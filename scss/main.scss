@@ -1,0 +1,20 @@
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+body input[type=number] {
+  -moz-appearance: textfield;
+  /*For FireFox*/
+}
+
+body input[type=number]::-webkit-inner-spin-button {
+  /*For Webkits like Chrome and Safari*/
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.button-sub {
+  width: 122px;
+  height: 33px;
+}

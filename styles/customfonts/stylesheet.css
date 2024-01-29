@@ -1,0 +1,108 @@
+@font-face {
+    font-family: 'Druk Text';
+    src: url('DrukText-Bold.eot');
+    src: url('DrukText-Bold.eot?#iefix') format('embedded-opentype'),
+        url('DrukText-Bold.woff2') format('woff2'),
+        url('DrukText-Bold.woff') format('woff'),
+        url('DrukText-Bold.ttf') format('truetype'),
+        url('DrukText-Bold.svg#DrukText-Bold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Druk Text';
+    src: url('DrukText-BoldItalic.eot');
+    src: url('DrukText-BoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('DrukText-BoldItalic.woff2') format('woff2'),
+        url('DrukText-BoldItalic.woff') format('woff'),
+        url('DrukText-BoldItalic.ttf') format('truetype'),
+        url('DrukText-BoldItalic.svg#DrukText-BoldItalic') format('svg');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Druk Text';
+    src: url('DrukText-Heavy.eot');
+    src: url('DrukText-Heavy.eot?#iefix') format('embedded-opentype'),
+        url('DrukText-Heavy.woff2') format('woff2'),
+        url('DrukText-Heavy.woff') format('woff'),
+        url('DrukText-Heavy.ttf') format('truetype'),
+        url('DrukText-Heavy.svg#DrukText-Heavy') format('svg');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Druk Text';
+    src: url('DrukText-Super.eot');
+    src: url('DrukText-Super.eot?#iefix') format('embedded-opentype'),
+        url('DrukText-Super.woff2') format('woff2'),
+        url('DrukText-Super.woff') format('woff'),
+        url('DrukText-Super.ttf') format('truetype'),
+        url('DrukText-Super.svg#DrukText-Super') format('svg');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Druk Text';
+    src: url('DrukText-Medium.eot');
+    src: url('DrukText-Medium.eot?#iefix') format('embedded-opentype'),
+        url('DrukText-Medium.woff2') format('woff2'),
+        url('DrukText-Medium.woff') format('woff'),
+        url('DrukText-Medium.ttf') format('truetype'),
+        url('DrukText-Medium.svg#DrukText-Medium') format('svg');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Druk Text';
+    src: url('DrukText-HeavyItalic.eot');
+    src: url('DrukText-HeavyItalic.eot?#iefix') format('embedded-opentype'),
+        url('DrukText-HeavyItalic.woff2') format('woff2'),
+        url('DrukText-HeavyItalic.woff') format('woff'),
+        url('DrukText-HeavyItalic.ttf') format('truetype'),
+        url('DrukText-HeavyItalic.svg#DrukText-HeavyItalic') format('svg');
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Druk Text';
+    src: url('DrukText-SuperItalic.eot');
+    src: url('DrukText-SuperItalic.eot?#iefix') format('embedded-opentype'),
+        url('DrukText-SuperItalic.woff2') format('woff2'),
+        url('DrukText-SuperItalic.woff') format('woff'),
+        url('DrukText-SuperItalic.ttf') format('truetype'),
+        url('DrukText-SuperItalic.svg#DrukText-SuperItalic') format('svg');
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Druk Text';
+    src: url('DrukText-MediumItalic.eot');
+    src: url('DrukText-MediumItalic.eot?#iefix') format('embedded-opentype'),
+        url('DrukText-MediumItalic.woff2') format('woff2'),
+        url('DrukText-MediumItalic.woff') format('woff'),
+        url('DrukText-MediumItalic.ttf') format('truetype'),
+        url('DrukText-MediumItalic.svg#DrukText-MediumItalic') format('svg');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'GT America';
+    src: url('GTAmerica-Regular.eot');
+    src: url('GTAmerica-Regular.eot?#iefix') format('embedded-opentype'),
+        url('GTAmerica-Regular.woff2') format('woff2'),
+        url('GTAmerica-Regular.woff') format('woff'),
+        url('GTAmerica-Regular.ttf') format('truetype'),
+        url('GTAmerica-Regular.svg#GTAmerica-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
