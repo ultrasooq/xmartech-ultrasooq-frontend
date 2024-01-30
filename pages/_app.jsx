@@ -1,7 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Head from "next/head";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../scss/main.scss";
+
 import "react-toastify/dist/ReactToastify.css";
 import { wrapper } from "../store/store";
 

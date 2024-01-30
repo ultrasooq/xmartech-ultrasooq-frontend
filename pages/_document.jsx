@@ -2,6 +2,8 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 import React from "react";
 import env from "../env";
 const APP_DESCRIPTION = "";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/js/bootstrap.bundle";
 
 export default class extends Document {
   static async getInitialProps(ctx) {
