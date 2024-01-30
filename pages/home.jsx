@@ -14,8 +14,8 @@ const Home = () => {
                 <title>Home Page</title>
             </Head>
             <div>Home page</div>
-            <button onClick={() => Router.push("/login")}>Goto Login</button>
-            <button onClick={() => Router.push("/details/page")}>Goto Page</button>
+            {/* <button onClick={() => Router.push("/login")}>Goto Login</button>
+            <button onClick={() => Router.push("/details/page")}>Goto Page</button> */}
         </SiteLayout>
     )
 
