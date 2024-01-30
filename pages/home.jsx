@@ -13,7 +13,53 @@ const Home = () => {
             <Head>
                 <title>Home Page</title>
             </Head>
-            <div>Home page</div>
+
+            <div className="section home_sec1">
+                <div className="container">
+                    <div className='row'>
+                        <div className="col-lg-6">
+                            <div className="home_sec1_box home_sec1_box_big">
+                                <img src="images/hs-1.png"/>
+                                <div className="home_sec1_box_overlay">
+                                    <div className="home_sec1_box_content">
+                                        <h6>samsung</h6>
+                                        <h3>sed do eiusmod tempor incididunt</h3>
+                                        <p>Only 2 days:</p>
+                                        <h5>21/10 & 22/10</h5>
+                                        <a href='#'> Shop Now </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-lg-6">
+                            <div className="home_sec1_box home_sec1_box_small">
+                                <img src="images/hs-2.png"/>
+                                <div className="home_sec1_box_overlay">
+                                    <div className="home_sec1_box_content">
+                                        <h3><b>Fluence</b> Minimal Speaker</h3>
+                                        <p>Just Price</p>
+                                        <h5>$159.99</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="home_sec1_box home_sec1_box_small">
+                                <img src="images/hs-3.png"/>
+                                <div className="home_sec1_box_overlay">
+                                    <div className="home_sec1_box_content">
+                                        <h6>camera</h6>
+                                        <h3><b>Camera</b> Sale <span>20% OFF</span></h3>
+                                        <p>Just Price</p>
+                                        <h5>$159.99</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            {/* <div>Home page</div>
             <button onClick={() => Router.push("/login")}>Goto Login</button>
             <button onClick={() => Router.push("/details/page")}>Goto Page</button>
             <div class="dropdown">
@@ -25,7 +71,7 @@ const Home = () => {
                     <li><a class="dropdown-item" href="#">Another action</a></li>
                     <li><a class="dropdown-item" href="#">Something else here</a></li>
                 </ul>
-            </div>
+            </div> */}
         </SiteLayout>
     )
 

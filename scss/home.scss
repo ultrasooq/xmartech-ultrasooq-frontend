@@ -1,0 +1,99 @@
+
+
+.home_sec1 {
+    .home_sec1_box {
+        position: relative;
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top right;
+        }
+        .home_sec1_box_overlay {
+            width: 100%;
+            height: 100%;
+            padding: 50px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(90deg, #DBDBDB -7.14%, rgba(219, 219, 219, 0.94) 29.43%, rgba(219, 219, 219, 0.10) 82.43%);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            .home_sec1_box_content {
+                max-width: 70%;
+                color: #7F818D;
+                font-size: 15px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 24px; 
+                h6 {
+                    color: #AF270C;
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 28.8px;
+                    letter-spacing: 0.14px;
+                    text-transform: uppercase;
+                    margin-bottom: 0;
+                }
+                h3 {
+                    color: #333;
+                    font-size: 35px;
+                    font-style: normal;
+                    font-weight: 500;
+                    line-height: normal;
+                    text-transform: capitalize;
+                    margin-bottom: 10px;
+                    span {
+                        width: 100%;
+                        display: inline-block;
+                        color: #DB2302;
+                    }
+                }
+                p {
+                    margin: 0;
+                }
+                h5 {
+                    color: #669D03;
+                    font-size: 18px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: 24px;
+                    margin-bottom: 20px;
+                }
+                a {
+                    color: #FFF;
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 700;
+                    line-height: 24px;
+                    border-radius: 2px;
+                    padding: 12px 25px;
+                    background: #DF2100;
+                    display: inline-block;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+    .home_sec1_box_big {
+        height: 400px;
+    }
+    .home_sec1_box_small {
+        height: 185px;
+        margin-bottom: 30px;
+        .home_sec1_box_overlay {
+            padding: 20px;
+            .home_sec1_box_content {
+                max-width: 40%;
+                h3 {
+                    font-size: 22px;
+                }
+            }
+        }
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
