@@ -22,7 +22,7 @@
     .sidebar_menu {
         width: 100%;
         height: calc(100% - 178px);
-        padding: 40px 20px 20px;
+        padding: 40px 15px 20px;
         overflow-y: auto;
         ul {
             display: grid;
@@ -56,8 +56,9 @@
         }
     }
     &:hover {
-        width: 220px;
-        max-width: 220px;
+        width: 200px;
+        max-width: 200px;
+        transition: all .3s ease 0s;
         .sidebar_menu {
             ul {
                 li {
