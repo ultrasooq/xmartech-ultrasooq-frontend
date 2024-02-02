@@ -18,7 +18,7 @@ const Home = () => {
             <div className="section home_sec1">
                 <div className="container">
                     <div className='row'>
-                        <div className="col-lg-6">
+                        <div className="col-lg-6 col-md-6 col-sm-6 home_sec1_wrap home_sec1_wrap_left">
                             <div className="home_sec1_box home_sec1_box_big">
                                 <img src="images/hs-1.png"/>
                                 <div className="home_sec1_box_overlay">
@@ -32,7 +32,7 @@ const Home = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-6">
+                        <div className="col-lg-6 col-md-6 col-sm-6 home_sec1_wrap home_sec1_wrap_right">
                             <div className="home_sec1_box home_sec1_box_small">
                                 <img src="images/hs-2.png"/>
                                 <div className="home_sec1_box_overlay">
@@ -672,11 +672,11 @@ const Home = () => {
                     <div className="row">
                         <div className="col-lg-12 home_sec5_box">
                             <div className="row">
-                                <div className="col-lg-6 home_sec5_box_left">
+                                <div className="col-lg-6 col-md-6 col-sm-5 home_sec5_box_left">
                                     <h3>Contrary to popular belief, Lorem Ipsum is not..</h3>
                                     <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
                                 </div>
-                                <div className="col-lg-3 home_sec5_box_right">
+                                <div className="col-lg-2 col-md-3 col-sm-3 home_sec5_box_right">
                                     <div className="home_sec5_price">
                                         <h6>$332.38</h6>
                                         <h4><span>$</span>219.05</h4>
@@ -684,6 +684,9 @@ const Home = () => {
                                             <a href="#">Shop Now </a>
                                         </div>
                                     </div>
+                                </div>
+                                <div className="col-lg-4 col-sm-4 home_sec5_box_image only_mobile_view">
+                                    <img src="images/big-headphone.png"/>
                                 </div>
                             </div>
                         </div>
@@ -1210,9 +1213,9 @@ const Home = () => {
                     <div className="row">
                         <div className="footer_top">
                             <div className="row">
-                                <div className="col-lg-8">
+                                <div className="col-lg-8 col-md-7 col-smn-12">
                                     <div className="row">
-                                        <div className="col-lg-4 footer_top_box">
+                                        <div className="col-lg-4 col-md-4 col-sm-4 footer_top_box">
                                             <h3>Quick Links</h3>
                                             <ul>
                                                 <li><a href="#">Policy</a></li>
@@ -1222,7 +1225,7 @@ const Home = () => {
                                                 <li><a href="#">FAQs</a></li>
                                             </ul>
                                         </div>
-                                        <div className="col-lg-4 footer_top_box">
+                                        <div className="col-lg-4 col-md-4 col-sm-4 footer_top_box">
                                             <h3>Company</h3>
                                             <ul>
                                                 <li><a href="#">About Us</a></li>
@@ -1231,7 +1234,7 @@ const Home = () => {
                                                 <li><a href="#">Contact</a></li>
                                             </ul>
                                         </div>
-                                        <div className="col-lg-4 footer_top_box">
+                                        <div className="col-lg-4 col-md-4 col-sm-4 footer_top_box">
                                             <h3>Business</h3>
                                             <ul>
                                                 <li><a href="#">Our Press</a></li>
@@ -1242,7 +1245,7 @@ const Home = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-4 footer_top_box">
+                                <div className="col-lg-4 col-md-5 footer_top_box">
                                     <h3>Newsletter</h3>
                                     <div className="newsletter_box">
                                         <div class="form-group">
@@ -1333,10 +1336,10 @@ const Home = () => {
                         </div>
                         <div className="footer_bottom">
                             <div className="row">
-                                <div className="col-lg-4 footer_bottom_left">
+                                <div className="col-lg-4 col-md-12 footer_bottom_left">
                                     <p>©2021 Puremoon All Rights Reserved</p>
                                 </div>
-                                <div className="col-lg-8 footer_bottom_right">
+                                <div className="col-lg-8 col-md-12 footer_bottom_right">
                                     <p>We Using Safe Payment For:</p>
                                     <img src="images/all-card.png"/>
                                 </div>

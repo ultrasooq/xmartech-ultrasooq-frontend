@@ -13,6 +13,21 @@
         background-repeat: no-repeat;
         background-position: center right;
         background-size: cover;
+        @media only screen and (min-width: 992px) and (max-width: 1100px) {
+            padding: 50px 30px 20px;
+            font-size: 14px;
+        }
+        @media only screen and (min-width: 768px) and (max-width: 991px) {
+            padding: 40px 30px 20px;
+            font-size: 14px;
+        }
+        @media only screen and (min-width: 575px) and (max-width: 767px) {
+            font-size: 14px;
+            line-height: 20px;
+        }
+        @media only screen and (min-width: 240px) and (max-width: 767px) {
+            padding: 30px 30px 20px;
+        }
         .trending_sec1_box_left {
             .breadcrumb {
                 background: transparent;
@@ -40,6 +55,18 @@
                 font-weight: 400;
                 line-height: 43px;
                 text-transform: capitalize;
+                @media only screen and (min-width: 992px) and (max-width: 1100px) {
+                    font-size: 30px;
+                    line-height: 38px;
+                }
+                @media only screen and (min-width: 768px) and (max-width: 991px) {
+                    font-size: 24px;
+                    line-height: 34px;
+                }
+                @media only screen and (min-width: 240px) and (max-width: 767px) {
+                    font-size: 20px;
+                    line-height: 30px;
+                }
             }
             .trending_sec1_price {
                 p {
@@ -73,11 +100,12 @@
             }
         }
         .trending_sec1_box_right {
-            min-height: 350px;
             padding-bottom: 20px;
-            background-image: url(../public/images/trending-banner.png);
-            background-repeat: no-repeat;
-            background-position: center right;
+            display: flex;
+            align-items: flex-end;
+            // background-image: url(../public/images/trending-banner.png);
+            // background-repeat: no-repeat;
+            // background-position: center right;
         }
     }
 }
@@ -86,11 +114,24 @@
     .company_logo {
         ul {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
             li {
+                @media only screen and (min-width: 240px) and (max-width: 575px) {
+                    width: 33.33%;
+                    padding: 0 7px;
+                    margin-bottom: 10px;
+                }
                 img {
                     filter: grayscale(100%);
+                    @media only screen and (min-width: 768px) and (max-width: 991px) {
+                        max-width: 100px;
+                    }
+                    @media only screen and (min-width: 575px) and (max-width: 767px) {
+                        max-width: 80px;
+                    }
+                    
                 }
             }
         }
@@ -110,9 +151,23 @@
                 padding: 10px;
                 display: flex;
                 color: #7F818D;
+                @media only screen and (min-width: 576px) and (max-width: 767px) {
+                    flex-wrap: wrap;
+                }
+                @media only screen and (min-width: 240px) and (max-width: 575px) {
+                    flex-wrap: wrap;
+                }
                 .trending_sec3_box_image {
                     width: 90px;
                     height: auto;
+                    @media only screen and (min-width: 576px) and (max-width: 767px) {
+                        width: 100%;
+                        text-align: center;
+                    }
+                    @media only screen and (min-width: 240px) and (max-width: 575px) {
+                        width: 100%;
+                        text-align: center;
+                    }
                 }
                 .trending_sec3_box_coontent {
                     width: calc(100% - 90px);
@@ -122,6 +177,12 @@
                     line-height: 20px;
                     letter-spacing: 0em;
                     text-align: left;
+                    @media only screen and (min-width: 576px) and (max-width: 767px) {
+                        width: 100%;
+                    }
+                    @media only screen and (min-width: 240px) and (max-width: 575px) {
+                        width: 100%;
+                    }
                     h6 {
                         font-size: 14px;
                         font-weight: 400;
@@ -141,6 +202,14 @@
 .trending_sec4 {
     .trending_sec4_left {
         max-width: 22%;
+        @media only screen and (min-width: 768px) and (max-width: 991px) {
+            max-width: 100%;
+            width: 100%;
+        }
+        @media only screen and (min-width: 240px) and (max-width: 767px) {
+            max-width: 100%;
+            width: 100%;
+        }
         .product_filter_box {
             width: 100%;
             border: 1px solid #E8E8E8;
@@ -195,12 +264,28 @@
             .check_filter {
                 width: 100%;
                 padding: 15px 15px;
+                @media only screen and (min-width: 768px) and (max-width: 991px) {
+                    display: flex;
+                    flex-wrap: wrap;
+                }
+                @media only screen and (min-width: 240px) and (max-width: 767px) {
+                    display: flex;
+                    flex-wrap: wrap;
+                }
                 .terms_check {
                     width: 100%;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
                     padding: 0;
+                    @media only screen and (min-width: 768px) and (max-width: 991px) {
+                        width: auto;
+                        padding: 0 10px 5px;
+                    }
+                    @media only screen and (min-width: 240px) and (max-width: 767px) {
+                        width: auto;
+                        padding: 0 10px 5px;
+                    }
                     label.remember_checkbox {
                         color: #7F818D;
                         font-size: 14px;
@@ -288,6 +373,14 @@
     }
     .trending_sec4_right {
         max-width: 78%;
+        @media only screen and (min-width: 768px) and (max-width: 991px) {
+            max-width: 100%;
+            width: 100%;
+        }
+        @media only screen and (min-width: 240px) and (max-width: 767px) {
+            max-width: 100%;
+            width: 100%;
+        }
         .product_gray_n_box {
             .products_sec_top {
                 .products_sec_top_right {
@@ -330,6 +423,12 @@
                 .product_list_part {
                     width: 25%;
                     margin-bottom: 20px;
+                    @media only screen and (min-width: 576px) and (max-width: 767px) {
+                        width: 33.33%;
+                    }
+                    @media only screen and (min-width: 240px) and (max-width: 575px) {
+                        width: 50%;
+                    }
                 }
             }
             .pagination {

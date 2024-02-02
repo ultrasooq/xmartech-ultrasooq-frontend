@@ -20,7 +20,7 @@ const Pagetest = () => {
                     <div className="row">
                         <div className="col-lg-12 trending_sec1_box">
                             <div className="row">
-                                <div className="col-lg-4 trending_sec1_box_left">
+                                <div className="col-lg-4 col-md-5 col-sm-5 trending_sec1_box_left">
                                     <div className="breadcrumb">
                                         <ul>
                                             <li><a href="#">Home</a></li>
@@ -37,8 +37,8 @@ const Pagetest = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-8 trending_sec1_box_right">
-                                    
+                                <div className="col-lg-8 col-md-7 col-sm-7 trending_sec1_box_right">
+                                    <img src="images/trending-banner.png"/>
                                 </div>
                             </div>
                         </div>
@@ -78,7 +78,7 @@ const Pagetest = () => {
             <section className="section trending_sec3">
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-3 trending_sec3_wrap">
+                        <div className="col-lg-3 col-md-4 col-sm-4 col-6 trending_sec3_wrap">
                             <div className="col-lg-12 trending_sec3_box">
                                 <a href="#">
                                     <div className="trending_sec3_box_image">
@@ -91,7 +91,7 @@ const Pagetest = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="col-lg-3 trending_sec3_wrap">
+                        <div className="col-lg-3 col-md-4 col-sm-4 col-6 trending_sec3_wrap">
                             <div className="col-lg-12 trending_sec3_box">
                                 <a href="#">
                                     <div className="trending_sec3_box_image">
@@ -104,7 +104,7 @@ const Pagetest = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="col-lg-3 trending_sec3_wrap">
+                        <div className="col-lg-3 col-md-4 col-sm-4 col-6 trending_sec3_wrap">
                             <div className="col-lg-12 trending_sec3_box">
                                 <a href="#">
                                     <div className="trending_sec3_box_image">
@@ -117,7 +117,7 @@ const Pagetest = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="col-lg-3 trending_sec3_wrap">
+                        <div className="col-lg-3 col-md-4 col-sm-4 col-6 trending_sec3_wrap">
                             <div className="col-lg-12 trending_sec3_box">
                                 <a href="#">
                                     <div className="trending_sec3_box_image">
@@ -130,7 +130,7 @@ const Pagetest = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="col-lg-3 trending_sec3_wrap">
+                        <div className="col-lg-3 col-md-4 col-sm-4 col-6 trending_sec3_wrap">
                             <div className="col-lg-12 trending_sec3_box">
                                 <a href="#">
                                     <div className="trending_sec3_box_image">
@@ -143,7 +143,7 @@ const Pagetest = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="col-lg-3 trending_sec3_wrap">
+                        <div className="col-lg-3 col-md-4 col-sm-4 col-6 trending_sec3_wrap">
                             <div className="col-lg-12 trending_sec3_box">
                                 <a href="#">
                                     <div className="trending_sec3_box_image">
@@ -156,7 +156,7 @@ const Pagetest = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="col-lg-3 trending_sec3_wrap">
+                        <div className="col-lg-3 col-md-4 col-sm-4 col-6 trending_sec3_wrap">
                             <div className="col-lg-12 trending_sec3_box">
                                 <a href="#">
                                     <div className="trending_sec3_box_image">
@@ -169,7 +169,7 @@ const Pagetest = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="col-lg-3 trending_sec3_wrap">
+                        <div className="col-lg-3 col-md-4 col-sm-4 col-6 trending_sec3_wrap">
                             <div className="col-lg-12 trending_sec3_box">
                                 <a href="#">
                                     <div className="trending_sec3_box_image">
@@ -992,9 +992,9 @@ const Pagetest = () => {
                     <div className="row">
                         <div className="footer_top">
                             <div className="row">
-                                <div className="col-lg-8">
+                                <div className="col-lg-8 col-md-7 col-smn-12">
                                     <div className="row">
-                                        <div className="col-lg-4 footer_top_box">
+                                        <div className="col-lg-4 col-md-4 col-sm-4 footer_top_box">
                                             <h3>Quick Links</h3>
                                             <ul>
                                                 <li><a href="#">Policy</a></li>
@@ -1004,7 +1004,7 @@ const Pagetest = () => {
                                                 <li><a href="#">FAQs</a></li>
                                             </ul>
                                         </div>
-                                        <div className="col-lg-4 footer_top_box">
+                                        <div className="col-lg-4 col-md-4 col-sm-4 footer_top_box">
                                             <h3>Company</h3>
                                             <ul>
                                                 <li><a href="#">About Us</a></li>
@@ -1013,7 +1013,7 @@ const Pagetest = () => {
                                                 <li><a href="#">Contact</a></li>
                                             </ul>
                                         </div>
-                                        <div className="col-lg-4 footer_top_box">
+                                        <div className="col-lg-4 col-md-4 col-sm-4 footer_top_box">
                                             <h3>Business</h3>
                                             <ul>
                                                 <li><a href="#">Our Press</a></li>
@@ -1024,7 +1024,7 @@ const Pagetest = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-4 footer_top_box">
+                                <div className="col-lg-4 col-md-5 footer_top_box">
                                     <h3>Newsletter</h3>
                                     <div className="newsletter_box">
                                         <div class="form-group">
@@ -1115,10 +1115,10 @@ const Pagetest = () => {
                         </div>
                         <div className="footer_bottom">
                             <div className="row">
-                                <div className="col-lg-4 footer_bottom_left">
+                                <div className="col-lg-4 col-md-12 footer_bottom_left">
                                     <p>©2021 Puremoon All Rights Reserved</p>
                                 </div>
-                                <div className="col-lg-8 footer_bottom_right">
+                                <div className="col-lg-8 col-md-12 footer_bottom_right">
                                     <p>We Using Safe Payment For:</p>
                                     <img src="images/all-card.png"/>
                                 </div>

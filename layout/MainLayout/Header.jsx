@@ -11,10 +11,10 @@ const Header = (props) => {
                <div className="row">
                   <div className="col-lg-12 header_top">
                      <div className="row">
-                        <div className="col-lg-4 header_top_left">
+                        <div className="col-xl-4 col-lg-6 col-md-5 col-sm-12 header_top_left">
                            <p>Welcome to Martfury Online Shopping Store !</p>
                         </div>
-                        <div className="col-lg-8 header_top_right">
+                        <div className="col-xl-8 col-lg-6 col-md-7 col-sm-12 header_top_right">
                            <ul>
                               <li><a href="#">Store Location</a></li>
                               <li><a href="#">Track Your Order</a></li>
@@ -38,12 +38,12 @@ const Header = (props) => {
                   </div>
                   <div className="col-lg-12 header_middle">
                      <div className="row">
-                        <div className="col-lg-2 logo">
+                        <div className="col-lg-2 col-md-2 col-6 logo">
                            <a href="#">
                               <img src="images/logo.png"/>
                            </a>
                         </div>
-                        <div className="col-lg-7 header_search_bar">
+                        <div className="col-lg-7 col-md-7 col-12 header_search_bar">
                            <form>
                               <div className="search_bar_left">
                                  <div className="search_dropdown">
@@ -67,7 +67,7 @@ const Header = (props) => {
                               </div>
                            </form>
                         </div>
-                        <div className="col-lg-3 header_middle_right_bar">
+                        <div className="col-lg-3 col-md-3 col-6 header_middle_right_bar">
                            <ul>
                               <li>
                                  <a href="#">
@@ -154,9 +154,9 @@ const Header = (props) => {
             </div>
          </div>
          <div className="header_down">
-         <div className="container">
+            <div className="container">
                <div className="row">
-                  <div className="col-lg-4 all_categories">
+                  <div className="col-lg-4 col-6 all_categories">
                      <div className="all_categories_head">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="14" viewBox="0 0 16 14" fill="none">
                            <path d="M1 2H15C15.6 2 16 1.6 16 1C16 0.4 15.6 0 15 0H1C0.4 0 0 0.4 0 1C0 1.6 0.4 2 1 2ZM1 8H15C15.6 8 16 7.6 16 7C16 6.4 15.6 6 15 6H1C0.4 6 0 6.4 0 7C0 7.6 0.4 8 1 8ZM1 14H15C15.6 14 16 13.6 16 13C16 12.4 15.6 12 15 12H1C0.4 12 0 12.4 0 13C0 13.6 0.4 14 1 14Z" fill="#333333"/>
@@ -296,7 +296,7 @@ const Header = (props) => {
                      </div>
                      
                   </div>
-                  <div className="col-lg-8 header_down_list">
+                  <div className="col-lg-8 col-6 header_down_list">
                      <ul>
                         <li>
                            <a href="#">Buyer Central</a>
