@@ -74,7 +74,7 @@ const AuthLayout = (props) => {
                             </>
                             :
                             <div style={{ position: 'absolute', top: '30%', left: '40%', fontSize: '30px' }}>
-                                Please Wait...
+                                Loading...
                             </div>
                     }
                 </div>

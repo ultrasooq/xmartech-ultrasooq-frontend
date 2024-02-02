@@ -7,18 +7,18 @@ import _ from "lodash";
 import { useRouter } from "next/router";
 import { SP } from 'next/dist/shared/lib/utils';
 
-const Dummy = () => {
+const Profile = () => {
     const Router = useRouter();
     return (
         <SiteLayout>
             <Head>
-                <title>Home Page</title>
+                <title>Profile Page</title>
             </Head>
-            Dummy test
+            Profile test
         </SiteLayout>
     )
 
 }
 
 
-export default withRouter(Dummy);
+export default withRouter(Profile);
