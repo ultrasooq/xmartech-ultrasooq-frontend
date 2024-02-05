@@ -83,8 +83,8 @@ const Header = (props) => {
                                  </a>
                               </li>
                               <li>
+                                 <img src="images/login.svg" />
                                  <a >
-                                    <img src="images/login.svg" />
                                     <span onClick={() => Router.push("/login")}>Login </span><br></br><span onClick={() => Router.push("/register")}> Register</span>
                                  </a>
                               </li>

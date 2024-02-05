@@ -88,7 +88,7 @@ const Register = () => {
                   </div>
                 </div>
                 <div className="col-lg-12 form-group">
-                  <label>Confirm Address</label>
+                  <label>Confirm Password</label>
                   <div className="form_field_wrap">
                     <input type="password" className="form-control" placeholder="Enter Your Login Password Again "/>
                     <span className="show_password"><img src="images/eyeslash.svg"/></span>

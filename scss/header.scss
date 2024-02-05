@@ -191,6 +191,7 @@
                     li {
                         position: relative;
                         padding: 0 6px 13px 0;
+                        display: flex;
                         active {
                             a {
                                 color: #DB2302;
@@ -198,6 +199,7 @@
                         }
                         a {
                             display: flex;
+                            flex-wrap: wrap;
                             align-items: center;
                             text-decoration: none;
                             span {
@@ -208,6 +210,7 @@
                                 line-height: normal;
                                 letter-spacing: -0.03px;
                                 margin-left: 5px;
+                                cursor: pointer;
                                 @media only screen and (min-width: 768px) and (max-width: 991px) {
                                     font-size: 13px;
                                 }

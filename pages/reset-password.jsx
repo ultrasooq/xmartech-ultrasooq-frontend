@@ -7,39 +7,40 @@ import _ from "lodash";
 import { useRouter } from "next/router";
 import ToastHot from 'react-hot-toast';
 
-const OtpVerification = () => {
+const ResetPassword = () => {
   const Router = useRouter();
   return (
     <SiteLayout>
       <Head>
-        <title>Otp Verification</title>
+        <title>Forget Password</title>
       </Head>
-
 
       <section className="before_login_sec">
         <div className="container">
           <div className="row">
             <div className="col-lg-7 before_login_box">
               <div className="before_login_heading">
-                <h2>verify OTP</h2>
-                <p>Enter the OTP which you received via email</p>
+                <h2>Reset Password</h2>
+                <p>Reset Your Password</p>
               </div>
               <div className="before_login_form_wrap">
                 <div className="row">
-                  <div className="col-lg-12 form-group">
-                    <div className="form_field_wrap otp_input_field">
-                      <input type="text" className="form-control"/>
-                      <input type="text" className="form-control"/>
-                      <input type="text" className="form-control"/>
-                      <input type="text" className="form-control"/>
-                      <input type="text" className="form-control"/>
-                    </div>
+                <div className="col-lg-12 form-group">
+                  <label>New Password</label>
+                  <div className="form_field_wrap">
+                    <input type="password" className="form-control" placeholder="************ "/>
+                    <span className="show_password"><img src="images/eyeslash.svg"/></span>
                   </div>
-                  <div className="col-lg-12 form-group">
-                    <button type="button" className="form-control submit_button verify_button">Verify</button>
+                </div>
+                <div className="col-lg-12 form-group">
+                  <label>Re-Enter New Password</label>
+                  <div className="form_field_wrap">
+                    <input type="password" className="form-control" placeholder="************ "/>
+                    <span className="show_password"><img src="images/eyeslash.svg"/></span>
                   </div>
-                  <div className="col-lg-12 form-group text-center allready_account">
-                    <span>Didn't receive OTP? <a >Resend</a></span>
+                </div>
+                  <div className="col-lg-12 form-group">
+                    <button type="button" className="form-control submit_button">Change Password</button>
                   </div>
                 </div>
               </div>
@@ -59,4 +60,4 @@ const OtpVerification = () => {
 
 
 
-export default withRouter(OtpVerification);
+export default withRouter(ResetPassword);

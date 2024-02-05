@@ -12,7 +12,7 @@
     .before_login_box {
         box-shadow: 0px 12px 40px 0px #FF452312;
         border: 1px solid #E4E3E3;
-        margin: auto;
+        margin: auto auto 50px;
         padding: 50px;
         border-radius: 10px;
         background: #fff;
@@ -246,6 +246,7 @@
                         font-weight: 500;
                         line-height: 33px;
                         color: #DB2302;
+                        cursor: pointer;
                     }
                 }
                 .submit_button {
@@ -262,16 +263,39 @@
                         height: 50px;
                     }
                 }
+                .otp_input_field {
+                    max-width: 70%;
+                    border: none;
+                    height: auto;
+                    margin: auto;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    .form-control {
+                        width: 17%;
+                        height: 60px;
+                        text-align: center;
+                        border-radius: 10px;
+                        border: 1px solid #E7E7E7;
+                    }
+                }
+                .verify_button {
+                    width: auto;
+                    padding: 10px 40px;
+                    margin: 20px auto auto;
+                }
             }
             .allready_account {
                 font-size: 15px;
                 font-weight: 400;
                 line-height: 18px;
+                color: #7F818D;
                 a {
                     font-size: 15px;
                     font-weight: 500;
                     line-height: 18px;
                     color: #DB2302;
+                    cursor: pointer;
                 }
             }
             .custom_radio {
@@ -337,6 +361,20 @@
                             background: #DB2302;
                         }
                     }
+                }
+            }
+        }
+    }
+    .successful_box {
+        padding: 100px;
+        .before_login_form_wrap {
+            .successful_box_under {
+                h3 {
+                    font-size: 35px;
+                    font-weight: 600;
+                    line-height: 42px;
+                    color: #333333;
+                    margin-top: 15px;
                 }
             }
         }
