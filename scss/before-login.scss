@@ -271,6 +271,9 @@
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
+                    @media only screen and (min-width: 240px) and (max-width: 767px) {
+                        max-width: 100%;
+                    }
                     .form-control {
                         width: 17%;
                         height: 60px;
@@ -367,14 +370,25 @@
     }
     .successful_box {
         padding: 100px;
+        @media only screen and (min-width: 240px) and (max-width: 767px) {
+            padding: 30px 20px;
+        }
         .before_login_form_wrap {
             .successful_box_under {
+                @media only screen and (min-width: 240px) and (max-width: 767px) {
+                    img {
+                        max-width: 120px;
+                    }   
+                }
                 h3 {
                     font-size: 35px;
                     font-weight: 600;
                     line-height: 42px;
                     color: #333333;
                     margin-top: 15px;
+                    @media only screen and (min-width: 240px) and (max-width: 767px) {
+                        font-size: 28px;
+                    }
                 }
             }
         }
