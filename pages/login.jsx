@@ -45,14 +45,14 @@ const Login = () => {
                             <span className="checkmark"></span>
                             Remember Me
                         </label>
-                        <a href="#" onClick={()=> Router.push("/forget-password")}>Forgot Password </a>
+                        <a onClick={()=> Router.push("/forget-password")}>Forgot Password </a>
                     </div>
                   </div>
                   <div className="col-lg-12 form-group">
                     <button type="button" className="form-control submit_button">Login</button>
                   </div>
                   <div className="col-lg-12 form-group text-center allready_account">
-                    <span>Don’t have an account? <a href="#" onClick={()=> Router.push("/register")}>Sign in</a></span>
+                    <span>Don’t have an account? <a onClick={()=> Router.push("/register")}>Sign in</a></span>
                   </div>
                   <div className="login_or">
                     <span>Or</span>

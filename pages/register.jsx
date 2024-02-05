@@ -113,7 +113,7 @@ const Register = () => {
                   <button type="button" className="form-control submit_button">Agree & Register</button>
                 </div>
                 <div className="col-lg-12 form-group text-center allready_account">
-                  <span>Do you already have an account? <a href="#" onClick={()=> Router.push("/login")}>Sign in</a></span>
+                  <span>Do you already have an account? <a onClick={()=> Router.push("/login")}>Sign in</a></span>
                 </div>
               </div>
             </div>
