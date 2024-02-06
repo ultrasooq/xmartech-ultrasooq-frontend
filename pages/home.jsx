@@ -1213,39 +1213,35 @@ const Home = () => {
                     <div className="row">
                         <div className="footer_top">
                             <div className="row">
-                                <div className="col-lg-8 col-md-7 col-smn-12">
-                                    <div className="row">
-                                        <div className="col-lg-4 col-md-4 col-sm-4 footer_top_box">
-                                            <h3>Quick Links</h3>
-                                            <ul>
-                                                <li><a href="#">Policy</a></li>
-                                                <li><a href="#">Term & Condition</a></li>
-                                                <li><a href="#">Shipping</a></li>
-                                                <li><a href="#">Return</a></li>
-                                                <li><a href="#">FAQs</a></li>
-                                            </ul>
-                                        </div>
-                                        <div className="col-lg-4 col-md-4 col-sm-4 footer_top_box">
-                                            <h3>Company</h3>
-                                            <ul>
-                                                <li><a href="#">About Us</a></li>
-                                                <li><a href="#">Affilate</a></li>
-                                                <li><a href="#">Career</a></li>
-                                                <li><a href="#">Contact</a></li>
-                                            </ul>
-                                        </div>
-                                        <div className="col-lg-4 col-md-4 col-sm-4 footer_top_box">
-                                            <h3>Business</h3>
-                                            <ul>
-                                                <li><a href="#">Our Press</a></li>
-                                                <li><a href="#">Checkout</a></li>
-                                                <li><a href="#">My account</a></li>
-                                                <li><a href="#">Shop</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                                <div className="col-lg-3 col-md-3 col-sm-6 col-6 footer_top_box">
+                                    <h3>Quick Links</h3>
+                                    <ul>
+                                        <li><a href="#">Policy</a></li>
+                                        <li><a href="#">Term & Condition</a></li>
+                                        <li><a href="#">Shipping</a></li>
+                                        <li><a href="#">Return</a></li>
+                                        <li><a href="#">FAQs</a></li>
+                                    </ul>
                                 </div>
-                                <div className="col-lg-4 col-md-5 footer_top_box">
+                                <div className="col-lg-3 col-md-2 col-sm-6 col-6 footer_top_box">
+                                    <h3>Company</h3>
+                                    <ul>
+                                        <li><a href="#">About Us</a></li>
+                                        <li><a href="#">Affilate</a></li>
+                                        <li><a href="#">Career</a></li>
+                                        <li><a href="#">Contact</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-lg-2 col-md-2 col-sm-6 col-6 footer_top_box">
+                                    <h3>Business</h3>
+                                    <ul>
+                                        <li><a href="#">Our Press</a></li>
+                                        <li><a href="#">Checkout</a></li>
+                                        <li><a href="#">My account</a></li>
+                                        <li><a href="#">Shop</a></li>
+                                    </ul>
+                                </div>
+                                <div className="col-lg-4 col-md-5 col-sm-6 col-12 footer_top_box">
                                     <h3>Newsletter</h3>
                                     <div className="newsletter_box">
                                         <div class="form-group">

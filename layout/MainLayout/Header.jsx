@@ -39,12 +39,12 @@ const Header = (props) => {
                   </div>
                   <div className="col-lg-12 header_middle">
                      <div className="row">
-                        <div className="col-lg-2 col-md-2 col-6 logo">
+                        <div className="col-lg-2 col-md-2 col-5 logo">
                            <a href="#">
                               <img src="images/logo.png" />
                            </a>
                         </div>
-                        <div className="col-lg-7 col-md-7 col-12 header_search_bar">
+                        <div className="col-lg-7 col-md-7 col-10 header_search_bar">
                            <form>
                               <div className="search_bar_left">
                                  <div className="search_dropdown">
@@ -68,7 +68,12 @@ const Header = (props) => {
                               </div>
                            </form>
                         </div>
-                        <div className="col-lg-3 col-md-3 col-6 header_middle_right_bar">
+                        <div class="col-2 only_mobile_view opentoggle">
+                           <div class="toggle_button" id="opentoggle">
+                              <div></div>
+                           </div>
+                     </div>
+                        <div className="col-lg-3 col-md-3 col-7 header_middle_right_bar">
                            <ul>
                               <li>
                                  <a href="#">
