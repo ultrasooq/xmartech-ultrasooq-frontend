@@ -7,12 +7,12 @@ import _ from "lodash";
 import { useRouter } from "next/router";
 import { SP } from 'next/dist/shared/lib/utils';
 
-const CompanyProfile = () => {
+const FreelancerProfile = () => {
     const Router = useRouter();
     return (
         <SiteLayout>
             <Head>
-                <title>Company Profile</title>
+                <title>Freelancer Profile</title>
             </Head>
             <section className="before_login_sec">
                 <div className="container">
@@ -486,4 +486,4 @@ const CompanyProfile = () => {
 }
 
 
-export default withRouter(CompanyProfile);
+export default withRouter(FreelancerProfile);

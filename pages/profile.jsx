@@ -12,7 +12,7 @@ const Profile = () => {
     return (
         <SiteLayout>
             <Head>
-                <title>Profile Page</title>
+                <title>Profile</title>
             </Head>
             <section className="before_login_sec">
                 <div className="container">
