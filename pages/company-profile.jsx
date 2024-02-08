@@ -472,7 +472,7 @@ const CompanyProfile = () => {
                                         </div>
                                     </div>
                                     <div className="col-lg-12 form-group">
-                                        <button type="button" className="form-control submit_button">Update Profile</button>
+                                        <button type="button" className="form-control submit_button">Save changes</button>
                                     </div>
                                 </div>
                             </div>
