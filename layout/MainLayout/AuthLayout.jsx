@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { ToastContainer, Zoom } from 'react-toastify';
-import { withRouter } from "next/router";
-import { Router, Link } from "../../routes";
+import { useRouter, withRouter } from "next/router";
+// import { Router, Link } from "../../routes";
 import PropTypes from "prop-types";
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -15,6 +15,7 @@ const LoginById = `/users/me`;
 
 
 const AuthLayout = (props) => {
+    const Router = useRouter();
     const dispatch = useDispatch();
     const { user, userRequestLoading, userLoginStatus } = useSelector(state => state.authReducer);
 
@@ -25,7 +26,7 @@ const AuthLayout = (props) => {
             checkSilentLogin()
         } else {
             dispatch(logout())
-            Router.pushRoute("/");
+            Router.push("/");
         }
     }, [])
 

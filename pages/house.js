@@ -21,7 +21,7 @@ export default function House() {
             House Page
           </p>
         </div>
-        <div className="p-3 bg-white shadow rounded-lg" onClick={(e)=> handleClick(e, "project")}>
+        <div className="p-3 bg-white shadow rounded-lg" onClick={(e)=> handleClick(e, "home")}>
           <h3 className="text-xs border-b">font-serif</h3>
           <p className="font-serif">
           project page

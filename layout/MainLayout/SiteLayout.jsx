@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ToastContainer, Zoom } from 'react-toastify';
-import { withRouter } from "next/router";
+import { useRouter, withRouter } from "next/router";
 // import { APP_NAME } from '../../env';
 import Head from 'next/head';
 import PropTypes from "prop-types";
-import { Router, Link } from "../../routes";
 import { useDispatch, useSelector } from 'react-redux';
 
 import { CallWithAuth, CallWithAuthentication } from "../../actions/apiAction";
@@ -15,6 +14,7 @@ import Sidebar from "./Sidebar";
 const LoginById = `/users/me`;
 
 const SiteLayout = (props) => {
+    const Router = useRouter();
     const [validAccess, setValidAccess] = useState(false)
 
     const dispatch = useDispatch();
@@ -26,9 +26,9 @@ const SiteLayout = (props) => {
             checkSilentLogin()
             console.log(props.router.asPath)
             if (props.router.asPath !== "/") {
-                Router.pushRoute(`${props.router.asPath}`)
+                Router.push(`${props.router.asPath}`)
             } else {
-                Router.pushRoute("/dashboard");
+                Router.push("/dashboard");
             }
         } else {
             setValidAccess(true)

@@ -35,7 +35,7 @@ export function CallWithOutAuth(method, apiUrl, body){
                     if(response.status === 200){
                         resolve(response)
                     }else if(response.status === 401){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else if(response.status === 404){
                         resolve(response)
                     }else{
@@ -116,9 +116,9 @@ export function CallWithAuth(method, apiUrl, body={}){
                     if(response.status === 200){
                         resolve(response)
                     }else if(response.status === 401){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else if(response.status === 404){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else{
                         resolve(false)
                     }
@@ -131,7 +131,7 @@ export function CallWithAuth(method, apiUrl, body={}){
                     if(response.status === 200){
                         resolve(response)
                     }else if(response.status === 401){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else{
                         resolve(false)
                     }
@@ -144,7 +144,7 @@ export function CallWithAuth(method, apiUrl, body={}){
                     if(response.status === 200){
                         resolve(response)
                     }else if(response.status === 401){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else if(response.status === 404){
                         resolve(response)
                     }else{
@@ -159,7 +159,7 @@ export function CallWithAuth(method, apiUrl, body={}){
                     if(response.status === 200){
                         resolve(response)
                     }else if(response.status === 401){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else{
                         resolve(false)
                     }
@@ -207,7 +207,7 @@ export function CallWithAuthentication(method, apiUrl, body={}){
                     if(response.status === 200){
                         resolve(response)
                     }else if(response.status === 401){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else{
                         resolve(false)
                     }
@@ -220,7 +220,7 @@ export function CallWithAuthentication(method, apiUrl, body={}){
                     if(response.status === 200){
                         resolve(response)
                     }else if(response.status === 401){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else{
                         resolve(false)
                     }
@@ -233,14 +233,14 @@ export function CallWithAuthentication(method, apiUrl, body={}){
                     if(response.status === 200){
                         resolve(response)
                     }else if(response.status === 401){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else{
                         resolve(false)
                     }
                 }).catch(err => {
                     if(err.response.status === 401){
                         localStorage.removeItem('accessToken');
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else{
                         resolve(err.response)
                     }
@@ -252,7 +252,7 @@ export function CallWithAuthentication(method, apiUrl, body={}){
                     if(response.status === 200){
                         resolve(response)
                     }else if(response.status === 401){
-                        Router.pushRoute("/");
+                        Router.push("/");
                     }else{
                         resolve(false)
                     }
