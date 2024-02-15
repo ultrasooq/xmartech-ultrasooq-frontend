@@ -12,8 +12,158 @@ export default function House() {
   }
   return (
     <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 `}
+      className={`flex min-h-screen flex-col justify-between p-24 `}
     >
+      
+      <header className='w-full'>
+         <div className='w-full bg-dark-cyan'>
+            <div className='container m-auto'>
+               <div className='flex gap-x-2.5'>
+                  <div className='w-1/3 text-sm text-white font-normal py-4'>
+                     <p>Welcome to Martfury Online Shopping Store !</p>
+                  </div>
+                  <div className='w-2/3 text-sm text-white font-normal flex justify-end py-4'>
+                     <ul className='flex justify-end'>
+                        <li className='px-2 text-white text-sm font-normal border-r border-solid border-white'><a href="#">Store Location</a></li>
+                        <li className='px-2 text-white text-sm font-normal border-r border-solid border-white'><a href="#">Track Your Order</a></li>
+                        <li className='px-2 text-white text-sm font-normal border-r border-solid border-white'>
+                           <select className='bg-transparent text-white border-0 focus:outline-none'>
+                              <option className='bg-dark-cyan'>USD</option>
+                              <option className='bg-dark-cyan'>INR</option>
+                              <option className='bg-dark-cyan'>AUD</option>
+                           </select>
+                        </li>
+                        <li className='px-2 pr-0 text-white text-sm font-normal'>
+                           <select className='bg-transparent text-white border-0 focus:outline-none'>
+                              <option className='bg-dark-cyan'>English</option>
+                              <option className='bg-dark-cyan'>German</option>
+                              <option className='bg-dark-cyan'>French</option>
+                           </select>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <div className='flex gap-x-2.5'>
+               <div className='w-1/6 py-4 flex items-center'>
+                     <a href="#">
+                     <img src="images/logo.png" />
+                     </a>
+                  </div>
+                  <div className='w-4/6 py-4 pr-4 flex items-center'>
+                     <div className='w-auto h-11'>
+                     <select className='w-full h-full focus:outline-none'>
+                        <option>All</option>
+                        <option>Apps & Games</option>
+                        <option>Beauty</option>
+                        <option>Car & Motorbike</option>
+                        <option>Clothing & Accessories</option>
+                        <option>Computers & Accessories</option>
+                        <option>Electronics</option>
+                        <option>Movies & TV Shows</option>
+                     </select>
+                     </div>
+                     <div className='w-4/6 h-11 border-l border-solid border-indigo-200'>
+                     <input type="search" className="form-control w-full h-full p-2.5 text-black focus:outline-none" placeholder="I’m shopping for..." />
+                     </div>
+                     <div className='w-1/6 h-11'>
+                     <button type="button" className="btn w-full h-full bg-dark-orange text-white text-sm font-semibold">Search</button>
+                     </div>
+                  </div>
+                  <div className='w-1/6 py-4 flex justify-end'>
+                  <ul className='flex items-center justify-end gap-x-4'>
+                     <li className='relative pt-0 pr-1 pb-3 pl-0 flex'>
+                           <a className='flex flex-wrap items-center'>
+                           <img src='images/wishlist.svg' />
+                           <div className='w-6 h-6 rounded-full bg-dark-orange text-xs text-white font-bold flex items-center justify-center absolute bottom-0 right-0'>0</div>
+                           </a>
+                     </li>
+                     <li className='relative pt-0 pr-1 pb-3 pl-0 flex'>
+                           <a className='flex flex-wrap items-center'>
+                           <img src='images/cart.svg' />
+                           <div className='w-6 h-6 rounded-full bg-dark-orange text-xs text-white font-bold flex items-center justify-center absolute bottom-0 right-0'>0</div>
+                           </a>
+                     </li>
+                     <li className='relative pt-0 pr-1 pb-3 pl-0 flex'>
+                           <img src="images/login.svg" />
+                           <a className='flex flex-wrap items-center text-sm text-white font-bold ml-1.5 flex flex-col items-start'>
+                           <span onClick={() => Router.push("/login")}>Login </span><span onClick={() => Router.push("/register")}> Register</span>
+                           </a>
+                     </li>
+                     </ul>
+                  </div>
+               </div>
+               <div className='flex w-full'>
+               <ul className='w-full flex items-center justify-between'>
+                  <li className='flex py-5 text-white text-lg font-semibold uppercase'>
+                     <a href='javascript:void(0);' className='flex gap-x-2'> <img src='images/menu-icon-home.svg'/> Home</a>
+                  </li>
+                  <li className='flex py-5 text-white text-lg font-semibold uppercase'>
+                     <a href='javascript:void(0);' className='flex gap-x-2'> <img src='images/menu-icon-trending.svg'/> Trending & Hot Deals</a>
+                  </li>
+                  <li className='flex py-5 text-white text-lg font-semibold uppercase'>
+                     <a href='javascript:void(0);' className='flex gap-x-2'> <img src='images/menu-icon-buy.svg'/> buygroup</a>
+                  </li>
+                  <li className='flex py-5 text-white text-lg font-semibold uppercase'>
+                     <a href='javascript:void(0);' className='flex gap-x-2'> <img src='images/menu-icon-rfq.svg'/> rfq</a>
+                  </li>
+                  <li className='flex py-5 text-white text-lg font-semibold uppercase'>
+                     <a href='javascript:void(0);' className='flex gap-x-2'> <img src='images/menu-icon-pos.svg'/> pos store</a>
+                  </li>
+                  <li className='flex py-5 text-white text-lg font-semibold uppercase'>
+                     <a href='javascript:void(0);' className='flex gap-x-2'> <img src='images/menu-icon-service.svg'/> Service</a>
+                  </li>
+               </ul>
+               </div>
+            </div>
+         </div>
+         <div className='w-full border-b border-solid border-slate-800'>
+            <div className='container m-auto'>
+               <div className='flex'>
+                  <div className='w-1/6 flex py-3'>
+                     <img src='images/humberger-icon.svg'/>
+                     <span className='text-lg font-normal capitalize text-color-dark mx-3'>All Categories</span>
+                     <img src='images/humberger-down-icon.svg'/>
+                  </div>
+                  <div className='w-5/6 flex items-center justify-end'>
+                    <ul className='flex items-center justify-end gap-x-4'>
+                      <li className='text-lg font-normal capitalize py-1.5 text-light-gray'>
+                          <a href="#" className='text-light-gray'>Buyer Central</a>
+                      </li>
+                      <li className='text-lg font-normal capitalize py-1.5 text-light-gray'>
+                          <a href="#" className='text-light-gray'>Help Center</a>
+                      </li>
+                    </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </header>
+
+      <section className="w-100 py-8">
+  <div className="container px-4 mx-auto">
+    <div className="px-7 py-6 bg-indigo-500 rounded">
+      <div className="flex flex-wrap">
+        <div className="w-full md:w-1/2 pt-6 mb-10 md:mb-0">
+          <h3 className="mb-1 text-2xl font-bold text-white">
+            <span className="text-green-300">Try For Free</span>
+            <span>New Features</span>
+          </h3>
+          <p className="mb-8 md:mb-16 text-sm font-medium text-indigo-100">No charge for seven days</p>
+          <a className="flex items-center text-white font-medium" href="#">
+            <svg className="mr-1" width="12" height="14" viewbox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11.92 6.62C11.8724 6.49725 11.801 6.38511 11.71 6.29L6.71 1.29C6.61676 1.19676 6.50607 1.1228 6.38425 1.07234C6.26243 1.02188 6.13186 0.995911 6 0.995911C5.7337 0.995911 5.4783 1.1017 5.29 1.29C5.19676 1.38324 5.1228 1.49393 5.07234 1.61575C5.02188 1.73758 4.99591 1.86814 4.99591 2C4.99591 2.2663 5.1017 2.5217 5.29 2.71L8.59 6H1C0.734784 6 0.48043 6.10536 0.292893 6.2929C0.105357 6.48043 0 6.73479 0 7C0 7.26522 0.105357 7.51957 0.292893 7.70711C0.48043 7.89465 0.734784 8 1 8H8.59L5.29 11.29C5.19627 11.383 5.12188 11.4936 5.07111 11.6154C5.02034 11.7373 4.9942 11.868 4.9942 12C4.9942 12.132 5.02034 12.2627 5.07111 12.3846C5.12188 12.5064 5.19627 12.617 5.29 12.71C5.38296 12.8037 5.49356 12.8781 5.61542 12.9289C5.73728 12.9797 5.86799 13.0058 6 13.0058C6.13201 13.0058 6.26272 12.9797 6.38458 12.9289C6.50644 12.8781 6.61704 12.8037 6.71 12.71L11.71 7.71C11.801 7.6149 11.8724 7.50275 11.92 7.38C12.02 7.13654 12.02 6.86346 11.92 6.62Z" fill="#D7D5F8"></path>
+            </svg>
+            <span>Check demo</span>
+          </a>
+        </div>
+        <div className="w-full md:w-1/2 flex items-center">
+          <img className="mx-auto h-48" src="artemis-assets/images/chart-folder.png" alt=""/>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
       <div className="space-y-5">
         <div className="p-3 bg-white shadow rounded-lg" onClick={(e)=> handleClick(e, "house")}>
           <h3 className="text-xs border-b">font-sans</h3>

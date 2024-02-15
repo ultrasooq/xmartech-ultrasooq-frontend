@@ -5,7 +5,7 @@ const Sidebar = (props) => {
   
   return (
     <div className="sidebar">
-        <div className="sidebar_top">
+        {/* <div className="sidebar_top">
           <img src="images/sidebar-arrow.png"/>
         </div>
         <div className="sidebar_menu">
@@ -95,7 +95,7 @@ const Sidebar = (props) => {
               </a>
             </li>
           </ul>
-        </div>
+        </div> */}
     </div>
   );
 }
