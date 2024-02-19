@@ -22,6 +22,9 @@ module.exports = {
 
         '2xl': '1140px',
       },
+      fontFamily: {
+        body_text: ["Work Sans", "sans-serif"],
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':

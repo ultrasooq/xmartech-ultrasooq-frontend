@@ -171,7 +171,7 @@ export default class extends Document {
 
           
         </Head>
-        <body className="">
+        <body className="font-body_text">
           <Main />
           <NextScript nonce="puremoon4321" />
           {/* External Scripts */}
