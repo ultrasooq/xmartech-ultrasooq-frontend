@@ -84,7 +84,7 @@ const Header = (props) => {
                         </li>
                         <li className='relative pt-0 pr-1 pb-3 pl-0 flex'>
                               <img src="images/login.svg" />
-                              <a className='flex flex-wrap items-center text-sm text-white font-bold ml-1.5 flex flex-col items-start'>
+                              <a className='flex flex-wrap text-sm text-white font-bold ml-1.5 flex-col items-start cursor-pointer'>
                               <span onClick={() => Router.push("/login")}>Login </span><span onClick={() => Router.push("/register")}> Register</span>
                               </a>
                         </li>
@@ -118,7 +118,7 @@ const Header = (props) => {
                </div>
             </div>
          </div>
-         <div className='w-full border-b border-solid border-gray-300'>
+         <div className='w-full border-b border-solid border-gray-300 bg-white'>
             <div className='container m-auto px-3'>
                <div className='flex'>
                   <div className='w-5/12 md:w-2/6 flex py-3'>
