@@ -14,472 +14,464 @@ const CompanyProfile = () => {
             <Head>
                 <title>Company Profile</title>
             </Head>
-            <section className="before_login_sec">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-10 col-md-11 col-sm-11 col-12 before_login_box profile_box company_profile_box">
-                            <div className="before_login_heading">
-                                <h2>Company Profile</h2>
+            
+            <section className='w-full py-7 relative'>
+                <div className='w-full h-full absolute top-0 left-0 -z-10'>
+                    <img src='images/before-login-bg.png' className='w-full h-full object-cover object-center'/>
+                </div>
+                <div className='container m-auto relative z-10'>
+                    <div className='flex'>
+                        <div className='md:w-10/12 lg:w-10/12 w-11/12 shadow-sm border border-solid border-gray-300 rounded-lg bg-white m-auto mb-12 lg:p-12 sm:p-8 p-6'>
+                            <div className='w-full text-sm text-normal leading-6 text-light-gray text-center m-auto mb-7'>
+                                <h2 className='sm:text-4xl font-semibold sm:leading-10 text-center text-color-dark mb-3 text-3xl leading-8'>Company Profile</h2>
                             </div>
-                            <div className="before_login_form_wrap">
-                                <div className="row">
-                                    <div className="col-lg-12 form-group">
-                                        <div className="col-lg-12 information_head">
-                                            <label>Company Information</label>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-12 form-group">
-                                        <div className="row">
-                                            <div className="col-lg-6 col-md-6 upload_logo_custom_box">
-                                                <label>Upload Company Logo</label>
-                                                <div class="drop">
-                                                    <div class="cont">
-                                                        <img src="images/upload.png"/>
-                                                        <div class="short_text">
-                                                            <span> Drop your Company Logo here, or <span>browse</span></span>
-                                                            <p>(.jpg or .png only. Up to 16mb)</p>
-                                                        </div>
-                                                    </div>
-                                                    <input id="files" multiple="true" name="files[]" type="file" />
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 col-md-6">
-                                                <div className="row">
-                                                    <div className="col-lg-12 form-group">
-                                                        <label>company name</label>
-                                                        <div className="form_field_wrap">
-                                                            <input type="text" className="form-control" placeholder="company name"/>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-lg-12 form-group">
-                                                        <label>Business Type</label>
-                                                        <div className="form_field_wrap">
-                                                            <select className="form-control">
-                                                                <option>Select Business type</option>
-                                                                <option>Select Business type</option>
-                                                                <option>Select Business type</option>
-                                                                <option>Select Business type</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-lg-12 form-group">
-                                                        <label>Annual Purchasing Volume</label>
-                                                        <div className="form_field_wrap">
-                                                            <input type="text" className="form-control" placeholder="Annual Purchasing Volume"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-12 separate_section">
-                                        <div className="row">
-                                            <div className="col-lg-12">
-                                                <div className="col-lg-12 form-group separate_section_heading">
-                                                    <label>Registration Address</label>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Address</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="text" className="form-control" placeholder="Address"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>City</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="text" className="form-control" placeholder="City"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Province</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="text" className="form-control" placeholder="Province"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Country</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="text" className="form-control" placeholder="Country"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-12 separate_section">
-                                        <div className="row">
-                                            <div className="col-lg-12">
-                                                <div className="col-lg-12 form-group separate_section_heading">
-                                                    <label>More information</label>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Year of Establishment</label>
-                                                <div className="form_field_wrap">
-                                                    <select className="form-control">
-                                                        <option>1990</option>
-                                                        <option>1991</option>
-                                                        <option>1992</option>
-                                                        <option>1993</option>
-                                                        <option>1994</option>
-                                                        <option>1995</option>
-                                                        <option>1996</option>
-                                                        <option>1997</option>
-                                                        <option>1998</option>
-                                                        <option>1999</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Total Number Of Employees</label>
-                                                <div className="form_field_wrap">
-                                                    <select className="form-control">
-                                                        <option>01-50</option>
-                                                        <option>51-100</option>
-                                                        <option>101-150</option>
-                                                        <option>151-200</option>
-                                                        <option>201-300</option>
-                                                        <option>301-500</option>
-                                                        <option>501-1000</option>
-                                                        <option>1001-2000</option>
-                                                        <option>2001-5000</option>
-                                                        <option>5000 above</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-12 form-group">
-                                                <label>About Us</label>
-                                                <div className="form_field_wrap textarea_field">
-                                                   <textarea className="form-control" rows="7" placeholder="Write Here...."></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-12 separate_section">
-                                        <div className="row">
-                                            <div className="col-lg-12">
-                                                <div className="col-lg-12 form-group separate_section_heading">
-                                                    <div className="add_text_wrap">
-                                                        <label>Branch</label>
-                                                        <div className="add_link_text">
-                                                            <span><img src="images/add-icon.svg"/> add new branch</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-12 form-group choose_type">
-                                                <label>Business Type</label>
-                                                <div className="form_field_wrap choose_type_box">
-                                                    <div className="choose_type_top">
-                                                        <div className="choose_type_box_left">
-                                                            <span>online shope <img src="images/close.svg"/></span>
-                                                            <span>manufacturer / factory <img src="images/close.svg"/></span>
-                                                            <span>trading company <img src="images/close.svg"/></span>
-                                                        </div>
-                                                        <div className="choose_type_box_right">
-                                                            <ul>
-                                                                <li><img src="images/social-arrow-icon.svg"/></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="form_field_wrap choose_type_box">
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>online shop </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>manufacturer / factory </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>trading company </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>distributor / wholesaler</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>retailer</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>individual  </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>other </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>service provider </span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-12 form-group">
-                                                <div className="row">
-                                                    <div className="col-lg-12 upload_logo_custom_box">
-                                                        <label>Upload Branch front picture</label>
-                                                        <div class="drop">
-                                                            <div class="cont">
-                                                                <img src="images/upload.png"/>
-                                                                <div class="short_text">
-                                                                    <span> Drop your Company Logo here, or <span>browse</span></span>
-                                                                    <p>(.jpg or .png only. Up to 16mb)</p>
-                                                                </div>
-                                                            </div>
-                                                            <input id="files" multiple="true" name="files[]" type="file" />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-lg-12 upload_logo_custom_box">
-                                                        <label>Proof of Address</label>
-                                                        <div class="drop">
-                                                            <div class="cont">
-                                                                <img src="images/upload.png"/>
-                                                                <div class="short_text">
-                                                                    <span> Drop your Company Logo here, or <span>browse</span></span>
-                                                                    <p>(.jpg or .png only. Up to 16mb)</p>
-                                                                </div>
-                                                            </div>
-                                                            <input id="files" multiple="true" name="files[]" type="file" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-12 separate_section">
-                                        <div className="row">
-                                            <div className="col-lg-12 form-group">
-                                                <div className="col-lg-12 information_head">
-                                                    <label>Branch location</label>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Address</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="text" className="form-control" placeholder="Address"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>City</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="text" className="form-control" placeholder="City"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Province</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="text" className="form-control" placeholder="Province"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Country</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="text" className="form-control" placeholder="Country"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Branch contact number</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="number" className="form-control" placeholder="Branch contact number"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Branch contact name</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="text" className="form-control" placeholder="Branch contact name"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-12 separate_section">
-                                        <div className="row">
-                                            <div className="col-lg-12 form-group">
-                                                <div className="col-lg-12 information_head">
-                                                    <label>Branch working hours</label>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>Start Time</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="time" className="form-control" value="9:00 AM"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-6 form-group">
-                                                <label>End Time</label>
-                                                <div className="form_field_wrap">
-                                                    <input type="time" className="form-control" placeholder="8:00 pM"/>
-                                                </div>
-                                            </div>
-                                            <div className="col-lg-12 form-group">
-                                                <div className="branch_weekly">
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>Sun</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>Mon</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>Tue</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>Wed</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>Thu</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>Fri</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>Sat</span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-12 separate_section">
-                                        <div className="row">
-                                        <div className="col-lg-12 form-group choose_type">
-                                                <label>Tag</label>
-                                                <div className="form_field_wrap choose_type_box">
-                                                    <div className="choose_type_top">
-                                                        <div className="choose_type_box_left">
-                                                            <span>online shope <img src="images/close.svg"/></span>
-                                                            <span>manufacturer / factory <img src="images/close.svg"/></span>
-                                                            <span>trading company <img src="images/close.svg"/></span>
-                                                        </div>
-                                                        <div className="choose_type_box_right">
-                                                            <ul>
-                                                                <li><img src="images/social-arrow-icon.svg"/></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="form_field_wrap choose_type_box">
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>online shop </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>manufacturer / factory </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>trading company </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>distributor / wholesaler</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>retailer</span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>individual  </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>other </span>
-                                                        </label>
-                                                    </div>
-                                                    <div className="terms_check">
-                                                        <label className="remember_checkbox">
-                                                            <input type="checkbox" name=""/>
-                                                            <span className="checkmark"></span>
-                                                            <span>service provider </span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-12 form-group">
-                                        <button type="button" className="form-control submit_button">Save changes</button>
+                            <div className='w-full flex flex-wrap'>
+                                <div className='w-full mb-4'>
+                                    <div className='w-full mt-2.5 border-b-2 border-dashed border-gray-300'>
+                                        <label className='text-lg font-medium leading-5 text-left text-color-dark mb-3.5 block capitalize'>Company Information</label>
                                     </div>
                                 </div>
+                                <div className='w-full mb-3.5'>
+                                    <div className='flex flex-wrap'>
+                                        <div className='md:w-6/12 w-full mb-3.5 md:pr-3.5'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Upload Company Logo</label>
+                                            <div className='w-full h-64 relative border-2 border-dashed border-gray-300 m-auto flex flex-wrap items-center justify-center text-center'>
+                                                <div className='text-sm font-medium leading-4 text-color-dark'>
+                                                    <img src="images/upload.png" className='m-auto mb-3'/>
+                                                    <span>  Drop your Company Logo here, or </span><span className='text-blue-500'>browse</span>
+                                                    <p className='text-xs text-normal leading-4 text-gray-300 mt-3'>(.jpg or .png only. Up to 16mb)</p>
+                                                </div>
+                                                <input type="file" id="files" multiple="" name="files[]" className='w-full h-full cursor-pointer opacity-0 m-auto absolute top-0 left-0 right-0 bottom-0'/>
+                                            </div>
+                                        </div>
+                                        <div className='md:w-6/12 w-full mb-3.5 md:pl-3.5'>
+                                            <div className='w-full mb-4'>
+                                                <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Company Name</label>
+                                                <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                    <input type='text' placeholder='Company Name' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                                </div>
+                                            </div>
+                                            <div className='w-full mb-4'>
+                                                <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Business Type</label>
+                                                <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                    <select className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'>
+                                                        <option>Select Business Type</option>
+                                                        <option>Select Business Type</option>
+                                                        <option>Select Business Type</option>
+                                                        <option>Select Business Type</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className='w-full mb-4'>
+                                                <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Annual Purchasing Volume</label>
+                                                <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                    <input type='text' placeholder='Annual Purchasing Volume' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='w-full mb-3.5'>
+                                    <div className='w-full border-y border-solid border-gray-200 py-2.5 mb-4'>
+                                        <label className='text-base font-medium leading-5 text-left text-color-dark m-0 block'>Registration Address</label>
+                                    </div>
+                                    <div className='flex flex-wrap'>
+                                        <div className='md:w-6/12 w-full mb-4 md:pr-3.5'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Address</label>
+                                            <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                <input type='text' placeholder='Address' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                            </div>
+                                        </div>
+                                        <div className='md:w-6/12 w-full mb-4 md:pl-3.5'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>City</label>
+                                            <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                <input type='text' placeholder='City' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                            </div>
+                                        </div>
+                                        <div className='md:w-6/12 w-full mb-4 md:pr-3.5'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Province</label>
+                                            <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                <input type='text' placeholder='Province' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                            </div>
+                                        </div>
+                                        <div className='md:w-6/12 w-full mb-4 md:pl-3.5'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Country</label>
+                                            <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                            <select className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'>
+                                                <option>Country</option>
+                                                <option>USA</option>
+                                                <option>UK</option>
+                                                <option>India</option>
+                                            </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='w-full mb-3.5'>
+                                    <div className='w-full border-y border-solid border-gray-200 py-2.5 mb-4'>
+                                        <label className='text-base font-medium leading-5 text-left text-color-dark m-0 block'>More Information</label>
+                                    </div>
+                                    <div className='flex flex-wrap'>
+                                        <div className='md:w-6/12 w-full mb-4 md:pr-3.5'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Year Of Establishment</label>
+                                            <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                <select className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'>
+                                                    <option>1990</option>
+                                                    <option>1991</option>
+                                                    <option>1992</option>
+                                                    <option>1993</option>
+                                                    <option>1994</option>
+                                                    <option>1995</option>
+                                                    <option>1996</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className='md:w-6/12 w-full mb-4 md:pl-3.5'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>City</label>
+                                            <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                <select className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'>
+                                                    <option>1990</option>
+                                                    <option>1991</option>
+                                                    <option>1992</option>
+                                                    <option>1993</option>
+                                                    <option>1994</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className='w-full mb-4'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>About Us</label>
+                                            <div className='w-full h-32 rounded border border-solid border-gray-300 relative'>
+                                                <textarea placeholder='Write Here....' className='w-full h-full resize-none rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='w-full mb-3.5'>
+                                    <div className='w-full border-y border-solid border-gray-200 py-2.5 mb-4 flex items-center justify-between'>
+                                        <label className='text-base font-medium leading-5 text-left text-color-dark m-0 block'>Branch</label>
+                                        <div className='flex items-center text-sm font-semibold leading-8 text-dark-orange capitalize cursor-pointer'>
+                                            <img src="images/add-icon.svg" className='mr-1'/>
+                                            <span> Add new branch</span>
+                                        </div>
+                                    </div>
+                                    <div className='w-full mb-3.5 inline-block'>
+                                        <label className='text-sm font-medium leading-5 text-left text-color-dark mb-3 block'>Business Type</label>
+                                        <div className='w-full p-3 mb-3.5 rounded relative border border-solid border-gray-200'>
+                                            <div className='w-full flex items-center justify-between'>
+                                                <div className='w-auto'>
+                                                    <span className='bg-zinc-100 py-3 px-3.5 text-sm font-normal leading-4 text-dark-cyan rounded my-1 mr-2 inline-flex items-center justify-between'>
+                                                        online shope
+                                                        <img src="images/close.svg" className='ml-4'/>
+                                                    </span>
+                                                    <span className='bg-zinc-100 py-3 px-3.5 text-sm font-normal leading-4 text-dark-cyan rounded my-1 mr-2 inline-flex items-center justify-between'>
+                                                        manufacturer / factory
+                                                        <img src="images/close.svg" className='ml-4'/>
+                                                    </span>
+                                                    <span className='bg-zinc-100 py-3 px-3.5 text-sm font-normal leading-4 text-dark-cyan rounded my-1 mr-2 inline-flex items-center justify-between'>
+                                                        trading company
+                                                        <img src="images/close.svg" className='ml-4'/>
+                                                    </span>
+                                                </div>
+                                                <div className='w-auto'>
+                                                    <ul>
+                                                        <li>
+                                                            <img src="images/social-arrow-icon.svg"/>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className='w-full p-3 mb-3.5 rounded relative border border-solid border-gray-200'>
+                                            <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                                <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                    <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                    <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                    <span className='tex'>online shop</span>
+                                                </label>
+                                            </div>
+                                            <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                                <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                    <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                    <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                    <span className='tex'>manufacturer / factory</span>
+                                                </label>
+                                            </div>
+                                            <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                                <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                    <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                    <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                    <span className='tex'>trading company</span>
+                                                </label>
+                                            </div>
+                                            <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                                <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                    <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                    <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                    <span className='tex'>distributor / wholesaler</span>
+                                                </label>
+                                            </div>
+                                            <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                                <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                    <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                    <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                    <span className='tex'>retailer</span>
+                                                </label>
+                                            </div>
+                                            <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                                <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                    <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                    <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                    <span className='tex'>individual</span>
+                                                </label>
+                                            </div>
+                                            <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                                <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                    <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                    <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                    <span className='tex'>other</span>
+                                                </label>
+                                            </div>
+                                            <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                                <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                    <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                    <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                    <span className='tex'>service provider</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='w-full mb-3.5'>
+                                        <label className='text-sm font-medium leading-5 text-left text-color-dark mb-3 block'>Upload Branch Front Picture</label>
+                                        <div className='w-full h-64 relative border-2 border-dashed border-gray-300 m-auto flex flex-wrap items-center justify-center text-center'>
+                                            <div className='text-sm font-medium leading-4 text-color-dark'>
+                                                <img src="images/upload.png" className='m-auto mb-3'/>
+                                                <span>  Drop your Company Logo here, or </span><span className='text-blue-500'>browse</span>
+                                                <p className='text-xs text-normal leading-4 text-gray-300 mt-3'>(.jpg or .png only. Up to 16mb)</p>
+                                            </div>
+                                            <input type="file" id="files" multiple="" name="files[]" className='w-full h-full cursor-pointer opacity-0 m-auto absolute top-0 left-0 right-0 bottom-0'/>
+                                        </div>
+                                    </div>
+                                    <div className='w-full mb-3.5'>
+                                        <label className='text-sm font-medium leading-5 text-left text-color-dark mb-3 block'>Proof Of Address</label>
+                                        <div className='w-full h-64 relative border-2 border-dashed border-gray-300 m-auto flex flex-wrap items-center justify-center text-center'>
+                                            <div className='text-sm font-medium leading-4 text-color-dark'>
+                                                <img src="images/upload.png" className='m-auto mb-3'/>
+                                                <span>  Drop your Company Logo here, or </span><span className='text-blue-500'>browse</span>
+                                                <p className='text-xs text-normal leading-4 text-gray-300 mt-3'>(.jpg or .png only. Up to 16mb)</p>
+                                            </div>
+                                            <input type="file" id="files" multiple="" name="files[]" className='w-full h-full cursor-pointer opacity-0 m-auto absolute top-0 left-0 right-0 bottom-0'/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='w-full flex flex-wrap'>
+                                <div className='w-full mb-4'>
+                                    <div className='w-full mt-2.5 border-b-2 border-dashed border-gray-300'>
+                                        <label className='text-lg font-medium leading-5 text-left text-color-dark mb-3.5 block capitalize'>Branch Location</label>
+                                    </div>
+                                </div>
+                                <div className='flex flex-wrap'>
+                                    <div className='md:w-6/12 w-full mb-4 md:pr-3.5'>
+                                        <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Address</label>
+                                        <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                            <input type='text' placeholder='Address' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                        </div>
+                                    </div>
+                                    <div className='md:w-6/12 w-full mb-4 md:pl-3.5'>
+                                        <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>City</label>
+                                        <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                            <input type='text' placeholder='City' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                        </div>
+                                    </div>
+                                    <div className='md:w-6/12 w-full mb-4 md:pr-3.5'>
+                                        <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Province</label>
+                                        <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                            <input type='text' placeholder='Province' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                        </div>
+                                    </div>
+                                    <div className='md:w-6/12 w-full mb-4 md:pl-3.5'>
+                                        <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Country</label>
+                                        <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                        <select className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'>
+                                            <option>Country</option>
+                                            <option>USA</option>
+                                            <option>UK</option>
+                                            <option>India</option>
+                                        </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='w-full flex flex-wrap'>
+                                <div className='w-full mb-4'>
+                                    <div className='w-full mt-2.5 border-b-2 border-dashed border-gray-300'>
+                                        <label className='text-lg font-medium leading-5 text-left text-color-dark mb-3.5 block capitalize'>Branch Working Hours</label>
+                                    </div>
+                                </div>
+                                <div className='w-full'>
+                                    <div className='flex flex-wrap'>
+                                        <div className='md:w-6/12 w-full mb-4 md:pr-3.5'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Start Time</label>
+                                            <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                <input type='date' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                            </div>
+                                        </div>
+                                        <div className='md:w-6/12 w-full mb-4 md:pl-3.5'>
+                                            <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>End Time</label>
+                                            <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                                <input type='date' className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='w-full mb-3.5 pb-4 border-b-2 border-dashed border-gray-300'>
+                                    <div className='flex flex-wrap'>
+                                        <div className='w-auto px-2 lg:px-0 flex items-center justify-between p-0 mr-4'>
+                                            <label className='w-auto text-sm font-normal text-color-dark leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange'/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                Sun
+                                            </label>
+                                        </div>
+                                        <div className='w-auto px-2 lg:px-0 flex items-center justify-between p-0 mr-4'>
+                                            <label className='w-auto text-sm font-normal text-color-dark leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange'/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                Mon
+                                            </label>
+                                        </div>
+                                        <div className='w-auto px-2 lg:px-0 flex items-center justify-between p-0 mr-4'>
+                                            <label className='w-auto text-sm font-normal text-color-dark leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange'/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                Tue
+                                            </label>
+                                        </div>
+                                        <div className='w-auto px-2 lg:px-0 flex items-center justify-between p-0 mr-4'>
+                                            <label className='w-auto text-sm font-normal text-color-dark leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange'/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                Wed
+                                            </label>
+                                        </div>
+                                        <div className='w-auto px-2 lg:px-0 flex items-center justify-between p-0 mr-4'>
+                                            <label className='w-auto text-sm font-normal text-color-dark leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange'/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                Thu
+                                            </label>
+                                        </div>
+                                        <div className='w-auto px-2 lg:px-0 flex items-center justify-between p-0 mr-4'>
+                                            <label className='w-auto text-sm font-normal text-color-dark leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange'/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                Fri
+                                            </label>
+                                        </div>
+                                        <div className='w-auto px-2 lg:px-0 flex items-center justify-between p-0 mr-4'>
+                                            <label className='w-auto text-sm font-normal text-color-dark leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange'/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                Sat
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='w-full mt-3 mb-3.5 inline-block'>
+                                    <label className='text-sm font-medium leading-5 text-left text-color-dark mb-3 block'>Tag</label>
+                                    <div className='w-full p-3 mb-3.5 rounded relative border border-solid border-gray-200'>
+                                        <div className='w-full flex items-center justify-between'>
+                                            <div className='w-auto'>
+                                                <span className='bg-zinc-100 py-3 px-3.5 text-sm font-normal leading-4 text-dark-cyan rounded my-1 mr-2 inline-flex items-center justify-between'>
+                                                    online shope
+                                                    <img src="images/close.svg" className='ml-4'/>
+                                                </span>
+                                                <span className='bg-zinc-100 py-3 px-3.5 text-sm font-normal leading-4 text-dark-cyan rounded my-1 mr-2 inline-flex items-center justify-between'>
+                                                    manufacturer / factory
+                                                    <img src="images/close.svg" className='ml-4'/>
+                                                </span>
+                                                <span className='bg-zinc-100 py-3 px-3.5 text-sm font-normal leading-4 text-dark-cyan rounded my-1 mr-2 inline-flex items-center justify-between'>
+                                                    trading company
+                                                    <img src="images/close.svg" className='ml-4'/>
+                                                </span>
+                                            </div>
+                                            <div className='w-auto'>
+                                                <ul>
+                                                    <li>
+                                                        <img src="images/social-arrow-icon.svg"/>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='w-full p-3 mb-3.5 rounded relative border border-solid border-gray-200'>
+                                        <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                            <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                <span className='tex'>online shop</span>
+                                            </label>
+                                        </div>
+                                        <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                            <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                <span className='tex'>manufacturer / factory</span>
+                                            </label>
+                                        </div>
+                                        <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                            <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                <span className='tex'>trading company</span>
+                                            </label>
+                                        </div>
+                                        <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                            <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                <span className='tex'>distributor / wholesaler</span>
+                                            </label>
+                                        </div>
+                                        <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                            <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                <span className='tex'>retailer</span>
+                                            </label>
+                                        </div>
+                                        <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                            <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                <span className='tex'>individual</span>
+                                            </label>
+                                        </div>
+                                        <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                            <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                <span className='tex'>other</span>
+                                            </label>
+                                        </div>
+                                        <div className='lg:w-full w-auto px-2 lg:px-0 flex items-center justify-between p-0'>
+                                            <label className='w-auto text-sm font-normal text-light-gray leading-8 flex items-center justify-start'>
+                                                <input type="checkbox" name="" className='absolute opacity-0 w-0 h-0 cursor-pointer [&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange [&:checked~span]:text-color-dark '/>
+                                                <span className="w-5 h-5 relative border-2 border-solid border-gray-400 bg-transparent rounded-sm inline-block mr-2.5 overflow-hidden before:content-[''] before:block before:absolute before:w-1.5 before:h-3 before:border-r-2 before:border-b-2 before:border-solid before:border-white before:rotate-45 before:left-0 before:-top-1 before:right-0 before:bottom-0 before:m-auto"></span>
+                                                <span className='tex'>service provider</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='w-full'>
+                                <button type="button" class="w-full h-14 rounded text-white text-lg font-bold leading-6 text-center bg-dark-orange focus:shadow-none">Save changes</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+
         </SiteLayout>
     )
 

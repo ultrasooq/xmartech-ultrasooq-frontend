@@ -36,7 +36,7 @@ const Home = () => {
                             <div className='w-full sm:h-44 h-auto relative mb-4 sm:mb-8'>
                                 <img src="images/hs-2.png" className='w-full h-full object-cover'/>
                                 <div className='w-full h-full absolute top-0 left-0 px-8 py-4 bg-gradient-to-r from-slate-100 to-transparent flex items-center justify-start'>
-                                    <div className='lg:w-2/5 w-4/5 text-light-gray text-sm font-normal'>
+                                    <div className='lg:w-3/5 w-4/5 text-light-gray text-sm font-normal'>
                                         <h3 className='lg:text-2xl text-xl font-medium capitalize text-color-dark mb-2.5'><b>Fluence</b> Minimal Speaker</h3>
                                         <p>Just Price</p>
                                         <h5 className='text-lg font-semibold mb-5 text-olive-green'>$159.99</h5>
@@ -46,7 +46,7 @@ const Home = () => {
                             <div className='w-full sm:h-44 h-auto relative'>
                                 <img src="images/hs-3.png" className='w-full h-full object-cover'/>
                                 <div className='w-full h-full absolute top-0 left-0 px-8 py-2 bg-gradient-to-r from-slate-100 to-transparent flex items-center justify-start'>
-                                    <div className='lg:w-2/5 w-4/5 text-light-gray text-sm font-normal'>
+                                    <div className='lg:w-3/5 w-4/5 text-light-gray text-sm font-normal'>
                                         <h6 className='text-xs font-normal text-dark-orange uppercase m-0'>CAMERA</h6>
                                         <h3 className='text-2xl font-medium capitalize text-color-dark'><b>Camera</b> Sale</h3>
                                         <span className='lg:text-2xl text-xl font-medium capitalize text-dark-orange mb-1.5 block'>20% OFF</span>
