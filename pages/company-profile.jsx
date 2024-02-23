@@ -53,7 +53,7 @@ const CompanyProfile = () => {
                                             </div>
                                             <div className='w-full mb-4'>
                                                 <label className='text-sm font-medium leading-4 text-left text-color-dark mb-3.5 block capitalize'>Business Type</label>
-                                                <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
+                                               <div className='w-full h-14 rounded border border-solid border-gray-300 relative'>
                                                     <select className='w-full h-full rounded py-2.5 px-4 text-sm font-normal leading-4 text-left border-0 text-light-gray placeholder:text-sm placeholder:font-normal placeholder:leading-4 placeholder:text-light-gray focus:outline-none'>
                                                         <option>Select Business Type</option>
                                                         <option>Select Business Type</option>

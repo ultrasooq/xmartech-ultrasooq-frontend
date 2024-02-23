@@ -15,48 +15,58 @@ const FreelancerProfileDetails = () => {
                 <title>Freelancer Profile Details</title>
             </Head>
             
-            <section className="profile_details_section">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12 profile_details_heading">
-                            <h1>Freelancer Profile</h1>
+            <section className='w-full py-7 relative'>
+                <div className='w-full h-full absolute top-0 left-0 -z-10'>
+                    <img src='images/before-login-bg.png' className='w-full h-full object-cover object-center'/>
+                </div>
+                <div className='container m-auto px-3 relative z-10'>
+                    <div className='flex flex-wrap'>
+                        <div className='w-full mb-7'>
+                            <h2 className='text-4xl font-semibold leading-10 text-color-dark'>Freelancer Profile</h2>
                         </div>
-                        <div className="col-lg-12 profile_details_box">
-                            <div className="profile_details_box_left">
-                                <div className="profile_details_box_image">
-                                    <img src="images/profile.png"/>
+                        <div className='flex flex-wrap w-full bg-white md:p-9 p-4 rounded-3xl border border-solid border-gray-300 shadow-sm'>
+                            <div className='w-40 h-40 rounded-full relative m-auto'>
+                                <div className='w-full h-full rounded-full overflow-hidden border-4 border-solid border-gray-300'>
+                                    <img src="images/profile.png" className='w-full h-full object-cover'/>
                                 </div>
-                                <div class="edit_profile_icon">
-                                    <div class="camera_icon">
+                                <div className='w-11 h-11 rounded-full bg-gray-300 absolute right-0 bottom-2 z-10'>
+                                    <div className='w-full h-full flex flex-wrap items-center justify-center cursor-pointer'>
                                         <img src="images/camera-icon.png"/>
                                     </div>
-                                    <input id="profile_impage_upload_input" accept="image/*" name="file" type="file"/>
+                                    <input type="file" id="profile_impage_upload_input" accept="image/*" name="file" className='w-full h-full absolute top-0 left-0 z-10 cursor-pointer opacity-0'/>
                                 </div>
                             </div>
-                            <div className="profile_details_box_right">
-                                <div className="profile_details_box_right_top">
-                                    <h2>John Rosensky</h2>
-                                    <div className="edit_button">
-                                        <button type="button"><img src="images/edit-icon.svg"/> edit</button>
+                            <div className='md:w-[calc(100%_-_10rem)] md:pl-7 w-full p-3'>
+                                <div className='w-full flex flex-wrap items-center justify-between'>
+                                    <h2 className='text-3xl font-semibold left-8 text-color-dark'>John Rosensky</h2>
+                                    <div className='w-auto'>
+                                        <button type="button" className='flex items-center py-2 px-3 rounded-md bg-dark-orange text-white text-sm font-medium leading-6 border-0 capitalize'>
+                                            <img src="images/edit-icon.svg" className='mr-1'/> edit</button>
                                     </div>
                                 </div>
-                                <div className="profile_details_box_right_middle">
-                                    <ul>
-                                        <li> <img src="images/profile-mail-icon.svg"/> <a href="mailto:john.rosensky@gmail.com">john.rosensky@gmail.com</a></li>
-                                        <li> <img src="images/profile-call-icon.svg"/> <a href="tel:1 000 0000 0000">+1 000 0000 0000</a></li>
+                                <div className='w-full h-auto mt-3'>
+                                    <ul className='flex flex-wrap items-center justify-start'>
+                                        <li className='mr-3.5 my-1.5 text-base font-normal leading-5 text-color-dark flex items-center justify-starts'> 
+                                            <img src="images/profile-mail-icon.svg" className='mr-1.5'/> 
+                                            <a href="mailto:john.rosensky@gmail.com">john.rosensky@gmail.com</a>
+                                        </li>
+                                        <li className='mr-3.5 my-1.5 text-base font-normal leading-5 text-color-dark flex items-center justify-starts'> 
+                                            <img src="images/profile-call-icon.svg" className='mr-1.5'/> 
+                                            <a href="tel:1 000 0000 0000">+1 000 0000 0000</a>
+                                        </li>
                                     </ul>
-                                    <div className="business_type">
-                                        <p>Business Type</p>
-                                        <span>Service Provider</span>
-                                    </div>
                                 </div>
-                                <div className="profile_details_box_right_bottom">
-                                    <div className="profile_details_box_right_bottom_left">
-                                        <p>Freelancer ID: <span>VCP0001458</span></p>
+                                <div className='w-full text-sm text-normal font-normal leading-4 mt-5 text-gray-500'>
+                                    <p>Business Type</p>
+                                    <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4'>Service Provider</span>
+                                </div>
+                                <div className='w-full flex flex-wrap items-center justify-between mt-5'>
+                                    <div className='text-sm font-normal leading-4 text-gray-500 my-2'>
+                                        <p>Freelancer ID: <span className='text-base font-medium leading-4 text-gray-600'>VCP0001458</span></p>
                                     </div>
-                                    <div className="profile_details_box_right_bottom_right">
-                                        <span>Online.</span>
-                                        <select className="form-control">
+                                    <div className='flex flex-wrap items-center justify-between my-2'>
+                                        <span className='text-sm font-medium leading-6 mr-2.5 text-light-green'>Online.</span>
+                                        <select className='h-auto py-3 px-4 rounded text-sm font-normal leading-6 text-color-dark bg-white border border-solid border-gray-300'>
                                             <option>Offline 9:30 pm</option>
                                             <option>Online 10:30 am</option>
                                         </select>
@@ -64,350 +74,180 @@ const FreelancerProfileDetails = () => {
                                 </div>
                             </div>
                         </div>
-
-                        <div className="profile_info_main">
-                            <div className="profile_info_tab_list">
-                                <ul>
-                                    <li className="active">
-                                        <a href="#">Profile Info</a>
+                        <div className='w-full mt-12'>
+                            <div className='w-full'>
+                                <ul className='flex flex-wrap items-center justify-start'>
+                                    <li className='md:mr-6 mr-4 sm:w-auto w-full'>
+                                        <a href="#" className='sm:w-auto w-full sm:py-3.5 sm:px-9 py-3 px-6 inline-block text-base font-semibold leading-6 text-white bg-dark-orange sm:rounded-t-lg text-center'>Profile Info</a>
                                     </li>
-                                    <li>
-                                        <a href="#">Ratings & Reviews</a>
+                                    <li className='md:mr-6 mr-4 sm:w-auto w-full'>
+                                        <a href="#" className='sm:w-auto w-full sm:py-3.5 sm:px-9 py-3 px-6 inline-block text-base font-semibold leading-6 text-zinc-500 bg-gray-300 sm:rounded-t-lg text-center'>Ratings & Reviews</a>
                                     </li>
-                                    <li>
-                                        <a href="#">Services</a>
+                                    <li className='md:mr-6 mr-4 sm:w-auto w-full'>
+                                        <a href="#" className='sm:w-auto w-full sm:py-3.5 sm:px-9 py-3 px-6 inline-block text-base font-semibold leading-6 text-zinc-500 bg-gray-300 sm:rounded-t-lg text-center'>Services</a>
                                     </li>
                                 </ul>
                             </div>
-                            <div className="profile_info_tab_content">
-                                <div className="profile_info_main_box">
-                                    <div className="profile_details_section_wrap">
-                                        <div className="profile_details_section_top">
-                                            <h2>Contact Information</h2>
-                                            <div className="edit_button">
-                                                <button type="button"><img src="images/edit-icon.svg"/> edit</button>
-                                            </div>
-                                        </div>  
-                                        <div className="profile_details_section_content">
-                                            <div className="profile_details_content_list">
-                                                <div className="row">
-                                                    <div className="col-lg-2 profile_details_content_list_label">
-                                                        <span>email:</span>
-                                                    </div>
-                                                    <div className="col-lg-10 profile_details_content_list_content">
-                                                        <p>john.rosensky@gmail.com</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="profile_details_content_list">
-                                                <div className="row">
-                                                    <div className="col-lg-2 profile_details_content_list_label">
-                                                        <span>Phone:</span>
-                                                    </div>
-                                                    <div className="col-lg-10 profile_details_content_list_content">
-                                                        <p>+1 000 0000 0456</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="profile_details_content_list">
-                                                <div className="row">
-                                                    <div className="col-lg-2 profile_details_content_list_label">
-                                                        <span>Social Links:</span>
-                                                    </div>
-                                                    <div className="col-lg-10 profile_details_content_list_content">
-                                                        <p>Facebook, LInkedin, Instagram</p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                            <div className='w-full md:pt-12 md:pb-7 md:px-9 sm:pt-8 sm:pb-4 sm:px-6 p-4 bg-white shadow-sm border border-solid border-gray-300'>
+                                <div className='w-full py-4 border-b-2 border-dashed border-gray-100'>
+                                    <div className='w-full flex flex-wrap items-center justify-between pb-5'>
+                                        <h2 className='text-2xl font-semibold left-8 text-color-dark'>John Rosensky</h2>
+                                        <div className='w-auto'>
+                                            <button type="button" className='flex items-center py-2 px-3 rounded-md bg-dark-orange text-white text-sm font-medium leading-6 border-0 capitalize'>
+                                            <img src="images/edit-icon.svg" className='mr-1'/> edit</button>
                                         </div>
-                                        <hr></hr>
                                     </div>
-                                    <div className="profile_details_section_wrap">
-                                        <div className="profile_details_section_top">
-                                            <h2>Freelancer Information</h2>
-                                            <div className="edit_button">
-                                                <button type="button"><img src="images/edit-icon.svg"/> edit</button>
+                                    <div className='w-full'>
+                                        <div className='w-full'>
+                                            <div className='w-full flex flex-wrap py-3.5'>
+                                                <div className='w-2/12 sm:mr-0 mr-1 flex items-center justify-start'>
+                                                    <span className='text-sm font-normal leading-4 text-gray-500 capitalize'>email:</span>
+                                                </div>
+                                                <div className='w-10/12sm:mr-0 mr-1  flex items-center justify-start'>
+                                                    <p className='text-base font-medium leading-4 text-color-dark'>john.rosensky@gmail.com</p>
+                                                </div>
                                             </div>
-                                        </div>  
-                                        <div className="profile_details_section_content">
-                                            <div className="profile_details_content_list">
-                                                <div className="row">
-                                                    <div className="col-lg-12 profile_details_content_list_content">
-                                                        <label>About Me</label>
-                                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation. <a href="#">More</a></p>
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <hr></hr>
-                                                    </div>
-                                                    <div className="col-lg-12 profile_details_content_list_content">
-                                                        <label>Address</label>
-                                                        <div className="row">
-                                                            <div className="col-lg-7">
-                                                                <div className="profile_details_content_list">
-                                                                    <div className="row">
-                                                                        <div className="col-lg-3 profile_details_content_list_label">
-                                                                            <span>Address:</span>
-                                                                        </div>
-                                                                        <div className="col-lg-9 profile_details_content_list_content">
-                                                                            <p>9890 S. Maryland Pkwy Cumbria, Northumberland,</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-5">
-                                                                <div className="profile_details_content_list">
-                                                                    <div className="row">
-                                                                        <div className="col-lg-6 profile_details_content_list_label">
-                                                                            <span>Contry:</span>
-                                                                        </div>
-                                                                        <div className="col-lg-6 profile_details_content_list_content">
-                                                                            <p>USA</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-7">
-                                                                <div className="profile_details_content_list">
-                                                                    <div className="row">
-                                                                        <div className="col-lg-3 profile_details_content_list_label">
-                                                                            <span>City:</span>
-                                                                        </div>
-                                                                        <div className="col-lg-9 profile_details_content_list_content">
-                                                                            <p>Los Angeles, United States</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-5">
-                                                                <div className="profile_details_content_list">
-                                                                    <div className="row">
-                                                                        <div className="col-lg-6 profile_details_content_list_label">
-                                                                            <span>Branch Contact Number:</span>
-                                                                        </div>
-                                                                        <div className="col-lg-6 profile_details_content_list_content">
-                                                                            <p>+1 000 0000 0456</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-7">
-                                                                <div className="profile_details_content_list">
-                                                                    <div className="row">
-                                                                        <div className="col-lg-3 profile_details_content_list_label">
-                                                                            <span>Province:</span>
-                                                                        </div>
-                                                                        <div className="col-lg-9 profile_details_content_list_content">
-                                                                            <p>Lorem Ipsum</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-5">
-                                                                <div className="profile_details_content_list">
-                                                                    <div className="row">
-                                                                        <div className="col-lg-6 profile_details_content_list_label">
-                                                                            <span>Branch Contact Name:</span>
-                                                                        </div>
-                                                                        <div className="col-lg-6 profile_details_content_list_content">
-                                                                            <p>John Doe</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <hr></hr>
-                                                    </div>
-                                                    <div className="col-lg-12 profile_details_content_list_content">
-                                                        <label>Working Hours</label>
-                                                        <div className="row">
-                                                            <div className="col-lg-4">
-                                                                <div className="profile_details_content_list">
-                                                                    <div className="row">
-                                                                        <div className="col-lg-6 profile_details_content_list_label">
-                                                                            <span>Start Time:</span>
-                                                                        </div>
-                                                                        <div className="col-lg-6 profile_details_content_list_content">
-                                                                            <p>9:00 am</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-4">
-                                                                <div className="profile_details_content_list">
-                                                                    <div className="row">
-                                                                        <div className="col-lg-6 profile_details_content_list_label">
-                                                                            <span>end time:</span>
-                                                                        </div>
-                                                                        <div className="col-lg-6 profile_details_content_list_content">
-                                                                            <p>12:00 pm</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-lg-4">
-                                                                <div className="profile_details_content_list">
-                                                                    <div className="row">
-                                                                        <div className="col-lg-6 profile_details_content_list_label">
-                                                                            <span>Working Days:</span>
-                                                                        </div>
-                                                                        <div className="col-lg-6 profile_details_content_list_content">
-                                                                            <p>Monday - Friday</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-lg-12">
-                                                        <hr></hr>
-                                                    </div>
-                                                    <div className="col-lg-12 profile_details_content_list_content">
-                                                        <label>Tag</label>
-                                                        <div className="row">
-                                                            <div className="col-lg-12 tag">
-                                                                <span>Online Shop</span>
-                                                                <span>manufacturer / factory </span>
-                                                                <span>Trading Company</span>
-                                                                <span>Online Shop</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                            <div className='w-full flex flex-wrap py-3.5'>
+                                                <div className='w-2/12 sm:mr-0 mr-1 flex items-center justify-start'>
+                                                    <span className='text-sm font-normal leading-4 text-gray-500 capitalize'>Phone:</span>
+                                                </div>
+                                                <div className='w-10/12sm:mr-0 mr-1  flex items-center justify-start'>
+                                                    <p className='text-base font-medium leading-4 text-color-dark'>+1 000 0000 0456</p>
+                                                </div>
+                                            </div>
+                                            <div className='w-full flex flex-wrap py-3.5'>
+                                                <div className='w-2/12 sm:mr-0 mr-1 flex items-center justify-start'>
+                                                    <span className='text-sm font-normal leading-4 text-gray-500 capitalize'>Social Links:</span>
+                                                </div>
+                                                <div className='w-10/12sm:mr-0 mr-1  flex items-center justify-start'>
+                                                    <p className='text-base font-medium leading-4 text-color-dark'>Facebook, LInkedin, Instagram</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="review_rating_main_box">
-                                    <div className="review_rating_box_top">
-                                        <div className="review_rating_box_top_left">
-                                            <h2>Ratings & Reviews</h2>
-                                            <div className="rating_part">
-                                                <h5>5.0</h5>
-                                                <span><img src="images/star.svg"/></span>
-                                                <span><img src="images/star.svg"/></span>
-                                                <span><img src="images/star.svg"/></span>
-                                                <span><img src="images/star.svg"/></span>
-                                                <span><img src="images/star.svg"/></span>
-                                                <p>Based on 139 Reviews</p>
-                                            </div>
-                                        </div>
-                                        <div className="review_rating_box_top_right">
-                                            <button type="button">
-                                                <img src="images/pen-icon.svg"/> Write A Review
-                                            </button>
+                                <div className='w-full py-4'>
+                                    <div className='w-full flex flex-wrap items-center justify-between pb-5'>
+                                        <h2 className='text-2xl font-semibold left-8 text-color-dark'>Freelancer Information</h2>
+                                        <div className='w-auto'>
+                                            <button type="button" className='flex items-center py-2 px-3 rounded-md bg-dark-orange text-white text-sm font-medium leading-6 border-0 capitalize'>
+                                            <img src="images/edit-icon.svg" className='mr-1'/> edit</button>
                                         </div>
                                     </div>
-                                    <div className="review_rating_box_middle">
-                                        <ul>
-                                            <li>Sort By :</li>
-                                            <li>
-                                                <button className="active_button">Newest</button>
-                                            </li>
-                                            <li>
-                                                <button>Highest</button>
-                                            </li>
-                                            <li>
-                                                <button>Lowest</button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <hr></hr>
-                                    <div className="review_rating_box_bottom">
-                                        <div className="review_main_box">
-                                            <div className="review_box">
-                                                <div className="review_box_top">
-                                                    <div className="review_box_top_icon">
-                                                        <img src="images/review-1.png"/>
-                                                    </div>
-                                                    <div className="review_box_top_user">
-                                                        <div className="review_box_top_user_head">
-                                                            <h4>John Doe</h4>
-                                                            <img src="images/review-dot.svg"/>
-                                                        </div>
-                                                        <span>2 reviews</span>
-                                                        <div className="review_box_top_user_bottom">
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span>3 Weeks ago</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="review_box_bottom">
-                                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a href="#">More.</a> </p>
-                                                </div>
+                                    <div className='w-full'>
+                                        <div className='w-full'>
+                                            <div className='w-full flex flex-wrap py-3.5 text-base font-medium text-color-dark pb-5 border-b-2 border-dashed border-gray-100'>
+                                                <label className='text-lg font-semibold leading-5 text-color-dark mb-3'>About Me</label>
+                                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation. <a href="#" className='font-semibold text-dark-orange'>More</a></p>
                                             </div>
-                                            <div className="review_box">
-                                                <div className="review_box_top">
-                                                    <div className="review_box_top_icon">
-                                                        <img src="images/review-2.png"/>
-                                                    </div>
-                                                    <div className="review_box_top_user">
-                                                        <div className="review_box_top_user_head">
-                                                            <h4>John Doe</h4>
-                                                            <img src="images/review-dot.svg"/>
+                                        </div>
+                                        <div className='w-full mt-6'>
+                                            <label className='text-lg font-semibold leading-5 text-color-dark mb-3.5 block'>Address</label>
+                                            <div className='w-full flex flex-wrap'>
+                                                <div className='md:w-7/12 w-full'>
+                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                        <div className='md:w-3/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                            <span>Address:</span>
                                                         </div>
-                                                        <span>2 reviews</span>
-                                                        <div className="review_box_top_user_bottom">
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span>3 Weeks ago</span>
+                                                        <div className='md:w-9/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                            <p>9890 S. Maryland Pkwy Cumbria, Northumberland</p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="review_box_bottom">
-                                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a href="#">More.</a> </p>
-                                                </div>
-                                            </div>
-                                            <div className="review_box">
-                                                <div className="review_box_top">
-                                                    <div className="review_box_top_icon">
-                                                        <img src="images/review-3.png"/>
-                                                    </div>
-                                                    <div className="review_box_top_user">
-                                                        <div className="review_box_top_user_head">
-                                                            <h4>John Doe</h4>
-                                                            <img src="images/review-dot.svg"/>
+                                                <div className='md:w-5/12 w-full'>
+                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                            <span>Contry:</span>
                                                         </div>
-                                                        <span>2 reviews</span>
-                                                        <div className="review_box_top_user_bottom">
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span><img src="images/star.svg"/></span>
-                                                            <span>3 Weeks ago</span>
+                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                            <p>USA</p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="review_box_bottom">
-                                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <a href="#">More.</a> </p>
+                                                <div className='md:w-7/12 w-full'>
+                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                        <div className='md:w-3/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                            <span>City:</span>
+                                                        </div>
+                                                        <div className='md:w-9/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                            <p>Los Angeles, United States</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='md:w-5/12 w-full'>
+                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                            <span>Branch Contact Number:</span>
+                                                        </div>
+                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                            <p>+1 000 0000 0456</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='md:w-7/12 w-full'>
+                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                        <div className='md:w-3/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                            <span>Province:</span>
+                                                        </div>
+                                                        <div className='md:w-9/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                            <p>Lorem Ipsum</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='md:w-5/12 w-full'>
+                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                            <span>Branch Contact Name:</span>
+                                                        </div>
+                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                            <p>John Doe</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="loading_sec">
-                                            <div className="lds-default">
-                                                <div></div>
-                                                <div></div>
-                                                <div></div>
-                                                <div></div>
-                                                <div></div>
-                                                <div></div>
-                                                <div></div>
-                                                <div></div>
-                                                {/* <div></div>
-                                                <div></div>
-                                                <div></div>
-                                                <div></div> */}
+                                        <div className='w-full mt-6'>
+                                            <label className='text-lg font-semibold leading-5 text-color-dark mb-3 block'>Working Hours</label>
+                                            <div className='w-full flex flex-wrap'>
+                                                <div className='lg:w-4/12 md:w-6/12 w-full'>
+                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                            <span>Start Time:</span>
+                                                        </div>
+                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                            <span>9:00 am</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='lg:w-4/12 md:w-6/12 w-full'>
+                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                            <span>End Time:</span>
+                                                        </div>
+                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                            <span>12:00 pm</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='lg:w-4/12 md:w-6/12 w-full'>
+                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                            <span>Working Days:</span>
+                                                        </div>
+                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                            <span>Monday - Friday</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <span>Load More</span>
+                                        </div>
+                                        <div className='w-full mt-6'>
+                                            <label className='text-lg font-semibold leading-5 text-color-dark mb-3 block'>Tag</label>
+                                            <div className='w-full flex flex-wrap'>
+                                                <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4 mr-4'>Online Shop</span>
+                                                <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4 mr-4'>manufacturer / factory </span>
+                                                <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4 mr-4'>Trading Company</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
