@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { withRouter } from 'next/router';
+import React, { useState } from "react";
+import { withRouter } from "next/router";
 import SiteLayout from "../layout/MainLayout/SiteLayout";
 import { toast } from "react-toastify";
-import Head from 'next/head';
+import Head from "next/head";
 import _ from "lodash";
 import { useRouter } from "next/router";
-import ToastHot from 'react-hot-toast';
+import ToastHot from "react-hot-toast";
 
 const OtpVerification = () => {
   const Router = useRouter();
@@ -14,7 +14,6 @@ const OtpVerification = () => {
       <Head>
         <title>Otp Verification</title>
       </Head>
-
 
       <section className="before_login_sec">
         <div className="container">
@@ -28,18 +27,25 @@ const OtpVerification = () => {
                 <div className="row">
                   <div className="col-lg-12 form-group">
                     <div className="form_field_wrap otp_input_field">
-                      <input type="text" className="form-control"/>
-                      <input type="text" className="form-control"/>
-                      <input type="text" className="form-control"/>
-                      <input type="text" className="form-control"/>
-                      <input type="text" className="form-control"/>
+                      <input type="text" className="form-control" />
+                      <input type="text" className="form-control" />
+                      <input type="text" className="form-control" />
+                      <input type="text" className="form-control" />
+                      <input type="text" className="form-control" />
                     </div>
                   </div>
                   <div className="col-lg-12 form-group">
-                    <button type="button" className="form-control submit_button verify_button">Verify</button>
+                    <button
+                      type="button"
+                      className="form-control submit_button verify_button"
+                    >
+                      Verify
+                    </button>
                   </div>
                   <div className="col-lg-12 form-group text-center allready_account">
-                    <span>Didn't receive OTP? <a >Resend</a></span>
+                    <span>
+                      Didn't receive OTP? <a>Resend</a>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -48,15 +54,11 @@ const OtpVerification = () => {
         </div>
       </section>
 
-      
       {/* <img src="../images/favicon.ico" />
       <button onClick={()=> Router.push("/home")} className='button-sub'>Goto Home</button>
       <button onClick={()=> Router.push("/details/page")} className='button-sub'>Goto Page</button> */}
     </SiteLayout>
-  )
-}
-
-
-
+  );
+};
 
 export default withRouter(OtpVerification);

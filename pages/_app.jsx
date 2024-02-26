@@ -8,9 +8,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { wrapper } from "../store/store";
 
 import { useRouter } from "next/router";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 // import '../styles/globals.css';
-import '../styles/globals.css'
+import "../styles/globals.css";
 function MyApp({ Component, pageProps }) {
   const Router = useRouter();
   React.useEffect(() => {
@@ -52,12 +52,12 @@ function MyApp({ Component, pageProps }) {
         )}
       </Head>
       <>
-      <Toaster
+        <Toaster
           position="bottom-center"
           reverseOrder={false}
           toastOptions={{
             // Define default options
-            className: 'hot-toast-opening-class',
+            className: "hot-toast-opening-class",
             duration: 3000,
             // style: {
             //   background: '#363636',
@@ -74,8 +74,8 @@ function MyApp({ Component, pageProps }) {
           }}
         />
         {/* <CustomThemeProvider> */}
-          {/* <CssBaseline /> */}
-          <Component {...pageProps} />
+        {/* <CssBaseline /> */}
+        <Component {...pageProps} />
         {/* </CustomThemeProvider> */}
       </>
     </>
@@ -89,8 +89,6 @@ MyApp.propTypes = {
 };
 
 export default wrapper.withRedux(MyApp);
-
-
 
 // export default function App({ Component, pageProps }) {
 //   return <Component {...pageProps} />

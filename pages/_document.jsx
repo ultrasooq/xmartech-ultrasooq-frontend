@@ -166,10 +166,7 @@ export default class extends Document {
             }}
           ></script>
 
-
           <link rel="stylesheet" href="owl-carousel/owl.theme.css" />
-
-          
         </Head>
         <body className="">
           <Main />
@@ -184,7 +181,8 @@ export default class extends Document {
             async
             src="//cdn.jsdelivr.net/npm/featherlight@1.7.14/release/featherlight.min.js"
             type="text/javascript"
-            charSet="utf-8" />
+            charSet="utf-8"
+          />
           {/* <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" /> */}
         </body>
       </Html>

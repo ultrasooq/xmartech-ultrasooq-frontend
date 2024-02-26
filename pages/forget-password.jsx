@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { withRouter } from 'next/router';
+import React, { useState } from "react";
+import { withRouter } from "next/router";
 import SiteLayout from "../layout/MainLayout/SiteLayout";
 import { toast } from "react-toastify";
-import Head from 'next/head';
+import Head from "next/head";
 import _ from "lodash";
 import { useRouter } from "next/router";
-import ToastHot from 'react-hot-toast';
+import ToastHot from "react-hot-toast";
 
 const ForgetPassword = () => {
   const Router = useRouter();
@@ -28,11 +28,20 @@ const ForgetPassword = () => {
                   <div className="col-lg-12 form-group">
                     <label>Email or Phone number or ID</label>
                     <div className="form_field_wrap">
-                      <input type="text" className="form-control" placeholder="Enter Your Email or Phone number or ID"/>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter Your Email or Phone number or ID"
+                      />
                     </div>
                   </div>
                   <div className="col-lg-12 form-group">
-                    <button type="button" className="form-control submit_button">Reset Password</button>
+                    <button
+                      type="button"
+                      className="form-control submit_button"
+                    >
+                      Reset Password
+                    </button>
                   </div>
                 </div>
               </div>
@@ -41,15 +50,11 @@ const ForgetPassword = () => {
         </div>
       </section>
 
-      
       {/* <img src="../images/favicon.ico" />
       <button onClick={()=> Router.push("/home")} className='button-sub'>Goto Home</button>
       <button onClick={()=> Router.push("/details/page")} className='button-sub'>Goto Page</button> */}
     </SiteLayout>
-  )
-}
-
-
-
+  );
+};
 
 export default withRouter(ForgetPassword);
