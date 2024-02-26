@@ -6,7 +6,6 @@ import Head from 'next/head';
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from 'react-redux';
 
-import { CallWithAuth, CallWithAuthentication } from "../../actions/apiAction";
 import { silentLogin, logout } from "../../store/authReducer/action";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
@@ -18,31 +17,7 @@ const SiteLayout = (props) => {
     const [validAccess, setValidAccess] = useState(false)
 
     const dispatch = useDispatch();
-    const { user } = useSelector(state => state.authReducer);
-    useEffect(() => {
-        if (localStorage.getItem('accessToken')) {
-
-            //Added by prasanta
-            checkSilentLogin()
-            console.log(props.router.asPath)
-            if (props.router.asPath !== "/") {
-                Router.push(`${props.router.asPath}`)
-            } else {
-                Router.push("/dashboard");
-            }
-        } else {
-            setValidAccess(true)
-        }
-    }, [])
-
-    //Added by prasanta
-    const checkSilentLogin = async () => {
-        let userDetails = await CallWithAuthentication("GET", LoginById)
-        console.log(userDetails)
-        if (userDetails.data.status === "success") {
-            dispatch(silentLogin(userDetails.data.data))
-        }
-    }
+    
 
     return (
         <React.Fragment>

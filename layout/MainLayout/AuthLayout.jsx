@@ -7,8 +7,6 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { CallWithAuth, CallWithAuthentication } from "../../actions/apiAction";
-import { silentLogin, logout } from "../../store/authReducer/action";
 
 
 const LoginById = `/users/me`;
@@ -20,23 +18,6 @@ const AuthLayout = (props) => {
     const { user, userRequestLoading, userLoginStatus } = useSelector(state => state.authReducer);
 
 
-    useEffect(() => {
-        console.log("I AM AUTHLAYOUT PAGE")
-        if (localStorage.getItem('accessToken')) {
-            checkSilentLogin()
-        } else {
-            dispatch(logout())
-            Router.push("/");
-        }
-    }, [])
-
-    const checkSilentLogin = async () => {
-        let userDetails = await CallWithAuthentication("GET", LoginById)
-        if (userDetails.data.status === "success") {
-            dispatch(silentLogin(userDetails.data.data))
-            
-        }
-    }
 
     
     return (
