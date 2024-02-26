@@ -1,13 +1,10 @@
-
 export const productActionTypes = {
-  PRODUCT: 'PRODUCT',
-}
+  PRODUCT: "PRODUCT",
+};
 
-export const fetchProducts = () => (dispatch) =>{
+export const fetchProducts = () => (dispatch) => {
   dispatch({
     type: productActionTypes.PRODUCT,
     productList: [],
-  })
-}
-
-
+  });
+};

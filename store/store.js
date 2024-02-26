@@ -1,41 +1,40 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux'
-import { HYDRATE, createWrapper } from 'next-redux-wrapper'
-import thunkMiddleware from 'redux-thunk'
+import { createStore, applyMiddleware, combineReducers } from "redux";
+import { HYDRATE, createWrapper } from "next-redux-wrapper";
+import thunkMiddleware from "redux-thunk";
 
 // List of reducers
-import authReducer  from './authReducer/reducer';
-import global  from './globalReducer/reducer';
+import authReducer from "./authReducer/reducer";
+import global from "./globalReducer/reducer";
 //Reducer list end
 
 const bindMiddleware = (middleware) => {
-  
-  if (process.env.NODE_ENV !== 'production') {
-    const { composeWithDevTools } = require('redux-devtools-extension')
-    return composeWithDevTools(applyMiddleware(...middleware))
+  if (process.env.NODE_ENV !== "production") {
+    const { composeWithDevTools } = require("redux-devtools-extension");
+    return composeWithDevTools(applyMiddleware(...middleware));
   }
-  return applyMiddleware(...middleware)
-}
+  return applyMiddleware(...middleware);
+};
 
 const combinedReducer = combineReducers({
   authReducer,
-  global
-})
+  global,
+});
 
 const reducer = (state, action) => {
   if (action.type === HYDRATE) {
     const nextState = {
       ...state, // use previous state
       ...action.payload, // apply delta from hydration
-    }
-    if (state.count.count) nextState.count.count = state.count.count // preserve count value on client side navigation
-    return nextState
+    };
+    if (state.count.count) nextState.count.count = state.count.count; // preserve count value on client side navigation
+    return nextState;
   } else {
-    return combinedReducer(state, action)
+    return combinedReducer(state, action);
   }
-}
+};
 
 const initStore = () => {
-  return createStore(reducer, bindMiddleware([thunkMiddleware]))
-}
+  return createStore(reducer, bindMiddleware([thunkMiddleware]));
+};
 
-export const wrapper = createWrapper(initStore)
+export const wrapper = createWrapper(initStore);
