@@ -24,11 +24,11 @@ const FreelancerProfileDetails = () => {
             <div className="col-lg-12 profile_details_box">
               <div className="profile_details_box_left">
                 <div className="profile_details_box_image">
-                  <img src="images/profile.png" />
+                  <img src="images/profile.png" alt="profile" />
                 </div>
                 <div className="edit_profile_icon">
                   <div className="camera_icon">
-                    <img src="images/camera-icon.png" />
+                    <img src="images/camera-icon.png" alt="camera-icon" />
                   </div>
                   <input
                     id="profile_impage_upload_input"
@@ -43,7 +43,7 @@ const FreelancerProfileDetails = () => {
                   <h2>John Rosensky</h2>
                   <div className="edit_button">
                     <button type="button">
-                      <img src="images/edit-icon.svg" /> edit
+                      <img src="images/edit-icon.svg" alt="edit-icon" /> edit
                     </button>
                   </div>
                 </div>
@@ -51,14 +51,20 @@ const FreelancerProfileDetails = () => {
                   <ul>
                     <li>
                       {" "}
-                      <img src="images/profile-mail-icon.svg" />{" "}
+                      <img
+                        src="images/profile-mail-icon.svg"
+                        alt="mail-icon"
+                      />{" "}
                       <a href="mailto:john.rosensky@gmail.com">
                         john.rosensky@gmail.com
                       </a>
                     </li>
                     <li>
                       {" "}
-                      <img src="images/profile-call-icon.svg" />{" "}
+                      <img
+                        src="images/profile-call-icon.svg"
+                        alt="call-icon"
+                      />{" "}
                       <a href="tel:1 000 0000 0000">+1 000 0000 0000</a>
                     </li>
                   </ul>
@@ -105,7 +111,8 @@ const FreelancerProfileDetails = () => {
                       <h2>Contact Information</h2>
                       <div className="edit_button">
                         <button type="button">
-                          <img src="images/edit-icon.svg" /> edit
+                          <img src="images/edit-icon.svg" alt="edit-icon" />{" "}
+                          edit
                         </button>
                       </div>
                     </div>
@@ -148,7 +155,8 @@ const FreelancerProfileDetails = () => {
                       <h2>Freelancer Information</h2>
                       <div className="edit_button">
                         <button type="button">
-                          <img src="images/edit-icon.svg" /> edit
+                          <img src="images/edit-icon.svg" alt="edit-icon" />{" "}
+                          edit
                         </button>
                       </div>
                     </div>
@@ -317,26 +325,27 @@ const FreelancerProfileDetails = () => {
                       <div className="rating_part">
                         <h5>5.0</h5>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <p>Based on 139 Reviews</p>
                       </div>
                     </div>
                     <div className="review_rating_box_top_right">
                       <button type="button">
-                        <img src="images/pen-icon.svg" /> Write A Review
+                        <img src="images/pen-icon.svg" alt="pen-icon" /> Write A
+                        Review
                       </button>
                     </div>
                   </div>
@@ -360,29 +369,32 @@ const FreelancerProfileDetails = () => {
                       <div className="review_box">
                         <div className="review_box_top">
                           <div className="review_box_top_icon">
-                            <img src="images/review-1.png" />
+                            <img src="images/review-1.png" alt="review-1" />
                           </div>
                           <div className="review_box_top_user">
                             <div className="review_box_top_user_head">
                               <h4>John Doe</h4>
-                              <img src="images/review-dot.svg" />
+                              <img
+                                src="images/review-dot.svg"
+                                alt="review-dot"
+                              />
                             </div>
                             <span>2 reviews</span>
                             <div className="review_box_top_user_bottom">
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>3 Weeks ago</span>
                             </div>
@@ -399,29 +411,32 @@ const FreelancerProfileDetails = () => {
                       <div className="review_box">
                         <div className="review_box_top">
                           <div className="review_box_top_icon">
-                            <img src="images/review-2.png" />
+                            <img src="images/review-2.png" alt="review-2" />
                           </div>
                           <div className="review_box_top_user">
                             <div className="review_box_top_user_head">
                               <h4>John Doe</h4>
-                              <img src="images/review-dot.svg" />
+                              <img
+                                src="images/review-dot.svg"
+                                alt="review-dot"
+                              />
                             </div>
                             <span>2 reviews</span>
                             <div className="review_box_top_user_bottom">
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>3 Weeks ago</span>
                             </div>
@@ -438,29 +453,32 @@ const FreelancerProfileDetails = () => {
                       <div className="review_box">
                         <div className="review_box_top">
                           <div className="review_box_top_icon">
-                            <img src="images/review-3.png" />
+                            <img src="images/review-3.png" alt="review-3" />
                           </div>
                           <div className="review_box_top_user">
                             <div className="review_box_top_user_head">
                               <h4>John Doe</h4>
-                              <img src="images/review-dot.svg" />
+                              <img
+                                src="images/review-dot.svg"
+                                alt="review-dot"
+                              />
                             </div>
                             <span>2 reviews</span>
                             <div className="review_box_top_user_bottom">
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>3 Weeks ago</span>
                             </div>

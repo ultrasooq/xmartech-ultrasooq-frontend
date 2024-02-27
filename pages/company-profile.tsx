@@ -34,7 +34,7 @@ const CompanyProfile = () => {
                         <label>Upload Company Logo</label>
                         <div className="drop">
                           <div className="cont">
-                            <img src="images/upload.png" />
+                            <img src="images/upload.png" alt="upload" />
                             <div className="short_text">
                               <span>
                                 {" "}
@@ -199,7 +199,8 @@ const CompanyProfile = () => {
                             <label>Branch</label>
                             <div className="add_link_text">
                               <span>
-                                <img src="images/add-icon.svg" /> add new branch
+                                <img src="images/add-icon.svg" alt="add" /> add
+                                new branch
                               </span>
                             </div>
                           </div>
@@ -211,20 +212,25 @@ const CompanyProfile = () => {
                           <div className="choose_type_top">
                             <div className="choose_type_box_left">
                               <span>
-                                online shope <img src="images/close.svg" />
+                                online shope{" "}
+                                <img src="images/close.svg" alt="close" />
                               </span>
                               <span>
                                 manufacturer / factory{" "}
-                                <img src="images/close.svg" />
+                                <img src="images/close.svg" alt="close" />
                               </span>
                               <span>
-                                trading company <img src="images/close.svg" />
+                                trading company{" "}
+                                <img src="images/close.svg" alt="close" />
                               </span>
                             </div>
                             <div className="choose_type_box_right">
                               <ul>
                                 <li>
-                                  <img src="images/social-arrow-icon.svg" />
+                                  <img
+                                    src="images/social-arrow-icon.svg"
+                                    alt="arrow"
+                                  />
                                 </li>
                               </ul>
                             </div>
@@ -295,7 +301,7 @@ const CompanyProfile = () => {
                             <label>Upload Branch front picture</label>
                             <div className="drop">
                               <div className="cont">
-                                <img src="images/upload.png" />
+                                <img src="images/upload.png" alt="upload" />
                                 <div className="short_text">
                                   <span>
                                     {" "}
@@ -317,7 +323,7 @@ const CompanyProfile = () => {
                             <label>Proof of Address</label>
                             <div className="drop">
                               <div className="cont">
-                                <img src="images/upload.png" />
+                                <img src="images/upload.png" alt="upload" />
                                 <div className="short_text">
                                   <span>
                                     {" "}
@@ -498,20 +504,25 @@ const CompanyProfile = () => {
                           <div className="choose_type_top">
                             <div className="choose_type_box_left">
                               <span>
-                                online shope <img src="images/close.svg" />
+                                online shope{" "}
+                                <img src="images/close.svg" alt="close" />
                               </span>
                               <span>
                                 manufacturer / factory{" "}
-                                <img src="images/close.svg" />
+                                <img src="images/close.svg" alt="close" />
                               </span>
                               <span>
-                                trading company <img src="images/close.svg" />
+                                trading company{" "}
+                                <img src="images/close.svg" alt="close" />
                               </span>
                             </div>
                             <div className="choose_type_box_right">
                               <ul>
                                 <li>
-                                  <img src="images/social-arrow-icon.svg" />
+                                  <img
+                                    src="images/social-arrow-icon.svg"
+                                    alt="arrow"
+                                  />
                                 </li>
                               </ul>
                             </div>

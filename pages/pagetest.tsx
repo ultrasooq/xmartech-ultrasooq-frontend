@@ -202,7 +202,7 @@ const Pagetest = () => {
                   <h4>By Brand</h4>
                   <img src="images/symbol.svg" />
                 </div>
-                <div class="product_search_bar">
+                <div className="product_search_bar">
                   <button type="button">
                     <img src="images/search.png" />
                   </button>
@@ -1468,7 +1468,7 @@ const Pagetest = () => {
                         </div>
                       </div>
                     </div>
-                    <div class="pagination">
+                    <div className="pagination">
                       <a href="#" className="first_pagination">
                         <img src="images/pagination-left-white-arrow.svg" />{" "}
                         Frist
@@ -1477,7 +1477,7 @@ const Pagetest = () => {
                         <img src="images/pagination-left-arrow.svg" />
                       </a>
                       <a href="#">1</a>
-                      <a class="active" href="#">
+                      <a className="active" href="#">
                         2
                       </a>
                       <a href="#">3</a>
@@ -1841,7 +1841,7 @@ const Pagetest = () => {
                 <div className="col-lg-4 col-md-5 col-sm-6 col-12 footer_top_box">
                   <h3>Newsletter</h3>
                   <div className="newsletter_box">
-                    <div class="form-group">
+                    <div className="form-group">
                       <input type="email" name="" placeholder="Email Address" />
                       <button type="button">Subscribe</button>
                     </div>

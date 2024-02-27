@@ -50,13 +50,17 @@ const FreelancerProfile = () => {
                           <div className="choose_type_top">
                             <div className="choose_type_box_left">
                               <span>
-                                Individual <img src="images/close.svg" />
+                                Individual{" "}
+                                <img src="images/close.svg" alt="close" />
                               </span>
                             </div>
                             <div className="choose_type_box_right">
                               <ul>
                                 <li>
-                                  <img src="images/social-arrow-icon.svg" />
+                                  <img
+                                    src="images/social-arrow-icon.svg"
+                                    alt="arrow"
+                                  />
                                 </li>
                               </ul>
                             </div>
@@ -247,20 +251,25 @@ const FreelancerProfile = () => {
                           <div className="choose_type_top">
                             <div className="choose_type_box_left">
                               <span>
-                                online shope <img src="images/close.svg" />
+                                online shope{" "}
+                                <img src="images/close.svg" alt="close" />
                               </span>
                               <span>
                                 manufacturer / factory{" "}
-                                <img src="images/close.svg" />
+                                <img src="images/close.svg" alt="close" />
                               </span>
                               <span>
-                                trading company <img src="images/close.svg" />
+                                trading company{" "}
+                                <img src="images/close.svg" alt="close" />
                               </span>
                             </div>
                             <div className="choose_type_box_right">
                               <ul>
                                 <li>
-                                  <img src="images/social-arrow-icon.svg" />
+                                  <img
+                                    src="images/social-arrow-icon.svg"
+                                    alt="arrow"
+                                  />
                                 </li>
                               </ul>
                             </div>
