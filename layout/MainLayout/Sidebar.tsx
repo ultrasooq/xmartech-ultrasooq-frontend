@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { withRouter } from "next/router";
 
 type SidebarProps = {
-  notificationCount?: any
-}
+  notificationCount?: any;
+};
 
-const Sidebar:React.FC<SidebarProps> = ({notificationCount}) => {
+const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
   return (
     <div className="sidebar">
       <div className="sidebar_top">
-        <img src="images/sidebar-arrow.png" />
+        <img src="images/sidebar-arrow.png" alt="arrow" />
       </div>
       <div className="sidebar_menu">
         <ul>

@@ -24,7 +24,7 @@ const CompanyProfileDetails = () => {
             <div className="col-lg-12 profile_details_box">
               <div className="profile_details_box_left">
                 <div className="profile_details_box_image">
-                  <img src="images/company-logo.png" />
+                  <img src="images/company-logo.png" alt="company-icon" />
                 </div>
               </div>
               <div className="profile_details_box_right">
@@ -32,7 +32,7 @@ const CompanyProfileDetails = () => {
                   <h2>Vehement Capital Partners Pvt Ltd</h2>
                   <div className="edit_button">
                     <button type="button">
-                      <img src="images/edit-icon.svg" /> edit
+                      <img src="images/edit-icon.svg" alt="edit-icon" /> edit
                     </button>
                   </div>
                 </div>
@@ -86,7 +86,8 @@ const CompanyProfileDetails = () => {
                       <h2>Company Information</h2>
                       <div className="edit_button">
                         <button type="button">
-                          <img src="images/edit-icon.svg" /> edit
+                          <img src="images/edit-icon.svg" alt="edit-icon" />{" "}
+                          edit
                         </button>
                       </div>
                     </div>
@@ -210,7 +211,8 @@ const CompanyProfileDetails = () => {
                       <h2>Branch Information</h2>
                       <div className="edit_button">
                         <button type="button">
-                          <img src="images/edit-icon.svg" /> edit
+                          <img src="images/edit-icon.svg" alt="edit-icon" />{" "}
+                          edit
                         </button>
                       </div>
                     </div>
@@ -229,7 +231,10 @@ const CompanyProfileDetails = () => {
                               <div className="branch_information_box_top_right">
                                 <ul>
                                   <li>
-                                    <img src="images/social-arrow-icon.svg" />
+                                    <img
+                                      src="images/social-arrow-icon.svg"
+                                      alt="arrow"
+                                    />
                                   </li>
                                 </ul>
                               </div>
@@ -360,7 +365,10 @@ const CompanyProfileDetails = () => {
                                         </div>
                                         <div className="col-lg-12 profile_details_content_list_content">
                                           <div className="branch_photo">
-                                            <img src="images/branch-front.png" />
+                                            <img
+                                              src="images/branch-front.png"
+                                              alt="branch"
+                                            />
                                           </div>
                                         </div>
                                       </div>
@@ -374,7 +382,10 @@ const CompanyProfileDetails = () => {
                                         </div>
                                         <div className="col-lg-12 profile_details_content_list_content">
                                           <div className="branch_photo">
-                                            <img src="images/branch-address.png" />
+                                            <img
+                                              src="images/branch-address.png"
+                                              alt="branch"
+                                            />
                                           </div>
                                         </div>
                                       </div>
@@ -394,7 +405,10 @@ const CompanyProfileDetails = () => {
                               <div className="branch_information_box_top_right">
                                 <ul>
                                   <li>
-                                    <img src="images/social-arrow-icon.svg" />
+                                    <img
+                                      src="images/social-arrow-icon.svg"
+                                      alt="social-arrow-icon"
+                                    />
                                   </li>
                                 </ul>
                               </div>
@@ -427,26 +441,27 @@ const CompanyProfileDetails = () => {
                       <div className="rating_part">
                         <h5>5.0</h5>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <span>
-                          <img src="images/star.svg" />
+                          <img src="images/star.svg" alt="star-icon" />
                         </span>
                         <p>Based on 139 Reviews</p>
                       </div>
                     </div>
                     <div className="review_rating_box_top_right">
                       <button type="button">
-                        <img src="images/pen-icon.svg" /> Write A Review
+                        <img src="images/pen-icon.svg" alt="pen" /> Write A
+                        Review
                       </button>
                     </div>
                   </div>
@@ -470,12 +485,15 @@ const CompanyProfileDetails = () => {
                       <div className="review_box">
                         <div className="review_box_top">
                           <div className="review_box_top_icon">
-                            <img src="images/review-1.png" />
+                            <img src="images/review-1.png" alt="review-icon" />
                           </div>
                           <div className="review_box_top_user">
                             <div className="review_box_top_user_head">
                               <h4>John Doe</h4>
-                              <img src="images/review-dot.svg" />
+                              <img
+                                src="images/review-dot.svg"
+                                alt="review-dot-icon"
+                              />
                             </div>
                             <span>2 reviews</span>
                             <div className="review_box_top_user_bottom">

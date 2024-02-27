@@ -2,11 +2,14 @@ import React from "react";
 import { useRouter, withRouter } from "next/router";
 
 type HeaderProps = {
-  teamHeaderSection?: any,
-  userHeaderSection?: any
-}
+  teamHeaderSection?: any;
+  userHeaderSection?: any;
+};
 
-const Header:React.FC<HeaderProps> = ({teamHeaderSection, userHeaderSection}) => {
+const Header: React.FC<HeaderProps> = ({
+  teamHeaderSection,
+  userHeaderSection,
+}) => {
   const Router = useRouter();
   return (
     <header className="header">
@@ -48,7 +51,7 @@ const Header:React.FC<HeaderProps> = ({teamHeaderSection, userHeaderSection}) =>
               <div className="row">
                 <div className="col-lg-2 col-md-2 col-5 logo">
                   <a href="#">
-                    <img src="images/logo.png" />
+                    <img src="images/logo.png" alt="logo" />
                   </a>
                 </div>
                 <div className="col-lg-7 col-md-7 col-10 header_search_bar">
@@ -90,18 +93,18 @@ const Header:React.FC<HeaderProps> = ({teamHeaderSection, userHeaderSection}) =>
                   <ul>
                     <li>
                       <a href="#">
-                        <img src="images/wishlist.svg" />
+                        <img src="images/wishlist.svg" alt="wishlist-icon" />
                         <div className="count">0</div>
                       </a>
                     </li>
                     <li>
                       <a>
-                        <img src="images/cart.svg" />
+                        <img src="images/cart.svg" alt="cart-icon" />
                         <div className="count">0</div>
                       </a>
                     </li>
                     <li>
-                      <img src="images/login.svg" />
+                      <img src="images/login.svg" alt="login-icon" />
                       <a>
                         <span onClick={() => Router.push("/login")}>
                           Login{" "}

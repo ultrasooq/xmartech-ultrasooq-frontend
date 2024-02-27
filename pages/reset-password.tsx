@@ -34,7 +34,7 @@ const ResetPassword = () => {
                         placeholder="************ "
                       />
                       <span className="show_password">
-                        <img src="images/eyeslash.svg" />
+                        <img src="images/eyeslash.svg" alt="eyelash-icon" />
                       </span>
                     </div>
                   </div>
@@ -47,7 +47,7 @@ const ResetPassword = () => {
                         placeholder="************ "
                       />
                       <span className="show_password">
-                        <img src="images/eyeslash.svg" />
+                        <img src="images/eyeslash.svg" alt="eyelash-icon" />
                       </span>
                     </div>
                   </div>
