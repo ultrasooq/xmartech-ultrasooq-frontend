@@ -27,17 +27,12 @@ const Profile = () => {
                   <div className="col-lg-12 form-group">
                     <div className="drop">
                       <div className="cont">
-                        <img src="images/camera.png" />
+                        <img src="images/camera.png" alt="camera-icon" />
                         <div className="short_text">
                           <span> Upload Image</span>
                         </div>
                       </div>
-                      <input
-                        id="files"
-                        multiple
-                        name="files[]"
-                        type="file"
-                      />
+                      <input id="files" multiple name="files[]" type="file" />
                     </div>
                   </div>
                   <div className="col-lg-12 form-group">
@@ -99,7 +94,8 @@ const Profile = () => {
                       <label>Phone Number</label>
                       <div className="add_link_text">
                         <span>
-                          <img src="images/add-icon.svg" /> add Phone Number
+                          <img src="images/add-icon.svg" alt="add-icon" /> add
+                          Phone Number
                         </span>
                       </div>
                     </div>
@@ -116,7 +112,8 @@ const Profile = () => {
                       <label>Social Links</label>
                       <div className="add_link_text">
                         <span>
-                          <img src="images/add-icon.svg" /> add link
+                          <img src="images/add-icon.svg" alt="add-icon" /> add
+                          link
                         </span>
                       </div>
                     </div>
@@ -124,20 +121,32 @@ const Profile = () => {
                       <div className="social_wrap_top">
                         <div className="social_wrap_top_left">
                           <span>
-                            <img src="images/social-facebook-icon.svg" />{" "}
+                            <img
+                              src="images/social-facebook-icon.svg"
+                              alt="facebook-icon"
+                            />{" "}
                             Facebook
                           </span>
                         </div>
                         <div className="social_wrap_top_right">
                           <ul>
                             <li>
-                              <img src="images/social-edit-icon.svg" />
+                              <img
+                                src="images/social-edit-icon.svg"
+                                alt="edit-icon"
+                              />
                             </li>
                             <li>
-                              <img src="images/social-delete-icon.svg" />
+                              <img
+                                src="images/social-delete-icon.svg"
+                                alt="delete-icon"
+                              />
                             </li>
                             <li>
-                              <img src="images/social-arrow-icon.svg" />
+                              <img
+                                src="images/social-arrow-icon.svg"
+                                alt="arrow-icon"
+                              />
                             </li>
                           </ul>
                         </div>
@@ -153,20 +162,32 @@ const Profile = () => {
                       <div className="social_wrap_top">
                         <div className="social_wrap_top_left">
                           <span>
-                            <img src="images/social-linkedin-icon.svg" />{" "}
+                            <img
+                              src="images/social-linkedin-icon.svg"
+                              alt="linkedin-icon"
+                            />{" "}
                             Linkedin
                           </span>
                         </div>
                         <div className="social_wrap_top_right">
                           <ul>
                             <li>
-                              <img src="images/social-edit-icon.svg" />
+                              <img
+                                src="images/social-edit-icon.svg"
+                                alt="edit-icon"
+                              />
                             </li>
                             <li>
-                              <img src="images/social-delete-icon.svg" />
+                              <img
+                                src="images/social-delete-icon.svg"
+                                alt="delete-icon"
+                              />
                             </li>
                             <li>
-                              <img src="images/social-arrow-icon.svg" />
+                              <img
+                                src="images/social-arrow-icon.svg"
+                                alt="arrow-icon"
+                              />
                             </li>
                           </ul>
                         </div>
@@ -182,20 +203,32 @@ const Profile = () => {
                       <div className="social_wrap_top">
                         <div className="social_wrap_top_left">
                           <span>
-                            <img src="images/social-instagram-icon.svg" />{" "}
+                            <img
+                              src="images/social-instagram-icon.svg"
+                              alt="instagram-icon"
+                            />{" "}
                             Instagram
                           </span>
                         </div>
                         <div className="social_wrap_top_right">
                           <ul>
                             <li>
-                              <img src="images/social-edit-icon.svg" />
+                              <img
+                                src="images/social-edit-icon.svg"
+                                alt="edit-icon"
+                              />
                             </li>
                             <li>
-                              <img src="images/social-delete-icon.svg" />
+                              <img
+                                src="images/social-delete-icon.svg"
+                                alt="delete-icon"
+                              />
                             </li>
                             <li>
-                              <img src="images/social-arrow-icon.svg" />
+                              <img
+                                src="images/social-arrow-icon.svg"
+                                alt="arrow-icon"
+                              />
                             </li>
                           </ul>
                         </div>
@@ -211,19 +244,32 @@ const Profile = () => {
                       <div className="social_wrap_top">
                         <div className="social_wrap_top_left">
                           <span>
-                            <img src="images/social-twitter-icon.svg" /> Twitter
+                            <img
+                              src="images/social-twitter-icon.svg"
+                              alt="twitter-icon"
+                            />{" "}
+                            Twitter
                           </span>
                         </div>
                         <div className="social_wrap_top_right">
                           <ul>
                             <li>
-                              <img src="images/social-edit-icon.svg" />
+                              <img
+                                src="images/social-edit-icon.svg"
+                                alt="edit-icon"
+                              />
                             </li>
                             <li>
-                              <img src="images/social-delete-icon.svg" />
+                              <img
+                                src="images/social-delete-icon.svg"
+                                alt="delete-icon"
+                              />
                             </li>
                             <li>
-                              <img src="images/social-arrow-icon.svg" />
+                              <img
+                                src="images/social-arrow-icon.svg"
+                                alt="arrow-icon"
+                              />
                             </li>
                           </ul>
                         </div>

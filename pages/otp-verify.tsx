@@ -44,7 +44,7 @@ const OtpVerification = () => {
                   </div>
                   <div className="col-lg-12 form-group text-center allready_account">
                     <span>
-                      Didn't receive OTP? <a>Resend</a>
+                      Didn&apos;t receive OTP? <a>Resend</a>
                     </span>
                   </div>
                 </div>

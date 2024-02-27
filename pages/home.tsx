@@ -20,7 +20,7 @@ const Home = () => {
           <div className="row">
             <div className="col-lg-6 col-md-6 col-sm-6 home_sec1_wrap home_sec1_wrap_left">
               <div className="home_sec1_box home_sec1_box_big">
-                <img src="images/hs-1.png" />
+                <img src="images/hs-1.png" alt="home-sec1" />
                 <div className="home_sec1_box_overlay">
                   <div className="home_sec1_box_content">
                     <h6>samsung</h6>
@@ -34,7 +34,7 @@ const Home = () => {
             </div>
             <div className="col-lg-6 col-md-6 col-sm-6 home_sec1_wrap home_sec1_wrap_right">
               <div className="home_sec1_box home_sec1_box_small">
-                <img src="images/hs-2.png" />
+                <img src="images/hs-2.png" alt="home-sec1" />
                 <div className="home_sec1_box_overlay">
                   <div className="home_sec1_box_content">
                     <h3>
@@ -46,7 +46,7 @@ const Home = () => {
                 </div>
               </div>
               <div className="home_sec1_box home_sec1_box_small">
-                <img src="images/hs-3.png" />
+                <img src="images/hs-3.png" alt="home-sec1" />
                 <div className="home_sec1_box_overlay">
                   <div className="home_sec1_box_content">
                     <h6>camera</h6>
@@ -271,7 +271,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-1.png" />
+                      <img src="images/tp-1.png" alt="tp-1" />
                     </div>
                     <div className="tab_products_content">
                       <span>#TELEVISION</span>
@@ -281,7 +281,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-2.png" />
+                      <img src="images/tp-2.png" alt="tp-2" />
                     </div>
                     <div className="tab_products_content">
                       <span>#CAMERA</span>
@@ -291,7 +291,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-3.png" />
+                      <img src="images/tp-3.png" alt="tp-3" />
                     </div>
                     <div className="tab_products_content">
                       <span>#WATCH</span>
@@ -301,7 +301,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-4.png" />
+                      <img src="images/tp-4.png" alt="tp-4" />
                     </div>
                     <div className="tab_products_content">
                       <span>#CHAIR</span>
@@ -311,7 +311,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-5.png" />
+                      <img src="images/tp-5.png" alt="tp-5" />
                     </div>
                     <div className="tab_products_content">
                       <span>#SNEAKER</span>
@@ -321,7 +321,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-6.png" />
+                      <img src="images/tp-6.png" alt="tp-6" />
                     </div>
                     <div className="tab_products_content">
                       <span>#XBOX</span>
@@ -331,7 +331,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-7.png" />
+                      <img src="images/tp-7.png" alt="tp-7" />
                     </div>
                     <div className="tab_products_content">
                       <span>#GOPRO</span>
@@ -341,7 +341,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-8.png" />
+                      <img src="images/tp-8.png" alt="tp-8" />
                     </div>
                     <div className="tab_products_content">
                       <span>#LIPSTICK</span>
@@ -351,7 +351,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-9.png" />
+                      <img src="images/tp-9.png" alt="tp-9" />
                     </div>
                     <div className="tab_products_content">
                       <span>#PHONE</span>
@@ -361,7 +361,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-10.png" />
+                      <img src="images/tp-10.png" alt="tp-10" />
                     </div>
                     <div className="tab_products_content">
                       <span>#LAPTOP</span>
@@ -371,7 +371,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-11.png" />
+                      <img src="images/tp-11.png" alt="tp-11" />
                     </div>
                     <div className="tab_products_content">
                       <span>#SPEAKER</span>
@@ -381,7 +381,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-12.png" />
+                      <img src="images/tp-12.png" alt="tp-12" />
                     </div>
                     <div className="tab_products_content">
                       <span>#BOOK</span>
@@ -391,7 +391,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-13.png" />
+                      <img src="images/tp-13.png" alt="tp-13" />
                     </div>
                     <div className="tab_products_content">
                       <span>#BLENDER</span>
@@ -401,7 +401,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-14.png" />
+                      <img src="images/tp-14.png" alt="tp-14" />
                     </div>
                     <div className="tab_products_content">
                       <span>#BAG</span>
@@ -411,7 +411,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-15.png" />
+                      <img src="images/tp-15.png" alt="tp-15" />
                     </div>
                     <div className="tab_products_content">
                       <span>#SMARTPHONE</span>
@@ -421,7 +421,7 @@ const Home = () => {
                 <div className="tab_products">
                   <a href="#">
                     <div className="tab_products_image">
-                      <img src="images/tp-16.png" />
+                      <img src="images/tp-16.png" alt="tp-16" />
                     </div>
                     <div className="tab_products_content">
                       <span>#CAMPING</span>
@@ -452,7 +452,7 @@ const Home = () => {
               <div className="product_sec_list">
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-1.png" />
+                    <img src="images/pro-1.png" alt="pro-1" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -507,9 +507,12 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="progress">
-                      <div className="progress-bar" style={{ width: "80%" }}></div>
+                      <div
+                        className="progress-bar"
+                        style={{ width: "80%" }}
+                      ></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
@@ -519,7 +522,7 @@ const Home = () => {
                     <span>-6%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-2.png" />
+                    <img src="images/pro-2.png" alt="product-1" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -574,16 +577,19 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="progress">
-                      <div className="progress-bar" style={{ width: "80%" }}></div>
+                      <div
+                        className="progress-bar"
+                        style={{ width: "80%" }}
+                      ></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-3.png" />
+                    <img src="images/pro-3.png" alt="product-3" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -638,9 +644,12 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="progress">
-                      <div className="progress-bar" style={{ width: "80%" }}></div>
+                      <div
+                        className="progress-bar"
+                        style={{ width: "80%" }}
+                      ></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
@@ -650,7 +659,7 @@ const Home = () => {
                     <span>-14%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-4.png" />
+                    <img src="images/pro-4.png" alt="product-list" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -705,16 +714,19 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="progress">
-                      <div className="progress-bar" style={{ width: "80%" }}></div>
+                      <div
+                        className="progress-bar"
+                        style={{ width: "80%" }}
+                      ></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-5.png" />
+                    <img src="images/pro-5.png" alt="product-5" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -769,9 +781,12 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="progress">
-                      <div className="progress-bar" style={{ width: "80%" }}></div>
+                      <div
+                        className="progress-bar"
+                        style={{ width: "80%" }}
+                      ></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
@@ -803,7 +818,7 @@ const Home = () => {
                     <span>-6%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-3.png" />
+                    <img src="images/pro-3.png" alt="product-1" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -855,7 +870,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -863,7 +878,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-6.png" />
+                    <img src="images/pro-6.png" alt="product" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -915,7 +930,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -923,7 +938,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-5.png" />
+                    <img src="images/pro-5.png" alt="pro-5" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -975,7 +990,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -983,7 +998,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-1.png" />
+                    <img src="images/pro-1.png" alt="pro-1" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1035,7 +1050,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1043,7 +1058,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-2.png" />
+                    <img src="images/pro-2.png" alt="product-1" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1095,7 +1110,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price old_new">
                       <div className="new_price">
                         <h5>$100.38</h5>
@@ -1136,7 +1151,7 @@ const Home = () => {
                   </div>
                 </div>
                 <div className="col-lg-4 col-sm-4 home_sec5_box_image only_mobile_view">
-                  <img src="images/big-headphone.png" />
+                  <img src="images/big-headphone.png" alt="big-headphone" />
                 </div>
               </div>
             </div>
@@ -1168,7 +1183,7 @@ const Home = () => {
                     <span>-6%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-7.png" />
+                    <img src="images/pro-7.png" alt="pro-7" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1220,7 +1235,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1231,7 +1246,7 @@ const Home = () => {
                     <span>-6%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-8.png" />
+                    <img src="images/pro-8.png" alt="product" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1283,7 +1298,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1291,7 +1306,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-4.png" />
+                    <img src="images/pro-4.png" alt="pro-4" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1343,7 +1358,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1354,7 +1369,7 @@ const Home = () => {
                     <span>-6%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-1.png" />
+                    <img src="images/pro-1.png" alt="pro-1" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1406,7 +1421,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1414,7 +1429,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-6.png" />
+                    <img src="images/pro-6.png" alt="pro-6" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1466,7 +1481,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price old_new">
                       <div className="new_price">
                         <h5>$100.38</h5>
@@ -1503,7 +1518,7 @@ const Home = () => {
               <div className="product_sec_list">
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-9.png" />
+                    <img src="images/pro-9.png" alt="pro-9" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1555,7 +1570,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1563,7 +1578,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-9.png" />
+                    <img src="images/pro-9.png" alt="product" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1615,7 +1630,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1623,7 +1638,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-10.png" />
+                    <img src="images/pro-10.png" alt="pro-10" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1675,7 +1690,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1686,7 +1701,7 @@ const Home = () => {
                     <span>-6%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-1.png" />
+                    <img src="images/pro-1.png" alt="pro-1" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1738,7 +1753,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1746,7 +1761,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-11.png" />
+                    <img src="images/pro-11.png" alt="product" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1798,7 +1813,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price old_new">
                       <div className="new_price">
                         <h5>$100.38</h5>
@@ -1838,7 +1853,7 @@ const Home = () => {
                     <span>-6%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-12.png" />
+                    <img src="images/pro-12.png" alt="pro-12" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1890,7 +1905,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1901,7 +1916,7 @@ const Home = () => {
                     <span>-6%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-13.png" />
+                    <img src="images/pro-13.png" alt="product" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -1953,7 +1968,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -1961,7 +1976,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-12.png" />
+                    <img src="images/pro-12.png" alt="pro-12" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -2013,7 +2028,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -2024,7 +2039,7 @@ const Home = () => {
                     <span>-6%</span>
                   </div>
                   <div className="product_list_image">
-                    <img src="images/pro-13.png" />
+                    <img src="images/pro-13.png" alt="pro-13" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -2076,7 +2091,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price">
                       <h5>$332.38</h5>
                     </div>
@@ -2084,7 +2099,7 @@ const Home = () => {
                 </div>
                 <div className="product_list_part">
                   <div className="product_list_image">
-                    <img src="images/pro-14.png" />
+                    <img src="images/pro-14.png" alt="pro-14" />
                   </div>
                   <div className="product_list_content">
                     <div className="product_short_show">
@@ -2136,7 +2151,7 @@ const Home = () => {
                     <p>
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
-                    <img src="images/star.png" />
+                    <img src="images/star.png" alt="star" />
                     <div className="product_price old_new">
                       <div className="new_price">
                         <h5>$100.38</h5>
@@ -2384,7 +2399,7 @@ const Home = () => {
                 </div>
                 <div className="col-lg-8 col-md-12 footer_bottom_right">
                   <p>We Using Safe Payment For:</p>
-                  <img src="images/all-card.png" />
+                  <img src="images/all-card.png" alt="all-card" />
                 </div>
               </div>
             </div>

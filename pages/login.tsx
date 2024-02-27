@@ -44,7 +44,7 @@ const Login = () => {
                         placeholder="Enter Your Login Password "
                       />
                       <span className="show_password">
-                        <img src="images/eyeslash.svg" />
+                        <img src="images/eyeslash.svg" alt="eyelash-icon" />
                       </span>
                     </div>
                   </div>
@@ -70,7 +70,7 @@ const Login = () => {
                   </div>
                   <div className="col-lg-12 form-group text-center allready_account">
                     <span>
-                      Don't have an account?{" "}
+                      Don&apos;t have an account?{" "}
                       <a onClick={() => Router.push("/register")}>Signup</a>
                     </span>
                   </div>
@@ -81,13 +81,16 @@ const Login = () => {
                     <ul>
                       <li>
                         <a href="#">
-                          <img src="images/facebook-icon.png" />
+                          <img
+                            src="images/facebook-icon.png"
+                            alt="facebook-icon"
+                          />
                           <span>Sign In with Facebook</span>
                         </a>
                       </li>
                       <li>
                         <a href="#">
-                          <img src="images/google-icon.png" />
+                          <img src="images/google-icon.png" alt="google-icon" />
                           <span>Sign In with Google</span>
                         </a>
                       </li>
@@ -100,7 +103,7 @@ const Login = () => {
         </div>
       </section>
 
-      {/* <img src="../images/favicon.ico" />
+      {/* <img src="../images/favicon.ico" alt='favicon'/>
       <button onClick={()=> Router.push("/home")} className='button-sub'>Goto Home</button>
       <button onClick={()=> Router.push("/details/page")} className='button-sub'>Goto Page</button> */}
     </SiteLayout>

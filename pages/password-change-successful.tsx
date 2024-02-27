@@ -22,7 +22,7 @@ const PasswordSuccessful = () => {
               <div className="before_login_form_wrap">
                 <div className="row">
                   <div className="col-lg-9 text-center m-auto successful_box_under">
-                    <img src="images/successful.svg" />
+                    <img src="images/successful.svg" alt="successful-icon" />
                     <h3>Successful Changed Password</h3>
                   </div>
                 </div>
@@ -32,7 +32,7 @@ const PasswordSuccessful = () => {
         </div>
       </section>
 
-      {/* <img src="../images/favicon.ico" />
+      {/* <img src="../images/favicon.ico" alt='favicon'/>
       <button onClick={()=> Router.push("/home")} className='button-sub'>Goto Home</button>
       <button onClick={()=> Router.push("/details/page")} className='button-sub'>Goto Page</button> */}
     </SiteLayout>

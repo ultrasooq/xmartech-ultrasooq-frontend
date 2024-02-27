@@ -498,58 +498,19 @@ const CompanyProfileDetails = () => {
                             <span>2 reviews</span>
                             <div className="review_box_top_user_bottom">
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
-                              </span>
-                              <span>3 Weeks ago</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="review_box_bottom">
-                          <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit, sed do eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. <a href="#">More.</a>{" "}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="review_box">
-                        <div className="review_box_top">
-                          <div className="review_box_top_icon">
-                            <img src="images/review-2.png" />
-                          </div>
-                          <div className="review_box_top_user">
-                            <div className="review_box_top_user_head">
-                              <h4>John Doe</h4>
-                              <img src="images/review-dot.svg" />
-                            </div>
-                            <span>2 reviews</span>
-                            <div className="review_box_top_user_bottom">
-                              <span>
-                                <img src="images/star.svg" />
-                              </span>
-                              <span>
-                                <img src="images/star.svg" />
-                              </span>
-                              <span>
-                                <img src="images/star.svg" />
-                              </span>
-                              <span>
-                                <img src="images/star.svg" />
-                              </span>
-                              <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>3 Weeks ago</span>
                             </div>
@@ -566,29 +527,74 @@ const CompanyProfileDetails = () => {
                       <div className="review_box">
                         <div className="review_box_top">
                           <div className="review_box_top_icon">
-                            <img src="images/review-3.png" />
+                            <img src="images/review-2.png" alt="review-icon" />
                           </div>
                           <div className="review_box_top_user">
                             <div className="review_box_top_user_head">
                               <h4>John Doe</h4>
-                              <img src="images/review-dot.svg" />
+                              <img
+                                src="images/review-dot.svg"
+                                alt="review-dot-icon"
+                              />
                             </div>
                             <span>2 reviews</span>
                             <div className="review_box_top_user_bottom">
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>
-                                <img src="images/star.svg" />
+                                <img src="images/star.svg" alt="star-icon" />
+                              </span>
+                              <span>3 Weeks ago</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="review_box_bottom">
+                          <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            elit, sed do eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua. <a href="#">More.</a>{" "}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="review_box">
+                        <div className="review_box_top">
+                          <div className="review_box_top_icon">
+                            <img src="images/review-3.png" alt="review-icon" />
+                          </div>
+                          <div className="review_box_top_user">
+                            <div className="review_box_top_user_head">
+                              <h4>John Doe</h4>
+                              <img
+                                src="images/review-dot.svg"
+                                alt="review-dot-icon"
+                              />
+                            </div>
+                            <span>2 reviews</span>
+                            <div className="review_box_top_user_bottom">
+                              <span>
+                                <img src="images/star.svg" alt="star-icon" />
+                              </span>
+                              <span>
+                                <img src="images/star.svg" alt="star-icon" />
+                              </span>
+                              <span>
+                                <img src="images/star.svg" alt="star-icon" />
+                              </span>
+                              <span>
+                                <img src="images/star.svg" alt="star-icon" />
+                              </span>
+                              <span>
+                                <img src="images/star.svg" alt="star-icon" />
                               </span>
                               <span>3 Weeks ago</span>
                             </div>
@@ -633,7 +639,7 @@ const CompanyProfileDetails = () => {
                           <span>-6%</span>
                         </div>
                         <div className="product_list_image">
-                          <img src="images/pro-3.png" />
+                          <img src="images/pro-3.png" alt="product-image" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -690,7 +696,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price">
                             <h5>$332.38</h5>
                           </div>
@@ -698,7 +704,7 @@ const CompanyProfileDetails = () => {
                       </div>
                       <div className="product_list_part">
                         <div className="product_list_image">
-                          <img src="images/pro-6.png" />
+                          <img src="images/pro-6.png" alt="product-image" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -755,7 +761,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price">
                             <h5>$332.38</h5>
                           </div>
@@ -763,7 +769,7 @@ const CompanyProfileDetails = () => {
                       </div>
                       <div className="product_list_part">
                         <div className="product_list_image">
-                          <img src="images/pro-5.png" />
+                          <img src="images/pro-5.png" alt="product-icon" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -820,7 +826,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price">
                             <h5>$332.38</h5>
                           </div>
@@ -828,7 +834,7 @@ const CompanyProfileDetails = () => {
                       </div>
                       <div className="product_list_part">
                         <div className="product_list_image">
-                          <img src="images/pro-1.png" />
+                          <img src="images/pro-1.png" alt="product-icon" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -885,7 +891,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price">
                             <h5>$332.38</h5>
                           </div>
@@ -893,7 +899,7 @@ const CompanyProfileDetails = () => {
                       </div>
                       <div className="product_list_part">
                         <div className="product_list_image">
-                          <img src="images/pro-2.png" />
+                          <img src="images/pro-2.png" alt="product-image" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -950,7 +956,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price old_new">
                             <div className="new_price">
                               <h5>$100.38</h5>
@@ -966,7 +972,7 @@ const CompanyProfileDetails = () => {
                           <span>-6%</span>
                         </div>
                         <div className="product_list_image">
-                          <img src="images/pro-3.png" />
+                          <img src="images/pro-3.png" alt="product-3" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -1023,7 +1029,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price">
                             <h5>$332.38</h5>
                           </div>
@@ -1031,7 +1037,7 @@ const CompanyProfileDetails = () => {
                       </div>
                       <div className="product_list_part">
                         <div className="product_list_image">
-                          <img src="images/pro-6.png" />
+                          <img src="images/pro-6.png" alt="product" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -1088,7 +1094,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price">
                             <h5>$332.38</h5>
                           </div>
@@ -1096,7 +1102,7 @@ const CompanyProfileDetails = () => {
                       </div>
                       <div className="product_list_part">
                         <div className="product_list_image">
-                          <img src="images/pro-5.png" />
+                          <img src="images/pro-5.png" alt="product-5" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -1153,7 +1159,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price">
                             <h5>$332.38</h5>
                           </div>
@@ -1161,7 +1167,7 @@ const CompanyProfileDetails = () => {
                       </div>
                       <div className="product_list_part">
                         <div className="product_list_image">
-                          <img src="images/pro-1.png" />
+                          <img src="images/pro-1.png" alt="product-1" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -1218,7 +1224,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price">
                             <h5>$332.38</h5>
                           </div>
@@ -1226,7 +1232,7 @@ const CompanyProfileDetails = () => {
                       </div>
                       <div className="product_list_part">
                         <div className="product_list_image">
-                          <img src="images/pro-2.png" />
+                          <img src="images/pro-2.png" alt="product-2" />
                         </div>
                         <div className="product_list_content">
                           <div className="product_short_show">
@@ -1283,7 +1289,7 @@ const CompanyProfileDetails = () => {
                           <p>
                             <a href="#">Lorem Ipsum is simply dummy text..</a>
                           </p>
-                          <img src="images/star.png" />
+                          <img src="images/star.png" alt="star" />
                           <div className="product_price old_new">
                             <div className="new_price">
                               <h5>$100.38</h5>

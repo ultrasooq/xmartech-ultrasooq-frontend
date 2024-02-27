@@ -23,7 +23,7 @@ const RFQ = () => {
                 <div className="product_filter_box">
                   <div className="product_filter_box_head">
                     <h4>Categories</h4>
-                    <img src="images/symbol.svg" />
+                    <img src="images/symbol.svg" alt="symbol-icon" />
                   </div>
                   <div className="check_filter">
                     <div className="categori_list">
@@ -73,11 +73,11 @@ const RFQ = () => {
                 <div className="product_filter_box">
                   <div className="product_filter_box_head">
                     <h4>By Brand</h4>
-                    <img src="images/symbol.svg" />
+                    <img src="images/symbol.svg" alt="symbol-icon" />
                   </div>
                   <div className="product_search_bar">
                     <button type="button">
-                      <img src="images/search.png" />
+                      <img src="images/search.png" alt="search-icon" />
                     </button>
                     <input
                       type="search"
@@ -204,13 +204,13 @@ const RFQ = () => {
                       placeholder="Search Product"
                     />
                     <button type="button">
-                      <img src="images/search-icon-rfq.png" />
+                      <img src="images/search-icon-rfq.png" alt="search-icon" />
                     </button>
                   </div>
                   <div className="rfq_add_new_product">
                     <button type="button">
-                      <img src="images/plus-icon-white.png" /> add new product
-                      in RFQ
+                      <img src="images/plus-icon-white.png" alt="plus-icon" />{" "}
+                      add new product in RFQ
                     </button>
                   </div>
                 </div>
@@ -237,12 +237,12 @@ const RFQ = () => {
                               <li>View</li>
                               <li>
                                 <a href="#">
-                                  <img src="images/view-t.svg" />
+                                  <img src="images/view-t.svg" alt="view-t" />
                                 </a>
                               </li>
                               <li>
                                 <a href="#">
-                                  <img src="images/view-l.svg" />
+                                  <img src="images/view-l.svg" alt="view-l" />
                                 </a>
                               </li>
                             </ul>
@@ -252,7 +252,7 @@ const RFQ = () => {
                       <div className="product_sec_list">
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-6.png" />
+                            <img src="images/pro-6.png" alt="pro-6" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -261,7 +261,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -278,7 +280,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-5.png" />
+                            <img src="images/pro-5.png" alt="pro-5" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -287,7 +289,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -304,7 +308,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-1.png" />
+                            <img src="images/pro-1.png" alt="pro-1" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -313,7 +317,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -330,7 +336,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-2.png" />
+                            <img src="images/pro-2.png" alt="pro-2" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -339,7 +345,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -356,7 +364,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-6.png" />
+                            <img src="images/pro-6.png" alt="pro-6" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -365,7 +373,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -382,7 +392,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-5.png" />
+                            <img src="images/pro-5.png" alt="pro-5" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -391,7 +401,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -408,7 +420,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-1.png" />
+                            <img src="images/pro-1.png" alt="pro-1" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -417,7 +429,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -434,7 +448,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-2.png" />
+                            <img src="images/pro-2.png" alt="pro-2" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -443,7 +457,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -460,7 +476,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-6.png" />
+                            <img src="images/pro-6.png" alt="pro-6" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -469,7 +485,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -486,7 +504,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-5.png" />
+                            <img src="images/pro-5.png" alt="pro-5" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -495,7 +513,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -512,7 +532,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-1.png" />
+                            <img src="images/pro-1.png" alt="pro-1" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -521,7 +541,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -538,7 +560,7 @@ const RFQ = () => {
                         </div>
                         <div className="product_list_part">
                           <div className="product_list_image">
-                            <img src="images/pro-2.png" />
+                            <img src="images/pro-2.png" alt="pro-2" />
                           </div>
                           <div className="product_list_content">
                             <p>
@@ -547,7 +569,9 @@ const RFQ = () => {
                             <div className="quantity_wrap">
                               <label>Quantity</label>
                               <div className="quantity">
-                                <button className="adjust_field minus">-</button>
+                                <button className="adjust_field minus">
+                                  -
+                                </button>
                                 <input type="text" value="1" />
                                 <button className="adjust_field plus">+</button>
                               </div>
@@ -565,11 +589,17 @@ const RFQ = () => {
                       </div>
                       <div className="pagination">
                         <a href="#" className="first_pagination">
-                          <img src="images/pagination-left-white-arrow.svg" />{" "}
+                          <img
+                            src="images/pagination-left-white-arrow.svg"
+                            alt="pagination-left-white-arrow"
+                          />{" "}
                           Frist
                         </a>
                         <a href="#">
-                          <img src="images/pagination-left-arrow.svg" />
+                          <img
+                            src="images/pagination-left-arrow.svg"
+                            alt="pagination-left-arrow"
+                          />
                         </a>
                         <a href="#">1</a>
                         <a className="active" href="#">
@@ -580,11 +610,17 @@ const RFQ = () => {
                         <a href="#">5</a>
                         <a href="#">6</a>
                         <a href="#">
-                          <img src="images/pagination-right-arrow.svg" />
+                          <img
+                            src="images/pagination-right-arrow.svg"
+                            alt="pagination-right-arrow"
+                          />
                         </a>
                         <a href="#" className="last_pagination">
                           Last{" "}
-                          <img src="images/pagination-right-white-arrow.svg" />
+                          <img
+                            src="images/pagination-right-white-arrow.svg"
+                            alt="pagination-right-white-arrow"
+                          />
                         </a>
                       </div>
                     </div>
@@ -601,13 +637,16 @@ const RFQ = () => {
                   <h4>Your RFQ Cart (3 items)</h4>
                   <div className="rfq_cart_wrap">
                     <div className="rfq_cart_wrap_image">
-                      <img src="images/pro-6.png" />
+                      <img src="images/pro-6.png" alt="pro-6" />
                     </div>
                     <div className="rfq_cart_wrap_content">
                       <div className="rfq_cart_wrap_content_top">
                         <a href="#">Lorem Ipsum is simply dummy text..</a>
                         <div className="pen_gray_icon">
-                          <img src="images/pen-gray-icon.png" />
+                          <img
+                            src="images/pen-gray-icon.png"
+                            alt="pen-gray-icon"
+                          />
                         </div>
                       </div>
                       <div className="rfq_cart_wrap_content_top_bottom">
@@ -624,13 +663,16 @@ const RFQ = () => {
                   </div>
                   <div className="rfq_cart_wrap">
                     <div className="rfq_cart_wrap_image">
-                      <img src="images/pro-5.png" />
+                      <img src="images/pro-5.png" alt="pro-5" />
                     </div>
                     <div className="rfq_cart_wrap_content">
                       <div className="rfq_cart_wrap_content_top">
                         <a href="#">Lorem Ipsum is simply dummy text..</a>
                         <div className="pen_gray_icon">
-                          <img src="images/pen-gray-icon.png" />
+                          <img
+                            src="images/pen-gray-icon.png"
+                            alt="pen-gray-icon"
+                          />
                         </div>
                       </div>
                       <div className="rfq_cart_wrap_content_top_bottom">
@@ -647,13 +689,16 @@ const RFQ = () => {
                   </div>
                   <div className="rfq_cart_wrap">
                     <div className="rfq_cart_wrap_image">
-                      <img src="images/pro-2.png" />
+                      <img src="images/pro-2.png" alt="pro-2" />
                     </div>
                     <div className="rfq_cart_wrap_content">
                       <div className="rfq_cart_wrap_content_top">
                         <a href="#">Lorem Ipsum is simply dummy text..</a>
                         <div className="pen_gray_icon">
-                          <img src="images/pen-gray-icon.png" />
+                          <img
+                            src="images/pen-gray-icon.png"
+                            alt="pen-gray-icon"
+                          />
                         </div>
                       </div>
                       <div className="rfq_cart_wrap_content_top_bottom">
