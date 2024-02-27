@@ -508,8 +508,8 @@ const Home = () => {
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
                     <img src="images/star.png" />
-                    <div class="progress">
-                      <div class="progress-bar" style={{ width: "80%" }}></div>
+                    <div className="progress">
+                      <div className="progress-bar" style={{ width: "80%" }}></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
@@ -575,8 +575,8 @@ const Home = () => {
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
                     <img src="images/star.png" />
-                    <div class="progress">
-                      <div class="progress-bar" style={{ width: "80%" }}></div>
+                    <div className="progress">
+                      <div className="progress-bar" style={{ width: "80%" }}></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
@@ -639,8 +639,8 @@ const Home = () => {
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
                     <img src="images/star.png" />
-                    <div class="progress">
-                      <div class="progress-bar" style={{ width: "80%" }}></div>
+                    <div className="progress">
+                      <div className="progress-bar" style={{ width: "80%" }}></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
@@ -706,8 +706,8 @@ const Home = () => {
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
                     <img src="images/star.png" />
-                    <div class="progress">
-                      <div class="progress-bar" style={{ width: "80%" }}></div>
+                    <div className="progress">
+                      <div className="progress-bar" style={{ width: "80%" }}></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
@@ -770,8 +770,8 @@ const Home = () => {
                       <a href="#">Lorem Ipsum is simply dummy text..</a>
                     </p>
                     <img src="images/star.png" />
-                    <div class="progress">
-                      <div class="progress-bar" style={{ width: "80%" }}></div>
+                    <div className="progress">
+                      <div className="progress-bar" style={{ width: "80%" }}></div>
                     </div>
                     <span>Sold: 10</span>
                   </div>
@@ -2215,7 +2215,7 @@ const Home = () => {
                 <div className="col-lg-4 col-md-5 col-sm-6 col-12 footer_top_box">
                   <h3>Newsletter</h3>
                   <div className="newsletter_box">
-                    <div class="form-group">
+                    <div className="form-group">
                       <input type="email" name="" placeholder="Email Address" />
                       <button type="button">Subscribe</button>
                     </div>

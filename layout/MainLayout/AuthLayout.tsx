@@ -7,7 +7,7 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 
 import { useDispatch, useSelector } from "react-redux";
-import { CallWithAuth, CallWithAuthentication } from "../../actions/apiAction";
+// import { CallWithAuth, CallWithAuthentication } from "../../actions/apiAction";
 import { silentLogin, logout } from "../../store/authReducer/action";
 
 const LoginById = `/users/me`;
@@ -30,10 +30,10 @@ const AuthLayout = (props) => {
   }, []);
 
   const checkSilentLogin = async () => {
-    let userDetails = await CallWithAuthentication("GET", LoginById);
-    if (userDetails.data.status === "success") {
-      dispatch(silentLogin(userDetails.data.data));
-    }
+    // let userDetails = await CallWithAuthentication("GET", LoginById);
+    // if (userDetails.data.status === "success") {
+    //   dispatch(silentLogin(userDetails.data.data));
+    // }
   };
 
   return (
@@ -65,7 +65,7 @@ const AuthLayout = (props) => {
                 closeOnClick
                 rtl={false}
                 toastClassName="px-3 txt-16--body text-white"
-                pauseOnVisibilityChange
+                // pauseOnVisibilityChange
                 draggable
                 pauseOnHover={false}
               />
@@ -105,3 +105,7 @@ AuthLayout.propTypes = propTypes;
 AuthLayout.defaultProps = defaultProps;
 
 export default withRouter(AuthLayout);
+function CallWithAuthentication(arg0: string, LoginById: string) {
+  throw new Error("Function not implemented.");
+}
+

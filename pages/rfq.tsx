@@ -75,7 +75,7 @@ const RFQ = () => {
                     <h4>By Brand</h4>
                     <img src="images/symbol.svg" />
                   </div>
-                  <div class="product_search_bar">
+                  <div className="product_search_bar">
                     <button type="button">
                       <img src="images/search.png" />
                     </button>
@@ -200,7 +200,7 @@ const RFQ = () => {
                   <div className="rfq_search">
                     <input
                       type="search"
-                      class="form-control"
+                      className="form-control"
                       placeholder="Search Product"
                     />
                     <button type="button">
@@ -260,10 +260,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -286,10 +286,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -312,10 +312,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -338,10 +338,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -364,10 +364,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -390,10 +390,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -416,10 +416,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -442,10 +442,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -468,10 +468,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -494,10 +494,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -520,10 +520,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -546,10 +546,10 @@ const RFQ = () => {
                             </p>
                             <div className="quantity_wrap">
                               <label>Quantity</label>
-                              <div class="quantity">
-                                <button class="adjust_field minus">-</button>
+                              <div className="quantity">
+                                <button className="adjust_field minus">-</button>
                                 <input type="text" value="1" />
-                                <button class="adjust_field plus">+</button>
+                                <button className="adjust_field plus">+</button>
                               </div>
                             </div>
                             <div className="cart_button">
@@ -563,7 +563,7 @@ const RFQ = () => {
                           </div>
                         </div>
                       </div>
-                      <div class="pagination">
+                      <div className="pagination">
                         <a href="#" className="first_pagination">
                           <img src="images/pagination-left-white-arrow.svg" />{" "}
                           Frist
@@ -572,7 +572,7 @@ const RFQ = () => {
                           <img src="images/pagination-left-arrow.svg" />
                         </a>
                         <a href="#">1</a>
-                        <a class="active" href="#">
+                        <a className="active" href="#">
                           2
                         </a>
                         <a href="#">3</a>
@@ -611,10 +611,10 @@ const RFQ = () => {
                         </div>
                       </div>
                       <div className="rfq_cart_wrap_content_top_bottom">
-                        <div class="quantity">
-                          <button class="adjust_field minus">-</button>
+                        <div className="quantity">
+                          <button className="adjust_field minus">-</button>
                           <input type="text" value="1" />
-                          <button class="adjust_field plus">+</button>
+                          <button className="adjust_field plus">+</button>
                         </div>
                         <div className="remove_text">
                           <span>Remove</span>
@@ -634,10 +634,10 @@ const RFQ = () => {
                         </div>
                       </div>
                       <div className="rfq_cart_wrap_content_top_bottom">
-                        <div class="quantity">
-                          <button class="adjust_field minus">-</button>
+                        <div className="quantity">
+                          <button className="adjust_field minus">-</button>
                           <input type="text" value="1" />
-                          <button class="adjust_field plus">+</button>
+                          <button className="adjust_field plus">+</button>
                         </div>
                         <div className="remove_text">
                           <span>Remove</span>
@@ -657,10 +657,10 @@ const RFQ = () => {
                         </div>
                       </div>
                       <div className="rfq_cart_wrap_content_top_bottom">
-                        <div class="quantity">
-                          <button class="adjust_field minus">-</button>
+                        <div className="quantity">
+                          <button className="adjust_field minus">-</button>
                           <input type="text" value="1" />
-                          <button class="adjust_field plus">+</button>
+                          <button className="adjust_field plus">+</button>
                         </div>
                         <div className="remove_text">
                           <span>Remove</span>

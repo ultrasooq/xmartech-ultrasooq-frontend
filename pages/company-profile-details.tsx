@@ -605,7 +605,7 @@ const CompanyProfileDetails = () => {
                   </div>
                 </div>
                 <div className="product_main_box product_section product_gray_n_box">
-                  <div class="profile_details_section_top">
+                  <div className="profile_details_section_top">
                     <h2>Products</h2>
                   </div>
                   <div className="products_sec_wrap">

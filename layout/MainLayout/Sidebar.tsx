@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { withRouter } from "next/router";
 
-const Sidebar = (props) => {
+type SidebarProps = {
+  notificationCount?: any
+}
+
+const Sidebar:React.FC<SidebarProps> = ({notificationCount}) => {
   return (
     <div className="sidebar">
       <div className="sidebar_top">

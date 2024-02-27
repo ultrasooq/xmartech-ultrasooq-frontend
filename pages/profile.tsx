@@ -25,16 +25,16 @@ const Profile = () => {
               <div className="before_login_form_wrap">
                 <div className="row">
                   <div className="col-lg-12 form-group">
-                    <div class="drop">
-                      <div class="cont">
+                    <div className="drop">
+                      <div className="cont">
                         <img src="images/camera.png" />
-                        <div class="short_text">
+                        <div className="short_text">
                           <span> Upload Image</span>
                         </div>
                       </div>
                       <input
                         id="files"
-                        multiple="true"
+                        multiple
                         name="files[]"
                         type="file"
                       />
@@ -60,7 +60,7 @@ const Profile = () => {
                     <label>Gender</label>
                     <div className="custom_radio_wrap">
                       <input type="radio" id="Male" name="trade" value="Male" />
-                      <label for="css">Male</label>
+                      <label htmlFor="css">Male</label>
                       <span className="checkmark"></span>
                     </div>
                     <div className="custom_radio_wrap">
@@ -70,7 +70,7 @@ const Profile = () => {
                         name="trade"
                         value="Female"
                       />
-                      <label for="css">Female</label>
+                      <label htmlFor="css">Female</label>
                       <span className="checkmark"></span>
                     </div>
                   </div>

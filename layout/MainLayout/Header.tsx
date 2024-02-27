@@ -1,7 +1,12 @@
 import React from "react";
 import { useRouter, withRouter } from "next/router";
 
-const Header = (props) => {
+type HeaderProps = {
+  teamHeaderSection?: any,
+  userHeaderSection?: any
+}
+
+const Header:React.FC<HeaderProps> = ({teamHeaderSection, userHeaderSection}) => {
   const Router = useRouter();
   return (
     <header className="header">

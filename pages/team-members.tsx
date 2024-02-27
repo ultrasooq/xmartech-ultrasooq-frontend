@@ -270,7 +270,7 @@ const TeamMembers = () => {
                   </tr>
                 </tbody>
               </table>
-              <div class="pagination">
+              <div className="pagination">
                 <a href="#" className="first_pagination">
                   <img src="images/pagination-left-white-arrow.svg" /> Frist
                 </a>
@@ -278,7 +278,7 @@ const TeamMembers = () => {
                   <img src="images/pagination-left-arrow.svg" />
                 </a>
                 <a href="#">1</a>
-                <a class="active" href="#">
+                <a className="active" href="#">
                   2
                 </a>
                 <a href="#">3</a>

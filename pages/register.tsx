@@ -53,7 +53,7 @@ const Register = () => {
                         name="trade"
                         value="Buyer"
                       />
-                      <label for="html">Buyer</label>
+                      <label htmlFor="html">Buyer</label>
                       <span className="checkmark"></span>
                     </div>
                     <div className="custom_radio_wrap">
@@ -63,7 +63,7 @@ const Register = () => {
                         name="trade"
                         value="Freelancer"
                       />
-                      <label for="css">Freelancer</label>
+                      <label htmlFor="css">Freelancer</label>
                       <span className="checkmark"></span>
                     </div>
                     <div className="custom_radio_wrap">
@@ -73,7 +73,7 @@ const Register = () => {
                         name="trade"
                         value="Company"
                       />
-                      <label for="css">Company</label>
+                      <label htmlFor="css">Company</label>
                       <span className="checkmark"></span>
                     </div>
                   </div>

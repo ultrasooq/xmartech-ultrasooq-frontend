@@ -5,7 +5,6 @@ import { useRouter, withRouter } from "next/router";
 import Head from "next/head";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-
 import { CallWithAuth, CallWithAuthentication } from "../../actions/apiAction";
 import { silentLogin, logout } from "../../store/authReducer/action";
 import Header from "./Header";
@@ -67,7 +66,7 @@ const SiteLayout = (props) => {
             closeOnClick
             rtl={false}
             toastClassName="px-3 txt-16--body text-white"
-            pauseOnVisibilityChange
+            // pauseOnVisibilityChange
             draggable
             pauseOnHover={false}
           />

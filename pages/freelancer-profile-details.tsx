@@ -26,8 +26,8 @@ const FreelancerProfileDetails = () => {
                 <div className="profile_details_box_image">
                   <img src="images/profile.png" />
                 </div>
-                <div class="edit_profile_icon">
-                  <div class="camera_icon">
+                <div className="edit_profile_icon">
+                  <div className="camera_icon">
                     <img src="images/camera-icon.png" />
                   </div>
                   <input
