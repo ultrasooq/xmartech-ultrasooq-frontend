@@ -88,166 +88,195 @@ const FreelancerProfileDetails = () => {
                                     </li>
                                 </ul>
                             </div>
-                            <div className='w-full md:pt-12 md:pb-7 md:px-9 sm:pt-8 sm:pb-4 sm:px-6 p-4 bg-white shadow-sm border border-solid border-gray-300'>
-                                <div className='w-full py-4 border-b-2 border-dashed border-gray-100'>
-                                    <div className='w-full flex flex-wrap items-center justify-between pb-5'>
-                                        <h2 className='text-2xl font-semibold left-8 text-color-dark'>John Rosensky</h2>
-                                        <div className='w-auto'>
-                                            <button type="button" className='flex items-center py-2 px-3 rounded-md bg-dark-orange text-white text-sm font-medium leading-6 border-0 capitalize'>
-                                            <img src="images/edit-icon.svg" className='mr-1'/> edit</button>
+                            <div className='w-full md:pt-12 md:pb-7 md:px-9 sm:pt-8 sm:pb-4 sm:px-6 p-4 rounded-b-3xl bg-white shadow-sm border border-solid border-gray-300'>
+                                <div className='w-full'>
+                                    <div className='w-full py-4 border-b-2 border-dashed border-gray-100'>
+                                        <div className='w-full flex flex-wrap items-center justify-between pb-5'>
+                                            <h2 className='text-2xl font-semibold left-8 text-color-dark'>John Rosensky</h2>
+                                            <div className='w-auto'>
+                                                <button type="button" className='flex items-center py-2 px-3 rounded-md bg-dark-orange text-white text-sm font-medium leading-6 border-0 capitalize'>
+                                                <img src="images/edit-icon.svg" className='mr-1'/> edit</button>
+                                            </div>
+                                        </div>
+                                        <div className='w-full'>
+                                            <div className='w-full'>
+                                                <div className='w-full flex flex-wrap py-3.5'>
+                                                    <div className='w-2/12 sm:mr-0 mr-1 flex items-center justify-start'>
+                                                        <span className='text-sm font-normal leading-4 text-gray-500 capitalize'>email:</span>
+                                                    </div>
+                                                    <div className='w-10/12sm:mr-0 mr-1  flex items-center justify-start'>
+                                                        <p className='text-base font-medium leading-4 text-color-dark'>john.rosensky@gmail.com</p>
+                                                    </div>
+                                                </div>
+                                                <div className='w-full flex flex-wrap py-3.5'>
+                                                    <div className='w-2/12 sm:mr-0 mr-1 flex items-center justify-start'>
+                                                        <span className='text-sm font-normal leading-4 text-gray-500 capitalize'>Phone:</span>
+                                                    </div>
+                                                    <div className='w-10/12sm:mr-0 mr-1  flex items-center justify-start'>
+                                                        <p className='text-base font-medium leading-4 text-color-dark'>+1 000 0000 0456</p>
+                                                    </div>
+                                                </div>
+                                                <div className='w-full flex flex-wrap py-3.5'>
+                                                    <div className='w-2/12 sm:mr-0 mr-1 flex items-center justify-start'>
+                                                        <span className='text-sm font-normal leading-4 text-gray-500 capitalize'>Social Links:</span>
+                                                    </div>
+                                                    <div className='w-10/12sm:mr-0 mr-1  flex items-center justify-start'>
+                                                        <p className='text-base font-medium leading-4 text-color-dark'>Facebook, LInkedin, Instagram</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className='w-full'>
+                                    <div className='w-full py-4'>
+                                        <div className='w-full flex flex-wrap items-center justify-between pb-5'>
+                                            <h2 className='text-2xl font-semibold left-8 text-color-dark'>Freelancer Information</h2>
+                                            <div className='w-auto'>
+                                                <button type="button" className='flex items-center py-2 px-3 rounded-md bg-dark-orange text-white text-sm font-medium leading-6 border-0 capitalize'>
+                                                <img src="images/edit-icon.svg" className='mr-1'/> edit</button>
+                                            </div>
+                                        </div>
                                         <div className='w-full'>
-                                            <div className='w-full flex flex-wrap py-3.5'>
-                                                <div className='w-2/12 sm:mr-0 mr-1 flex items-center justify-start'>
-                                                    <span className='text-sm font-normal leading-4 text-gray-500 capitalize'>email:</span>
-                                                </div>
-                                                <div className='w-10/12sm:mr-0 mr-1  flex items-center justify-start'>
-                                                    <p className='text-base font-medium leading-4 text-color-dark'>john.rosensky@gmail.com</p>
+                                            <div className='w-full'>
+                                                <div className='w-full flex flex-wrap py-3.5 text-base font-medium text-color-dark pb-5 border-b-2 border-dashed border-gray-100'>
+                                                    <label className='text-lg font-semibold leading-5 text-color-dark mb-3'>About Me</label>
+                                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation. <a href="#" className='font-semibold text-dark-orange'>More</a></p>
                                                 </div>
                                             </div>
-                                            <div className='w-full flex flex-wrap py-3.5'>
-                                                <div className='w-2/12 sm:mr-0 mr-1 flex items-center justify-start'>
-                                                    <span className='text-sm font-normal leading-4 text-gray-500 capitalize'>Phone:</span>
-                                                </div>
-                                                <div className='w-10/12sm:mr-0 mr-1  flex items-center justify-start'>
-                                                    <p className='text-base font-medium leading-4 text-color-dark'>+1 000 0000 0456</p>
+                                            <div className='w-full mt-6'>
+                                                <label className='text-lg font-semibold leading-5 text-color-dark mb-3.5 block'>Address</label>
+                                                <div className='w-full flex flex-wrap'>
+                                                    <div className='md:w-7/12 w-full'>
+                                                        <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                            <div className='md:w-3/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                                <span>Address:</span>
+                                                            </div>
+                                                            <div className='md:w-9/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                                <p>9890 S. Maryland Pkwy Cumbria, Northumberland</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className='md:w-5/12 w-full'>
+                                                        <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                            <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                                <span>Contry:</span>
+                                                            </div>
+                                                            <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                                <p>USA</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className='md:w-7/12 w-full'>
+                                                        <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                            <div className='md:w-3/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                                <span>City:</span>
+                                                            </div>
+                                                            <div className='md:w-9/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                                <p>Los Angeles, United States</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className='md:w-5/12 w-full'>
+                                                        <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                            <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                                <span>Branch Contact Number:</span>
+                                                            </div>
+                                                            <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                                <p>+1 000 0000 0456</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className='md:w-7/12 w-full'>
+                                                        <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                            <div className='md:w-3/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                                <span>Province:</span>
+                                                            </div>
+                                                            <div className='md:w-9/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                                <p>Lorem Ipsum</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className='md:w-5/12 w-full'>
+                                                        <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                            <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                                <span>Branch Contact Name:</span>
+                                                            </div>
+                                                            <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                                <p>John Doe</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className='w-full flex flex-wrap py-3.5'>
-                                                <div className='w-2/12 sm:mr-0 mr-1 flex items-center justify-start'>
-                                                    <span className='text-sm font-normal leading-4 text-gray-500 capitalize'>Social Links:</span>
+                                            <div className='w-full mt-6'>
+                                                <label className='text-lg font-semibold leading-5 text-color-dark mb-3 block'>Working Hours</label>
+                                                <div className='w-full flex flex-wrap'>
+                                                    <div className='lg:w-4/12 md:w-6/12 w-full'>
+                                                        <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                            <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                                <span>Start Time:</span>
+                                                            </div>
+                                                            <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                                <span>9:00 am</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className='lg:w-4/12 md:w-6/12 w-full'>
+                                                        <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                            <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                                <span>End Time:</span>
+                                                            </div>
+                                                            <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                                <span>12:00 pm</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className='lg:w-4/12 md:w-6/12 w-full'>
+                                                        <div className='w-full md:py-3.5 py-2.5 flex'>
+                                                            <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
+                                                                <span>Working Days:</span>
+                                                            </div>
+                                                            <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
+                                                                <span>Monday - Friday</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className='w-10/12sm:mr-0 mr-1  flex items-center justify-start'>
-                                                    <p className='text-base font-medium leading-4 text-color-dark'>Facebook, LInkedin, Instagram</p>
+                                            </div>
+                                            <div className='w-full mt-6'>
+                                                <label className='text-lg font-semibold leading-5 text-color-dark mb-3 block'>Tag</label>
+                                                <div className='w-full flex flex-wrap'>
+                                                    <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4 mr-4'>Online Shop</span>
+                                                    <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4 mr-4'>manufacturer / factory </span>
+                                                    <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4 mr-4'>Trading Company</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className='w-full py-4'>
-                                    <div className='w-full flex flex-wrap items-center justify-between pb-5'>
-                                        <h2 className='text-2xl font-semibold left-8 text-color-dark'>Freelancer Information</h2>
+
+                                <div className='w-full'>
+                                    <div className='w-full flex flex-wrap items-center justify-between'>
+                                        <div className='w-auto flex flex-wrap items-start justify-start'>
+                                            <h2 className='text-2xl font-semibold leading-7 text-color-dark mr-7 mb-0'>Ratings &amp; Reviews</h2>
+                                            <div className='w-auto flex flex-col'>
+                                                <div className='w-auto flex items-center justify-start'>
+                                                    <h4 className='text-2xl font-medium leading-7 mr-2.5 mb-0 text-color-dark'>5.0</h4>
+                                                    <span><img src="images/star.svg"/></span>
+                                                    <span><img src="images/star.svg"/></span>
+                                                    <span><img src="images/star.svg"/></span>
+                                                    <span><img src="images/star.svg"/></span>
+                                                    <span><img src="images/star.svg"/></span>
+                                                </div>
+                                                <div className='w-auto text-sm font-medium text-gray-500 leading-5 mt-1.5'>
+                                                    <p>Based on 139 Reviews</p>
+                                                </div>
+                                            </div>    
+                                        </div>
                                         <div className='w-auto'>
-                                            <button type="button" className='flex items-center py-2 px-3 rounded-md bg-dark-orange text-white text-sm font-medium leading-6 border-0 capitalize'>
-                                            <img src="images/edit-icon.svg" className='mr-1'/> edit</button>
-                                        </div>
-                                    </div>
-                                    <div className='w-full'>
-                                        <div className='w-full'>
-                                            <div className='w-full flex flex-wrap py-3.5 text-base font-medium text-color-dark pb-5 border-b-2 border-dashed border-gray-100'>
-                                                <label className='text-lg font-semibold leading-5 text-color-dark mb-3'>About Me</label>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation. <a href="#" className='font-semibold text-dark-orange'>More</a></p>
-                                            </div>
-                                        </div>
-                                        <div className='w-full mt-6'>
-                                            <label className='text-lg font-semibold leading-5 text-color-dark mb-3.5 block'>Address</label>
-                                            <div className='w-full flex flex-wrap'>
-                                                <div className='md:w-7/12 w-full'>
-                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
-                                                        <div className='md:w-3/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
-                                                            <span>Address:</span>
-                                                        </div>
-                                                        <div className='md:w-9/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
-                                                            <p>9890 S. Maryland Pkwy Cumbria, Northumberland</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='md:w-5/12 w-full'>
-                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
-                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
-                                                            <span>Contry:</span>
-                                                        </div>
-                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
-                                                            <p>USA</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='md:w-7/12 w-full'>
-                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
-                                                        <div className='md:w-3/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
-                                                            <span>City:</span>
-                                                        </div>
-                                                        <div className='md:w-9/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
-                                                            <p>Los Angeles, United States</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='md:w-5/12 w-full'>
-                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
-                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
-                                                            <span>Branch Contact Number:</span>
-                                                        </div>
-                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
-                                                            <p>+1 000 0000 0456</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='md:w-7/12 w-full'>
-                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
-                                                        <div className='md:w-3/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
-                                                            <span>Province:</span>
-                                                        </div>
-                                                        <div className='md:w-9/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
-                                                            <p>Lorem Ipsum</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='md:w-5/12 w-full'>
-                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
-                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
-                                                            <span>Branch Contact Name:</span>
-                                                        </div>
-                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
-                                                            <p>John Doe</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className='w-full mt-6'>
-                                            <label className='text-lg font-semibold leading-5 text-color-dark mb-3 block'>Working Hours</label>
-                                            <div className='w-full flex flex-wrap'>
-                                                <div className='lg:w-4/12 md:w-6/12 w-full'>
-                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
-                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
-                                                            <span>Start Time:</span>
-                                                        </div>
-                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
-                                                            <span>9:00 am</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='lg:w-4/12 md:w-6/12 w-full'>
-                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
-                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
-                                                            <span>End Time:</span>
-                                                        </div>
-                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
-                                                            <span>12:00 pm</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='lg:w-4/12 md:w-6/12 w-full'>
-                                                    <div className='w-full md:py-3.5 py-2.5 flex'>
-                                                        <div className='md:w-6/12 w-3/12 text-sm font-normal leading-4 text-gray-500 capitalize'>
-                                                            <span>Working Days:</span>
-                                                        </div>
-                                                        <div className='md:w-6/12 w-9/12 text-base font-medium leading-4 text-color-dark'>
-                                                            <span>Monday - Friday</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className='w-full mt-6'>
-                                            <label className='text-lg font-semibold leading-5 text-color-dark mb-3 block'>Tag</label>
-                                            <div className='w-full flex flex-wrap'>
-                                                <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4 mr-4'>Online Shop</span>
-                                                <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4 mr-4'>manufacturer / factory </span>
-                                                <span className='bg-gray-300 py-2.5 p-4 inline-block text-dark-cyan rounded text-base font-medium leading-5 mt-4 mr-4'>Trading Company</span>
-                                            </div>
+                                            <button type='button' className='py-4 px-6 text-white text-base font-bold leading-5 rounded-sm bg-dark-orange flex'>
+                                                <img src="images/pen-icon.svg" className='mr-2'/>
+                                                <span>Write A Review</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
