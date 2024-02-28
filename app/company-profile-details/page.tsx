@@ -1,6 +1,6 @@
 import React from "react";
 
-function CompanyProfileDetails() {
+export default function CompanyProfileDetailsPage() {
   return (
     <section className="profile_details_section company_profile_details">
       <div className="container">
@@ -1244,5 +1244,3 @@ function CompanyProfileDetails() {
     </section>
   );
 }
-
-export default CompanyProfileDetails;

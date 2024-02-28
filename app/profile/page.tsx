@@ -1,6 +1,6 @@
 import React from "react";
 
-function ProfilePage() {
+export default function ProfilePage() {
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -301,5 +301,3 @@ function ProfilePage() {
     </section>
   );
 }
-
-export default ProfilePage;

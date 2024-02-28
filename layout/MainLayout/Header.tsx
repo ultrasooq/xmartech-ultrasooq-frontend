@@ -2,15 +2,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 
-type HeaderProps = {
-  teamHeaderSection?: any;
-  userHeaderSection?: any;
-};
-
-const Header: React.FC<HeaderProps> = ({
-  teamHeaderSection,
-  userHeaderSection,
-}) => {
+const Header = () => {
   const Router = useRouter();
   return (
     <header className="w-full">
