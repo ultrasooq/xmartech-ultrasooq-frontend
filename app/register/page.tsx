@@ -1,9 +1,40 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function RegisterPage() {
   const Router = useRouter();
+  const form = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      initialPassword: "",
+      password: "",
+      phoneNumber: "",
+      cc: "+91",
+      tradeRole: "",
+      acceptTerms: false,
+    },
+  });
+
+  const onSubmit = (values: any) => {
+    console.log(values);
+  };
+
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -49,170 +80,197 @@ export default function RegisterPage() {
               </span>
             </div>
             <div className="w-full">
-              <div className="flex flex-wrap">
-                <div className="mb-4 flex w-full flex-wrap items-center justify-start">
-                  <label className="text-color-dark relative m-0 w-full text-left text-sm font-medium capitalize leading-4 sm:w-auto">
-                    Please select trade role :
-                  </label>
-                  <div className="relative mt-2 flex w-full items-center sm:ml-5 sm:mt-0 sm:w-auto">
-                    <input
-                      type="radio"
-                      id="Buyer"
-                      name="trade"
-                      value="Buyer"
-                      className="[&:checked+span]:border-dark-orange peer absolute z-10 h-full w-full cursor-pointer opacity-0"
-                    />
-                    <span className="before:peer-checked:bg-dark-orange absolute bottom-0 left-0 top-0 m-auto h-3.5 w-3.5 rounded-full border-2 border-solid border-gray-400 bg-white before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-4/6 before:w-4/6 before:rounded-full before:content-['']"></span>
-                    <label
-                      htmlFor="html"
-                      className="text-color-dark relative pl-5 text-left text-sm font-medium capitalize leading-4"
+              <Form {...form}>
+                <form
+                  className="flex flex-wrap"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                >
+                  <FormField
+                    control={form.control}
+                    name="tradeRole"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 flex w-full items-center">
+                        <FormLabel className="mr-6 capitalize">
+                          Please select trade role:
+                        </FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            className="!mt-0 flex items-center gap-4"
+                            onValueChange={field.onChange}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="buyer" id="buyer" />
+                              <Label htmlFor="buyer">Buyer</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem
+                                value="freelancer"
+                                id="freelancer"
+                              />
+                              <Label htmlFor="freelancer">Freelancer</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="company" id="company" />
+                              <Label htmlFor="company">Company</Label>
+                            </div>
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full">
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Your First Name"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full">
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Your Last Name"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full">
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Your Email Address"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="initialPassword"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full">
+                        <FormLabel>Login Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Enter Your Login Password"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full">
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Enter Your Confirm Password"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full">
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Enter Your Phone Number"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="acceptTerms"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="data-[state=checked]:!bg-dark-orange"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-light-gray">
+                            I Agree The Terms Of Use & Privacy Policy
+                          </FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  <div className="mb-4 w-full">
+                    <button
+                      type="submit"
+                      className="bg-dark-orange h-14 w-full rounded text-center text-lg font-bold leading-6 text-white"
                     >
-                      Buyer
-                    </label>
+                      Agree & Register
+                    </button>
                   </div>
-                  <div className="relative mt-2 flex w-full items-center sm:ml-5 sm:mt-0 sm:w-auto">
-                    <input
-                      type="radio"
-                      id="Buyer"
-                      name="trade"
-                      value="Buyer"
-                      className="[&:checked+span]:border-dark-orange peer absolute z-10 h-full w-full cursor-pointer opacity-0"
-                    />
-                    <span className="before:peer-checked:bg-dark-orange absolute bottom-0 left-0 top-0 m-auto h-3.5 w-3.5 rounded-full border-2 border-solid border-gray-400 bg-white before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-4/6 before:w-4/6 before:rounded-full before:content-['']"></span>
-                    <label
-                      htmlFor="html"
-                      className="text-color-dark relative pl-5 text-left text-sm font-medium capitalize leading-4"
-                    >
-                      Freelancer
-                    </label>
-                  </div>
-                  <div className="relative mt-2 flex w-full items-center sm:ml-5 sm:mt-0 sm:w-auto">
-                    <input
-                      type="radio"
-                      id="Buyer"
-                      name="trade"
-                      value="Buyer"
-                      className="[&:checked+span]:border-dark-orange peer absolute z-10 h-full w-full cursor-pointer opacity-0"
-                    />
-                    <span className="before:peer-checked:bg-dark-orange absolute bottom-0 left-0 top-0 m-auto h-3.5 w-3.5 rounded-full border-2 border-solid border-gray-400 bg-white before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-4/6 before:w-4/6 before:rounded-full before:content-['']"></span>
-                    <label
-                      htmlFor="html"
-                      className="text-color-dark relative pl-5 text-left text-sm font-medium capitalize leading-4"
-                    >
-                      Company
-                    </label>
-                  </div>
-                </div>
-                <div className="mb-4 w-full">
-                  <label className="text-color-dark mb-3.5 block text-left text-sm font-medium capitalize leading-4">
-                    First Name
-                  </label>
-                  <div className="relative h-14 w-full rounded border border-solid border-gray-300">
-                    <input
-                      type="text"
-                      placeholder="Enter Your First Name"
-                      className="text-light-gray placeholder:text-light-gray h-full w-full rounded border-0 px-4 py-2.5 text-left text-sm font-normal leading-4 placeholder:text-sm placeholder:font-normal placeholder:leading-4 focus:outline-none"
-                    />
-                  </div>
-                </div>
-                <div className="mb-4 w-full">
-                  <label className="text-color-dark mb-3.5 block text-left text-sm font-medium capitalize leading-4">
-                    Last Name
-                  </label>
-                  <div className="relative h-14 w-full rounded border border-solid border-gray-300">
-                    <input
-                      type="text"
-                      placeholder="Enter Your Last Name"
-                      className="text-light-gray placeholder:text-light-gray h-full w-full rounded border-0 px-4 py-2.5 text-left text-sm font-normal leading-4 placeholder:text-sm placeholder:font-normal placeholder:leading-4 focus:outline-none"
-                    />
-                  </div>
-                </div>
-                <div className="mb-4 w-full">
-                  <label className="text-color-dark mb-3.5 block text-left text-sm font-medium capitalize leading-4">
-                    Email Address
-                  </label>
-                  <div className="relative h-14 w-full rounded border border-solid border-gray-300">
-                    <input
-                      type="email"
-                      placeholder="Enter Your Email Address"
-                      className="text-light-gray placeholder:text-light-gray h-full w-full rounded border-0 px-4 py-2.5 text-left text-sm font-normal leading-4 placeholder:text-sm placeholder:font-normal placeholder:leading-4 focus:outline-none"
-                    />
-                  </div>
-                </div>
-                <div className="mb-4 w-full">
-                  <label className="text-color-dark mb-3.5 block text-left text-sm font-medium capitalize leading-4">
-                    Login Password
-                  </label>
-                  <div className="relative h-14 w-full rounded border border-solid border-gray-300">
-                    <input
-                      type="password"
-                      placeholder="Enter Your Login Password"
-                      className="text-light-gray placeholder:text-light-gray h-full w-full rounded border-0 px-4 py-2.5 text-left text-sm font-normal leading-4 placeholder:text-sm placeholder:font-normal placeholder:leading-4 focus:outline-none"
-                    />
-                    <span className="absolute bottom-0 right-2.5 top-0 m-auto h-6 w-6 cursor-pointer">
-                      <img src="images/eyeslash.svg" />
-                    </span>
-                  </div>
-                </div>
-                <div className="mb-4 w-full">
-                  <label className="text-color-dark mb-3.5 block text-left text-sm font-medium capitalize leading-4">
-                    Confirm Password
-                  </label>
-                  <div className="relative h-14 w-full rounded border border-solid border-gray-300">
-                    <input
-                      type="password"
-                      placeholder="Enter Your Confirm Password"
-                      className="text-light-gray placeholder:text-light-gray h-full w-full rounded border-0 px-4 py-2.5 text-left text-sm font-normal leading-4 placeholder:text-sm placeholder:font-normal placeholder:leading-4 focus:outline-none"
-                    />
-                    <span className="absolute bottom-0 right-2.5 top-0 m-auto h-6 w-6 cursor-pointer">
-                      <img src="images/eyeslash.svg" />
-                    </span>
-                  </div>
-                </div>
-                <div className="mb-4 w-full">
-                  <label className="text-color-dark mb-3.5 block text-left text-sm font-medium capitalize leading-4">
-                    Phone Number
-                  </label>
-                  <div className="relative h-14 w-full rounded border border-solid border-gray-300">
-                    <input
-                      type="number"
-                      placeholder="Enter Your Phone Number"
-                      className="text-light-gray placeholder:text-light-gray h-full w-full rounded border-0 px-4 py-2.5 text-left text-sm font-normal leading-4 placeholder:text-sm placeholder:font-normal placeholder:leading-4 focus:outline-none"
-                    />
-                  </div>
-                </div>
-                <div className="mb-4 w-full">
-                  <div className="flex w-auto items-center justify-between p-0 lg:w-full">
-                    <label className="text-light-gray flex w-full items-start justify-start text-sm font-medium leading-4">
-                      <input
-                        type="checkbox"
-                        name=""
-                        className="[&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange absolute h-0 w-0 cursor-pointer opacity-0"
-                      />
-                      <span className="relative mr-2.5 inline-block h-5 w-5 overflow-hidden rounded-sm border-2 border-solid border-gray-400 bg-transparent before:absolute before:-top-1 before:bottom-0 before:left-0 before:right-0 before:m-auto before:block before:h-3 before:w-1.5 before:rotate-45 before:border-b-2 before:border-r-2 before:border-solid before:border-white before:content-['']"></span>
-                      I Agree The Terms Of Use & Privacy Policy
-                    </label>
-                  </div>
-                </div>
-                <div className="mb-4 w-full">
-                  <button
-                    type="button"
-                    className="bg-dark-orange h-14 w-full rounded text-center text-lg font-bold leading-6 text-white"
+                </form>
+              </Form>
+              <div className="mb-4 w-full text-center">
+                <span className="text-light-gray text-sm font-medium leading-4">
+                  Do you already have an account?{" "}
+                  <a
+                    onClick={() => Router.push("/login")}
+                    className="text-dark-orange cursor-pointer font-medium"
                   >
-                    Agree & Register
-                  </button>
-                </div>
-                <div className="mb-4 w-full text-center">
-                  <span className="text-light-gray text-sm font-medium leading-4">
-                    Do you already have an account?{" "}
-                    <a
-                      onClick={() => Router.push("/login")}
-                      className="text-dark-orange cursor-pointer font-medium"
-                    >
-                      Sign in
-                    </a>
-                  </span>
-                </div>
+                    Sign in
+                  </a>
+                </span>
               </div>
             </div>
           </div>
