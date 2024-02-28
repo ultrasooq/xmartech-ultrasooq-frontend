@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { withRouter } from "next/router";
 
 type SidebarProps = {
   notificationCount?: any;
@@ -220,4 +219,4 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
   );
 };
 
-export default withRouter(Sidebar);
+export default Sidebar;

@@ -1,5 +1,6 @@
+"use client";
 import React from "react";
-import { useRouter, withRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 type HeaderProps = {
   teamHeaderSection?: any;
@@ -531,4 +532,4 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export default withRouter(Header);
+export default Header;
