@@ -109,7 +109,7 @@ const Header = () => {
           <div className="bg-dark-cyan fixed left-0 top-0 z-20 hidden h-full w-full px-3 md:static md:flex md:px-0">
             <ul className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 md:flex-row md:justify-between">
               <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
-                <a href="#0" className="flex gap-x-2">
+                <a href="/home" className="flex gap-x-2">
                   {" "}
                   <img src="images/menu-icon-home.svg" /> Home
                 </a>
