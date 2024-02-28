@@ -1,14 +1,33 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-// import SiteLayout from "../../layout/MainLayout/SiteLayout";
-// import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import _ from "lodash";
-// import { useRouter } from "next/router";
+// import { toast } from "react-toastify";
 // import ToastHot from "react-hot-toast";
 
 export default function LoginPage() {
   const Router = useRouter();
+  const form = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (values: any) => {
+    console.log(values);
+  };
+
   return (
     <>
       <section className="relative w-full py-7">
@@ -28,74 +47,89 @@ export default function LoginPage() {
                 <p>Login to your account</p>
               </div>
               <div className="w-full">
-                <div className="flex flex-wrap">
-                  <div className="mb-4 w-full">
-                    <label className="text-color-dark mb-3.5 block text-left text-sm font-medium capitalize leading-4">
-                      Email or Phone number or ID
-                    </label>
-                    <div className="relative h-14 w-full rounded border border-solid border-gray-300">
-                      <input
-                        type="text"
-                        placeholder="Email or Phone number or ID"
-                        className="text-light-gray placeholder:text-light-gray h-full w-full rounded border-0 px-4 py-2.5 text-left text-sm font-normal leading-4 placeholder:text-sm placeholder:font-normal placeholder:leading-4 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-4 w-full">
-                    <label className="text-color-dark mb-3.5 block text-left text-sm font-medium capitalize leading-4">
-                      Password
-                    </label>
-                    <div className="relative h-14 w-full rounded border border-solid border-gray-300">
-                      <input
-                        type="password"
-                        placeholder="**********"
-                        className="text-light-gray placeholder:text-light-gray h-full w-full rounded border-0 px-4 py-2.5 text-left text-sm font-normal leading-4 placeholder:text-sm placeholder:font-normal placeholder:leading-4 focus:outline-none"
-                      />
-                      <span className="absolute bottom-0 right-2.5 top-0 m-auto h-6 w-6 cursor-pointer">
-                        <img src="images/eyeslash.svg" />
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mb-4 w-full">
-                    <div className="flex w-auto items-center justify-between p-0 lg:w-full">
-                      <label className="text-color-dark flex w-auto items-center justify-start text-sm font-medium leading-4">
-                        <input
-                          type="checkbox"
-                          name=""
-                          className="[&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange absolute h-0 w-0 cursor-pointer opacity-0"
-                        />
-                        <span className="relative mr-2.5 inline-block h-5 w-5 overflow-hidden rounded border-2 border-solid border-gray-400 bg-transparent before:absolute before:-top-1 before:bottom-0 before:left-0 before:right-0 before:m-auto before:block before:h-3 before:w-1.5 before:rotate-45 before:border-b-2 before:border-r-2 before:border-solid before:border-white before:content-['']"></span>
-                        Remembar me
-                      </label>
-                      <div className="w-auto">
-                        <span
-                          className="text-dark-orange cursor-pointer text-sm font-medium leading-8"
-                          onClick={() => Router.push("/forget-password")}
-                        >
-                          Forgot Password{" "}
-                        </span>
+                <Form {...form}>
+                  <form
+                    className="flex flex-wrap"
+                    onSubmit={form.handleSubmit(onSubmit)}
+                  >
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="mb-4 w-full">
+                          <FormLabel>Email or Phone number or ID</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Email or Phone number or ID"
+                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem className="mb-4 w-full">
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="**********"
+                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="mb-4 w-full">
+                      <div className="flex w-auto items-center justify-between p-0 lg:w-full">
+                        <label className="text-color-dark flex w-auto items-center justify-start text-sm font-medium leading-4">
+                          <input
+                            type="checkbox"
+                            name=""
+                            className="[&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange absolute h-0 w-0 cursor-pointer opacity-0"
+                          />
+                          <span className="relative mr-2.5 inline-block h-5 w-5 overflow-hidden rounded border-2 border-solid border-gray-400 bg-transparent before:absolute before:-top-1 before:bottom-0 before:left-0 before:right-0 before:m-auto before:block before:h-3 before:w-1.5 before:rotate-45 before:border-b-2 before:border-r-2 before:border-solid before:border-white before:content-['']"></span>
+                          Remembar me
+                        </label>
+                        <div className="w-auto">
+                          <span
+                            className="text-dark-orange cursor-pointer text-sm font-medium leading-8"
+                            onClick={() => Router.push("/forget-password")}
+                          >
+                            Forgot Password{" "}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="mb-4 w-full">
-                    <button
-                      type="button"
-                      className="bg-dark-orange h-14 w-full rounded text-center text-lg font-bold leading-6 text-white"
-                    >
-                      Login
-                    </button>
-                  </div>
-                  <div className="mb-4 w-full text-center">
-                    <span className="text-light-gray text-sm font-medium leading-4">
-                      Don't have an account?{" "}
-                      <a
-                        onClick={() => Router.push("/register")}
-                        className="text-dark-orange cursor-pointer font-medium"
+                    <div className="mb-4 w-full">
+                      <button
+                        type="submit"
+                        className="bg-dark-orange h-14 w-full rounded text-center text-lg font-bold leading-6 text-white"
                       >
-                        Signup
-                      </a>
-                    </span>
-                  </div>
+                        Login
+                      </button>
+                    </div>
+                  </form>
+                </Form>
+                <div className="mb-4 w-full text-center">
+                  <span className="text-light-gray text-sm font-medium leading-4">
+                    Don't have an account?{" "}
+                    <a
+                      onClick={() => Router.push("/register")}
+                      className="text-dark-orange cursor-pointer font-medium"
+                    >
+                      Signup
+                    </a>
+                  </span>
                 </div>
               </div>
               <div className="relative w-full py-5 text-center before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-px before:w-full before:bg-gray-200 before:content-['']">
