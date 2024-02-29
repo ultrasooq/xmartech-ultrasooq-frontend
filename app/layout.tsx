@@ -3,6 +3,7 @@ import "@/app/ui/global.css";
 import { inter } from "@/app/ui/fonts";
 import Sidebar from "@/layout/MainLayout/Sidebar";
 import Header from "@/layout/MainLayout/Header";
+import ReactQueryProvider from "@/providers/ReactQueryProvider";
 
 export const metadata: Metadata = {
   title: "Puremoon",
@@ -17,11 +18,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className}`}>
-        <main className="overflow-x-hidden">
-          <Sidebar />
-          <Header />
-          {children}
-        </main>
+        <ReactQueryProvider>
+          <main className="overflow-x-hidden">
+            <Sidebar />
+            <Header />
+            {children}
+          </main>
+        </ReactQueryProvider>
       </body>
     </html>
   );
