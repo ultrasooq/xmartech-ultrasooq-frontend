@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { withRouter } from "next/router";
-import SiteLayout from "../layout/MainLayout/SiteLayout";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import _ from "lodash";
@@ -10,7 +9,7 @@ import ToastHot from "react-hot-toast";
 const PasswordSuccessful = () => {
   const Router = useRouter();
   return (
-    <SiteLayout>
+    <div>
       <Head>
         <title>Forget Password</title>
       </Head>
@@ -48,7 +47,7 @@ const PasswordSuccessful = () => {
       {/* <img src="../images/favicon.ico" alt='logo'/>
       <button onClick={()=> Router.push("/home")} className='button-sub'>Goto Home</button>
       <button onClick={()=> Router.push("/details/page")} className='button-sub'>Goto Page</button> */}
-    </SiteLayout>
+    </div>
   );
 };
 
