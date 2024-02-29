@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z
   .object({
@@ -66,6 +67,7 @@ const formSchema = z
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -95,16 +97,23 @@ export default function RegisterPage() {
       tradeRole: values.tradeRole,
       cc: "+91",
     };
-    register.mutate(data, {
-      onSuccess: (data) => {
-        if (data.status && data.otp) {
-          sessionStorage.setItem("email", values.email);
-          sessionStorage.setItem("otp", data.otp.toString());
-        }
-        form.reset();
-        router.push("/otp-verify");
-      },
-    });
+    const response = await register.mutateAsync(data);
+
+    if (response?.status && response?.otp) {
+      toast({
+        title: "Otp Sent",
+        description: "OTP has been sent to your email/phone",
+      });
+      sessionStorage.setItem("email", values.email);
+      sessionStorage.setItem("otp", response.otp.toString());
+      form.reset();
+      router.push("/otp-verify");
+    } else {
+      toast({
+        title: "Registration Failed",
+        description: response.message,
+      });
+    }
   };
 
   return (

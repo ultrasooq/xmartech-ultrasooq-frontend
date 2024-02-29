@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useVerifyOtp } from "@/apis/queries/auth.queries";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function OtpVerifyPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
   const refs = React.useRef<HTMLInputElement[]>([]);
   const form = useForm({
@@ -28,17 +30,24 @@ export default function OtpVerifyPage() {
       email: values.email,
       otp: Number(combinedOtp),
     };
-    verifyOtp.mutate(data, {
-      onSuccess: (data) => {
-        form.reset();
-        setOtp(new Array(4).fill(""));
-        sessionStorage.clear();
-        if (data?.success && data?.accessToken) {
-          // store in cookie
-        }
-        router.push("/home");
-      },
-    });
+    const response = await verifyOtp.mutateAsync(data);
+
+    if (response?.success && response?.accessToken) {
+      // store in cookie
+      toast({
+        title: "Verification Successful",
+        description: "You have successfully verified",
+      });
+      form.reset();
+      setOtp(new Array(4).fill(""));
+      sessionStorage.clear();
+      router.push("/home");
+    } else {
+      toast({
+        title: "Verification Failed",
+        description: response.message,
+      });
+    }
   };
 
   const handleChange = (
