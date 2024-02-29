@@ -1,16 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { number } from "prop-types";
+import { Button } from "@/components/ui/button";
+import { useVerifyOtp } from "@/apis/queries/auth.queries";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 export default function OtpVerifyPage() {
   const router = useRouter();
   const [otp, setOtp] = useState(new Array(4).fill(""));
   const refs = React.useRef<HTMLInputElement[]>([]);
-
   const form = useForm({
     defaultValues: {
       email: "",
@@ -18,8 +19,26 @@ export default function OtpVerifyPage() {
     },
   });
 
-  const onSubmit = (values: any) => {
-    console.log(otp.join(""));
+  const verifyOtp = useVerifyOtp();
+
+  const onSubmit = async (values: any) => {
+    // TODO: fix z.infer for formvalue
+    const combinedOtp = otp.join("");
+    const data = {
+      email: values.email,
+      otp: Number(combinedOtp),
+    };
+    verifyOtp.mutate(data, {
+      onSuccess: (data) => {
+        form.reset();
+        setOtp(new Array(4).fill(""));
+        sessionStorage.clear();
+        if (data?.success && data?.accessToken) {
+          // store in cookie
+        }
+        router.push("/home");
+      },
+    });
   };
 
   const handleChange = (
@@ -61,6 +80,19 @@ export default function OtpVerifyPage() {
     }
   };
 
+  useEffect(() => {
+    if (window) {
+      const storedEmail = sessionStorage.getItem("email");
+      const storedOTP = sessionStorage.getItem("otp");
+      console.log({ storedEmail, storedOTP });
+      if (storedEmail && storedOTP) {
+        form.setValue("email", storedEmail);
+        form.setValue("otp", storedOTP);
+        setOtp([...storedOTP.split("")]);
+      }
+    }
+  }, []);
+
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -72,8 +104,8 @@ export default function OtpVerifyPage() {
       <div className="container relative z-10 m-auto">
         <div className="flex">
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
-            <div className="text-normal text-light-gray m-auto mb-7 w-full text-center text-sm leading-6">
-              <h2 className="text-color-dark mb-3 text-center text-3xl font-semibold leading-8 sm:text-4xl sm:leading-10">
+            <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
                 Verify OTP
               </h2>
               <p>Enter the OTP which you received via email</p>
@@ -102,21 +134,29 @@ export default function OtpVerifyPage() {
                     </div>
                   </div>
                   <div className="mb-4 w-full text-center">
-                    <button
+                    <Button
+                      disabled={verifyOtp.isPending}
                       type="submit"
-                      className="bg-dark-orange m-auto h-14 w-auto rounded px-10 text-center text-lg font-bold leading-6 text-white"
+                      className="m-auto h-14 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
-                      Verify
-                    </button>
+                      {verifyOtp.isPending ? (
+                        <>
+                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                          Please wait
+                        </>
+                      ) : (
+                        "Verify"
+                      )}
+                    </Button>
                   </div>
                 </form>
               </Form>
               <div className="mb-4 w-full text-center">
-                <span className="text-light-gray text-sm font-medium leading-4">
+                <span className="text-sm font-medium leading-4 text-light-gray">
                   Didn't receive OTP?{" "}
                   <a
                     onClick={() => router.push("/register")}
-                    className="text-dark-orange cursor-pointer font-medium"
+                    className="cursor-pointer font-medium text-dark-orange"
                   >
                     Signup
                   </a>

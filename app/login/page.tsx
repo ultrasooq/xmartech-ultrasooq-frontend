@@ -12,20 +12,44 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import _ from "lodash";
+import { useLogin } from "@/apis/queries/auth.queries";
+import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
 // import { toast } from "react-toastify";
 // import ToastHot from "react-hot-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const formSchema = z.object({
+  email: z.string().trim().email({
+    message: "Invalid Email Address",
+  }),
+  password: z.string().trim().min(8, {
+    message: "Password must be longer than or equal to 8 characters",
+  }),
+});
 
 export default function LoginPage() {
-  const Router = useRouter();
+  const router = useRouter();
   const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
+  const login = useLogin();
 
-  const onSubmit = (values: any) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    login.mutate(values, {
+      onSuccess: (data) => {
+        form.reset();
+        if (data?.success && data?.accessToken) {
+          // store in cookie
+        }
+        router.push("/home");
+      },
+    });
   };
 
   return (
@@ -40,8 +64,8 @@ export default function LoginPage() {
         <div className="container relative z-10 m-auto">
           <div className="flex">
             <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
-              <div className="text-normal text-light-gray m-auto mb-7 w-full text-center text-sm leading-6">
-                <h2 className="text-color-dark mb-3 text-center text-3xl font-semibold leading-8 sm:text-4xl sm:leading-10">
+              <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
+                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
                   Login
                 </h2>
                 <p>Login to your account</p>
@@ -91,19 +115,19 @@ export default function LoginPage() {
 
                     <div className="mb-4 w-full">
                       <div className="flex w-auto items-center justify-between p-0 lg:w-full">
-                        <label className="text-color-dark flex w-auto items-center justify-start text-sm font-medium leading-4">
+                        <label className="flex w-auto items-center justify-start text-sm font-medium leading-4 text-color-dark">
                           <input
                             type="checkbox"
                             name=""
-                            className="[&:checked+span]:bg-dark-orange [&:checked+span]:border-dark-orange absolute h-0 w-0 cursor-pointer opacity-0"
+                            className="absolute h-0 w-0 cursor-pointer opacity-0 [&:checked+span]:border-dark-orange [&:checked+span]:bg-dark-orange"
                           />
                           <span className="relative mr-2.5 inline-block h-5 w-5 overflow-hidden rounded border-2 border-solid border-gray-400 bg-transparent before:absolute before:-top-1 before:bottom-0 before:left-0 before:right-0 before:m-auto before:block before:h-3 before:w-1.5 before:rotate-45 before:border-b-2 before:border-r-2 before:border-solid before:border-white before:content-['']"></span>
                           Remembar me
                         </label>
                         <div className="w-auto">
                           <span
-                            className="text-dark-orange cursor-pointer text-sm font-medium leading-8"
-                            onClick={() => Router.push("/forget-password")}
+                            className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
+                            onClick={() => router.push("/forget-password")}
                           >
                             Forgot Password{" "}
                           </span>
@@ -111,21 +135,29 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <div className="mb-4 w-full">
-                      <button
+                      <Button
+                        disabled={login.isPending}
                         type="submit"
-                        className="bg-dark-orange h-14 w-full rounded text-center text-lg font-bold leading-6 text-white"
+                        className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                       >
-                        Login
-                      </button>
+                        {login.isPending ? (
+                          <>
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                            Please wait
+                          </>
+                        ) : (
+                          "Login"
+                        )}
+                      </Button>
                     </div>
                   </form>
                 </Form>
                 <div className="mb-4 w-full text-center">
-                  <span className="text-light-gray text-sm font-medium leading-4">
+                  <span className="text-sm font-medium leading-4 text-light-gray">
                     Don't have an account?{" "}
                     <a
-                      onClick={() => Router.push("/register")}
-                      className="text-dark-orange cursor-pointer font-medium"
+                      onClick={() => router.push("/register")}
+                      className="cursor-pointer font-medium text-dark-orange"
                     >
                       Signup
                     </a>
@@ -142,7 +174,7 @@ export default function LoginPage() {
                   <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
                     <a
                       href="#"
-                      className="text-light-gray inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4"
+                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                     >
                       <img src="images/facebook-icon.png" className="mr-1.5" />
                       <span>Sign In with Facebook</span>
@@ -151,7 +183,7 @@ export default function LoginPage() {
                   <li className="w-full p-0 sm:w-6/12 sm:pl-3">
                     <a
                       href="#"
-                      className="text-light-gray inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4"
+                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                     >
                       <img src="images/google-icon.png" className="mr-1.5" />
                       <span>Sign In with Facebook</span>
