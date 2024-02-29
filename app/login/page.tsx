@@ -15,10 +15,9 @@ import _ from "lodash";
 import { useLogin } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
-// import { toast } from "react-toastify";
-// import ToastHot from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   email: z.string().trim().email({
@@ -31,6 +30,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,15 +41,22 @@ export default function LoginPage() {
   const login = useLogin();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    login.mutate(values, {
-      onSuccess: (data) => {
-        form.reset();
-        if (data?.success && data?.accessToken) {
-          // store in cookie
-        }
-        router.push("/home");
-      },
-    });
+    const response = await login.mutateAsync(values);
+
+    if (response?.success && response?.accessToken) {
+      // store in cookie
+      toast({
+        title: "Login Successful",
+        description: "You have successfully logged in.",
+      });
+      form.reset();
+      router.push("/home");
+    } else {
+      toast({
+        title: "Login Failed",
+        description: response.message,
+      });
+    }
   };
 
   return (
