@@ -4,6 +4,7 @@ import { inter } from "@/app/ui/fonts";
 import Sidebar from "@/layout/MainLayout/Sidebar";
 import Header from "@/layout/MainLayout/Header";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Puremoon",
@@ -23,6 +24,7 @@ export default function RootLayout({
             <Sidebar />
             <Header />
             {children}
+            <Toaster />
           </main>
         </ReactQueryProvider>
       </body>
