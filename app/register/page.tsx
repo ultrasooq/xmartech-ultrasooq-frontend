@@ -14,10 +14,60 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRegister } from "@/apis/queries/auth.queries";
+import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const formSchema = z
+  .object({
+    firstName: z
+      .string()
+      .trim()
+      .min(2, {
+        message: "First Name must be at least 2 characters",
+      })
+      .max(50, {
+        message: "First Name must be less than 50 characters",
+      }),
+    lastName: z
+      .string()
+      .trim()
+      .min(2, { message: "Last Name must be at least 2 characters" })
+      .max(50, {
+        message: "Last Name must be less than 50 characters",
+      }),
+    email: z.string().trim().email({
+      message: "Invalid Email Address",
+    }),
+    password: z.string().trim().min(8, {
+      message: "Password must be longer than or equal to 8 characters",
+    }),
+    initialPassword: z.string().trim().min(8, {
+      message: "Password must be longer than or equal to 8 characters",
+    }),
+    phoneNumber: z.string().trim().min(10, {
+      message: "Phone Number must be at least 10 digits",
+    }),
+    tradeRole: z.string().trim(),
+    acceptTerms: z.boolean(),
+    cc: z.string().trim(),
+  })
+  .superRefine(({ initialPassword, password }, ctx) => {
+    if (initialPassword !== password) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Passwords do not match",
+        path: ["password"],
+      });
+    }
+  });
 
 export default function RegisterPage() {
-  const Router = useRouter();
+  const router = useRouter();
   const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -30,9 +80,31 @@ export default function RegisterPage() {
       acceptTerms: false,
     },
   });
+  const watchAcceptTerms = form.watch("acceptTerms");
+  const register = useRegister();
 
-  const onSubmit = (values: any) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // console.log(values);
+    // return;
+    const data = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      password: values.password,
+      phoneNumber: values.phoneNumber,
+      tradeRole: values.tradeRole,
+      cc: "+91",
+    };
+    register.mutate(data, {
+      onSuccess: (data) => {
+        if (data.status && data.otp) {
+          sessionStorage.setItem("email", values.email);
+          sessionStorage.setItem("otp", data.otp.toString());
+        }
+        form.reset();
+        router.push("/otp-verify");
+      },
+    });
   };
 
   return (
@@ -46,8 +118,8 @@ export default function RegisterPage() {
       <div className="container relative z-10 m-auto">
         <div className="flex">
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
-            <div className="text-normal text-light-gray m-auto mb-7 w-full text-center text-sm leading-6">
-              <h2 className="text-color-dark mb-3 text-center text-3xl font-semibold leading-8 sm:text-4xl sm:leading-10">
+            <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
                 Registration
               </h2>
               <p>Create Your account</p>
@@ -57,7 +129,7 @@ export default function RegisterPage() {
                 <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
                   <a
                     href="#"
-                    className="text-light-gray inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4"
+                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                   >
                     <img src="images/facebook-icon.png" className="mr-1.5" />
                     <span>Sign In with Facebook</span>
@@ -66,7 +138,7 @@ export default function RegisterPage() {
                 <li className="w-full p-0 sm:w-6/12 sm:pl-3">
                   <a
                     href="#"
-                    className="text-light-gray inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4"
+                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                   >
                     <img src="images/google-icon.png" className="mr-1.5" />
                     <span>Sign In with Facebook</span>
@@ -252,21 +324,29 @@ export default function RegisterPage() {
                     )}
                   />
                   <div className="mb-4 w-full">
-                    <button
+                    <Button
+                      disabled={!watchAcceptTerms || register.isPending}
                       type="submit"
-                      className="bg-dark-orange h-14 w-full rounded text-center text-lg font-bold leading-6 text-white"
+                      className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
-                      Agree & Register
-                    </button>
+                      {register.isPending ? (
+                        <>
+                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                          Please wait
+                        </>
+                      ) : (
+                        "Agree & Register"
+                      )}
+                    </Button>
                   </div>
                 </form>
               </Form>
               <div className="mb-4 w-full text-center">
-                <span className="text-light-gray text-sm font-medium leading-4">
+                <span className="text-sm font-medium leading-4 text-light-gray">
                   Do you already have an account?{" "}
                   <a
-                    onClick={() => Router.push("/login")}
-                    className="text-dark-orange cursor-pointer font-medium"
+                    onClick={() => router.push("/login")}
+                    className="cursor-pointer font-medium text-dark-orange"
                   >
                     Sign in
                   </a>
