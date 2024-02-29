@@ -154,7 +154,7 @@ export default function LoginPage() {
                 </Form>
                 <div className="mb-4 w-full text-center">
                   <span className="text-sm font-medium leading-4 text-light-gray">
-                    Don't have an account?{" "}
+                    Don&apos;t have an account?{" "}
                     <a
                       onClick={() => router.push("/register")}
                       className="cursor-pointer font-medium text-dark-orange"

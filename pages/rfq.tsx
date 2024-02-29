@@ -228,7 +228,7 @@ const RFQ = () => {
                               <option>Price Hight to Low</option>
                               <option>Price Low to High</option>
                               <option>Customer Rating</option>
-                              <option>What's New</option>
+                              <option>What&apos;s New</option>
                               <option>Popularity</option>
                             </select>
                           </div>

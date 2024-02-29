@@ -20,6 +20,7 @@ const PasswordSuccessful = () => {
           <img
             src="images/before-login-bg.png"
             className="h-full w-full object-cover object-bottom"
+            alt="before-login-bg-icon"
           />
         </div>
         <div className="container relative z-10 m-auto">
@@ -28,8 +29,12 @@ const PasswordSuccessful = () => {
               <div className="w-full">
                 <div className="flex flex-wrap">
                   <div className="m-auto w-9/12 text-center lg:w-8/12">
-                    <img src="images/successful.svg" className="m-auto" />
-                    <h3 className="text-color-dark mt-3.5 text-2xl font-semibold leading-normal sm:text-3xl sm:leading-10 xl:text-4xl">
+                    <img
+                      src="images/successful.svg"
+                      className="m-auto"
+                      alt="successful-icon"
+                    />
+                    <h3 className="mt-3.5 text-2xl font-semibold leading-normal text-color-dark sm:text-3xl sm:leading-10 xl:text-4xl">
                       Successful Changed Password
                     </h3>
                   </div>
@@ -40,7 +45,7 @@ const PasswordSuccessful = () => {
         </div>
       </section>
 
-      {/* <img src="../images/favicon.ico" />
+      {/* <img src="../images/favicon.ico" alt='logo'/>
       <button onClick={()=> Router.push("/home")} className='button-sub'>Goto Home</button>
       <button onClick={()=> Router.push("/details/page")} className='button-sub'>Goto Page</button> */}
     </SiteLayout>
