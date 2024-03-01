@@ -1,5 +1,7 @@
-import { ILoginRequest, IRegisterRequest, IResendOtpRequest, IVerifyOtpRequest } from "@/utils/types/auth.types";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { IForgotPasswordRequest, ILoginRequest, IRegisterRequest, IResendOtpRequest, IResetPasswordRequest, IVerifyOtpRequest } from "@/utils/types/auth.types";
 import axios from "axios";
+import { getCookie } from 'cookies-next';
 
 export const register = (payload:IRegisterRequest) => {
     return axios({
@@ -28,3 +30,22 @@ export const login = (payload:ILoginRequest) => {
     url: `${process.env.NEXT_PUBLIC_API_URL}/user/login`,
     data: payload
 })};
+
+export const forgotPassword = (payload:IForgotPasswordRequest) => {
+    return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/forgetPassword`,
+    data: payload
+})}
+
+export const resetPassword = (payload:IResetPasswordRequest) => {
+    return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/resetPassword`,
+    data: payload,
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer " + getCookie(PUREMOON_TOKEN_KEY)
+    },
+})}

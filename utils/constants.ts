@@ -1,0 +1,1 @@
+export const PUREMOON_TOKEN_KEY: string = "puremoon_accessToken";

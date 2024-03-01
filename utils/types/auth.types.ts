@@ -41,3 +41,25 @@ export interface IVerifyOtp {
 export interface IResendOtpRequest {
     email: string;
 }
+
+export interface IForgotPasswordRequest {
+    email: string;
+}
+
+export interface IForgotPassword {
+    message:string;
+    status: boolean;
+    data: string;
+}
+
+export interface IResetPasswordRequest {
+    newPassword: string;
+    confirmPassword: string;
+}
+
+export interface IResetPassword {
+    message:string;
+    status: boolean;
+    data: any;
+    statusCode: number
+}
