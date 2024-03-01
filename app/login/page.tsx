@@ -18,6 +18,8 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { setCookie } from "cookies-next";
 
 const formSchema = z.object({
   email: z.string().trim().email({
@@ -45,6 +47,7 @@ export default function LoginPage() {
 
     if (response?.success && response?.accessToken) {
       // store in cookie
+      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
       toast({
         title: "Login Successful",
         description: "You have successfully logged in.",

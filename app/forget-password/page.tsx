@@ -10,16 +10,51 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
+import { useForgotPassword } from "@/apis/queries/auth.queries";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
+
+const formSchema = z.object({
+  email: z.string().trim().email({
+    message: "Invalid Email Address",
+  }),
+});
 
 export default function ForgetPasswordPage() {
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
     },
   });
+  const forgotPassword = useForgotPassword();
 
-  const onSubmit = (values: any) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
+    const response = await forgotPassword.mutateAsync(values);
+
+    if (response?.status) {
+      toast({
+        title: "Password Reset Link Sent",
+        description: response?.message,
+      });
+      form.reset();
+      if (response?.data) {
+        const token = response.data.split("?").at(-1);
+        router.push(`/reset-password?token=${token}`);
+      }
+    } else {
+      toast({
+        title: "Password Reset Failed",
+        description: response?.message,
+      });
+    }
   };
 
   return (
@@ -63,12 +98,20 @@ export default function ForgetPasswordPage() {
                     )}
                   />
                   <div className="mb-4 w-full">
-                    <button
+                    <Button
+                      disabled={forgotPassword.isPending}
                       type="submit"
-                      className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white"
+                      className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
-                      Reset Password
-                    </button>
+                      {forgotPassword.isPending ? (
+                        <>
+                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                          Please wait
+                        </>
+                      ) : (
+                        "Reset Password"
+                      )}
+                    </Button>
                   </div>
                 </form>
               </Form>
