@@ -15,7 +15,7 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { deleteCookie, setCookie } from "cookies-next";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -41,7 +41,6 @@ const formSchema = z
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -83,11 +82,12 @@ export default function ResetPasswordPage() {
   };
 
   useEffect(() => {
-    const accessToken = searchParams?.get("token");
+    const params = new URLSearchParams(document.location.search);
+    let accessToken = params.get("token");
     if (accessToken) {
       setCookie(PUREMOON_TOKEN_KEY, accessToken);
     }
-  }, [searchParams?.get("token")]);
+  }, []);
 
   return (
     <section className="relative w-full py-7">
