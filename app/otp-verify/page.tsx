@@ -162,7 +162,7 @@ export default function OtpVerifyPage() {
               </Form>
               <div className="mb-4 w-full text-center">
                 <span className="text-sm font-medium leading-4 text-light-gray">
-                  Didn't receive OTP?{" "}
+                  Didn&apos;t receive OTP?{" "}
                   <a
                     onClick={() => router.push("/register")}
                     className="cursor-pointer font-medium text-dark-orange"

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { withRouter } from "next/router";
-import SiteLayout from "../layout/MainLayout/SiteLayout";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import _ from "lodash";
@@ -10,7 +9,7 @@ import { SP } from "next/dist/shared/lib/utils";
 const RFQ = () => {
   const Router = useRouter();
   return (
-    <SiteLayout>
+    <div>
       <Head>
         <title>RFQ</title>
       </Head>
@@ -228,7 +227,7 @@ const RFQ = () => {
                               <option>Price Hight to Low</option>
                               <option>Price Low to High</option>
                               <option>Customer Rating</option>
-                              <option>What's New</option>
+                              <option>What&apos;s New</option>
                               <option>Popularity</option>
                             </select>
                           </div>
@@ -719,7 +718,7 @@ const RFQ = () => {
           </div>
         </div>
       </section>
-    </SiteLayout>
+    </div>
   );
 };
 
