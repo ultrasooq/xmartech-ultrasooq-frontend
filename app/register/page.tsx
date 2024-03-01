@@ -170,8 +170,8 @@ export default function RegisterPage() {
                     control={form.control}
                     name="tradeRole"
                     render={({ field }) => (
-                      <FormItem className="mb-4 flex w-full items-center">
-                        <FormLabel className="mr-6 capitalize">
+                      <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row">
+                        <FormLabel className="mb-3 mr-6 capitalize md:mb-0">
                           Please select trade role:
                         </FormLabel>
                         <FormControl>
