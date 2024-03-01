@@ -1,12 +1,30 @@
 "use client";
-import React from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { deleteCookie, getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 
 const Header = () => {
-  const Router = useRouter();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    deleteCookie(PUREMOON_TOKEN_KEY);
+    router.push("/login");
+  };
+
+  useEffect(() => {
+    const authToken = getCookie(PUREMOON_TOKEN_KEY);
+    if (authToken) {
+      setIsLoggedIn(true);
+    }
+  }, [pathname, getCookie(PUREMOON_TOKEN_KEY)]);
+
   return (
     <header className="w-full">
-      <div className="bg-dark-cyan w-full">
+      <div className="w-full bg-dark-cyan">
         <div className="container m-auto px-3">
           <div className="hidden sm:hidden md:flex md:gap-x-2.5">
             <div className="py-4 text-sm font-normal text-white md:w-5/12 lg:w-4/12">
@@ -66,7 +84,7 @@ const Header = () => {
               <div className="h-11 w-1/6">
                 <button
                   type="button"
-                  className="btn bg-dark-orange h-full w-full text-sm font-semibold text-white"
+                  className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
                 >
                   Search
                 </button>
@@ -77,7 +95,7 @@ const Header = () => {
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
                   <a className="flex flex-wrap items-center">
                     <img src="images/wishlist.svg" />
-                    <div className="bg-dark-orange absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
+                    <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
                       0
                     </div>
                   </a>
@@ -85,20 +103,29 @@ const Header = () => {
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
                   <a className="flex flex-wrap items-center">
                     <img src="images/cart.svg" />
-                    <div className="bg-dark-orange absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
+                    <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
                       0
                     </div>
                   </a>
                 </li>
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
                   <img src="images/login.svg" />
-                  <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
-                    <span onClick={() => Router.push("/login")}>Login </span>
-                    <span onClick={() => Router.push("/register")}>
-                      {" "}
-                      Register
-                    </span>
-                  </a>
+                  {isLoggedIn ? (
+                    <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
+                      <span onClick={handleLogout}>Logout</span>
+                    </a>
+                  ) : (
+                    <div className="flex flex-col">
+                      <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
+                        <span onClick={() => router.push("/login")}>Login</span>
+                      </a>
+                      <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
+                        <span onClick={() => router.push("/register")}>
+                          Register
+                        </span>
+                      </a>
+                    </div>
+                  )}
                 </li>
               </ul>
             </div>
@@ -106,7 +133,7 @@ const Header = () => {
               <img src="images/humberger-white-icon.svg" />
             </div>
           </div>
-          <div className="bg-dark-cyan fixed left-0 top-0 z-20 hidden h-full w-full px-3 md:static md:flex md:px-0">
+          <div className="fixed left-0 top-0 z-20 hidden h-full w-full bg-dark-cyan px-3 md:static md:flex md:px-0">
             <ul className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 md:flex-row md:justify-between">
               <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                 <a href="/home" className="flex gap-x-2">
@@ -154,19 +181,19 @@ const Header = () => {
           <div className="flex">
             <div className="flex w-5/12 py-3 md:w-2/6">
               <img src="images/humberger-icon.svg" />
-              <span className="text-color-dark mx-3 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <span className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
                 All Categories
               </span>
               <img src="images/humberger-down-icon.svg" />
             </div>
             <div className="flex w-7/12 items-center justify-end md:w-4/6">
               <ul className="flex items-center justify-end gap-x-4">
-                <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+                <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
                   <a href="#" className="text-light-gray">
                     Buyer Central
                   </a>
                 </li>
-                <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+                <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
                   <a href="#" className="text-light-gray">
                     Help Center
                   </a>
