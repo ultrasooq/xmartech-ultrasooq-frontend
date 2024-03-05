@@ -24,15 +24,23 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-// import { useToast } from "@/components/ui/use-toast";
+import { SOCIAL_MEDIA_ICON, SOCIAL_MEDIA_LIST } from "@/utils/constants";
+import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -40,65 +48,101 @@ const formSchema = z.object({
   firstName: z
     .string()
     .trim()
-    .min(2, {
-      message: "First Name must be at least 2 characters",
-    })
-    .max(50, {
-      message: "First Name must be less than 50 characters",
-    }),
+    .min(2, { message: "First Name is Required" })
+    .max(50, { message: "First Name must be less than 50 characters" }),
   lastName: z
     .string()
     .trim()
-    .min(2, { message: "Last Name must be at least 2 characters" })
-    .max(50, {
-      message: "Last Name must be less than 50 characters",
-    }),
-  email: z.string().trim().email({
+    .min(2, { message: "Last Name is Required" })
+    .max(50, { message: "Last Name must be less than 50 characters" }),
+  gender: z.string().trim().min(2, { message: "Gender is Required" }),
+  email: z.string().trim().min(10, { message: "Email is Required" }).email({
     message: "Invalid Email Address",
   }),
-  phoneNumber: z.string().trim().min(10, {
-    message: "Phone Number must be at least 10 digits",
-  }),
-  gender: z.string().trim(),
-  dob: z.date({
-    required_error: "A date of birth is required.",
-  }),
+  phoneNumber: z.array(
+    z.object({
+      phoneNumber: z
+        .string()
+        .trim()
+        .min(10, { message: "Phone Number is Required" })
+        .max(10, { message: "Phone Number must be less than 10 digits" }),
+    }),
+  ),
+  socialMedia: z.array(
+    z.object({
+      type: z.string().trim().min(2, { message: "Type is Required" }),
+      link: z
+        .string()
+        .trim()
+        .min(2, { message: "Link is Required" })
+        .max(50, { message: "Link must be less than 50 characters" })
+        .url({ message: "Invalid URL" }),
+    }),
+  ),
+  dob: z.date({ required_error: "Date of Birth is required." }),
 });
 
 export default function ProfilePage() {
   const router = useRouter();
-  // const { toast } = useToast();
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       profileImage: "",
       firstName: "",
       lastName: "",
-      email: "",
-      phoneNumber: "",
       gender: "",
+      email: "",
+      phoneNumber: [
+        {
+          phoneNumber: "",
+        },
+      ],
       dob: new Date(),
+      socialMedia: [
+        {
+          type: "",
+          link: "",
+        },
+      ],
     },
   });
 
   const updateProfile = useUpdateProfile();
 
+  const fieldArrayForPhoneNumber = useFieldArray({
+    control: form.control,
+    name: "phoneNumber",
+  });
+
+  const fieldArrayForSocialMedia = useFieldArray({
+    control: form.control,
+    name: "socialMedia",
+  });
+
+  const appendPhoneNumber = () =>
+    fieldArrayForPhoneNumber.append({
+      phoneNumber: "",
+    });
+
+  const appendSocialLinks = () =>
+    fieldArrayForSocialMedia.append({
+      type: "",
+      link: "",
+    });
+
+  const removePhoneNumber = (index: number) =>
+    fieldArrayForPhoneNumber.remove(index);
+
+  const removeSocialLinks = (index: number) =>
+    fieldArrayForSocialMedia.remove(index);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
-    // return;
-    // const response = await updateProfile.mutateAsync(values);
-    // if (response?.status && response?.otp) {
-    //   toast({
-    //     title: "Profile updated",
-    //     description: "Your profile has been updated successfully",
-    //   });
-    // } else {
-    //   toast({
-    //     title: "Profile Update Failed",
-    //     description: response.message,
-    //   });
-    // }
   };
+
+  const watchSocialMedia = form.watch("socialMedia");
+  const watchProfileImage = form.watch("profileImage");
 
   return (
     <section className="relative w-full py-7">
@@ -108,6 +152,7 @@ export default function ProfilePage() {
           className="h-full w-full object-cover object-center"
           alt="background"
           fill
+          priority
         />
       </div>
       <div className="container relative z-10 m-auto">
@@ -280,47 +325,82 @@ export default function ProfilePage() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>
-                          <div className="flex w-full items-center justify-between">
-                            <label className="block text-left text-sm font-medium capitalize leading-4 text-color-dark">
-                              Phone Number
-                            </label>
-                            <div className="flex cursor-pointer items-center text-sm font-semibold capitalize text-dark-orange">
-                              <Image
-                                src="/images/add-icon.svg"
-                                className="mr-1"
-                                width={14}
-                                height={14}
-                                alt="add-icon"
-                              />
-                              <span>Add Phone Number</span>
-                            </div>
-                          </div>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="Enter Your Phone Number"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="mb-1 w-full">
+                    <div className="flex w-full items-center justify-between">
+                      <label
+                        className={
+                          "block text-left text-sm font-medium capitalize leading-4 text-color-dark"
+                        }
+                      >
+                        Phone Number
+                      </label>
 
-                  <div className="mb-4 w-full">
+                      <Button
+                        type="button"
+                        onClick={appendPhoneNumber}
+                        className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                      >
+                        <Image
+                          src="/images/add-icon.svg"
+                          className="mr-1"
+                          width={14}
+                          height={14}
+                          alt="add-icon"
+                        />
+                        <span>Add Phone Number</span>
+                      </Button>
+                    </div>
+                  </div>
+
+                  {fieldArrayForPhoneNumber.fields.map((field, index) => (
+                    <div
+                      key={field.id}
+                      className="relative mb-4 flex w-full flex-row items-center gap-x-3.5"
+                    >
+                      <FormField
+                        key={field.id}
+                        control={form.control}
+                        name={`phoneNumber.${index}.phoneNumber`}
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="Enter Your Phone Number"
+                                className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => removePhoneNumber(index)}
+                        className="absolute right-4 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                      >
+                        <Image
+                          src="/images/social-delete-icon.svg"
+                          height={35}
+                          width={35}
+                          alt="social-delete-icon"
+                        />
+                      </Button>
+                    </div>
+                  ))}
+
+                  <div className="mb-1 w-full">
                     <div className="flex w-full items-center justify-between">
                       <label className="block text-left text-sm font-medium capitalize leading-4 text-color-dark">
                         Social Links
                       </label>
-                      <div className="flex cursor-pointer items-center text-sm font-semibold capitalize text-dark-orange">
+
+                      <Button
+                        type="button"
+                        onClick={appendSocialLinks}
+                        className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                      >
                         <Image
                           src="/images/add-icon.svg"
                           className="mr-1"
@@ -329,245 +409,138 @@ export default function ProfilePage() {
                           alt="add-icon"
                         />
                         <span>Add Link</span>
-                      </div>
+                      </Button>
                     </div>
                   </div>
 
-                  <div className="mb-3.5 h-auto w-full rounded border border-solid border-gray-300 p-3.5">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="item-1" className="border-b-0">
-                        <AccordionTrigger className="flex justify-between py-0">
-                          <div className="flex items-center text-sm font-normal leading-4 text-color-dark">
-                            <Image
-                              src="/images/social-facebook-icon.svg"
-                              className="mr-1.5"
-                              width={20}
-                              height={20}
-                              alt="social-facebook-icon"
-                            />
-                            <span>Facebook</span>
-                          </div>
-                          <div className="mr-3 flex flex-1 justify-end">
-                            <ul className="flex items-center justify-end gap-x-3.5">
-                              <li>
+                  {fieldArrayForSocialMedia.fields.map((field, index) => (
+                    <div
+                      key={field.id}
+                      className="relative mb-3.5 h-auto min-h-[65px] w-full rounded border border-solid border-gray-300 p-3.5"
+                    >
+                      <Accordion type="single" collapsible>
+                        <AccordionItem
+                          value="item-1"
+                          className="mt-2 border-b-0"
+                        >
+                          <AccordionTrigger className="flex justify-between py-0">
+                            <div className="flex items-center text-sm font-normal leading-4 text-color-dark">
+                              {watchSocialMedia[index]?.type !== "" ? (
                                 <Image
-                                  src="/images/social-edit-icon.svg"
-                                  height={35}
-                                  width={35}
-                                  alt="social-edit-icon"
+                                  src={
+                                    SOCIAL_MEDIA_ICON[
+                                      watchSocialMedia[index]?.type
+                                    ]
+                                  }
+                                  className="mr-1.5"
+                                  width={20}
+                                  height={20}
+                                  alt="social-facebook-icon"
                                 />
-                              </li>
-                              <li>
-                                <Image
-                                  src="/images/social-delete-icon.svg"
-                                  height={35}
-                                  width={35}
-                                  alt="social-delete-icon"
-                                />
-                              </li>
-                            </ul>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-0">
-                          <FormField
-                            control={form.control}
-                            name="phoneNumber"
-                            render={({ field }) => (
-                              <FormItem className="mb-4 mt-3 w-full">
-                                <FormLabel>Link</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    placeholder="Enter Your Link"
-                                    className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
+                              ) : (
+                                <span className="capitalize">Select Type</span>
+                              )}
 
-                  <div className="mb-3.5 h-auto w-full rounded border border-solid border-gray-300 p-3.5">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="item-1" className="border-b-0">
-                        <AccordionTrigger className="flex justify-between py-0">
-                          <div className="flex items-center text-sm font-normal leading-4 text-color-dark">
-                            <Image
-                              src="/images/social-linkedin-icon.svg"
-                              className="mr-1.5"
-                              width={20}
-                              height={20}
-                              alt="social-linkedin-icon"
-                            />
-                            <span>Linkedin</span>
-                          </div>
-                          <div className="mr-3 flex flex-1 justify-end">
-                            <ul className="flex items-center justify-end gap-x-3.5">
-                              <li>
+                              <span className="capitalize">
+                                {watchSocialMedia[index]?.type}
+                              </span>
+                            </div>
+                            {/* TODO: remove this after discussing */}
+                            {/* <div className="mr-3 flex flex-1 justify-end gap-x-3.5">
+                              <Button
+                                type="button"
+                                onClick={() => {}}
+                                className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                              >
                                 <Image
                                   src="/images/social-edit-icon.svg"
                                   height={35}
                                   width={35}
                                   alt="social-edit-icon"
                                 />
-                              </li>
-                              <li>
-                                <Image
-                                  src="/images/social-delete-icon.svg"
-                                  height={35}
-                                  width={35}
-                                  alt="social-delete-icon"
-                                />
-                              </li>
-                            </ul>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-0">
-                          <FormField
-                            control={form.control}
-                            name="phoneNumber"
-                            render={({ field }) => (
-                              <FormItem className="mb-4 mt-3 w-full">
-                                <FormLabel>Link</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    placeholder="Enter Your Link"
-                                    className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
+                              </Button>
+                            </div> */}
+                          </AccordionTrigger>
+                          <AccordionContent className="pb-0">
+                            <FormField
+                              control={form.control}
+                              name={`socialMedia.${index}.type`}
+                              render={({ field }) => (
+                                <FormItem className="mt-3">
+                                  <FormLabel>Type</FormLabel>
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                                        <SelectValue placeholder="Select Social Media" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {SOCIAL_MEDIA_LIST.map((item) => (
+                                        <SelectItem
+                                          key={item.type}
+                                          value={item.type}
+                                        >
+                                          <div className="flex flex-row items-center py-2">
+                                            <Image
+                                              src={item.icon}
+                                              className="mr-2"
+                                              width={20}
+                                              height={20}
+                                              alt="social-icon"
+                                            />
 
-                  <div className="mb-3.5 h-auto w-full rounded border border-solid border-gray-300 p-3.5">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="item-1" className="border-b-0">
-                        <AccordionTrigger className="flex justify-between py-0">
-                          <div className="flex items-center text-sm font-normal leading-4 text-color-dark">
-                            <Image
-                              src="/images/social-instagram-icon.svg"
-                              className="mr-1.5"
-                              width={20}
-                              height={20}
-                              alt="social-instagram-icon"
-                            />
-                            <span>Instagram</span>
-                          </div>
-                          <div className="mr-3 flex flex-1 justify-end">
-                            <ul className="flex items-center justify-end gap-x-3.5">
-                              <li>
-                                <Image
-                                  src="/images/social-edit-icon.svg"
-                                  height={35}
-                                  width={35}
-                                  alt="social-edit-icon"
-                                />
-                              </li>
-                              <li>
-                                <Image
-                                  src="/images/social-delete-icon.svg"
-                                  height={35}
-                                  width={35}
-                                  alt="social-delete-icon"
-                                />
-                              </li>
-                            </ul>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-0">
-                          <FormField
-                            control={form.control}
-                            name="phoneNumber"
-                            render={({ field }) => (
-                              <FormItem className="mb-4 mt-3 w-full">
-                                <FormLabel>Link</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    placeholder="Enter Your Link"
-                                    className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
+                                            <span className="capitalize">
+                                              {item.type}
+                                            </span>
+                                          </div>
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
 
-                  <div className="mb-3.5 h-auto w-full rounded border border-solid border-gray-300 p-3.5">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="item-1" className="border-b-0">
-                        <AccordionTrigger className="flex justify-between py-0">
-                          <div className="flex items-center text-sm font-normal leading-4 text-color-dark">
-                            <Image
-                              src="images/social-twitter-icon.svg"
-                              className="mr-1.5"
-                              width={20}
-                              height={20}
-                              alt="social-twitter-icon"
+                                  <FormMessage />
+                                </FormItem>
+                              )}
                             />
-                            <span>Twitter</span>
-                          </div>
-                          <div className="mr-3 flex flex-1 justify-end">
-                            <ul className="flex items-center justify-end gap-x-3.5">
-                              <li>
-                                <Image
-                                  src="/images/social-edit-icon.svg"
-                                  height={35}
-                                  width={35}
-                                  alt="social-edit-icon"
-                                />
-                              </li>
-                              <li>
-                                <Image
-                                  src="/images/social-delete-icon.svg"
-                                  height={35}
-                                  width={35}
-                                  alt="social-delete-icon"
-                                />
-                              </li>
-                            </ul>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-0">
-                          <FormField
-                            control={form.control}
-                            name="phoneNumber"
-                            render={({ field }) => (
-                              <FormItem className="mb-4 mt-3 w-full">
-                                <FormLabel>Link</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="number"
-                                    placeholder="Enter Your Link"
-                                    className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
+
+                            <FormField
+                              key={field.id}
+                              control={form.control}
+                              name={`socialMedia.${index}.link`}
+                              render={({ field }) => (
+                                <FormItem className="mb-4 mt-3 w-full">
+                                  <FormLabel>Link</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Enter Your Link"
+                                      className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                      <Button
+                        type="button"
+                        onClick={() => removeSocialLinks(index)}
+                        className="absolute right-11 top-3.5 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                      >
+                        <Image
+                          src="/images/social-delete-icon.svg"
+                          height={35}
+                          width={35}
+                          alt="social-delete-icon"
+                        />
+                      </Button>
+                    </div>
+                  ))}
 
                   <Button
                     disabled={updateProfile.isPending}
