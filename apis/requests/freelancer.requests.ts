@@ -2,10 +2,10 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants"
 import axios from "axios"
 import { getCookie } from "cookies-next"
 
-export const updateUserProfile = (payload:any) => {
+export const createFreelancerProfile = (payload:any) => {
     return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/update-profile`,
+    url: `${process.env.NEXT_PUBLIC_API_URL}/freelancer/update-profile`,
     data: payload,
     headers: {
         "Content-Type": "application/json",
