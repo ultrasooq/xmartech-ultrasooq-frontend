@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { useVerifyOtp } from "@/apis/queries/auth.queries";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
+import { setCookie } from "cookies-next";
 import Image from "next/image";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 
 export default function OtpVerifyPage() {
   const router = useRouter();
@@ -46,8 +48,9 @@ export default function OtpVerifyPage() {
     };
     const response = await verifyOtp.mutateAsync(data);
 
-    if (response?.success && response?.accessToken) {
+    if (response?.status && response?.accessToken) {
       // store in cookie
+      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
       toast({
         title: "Verification Successful",
         description: "You have successfully verified",
@@ -55,7 +58,14 @@ export default function OtpVerifyPage() {
       form.reset();
       setOtp(new Array(4).fill(""));
       sessionStorage.clear();
-      router.push("/home");
+      const tradeRole = response.data?.tradeRole;
+      if (tradeRole === "BUYER") {
+        router.push("/profile");
+      } else if (tradeRole === "COMPANY") {
+        router.push("/company-profile");
+      } else if (tradeRole === "FREELANCER") {
+        router.push("/freelancer-profile");
+      }
     } else {
       toast({
         title: "Verification Failed",

@@ -230,19 +230,19 @@ export default function RegisterPage() {
                               onValueChange={field.onChange}
                             >
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="buyer" id="buyer" />
-                                <Label htmlFor="buyer">Buyer</Label>
+                                <RadioGroupItem value="BUYER" id="BUYER" />
+                                <Label htmlFor="BUYER">Buyer</Label>
                               </div>
                               <div className="flex items-center space-x-2">
                                 <RadioGroupItem
-                                  value="freelancer"
-                                  id="freelancer"
+                                  value="FREELANCER"
+                                  id="FREELANCER"
                                 />
-                                <Label htmlFor="freelancer">Freelancer</Label>
+                                <Label htmlFor="FREELANCER">Freelancer</Label>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="company" id="company" />
-                                <Label htmlFor="company">Company</Label>
+                                <RadioGroupItem value="COMPANY" id="COMPANY" />
+                                <Label htmlFor="COMPANY">Company</Label>
                               </div>
                             </RadioGroup>
                           </FormControl>

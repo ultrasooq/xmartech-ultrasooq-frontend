@@ -474,7 +474,13 @@ export default function CompanyProfilePage() {
                   Branch
                 </label>
                 <div className="flex cursor-pointer items-center text-sm font-semibold capitalize leading-8 text-dark-orange">
-                  <img src="images/add-icon.svg" className="mr-1" />
+                  <Image
+                    src="/images/add-icon.svg"
+                    className="mr-1"
+                    width={14}
+                    height={14}
+                    alt="add-icon"
+                  />
                   <span> Add new branch</span>
                 </div>
               </div>

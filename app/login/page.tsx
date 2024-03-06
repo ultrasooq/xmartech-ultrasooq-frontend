@@ -52,7 +52,7 @@ export default function LoginPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const response = await login.mutateAsync(values);
 
-    if (response?.success && response?.accessToken) {
+    if (response?.status && response?.accessToken) {
       // store in cookie
       setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
       toast({
