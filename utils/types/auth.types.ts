@@ -32,7 +32,16 @@ export interface IVerifyOtpRequest {
 }
 
 export interface User {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  gender: "MALE" | "FEMALE";
   tradeRole: "BUYER" | "COMPANY" | "FREELANCER";
+  cc: string;
+  phoneNumber: string;
 }
 
 export interface IVerifyOtp {

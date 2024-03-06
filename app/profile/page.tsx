@@ -1,5 +1,5 @@
 "use client";
-import { useUpdateProfile } from "@/apis/queries/user.queries";
+import { useMe, useUpdateProfile } from "@/apis/queries/user.queries";
 import {
   Accordion,
   AccordionContent,
@@ -39,7 +39,7 @@ import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -70,7 +70,7 @@ const formSchema = z.object({
   ),
   socialMedia: z.array(
     z.object({
-      type: z.string().trim().min(2, { message: "Type is Required" }),
+      linkType: z.string().trim().min(2, { message: "Type is Required" }),
       link: z
         .string()
         .trim()
@@ -101,13 +101,13 @@ export default function ProfilePage() {
       dob: new Date(),
       socialMedia: [
         {
-          type: "",
+          linkType: "",
           link: "",
         },
       ],
     },
   });
-
+  const me = useMe();
   const updateProfile = useUpdateProfile();
 
   const fieldArrayForPhoneNumber = useFieldArray({
@@ -127,7 +127,7 @@ export default function ProfilePage() {
 
   const appendSocialLinks = () =>
     fieldArrayForSocialMedia.append({
-      type: "",
+      linkType: "",
       link: "",
     });
 
@@ -142,7 +142,30 @@ export default function ProfilePage() {
   };
 
   const watchSocialMedia = form.watch("socialMedia");
-  const watchProfileImage = form.watch("profileImage");
+
+  useEffect(() => {
+    if (me.data) {
+      const { firstName, lastName, gender, email, phoneNumber } = me.data?.data;
+
+      form.reset({
+        firstName,
+        lastName,
+        gender,
+        email,
+        phoneNumber: [
+          {
+            phoneNumber: phoneNumber,
+          },
+        ],
+        socialMedia: [
+          {
+            linkType: "",
+            link: "",
+          },
+        ],
+      });
+    }
+  }, [me.data]);
 
   return (
     <section className="relative w-full py-7">
@@ -248,14 +271,15 @@ export default function ProfilePage() {
                           <RadioGroup
                             className="!mt-0 flex items-center gap-4"
                             onValueChange={field.onChange}
+                            defaultValue="MALE"
                           >
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="male" id="male" />
-                              <Label htmlFor="male">Male</Label>
+                              <RadioGroupItem value="MALE" id="MALE" />
+                              <Label htmlFor="MALE">Male</Label>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="female" id="female" />
-                              <Label htmlFor="female">Female</Label>
+                              <RadioGroupItem value="FEMALE" id="FEMALE" />
+                              <Label htmlFor="FEMALE">Female</Label>
                             </div>
                           </RadioGroup>
                         </FormControl>
@@ -425,11 +449,11 @@ export default function ProfilePage() {
                         >
                           <AccordionTrigger className="flex justify-between py-0">
                             <div className="flex items-center text-sm font-normal leading-4 text-color-dark">
-                              {watchSocialMedia[index]?.type !== "" ? (
+                              {watchSocialMedia[index]?.linkType !== "" ? (
                                 <Image
                                   src={
                                     SOCIAL_MEDIA_ICON[
-                                      watchSocialMedia[index]?.type
+                                      watchSocialMedia[index]?.linkType
                                     ]
                                   }
                                   className="mr-1.5"
@@ -442,7 +466,7 @@ export default function ProfilePage() {
                               )}
 
                               <span className="capitalize">
-                                {watchSocialMedia[index]?.type}
+                                {watchSocialMedia[index]?.linkType}
                               </span>
                             </div>
                             {/* TODO: remove this after discussing */}
@@ -464,7 +488,7 @@ export default function ProfilePage() {
                           <AccordionContent className="pb-0">
                             <FormField
                               control={form.control}
-                              name={`socialMedia.${index}.type`}
+                              name={`socialMedia.${index}.linkType`}
                               render={({ field }) => (
                                 <FormItem className="mt-3">
                                   <FormLabel>Type</FormLabel>
