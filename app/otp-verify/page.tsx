@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useVerifyOtp } from "@/apis/queries/auth.queries";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
+import Image from "next/image";
 
 export default function OtpVerifyPage() {
   const router = useRouter();
@@ -24,8 +25,21 @@ export default function OtpVerifyPage() {
   const verifyOtp = useVerifyOtp();
 
   const onSubmit = async (values: any) => {
+    if (otp.join("") === "") {
+      toast({
+        title: "OTP is required",
+      });
+      return;
+    }
     // TODO: fix z.infer for formvalue
     const combinedOtp = otp.join("");
+
+    if (combinedOtp.length !== 4) {
+      toast({
+        title: "OTP length should be 4 digits",
+      });
+      return;
+    }
     const data = {
       email: values.email,
       otp: Number(combinedOtp),
@@ -105,9 +119,12 @@ export default function OtpVerifyPage() {
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
-        <img
-          src="images/before-login-bg.png"
-          className="h-full w-full object-cover object-bottom"
+        <Image
+          src="/images/before-login-bg.png"
+          className="h-full w-full object-cover object-center"
+          alt="background"
+          fill
+          priority
         />
       </div>
       <div className="container relative z-10 m-auto">

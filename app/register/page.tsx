@@ -20,6 +20,15 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
+import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const formSchema = z
   .object({
@@ -27,7 +36,7 @@ const formSchema = z
       .string()
       .trim()
       .min(2, {
-        message: "First Name must be at least 2 characters",
+        message: "First Name is Required",
       })
       .max(50, {
         message: "First Name must be less than 50 characters",
@@ -35,24 +44,49 @@ const formSchema = z
     lastName: z
       .string()
       .trim()
-      .min(2, { message: "Last Name must be at least 2 characters" })
+      .min(2, { message: "Last Name is Required" })
       .max(50, {
         message: "Last Name must be less than 50 characters",
       }),
-    email: z.string().trim().email({
+    email: z.string().trim().min(5, { message: "Email is Required" }).email({
       message: "Invalid Email Address",
     }),
-    password: z.string().trim().min(8, {
-      message: "Password must be longer than or equal to 8 characters",
+    initialPassword: z
+      .string()
+      .trim()
+      .min(2, {
+        message: "Password is Required",
+      })
+      .min(8, {
+        message: "Password must be longer than or equal to 8 characters",
+      }),
+    password: z
+      .string()
+      .trim()
+      .min(2, {
+        message: "Confirm Password is Required",
+      })
+      .min(8, {
+        message: "Password must be longer than or equal to 8 characters",
+      }),
+    phoneNumber: z
+      .string()
+      .trim()
+      .min(2, {
+        message: "Phone Number is Required",
+      })
+      .min(10, {
+        message: "Phone Number must be longer than or equal to 10 characters",
+      })
+      .max(10, {
+        message: "Phone Number must be less than 10 characters",
+      }),
+    tradeRole: z.string().trim().min(2, {
+      message: "Trade Role is Required",
     }),
-    initialPassword: z.string().trim().min(8, {
-      message: "Password must be longer than or equal to 8 characters",
+    acceptTerms: z.boolean().refine((val) => val, {
+      message: "You must accept the terms",
     }),
-    phoneNumber: z.string().trim().min(10, {
-      message: "Phone Number must be at least 10 digits",
-    }),
-    tradeRole: z.string().trim(),
-    acceptTerms: z.boolean(),
     cc: z.string().trim(),
   })
   .superRefine(({ initialPassword, password }, ctx) => {
@@ -82,7 +116,7 @@ export default function RegisterPage() {
       acceptTerms: false,
     },
   });
-  const watchAcceptTerms = form.watch("acceptTerms");
+
   const register = useRegister();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -119,9 +153,12 @@ export default function RegisterPage() {
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
-        <img
-          src="images/before-login-bg.png"
+        <Image
+          src="/images/before-login-bg.png"
           className="h-full w-full object-cover object-center"
+          alt="background"
+          fill
+          priority
         />
       </div>
       <div className="container relative z-10 m-auto">
@@ -140,7 +177,13 @@ export default function RegisterPage() {
                     href="#"
                     className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                   >
-                    <img src="images/facebook-icon.png" className="mr-1.5" />
+                    <Image
+                      src="/images/facebook-icon.png"
+                      className="mr-1.5"
+                      alt="facebook-icon"
+                      height={26}
+                      width={26}
+                    />
                     <span>Sign In with Facebook</span>
                   </a>
                 </li>
@@ -149,7 +192,13 @@ export default function RegisterPage() {
                     href="#"
                     className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                   >
-                    <img src="images/google-icon.png" className="mr-1.5" />
+                    <Image
+                      src="/images/google-icon.png"
+                      className="mr-1.5"
+                      alt="google-icon"
+                      height={26}
+                      width={26}
+                    />
                     <span>Sign In with Facebook</span>
                   </a>
                 </li>
@@ -170,33 +219,35 @@ export default function RegisterPage() {
                     control={form.control}
                     name="tradeRole"
                     render={({ field }) => (
-                      <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row">
+                      <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row md:items-start">
                         <FormLabel className="mb-3 mr-6 capitalize md:mb-0">
                           Please select trade role:
                         </FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            className="!mt-0 flex items-center gap-4"
-                            onValueChange={field.onChange}
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="buyer" id="buyer" />
-                              <Label htmlFor="buyer">Buyer</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem
-                                value="freelancer"
-                                id="freelancer"
-                              />
-                              <Label htmlFor="freelancer">Freelancer</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="company" id="company" />
-                              <Label htmlFor="company">Company</Label>
-                            </div>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
+                        <div className="!mt-0">
+                          <FormControl className="mb-2">
+                            <RadioGroup
+                              className="!mt-0 flex items-center gap-4"
+                              onValueChange={field.onChange}
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="buyer" id="buyer" />
+                                <Label htmlFor="buyer">Buyer</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem
+                                  value="freelancer"
+                                  id="freelancer"
+                                />
+                                <Label htmlFor="freelancer">Freelancer</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="company" id="company" />
+                                <Label htmlFor="company">Company</Label>
+                              </div>
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -324,17 +375,49 @@ export default function RegisterPage() {
                             className="data-[state=checked]:!bg-dark-orange"
                           />
                         </FormControl>
-                        <div className="space-y-1 leading-none">
+                        <div className="space-y-2 leading-none">
                           <FormLabel className="text-light-gray">
-                            I Agree The Terms Of Use & Privacy Policy
+                            <Dialog>
+                              <DialogTrigger>
+                                I Agree The{" "}
+                                <span className="underline">Terms Of Use</span>{" "}
+                                &{" "}
+                                <span className="underline">
+                                  Privacy Policy
+                                </span>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogDescription>
+                                    Lorem ipsum dolor sit amet consectetur
+                                    adipisicing elit. Voluptate quas accusamus
+                                    unde vero, earum, quo perspiciatis libero
+                                    adipisci tempore magni ad quia vitae, sint
+                                    dolore voluptatum repellendus exercitationem
+                                    dolores! Esse. Lorem ipsum dolor sit amet
+                                    consectetur adipisicing elit. Voluptate quas
+                                    accusamus unde vero, earum, quo perspiciatis
+                                    libero adipisci tempore magni ad quia vitae,
+                                    sint dolore voluptatum repellendus
+                                    exercitationem dolores! Esse. Lorem ipsum
+                                    dolor sit amet consectetur adipisicing elit.
+                                    Voluptate quas accusamus unde vero, earum,
+                                    quo perspiciatis libero adipisci tempore
+                                    magni ad quia vitae, sint dolore voluptatum
+                                    repellendus exercitationem dolores! Esse.
+                                  </DialogDescription>
+                                </DialogHeader>
+                              </DialogContent>
+                            </Dialog>
                           </FormLabel>
+                          <FormMessage />
                         </div>
                       </FormItem>
                     )}
                   />
                   <div className="mb-4 w-full">
                     <Button
-                      disabled={!watchAcceptTerms || register.isPending}
+                      disabled={register.isPending}
                       type="submit"
                       className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >

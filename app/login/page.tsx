@@ -20,14 +20,21 @@ import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { setCookie } from "cookies-next";
+import Image from "next/image";
 
 const formSchema = z.object({
-  email: z.string().trim().email({
+  email: z.string().trim().min(5, { message: "Email is Required" }).email({
     message: "Invalid Email Address",
   }),
-  password: z.string().trim().min(8, {
-    message: "Password must be longer than or equal to 8 characters",
-  }),
+  password: z
+    .string()
+    .trim()
+    .min(2, {
+      message: "Password is Required",
+    })
+    .min(8, {
+      message: "Password must be longer than or equal to 8 characters",
+    }),
 });
 
 export default function LoginPage() {
@@ -66,9 +73,12 @@ export default function LoginPage() {
     <>
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
-          <img
-            src="images/before-login-bg.png"
+          <Image
+            src="/images/before-login-bg.png"
             className="h-full w-full object-cover object-center"
+            alt="background"
+            fill
+            priority
           />
         </div>
         <div className="container relative z-10 m-auto">
@@ -186,7 +196,13 @@ export default function LoginPage() {
                       href="#"
                       className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                     >
-                      <img src="images/facebook-icon.png" className="mr-1.5" />
+                      <Image
+                        src="/images/facebook-icon.png"
+                        className="mr-1.5"
+                        alt="facebook-icon"
+                        height={26}
+                        width={26}
+                      />
                       <span>Sign In with Facebook</span>
                     </a>
                   </li>
@@ -195,7 +211,13 @@ export default function LoginPage() {
                       href="#"
                       className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                     >
-                      <img src="images/google-icon.png" className="mr-1.5" />
+                      <Image
+                        src="/images/google-icon.png"
+                        className="mr-1.5"
+                        alt="google-icon"
+                        height={26}
+                        width={26}
+                      />
                       <span>Sign In with Facebook</span>
                     </a>
                   </li>

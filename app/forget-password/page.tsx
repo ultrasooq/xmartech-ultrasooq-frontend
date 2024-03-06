@@ -17,9 +17,10 @@ import { useForgotPassword } from "@/apis/queries/auth.queries";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import Image from "next/image";
 
 const formSchema = z.object({
-  email: z.string().trim().email({
+  email: z.string().trim().min(5, { message: "Email is Required" }).email({
     message: "Invalid Email Address",
   }),
 });
@@ -60,9 +61,12 @@ export default function ForgetPasswordPage() {
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
-        <img
-          src="images/before-login-bg.png"
-          className="h-full w-full object-cover object-bottom"
+        <Image
+          src="/images/before-login-bg.png"
+          className="h-full w-full object-cover object-center"
+          alt="background"
+          fill
+          priority
         />
       </div>
       <div className="container relative z-10 m-auto">
