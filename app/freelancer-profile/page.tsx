@@ -78,20 +78,23 @@ const formSchema = z.object({
     .string()
     .trim()
     .min(2, { message: "Branch Contact Name is Required" }),
-  startTime: z.date().transform((value) => {
-    const date = new Date(value);
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const formattedTime = `${hours}:${minutes}`;
-    return formattedTime;
-  }),
-  endTime: z.date().transform((value) => {
-    const date = new Date(value);
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const formattedTime = `${hours}:${minutes}`;
-    return formattedTime;
-  }),
+  // startTime: z.date().transform((value) => {
+  //   console.log(value);
+  //   const date = new Date(value);
+  //   const hours = String(date.getHours()).padStart(2, "0");
+  //   const minutes = String(date.getMinutes()).padStart(2, "0");
+  //   const formattedTime = `${hours}:${minutes}`;
+  //   return formattedTime;
+  // }),
+  // endTime: z.date().transform((value) => {
+  //   const date = new Date(value);
+  //   const hours = String(date.getHours()).padStart(2, "0");
+  //   const minutes = String(date.getMinutes()).padStart(2, "0");
+  //   const formattedTime = `${hours}:${minutes}`;
+  //   return formattedTime;
+  // }),
+  startTime: z.string().trim(),
+  endTime: z.string().trim(),
   workingDays: z.object({
     sun: z.number(),
     mon: z.number(),
@@ -134,8 +137,10 @@ export default function FreelancerProfilePage() {
       country: "",
       contactNumber: "9879879870",
       contactName: "Branches",
-      startTime: new Date(),
-      endTime: new Date(),
+      // startTime: new Date(),
+      // endTime: new Date(),
+      startTime: "",
+      endTime: "",
       workingDays: {
         sun: 0,
         mon: 0,
@@ -166,11 +171,11 @@ export default function FreelancerProfilePage() {
     };
 
     delete data.branchList[0].aboutUs;
-
+    console.log(data);
+    return;
     const response = await createFreelancerProfile.mutateAsync(data);
 
     if (response.status && response.data) {
-      console.log(response);
       toast({
         title: "Profile Created Successful",
         description: response.message,
@@ -192,6 +197,8 @@ export default function FreelancerProfilePage() {
       }) || []
     );
   }, [tagsQuery?.data]);
+
+  console.log(form.formState.errors);
 
   return (
     <section className="relative w-full py-7">
@@ -399,10 +406,13 @@ export default function FreelancerProfilePage() {
                     <Controller
                       name="startTime"
                       control={form.control}
-                      defaultValue={new Date()}
+                      // defaultValue={new Date()}
                       render={({ field }) => (
                         <TimePicker
-                          onChange={field.onChange}
+                          onChange={(e) => {
+                            console.log(e, typeof e);
+                            field.onChange(e);
+                          }}
                           value={field.value}
                           disableClock={true}
                         />
@@ -416,7 +426,7 @@ export default function FreelancerProfilePage() {
                     <Controller
                       name="endTime"
                       control={form.control}
-                      defaultValue={new Date()}
+                      // defaultValue={new Date()}
                       render={({ field }) => (
                         <TimePicker
                           onChange={field.onChange}
