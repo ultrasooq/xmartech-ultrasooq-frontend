@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
-import React from "react";
+import React, { useMemo } from "react";
 import { useCreateCompanyProfile } from "@/apis/queries/company.queries";
 import { useFieldArray, useForm } from "react-hook-form";
 import {
@@ -33,108 +33,174 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DAYS_OF_WEEK, TAG_LIST } from "@/utils/constants";
+import { DAYS_OF_WEEK } from "@/utils/constants";
 import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
+import { useTags } from "@/apis/queries/tags.queries";
+import { Item } from "@radix-ui/react-select";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  profileImage: z.string().trim(),
-  firstName: z
+  companyName: z
     .string()
     .trim()
-    .min(2, {
-      message: "First Name must be at least 2 characters",
-    })
-    .max(50, {
-      message: "First Name must be less than 50 characters",
-    }),
-  lastName: z
+    .min(2, { message: "Company Name is Required" })
+    .max(50, { message: "Company Name must be less than 50 characters" }),
+  annualPurchasingVolume: z
     .string()
     .trim()
-    .min(2, { message: "Last Name must be at least 2 characters" })
+    .min(2, { message: "Annual Purchasing Volume is Required" })
     .max(50, {
-      message: "Last Name must be less than 50 characters",
+      message: "Annual Purchasing Volume must be less than 20 characters",
     }),
-  email: z.string().trim().email({
-    message: "Invalid Email Address",
-  }),
-  phoneNumber: z.string().trim().min(10, {
-    message: "Phone Number must be at least 10 digits",
-  }),
-  gender: z.string().trim(),
-  dob: z.date({
-    required_error: "A date of birth is required.",
-  }),
-  branchList: z.array(z.object({})),
+  address: z
+    .string()
+    .trim()
+    .min(2, { message: "Address is Required" })
+    .max(50, {
+      message: "Address must be less than 50 characters",
+    }),
+  city: z.string().trim().min(2, { message: "City is Required" }),
+  province: z.string().trim().min(2, { message: "Province is Required" }),
+  country: z.string().trim().min(2, { message: "Country is Required" }),
+  yearOfEstablishment: z
+    .string()
+    .trim()
+    .min(2, { message: "Year Of Establishment is Required" }),
+  totalNoOfEmployee: z
+    .string()
+    .trim()
+    .min(2, { message: "Total No Of Employee is Required" }),
+  aboutUs: z.string().trim().min(2, { message: "About Us is Required" }),
+  branchList: z.array(
+    z.object({
+      businessTypeList: z
+        .array(
+          z.object({
+            label: z.string().trim(),
+            value: z.number(),
+          }),
+        )
+        .min(1, {
+          message: "Business Type is Required",
+        })
+        .transform((value) => {
+          let temp: any = [];
+          value.forEach((item) => {
+            temp.push({ businessTypeId: item.value });
+          });
+          return temp;
+        }),
+      address: z
+        .string()
+        .trim()
+        .min(2, { message: "Address is Required" })
+        .max(50, {
+          message: "Address must be less than 50 characters",
+        }),
+      city: z.string().trim().min(2, { message: "City is Required" }),
+      province: z.string().trim().min(2, { message: "Province is Required" }),
+      country: z.string().trim().min(2, { message: "Country is Required" }),
+      contactNumber: z
+        .string()
+        .trim()
+        .min(2, { message: "Branch Contact Number is Required" }),
+      contactName: z
+        .string()
+        .trim()
+        .min(2, { message: "Branch Contact Name is Required" }),
+      startTime: z.date().transform((value) => {
+        const date = new Date(value);
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const formattedTime = `${hours}:${minutes}`;
+        return formattedTime;
+      }),
+      endTime: z.date().transform((value) => {
+        const date = new Date(value);
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const formattedTime = `${hours}:${minutes}`;
+        return formattedTime;
+      }),
+      workingDays: z.object({
+        sun: z.number(),
+        mon: z.number(),
+        tue: z.number(),
+        wed: z.number(),
+        thu: z.number(),
+        fri: z.number(),
+        sat: z.number(),
+      }),
+      tagList: z
+        .array(
+          z.object({
+            label: z.string().trim(),
+            value: z.number(),
+          }),
+        )
+        .min(1, {
+          message: "Tag is Required",
+        })
+        .transform((value) => {
+          let temp: any = [];
+          value.forEach((item) => {
+            temp.push({ tagId: item.value });
+          });
+          return temp;
+        }),
+    }),
+  ),
 });
 
 export default function CompanyProfilePage() {
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      companyName: "",
+      profileType: "COMPANY", // dont remove value
       companyLogo: "",
-      profileType: "COMPANY",
+      companyName: "Flipkart",
+      annualPurchasingVolume: "1000",
       businessTypeList: undefined,
-      annualPurchaceVolume: "",
-      address: "",
-      city: "",
-      province: "",
+      address: "South City",
+      city: "kolkata",
+      province: "WB",
       country: "",
       yearOfEstablishment: "",
-      moreInfoCity: "",
-      aboutUs: "",
+      totalNoOfEmployee: "",
+      aboutUs: "Hello",
       branchList: [
         {
-          businessType: "",
+          profileType: "COMPANY",
+          businessTypeList: undefined,
           branchFrontPicture: "",
           proofOfAddress: "",
           address: "",
           city: "",
           province: "",
           country: "",
+          contactNumber: "",
+          contactName: "",
           startTime: new Date(),
           endTime: new Date(),
-          workingDays: [],
+          workingDays: {
+            sun: 0,
+            mon: 0,
+            tue: 0,
+            wed: 0,
+            thu: 0,
+            fri: 0,
+            sat: 0,
+          },
+          tagList: undefined,
+          mainOffice: 0,
         },
       ],
-      // branchList: [
-      //   {
-      //     profileType: "COMPANY",
-      //     branchFrontPicture: "abcd branchFrontPicture",
-      //     proofOfAddress: "abcd proofOfAddress",
-      //     address: "1/n aravali apartment",
-      //     city: "tollygunge",
-      //     province: "west bengal",
-      //     country: "india",
-      //     contactNumber: 8961039701,
-      //     contactName: "Prem Nath Jha",
-      //     startTime: new Date(),
-      //     endTime: new Date(),
-      //     workingDays: {
-      //       sun: 0,
-      //       mon: 1,
-      //       tue: 1,
-      //       wed: 1,
-      //       thu: 1,
-      //       fri: 1,
-      //       sat: 0,
-      //     },
-      //     businessTypeList: [
-      //       {
-      //         businessTypeId: 2,
-      //       },
-      //     ],
-      //     tagList: [
-      //       {
-      //         tagId: 2,
-      //       },
-      //     ],
-      //     mainOffice: 1,
-      //   },
-      // ],
     },
   });
-
+  const tagsQuery = useTags();
   const createCompanyProfile = useCreateCompanyProfile();
 
   const fieldArray = useFieldArray({
@@ -144,21 +210,73 @@ export default function CompanyProfilePage() {
 
   const appendBranchList = () =>
     fieldArray.append({
-      businessType: "",
+      profileType: "COMPANY",
+      businessTypeList: undefined,
       branchFrontPicture: "",
       proofOfAddress: "",
       address: "",
       city: "",
       province: "",
       country: "",
+      contactNumber: "",
+      contactName: "",
       startTime: new Date(),
       endTime: new Date(),
-      workingDays: [],
+      workingDays: {
+        sun: 0,
+        mon: 0,
+        tue: 0,
+        wed: 0,
+        thu: 0,
+        fri: 0,
+        sat: 0,
+      },
+      tagList: undefined,
+      mainOffice: 0,
     });
 
-  const onSubmit = async (values: any) => {
-    console.log(values);
+  const removeBranchList = (index: number) => fieldArray.remove(index);
+
+  const onSubmit = async (formData: any) => {
+    let data = {
+      ...formData,
+      profileType: "COMPANY",
+    };
+
+    if (data.branchList) {
+      const updatedBranchList = data.branchList.map(
+        (item: any, index: number) => ({
+          ...item,
+          profileType: "COMPANY",
+          mainOffice: index === 0 ? 1 : 0,
+        }),
+      );
+      data.branchList = updatedBranchList;
+    }
+
+    const response = await createCompanyProfile.mutateAsync(data);
+    if (response.status && response.data) {
+      toast({
+        title: "Profile Created Successful",
+        description: response.message,
+      });
+      form.reset();
+      router.push("/home");
+    } else {
+      toast({
+        title: "Profile Create Failed",
+        description: response.message,
+      });
+    }
   };
+
+  const memoizedTags = useMemo(() => {
+    return (
+      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
+        return { label: item.tagName, value: item.id };
+      }) || []
+    );
+  }, [tagsQuery?.data]);
 
   return (
     <section className="relative w-full py-7">
@@ -262,9 +380,16 @@ export default function CompanyProfilePage() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="type1">Type 1</SelectItem>
-                              <SelectItem value="type2">Type 2</SelectItem>
-                              <SelectItem value="type3">Type 3</SelectItem>
+                              {memoizedTags.map(
+                                (item: { label: string; value: number }) => (
+                                  <SelectItem
+                                    value={item.value?.toString()}
+                                    key={item.value}
+                                  >
+                                    {item.label}
+                                  </SelectItem>
+                                ),
+                              )}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -274,7 +399,7 @@ export default function CompanyProfilePage() {
 
                     <FormField
                       control={form.control}
-                      name="annualPurchaceVolume"
+                      name="annualPurchasingVolume"
                       render={({ field }) => (
                         <FormItem className="mb-4 w-full">
                           <FormLabel>Annual Purchasing Volume</FormLabel>
@@ -359,7 +484,7 @@ export default function CompanyProfilePage() {
                     name="country"
                     render={({ field }) => (
                       <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                        <FormLabel>Business Type</FormLabel>
+                        <FormLabel>Country</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -421,24 +546,24 @@ export default function CompanyProfilePage() {
 
                   <FormField
                     control={form.control}
-                    name="moreInfoCity"
+                    name="totalNoOfEmployee"
                     render={({ field }) => (
                       <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                        <FormLabel>City</FormLabel>
+                        <FormLabel>Total Number of Employees</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
-                              <SelectValue placeholder="Select City" />
+                              <SelectValue placeholder="Select Number of Employees" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="west">West Texas</SelectItem>
-                            <SelectItem value="east">East Texas</SelectItem>
-                            <SelectItem value="south">South Texas</SelectItem>
-                            <SelectItem value="north">North Texas</SelectItem>
+                            <SelectItem value="1000">1000</SelectItem>
+                            <SelectItem value="2000">2000</SelectItem>
+                            <SelectItem value="3000">3000</SelectItem>
+                            <SelectItem value="4000">4000</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -473,7 +598,11 @@ export default function CompanyProfilePage() {
                 <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
                   Branch
                 </label>
-                <div className="flex cursor-pointer items-center text-sm font-semibold capitalize leading-8 text-dark-orange">
+                <Button
+                  type="button"
+                  onClick={appendBranchList}
+                  className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                >
                   <Image
                     src="/images/add-icon.svg"
                     className="mr-1"
@@ -481,8 +610,8 @@ export default function CompanyProfilePage() {
                     height={14}
                     alt="add-icon"
                   />
-                  <span> Add new branch</span>
-                </div>
+                  <span>Add new branch</span>
+                </Button>
               </div>
             </div>
 
@@ -491,9 +620,13 @@ export default function CompanyProfilePage() {
                 <div className="mb-3.5 w-full">
                   <AccordionMultiSelect
                     label="Business Type"
-                    name={`branchList.${index}.businessType`}
-                    options={TAG_LIST}
+                    name={`branchList.${index}.businessTypeList`}
+                    options={memoizedTags || []}
                     placeholder="Business Type"
+                    error={
+                      form.formState.errors?.branchList?.[index]
+                        ?.businessTypeList?.message
+                    }
                   />
 
                   <FormField
@@ -655,6 +788,43 @@ export default function CompanyProfilePage() {
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name={`branchList.${index}.contactNumber`}
+                      render={({ field }) => (
+                        <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
+                          <FormLabel>Branch Contact Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="Branch Contact Number"
+                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`branchList.${index}.contactName`}
+                      render={({ field }) => (
+                        <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
+                          <FormLabel>Branch Contact Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Branch Contact Name"
+                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
 
@@ -765,21 +935,25 @@ export default function CompanyProfilePage() {
                     <div className="flex flex-wrap">
                       {DAYS_OF_WEEK.map((item) => (
                         <FormField
-                          key={item}
+                          key={item.value}
                           control={form.control}
                           name={`branchList.${index}.workingDays`}
                           render={({ field }) => (
                             <FormItem className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
+                                  onCheckedChange={(e) => {
+                                    field.onChange({
+                                      ...field.value,
+                                      [item.value]: e ? 1 : 0,
+                                    });
+                                  }}
                                   className="data-[state=checked]:!bg-dark-orange"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
                                 <FormLabel className="text-light-gray">
-                                  {item}
+                                  {item.label}
                                 </FormLabel>
                               </div>
                             </FormItem>
@@ -791,10 +965,30 @@ export default function CompanyProfilePage() {
 
                   <AccordionMultiSelect
                     label="Tag"
-                    name={`branchList.${index}.tags`}
-                    options={TAG_LIST}
+                    name={`branchList.${index}.tagList`}
+                    options={memoizedTags || []}
                     placeholder="Tag"
+                    error={
+                      form.formState.errors.branchList?.[index]?.tagList
+                        ?.message
+                    }
                   />
+                </div>
+                <div className="mb-3.5 flex w-full justify-end border-b-2 border-dashed border-gray-300 pb-4">
+                  {index !== 0 ? (
+                    <Button
+                      type="button"
+                      onClick={() => removeBranchList(index)}
+                      className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                    >
+                      <Image
+                        src="/images/social-delete-icon.svg"
+                        height={35}
+                        width={35}
+                        alt="social-delete-icon"
+                      />
+                    </Button>
+                  ) : null}
                 </div>
               </div>
             ))}

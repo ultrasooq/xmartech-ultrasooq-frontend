@@ -44,7 +44,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  profileImage: z.string().trim(),
+  profileImage: z.string().trim().optional(),
   firstName: z
     .string()
     .trim()
@@ -59,7 +59,7 @@ const formSchema = z.object({
   email: z.string().trim().min(10, { message: "Email is Required" }).email({
     message: "Invalid Email Address",
   }),
-  phoneNumber: z.array(
+  phoneNumberList: z.array(
     z.object({
       phoneNumber: z
         .string()
@@ -68,7 +68,7 @@ const formSchema = z.object({
         .max(10, { message: "Phone Number must be less than 10 digits" }),
     }),
   ),
-  socialMedia: z.array(
+  socialLinkList: z.array(
     z.object({
       linkType: z.string().trim().min(2, { message: "Type is Required" }),
       link: z
@@ -79,7 +79,11 @@ const formSchema = z.object({
         .url({ message: "Invalid URL" }),
     }),
   ),
-  dob: z.date({ required_error: "Date of Birth is required." }),
+  dateOfBirth: z.date({ required_error: "Date of Birth is required." }),
+  // .transform((value) => {
+  //   const date = new Date(value);
+  //   return date.toISOString();
+  // }),
 });
 
 export default function ProfilePage() {
@@ -93,13 +97,13 @@ export default function ProfilePage() {
       lastName: "",
       gender: "",
       email: "",
-      phoneNumber: [
+      phoneNumberList: [
         {
           phoneNumber: "",
         },
       ],
-      dob: new Date(),
-      socialMedia: [
+      dateOfBirth: new Date(),
+      socialLinkList: [
         {
           linkType: "",
           link: "",
@@ -112,12 +116,12 @@ export default function ProfilePage() {
 
   const fieldArrayForPhoneNumber = useFieldArray({
     control: form.control,
-    name: "phoneNumber",
+    name: "phoneNumberList",
   });
 
   const fieldArrayForSocialMedia = useFieldArray({
     control: form.control,
-    name: "socialMedia",
+    name: "socialLinkList",
   });
 
   const appendPhoneNumber = () =>
@@ -137,11 +141,37 @@ export default function ProfilePage() {
   const removeSocialLinks = (index: number) =>
     fieldArrayForSocialMedia.remove(index);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    const data = {
+      ...formData,
+      dateOfBirth: formData.dateOfBirth.toISOString(),
+    };
+
+    data.phoneNumberList = data.phoneNumberList.map((entry) =>
+      JSON.stringify(entry),
+    ) as any;
+    data.socialLinkList = data.socialLinkList.map((entry) =>
+      JSON.stringify(entry),
+    ) as any;
+
+    const response = await updateProfile.mutateAsync(data);
+    if (response.status && response.data) {
+      console.log(response);
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully",
+      });
+      form.reset();
+      router.push("/home");
+    } else {
+      toast({
+        title: "Profile Update Failed",
+        description: response.message,
+      });
+    }
   };
 
-  const watchSocialMedia = form.watch("socialMedia");
+  const watchSocialMedia = form.watch("socialLinkList");
 
   useEffect(() => {
     if (me.data) {
@@ -152,12 +182,12 @@ export default function ProfilePage() {
         lastName,
         gender,
         email,
-        phoneNumber: [
+        phoneNumberList: [
           {
             phoneNumber: phoneNumber,
           },
         ],
-        socialMedia: [
+        socialLinkList: [
           {
             linkType: "",
             link: "",
@@ -290,7 +320,7 @@ export default function ProfilePage() {
 
                   <FormField
                     control={form.control}
-                    name="dob"
+                    name="dateOfBirth"
                     render={({ field }) => (
                       <FormItem className="mb-4 flex w-full flex-col">
                         <FormLabel>Date of Birth</FormLabel>
@@ -384,7 +414,7 @@ export default function ProfilePage() {
                       <FormField
                         key={field.id}
                         control={form.control}
-                        name={`phoneNumber.${index}.phoneNumber`}
+                        name={`phoneNumberList.${index}.phoneNumber`}
                         render={({ field }) => (
                           <FormItem className="w-full">
                             <FormControl>
@@ -488,7 +518,7 @@ export default function ProfilePage() {
                           <AccordionContent className="pb-0">
                             <FormField
                               control={form.control}
-                              name={`socialMedia.${index}.linkType`}
+                              name={`socialLinkList.${index}.linkType`}
                               render={({ field }) => (
                                 <FormItem className="mt-3">
                                   <FormLabel>Type</FormLabel>
@@ -533,7 +563,7 @@ export default function ProfilePage() {
                             <FormField
                               key={field.id}
                               control={form.control}
-                              name={`socialMedia.${index}.link`}
+                              name={`socialLinkList.${index}.link`}
                               render={({ field }) => (
                                 <FormItem className="mb-4 mt-3 w-full">
                                   <FormLabel>Link</FormLabel>

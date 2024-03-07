@@ -27,60 +27,171 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { BUSINESS_TYPE_LIST, DAYS_OF_WEEK, TAG_LIST } from "@/utils/constants";
+import { DAYS_OF_WEEK } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import Image from "next/image";
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useMemo } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import TimePicker from "react-time-picker";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { useTags } from "@/apis/queries/tags.queries";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   aboutUs: z.string().trim().min(2, { message: "About Us is Required" }),
-  businessType: z.array(z.string()),
-  address: z.string().trim().min(2, { message: "Address is Required" }),
+  businessTypeList: z
+    .array(
+      z.object({
+        label: z.string().trim(),
+        value: z.number(),
+      }),
+    )
+    .min(1, {
+      message: "Business Type is Required",
+    })
+    .transform((value) => {
+      let temp: any = [];
+      value.forEach((item) => {
+        temp.push({ businessTypeId: item.value });
+      });
+      return temp;
+    }),
+  address: z
+    .string()
+    .trim()
+    .min(2, { message: "Address is Required" })
+    .max(50, {
+      message: "Address must be less than 50 characters",
+    }),
   city: z.string().trim().min(2, { message: "City is Required" }),
   province: z.string().trim().min(2, { message: "Province is Required" }),
   country: z.string().trim().min(2, { message: "Country is Required" }),
-  branchContactNumber: z
+  contactNumber: z
     .string()
     .trim()
     .min(2, { message: "Branch Contact Number is Required" }),
-  branchContactName: z
+  contactName: z
     .string()
     .trim()
     .min(2, { message: "Branch Contact Name is Required" }),
-  startTime: z.date(),
-  endTime: z.date(),
-  // days: z.array(z.string()),
-  tags: z.array(z.string()),
+  startTime: z.date().transform((value) => {
+    const date = new Date(value);
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const formattedTime = `${hours}:${minutes}`;
+    return formattedTime;
+  }),
+  endTime: z.date().transform((value) => {
+    const date = new Date(value);
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const formattedTime = `${hours}:${minutes}`;
+    return formattedTime;
+  }),
+  workingDays: z.object({
+    sun: z.number(),
+    mon: z.number(),
+    tue: z.number(),
+    wed: z.number(),
+    thu: z.number(),
+    fri: z.number(),
+    sat: z.number(),
+  }),
+  tagList: z
+    .array(
+      z.object({
+        label: z.string().trim(),
+        value: z.number(),
+      }),
+    )
+    .min(1, {
+      message: "Tag is Required",
+    })
+    .transform((value) => {
+      let temp: any = [];
+      value.forEach((item) => {
+        temp.push({ tagId: item.value });
+      });
+      return temp;
+    }),
 });
 
 export default function FreelancerProfilePage() {
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      aboutUs: "",
-      businessType: undefined,
-      address: "",
-      city: "",
-      province: "",
+      aboutUs: "Hello",
+      businessTypeList: undefined,
+      address: "50F south sinthee",
+      city: "Kolkata",
+      province: "WB",
       country: "",
-      branchContactNumber: "",
-      branchContactName: "",
+      contactNumber: "9879879870",
+      contactName: "Branches",
       startTime: new Date(),
       endTime: new Date(),
-      days: undefined,
-      tags: undefined,
+      workingDays: {
+        sun: 0,
+        mon: 0,
+        tue: 0,
+        wed: 0,
+        thu: 0,
+        fri: 0,
+        sat: 0,
+      },
+      tagList: undefined,
     },
   });
 
+  const tagsQuery = useTags();
   const createFreelancerProfile = useCreateFreelancerProfile();
 
-  const onSubmit = async (values: any) => {
-    console.log(values);
+  const onSubmit = async (formData: any) => {
+    const data = {
+      aboutUs: formData.aboutUs,
+      profileType: "FREELANCER",
+      branchList: [
+        {
+          ...formData,
+          profileType: "FREELANCER",
+          mainOffice: 1,
+        },
+      ],
+    };
+
+    delete data.branchList[0].aboutUs;
+
+    const response = await createFreelancerProfile.mutateAsync(data);
+
+    if (response.status && response.data) {
+      console.log(response);
+      toast({
+        title: "Profile Created Successful",
+        description: response.message,
+      });
+      form.reset();
+      router.push("/home");
+    } else {
+      toast({
+        title: "Profile Created Failed",
+        description: response.message,
+      });
+    }
   };
+
+  const memoizedTags = useMemo(() => {
+    return (
+      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
+        return { label: item.tagName, value: item.id };
+      }) || []
+    );
+  }, [tagsQuery?.data]);
 
   return (
     <section className="relative w-full py-7">
@@ -136,68 +247,11 @@ export default function FreelancerProfilePage() {
 
                     <AccordionMultiSelect
                       label="Business Type"
-                      name="businessType"
-                      options={BUSINESS_TYPE_LIST}
+                      name="businessTypeList"
+                      options={memoizedTags || []}
                       placeholder="Business Type"
+                      error={form.formState.errors.businessTypeList?.message}
                     />
-
-                    <div className="inline-block w-full">
-                      <label className="mb-3 block text-left text-sm font-medium leading-5 text-color-dark">
-                        Business Type
-                      </label>
-                      <div className="relative mb-3.5 w-full rounded border border-solid border-gray-200 p-3">
-                        <div className="flex w-full items-center justify-between">
-                          <div className="w-auto">
-                            <span className="my-1 mr-2 inline-flex items-center justify-between rounded bg-zinc-100 px-3.5 py-3 text-sm font-normal leading-4 text-dark-cyan">
-                              Individual
-                              <img src="images/close.svg" className="ml-4" />
-                            </span>
-                          </div>
-                          <div className="w-auto">
-                            <ul>
-                              <li>
-                                <img src="images/social-arrow-icon.svg" />
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="relative mb-3.5 w-full rounded border border-solid border-gray-200 p-3">
-                        <div className="flex w-auto items-center justify-between p-0 px-2 lg:w-full lg:px-0">
-                          <label className="flex w-auto items-center justify-start text-sm font-normal leading-8 text-light-gray">
-                            <input
-                              type="checkbox"
-                              name=""
-                              className="absolute h-0 w-0 cursor-pointer opacity-0 [&:checked+span]:border-dark-orange [&:checked+span]:bg-dark-orange [&:checked~span]:text-color-dark "
-                            />
-                            <span className="relative mr-2.5 inline-block h-5 w-5 overflow-hidden rounded-sm border-2 border-solid border-gray-400 bg-transparent before:absolute before:-top-1 before:bottom-0 before:left-0 before:right-0 before:m-auto before:block before:h-3 before:w-1.5 before:rotate-45 before:border-b-2 before:border-r-2 before:border-solid before:border-white before:content-['']"></span>
-                            <span className="tex">Individual</span>
-                          </label>
-                        </div>
-                        <div className="flex w-auto items-center justify-between p-0 px-2 lg:w-full lg:px-0">
-                          <label className="flex w-auto items-center justify-start text-sm font-normal leading-8 text-light-gray">
-                            <input
-                              type="checkbox"
-                              name=""
-                              className="absolute h-0 w-0 cursor-pointer opacity-0 [&:checked+span]:border-dark-orange [&:checked+span]:bg-dark-orange [&:checked~span]:text-color-dark "
-                            />
-                            <span className="relative mr-2.5 inline-block h-5 w-5 overflow-hidden rounded-sm border-2 border-solid border-gray-400 bg-transparent before:absolute before:-top-1 before:bottom-0 before:left-0 before:right-0 before:m-auto before:block before:h-3 before:w-1.5 before:rotate-45 before:border-b-2 before:border-r-2 before:border-solid before:border-white before:content-['']"></span>
-                            <span className="tex">service provider</span>
-                          </label>
-                        </div>
-                        <div className="flex w-auto items-center justify-between p-0 px-2 lg:w-full lg:px-0">
-                          <label className="flex w-auto items-center justify-start text-sm font-normal leading-8 text-light-gray">
-                            <input
-                              type="checkbox"
-                              name=""
-                              className="absolute h-0 w-0 cursor-pointer opacity-0 [&:checked+span]:border-dark-orange [&:checked+span]:bg-dark-orange [&:checked~span]:text-color-dark "
-                            />
-                            <span className="relative mr-2.5 inline-block h-5 w-5 overflow-hidden rounded-sm border-2 border-solid border-gray-400 bg-transparent before:absolute before:-top-1 before:bottom-0 before:left-0 before:right-0 before:m-auto before:block before:h-3 before:w-1.5 before:rotate-45 before:border-b-2 before:border-r-2 before:border-solid before:border-white before:content-['']"></span>
-                            <span className="tex">Other</span>
-                          </label>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
                 <div className="mb-3.5 w-full">
@@ -280,11 +334,9 @@ export default function FreelancerProfilePage() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="m@example.com">USA</SelectItem>
-                              <SelectItem value="m@google.com">UK</SelectItem>
-                              <SelectItem value="m@support.com">
-                                India
-                              </SelectItem>
+                              <SelectItem value="USA">USA</SelectItem>
+                              <SelectItem value="UK">UK</SelectItem>
+                              <SelectItem value="India">India</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -294,7 +346,7 @@ export default function FreelancerProfilePage() {
 
                     <FormField
                       control={form.control}
-                      name="branchContactNumber"
+                      name="contactNumber"
                       render={({ field }) => (
                         <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
                           <FormLabel>Branch Contact Number</FormLabel>
@@ -313,7 +365,7 @@ export default function FreelancerProfilePage() {
 
                     <FormField
                       control={form.control}
-                      name="branchContactName"
+                      name="contactName"
                       render={({ field }) => (
                         <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
                           <FormLabel>Branch Contact Name</FormLabel>
@@ -340,7 +392,41 @@ export default function FreelancerProfilePage() {
                   </div>
                 </div>
                 <div className="grid w-full grid-cols-1 gap-x-6 md:grid-cols-2">
-                  <FormField
+                  <div className="mb-4 w-full">
+                    <Label htmlFor="startTime" className="text-color-dark">
+                      Start Time
+                    </Label>
+                    <Controller
+                      name="startTime"
+                      control={form.control}
+                      defaultValue={new Date()}
+                      render={({ field }) => (
+                        <TimePicker
+                          onChange={field.onChange}
+                          value={field.value}
+                          disableClock={true}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="mb-4 w-full">
+                    <Label htmlFor="endTime" className="text-color-dark">
+                      End Time
+                    </Label>
+                    <Controller
+                      name="endTime"
+                      control={form.control}
+                      defaultValue={new Date()}
+                      render={({ field }) => (
+                        <TimePicker
+                          onChange={field.onChange}
+                          value={field.value}
+                          disableClock={true}
+                        />
+                      )}
+                    />
+                  </div>
+                  {/* <FormField
                     control={form.control}
                     name="startTime"
                     render={({ field }) => (
@@ -381,9 +467,9 @@ export default function FreelancerProfilePage() {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
 
-                  <FormField
+                  {/* <FormField
                     control={form.control}
                     name="endTime"
                     render={({ field }) => (
@@ -424,27 +510,31 @@ export default function FreelancerProfilePage() {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
                 </div>
                 <div className="mb-3.5 w-full border-b-2 border-dashed border-gray-300 pb-4">
                   <div className="flex flex-wrap">
                     {DAYS_OF_WEEK.map((item) => (
                       <FormField
-                        key={item}
+                        key={item.value}
                         control={form.control}
-                        name="days"
+                        name="workingDays"
                         render={({ field }) => (
                           <FormItem className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
                             <FormControl>
                               <Checkbox
-                                checked={field.value && field.value === item}
-                                onCheckedChange={field.onChange}
+                                onCheckedChange={(e) => {
+                                  field.onChange({
+                                    ...field.value,
+                                    [item.value]: e ? 1 : 0,
+                                  });
+                                }}
                                 className="data-[state=checked]:!bg-dark-orange"
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
                               <FormLabel className="text-light-gray">
-                                {item}
+                                {item.label}
                               </FormLabel>
                             </div>
                           </FormItem>
@@ -456,9 +546,10 @@ export default function FreelancerProfilePage() {
 
                 <AccordionMultiSelect
                   label="Tag"
-                  name="tags"
-                  options={TAG_LIST}
+                  name="tagList"
+                  options={memoizedTags || []}
                   placeholder="Tag"
+                  error={form.formState.errors.tagList?.message}
                 />
               </div>
 
