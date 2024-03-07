@@ -15,6 +15,7 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { deleteCookie, setCookie } from "cookies-next";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -22,12 +23,24 @@ import { z } from "zod";
 
 const formSchema = z
   .object({
-    newPassword: z.string().trim().min(8, {
-      message: "Password must be longer than or equal to 8 characters",
-    }),
-    confirmPassword: z.string().trim().min(8, {
-      message: "Password must be longer than or equal to 8 characters",
-    }),
+    newPassword: z
+      .string()
+      .trim()
+      .min(2, {
+        message: "New Password is Required",
+      })
+      .min(8, {
+        message: "Password must be longer than or equal to 8 characters",
+      }),
+    confirmPassword: z
+      .string()
+      .trim()
+      .min(2, {
+        message: "Password is Required",
+      })
+      .min(8, {
+        message: "Password must be longer than or equal to 8 characters",
+      }),
   })
   .superRefine(({ newPassword, confirmPassword }, ctx) => {
     if (newPassword !== confirmPassword) {
@@ -92,9 +105,12 @@ export default function ResetPasswordPage() {
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
-        <img
-          src="images/before-login-bg.png"
-          className="h-full w-full object-cover object-bottom"
+        <Image
+          src="/images/before-login-bg.png"
+          className="h-full w-full object-cover object-center"
+          alt="background"
+          fill
+          priority
         />
       </div>
       <div className="container relative z-10 m-auto">
