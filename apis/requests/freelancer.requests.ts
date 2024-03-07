@@ -1,15 +1,16 @@
-import { PUREMOON_TOKEN_KEY } from "@/utils/constants"
-import axios from "axios"
-import { getCookie } from "cookies-next"
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import axios from "axios";
+import { getCookie } from "cookies-next";
 
-export const createFreelancerProfile = (payload:any) => {
-    return axios({
+export const createFreelancerProfile = (payload: any) => {
+  return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/freelancer/update-profile`,
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/userProfile`,
     data: payload,
     headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer " + getCookie(PUREMOON_TOKEN_KEY)
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
     },
-})}
+  });
+};

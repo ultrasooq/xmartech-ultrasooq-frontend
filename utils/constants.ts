@@ -10,6 +10,40 @@ export const DAYS_OF_WEEK: string[] = [
   "Sat",
 ];
 
+export const DAYS_OF_WEEK_V2: {
+  label: string;
+  value: string;
+}[] = [
+  {
+    label: "Sun",
+    value: "sun",
+  },
+  {
+    label: "Mon",
+    value: "mon",
+  },
+  {
+    label: "Tues",
+    value: "tue",
+  },
+  {
+    label: "Wed",
+    value: "wed",
+  },
+  {
+    label: "Thurs",
+    value: "thu",
+  },
+  {
+    label: "Fri",
+    value: "fri",
+  },
+  {
+    label: "Sat",
+    value: "sat",
+  },
+];
+
 export const SOCIAL_MEDIA_LIST: { type: string; icon: string }[] = [
   {
     type: "facebook",

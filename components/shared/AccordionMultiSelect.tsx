@@ -17,6 +17,7 @@ interface ISelectProps {
     value: string;
   }[];
   placeholder?: string;
+  error?: string;
 }
 
 const AccordionMultiSelect = ({
@@ -24,27 +25,34 @@ const AccordionMultiSelect = ({
   name,
   options = [],
   placeholder,
+  error,
 }: ISelectProps) => {
   const formContext = useFormContext();
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<
+    {
+      label: string;
+      value: string | number;
+    }[]
+  >([]);
 
-  const handleSelectChange = (value: string) => {
-    if (!selectedItems.includes(value)) {
-      setSelectedItems((prev) => [...prev, value]);
+  const handleSelectChange = (item: { label: string; value: string }) => {
+    if (!selectedItems.includes(item)) {
+      setSelectedItems((prev) => [...prev, item]);
     } else {
       const referencedArray = [...selectedItems];
-      const indexOfItemToBeRemoved = referencedArray.indexOf(value);
+      const indexOfItemToBeRemoved = referencedArray.indexOf(item);
       referencedArray.splice(indexOfItemToBeRemoved, 1);
       setSelectedItems(referencedArray);
     }
   };
 
-  const isOptionSelected = (item: string): boolean =>
+  const isOptionSelected = (item: { label: string; value: string }): boolean =>
     selectedItems.includes(item) ? true : false;
 
   const watchSelectedItems = formContext.getValues(name);
 
   useEffect(() => {
+    // console.log("watchSelectedItems", selectedItems);
     formContext.setValue(name, selectedItems);
   }, [watchSelectedItems]);
 
@@ -65,10 +73,10 @@ const AccordionMultiSelect = ({
               {selectedItems.length ? (
                 selectedItems.map((item) => (
                   <p
-                    key={item}
+                    key={item.value}
                     className="my-1 mr-2 inline-flex items-center justify-between rounded bg-zinc-100 px-3.5 py-3 text-sm font-normal capitalize leading-4 text-dark-cyan"
                   >
-                    {item}
+                    {item.label}
                   </p>
                 ))
               ) : (
@@ -87,9 +95,9 @@ const AccordionMultiSelect = ({
                     <FormItem className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
                       <FormControl>
                         <Checkbox
-                          checked={isOptionSelected(option.value)}
+                          checked={isOptionSelected(option)}
                           onCheckedChange={() => {
-                            handleSelectChange(option.value);
+                            handleSelectChange(option);
                             field.onChange(option.value);
                           }}
                           className="data-[state=checked]:!bg-dark-orange"
@@ -108,6 +116,8 @@ const AccordionMultiSelect = ({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+
+      <p className="text-[13px] text-red-500">{error}</p>
     </>
   );
 };
