@@ -66,7 +66,6 @@ export default function ResetPasswordPage() {
   const resetPassword = useResetPassword();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     const response = await resetPassword.mutateAsync(values, {
       onError: (err) => {
         toast({

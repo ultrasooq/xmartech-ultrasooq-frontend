@@ -52,7 +52,6 @@ const AccordionMultiSelect = ({
   const watchSelectedItems = formContext.getValues(name);
 
   useEffect(() => {
-    // console.log("watchSelectedItems", selectedItems);
     formContext.setValue(name, selectedItems);
   }, [watchSelectedItems]);
 

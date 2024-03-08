@@ -117,7 +117,7 @@ export default function OtpVerifyPage() {
     if (window) {
       const storedEmail = sessionStorage.getItem("email");
       const storedOTP = sessionStorage.getItem("otp");
-      console.log({ storedEmail, storedOTP });
+
       if (storedEmail && storedOTP) {
         form.setValue("email", storedEmail);
         form.setValue("otp", storedOTP);

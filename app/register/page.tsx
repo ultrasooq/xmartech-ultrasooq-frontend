@@ -120,8 +120,6 @@ export default function RegisterPage() {
   const register = useRegister();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // console.log(values);
-    // return;
     const data = {
       firstName: values.firstName,
       lastName: values.lastName,

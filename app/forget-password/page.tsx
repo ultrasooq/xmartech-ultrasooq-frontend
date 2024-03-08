@@ -37,7 +37,6 @@ export default function ForgetPasswordPage() {
   const forgotPassword = useForgotPassword();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     const response = await forgotPassword.mutateAsync(values);
 
     if (response?.status) {
