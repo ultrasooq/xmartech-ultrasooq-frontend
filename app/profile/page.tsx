@@ -595,6 +595,12 @@ export default function ProfilePage() {
                     </div>
                   ))}
 
+                  <p className="mb-3 text-[13px] text-red-500">
+                    {form.formState.errors.socialLinkList?.length
+                      ? "Social Links is required"
+                      : null}
+                  </p>
+
                   <Button
                     disabled={updateProfile.isPending}
                     type="submit"
