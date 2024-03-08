@@ -156,7 +156,6 @@ export default function ProfilePage() {
 
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
-      console.log(response);
       toast({
         title: "Profile Updated",
         description: "Your profile has been updated successfully",

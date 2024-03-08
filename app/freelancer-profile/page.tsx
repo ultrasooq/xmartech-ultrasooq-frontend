@@ -2,7 +2,6 @@
 import { useCreateFreelancerProfile } from "@/apis/queries/freelancer.queries";
 import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -14,11 +13,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -26,11 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { DAYS_OF_WEEK } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
-import { format } from "date-fns";
 import Image from "next/image";
 import React, { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -73,24 +65,22 @@ const formSchema = z.object({
   contactNumber: z
     .string()
     .trim()
-    .min(2, { message: "Branch Contact Number is Required" }),
+    .min(2, { message: "Branch Contact Number is Required" })
+    .min(10, {
+      message: "Branch Contact must be longer than or equal to 10 characters",
+    })
+    .max(10, {
+      message: "Branch Contact must be less than 10 characters",
+    }),
   contactName: z
     .string()
     .trim()
     .min(2, { message: "Branch Contact Name is Required" }),
-  startTime: z.date().transform((value) => {
-    const date = new Date(value);
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const formattedTime = `${hours}:${minutes}`;
-    return formattedTime;
+  startTime: z.string().trim().min(1, {
+    message: "Start Time is Required",
   }),
-  endTime: z.date().transform((value) => {
-    const date = new Date(value);
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const formattedTime = `${hours}:${minutes}`;
-    return formattedTime;
+  endTime: z.string().trim().min(1, {
+    message: "End Time is Required",
   }),
   workingDays: z.object({
     sun: z.number(),
@@ -126,16 +116,16 @@ export default function FreelancerProfilePage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      aboutUs: "Hello",
+      aboutUs: "",
       businessTypeList: undefined,
-      address: "50F south sinthee",
-      city: "Kolkata",
-      province: "WB",
+      address: "",
+      city: "",
+      province: "",
       country: "",
-      contactNumber: "9879879870",
-      contactName: "Branches",
-      startTime: new Date(),
-      endTime: new Date(),
+      contactNumber: "",
+      contactName: "",
+      startTime: "",
+      endTime: "",
       workingDays: {
         sun: 0,
         mon: 0,
@@ -170,7 +160,6 @@ export default function FreelancerProfilePage() {
     const response = await createFreelancerProfile.mutateAsync(data);
 
     if (response.status && response.data) {
-      console.log(response);
       toast({
         title: "Profile Created Successful",
         description: response.message,
@@ -392,125 +381,46 @@ export default function FreelancerProfilePage() {
                   </div>
                 </div>
                 <div className="grid w-full grid-cols-1 gap-x-6 md:grid-cols-2">
-                  <div className="mb-4 w-full">
+                  <div className="mb-4 flex w-full flex-col gap-y-3">
                     <Label htmlFor="startTime" className="text-color-dark">
                       Start Time
                     </Label>
                     <Controller
                       name="startTime"
                       control={form.control}
-                      defaultValue={new Date()}
                       render={({ field }) => (
                         <TimePicker
                           onChange={field.onChange}
                           value={field.value}
                           disableClock={true}
+                          className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
                         />
                       )}
                     />
+                    <p className="text-[13px] text-red-500">
+                      {form.formState.errors.startTime?.message}
+                    </p>
                   </div>
-                  <div className="mb-4 w-full">
+                  <div className="mb-4 flex w-full flex-col gap-y-3">
                     <Label htmlFor="endTime" className="text-color-dark">
                       End Time
                     </Label>
                     <Controller
                       name="endTime"
                       control={form.control}
-                      defaultValue={new Date()}
                       render={({ field }) => (
                         <TimePicker
                           onChange={field.onChange}
                           value={field.value}
                           disableClock={true}
+                          className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
                         />
                       )}
                     />
+                    <p className="text-[13px] text-red-500">
+                      {form.formState.errors.endTime?.message}
+                    </p>
                   </div>
-                  {/* <FormField
-                    control={form.control}
-                    name="startTime"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 flex w-full flex-col">
-                        <FormLabel>Start Time</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "!h-[54px] rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date("1900-01-01")
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  /> */}
-
-                  {/* <FormField
-                    control={form.control}
-                    name="endTime"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 flex w-full flex-col">
-                        <FormLabel>End Time</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "!h-[54px] rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date("1900-01-01")
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  /> */}
                 </div>
                 <div className="mb-3.5 w-full border-b-2 border-dashed border-gray-300 pb-4">
                   <div className="flex flex-wrap">
