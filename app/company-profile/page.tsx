@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import React, { useMemo } from "react";
 import { useCreateCompanyProfile } from "@/apis/queries/company.queries";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -24,21 +24,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DAYS_OF_WEEK } from "@/utils/constants";
 import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
 import { useTags } from "@/apis/queries/tags.queries";
-import { Item } from "@radix-ui/react-select";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
+import TimePicker from "react-time-picker";
 
 const formSchema = z.object({
   companyName: z
@@ -104,24 +97,23 @@ const formSchema = z.object({
       contactNumber: z
         .string()
         .trim()
-        .min(2, { message: "Branch Contact Number is Required" }),
+        .min(2, { message: "Branch Contact Number is Required" })
+        .min(10, {
+          message:
+            "Branch Contact must be longer than or equal to 10 characters",
+        })
+        .max(10, {
+          message: "Branch Contact must be less than 10 characters",
+        }),
       contactName: z
         .string()
         .trim()
         .min(2, { message: "Branch Contact Name is Required" }),
-      startTime: z.date().transform((value) => {
-        const date = new Date(value);
-        const hours = String(date.getHours()).padStart(2, "0");
-        const minutes = String(date.getMinutes()).padStart(2, "0");
-        const formattedTime = `${hours}:${minutes}`;
-        return formattedTime;
+      startTime: z.string().trim().min(1, {
+        message: "Start Time is Required",
       }),
-      endTime: z.date().transform((value) => {
-        const date = new Date(value);
-        const hours = String(date.getHours()).padStart(2, "0");
-        const minutes = String(date.getMinutes()).padStart(2, "0");
-        const formattedTime = `${hours}:${minutes}`;
-        return formattedTime;
+      endTime: z.string().trim().min(1, {
+        message: "End Time is Required",
       }),
       workingDays: z.object({
         sun: z.number(),
@@ -161,16 +153,17 @@ export default function CompanyProfilePage() {
     defaultValues: {
       profileType: "COMPANY", // dont remove value
       companyLogo: "",
-      companyName: "Flipkart",
-      annualPurchasingVolume: "1000",
+      companyName: "",
+      //TODO: change to number
+      annualPurchasingVolume: "",
       businessTypeList: undefined,
-      address: "South City",
-      city: "kolkata",
-      province: "WB",
+      address: "",
+      city: "",
+      province: "",
       country: "",
       yearOfEstablishment: "",
       totalNoOfEmployee: "",
-      aboutUs: "Hello",
+      aboutUs: "",
       branchList: [
         {
           profileType: "COMPANY",
@@ -183,8 +176,8 @@ export default function CompanyProfilePage() {
           country: "",
           contactNumber: "",
           contactName: "",
-          startTime: new Date(),
-          endTime: new Date(),
+          startTime: "",
+          endTime: "",
           workingDays: {
             sun: 0,
             mon: 0,
@@ -220,8 +213,8 @@ export default function CompanyProfilePage() {
       country: "",
       contactNumber: "",
       contactName: "",
-      startTime: new Date(),
-      endTime: new Date(),
+      startTime: "",
+      endTime: "",
       workingDays: {
         sun: 0,
         mon: 0,
@@ -255,6 +248,7 @@ export default function CompanyProfilePage() {
     }
 
     const response = await createCompanyProfile.mutateAsync(data);
+
     if (response.status && response.data) {
       toast({
         title: "Profile Created Successful",
@@ -838,97 +832,53 @@ export default function CompanyProfilePage() {
                   </div>
                   <div className="w-full">
                     <div className="flex flex-wrap">
-                      <FormField
-                        control={form.control}
-                        name={`branchList.${index}.startTime`}
-                        render={({ field }) => (
-                          <FormItem className="mb-4 flex w-full flex-col md:w-6/12 md:pr-3.5">
-                            <FormLabel>Start Time</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                      "!h-[54px] rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
-                                      !field.value && "text-muted-foreground",
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP")
-                                    ) : (
-                                      <span>Pick a date</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-auto p-0"
-                                align="start"
-                              >
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  disabled={(date) =>
-                                    date > new Date() ||
-                                    date < new Date("1900-01-01")
-                                  }
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
+                        <Label htmlFor="startTime" className="text-color-dark">
+                          Start Time
+                        </Label>
+                        <Controller
+                          name={`branchList.${index}.startTime`}
+                          control={form.control}
+                          render={({ field }) => (
+                            <TimePicker
+                              onChange={field.onChange}
+                              value={field.value}
+                              disableClock={true}
+                              className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
+                            />
+                          )}
+                        />
+                        <p className="text-[13px] text-red-500">
+                          {
+                            form.formState.errors.branchList?.[index]?.startTime
+                              ?.message
+                          }
+                        </p>
+                      </div>
 
-                      <FormField
-                        control={form.control}
-                        name={`branchList.${index}.endTime`}
-                        render={({ field }) => (
-                          <FormItem className="mb-4 flex w-full flex-col md:w-6/12 md:pr-3.5">
-                            <FormLabel>End Time</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                      "!h-[54px] rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
-                                      !field.value && "text-muted-foreground",
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP")
-                                    ) : (
-                                      <span>Pick a date</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-auto p-0"
-                                align="start"
-                              >
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  disabled={(date) =>
-                                    date > new Date() ||
-                                    date < new Date("1900-01-01")
-                                  }
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
+                        <Label htmlFor="endTime" className="text-color-dark">
+                          End Time
+                        </Label>
+                        <Controller
+                          name={`branchList.${index}.endTime`}
+                          control={form.control}
+                          render={({ field }) => (
+                            <TimePicker
+                              onChange={field.onChange}
+                              value={field.value}
+                              disableClock={true}
+                              className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
+                            />
+                          )}
+                        />
+                        <p className="text-[13px] text-red-500">
+                          {
+                            form.formState.errors.branchList?.[index]?.endTime
+                              ?.message
+                          }
+                        </p>
+                      </div>
                     </div>
                   </div>
                   <div className="mb-3.5 w-full border-b-2 border-dashed border-gray-300 pb-4">
