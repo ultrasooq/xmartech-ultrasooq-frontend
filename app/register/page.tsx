@@ -197,7 +197,7 @@ export default function RegisterPage() {
                       height={26}
                       width={26}
                     />
-                    <span>Sign In with Facebook</span>
+                    <span>Sign In with Google</span>
                   </a>
                 </li>
               </ul>
@@ -332,7 +332,7 @@ export default function RegisterPage() {
                         <FormControl>
                           <Input
                             type="password"
-                            placeholder="Enter Your Confirm Password"
+                            placeholder="Enter Your Login Password Again"
                             className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />

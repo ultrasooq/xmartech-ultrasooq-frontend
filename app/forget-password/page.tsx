@@ -91,7 +91,7 @@ export default function ForgetPasswordPage() {
                         <FormLabel>Email or Phone number or ID</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Email or Phone number or ID"
+                            placeholder="Enter Your Email or Phone number or ID"
                             className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />

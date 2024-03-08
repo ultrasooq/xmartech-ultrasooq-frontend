@@ -104,7 +104,7 @@ export default function LoginPage() {
                           <FormLabel>Email or Phone number or ID</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Email or Phone number or ID"
+                              placeholder="Enter Your Email or Phone number or ID"
                               className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
@@ -142,14 +142,14 @@ export default function LoginPage() {
                             className="absolute h-0 w-0 cursor-pointer opacity-0 [&:checked+span]:border-dark-orange [&:checked+span]:bg-dark-orange"
                           />
                           <span className="relative mr-2.5 inline-block h-5 w-5 overflow-hidden rounded border-2 border-solid border-gray-400 bg-transparent before:absolute before:-top-1 before:bottom-0 before:left-0 before:right-0 before:m-auto before:block before:h-3 before:w-1.5 before:rotate-45 before:border-b-2 before:border-r-2 before:border-solid before:border-white before:content-['']"></span>
-                          Remembar me
+                          Remember me
                         </label>
                         <div className="w-auto">
                           <span
                             className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
                             onClick={() => router.push("/forget-password")}
                           >
-                            Forgot Password{" "}
+                            Forgot Password?
                           </span>
                         </div>
                       </div>
@@ -218,7 +218,7 @@ export default function LoginPage() {
                         height={26}
                         width={26}
                       />
-                      <span>Sign In with Facebook</span>
+                      <span>Sign In with Google</span>
                     </a>
                   </li>
                 </ul>

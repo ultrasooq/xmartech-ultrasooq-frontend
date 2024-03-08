@@ -151,7 +151,7 @@ export default function ResetPasswordPage() {
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem className="mb-4 w-full">
-                        <FormLabel>Re-enter new Password</FormLabel>
+                        <FormLabel>Re-Enter New Password</FormLabel>
                         <FormControl>
                           <Input
                             type="password"
