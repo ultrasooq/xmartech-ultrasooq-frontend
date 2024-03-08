@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useVerifyOtp } from "@/apis/queries/auth.queries";
+import { useResendOtp, useVerifyOtp } from "@/apis/queries/auth.queries";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
 import { setCookie } from "cookies-next";
@@ -25,8 +25,9 @@ export default function OtpVerifyPage() {
   });
 
   const verifyOtp = useVerifyOtp();
+  const resendOtp = useResendOtp();
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (formData: any) => {
     if (otp.join("") === "") {
       toast({
         title: "OTP is required",
@@ -43,7 +44,7 @@ export default function OtpVerifyPage() {
       return;
     }
     const data = {
-      email: values.email,
+      email: formData.email,
       otp: Number(combinedOtp),
     };
     const response = await verifyOtp.mutateAsync(data);
@@ -69,6 +70,35 @@ export default function OtpVerifyPage() {
     } else {
       toast({
         title: "Verification Failed",
+        description: response.message,
+      });
+    }
+  };
+
+  const handleResendOtp = async () => {
+    const email = sessionStorage.getItem("email") || "";
+    const data = {
+      email,
+    };
+
+    if (!data.email) {
+      toast({
+        title: "Email is required",
+      });
+      return;
+    }
+    const response = await resendOtp.mutateAsync(data);
+
+    if (response.status && response.otp) {
+      form.setValue("otp", response.otp.toString());
+      setOtp([...response.otp.toString().split("")]);
+      toast({
+        title: "Otp Sent",
+        description: response.message,
+      });
+    } else {
+      toast({
+        title: "Otp Failed",
         description: response.message,
       });
     }
@@ -171,7 +201,7 @@ export default function OtpVerifyPage() {
                   </div>
                   <div className="mb-4 w-full text-center">
                     <Button
-                      disabled={verifyOtp.isPending}
+                      disabled={verifyOtp.isPending || resendOtp.isPending}
                       type="submit"
                       className="m-auto h-14 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
@@ -187,13 +217,19 @@ export default function OtpVerifyPage() {
                   </div>
                 </form>
               </Form>
-              <div className="mb-4 w-full text-center">
+              <div className="mb-4 w-full space-x-2 text-center">
                 <span className="text-sm font-medium leading-4 text-light-gray">
-                  Didn&apos;t receive OTP?{" "}
-                  <span className="cursor-pointer font-medium text-dark-orange">
-                    Resend
-                  </span>
+                  Didn&apos;t receive OTP?
                 </span>
+                <Button
+                  type="button"
+                  variant="link"
+                  disabled={verifyOtp.isPending || resendOtp.isPending}
+                  onClick={handleResendOtp}
+                  className="cursor-pointer p-0 font-medium text-dark-orange"
+                >
+                  Resend
+                </Button>
               </div>
             </div>
           </div>
