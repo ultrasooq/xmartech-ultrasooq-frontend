@@ -55,6 +55,12 @@ export interface IResendOtpRequest {
   email: string;
 }
 
+export interface IResendOtp {
+  status: boolean;
+  message: string;
+  otp: number;
+}
+
 export interface IForgotPasswordRequest {
   email: string;
 }

@@ -1,72 +1,98 @@
-import { useMutation } from "@tanstack/react-query"
-import { forgotPassword, login, register, resendOtp, resetPassword, verifyOtp } from "../requests/auth.requests";
+import { useMutation } from "@tanstack/react-query";
+import {
+  forgotPassword,
+  login,
+  register,
+  resendOtp,
+  resetPassword,
+  verifyOtp,
+} from "../requests/auth.requests";
 import { APIResponseError } from "@/utils/types/common.types";
-import { IForgotPassword, IForgotPasswordRequest, ILogin, ILoginRequest, IRegister, IRegisterRequest, IResetPassword, IResetPasswordRequest, IVerifyOtp, IVerifyOtpRequest } from "@/utils/types/auth.types";
+import {
+  IForgotPassword,
+  IForgotPasswordRequest,
+  ILogin,
+  ILoginRequest,
+  IRegister,
+  IRegisterRequest,
+  IResendOtp,
+  IResendOtpRequest,
+  IResetPassword,
+  IResetPasswordRequest,
+  IVerifyOtp,
+  IVerifyOtpRequest,
+} from "@/utils/types/auth.types";
 import { useToast } from "@/components/ui/use-toast";
 
-export const useRegister = () => useMutation<IRegister, APIResponseError, IRegisterRequest>({
-  mutationFn: async payload => {
+export const useRegister = () =>
+  useMutation<IRegister, APIResponseError, IRegisterRequest>({
+    mutationFn: async (payload) => {
       const res = await register(payload);
       return res.data;
-  },
-  onSuccess: () => {},
-  onError: (err:APIResponseError) => {
-    console.log(err);
-  },
-})
+    },
+    onSuccess: () => {},
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
 
-export const useVerifyOtp = () => useMutation<IVerifyOtp, APIResponseError, IVerifyOtpRequest>({
-  mutationFn: async payload => {
+export const useVerifyOtp = () =>
+  useMutation<IVerifyOtp, APIResponseError, IVerifyOtpRequest>({
+    mutationFn: async (payload) => {
       const res = await verifyOtp(payload);
       return res.data;
-  },
-  onSuccess: () => {},
-  onError: (err:APIResponseError) => {
-    console.log(err);
-  },
-});
-
-export const useResendOtp = () => useMutation({
-    mutationFn: async (payload: any) => {
-        const res = await resendOtp(payload);
-        return res;
     },
     onSuccess: () => {},
-    onError: (err:APIResponseError) => {
+    onError: (err: APIResponseError) => {
       console.log(err);
     },
-  })
+  });
 
-export const useLogin = () => useMutation<ILogin, APIResponseError, ILoginRequest>({
-    mutationFn: async payload => {
-        const res = await login(payload);
-
-        return res.data;
+export const useResendOtp = () =>
+  useMutation<IResendOtp, APIResponseError, IResendOtpRequest>({
+    mutationFn: async (payload) => {
+      const res = await resendOtp(payload);
+      return res.data;
     },
     onSuccess: () => {},
-    onError: (err:APIResponseError) => {
+    onError: (err: APIResponseError) => {
       console.log(err);
     },
-  })
+  });
 
-export const useForgotPassword = () => useMutation<IForgotPassword, APIResponseError, IForgotPasswordRequest>({
-    mutationFn: async payload => {
-        const res = await forgotPassword(payload);
-        return res.data;
+export const useLogin = () =>
+  useMutation<ILogin, APIResponseError, ILoginRequest>({
+    mutationFn: async (payload) => {
+      const res = await login(payload);
+
+      return res.data;
     },
     onSuccess: () => {},
-    onError: (err:APIResponseError) => {
+    onError: (err: APIResponseError) => {
       console.log(err);
     },
-  })
+  });
 
-  export const useResetPassword = () => useMutation<IResetPassword, APIResponseError, IResetPasswordRequest>({
-    mutationFn: async payload => {
-        const res = await resetPassword(payload);
-        return res.data;
+export const useForgotPassword = () =>
+  useMutation<IForgotPassword, APIResponseError, IForgotPasswordRequest>({
+    mutationFn: async (payload) => {
+      const res = await forgotPassword(payload);
+      return res.data;
     },
     onSuccess: () => {},
-    onError: (err:APIResponseError) => {
+    onError: (err: APIResponseError) => {
       console.log(err);
     },
-  })
+  });
+
+export const useResetPassword = () =>
+  useMutation<IResetPassword, APIResponseError, IResetPasswordRequest>({
+    mutationFn: async (payload) => {
+      const res = await resetPassword(payload);
+      return res.data;
+    },
+    onSuccess: () => {},
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
