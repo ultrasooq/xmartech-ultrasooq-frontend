@@ -318,7 +318,7 @@ export default function FreelancerProfilePage() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                                 <SelectValue placeholder="Select Country" />
                               </SelectTrigger>
                             </FormControl>

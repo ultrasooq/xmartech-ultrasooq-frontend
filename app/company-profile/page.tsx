@@ -32,6 +32,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import TimePicker from "react-time-picker";
+import { Switch } from "@/components/ui/switch";
 
 const formSchema = z.object({
   companyName: z
@@ -369,7 +370,7 @@ export default function CompanyProfilePage() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                                 <SelectValue placeholder="Select Business Type" />
                               </SelectTrigger>
                             </FormControl>
@@ -484,7 +485,7 @@ export default function CompanyProfilePage() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                               <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                           </FormControl>
@@ -519,7 +520,7 @@ export default function CompanyProfilePage() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                               <SelectValue placeholder="Select Year Of Establishment" />
                             </SelectTrigger>
                           </FormControl>
@@ -549,7 +550,7 @@ export default function CompanyProfilePage() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                               <SelectValue placeholder="Select Number of Employees" />
                             </SelectTrigger>
                           </FormControl>
@@ -768,7 +769,7 @@ export default function CompanyProfilePage() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                                 <SelectValue placeholder="Select Country" />
                               </SelectTrigger>
                             </FormControl>
@@ -925,6 +926,17 @@ export default function CompanyProfilePage() {
                   />
                 </div>
                 <div className="mb-3.5 flex w-full justify-end border-b-2 border-dashed border-gray-300 pb-4">
+                  {index === 0 ? (
+                    <div className="flex w-full items-center space-x-2 ">
+                      <Label htmlFor="airplane-mode">Main Office:</Label>
+                      <Switch
+                        aria-readonly
+                        checked
+                        className="data-[state=checked]:!bg-dark-orange"
+                      />
+                    </div>
+                  ) : null}
+
                   {index !== 0 ? (
                     <Button
                       type="button"
