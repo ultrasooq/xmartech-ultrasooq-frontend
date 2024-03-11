@@ -3,11 +3,15 @@ import React, { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+// import { useMe } from "@/apis/queries/user.queries";
+import Image from "next/image";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  // useMe(!!accessToken);
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -16,11 +20,10 @@ const Header = () => {
   };
 
   useEffect(() => {
-    const authToken = getCookie(PUREMOON_TOKEN_KEY);
-    if (authToken) {
+    if (accessToken) {
       setIsLoggedIn(true);
     }
-  }, [pathname, getCookie(PUREMOON_TOKEN_KEY)]);
+  }, [pathname, accessToken]);
 
   return (
     <header className="w-full">
@@ -109,7 +112,12 @@ const Header = () => {
                   </a>
                 </li>
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
-                  <img src="images/login.svg" />
+                  <Image
+                    src="/images/login.svg"
+                    height={28}
+                    width={28}
+                    alt="login-avatar-icon"
+                  />
                   {isLoggedIn ? (
                     <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
                       <span onClick={handleLogout}>Logout</span>
@@ -137,38 +145,32 @@ const Header = () => {
             <ul className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 md:flex-row md:justify-between">
               <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                 <a href="/home" className="flex gap-x-2">
-                  {" "}
                   <img src="images/menu-icon-home.svg" /> Home
                 </a>
               </li>
               <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                 <a href="#0" className="flex gap-x-2">
-                  {" "}
                   <img src="images/menu-icon-trending.svg" /> Trending & Hot
                   Deals
                 </a>
               </li>
               <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                 <a href="#0" className="flex gap-x-2">
-                  {" "}
                   <img src="images/menu-icon-buy.svg" /> buygroup
                 </a>
               </li>
               <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                 <a href="#0" className="flex gap-x-2">
-                  {" "}
                   <img src="images/menu-icon-rfq.svg" /> rfq
                 </a>
               </li>
               <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                 <a href="#0" className="flex gap-x-2">
-                  {" "}
                   <img src="images/menu-icon-pos.svg" /> pos store
                 </a>
               </li>
               <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                 <a href="#0" className="flex gap-x-2">
-                  {" "}
                   <img src="images/menu-icon-service.svg" /> Service
                 </a>
               </li>
