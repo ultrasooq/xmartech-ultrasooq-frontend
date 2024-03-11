@@ -16,7 +16,7 @@ export default function FreelancerProfileDetailsPage() {
               Freelancer Profile
             </h2>
           </div>
-          <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-sm md:p-9">
+          <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
             <div className="relative m-auto h-40 w-40 rounded-full">
               <div className="h-full w-full overflow-hidden rounded-full border-4 border-solid border-gray-300">
                 <img
@@ -127,9 +127,9 @@ export default function FreelancerProfileDetailsPage() {
                 </li>
               </ul>
             </div>
-            <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-sm sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
+            <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
               <div className="w-full">
-                <div className="w-full border-b-2 border-dashed border-gray-100 py-4">
+                <div className="w-full border-b-2 border-dashed border-gray-200 py-4">
                   <div className="flex w-full flex-wrap items-center justify-between pb-5">
                     <h2 className="text-color-dark left-8 text-2xl font-semibold">
                       John Rosensky
@@ -151,7 +151,7 @@ export default function FreelancerProfileDetailsPage() {
                             email:
                           </span>
                         </div>
-                        <div className="w-10/12sm:mr-0 mr-1  flex items-center justify-start">
+                        <div className="w-10/12 sm:mr-0 mr-1  flex items-center justify-start">
                           <p className="text-color-dark text-base font-medium leading-4">
                             john.rosensky@gmail.com
                           </p>
@@ -163,7 +163,7 @@ export default function FreelancerProfileDetailsPage() {
                             Phone:
                           </span>
                         </div>
-                        <div className="w-10/12sm:mr-0 mr-1  flex items-center justify-start">
+                        <div className="w-10/12 sm:mr-0 mr-1  flex items-center justify-start">
                           <p className="text-color-dark text-base font-medium leading-4">
                             +1 000 0000 0456
                           </p>
@@ -175,7 +175,7 @@ export default function FreelancerProfileDetailsPage() {
                             Social Links:
                           </span>
                         </div>
-                        <div className="w-10/12sm:mr-0 mr-1  flex items-center justify-start">
+                        <div className="w-10/12 sm:mr-0 mr-1  flex items-center justify-start">
                           <p className="text-color-dark text-base font-medium leading-4">
                             Facebook, LInkedin, Instagram
                           </p>
@@ -348,7 +348,7 @@ export default function FreelancerProfileDetailsPage() {
                 <div className="flex w-full flex-wrap items-center justify-between">
                   <div className="flex w-auto flex-wrap items-start justify-start">
                     <h2 className="text-color-dark mb-0 mr-7 text-2xl font-semibold leading-7">
-                      Ratings &amp; Reviews
+                      Ratings & Reviews
                     </h2>
                     <div className="flex w-auto flex-col">
                       <div className="flex w-auto items-center justify-start">
@@ -385,6 +385,108 @@ export default function FreelancerProfileDetailsPage() {
                       <span>Write A Review</span>
                     </button>
                   </div>
+                </div>
+                <div className="w-full flex items-center justify-end py-6">
+                  <ul className="flex items-center justify-end">
+                    <li className="text-sm font-medium text-color-dark ml-2">Sort By :</li>
+                    <li className="ml-2"><a href="" className="text-sm font-medium text-gray-500 py-3.5 px-10 rounded-full block border border-solid border-gray-300">Newest</a></li>
+                    <li className="ml-2"><a href="" className="text-sm font-medium text-gray-500 py-3.5 px-10 rounded-full block border border-solid border-gray-300">Newest</a></li>
+                    <li className="ml-2"><a href="" className="text-sm font-medium text-gray-500 py-3.5 px-10 rounded-full block border border-solid border-gray-300">Newest</a></li>
+                  </ul>
+                </div>
+                <div className="w-full flex py-10 mt-5 border-t-2 border-dashed border-gray-300">
+                  <div className="w-full flex flex-items justify-between">
+                    <div className="w-2/6 px-3.5">
+                      <div className="w-full border border-solid border-gray-300 rounded-2xl px-5 py-5">
+                        <div className="w-full flex flex-wrap items-start justify-between">
+                          <div className="w-12 h-12 rounded-full overflow-hidden">
+                            <img src="images/review-1.png" alt="review-icon"/>
+                          </div>
+                          <div className="w-[calc(100%_-_3rem)] text-sm font-normal leading-5 text-gray-500 pl-3.5">
+                            <div className="w-full flex items-start justify-between">
+                              <h4 className="text-lg font-semibold text-color-dark">John Doe</h4>
+                              <img src="images/review-dot.svg" alt="review-dot-icon"/>
+                            </div>
+                            <div className="w-full">
+                              <h5 className="text-xs font-normal text-gray-500 mb-1">2 reviews</h5>
+                              <div className="w-full flex items-start text-xs leading-5 text-gray-500">
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="ml-1">3 Weeks ago</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="w-full pt-3 text-sm font-normal leading-6 text-gray-500">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.<a href="#" className="font-semibold">More.</a> </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-2/6 px-3.5">
+                      <div className="w-full border border-solid border-gray-300 rounded-2xl px-5 py-5">
+                        <div className="w-full flex flex-wrap items-start justify-between">
+                          <div className="w-12 h-12 rounded-full overflow-hidden">
+                            <img src="images/review-1.png" alt="review-icon"/>
+                          </div>
+                          <div className="w-[calc(100%_-_3rem)] text-sm font-normal leading-5 text-gray-500 pl-3.5">
+                            <div className="w-full flex items-start justify-between">
+                              <h4 className="text-lg font-semibold text-color-dark">John Doe</h4>
+                              <img src="images/review-dot.svg" alt="review-dot-icon"/>
+                            </div>
+                            <div className="w-full">
+                              <h5 className="text-xs font-normal text-gray-500 mb-1">2 reviews</h5>
+                              <div className="w-full flex items-start text-xs leading-5 text-gray-500">
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="ml-1">3 Weeks ago</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="w-full pt-3 text-sm font-normal leading-6 text-gray-500">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.<a href="#" className="font-semibold">More.</a> </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-2/6 px-3.5">
+                      <div className="w-full border border-solid border-gray-300 rounded-2xl px-5 py-5">
+                        <div className="w-full flex flex-wrap items-start justify-between">
+                          <div className="w-12 h-12 rounded-full overflow-hidden">
+                            <img src="images/review-1.png" alt="review-icon"/>
+                          </div>
+                          <div className="w-[calc(100%_-_3rem)] text-sm font-normal leading-5 text-gray-500 pl-3.5">
+                            <div className="w-full flex items-start justify-between">
+                              <h4 className="text-lg font-semibold text-color-dark">John Doe</h4>
+                              <img src="images/review-dot.svg" alt="review-dot-icon"/>
+                            </div>
+                            <div className="w-full">
+                              <h5 className="text-xs font-normal text-gray-500 mb-1">2 reviews</h5>
+                              <div className="w-full flex items-start text-xs leading-5 text-gray-500">
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="mr-1"><img src="images/star.svg" alt="star-icon"/></span>
+                                <span className="ml-1">3 Weeks ago</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="w-full pt-3 text-sm font-normal leading-6 text-gray-500">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.<a href="#" className="font-semibold">More.</a> </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full flex items-center justify-center text-center text-base font-bold text-dark-orange">
+                  <span className="flex"><img src="images/loader.png" className="mr-1.5"/> Load More</span>
                 </div>
               </div>
             </div>
