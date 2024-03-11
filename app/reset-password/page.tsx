@@ -1,5 +1,6 @@
 "use client";
 import { useResetPassword } from "@/apis/queries/auth.queries";
+import PasswordChangeSuccessContent from "@/components/shared/PasswordChangeSuccessContent";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,7 +18,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { deleteCookie, setCookie } from "cookies-next";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -62,7 +63,7 @@ export default function ResetPasswordPage() {
       confirmPassword: "",
     },
   });
-
+  const [showSuccess, setShowSuccess] = useState(false);
   const resetPassword = useResetPassword();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -84,7 +85,11 @@ export default function ResetPasswordPage() {
       });
       form.reset();
       deleteCookie(PUREMOON_TOKEN_KEY);
-      router.push("/login");
+      setShowSuccess(true);
+      setTimeout(() => {
+        router.push("/login");
+        setShowSuccess(false);
+      }, 3000);
     } else {
       toast({
         title: "Password Reset Failed",
@@ -115,75 +120,81 @@ export default function ResetPasswordPage() {
       <div className="container relative z-10 m-auto">
         <div className="flex">
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
-            <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Reset Password
-              </h2>
-              <p>Reset Your Password</p>
-            </div>
-            <div className="w-full">
-              <Form {...form}>
-                <form
-                  className="flex flex-wrap"
-                  onSubmit={form.handleSubmit(onSubmit)}
-                >
-                  <FormField
-                    control={form.control}
-                    name="newPassword"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>New Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="**********"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Re-Enter New Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="**********"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="mb-4 w-full">
-                    <Button
-                      disabled={resetPassword.isPending}
-                      type="submit"
-                      className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+            {showSuccess ? (
+              <PasswordChangeSuccessContent />
+            ) : (
+              <>
+                <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
+                  <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                    Reset Password
+                  </h2>
+                  <p>Reset Your Password</p>
+                </div>
+                <div className="w-full">
+                  <Form {...form}>
+                    <form
+                      className="flex flex-wrap"
+                      onSubmit={form.handleSubmit(onSubmit)}
                     >
-                      {resetPassword.isPending ? (
-                        <>
-                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                          Please wait
-                        </>
-                      ) : (
-                        "Change Password"
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </div>
+                      <FormField
+                        control={form.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem className="mb-4 w-full">
+                            <FormLabel>New Password</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="**********"
+                                className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem className="mb-4 w-full">
+                            <FormLabel>Re-Enter New Password</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="**********"
+                                className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="mb-4 w-full">
+                        <Button
+                          disabled={resetPassword.isPending}
+                          type="submit"
+                          className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                        >
+                          {resetPassword.isPending ? (
+                            <>
+                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                              Please wait
+                            </>
+                          ) : (
+                            "Change Password"
+                          )}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
