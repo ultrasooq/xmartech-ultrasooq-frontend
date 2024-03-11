@@ -253,23 +253,33 @@ export default function FreelancerProfilePage() {
                       </div>
                     </div>
 
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
-                          <FormLabel>Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Address"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="relative mb-4 w-full md:w-6/12 md:pr-3.5">
+                      <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Address</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Address"
+                                className="!h-[54px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Image
+                        src="/images/location.svg"
+                        alt="location-icon"
+                        height={16}
+                        width={16}
+                        className="absolute right-6 top-[50px]"
+                      />
+                    </div>
 
                     <FormField
                       control={form.control}
