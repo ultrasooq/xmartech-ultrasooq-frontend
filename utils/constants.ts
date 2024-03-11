@@ -76,3 +76,13 @@ export const BUSINESS_TYPE_LIST: { label: string; value: string }[] = [
   { label: "other", value: "other" },
   { label: "service provider", value: "service_provider" },
 ];
+
+export const DAYS_NAME_LIST: { [key: string]: string } = {
+  sun: "Sunday",
+  mon: "Monday",
+  tue: "Tuesday",
+  wed: "Wednesday",
+  thu: "Thursday",
+  fri: "Friday",
+  sat: "Saturday",
+};
