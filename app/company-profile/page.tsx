@@ -32,6 +32,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import TimePicker from "react-time-picker";
+import { Switch } from "@/components/ui/switch";
 
 const formSchema = z.object({
   companyName: z
@@ -59,11 +60,13 @@ const formSchema = z.object({
   yearOfEstablishment: z
     .string()
     .trim()
-    .min(2, { message: "Year Of Establishment is Required" }),
+    .min(2, { message: "Year Of Establishment is Required" })
+    .transform((value) => Number(value)),
   totalNoOfEmployee: z
     .string()
     .trim()
-    .min(2, { message: "Total No Of Employee is Required" }),
+    .min(2, { message: "Total No Of Employee is Required" })
+    .transform((value) => Number(value)),
   aboutUs: z.string().trim().min(2, { message: "About Us is Required" }),
   branchList: z.array(
     z.object({
@@ -154,7 +157,6 @@ export default function CompanyProfilePage() {
       profileType: "COMPANY", // dont remove value
       companyLogo: "",
       companyName: "",
-      //TODO: change to number
       annualPurchasingVolume: "",
       businessTypeList: undefined,
       address: "",
@@ -369,7 +371,7 @@ export default function CompanyProfilePage() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                                 <SelectValue placeholder="Select Business Type" />
                               </SelectTrigger>
                             </FormControl>
@@ -400,6 +402,7 @@ export default function CompanyProfilePage() {
                           <FormControl>
                             <Input
                               placeholder="Annual Purchasing Volume"
+                              type="number"
                               className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
@@ -419,23 +422,32 @@ export default function CompanyProfilePage() {
                   </label>
                 </div>
                 <div className="flex flex-wrap">
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
-                        <FormLabel>Address</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Address"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="relative mb-4 w-full md:w-6/12 md:pr-3.5">
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Address</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Address"
+                              className="!h-[54px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Image
+                      src="/images/location.svg"
+                      alt="location-icon"
+                      height={17}
+                      width={17}
+                      className="absolute right-6 top-[50px]"
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -484,7 +496,7 @@ export default function CompanyProfilePage() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                               <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
                           </FormControl>
@@ -519,7 +531,7 @@ export default function CompanyProfilePage() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                               <SelectValue placeholder="Select Year Of Establishment" />
                             </SelectTrigger>
                           </FormControl>
@@ -549,7 +561,7 @@ export default function CompanyProfilePage() {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                               <SelectValue placeholder="Select Number of Employees" />
                             </SelectTrigger>
                           </FormControl>
@@ -703,23 +715,32 @@ export default function CompanyProfilePage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap">
-                    <FormField
-                      control={form.control}
-                      name={`branchList.${index}.address`}
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
-                          <FormLabel>Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Address"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="relative mb-4 w-full md:w-6/12 md:pr-3.5">
+                      <FormField
+                        control={form.control}
+                        name={`branchList.${index}.address`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Address</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Address"
+                                className="!h-[54px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Image
+                        src="/images/location.svg"
+                        alt="location-icon"
+                        height={16}
+                        width={16}
+                        className="absolute right-6 top-[50px]"
+                      />
+                    </div>
 
                     <FormField
                       control={form.control}
@@ -768,7 +789,7 @@ export default function CompanyProfilePage() {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                                 <SelectValue placeholder="Select Country" />
                               </SelectTrigger>
                             </FormControl>
@@ -925,6 +946,17 @@ export default function CompanyProfilePage() {
                   />
                 </div>
                 <div className="mb-3.5 flex w-full justify-end border-b-2 border-dashed border-gray-300 pb-4">
+                  {index === 0 ? (
+                    <div className="flex w-full items-center space-x-2 ">
+                      <Label htmlFor="airplane-mode">Main Office:</Label>
+                      <Switch
+                        aria-readonly
+                        checked
+                        className="data-[state=checked]:!bg-dark-orange"
+                      />
+                    </div>
+                  ) : null}
+
                   {index !== 0 ? (
                     <Button
                       type="button"
