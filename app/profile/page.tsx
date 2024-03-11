@@ -32,7 +32,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { SOCIAL_MEDIA_ICON, SOCIAL_MEDIA_LIST } from "@/utils/constants";
+import {
+  PUREMOON_TOKEN_KEY,
+  SOCIAL_MEDIA_ICON,
+  SOCIAL_MEDIA_LIST,
+} from "@/utils/constants";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
@@ -42,6 +46,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
+import { getCookie } from "cookies-next";
 
 const formSchema = z.object({
   profileImage: z.string().trim().optional(),
@@ -79,11 +84,7 @@ const formSchema = z.object({
         .url({ message: "Invalid URL" }),
     }),
   ),
-  dateOfBirth: z.date({ required_error: "Date of Birth is required." }),
-  // .transform((value) => {
-  //   const date = new Date(value);
-  //   return date.toISOString();
-  // }),
+  dateOfBirth: z.date({ required_error: "Date of Birth is Required" }),
 });
 
 export default function ProfilePage() {
@@ -102,7 +103,7 @@ export default function ProfilePage() {
           phoneNumber: "",
         },
       ],
-      dateOfBirth: new Date(),
+      dateOfBirth: undefined as unknown as Date,
       socialLinkList: [
         {
           linkType: "",
@@ -111,7 +112,8 @@ export default function ProfilePage() {
       ],
     },
   });
-  const me = useMe();
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  const me = useMe(!!accessToken);
   const updateProfile = useUpdateProfile();
 
   const fieldArrayForPhoneNumber = useFieldArray({
@@ -336,7 +338,7 @@ export default function ProfilePage() {
                                 {field.value ? (
                                   format(field.value, "PPP")
                                 ) : (
-                                  <span>Pick a date</span>
+                                  <span>Enter Your Date of Birth</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
@@ -352,6 +354,8 @@ export default function ProfilePage() {
                                 date < new Date("1900-01-01")
                               }
                               initialFocus
+                              toYear={new Date().getFullYear() - 18}
+                              fromYear={new Date().getFullYear() - 100}
                             />
                           </PopoverContent>
                         </Popover>
@@ -526,7 +530,7 @@ export default function ProfilePage() {
                                     defaultValue={field.value}
                                   >
                                     <FormControl>
-                                      <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0">
+                                      <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                                         <SelectValue placeholder="Select Social Media" />
                                       </SelectTrigger>
                                     </FormControl>
@@ -597,7 +601,7 @@ export default function ProfilePage() {
 
                   <p className="mb-3 text-[13px] text-red-500">
                     {form.formState.errors.socialLinkList?.length
-                      ? "Social Links is required"
+                      ? "Social Link is Required"
                       : null}
                   </p>
 
