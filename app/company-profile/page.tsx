@@ -266,7 +266,7 @@ export default function CompanyProfilePage() {
       data.branchList = updatedBranchList;
     }
     console.log(data);
-    return;
+    // return;
     const response = await createCompanyProfile.mutateAsync(data);
 
     if (response.status && response.data) {
