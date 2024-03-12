@@ -83,15 +83,27 @@ const formSchema = z.object({
   endTime: z.string().trim().min(1, {
     message: "End Time is Required",
   }),
-  workingDays: z.object({
-    sun: z.number(),
-    mon: z.number(),
-    tue: z.number(),
-    wed: z.number(),
-    thu: z.number(),
-    fri: z.number(),
-    sat: z.number(),
-  }),
+  workingDays: z
+    .object({
+      sun: z.number(),
+      mon: z.number(),
+      tue: z.number(),
+      wed: z.number(),
+      thu: z.number(),
+      fri: z.number(),
+      sat: z.number(),
+    })
+    .refine((value) => {
+      return (
+        value.sun !== 0 ||
+        value.mon !== 0 ||
+        value.tue !== 0 ||
+        value.wed !== 0 ||
+        value.thu !== 0 ||
+        value.fri !== 0 ||
+        value.sat !== 0
+      );
+    }),
   tagList: z
     .array(
       z.object({
@@ -160,7 +172,7 @@ export default function FreelancerProfilePage() {
     delete data.branchList[0].aboutUs;
 
     console.log(data);
-    return;
+    // return;
     const response = await createFreelancerProfile.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -242,7 +254,6 @@ export default function FreelancerProfilePage() {
     }
   }, [userDetails.data?.status]);
 
-  // console.log(form.getValues());
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -528,6 +539,12 @@ export default function FreelancerProfilePage() {
                       />
                     ))}
                   </div>
+
+                  {form.formState.errors.workingDays?.message ? (
+                    <p className="text-[13px] text-red-500">
+                      Working Day is Required
+                    </p>
+                  ) : null}
                 </div>
 
                 <AccordionMultiSelect

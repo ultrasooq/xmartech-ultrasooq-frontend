@@ -3,10 +3,12 @@ import React from "react";
 
 type InformationSectionProps = {
   userDetails: any;
+  onEdit: () => void;
 };
 
 const InformationSection: React.FC<InformationSectionProps> = ({
   userDetails,
+  onEdit,
 }) => {
   return (
     <div className="w-full border-b-2 border-dashed border-gray-200 py-4">
@@ -17,6 +19,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
         <div className="w-auto">
           <button
             type="button"
+            onClick={onEdit}
             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
           >
             <Image
