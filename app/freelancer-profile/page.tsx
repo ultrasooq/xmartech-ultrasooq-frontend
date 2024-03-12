@@ -22,9 +22,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { DAYS_OF_WEEK } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import TimePicker from "react-time-picker";
@@ -32,6 +32,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useRouter } from "next/navigation";
+import { useMe } from "@/apis/queries/user.queries";
 
 const formSchema = z.object({
   aboutUs: z.string().trim().min(2, { message: "About Us is Required" }),
@@ -82,15 +83,27 @@ const formSchema = z.object({
   endTime: z.string().trim().min(1, {
     message: "End Time is Required",
   }),
-  workingDays: z.object({
-    sun: z.number(),
-    mon: z.number(),
-    tue: z.number(),
-    wed: z.number(),
-    thu: z.number(),
-    fri: z.number(),
-    sat: z.number(),
-  }),
+  workingDays: z
+    .object({
+      sun: z.number(),
+      mon: z.number(),
+      tue: z.number(),
+      wed: z.number(),
+      thu: z.number(),
+      fri: z.number(),
+      sat: z.number(),
+    })
+    .refine((value) => {
+      return (
+        value.sun !== 0 ||
+        value.mon !== 0 ||
+        value.tue !== 0 ||
+        value.wed !== 0 ||
+        value.thu !== 0 ||
+        value.fri !== 0 ||
+        value.sat !== 0
+      );
+    }),
   tagList: z
     .array(
       z.object({
@@ -139,6 +152,7 @@ export default function FreelancerProfilePage() {
     },
   });
 
+  const userDetails = useMe();
   const tagsQuery = useTags();
   const createFreelancerProfile = useCreateFreelancerProfile();
 
@@ -157,6 +171,8 @@ export default function FreelancerProfilePage() {
 
     delete data.branchList[0].aboutUs;
 
+    console.log(data);
+    // return;
     const response = await createFreelancerProfile.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -181,6 +197,62 @@ export default function FreelancerProfilePage() {
       }) || []
     );
   }, [tagsQuery?.data]);
+
+  useEffect(() => {
+    // console.log(userDetails.data?.data);
+    if (userDetails.data?.data) {
+      const businessTypeList = userDetails.data?.data?.userBranch?.[0]
+        ?.userBranchBusinessType
+        ? userDetails.data?.data?.userBranch?.[0]?.userBranchBusinessType?.map(
+            (item: any) => {
+              return {
+                label: item?.userBranch_BusinessType_Tag?.tagName,
+                value: item?.userBranch_BusinessType_Tag?.id,
+              };
+            },
+          )
+        : [];
+
+      const workingDays = userDetails.data?.data?.userBranch?.[0]?.workingDays
+        ? JSON.parse(userDetails.data.data.userBranch[0].workingDays)
+        : {
+            sun: 0,
+            mon: 0,
+            tue: 0,
+            wed: 0,
+            thu: 0,
+            fri: 0,
+            sat: 0,
+          };
+
+      const tagList = userDetails.data?.data?.userBranch?.[0]?.userBranchTags
+        ? userDetails.data?.data?.userBranch?.[0]?.userBranchTags?.map(
+            (item: any) => {
+              return {
+                label: item?.userBranchTagsTag?.tagName,
+                value: item?.userBranchTagsTag?.id,
+              };
+            },
+          )
+        : [];
+
+      form.reset({
+        aboutUs: userDetails.data?.data?.userProfile?.[0]?.aboutUs || "",
+        businessTypeList: businessTypeList || undefined,
+        startTime: userDetails.data?.data?.userBranch?.[0]?.startTime || "",
+        endTime: userDetails.data?.data?.userBranch?.[0]?.endTime || "",
+        address: userDetails.data?.data?.userBranch?.[0]?.address || "",
+        city: userDetails.data?.data?.userBranch?.[0]?.city || "",
+        province: userDetails.data?.data?.userBranch?.[0]?.province || "",
+        country: userDetails.data?.data?.userBranch?.[0]?.country || "",
+        contactNumber:
+          userDetails.data?.data?.userBranch?.[0]?.contactNumber || "",
+        contactName: userDetails.data?.data?.userBranch?.[0]?.contactName || "",
+        workingDays,
+        tagList: tagList || undefined,
+      });
+    }
+  }, [userDetails.data?.status]);
 
   return (
     <section className="relative w-full py-7">
@@ -450,6 +522,11 @@ export default function FreelancerProfilePage() {
                                   });
                                 }}
                                 className="data-[state=checked]:!bg-dark-orange"
+                                checked={
+                                  !!field.value[
+                                    item.value as keyof typeof field.value
+                                  ]
+                                }
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
@@ -462,6 +539,12 @@ export default function FreelancerProfilePage() {
                       />
                     ))}
                   </div>
+
+                  {form.formState.errors.workingDays?.message ? (
+                    <p className="text-[13px] text-red-500">
+                      Working Day is Required
+                    </p>
+                  ) : null}
                 </div>
 
                 <AccordionMultiSelect

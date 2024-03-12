@@ -3,21 +3,53 @@ import React, { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
-// import { useMe } from "@/apis/queries/user.queries";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMe } from "@/apis/queries/user.queries";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const queryClient = useQueryClient();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
-  // useMe(!!accessToken);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+  const userDetails = useMe(!!accessToken);
+
+  const handleProfile = () => {
+    switch (userDetails?.data?.data?.tradeRole) {
+      case "BUYER":
+        // TODO: fix path later
+        router.push("/home");
+        break;
+      case "FREELANCER":
+        router.push("/freelancer-profile-details");
+        break;
+      case "COMPANY":
+        router.push("/company-profile-details");
+        break;
+      default:
+        router.push("/home");
+        break;
+    }
+  };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     deleteCookie(PUREMOON_TOKEN_KEY);
+    queryClient.clear();
     router.push("/login");
   };
+  const handleLogin = () => router.push("/login");
+  const handleRegister = () => router.push("/register");
 
   useEffect(() => {
     if (accessToken) {
@@ -112,27 +144,54 @@ const Header = () => {
                   </a>
                 </li>
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
-                  <Image
-                    src="/images/login.svg"
-                    height={28}
-                    width={28}
-                    alt="login-avatar-icon"
-                  />
                   {isLoggedIn ? (
-                    <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
-                      <span onClick={handleLogout}>Logout</span>
-                    </a>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Avatar className="h-[30px] w-[30px]">
+                          <AvatarImage src="null" alt="image-icon" />
+                          <AvatarFallback className="p-2 text-lg font-bold">
+                            AD
+                          </AvatarFallback>
+                        </Avatar>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          onClick={handleProfile}
+                          className="cursor-pointer"
+                        >
+                          Profile Information
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Change Password</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={handleLogout}
+                          className="cursor-pointer"
+                        >
+                          Logout
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   ) : (
-                    <div className="flex flex-col">
-                      <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
-                        <span onClick={() => router.push("/login")}>Login</span>
-                      </a>
-                      <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
-                        <span onClick={() => router.push("/register")}>
-                          Register
-                        </span>
-                      </a>
-                    </div>
+                    // <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
+                    //   <span onClick={handleLogout}>Logout</span>
+                    // </a>
+                    <>
+                      <Image
+                        src="/images/login.svg"
+                        height={28}
+                        width={28}
+                        alt="login-avatar-icon"
+                      />
+                      <div className="flex flex-col">
+                        <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
+                          <span onClick={handleLogin}>Login</span>
+                        </a>
+                        <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
+                          <span onClick={handleRegister}>Register</span>
+                        </a>
+                      </div>
+                    </>
                   )}
                 </li>
               </ul>
