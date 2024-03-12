@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useCreateCompanyProfile } from "@/apis/queries/company.queries";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import TimePicker from "react-time-picker";
 import { Switch } from "@/components/ui/switch";
+import { useMe } from "@/apis/queries/user.queries";
 
 const formSchema = z.object({
   companyName: z
@@ -40,6 +41,9 @@ const formSchema = z.object({
     .trim()
     .min(2, { message: "Company Name is Required" })
     .max(50, { message: "Company Name must be less than 50 characters" }),
+  businessTypeList: z
+    .string()
+    .transform((value) => [{ businessTypeId: Number(value) }]),
   annualPurchasingVolume: z
     .string()
     .trim()
@@ -118,15 +122,27 @@ const formSchema = z.object({
       endTime: z.string().trim().min(1, {
         message: "End Time is Required",
       }),
-      workingDays: z.object({
-        sun: z.number(),
-        mon: z.number(),
-        tue: z.number(),
-        wed: z.number(),
-        thu: z.number(),
-        fri: z.number(),
-        sat: z.number(),
-      }),
+      workingDays: z
+        .object({
+          sun: z.number(),
+          mon: z.number(),
+          tue: z.number(),
+          wed: z.number(),
+          thu: z.number(),
+          fri: z.number(),
+          sat: z.number(),
+        })
+        .refine((value) => {
+          return (
+            value.sun !== 0 ||
+            value.mon !== 0 ||
+            value.tue !== 0 ||
+            value.wed !== 0 ||
+            value.thu !== 0 ||
+            value.fri !== 0 ||
+            value.sat !== 0
+          );
+        }),
       tagList: z
         .array(
           z.object({
@@ -195,6 +211,7 @@ export default function CompanyProfilePage() {
       ],
     },
   });
+  const userDetails = useMe();
   const tagsQuery = useTags();
   const createCompanyProfile = useCreateCompanyProfile();
 
@@ -248,7 +265,8 @@ export default function CompanyProfilePage() {
       );
       data.branchList = updatedBranchList;
     }
-
+    console.log(data);
+    return;
     const response = await createCompanyProfile.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -273,6 +291,92 @@ export default function CompanyProfilePage() {
       }) || []
     );
   }, [tagsQuery?.data]);
+
+  useEffect(() => {
+    if (userDetails.data?.data) {
+      console.log(userDetails.data?.data);
+      const userProfile = userDetails.data?.data?.userProfile?.[0];
+
+      const branchList = userDetails.data?.data?.userBranch?.map(
+        (item: any) => ({
+          profileType: "COMPANY",
+          // businessTypeList: undefined,
+          // branchFrontPicture: "",
+          // proofOfAddress: "",
+          address: item?.address,
+          city: item?.city,
+          province: item?.province,
+          country: item?.country,
+          contactNumber: item?.contactNumber,
+          contactName: item?.contactName,
+          startTime: item?.startTime,
+          endTime: item?.endTime,
+          // workingDays: {
+          //   sun: 0,
+          //   mon: 0,
+          //   tue: 0,
+          //   wed: 0,
+          //   thu: 0,
+          //   fri: 0,
+          //   sat: 0,
+          // },
+          // tagList: undefined,
+          workingDays: item?.workingDays
+            ? JSON.parse(item?.workingDays)
+            : {
+                sun: 0,
+                mon: 0,
+                tue: 0,
+                wed: 0,
+                thu: 0,
+                fri: 0,
+                sat: 0,
+              },
+          // mainOffice: 0,
+        }),
+      );
+      console.log(branchList);
+      form.reset({
+        address: userProfile?.address || "",
+        city: userProfile?.city || "",
+        province: userProfile?.province || "",
+        country: userProfile?.country || "",
+        yearOfEstablishment: userProfile?.yearOfEstablishment?.toString() || "",
+        totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
+        annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
+        aboutUs: userProfile?.aboutUs || "",
+        companyName: userProfile?.companyName || "",
+        // businessTypeList: userProfile?.businessTypeList||undefined,/
+        // branchList: branchList || [
+        //   {
+        //     profileType: "COMPANY",
+        //     businessTypeList: undefined,
+        //     branchFrontPicture: "",
+        //     proofOfAddress: "",
+        //     address: "",
+        //     city: "",
+        //     province: "",
+        //     country: "",
+        //     contactNumber: "",
+        //     contactName: "",
+        //     startTime: "",
+        //     endTime: "",
+        //     workingDays: {
+        //       sun: 0,
+        //       mon: 0,
+        //       tue: 0,
+        //       wed: 0,
+        //       thu: 0,
+        //       fri: 0,
+        //       sat: 0,
+        //     },
+        //     tagList: undefined,
+        //     mainOffice: 0,
+        //   },
+        // ],
+      });
+    }
+  }, [userDetails.data?.status]);
 
   return (
     <section className="relative w-full py-7">
@@ -919,6 +1023,11 @@ export default function CompanyProfilePage() {
                                       [item.value]: e ? 1 : 0,
                                     });
                                   }}
+                                  checked={
+                                    !!field.value[
+                                      item.value as keyof typeof field.value
+                                    ]
+                                  }
                                   className="data-[state=checked]:!bg-dark-orange"
                                 />
                               </FormControl>
@@ -932,6 +1041,12 @@ export default function CompanyProfilePage() {
                         />
                       ))}
                     </div>
+                    {form.formState.errors.branchList?.[index]?.workingDays
+                      ?.message ? (
+                      <p className="text-[13px] text-red-500">
+                        Working Day is Required
+                      </p>
+                    ) : null}
                   </div>
 
                   <AccordionMultiSelect
