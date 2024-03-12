@@ -3,10 +3,12 @@ import React from "react";
 
 type MoreInformationSectionProps = {
   userDetails: any;
+  onEdit: () => void;
 };
 
 const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
   userDetails,
+  onEdit,
 }) => {
   return (
     <div className="w-full py-4">
@@ -18,6 +20,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
           <div className="w-auto">
             <button
               type="button"
+              onClick={onEdit}
               className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
             >
               <Image

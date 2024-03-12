@@ -5,9 +5,10 @@ import { getInitials } from "@/utils/helper";
 
 type ProfileCardProps = {
   userDetails: any;
+  onEdit: () => void;
 };
 
-const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
+const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
   const memoizedInitials = useMemo(
     () => getInitials(userDetails?.firstName, userDetails?.lastName),
     [userDetails?.firstName, userDetails?.lastName],
@@ -37,6 +38,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
           <div className="w-auto">
             <button
               type="button"
+              onClick={onEdit}
               className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
             >
               <Image

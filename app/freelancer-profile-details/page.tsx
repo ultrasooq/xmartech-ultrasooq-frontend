@@ -7,9 +7,12 @@ import InformationSection from "@/components/modules/freelancerProfileDetails/In
 import RatingsSection from "@/components/shared/RatingsSection";
 import TabViewSection from "@/components/modules/freelancerProfileDetails/TabViewSection";
 import MoreInformationSection from "@/components/modules/freelancerProfileDetails/MoreInformationSection";
+import { useRouter } from "next/navigation";
 
 export default function FreelancerProfileDetailsPage() {
+  const router = useRouter();
   const userDetails = useMe();
+  const handleFreelancerProfilePage = () => router.push("/freelancer-profile");
 
   return (
     <section className="relative w-full py-7">
@@ -29,12 +32,18 @@ export default function FreelancerProfileDetailsPage() {
               Freelancer Profile
             </h2>
           </div>
-          <ProfileCard userDetails={userDetails.data?.data} />
+          <ProfileCard
+            userDetails={userDetails.data?.data}
+            onEdit={handleFreelancerProfilePage}
+          />
           <div className="mt-12 w-full">
             <TabViewSection />
             <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
               <div className="w-full">
-                <InformationSection userDetails={userDetails.data?.data} />
+                <InformationSection
+                  userDetails={userDetails.data?.data}
+                  onEdit={handleFreelancerProfilePage}
+                />
                 <MoreInformationSection userDetails={userDetails.data?.data} />
               </div>
               <RatingsSection />

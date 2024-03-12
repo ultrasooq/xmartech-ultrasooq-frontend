@@ -8,10 +8,13 @@ import TabViewSection from "@/components/modules/companyProfileDetails/TabViewSe
 import TagInformationSection from "@/components/modules/companyProfileDetails/TagInformationSection";
 import RatingsSection from "@/components/shared/RatingsSection";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function CompanyProfileDetailsPage() {
+  const router = useRouter();
   const userDetails = useMe();
+  const handleCompanyProfilePage = () => router.push("/company-profile");
 
   return (
     <section className="relative w-full py-7">
@@ -31,13 +34,22 @@ export default function CompanyProfileDetailsPage() {
               Company Profile
             </h2>
           </div>
-          <ProfileCard userDetails={userDetails.data?.data} />
+          <ProfileCard
+            userDetails={userDetails.data?.data}
+            onEdit={handleCompanyProfilePage}
+          />
           <div className="mt-12 w-full">
             <TabViewSection />
             <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
               <div className="w-full">
-                <InformationSection userDetails={userDetails.data?.data} />
-                <MoreInformationSection userDetails={userDetails.data?.data} />
+                <InformationSection
+                  userDetails={userDetails.data?.data}
+                  onEdit={handleCompanyProfilePage}
+                />
+                <MoreInformationSection
+                  userDetails={userDetails.data?.data}
+                  onEdit={handleCompanyProfilePage}
+                />
                 {/* Branch Section */}
                 <div className="mb-4 w-full border-b-2 border-dashed border-gray-200 pt-4">
                   <div className="flex w-full flex-wrap items-center justify-between pb-5">
@@ -46,10 +58,10 @@ export default function CompanyProfileDetailsPage() {
                     </h2>
                   </div>
                   {userDetails.data?.data?.userBranch.map((item: any) => (
-                    <>
+                    <React.Fragment key={item.id}>
                       <BranchSection branchDetails={item} />
                       <TagInformationSection tagDetails={item} />
-                    </>
+                    </React.Fragment>
                   ))}
                 </div>
               </div>

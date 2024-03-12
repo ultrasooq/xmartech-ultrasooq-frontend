@@ -34,14 +34,6 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                 </span>
               ))}
             </div>
-            <div className="w-auto">
-              <Image
-                src="/images/social-arrow-icon.svg"
-                alt="arrow-icon"
-                width={12}
-                height={9}
-              />
-            </div>
           </div>
         </AccordionTrigger>
         <AccordionContent>
