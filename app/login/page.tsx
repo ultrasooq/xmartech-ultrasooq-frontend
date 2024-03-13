@@ -23,14 +23,14 @@ import { setCookie } from "cookies-next";
 import Image from "next/image";
 
 const formSchema = z.object({
-  email: z.string().trim().min(5, { message: "Email is Required" }).email({
+  email: z.string().trim().min(5, { message: "Email is required" }).email({
     message: "Invalid Email Address",
   }),
   password: z
     .string()
     .trim()
     .min(2, {
-      message: "Password is Required",
+      message: "Password is required",
     })
     .min(8, {
       message: "Password must be longer than or equal to 8 characters",

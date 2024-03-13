@@ -44,7 +44,7 @@ export default function OtpVerifyPage() {
       return;
     }
     const data = {
-      email: formData.email,
+      email: formData.email?.toLowerCase(),
       otp: Number(combinedOtp),
     };
     const response = await verifyOtp.mutateAsync(data);
@@ -78,7 +78,7 @@ export default function OtpVerifyPage() {
   const handleResendOtp = async () => {
     const email = sessionStorage.getItem("email") || "";
     const data = {
-      email,
+      email: email.toLowerCase(),
     };
 
     if (!data.email) {
@@ -149,7 +149,7 @@ export default function OtpVerifyPage() {
       const storedOTP = sessionStorage.getItem("otp");
 
       if (storedEmail && storedOTP) {
-        form.setValue("email", storedEmail);
+        form.setValue("email", storedEmail.toLowerCase());
         form.setValue("otp", storedOTP);
         setOtp([...storedOTP.split("")]);
       }

@@ -35,7 +35,7 @@ import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
 
 const formSchema = z.object({
-  aboutUs: z.string().trim().min(2, { message: "About Us is Required" }),
+  aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
   businessTypeList: z
     .array(
       z.object({
@@ -44,7 +44,7 @@ const formSchema = z.object({
       }),
     )
     .min(1, {
-      message: "Business Type is Required",
+      message: "Business Type is required",
     })
     .transform((value) => {
       let temp: any = [];
@@ -56,32 +56,32 @@ const formSchema = z.object({
   address: z
     .string()
     .trim()
-    .min(2, { message: "Address is Required" })
+    .min(2, { message: "Address is required" })
     .max(50, {
       message: "Address must be less than 50 characters",
     }),
-  city: z.string().trim().min(2, { message: "City is Required" }),
-  province: z.string().trim().min(2, { message: "Province is Required" }),
-  country: z.string().trim().min(2, { message: "Country is Required" }),
+  city: z.string().trim().min(2, { message: "City is required" }),
+  province: z.string().trim().min(2, { message: "Province is required" }),
+  country: z.string().trim().min(2, { message: "Country is required" }),
   contactNumber: z
     .string()
     .trim()
-    .min(2, { message: "Branch Contact Number is Required" })
+    .min(2, { message: "Branch Contact Number is required" })
     .min(10, {
-      message: "Branch Contact must be longer than or equal to 10 characters",
+      message: "Branch Contact Number must be equal to 10 digits",
     })
     .max(10, {
-      message: "Branch Contact must be less than 10 characters",
+      message: "Branch Contact Number must be equal to 10 digits",
     }),
   contactName: z
     .string()
     .trim()
-    .min(2, { message: "Branch Contact Name is Required" }),
+    .min(2, { message: "Branch Contact Name is required" }),
   startTime: z.string().trim().min(1, {
-    message: "Start Time is Required",
+    message: "Start Time is required",
   }),
   endTime: z.string().trim().min(1, {
-    message: "End Time is Required",
+    message: "End Time is required",
   }),
   workingDays: z
     .object({
@@ -112,7 +112,7 @@ const formSchema = z.object({
       }),
     )
     .min(1, {
-      message: "Tag is Required",
+      message: "Tag is required",
     })
     .transform((value) => {
       let temp: any = [];
@@ -542,7 +542,7 @@ export default function FreelancerProfilePage() {
 
                   {form.formState.errors.workingDays?.message ? (
                     <p className="text-[13px] text-red-500">
-                      Working Day is Required
+                      Working Day is required
                     </p>
                   ) : null}
                 </div>

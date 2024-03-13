@@ -53,38 +53,50 @@ const formSchema = z.object({
   firstName: z
     .string()
     .trim()
-    .min(2, { message: "First Name is Required" })
+    .min(2, { message: "First Name is required" })
     .max(50, { message: "First Name must be less than 50 characters" }),
   lastName: z
     .string()
     .trim()
-    .min(2, { message: "Last Name is Required" })
+    .min(2, { message: "Last Name is required" })
     .max(50, { message: "Last Name must be less than 50 characters" }),
-  gender: z.string().trim().min(2, { message: "Gender is Required" }),
-  email: z.string().trim().min(10, { message: "Email is Required" }).email({
-    message: "Invalid Email Address",
-  }),
+  gender: z.string().trim().min(2, { message: "Gender is required" }),
+  email: z
+    .string()
+    .trim()
+    .min(10, { message: "Email is required" })
+    .email({
+      message: "Invalid Email Address",
+    })
+    .toLowerCase(),
   phoneNumberList: z.array(
     z.object({
       phoneNumber: z
         .string()
         .trim()
-        .min(10, { message: "Phone Number is Required" })
-        .max(10, { message: "Phone Number must be less than 10 digits" }),
+        .min(2, {
+          message: "Phone Number is required",
+        })
+        .min(10, {
+          message: "Phone Number must be equal to 10 digits",
+        })
+        .max(10, {
+          message: "Phone Number must be equal to 10 digits",
+        }),
     }),
   ),
   socialLinkList: z.array(
     z.object({
-      linkType: z.string().trim().min(2, { message: "Type is Required" }),
+      linkType: z.string().trim().min(2, { message: "Type is required" }),
       link: z
         .string()
         .trim()
-        .min(2, { message: "Link is Required" })
+        .min(2, { message: "Link is required" })
         .max(50, { message: "Link must be less than 50 characters" })
         .url({ message: "Invalid URL" }),
     }),
   ),
-  dateOfBirth: z.date({ required_error: "Date of Birth is Required" }),
+  dateOfBirth: z.date({ required_error: "Date of Birth is required" }),
 });
 
 export default function ProfilePage() {
@@ -601,7 +613,7 @@ export default function ProfilePage() {
 
                   <p className="mb-3 text-[13px] text-red-500">
                     {form.formState.errors.socialLinkList?.length
-                      ? "Social Link is Required"
+                      ? "Social Link is required"
                       : null}
                   </p>
 

@@ -36,7 +36,7 @@ const formSchema = z
       .string()
       .trim()
       .min(2, {
-        message: "First Name is Required",
+        message: "First Name is required",
       })
       .max(50, {
         message: "First Name must be less than 50 characters",
@@ -44,18 +44,23 @@ const formSchema = z
     lastName: z
       .string()
       .trim()
-      .min(2, { message: "Last Name is Required" })
+      .min(2, { message: "Last Name is required" })
       .max(50, {
         message: "Last Name must be less than 50 characters",
       }),
-    email: z.string().trim().min(5, { message: "Email is Required" }).email({
-      message: "Invalid Email Address",
-    }),
+    email: z
+      .string()
+      .trim()
+      .min(5, { message: "Email Address is required" })
+      .email({
+        message: "Invalid Email Address",
+      })
+      .toLowerCase(),
     initialPassword: z
       .string()
       .trim()
       .min(2, {
-        message: "Password is Required",
+        message: "Login Password is required",
       })
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",
@@ -64,7 +69,7 @@ const formSchema = z
       .string()
       .trim()
       .min(2, {
-        message: "Confirm Password is Required",
+        message: "Confirm Password is required",
       })
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",
@@ -73,16 +78,16 @@ const formSchema = z
       .string()
       .trim()
       .min(2, {
-        message: "Phone Number is Required",
+        message: "Phone Number is required",
       })
       .min(10, {
-        message: "Phone Number must be longer than or equal to 10 characters",
+        message: "Phone Number must be equal to 10 digits",
       })
       .max(10, {
-        message: "Phone Number must be less than 10 characters",
+        message: "Phone Number must be equal to 10 digits",
       }),
     tradeRole: z.string().trim().min(2, {
-      message: "Trade Role is Required",
+      message: "Trade Role is required",
     }),
     acceptTerms: z.boolean().refine((val) => val, {
       message: "You must accept the terms",
@@ -136,7 +141,7 @@ export default function RegisterPage() {
         title: "Otp Sent",
         description: "OTP has been sent to your email/phone",
       });
-      sessionStorage.setItem("email", values.email);
+      sessionStorage.setItem("email", values.email.toLowerCase());
       sessionStorage.setItem("otp", response.otp.toString());
       form.reset();
       router.push("/otp-verify");
