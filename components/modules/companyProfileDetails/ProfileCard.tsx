@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { getInitials } from "@/utils/helper";
+import { COMPANY_UNIQUE_ID } from "@/utils/constants";
 
 type ProfileCardProps = {
   userDetails: any;
@@ -81,7 +82,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
             <p>
               Company ID:
               <span className="text-base font-medium leading-4 text-gray-600">
-                NA
+                {userDetails?.uniqueId
+                  ? `${COMPANY_UNIQUE_ID}${userDetails?.uniqueId}`
+                  : "NA"}
               </span>
             </p>
           </div>

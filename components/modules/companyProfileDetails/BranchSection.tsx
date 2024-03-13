@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { parsedDays } from "@/utils/helper";
+import { getAmPm, parsedDays } from "@/utils/helper";
 import Image from "next/image";
 import {
   Accordion,
@@ -132,7 +132,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                   </div>
                   <div className="mr-1 flex w-8/12  items-center justify-start sm:mr-0">
                     <p className="text-base font-medium leading-4 text-color-dark">
-                      {branchDetails?.startTime || "NA"}
+                      {getAmPm(branchDetails?.startTime) || "NA"}
                     </p>
                   </div>
                 </div>
@@ -146,7 +146,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                   </div>
                   <div className="mr-1 flex w-7/12  items-center justify-start sm:mr-0">
                     <p className="text-base font-medium leading-4 text-color-dark">
-                      {branchDetails?.endTime || "NA"}
+                      {getAmPm(branchDetails?.endTime) || "NA"}
                     </p>
                   </div>
                 </div>
