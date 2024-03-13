@@ -89,3 +89,13 @@ export const DAYS_NAME_LIST: { [key: string]: string } = {
 
 export const FREELANCER_UNIQUE_ID = "PUREFW";
 export const COMPANY_UNIQUE_ID = "PUREFC";
+
+export const WEEKDAYS_LIST = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];

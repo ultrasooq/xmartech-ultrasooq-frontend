@@ -1,4 +1,4 @@
-import { DAYS_NAME_LIST } from "./constants";
+import { DAYS_NAME_LIST, WEEKDAYS_LIST } from "./constants";
 
 export const parsedDays = (data: string) => {
   if (!data) return;
@@ -27,4 +27,10 @@ export const getAmPm = (time: string) => {
   const ampm = hours >= 12 ? "pm" : "am";
   const hours12 = hours % 12 || 12;
   return `${hours12}:${minutes} ${ampm}`;
+};
+
+export const getCurrentDay = () => {
+  const date = new Date();
+  const day = date.getDay();
+  return WEEKDAYS_LIST[day];
 };

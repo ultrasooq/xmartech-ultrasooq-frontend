@@ -1,8 +1,9 @@
 import React, { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
-import { getInitials } from "@/utils/helper";
+import { getCurrentDay, getInitials, parsedDays } from "@/utils/helper";
 import { COMPANY_UNIQUE_ID } from "@/utils/constants";
+import { cn } from "@/lib/utils";
 
 type ProfileCardProps = {
   userDetails: any;
@@ -14,6 +15,15 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
     () => getInitials(userDetails?.firstName, userDetails?.lastName),
     [userDetails?.firstName, userDetails?.lastName],
   );
+
+  const isOnlineToday = useMemo(() => {
+    const getActiveDays = userDetails?.userBranch
+      ?.map((item: any) => {
+        return parsedDays(item?.workingDays)?.includes(getCurrentDay());
+      })
+      .includes(true);
+    return getActiveDays;
+  }, [userDetails?.userBranch?.length]);
 
   return (
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
@@ -89,8 +99,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
             </p>
           </div>
           <div className="my-2 flex flex-wrap items-center justify-between">
-            <span className="mr-2.5 text-sm font-medium leading-6 text-light-green">
-              Online
+            <span
+              className={cn(
+                "mr-2.5 text-sm font-bold leading-6",
+                isOnlineToday ? "text-light-green" : "text-red-500",
+              )}
+            >
+              {isOnlineToday ? "Online" : "Offline"}
             </span>
           </div>
         </div>
