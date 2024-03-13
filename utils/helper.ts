@@ -19,3 +19,12 @@ export const getInitials = (firstName: string, lastName: string) => {
   const lastInitial = lastName?.charAt(0) || "";
   return `${firstInitial}${lastInitial}`;
 };
+
+export const getAmPm = (time: string) => {
+  if (!time) return;
+  const [hoursStr, minutes] = time.split(":");
+  const hours = parseInt(hoursStr, 10);
+  const ampm = hours >= 12 ? "pm" : "am";
+  const hours12 = hours % 12 || 12;
+  return `${hours12}:${minutes} ${ampm}`;
+};
