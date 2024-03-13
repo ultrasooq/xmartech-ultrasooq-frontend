@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
@@ -14,6 +14,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
+import { getInitials } from "@/utils/helper";
 
 const Header = () => {
   const router = useRouter();
@@ -23,6 +24,15 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   const userDetails = useMe(!!accessToken);
+
+  const memoizedInitials = useMemo(
+    () =>
+      getInitials(
+        userDetails.data?.data?.firstName,
+        userDetails.data?.data?.lastName,
+      ),
+    [userDetails.data?.data?.firstName, userDetails.data?.data?.lastName],
+  );
 
   const handleProfile = () => {
     switch (userDetails?.data?.data?.tradeRole) {
@@ -150,7 +160,7 @@ const Header = () => {
                         <Avatar className="h-[30px] w-[30px]">
                           <AvatarImage src="null" alt="image-icon" />
                           <AvatarFallback className="p-2 text-lg font-bold">
-                            AD
+                            {memoizedInitials}
                           </AvatarFallback>
                         </Avatar>
                       </DropdownMenuTrigger>

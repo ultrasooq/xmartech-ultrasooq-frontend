@@ -28,7 +28,7 @@ const formSchema = z
       .string()
       .trim()
       .min(2, {
-        message: "New Password is Required",
+        message: "New Password is required",
       })
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",
@@ -37,7 +37,7 @@ const formSchema = z
       .string()
       .trim()
       .min(2, {
-        message: "Password is Required",
+        message: "Password is required",
       })
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",

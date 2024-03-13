@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { DAYS_NAME_LIST } from "@/utils/constants";
+import { getAmPm, parsedDays } from "@/utils/helper";
 
 type MoreInformationSectionProps = {
   userDetails: any;
@@ -9,20 +10,8 @@ type MoreInformationSectionProps = {
 const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
   userDetails,
 }) => {
-  const parsedDays = useMemo(
-    () => (data: string) => {
-      if (!data) return;
-      const days = JSON.parse(data);
-      const response = Object.keys(days)
-        .map((day) => {
-          if (days[day] === 1) {
-            return DAYS_NAME_LIST[day];
-          }
-        })
-        .filter((item) => item)
-        .join(", ");
-      return response || "NA";
-    },
+  const memoizedParsedDays = useMemo(
+    () => parsedDays(userDetails?.userBranch?.[0]?.workingDays),
     [userDetails?.userBranch?.[0]?.workingDays],
   );
 
@@ -135,7 +124,9 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
                   <span>Start Time:</span>
                 </div>
                 <div className="w-9/12 text-base font-medium leading-4 text-color-dark md:w-6/12">
-                  <span>{userDetails?.userBranch?.[0]?.startTime}</span>
+                  <span>
+                    {getAmPm(userDetails?.userBranch?.[0]?.startTime)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -145,7 +136,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
                   <span>End Time:</span>
                 </div>
                 <div className="w-9/12 text-base font-medium leading-4 text-color-dark md:w-6/12">
-                  <span>{userDetails?.userBranch?.[0]?.endTime}</span>
+                  <span>{getAmPm(userDetails?.userBranch?.[0]?.endTime)}</span>
                 </div>
               </div>
             </div>
@@ -155,9 +146,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
                   <span>Working Days:</span>
                 </div>
                 <div className="w-9/12 text-base font-medium leading-4 text-color-dark md:w-6/12">
-                  <span>
-                    {parsedDays(userDetails?.userBranch?.[0]?.workingDays)}
-                  </span>
+                  <span>{memoizedParsedDays || "NA"}</span>
                 </div>
               </div>
             </div>

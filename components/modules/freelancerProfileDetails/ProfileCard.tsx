@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
+import { FREELANCER_UNIQUE_ID } from "@/utils/constants";
+import { getInitials } from "@/utils/helper";
 
 type ProfileCardProps = {
   userDetails: any;
@@ -9,11 +10,10 @@ type ProfileCardProps = {
 };
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
-  const getInitials = useMemo(() => {
-    const firstInitial = userDetails?.firstName?.charAt(0) || "";
-    const lastInitial = userDetails?.lastName?.charAt(0) || "";
-    return `${firstInitial}${lastInitial}`;
-  }, [userDetails?.firstName, userDetails?.lastName]);
+  const memoizedInitials = useMemo(
+    () => getInitials(userDetails?.firstName, userDetails?.lastName),
+    [userDetails?.firstName, userDetails?.lastName],
+  );
 
   return (
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
@@ -21,7 +21,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
         <Avatar className="h-40 w-40">
           <AvatarImage src="null" alt="image-icon" />
           <AvatarFallback className="text-5xl font-bold">
-            {getInitials}
+            {memoizedInitials}
           </AvatarFallback>
         </Avatar>
         <div className="absolute bottom-2 right-0 z-10 h-11 w-11 rounded-full bg-gray-300">
@@ -110,7 +110,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
             <p>
               Freelancer ID:
               <span className="text-base font-medium leading-4 text-gray-600">
-                NA
+                {userDetails?.uniqueId
+                  ? `${FREELANCER_UNIQUE_ID}${userDetails?.uniqueId}`
+                  : "NA"}
               </span>
             </p>
           </div>

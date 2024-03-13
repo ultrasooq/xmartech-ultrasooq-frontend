@@ -20,9 +20,14 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 
 const formSchema = z.object({
-  email: z.string().trim().min(5, { message: "Email is Required" }).email({
-    message: "Invalid Email Address",
-  }),
+  email: z
+    .string()
+    .trim()
+    .min(5, { message: "Email is required" })
+    .email({
+      message: "Invalid Email Address",
+    })
+    .toLowerCase(),
 });
 
 export default function ForgetPasswordPage() {
