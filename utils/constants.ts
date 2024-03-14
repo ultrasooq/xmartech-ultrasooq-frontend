@@ -89,3 +89,15 @@ export const DAYS_NAME_LIST: { [key: string]: string } = {
 
 export const FREELANCER_UNIQUE_ID = "PUREFW";
 export const COMPANY_UNIQUE_ID = "PUREFC";
+
+export const WEEKDAYS_LIST = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+export const EMAIL_REGEX_LOWERCASE = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;

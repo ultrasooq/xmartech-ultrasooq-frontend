@@ -29,6 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 
 const formSchema = z
   .object({
@@ -55,7 +56,9 @@ const formSchema = z
       .email({
         message: "Invalid Email Address",
       })
-      .toLowerCase(),
+      .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+        message: "Email must be in lower case",
+      }),
     initialPassword: z
       .string()
       .trim()

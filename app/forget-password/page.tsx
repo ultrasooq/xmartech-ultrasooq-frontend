@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
+import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 
 const formSchema = z.object({
   email: z
@@ -27,7 +28,9 @@ const formSchema = z.object({
     .email({
       message: "Invalid Email Address",
     })
-    .toLowerCase(),
+    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+      message: "Email must be in lower case",
+    }),
 });
 
 export default function ForgetPasswordPage() {

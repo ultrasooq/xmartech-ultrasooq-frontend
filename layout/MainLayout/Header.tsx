@@ -38,7 +38,7 @@ const Header = () => {
     switch (userDetails?.data?.data?.tradeRole) {
       case "BUYER":
         // TODO: fix path later
-        router.push("/home");
+        router.push("/profile");
         break;
       case "FREELANCER":
         router.push("/freelancer-profile-details");
