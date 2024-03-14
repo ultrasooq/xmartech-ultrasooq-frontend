@@ -4,7 +4,6 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useMemo } from "react";
 import { useUpdateCompanyBranch } from "@/apis/queries/company.queries";
 import { Controller, useForm } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -125,8 +124,9 @@ const formSchema = z.object({
 
 export default function EditBranchPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const branchId = searchParams ? searchParams.get("branchId") : null;
+  const params = new URLSearchParams(document.location.search);
+  let branchId = params.get("branchId");
+
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
