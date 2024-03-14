@@ -177,14 +177,14 @@ export default function FreelancerProfilePage() {
 
     if (response.status && response.data) {
       toast({
-        title: "Profile Created Successful",
+        title: "Profile Create Successful",
         description: response.message,
       });
       form.reset();
       router.push("/home");
     } else {
       toast({
-        title: "Profile Created Failed",
+        title: "Profile Create Failed",
         description: response.message,
       });
     }
