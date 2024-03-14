@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 type InformationSectionProps = {
   userDetails: any;
@@ -11,6 +10,15 @@ const InformationSection: React.FC<InformationSectionProps> = ({
   userDetails,
   onEdit,
 }) => {
+  const getSocialLinks = useMemo(() => {
+    if (userDetails?.userSocialLink?.length > 0) {
+      const socialLinks = userDetails?.userSocialLink?.map((item: any) => {
+        return `${item?.linkType}, `;
+      });
+      return socialLinks;
+    }
+  }, [userDetails?.userSocialLink?.length]);
+
   return (
     <div className="w-full border-b-2 border-dashed border-gray-200 py-4">
       <div className="flex w-full flex-wrap items-center justify-between pb-5">
@@ -67,9 +75,8 @@ const InformationSection: React.FC<InformationSectionProps> = ({
               </span>
             </div>
             <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0">
-              <p className="text-base font-medium leading-4 text-color-dark">
-                {/* Facebook, LInkedin, Instagram */}
-                NA
+              <p className="cursor-pointer text-base font-medium capitalize leading-4 text-color-dark">
+                {getSocialLinks || "NA"}
               </p>
             </div>
           </div>
