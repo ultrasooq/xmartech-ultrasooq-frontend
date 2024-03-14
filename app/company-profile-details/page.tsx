@@ -14,6 +14,9 @@ import React from "react";
 export default function CompanyProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
+
+  const handleCompanyEditPage = () =>
+    router.push("/company-profile/edit-profile");
   const handleCompanyProfilePage = () => router.push("/company-profile");
 
   return (
@@ -36,7 +39,7 @@ export default function CompanyProfileDetailsPage() {
           </div>
           <ProfileCard
             userDetails={userDetails.data?.data}
-            onEdit={handleCompanyProfilePage}
+            onEdit={handleCompanyEditPage}
           />
           <div className="mt-12 w-full">
             <TabViewSection />
@@ -44,11 +47,11 @@ export default function CompanyProfileDetailsPage() {
               <div className="w-full">
                 <InformationSection
                   userDetails={userDetails.data?.data}
-                  onEdit={handleCompanyProfilePage}
+                  onEdit={handleCompanyEditPage}
                 />
                 <MoreInformationSection
                   userDetails={userDetails.data?.data}
-                  onEdit={handleCompanyProfilePage}
+                  onEdit={handleCompanyEditPage}
                 />
                 {/* Branch Section */}
                 <div className="mb-4 w-full border-b-2 border-dashed border-gray-200 pt-4">
@@ -60,7 +63,9 @@ export default function CompanyProfileDetailsPage() {
                   {userDetails.data?.data?.userBranch.map((item: any) => (
                     <React.Fragment key={item.id}>
                       <BranchSection branchDetails={item} />
+                      <div className="border-b-2 border-dashed border-gray-200" />
                       <TagInformationSection tagDetails={item} />
+                      <div className="mb-5 border-b-2 border-dashed border-gray-200" />
                     </React.Fragment>
                   ))}
                 </div>
