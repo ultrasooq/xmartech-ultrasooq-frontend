@@ -86,3 +86,34 @@ export interface IBuyer {
   // endTime: string;
   // days: any;
 }
+
+export interface IEditFreelancerProfileRequest {
+  userProfileId: number;
+  aboutUs: string;
+  profileType: string;
+}
+
+export interface IEditFreelancerBranchRequest {
+  branchId: number;
+  businessTypeList?: { businessTypeId: number }[];
+  address: string;
+  city: string;
+  province: string;
+  country: string;
+  contactNumber: string;
+  contactName: string;
+  startTime: string;
+  endTime: string;
+  workingDays: {
+    sun: number;
+    mon: number;
+    tue: number;
+    wed: number;
+    thu: number;
+    fri: number;
+    sat: number;
+  };
+  tagList?: { tagId: number }[];
+  profileType: string;
+  mainOffice: number;
+}

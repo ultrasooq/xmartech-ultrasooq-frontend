@@ -4,7 +4,7 @@ import { getCookie } from "cookies-next";
 
 export const updateUserProfile = (payload: any) => {
   return axios({
-    method: "POST",
+    method: "PATCH",
     url: `${process.env.NEXT_PUBLIC_API_URL}/user/updateProfile`,
     data: payload,
     headers: {
