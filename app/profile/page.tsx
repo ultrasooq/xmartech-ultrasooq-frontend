@@ -161,6 +161,7 @@ export default function ProfilePage() {
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const data = {
       ...formData,
+      phoneNumber: formData.phoneNumberList[0].phoneNumber,
       dateOfBirth: formData.dateOfBirth.toISOString(),
     };
 
@@ -180,7 +181,11 @@ export default function ProfilePage() {
       } else if (tradeRole === "COMPANY") {
         router.push("/company-profile");
       } else if (tradeRole === "FREELANCER") {
-        router.push("/freelancer-profile");
+        if (me.data?.data?.userBranch.length) {
+          router.push("/freelancer-profile-details");
+        } else {
+          router.push("/freelancer-profile");
+        }
       }
     } else {
       toast({
@@ -205,36 +210,36 @@ export default function ProfilePage() {
         userSocialLink,
       } = me.data?.data;
 
-      const phoneNumberList = userPhone.map((item: any) => ({
-        phoneNumber: item?.phoneNumber,
-      }));
+      const phoneNumberList = userPhone.length
+        ? userPhone.map((item: any) => ({
+            phoneNumber: item?.phoneNumber,
+          }))
+        : [
+            {
+              phoneNumber: phoneNumber || '',
+            },
+          ];
 
-      const socialLinkList = userSocialLink.map((item: any) => ({
-        linkType: item?.linkType,
-        link: item?.link,
-      }));
+      const socialLinkList = userSocialLink.length
+        ? userSocialLink.map((item: any) => ({
+            linkType: item?.linkType,
+            link: item?.link,
+          }))
+        : [
+            {
+              linkType: "",
+              link: "",
+            },
+          ];
 
       form.reset({
         firstName,
         lastName,
         gender,
         email,
-        phoneNumberList: phoneNumberList || [
-            {
-              phoneNumber: phoneNumber,
-            },
-          ] || [
-            {
-              phoneNumber: "",
-            },
-          ],
+        phoneNumberList: phoneNumberList,
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : new Date(),
-        socialLinkList: socialLinkList || [
-          {
-            linkType: "",
-            link: "",
-          },
-        ],
+        socialLinkList: socialLinkList,
       });
     }
   }, [me.data]);
@@ -473,18 +478,20 @@ export default function ProfilePage() {
                           </FormItem>
                         )}
                       />
-                      <Button
-                        type="button"
-                        onClick={() => removePhoneNumber(index)}
-                        className="absolute right-4 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                      >
-                        <Image
-                          src="/images/social-delete-icon.svg"
-                          height={35}
-                          width={35}
-                          alt="social-delete-icon"
-                        />
-                      </Button>
+                      {index !== 0 ? (
+                        <Button
+                          type="button"
+                          onClick={() => removePhoneNumber(index)}
+                          className="absolute right-4 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                        >
+                          <Image
+                            src="/images/social-delete-icon.svg"
+                            height={35}
+                            width={35}
+                            alt="social-delete-icon"
+                          />
+                        </Button>
+                      ) : null}
                     </div>
                   ))}
 
