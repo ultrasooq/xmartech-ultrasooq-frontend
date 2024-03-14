@@ -100,7 +100,7 @@ export default function EditProfilePage() {
       userProfileId: userDetails.data?.data?.userProfile?.[0]?.id as number,
     };
 
-    console.log(data);
+    // console.log(data);
     // return;
     const response = await updateCompanyProfile.mutateAsync(data);
 

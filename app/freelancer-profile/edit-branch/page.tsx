@@ -162,9 +162,8 @@ export default function EditBranchPage() {
       branchId: userDetails.data?.data?.userBranch?.[0]?.id as number,
     };
 
-    console.log(data);
-
-    return;
+    // console.log(data);
+    // return;
     const response = await updateFreelancerBranch.mutateAsync(data);
 
     if (response.status && response.data) {
