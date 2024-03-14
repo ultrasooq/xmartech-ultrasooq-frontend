@@ -10,9 +10,13 @@ import {
 
 type BranchSectionProps = {
   branchDetails: any;
+  onEditBranch: () => void;
 };
 
-const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
+const BranchSection: React.FC<BranchSectionProps> = ({
+  branchDetails,
+  onEditBranch,
+}) => {
   const memoizedParsedDays = useMemo(
     () => parsedDays(branchDetails?.workingDays),
     [branchDetails?.workingDays],
@@ -38,6 +42,22 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
         </AccordionTrigger>
         <AccordionContent>
           <div className="w-full border-t border-solid border-gray-300 px-5 py-4">
+            <div className="flex w-full justify-end">
+              <button
+                type="button"
+                onClick={onEditBranch}
+                className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+              >
+                <Image
+                  src="/images/edit-icon.svg"
+                  height={18}
+                  width={18}
+                  className="mr-1"
+                  alt="edit-icon"
+                />
+                edit
+              </button>
+            </div>
             <div className="flex w-full flex-wrap">
               <div className="w-7/12">
                 <div className="flex w-full flex-wrap py-4">

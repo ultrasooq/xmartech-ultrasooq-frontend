@@ -15,9 +15,11 @@ export default function CompanyProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
 
-  const handleCompanyEditPage = () =>
+  const handleCompanyProfilePage = () => router.push("/profile");
+  const handleEditCompanyPage = () =>
     router.push("/company-profile/edit-profile");
-  const handleCompanyProfilePage = () => router.push("/company-profile");
+  const handleEditCompanyBranchPage = (branchId: number) =>
+    router.push(`/company-profile/edit-branch?branchId=${branchId}`);
 
   return (
     <section className="relative w-full py-7">
@@ -39,7 +41,7 @@ export default function CompanyProfileDetailsPage() {
           </div>
           <ProfileCard
             userDetails={userDetails.data?.data}
-            onEdit={handleCompanyEditPage}
+            onEdit={handleEditCompanyPage}
           />
           <div className="mt-12 w-full">
             <TabViewSection />
@@ -47,11 +49,11 @@ export default function CompanyProfileDetailsPage() {
               <div className="w-full">
                 <InformationSection
                   userDetails={userDetails.data?.data}
-                  onEdit={handleCompanyEditPage}
+                  onEdit={handleCompanyProfilePage}
                 />
                 <MoreInformationSection
                   userDetails={userDetails.data?.data}
-                  onEdit={handleCompanyEditPage}
+                  onEdit={handleEditCompanyPage}
                 />
                 {/* Branch Section */}
                 <div className="mb-4 w-full border-b-2 border-dashed border-gray-200 pt-4">
@@ -62,7 +64,12 @@ export default function CompanyProfileDetailsPage() {
                   </div>
                   {userDetails.data?.data?.userBranch.map((item: any) => (
                     <React.Fragment key={item.id}>
-                      <BranchSection branchDetails={item} />
+                      <BranchSection
+                        branchDetails={item}
+                        onEditBranch={() =>
+                          handleEditCompanyBranchPage(item.id)
+                        }
+                      />
                       <div className="border-b-2 border-dashed border-gray-200" />
                       <TagInformationSection tagDetails={item} />
                       <div className="mb-5 border-b-2 border-dashed border-gray-200" />

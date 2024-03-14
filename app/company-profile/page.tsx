@@ -269,7 +269,7 @@ export default function CompanyProfilePage() {
 
     if (response.status && response.data) {
       toast({
-        title: "Profile Created Successful",
+        title: "Profile Create Successful",
         description: response.message,
       });
       form.reset();

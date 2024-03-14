@@ -179,7 +179,11 @@ export default function ProfilePage() {
       if (tradeRole === "BUYER") {
         router.push("/home");
       } else if (tradeRole === "COMPANY") {
-        router.push("/company-profile");
+        if (me.data?.data?.userBranch.length) {
+          router.push("/company-profile-details");
+        } else {
+          router.push("/company-profile");
+        }
       } else if (tradeRole === "FREELANCER") {
         if (me.data?.data?.userBranch.length) {
           router.push("/freelancer-profile-details");
@@ -216,7 +220,7 @@ export default function ProfilePage() {
           }))
         : [
             {
-              phoneNumber: phoneNumber || '',
+              phoneNumber: phoneNumber || "",
             },
           ];
 

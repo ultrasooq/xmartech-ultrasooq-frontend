@@ -1,0 +1,624 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import React, { useEffect, useMemo, useState } from "react";
+import { useUpdateCompanyBranch } from "@/apis/queries/company.queries";
+import { Controller, useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DAYS_OF_WEEK } from "@/utils/constants";
+import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
+import { useTags } from "@/apis/queries/tags.queries";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
+import TimePicker from "react-time-picker";
+import { Switch } from "@/components/ui/switch";
+import { useMe } from "@/apis/queries/user.queries";
+
+const formSchema = z.object({
+  businessTypeList: z
+    .array(
+      z.object({
+        label: z.string().trim(),
+        value: z.number(),
+      }),
+    )
+    .min(1, {
+      message: "Business Type is required",
+    })
+    .transform((value) => {
+      let temp: any = [];
+      value.forEach((item) => {
+        temp.push({ businessTypeId: item.value });
+      });
+      return temp;
+    }),
+  address: z
+    .string()
+    .trim()
+    .min(2, { message: "Address is required" })
+    .max(50, {
+      message: "Address must be less than 50 characters",
+    }),
+  city: z.string().trim().min(2, { message: "City is required" }),
+  province: z.string().trim().min(2, { message: "Province is required" }),
+  country: z.string().trim().min(2, { message: "Country is required" }),
+  contactNumber: z
+    .string()
+    .trim()
+    .min(2, { message: "Branch Contact Number is required" })
+    .min(10, {
+      message: "Branch Contact Number must be equal to 10 digits",
+    })
+    .max(10, {
+      message: "Branch Contact Number must be equal to 10 digits",
+    }),
+  contactName: z
+    .string()
+    .trim()
+    .min(2, { message: "Branch Contact Name is required" }),
+  startTime: z.string().trim().min(1, {
+    message: "Start Time is required",
+  }),
+  endTime: z.string().trim().min(1, {
+    message: "End Time is required",
+  }),
+  workingDays: z
+    .object({
+      sun: z.number(),
+      mon: z.number(),
+      tue: z.number(),
+      wed: z.number(),
+      thu: z.number(),
+      fri: z.number(),
+      sat: z.number(),
+    })
+    .refine((value) => {
+      return (
+        value.sun !== 0 ||
+        value.mon !== 0 ||
+        value.tue !== 0 ||
+        value.wed !== 0 ||
+        value.thu !== 0 ||
+        value.fri !== 0 ||
+        value.sat !== 0
+      );
+    }),
+  tagList: z
+    .array(
+      z.object({
+        label: z.string().trim(),
+        value: z.number(),
+      }),
+    )
+    .min(1, {
+      message: "Tag is required",
+    })
+    .transform((value) => {
+      let temp: any = [];
+      value.forEach((item) => {
+        temp.push({ tagId: item.value });
+      });
+      return temp;
+    }),
+});
+
+export default function EditBranchPage() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      profileType: "COMPANY",
+      businessTypeList: undefined,
+      branchFrontPicture: "",
+      proofOfAddress: "",
+      address: "",
+      city: "",
+      province: "",
+      country: "",
+      contactNumber: "",
+      contactName: "",
+      startTime: "",
+      endTime: "",
+      workingDays: {
+        sun: 0,
+        mon: 0,
+        tue: 0,
+        wed: 0,
+        thu: 0,
+        fri: 0,
+        sat: 0,
+      },
+      tagList: undefined,
+      mainOffice: 0,
+    },
+  });
+  const [activeBranchId, setActiveBranchId] = useState<string | null>();
+  const userDetails = useMe();
+  const tagsQuery = useTags();
+  const updateCompanyBranch = useUpdateCompanyBranch();
+
+  const onSubmit = async (formData: any) => {
+    let data = {
+      ...formData,
+      profileType: "COMPANY",
+      mainOffice: 1,
+      branchId: Number(activeBranchId),
+    };
+
+    // console.log(data);
+    // return;
+    const response = await updateCompanyBranch.mutateAsync(data);
+
+    if (response.status && response.data) {
+      toast({
+        title: "Profile Edit Successful",
+        description: response.message,
+      });
+      form.reset();
+      router.push("/company-profile-details");
+    } else {
+      toast({
+        title: "Profile Edit Failed",
+        description: response.message,
+      });
+    }
+  };
+
+  const memoizedTags = useMemo(() => {
+    return (
+      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
+        return { label: item.tagName, value: item.id };
+      }) || []
+    );
+  }, [tagsQuery?.data]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(document.location.search);
+    let branchId = params.get("branchId");
+    setActiveBranchId(branchId);
+
+    if (userDetails.data?.data && branchId) {
+      const branch = userDetails.data?.data?.userBranch?.filter(
+        (item: any) => item?.id === Number(branchId),
+      )[0];
+
+      if (branch) {
+        const businessTypeList = branch?.userBranchBusinessType
+          ? branch?.userBranchBusinessType?.map((item: any) => {
+              return {
+                label: item?.userBranch_BusinessType_Tag?.tagName,
+                value: item?.userBranch_BusinessType_Tag?.id,
+              };
+            })
+          : [];
+
+        const workingDays = branch?.workingDays
+          ? JSON.parse(branch.workingDays)
+          : {
+              sun: 0,
+              mon: 0,
+              tue: 0,
+              wed: 0,
+              thu: 0,
+              fri: 0,
+              sat: 0,
+            };
+
+        const tagList = branch?.userBranchTags
+          ? branch?.userBranchTags?.map((item: any) => {
+              return {
+                label: item?.userBranchTagsTag?.tagName,
+                value: item?.userBranchTagsTag?.id,
+              };
+            })
+          : [];
+
+        form.reset({
+          businessTypeList: businessTypeList || undefined,
+          startTime: branch?.startTime || "",
+          endTime: branch?.endTime || "",
+          address: branch?.address || "",
+          city: branch?.city || "",
+          province: branch?.province || "",
+          country: branch?.country || "",
+          contactNumber: branch?.contactNumber || "",
+          contactName: branch?.contactName || "",
+          workingDays,
+          tagList: tagList || undefined,
+        });
+      }
+    }
+  }, [userDetails.data?.status]);
+
+  return (
+    <section className="relative w-full py-7">
+      <div className="absolute left-0 top-0 -z-10 h-full w-full">
+        <Image
+          src="/images/before-login-bg.png"
+          className="h-full w-full object-cover object-center"
+          alt="background"
+          fill
+          priority
+        />
+      </div>
+      <div className="container relative z-10 m-auto">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
+          >
+            <div className="mb-3.5 w-full">
+              <div className="flex w-full flex-wrap items-center justify-between pb-5">
+                <h2 className="left-8 text-2xl font-semibold text-color-dark">
+                  Branch Information
+                </h2>
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-3.5 w-full">
+                <AccordionMultiSelect
+                  label="Business Type"
+                  name="businessTypeList"
+                  options={memoizedTags || []}
+                  placeholder="Business Type"
+                  error={form.formState.errors?.businessTypeList?.message}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="branchFrontPicture"
+                  render={({ field }) => (
+                    <FormItem className="mb-3.5 w-full">
+                      <FormLabel>Upload Branch Front Picture</FormLabel>
+                      <FormControl>
+                        <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
+                          <div className="text-sm font-medium leading-4 text-color-dark">
+                            <Image
+                              src="/images/upload.png"
+                              className="m-auto mb-3"
+                              width={30}
+                              height={30}
+                              alt="camera"
+                            />
+                            <span> Drop your Company Logo here, or </span>
+                            <span className="text-blue-500">browse</span>
+                            <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                              (.jpg or .png only. Up to 16mb)
+                            </p>
+                          </div>
+
+                          <Input
+                            type="file"
+                            className="absolute h-full rounded-full bg-red-200 opacity-0"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="proofOfAddress"
+                  render={({ field }) => (
+                    <FormItem className="mb-3.5 w-full">
+                      <FormLabel>Proof Of Address</FormLabel>
+                      <FormControl>
+                        <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
+                          <div className="text-sm font-medium leading-4 text-color-dark">
+                            <Image
+                              src="/images/upload.png"
+                              className="m-auto mb-3"
+                              width={30}
+                              height={30}
+                              alt="camera"
+                            />
+                            <span> Drop your Company Logo here, or </span>
+                            <span className="text-blue-500">browse</span>
+                            <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                              (.jpg or .png only. Up to 16mb)
+                            </p>
+                          </div>
+
+                          <Input
+                            type="file"
+                            className="absolute h-full rounded-full bg-red-200 opacity-0"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex w-full flex-wrap">
+                <div className="mb-4 w-full">
+                  <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
+                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                      Branch Location
+                    </label>
+                  </div>
+                </div>
+                <div className="flex flex-wrap">
+                  <div className="relative mb-4 w-full md:w-6/12 md:pr-3.5">
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Address</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Address"
+                              className="!h-[54px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Image
+                      src="/images/location.svg"
+                      alt="location-icon"
+                      height={16}
+                      width={16}
+                      className="absolute right-6 top-[50px]"
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="City"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="province"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
+                        <FormLabel>Province</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Province"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
+                    <Label>Country</Label>
+                    <Controller
+                      name="country"
+                      control={form.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                        >
+                          <option value="">Select Country</option>
+                          <option value="USA">USA</option>
+                          <option value="UK">UK</option>
+                          <option value="India">India</option>
+                        </select>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="contactNumber"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
+                        <FormLabel>Branch Contact Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Branch Contact Number"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="contactName"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
+                        <FormLabel>Branch Contact Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Branch Contact Name"
+                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="flex w-full flex-wrap">
+                <div className="mb-4 w-full">
+                  <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
+                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                      Branch Working Hours
+                    </label>
+                  </div>
+                </div>
+                <div className="w-full">
+                  <div className="flex flex-wrap">
+                    <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
+                      <Label htmlFor="startTime" className="text-color-dark">
+                        Start Time
+                      </Label>
+                      <Controller
+                        name="startTime"
+                        control={form.control}
+                        render={({ field }) => (
+                          <TimePicker
+                            onChange={field.onChange}
+                            value={field.value}
+                            disableClock={true}
+                            className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
+                          />
+                        )}
+                      />
+                      <p className="text-[13px] text-red-500">
+                        {form.formState.errors.startTime?.message}
+                      </p>
+                    </div>
+
+                    <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
+                      <Label htmlFor="endTime" className="text-color-dark">
+                        End Time
+                      </Label>
+                      <Controller
+                        name="endTime"
+                        control={form.control}
+                        render={({ field }) => (
+                          <TimePicker
+                            onChange={field.onChange}
+                            value={field.value}
+                            disableClock={true}
+                            className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
+                          />
+                        )}
+                      />
+                      <p className="text-[13px] text-red-500">
+                        {form.formState.errors.endTime?.message}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-3.5 w-full border-b-2 border-dashed border-gray-300 pb-4">
+                  <div className="flex flex-wrap">
+                    {DAYS_OF_WEEK.map((item) => (
+                      <FormField
+                        key={item.value}
+                        control={form.control}
+                        name="workingDays"
+                        render={({ field }) => (
+                          <FormItem className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                onCheckedChange={(e) => {
+                                  field.onChange({
+                                    ...field.value,
+                                    [item.value]: e ? 1 : 0,
+                                  });
+                                }}
+                                checked={
+                                  !!field.value[
+                                    item.value as keyof typeof field.value
+                                  ]
+                                }
+                                className="data-[state=checked]:!bg-dark-orange"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-light-gray">
+                                {item.label}
+                              </FormLabel>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
+                  {form.formState.errors.workingDays?.message ? (
+                    <p className="text-[13px] text-red-500">
+                      Working Day is required
+                    </p>
+                  ) : null}
+                </div>
+
+                <AccordionMultiSelect
+                  label="Tag"
+                  name="tagList"
+                  options={memoizedTags || []}
+                  placeholder="Tag"
+                  error={form.formState.errors.tagList?.message}
+                />
+              </div>
+              <div className="mb-3.5 flex w-full justify-end border-b-2 border-dashed border-gray-300 pb-4">
+                <div className="flex w-full items-center space-x-2 ">
+                  <Label htmlFor="airplane-mode">Main Office:</Label>
+                  <Switch
+                    aria-readonly
+                    checked
+                    className="data-[state=checked]:!bg-dark-orange"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Button
+              disabled={updateCompanyBranch.isPending}
+              type="submit"
+              className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+            >
+              {updateCompanyBranch.isPending ? (
+                <>
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                "Edit changes"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </section>
+  );
+}
