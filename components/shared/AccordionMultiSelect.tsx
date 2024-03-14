@@ -35,25 +35,35 @@ const AccordionMultiSelect = ({
     }[]
   >([]);
 
+  // Initialize selectedItems with form values during initial render
+  useEffect(() => {
+    setSelectedItems(formContext.getValues(name) || []);
+  }, [formContext.getValues, name]);
+
   const handleSelectChange = (item: { label: string; value: string }) => {
-    if (!selectedItems.includes(item)) {
+    if (!selectedItems.some((selected) => selected.value === item.value)) {
       setSelectedItems((prev) => [...prev, item]);
     } else {
-      const referencedArray = [...selectedItems];
-      const indexOfItemToBeRemoved = referencedArray.indexOf(item);
-      referencedArray.splice(indexOfItemToBeRemoved, 1);
-      setSelectedItems(referencedArray);
+      setSelectedItems((prev) =>
+        prev.filter((selected) => selected.value !== item.value),
+      );
     }
   };
 
-  const isOptionSelected = (item: { label: string; value: string }): boolean =>
-    selectedItems.includes(item) ? true : false;
-
-  const watchSelectedItems = formContext.getValues(name);
+  const isOptionSelected = (item: {
+    label: string;
+    value: string;
+  }): boolean => {
+    const selectedValues = formContext.getValues(name);
+    return (
+      selectedItems.some((selected) => selected.value === item.value) ||
+      (Array.isArray(selectedValues) && selectedValues.includes(item.value))
+    );
+  };
 
   useEffect(() => {
     formContext.setValue(name, selectedItems);
-  }, [watchSelectedItems]);
+  }, [selectedItems, name, formContext]);
 
   return (
     <>
@@ -69,8 +79,11 @@ const AccordionMultiSelect = ({
         <AccordionItem value="item-1" className="border-b-0 px-5">
           <AccordionTrigger className="flex h-auto min-h-[65px] justify-between py-0 hover:!no-underline">
             <div className="my-2 flex flex-wrap">
-              {selectedItems.length ? (
-                selectedItems.map((item) => (
+              {selectedItems.length || formContext.getValues(name)?.length ? (
+                (selectedItems.length
+                  ? selectedItems
+                  : formContext.getValues(name)
+                ).map((item: { label: string; value: string }) => (
                   <p
                     key={item.value}
                     className="my-1 mr-2 inline-flex items-center justify-between rounded bg-zinc-100 px-3.5 py-3 text-sm font-normal capitalize leading-4 text-dark-cyan"
