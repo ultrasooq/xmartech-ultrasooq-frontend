@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useUpdateCompanyBranch } from "@/apis/queries/company.queries";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -124,9 +124,6 @@ const formSchema = z.object({
 
 export default function EditBranchPage() {
   const router = useRouter();
-  const params = new URLSearchParams(document.location.search);
-  let branchId = params.get("branchId");
-
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -156,7 +153,7 @@ export default function EditBranchPage() {
       mainOffice: 0,
     },
   });
-
+  const [activeBranchId, setActiveBranchId] = useState<string | null>();
   const userDetails = useMe();
   const tagsQuery = useTags();
   const updateCompanyBranch = useUpdateCompanyBranch();
@@ -166,7 +163,7 @@ export default function EditBranchPage() {
       ...formData,
       profileType: "COMPANY",
       mainOffice: 1,
-      branchId: Number(branchId),
+      branchId: Number(activeBranchId),
     };
 
     // console.log(data);
@@ -197,6 +194,10 @@ export default function EditBranchPage() {
   }, [tagsQuery?.data]);
 
   useEffect(() => {
+    const params = new URLSearchParams(document.location.search);
+    let branchId = params.get("branchId");
+    setActiveBranchId(branchId);
+
     if (userDetails.data?.data && branchId) {
       const branch = userDetails.data?.data?.userBranch?.filter(
         (item: any) => item?.id === Number(branchId),
@@ -248,7 +249,7 @@ export default function EditBranchPage() {
         });
       }
     }
-  }, [userDetails.data?.status, branchId]);
+  }, [userDetails.data?.status]);
 
   return (
     <section className="relative w-full py-7">
@@ -428,31 +429,24 @@ export default function EditBranchPage() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="country"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                        <FormLabel>Country</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
+                  <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
+                    <Label>Country</Label>
+                    <Controller
+                      name="country"
+                      control={form.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
-                          <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
-                              <SelectValue placeholder="Select Country" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="usa">USA</SelectItem>
-                            <SelectItem value="uk">UK</SelectItem>
-                            <SelectItem value="india">India</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <option value="">Select Country</option>
+                          <option value="USA">USA</option>
+                          <option value="UK">UK</option>
+                          <option value="India">India</option>
+                        </select>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}

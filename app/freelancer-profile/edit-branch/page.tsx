@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -161,8 +162,9 @@ export default function EditBranchPage() {
       branchId: userDetails.data?.data?.userBranch?.[0]?.id as number,
     };
 
-    // console.log(data);
-    // return;
+    console.log(data);
+
+    return;
     const response = await updateFreelancerBranch.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -358,31 +360,24 @@ export default function EditBranchPage() {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="country"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                          <FormLabel>Country</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                    <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
+                      <Label>Country</Label>
+                      <Controller
+                        name="country"
+                        control={form.control}
+                        render={({ field }) => (
+                          <select
+                            {...field}
+                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                           >
-                            <FormControl>
-                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
-                                <SelectValue placeholder="Select Country" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="USA">USA</SelectItem>
-                              <SelectItem value="UK">UK</SelectItem>
-                              <SelectItem value="India">India</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            <option value="">Select Country</option>
+                            <option value="USA">USA</option>
+                            <option value="UK">UK</option>
+                            <option value="India">India</option>
+                          </select>
+                        )}
+                      />
+                    </div>
 
                     <FormField
                       control={form.control}

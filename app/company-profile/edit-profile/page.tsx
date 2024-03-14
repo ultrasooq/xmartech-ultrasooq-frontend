@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useMemo } from "react";
 import { useUpdateCompanyProfile } from "@/apis/queries/company.queries";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -28,6 +28,7 @@ import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   companyName: z
@@ -128,7 +129,6 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     if (userDetails.data?.data) {
-      console.log(userDetails.data?.data);
       const userProfile = userDetails.data?.data?.userProfile?.[0];
 
       form.reset({
@@ -234,38 +234,30 @@ export default function EditProfilePage() {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="businessTypeList"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full">
-                          <FormLabel>Business Type</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                    <div className="mb-4 flex w-full flex-col justify-between space-y-3">
+                      <Label>Business Type</Label>
+                      <Controller
+                        name="businessTypeList"
+                        control={form.control}
+                        render={({ field }) => (
+                          <select
+                            {...field}
+                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                           >
-                            <FormControl>
-                              <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
-                                <SelectValue placeholder="Select Business Type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {memoizedTags.map(
-                                (item: { label: string; value: number }) => (
-                                  <SelectItem
-                                    value={item.value?.toString()}
-                                    key={item.value}
-                                  >
-                                    {item.label}
-                                  </SelectItem>
-                                ),
-                              )}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            {memoizedTags.map(
+                              (item: { label: string; value: number }) => (
+                                <option
+                                  value={item.value?.toString()}
+                                  key={item.value}
+                                >
+                                  {item.label}
+                                </option>
+                              ),
+                            )}
+                          </select>
+                        )}
+                      />
+                    </div>
 
                     <FormField
                       control={form.control}
@@ -359,32 +351,24 @@ export default function EditProfilePage() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="country"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                        <FormLabel>Country</FormLabel>
-                        <Select
-                          //   onValueChange={field.onChange}
-                          //   value={field.value}
+                  <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
+                    <Label>Country</Label>
+                    <Controller
+                      name="country"
+                      control={form.control}
+                      render={({ field }) => (
+                        <select
                           {...field}
+                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
-                          <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
-                              <SelectValue placeholder="Select Country" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="usa">USA</SelectItem>
-                            <SelectItem value="uk">UK</SelectItem>
-                            <SelectItem value="india">India</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <option value="">Select Country</option>
+                          <option value="USA">USA</option>
+                          <option value="UK">UK</option>
+                          <option value="India">India</option>
+                        </select>
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -395,62 +379,46 @@ export default function EditProfilePage() {
                   </label>
                 </div>
                 <div className="flex flex-wrap">
-                  <FormField
-                    control={form.control}
-                    name="yearOfEstablishment"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
-                        <FormLabel>Year Of Establishment</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
+                  <div className="mb-4 flex w-full flex-col justify-between space-y-4 md:w-6/12 md:pr-3.5">
+                    <Label>Year Of Establishment</Label>
+                    <Controller
+                      name="yearOfEstablishment"
+                      control={form.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
-                          <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
-                              <SelectValue placeholder="Select Year Of Establishment" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="1990">1990</SelectItem>
-                            <SelectItem value="1991">1991</SelectItem>
-                            <SelectItem value="1992">1992</SelectItem>
-                            <SelectItem value="1993">1993</SelectItem>
-                            <SelectItem value="1994">1994</SelectItem>
-                            <SelectItem value="1995">1995</SelectItem>
-                            <SelectItem value="1996">1996</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <option value="1990">1990</option>
+                          <option value="1991">1991</option>
+                          <option value="1992">1992</option>
+                          <option value="1993">1993</option>
+                          <option value="1994">1994</option>
+                          <option value="1995">1995</option>
+                          <option value="1996">1996</option>
+                        </select>
+                      )}
+                    />
+                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="totalNoOfEmployee"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                        <FormLabel>Total Number of Employees</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
+                  <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
+                    <Label>Total Number of Employees</Label>
+                    <Controller
+                      name="totalNoOfEmployee"
+                      control={form.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
-                          <FormControl>
-                            <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
-                              <SelectValue placeholder="Select Number of Employees" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="1000">1000</SelectItem>
-                            <SelectItem value="2000">2000</SelectItem>
-                            <SelectItem value="3000">3000</SelectItem>
-                            <SelectItem value="4000">4000</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <option value="1000">1000</option>
+                          <option value="2000">2000</option>
+                          <option value="3000">3000</option>
+                          <option value="4000">4000</option>
+                        </select>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
