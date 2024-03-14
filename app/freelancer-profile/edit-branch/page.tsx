@@ -1,5 +1,5 @@
 "use client";
-import { useCreateFreelancerProfile } from "@/apis/queries/freelancer.queries";
+import { useUpdateFreelancerBranch } from "@/apis/queries/freelancer.queries";
 import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { DAYS_OF_WEEK } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -35,7 +34,6 @@ import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
 
 const formSchema = z.object({
-  aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
   businessTypeList: z
     .array(
       z.object({
@@ -123,13 +121,12 @@ const formSchema = z.object({
     }),
 });
 
-export default function FreelancerProfilePage() {
+export default function EditBranchPage() {
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      aboutUs: "",
       businessTypeList: undefined,
       address: "",
       city: "",
@@ -154,37 +151,30 @@ export default function FreelancerProfilePage() {
 
   const userDetails = useMe();
   const tagsQuery = useTags();
-  const createFreelancerProfile = useCreateFreelancerProfile();
+  const updateFreelancerBranch = useUpdateFreelancerBranch();
 
-  const onSubmit = async (formData: any) => {
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const data = {
-      aboutUs: formData.aboutUs,
+      ...formData,
       profileType: "FREELANCER",
-      branchList: [
-        {
-          ...formData,
-          profileType: "FREELANCER",
-          mainOffice: 1,
-        },
-      ],
+      mainOffice: 1,
+      branchId: userDetails.data?.data?.userBranch?.[0]?.id as number,
     };
-
-    delete data.branchList[0].aboutUs;
 
     // console.log(data);
     // return;
-    const response = await createFreelancerProfile.mutateAsync(data);
+    const response = await updateFreelancerBranch.mutateAsync(data);
 
     if (response.status && response.data) {
       toast({
-        title: "Profile Created Successful",
+        title: "Profile Edit Successful",
         description: response.message,
       });
       form.reset();
-      router.push("/home");
+      router.push("/freelancer-profile-details");
     } else {
       toast({
-        title: "Profile Created Failed",
+        title: "Profile Edit Failed",
         description: response.message,
       });
     }
@@ -199,7 +189,6 @@ export default function FreelancerProfilePage() {
   }, [tagsQuery?.data]);
 
   useEffect(() => {
-    // console.log(userDetails.data?.data);
     if (userDetails.data?.data) {
       const businessTypeList = userDetails.data?.data?.userBranch?.[0]
         ?.userBranchBusinessType
@@ -237,7 +226,6 @@ export default function FreelancerProfilePage() {
         : [];
 
       form.reset({
-        aboutUs: userDetails.data?.data?.userProfile?.[0]?.aboutUs || "",
         businessTypeList: businessTypeList || undefined,
         startTime: userDetails.data?.data?.userBranch?.[0]?.startTime || "",
         endTime: userDetails.data?.data?.userBranch?.[0]?.endTime || "",
@@ -287,25 +275,6 @@ export default function FreelancerProfilePage() {
                 </div>
                 <div className="mb-3.5 w-full">
                   <div className="flex flex-wrap">
-                    <FormField
-                      control={form.control}
-                      name="aboutUs"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full">
-                          <FormLabel>About Us</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Write Here...."
-                              className="rounded border-gray-300 focus-visible:!ring-0"
-                              rows={6}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     <AccordionMultiSelect
                       label="Business Type"
                       name="businessTypeList"
@@ -557,17 +526,17 @@ export default function FreelancerProfilePage() {
               </div>
 
               <Button
-                disabled={createFreelancerProfile.isPending}
+                disabled={updateFreelancerBranch.isPending}
                 type="submit"
                 className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
               >
-                {createFreelancerProfile.isPending ? (
+                {updateFreelancerBranch.isPending ? (
                   <>
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                     Please wait
                   </>
                 ) : (
-                  "Save changes"
+                  "Edit changes"
                 )}
               </Button>
             </form>

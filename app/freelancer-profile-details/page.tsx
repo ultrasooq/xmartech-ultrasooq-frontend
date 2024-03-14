@@ -12,7 +12,12 @@ import { useRouter } from "next/navigation";
 export default function FreelancerProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
-  const handleFreelancerProfilePage = () => router.push("/freelancer-profile");
+
+  const handleFreelancerProfilePage = () => router.push("/profile");
+  const handleEditFreelancerProfilePage = () =>
+    router.push("/freelancer-profile/edit-profile");
+  const handleEditFreelancerBranchPage = () =>
+    router.push("/freelancer-profile/edit-branch");
 
   return (
     <section className="relative w-full py-7">
@@ -44,7 +49,11 @@ export default function FreelancerProfileDetailsPage() {
                   userDetails={userDetails.data?.data}
                   onEdit={handleFreelancerProfilePage}
                 />
-                <MoreInformationSection userDetails={userDetails.data?.data} />
+                <MoreInformationSection
+                  userDetails={userDetails.data?.data}
+                  onEditProfile={handleEditFreelancerProfilePage}
+                  onEditBranch={handleEditFreelancerBranchPage}
+                />
               </div>
               <RatingsSection />
             </div>

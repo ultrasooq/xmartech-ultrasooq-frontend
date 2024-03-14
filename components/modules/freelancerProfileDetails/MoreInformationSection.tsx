@@ -5,10 +5,14 @@ import { getAmPm, parsedDays } from "@/utils/helper";
 
 type MoreInformationSectionProps = {
   userDetails: any;
+  onEditProfile: () => void;
+  onEditBranch: () => void;
 };
 
 const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
   userDetails,
+  onEditProfile,
+  onEditBranch,
 }) => {
   const memoizedParsedDays = useMemo(
     () => parsedDays(userDetails?.userBranch?.[0]?.workingDays),
@@ -24,6 +28,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
         <div className="w-auto">
           <button
             type="button"
+            onClick={onEditProfile}
             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
           >
             <Image
@@ -47,9 +52,27 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
           </div>
         </div>
         <div className="mt-6 w-full border-b-2 border-dashed border-gray-200 pb-3.5">
-          <label className="mb-3.5 block text-lg font-semibold leading-5 text-color-dark">
-            Address
-          </label>
+          <div className="flex w-full flex-wrap items-center justify-between pb-5">
+            <label className="mb-3.5 block text-lg font-semibold leading-5 text-color-dark">
+              Address
+            </label>
+            <div className="w-auto">
+              <button
+                type="button"
+                onClick={onEditBranch}
+                className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+              >
+                <Image
+                  src="/images/edit-icon.svg"
+                  height={18}
+                  width={18}
+                  className="mr-1"
+                  alt="edit-icon"
+                />
+                edit
+              </button>
+            </div>
+          </div>
           <div className="flex w-full flex-wrap">
             <div className="w-full md:w-7/12">
               <div className="flex w-full py-2.5 md:py-3.5">
