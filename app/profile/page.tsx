@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
+  EMAIL_REGEX_LOWERCASE,
   PUREMOON_TOKEN_KEY,
   SOCIAL_MEDIA_ICON,
   SOCIAL_MEDIA_LIST,
@@ -64,11 +65,13 @@ const formSchema = z.object({
   email: z
     .string()
     .trim()
-    .min(10, { message: "Email is required" })
+    .min(5, { message: "Email is required" })
     .email({
       message: "Invalid Email Address",
     })
-    .toLowerCase(),
+    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+      message: "Email must be in lower case",
+    }),
   phoneNumberList: z.array(
     z.object({
       phoneNumber: z
@@ -161,12 +164,8 @@ export default function ProfilePage() {
       dateOfBirth: formData.dateOfBirth.toISOString(),
     };
 
-    data.phoneNumberList = data.phoneNumberList.map((entry) =>
-      JSON.stringify(entry),
-    ) as any;
-    data.socialLinkList = data.socialLinkList.map((entry) =>
-      JSON.stringify(entry),
-    ) as any;
+    // console.log(data);
+    // return;
 
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
@@ -175,7 +174,14 @@ export default function ProfilePage() {
         description: "Your profile has been updated successfully",
       });
       form.reset();
-      router.push("/home");
+      const tradeRole = response.data?.tradeRole;
+      if (tradeRole === "BUYER") {
+        router.push("/home");
+      } else if (tradeRole === "COMPANY") {
+        router.push("/company-profile");
+      } else if (tradeRole === "FREELANCER") {
+        router.push("/freelancer-profile");
+      }
     } else {
       toast({
         title: "Profile Update Failed",
@@ -188,19 +194,42 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (me.data) {
-      const { firstName, lastName, gender, email, phoneNumber } = me.data?.data;
+      const {
+        firstName,
+        lastName,
+        gender,
+        email,
+        phoneNumber,
+        dateOfBirth,
+        userPhone,
+        userSocialLink,
+      } = me.data?.data;
+
+      const phoneNumberList = userPhone.map((item: any) => ({
+        phoneNumber: item?.phoneNumber,
+      }));
+
+      const socialLinkList = userSocialLink.map((item: any) => ({
+        linkType: item?.linkType,
+        link: item?.link,
+      }));
 
       form.reset({
         firstName,
         lastName,
         gender,
         email,
-        phoneNumberList: [
-          {
-            phoneNumber: phoneNumber,
-          },
-        ],
-        socialLinkList: [
+        phoneNumberList: phoneNumberList || [
+            {
+              phoneNumber: phoneNumber,
+            },
+          ] || [
+            {
+              phoneNumber: "",
+            },
+          ],
+        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : new Date(),
+        socialLinkList: socialLinkList || [
           {
             linkType: "",
             link: "",

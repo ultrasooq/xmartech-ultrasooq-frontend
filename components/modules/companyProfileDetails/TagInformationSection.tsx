@@ -7,9 +7,9 @@ const TagInformationSection: React.FC<TagInformationSectionProps> = ({
   tagDetails,
 }) => {
   return (
-    <div className="my-6 w-full">
+    <div className="mt-6 w-full pb-5">
       <div className="w-full">
-        <label className="mb-3 block text-lg font-semibold leading-5 text-color-dark">
+        <label className="block text-lg font-semibold leading-5 text-color-dark">
           Tag
         </label>
         <div className="flex w-full flex-wrap">

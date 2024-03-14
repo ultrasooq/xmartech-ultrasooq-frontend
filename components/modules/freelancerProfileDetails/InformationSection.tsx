@@ -15,7 +15,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
     <div className="w-full border-b-2 border-dashed border-gray-200 py-4">
       <div className="flex w-full flex-wrap items-center justify-between pb-5">
         <h2 className="left-8 text-2xl font-semibold text-color-dark">
-          {userDetails?.firstName || "NA"} {userDetails?.lastName}
+          Contact Information
         </h2>
         <div className="w-auto">
           <button

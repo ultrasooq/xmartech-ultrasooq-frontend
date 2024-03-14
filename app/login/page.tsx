@@ -18,14 +18,21 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
-import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { EMAIL_REGEX_LOWERCASE, PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { setCookie } from "cookies-next";
 import Image from "next/image";
 
 const formSchema = z.object({
-  email: z.string().trim().min(5, { message: "Email is required" }).email({
-    message: "Invalid Email Address",
-  }),
+  email: z
+    .string()
+    .trim()
+    .min(5, { message: "Email is required" })
+    .email({
+      message: "Invalid Email Address",
+    })
+    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+      message: "Email must be in lower case",
+    }),
   password: z
     .string()
     .trim()

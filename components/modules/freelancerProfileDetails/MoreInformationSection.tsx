@@ -39,14 +39,14 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
       </div>
       <div className="w-full">
         <div className="w-full">
-          <div className="flex w-full flex-col border-b-2 border-dashed border-gray-100 py-3.5 pb-5 text-base font-medium text-color-dark">
+          <div className="flex w-full flex-col border-b-2 border-dashed border-gray-200 py-3.5 pb-5 text-base font-medium text-color-dark">
             <label className="mb-3 text-lg font-semibold leading-5 text-color-dark">
               About Me
             </label>
             <p>{userDetails?.userProfile?.[0]?.aboutUs || "NA"}</p>
           </div>
         </div>
-        <div className="mt-6 w-full">
+        <div className="mt-6 w-full border-b-2 border-dashed border-gray-200 pb-3.5">
           <label className="mb-3.5 block text-lg font-semibold leading-5 text-color-dark">
             Address
           </label>
@@ -113,7 +113,8 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
             </div>
           </div>
         </div>
-        <div className="mt-6 w-full">
+
+        <div className="mt-6 w-full border-b-2 border-dashed border-gray-200 pb-3.5">
           <label className="mb-3 block text-lg font-semibold leading-5 text-color-dark">
             Working Hours
           </label>
@@ -152,6 +153,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
             </div>
           </div>
         </div>
+
         <div className="mt-6 w-full">
           <label className="mb-3 block text-lg font-semibold leading-5 text-color-dark">
             Tag

@@ -59,14 +59,7 @@ export default function OtpVerifyPage() {
       form.reset();
       setOtp(new Array(4).fill(""));
       sessionStorage.clear();
-      const tradeRole = response.data?.tradeRole;
-      if (tradeRole === "BUYER") {
-        router.push("/profile");
-      } else if (tradeRole === "COMPANY") {
-        router.push("/company-profile");
-      } else if (tradeRole === "FREELANCER") {
-        router.push("/freelancer-profile");
-      }
+      router.push("/profile");
     } else {
       toast({
         title: "Verification Failed",

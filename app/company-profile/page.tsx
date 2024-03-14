@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useCreateCompanyProfile } from "@/apis/queries/company.queries";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
@@ -33,7 +33,6 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import TimePicker from "react-time-picker";
 import { Switch } from "@/components/ui/switch";
-import { useMe } from "@/apis/queries/user.queries";
 
 const formSchema = z.object({
   companyName: z
@@ -210,7 +209,7 @@ export default function CompanyProfilePage() {
       ],
     },
   });
-  const userDetails = useMe();
+
   const tagsQuery = useTags();
   const createCompanyProfile = useCreateCompanyProfile();
 
@@ -264,7 +263,7 @@ export default function CompanyProfilePage() {
       );
       data.branchList = updatedBranchList;
     }
-    console.log(data);
+    // console.log(data);
     // return;
     const response = await createCompanyProfile.mutateAsync(data);
 
@@ -290,92 +289,6 @@ export default function CompanyProfilePage() {
       }) || []
     );
   }, [tagsQuery?.data]);
-
-  useEffect(() => {
-    if (userDetails.data?.data) {
-      console.log(userDetails.data?.data);
-      const userProfile = userDetails.data?.data?.userProfile?.[0];
-
-      const branchList = userDetails.data?.data?.userBranch?.map(
-        (item: any) => ({
-          profileType: "COMPANY",
-          // businessTypeList: undefined,
-          // branchFrontPicture: "",
-          // proofOfAddress: "",
-          address: item?.address,
-          city: item?.city,
-          province: item?.province,
-          country: item?.country,
-          contactNumber: item?.contactNumber,
-          contactName: item?.contactName,
-          startTime: item?.startTime,
-          endTime: item?.endTime,
-          // workingDays: {
-          //   sun: 0,
-          //   mon: 0,
-          //   tue: 0,
-          //   wed: 0,
-          //   thu: 0,
-          //   fri: 0,
-          //   sat: 0,
-          // },
-          // tagList: undefined,
-          workingDays: item?.workingDays
-            ? JSON.parse(item?.workingDays)
-            : {
-                sun: 0,
-                mon: 0,
-                tue: 0,
-                wed: 0,
-                thu: 0,
-                fri: 0,
-                sat: 0,
-              },
-          // mainOffice: 0,
-        }),
-      );
-      console.log(branchList);
-      form.reset({
-        address: userProfile?.address || "",
-        city: userProfile?.city || "",
-        province: userProfile?.province || "",
-        country: userProfile?.country || "",
-        yearOfEstablishment: userProfile?.yearOfEstablishment?.toString() || "",
-        totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
-        annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
-        aboutUs: userProfile?.aboutUs || "",
-        companyName: userProfile?.companyName || "",
-        // businessTypeList: userProfile?.businessTypeList||undefined,/
-        // branchList: branchList || [
-        //   {
-        //     profileType: "COMPANY",
-        //     businessTypeList: undefined,
-        //     branchFrontPicture: "",
-        //     proofOfAddress: "",
-        //     address: "",
-        //     city: "",
-        //     province: "",
-        //     country: "",
-        //     contactNumber: "",
-        //     contactName: "",
-        //     startTime: "",
-        //     endTime: "",
-        //     workingDays: {
-        //       sun: 0,
-        //       mon: 0,
-        //       tue: 0,
-        //       wed: 0,
-        //       thu: 0,
-        //       fri: 0,
-        //       sat: 0,
-        //     },
-        //     tagList: undefined,
-        //     mainOffice: 0,
-        //   },
-        // ],
-      });
-    }
-  }, [userDetails.data?.status]);
 
   return (
     <section className="relative w-full py-7">

@@ -99,3 +99,5 @@ export const WEEKDAYS_LIST = [
   "Friday",
   "Saturday",
 ];
+
+export const EMAIL_REGEX_LOWERCASE = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
