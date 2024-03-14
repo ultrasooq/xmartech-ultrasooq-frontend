@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useMemo } from "react";
-import { useCreateCompanyProfile } from "@/apis/queries/company.queries";
+import { useUpdateCompanyProfile } from "@/apis/queries/company.queries";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -90,27 +90,18 @@ export default function EditProfilePage() {
   });
   const userDetails = useMe();
   const tagsQuery = useTags();
-  const createCompanyProfile = useCreateCompanyProfile();
+  const updateCompanyProfile = useUpdateCompanyProfile();
 
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
       profileType: "COMPANY",
+      userProfileId: userDetails.data?.data?.userProfile?.[0]?.id as number,
     };
 
-    if (data.branchList) {
-      const updatedBranchList = data.branchList.map(
-        (item: any, index: number) => ({
-          ...item,
-          profileType: "COMPANY",
-          mainOffice: index === 0 ? 1 : 0,
-        }),
-      );
-      data.branchList = updatedBranchList;
-    }
     console.log(data);
-    return;
-    const response = await createCompanyProfile.mutateAsync(data);
+    // return;
+    const response = await updateCompanyProfile.mutateAsync(data);
 
     if (response.status && response.data) {
       toast({
@@ -118,7 +109,7 @@ export default function EditProfilePage() {
         description: response.message,
       });
       form.reset();
-      router.push("/home");
+      router.push("/company-profile-details");
     } else {
       toast({
         title: "Profile Edit Failed",
@@ -484,11 +475,11 @@ export default function EditProfilePage() {
             </div>
 
             <Button
-              disabled={createCompanyProfile.isPending}
+              disabled={updateCompanyProfile.isPending}
               type="submit"
               className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
             >
-              {createCompanyProfile.isPending ? (
+              {updateCompanyProfile.isPending ? (
                 <>
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                   Please wait
