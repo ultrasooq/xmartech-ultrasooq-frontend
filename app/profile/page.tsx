@@ -534,7 +534,7 @@ export default function ProfilePage() {
                           value="item-1"
                           className="mt-2 border-b-0"
                         >
-                          <AccordionTrigger className="flex justify-between py-0">
+                          <AccordionTrigger className="flex justify-between py-0 hover:!no-underline">
                             <div className="flex items-center text-sm font-normal leading-4 text-color-dark">
                               {watchSocialMedia[index]?.linkType !== "" ? (
                                 <Image
@@ -551,8 +551,29 @@ export default function ProfilePage() {
                               ) : (
                                 <span className="capitalize">Select Type</span>
                               )}
-
-                              <span>{watchSocialMedia[index]?.link}</span>
+                              <div className="relative">
+                                {watchSocialMedia[index]?.link !== "" ? (
+                                  <a
+                                    href={watchSocialMedia[index]?.link}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="absolute left-[-5px] top-[-6px] px-2 py-1"
+                                  >
+                                    <Image
+                                      src="/images/share.png"
+                                      height={20}
+                                      width={20}
+                                      alt="share-icon"
+                                    />
+                                  </a>
+                                ) : null}
+                                <p
+                                  className="min-w-[280px] max-w-[280px] overflow-hidden pl-8 text-left"
+                                  title={watchSocialMedia[index]?.link}
+                                >
+                                  {watchSocialMedia[index]?.link}
+                                </p>
+                              </div>
                             </div>
                             {/* TODO: remove this after discussing */}
                             {/* <div className="mr-3 flex flex-1 justify-end gap-x-3.5">
