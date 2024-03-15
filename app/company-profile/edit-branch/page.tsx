@@ -25,7 +25,6 @@ import { Input } from "@/components/ui/input";
 // } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
-import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
@@ -34,6 +33,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useMe } from "@/apis/queries/user.queries";
 import { getAmPm } from "@/utils/helper";
+import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 
 const formSchema = z
   .object({
@@ -160,7 +160,7 @@ export default function EditBranchPage() {
         fri: 0,
         sat: 0,
       },
-      tagList: undefined,
+      tagList: [],
       mainOffice: 0,
     },
   });
@@ -295,7 +295,7 @@ export default function EditBranchPage() {
 
             <div>
               <div className="mb-3.5 w-full">
-                <AccordionMultiSelect
+                <AccordionMultiSelectV2
                   label="Business Type"
                   name="businessTypeList"
                   options={memoizedTags || []}
@@ -594,7 +594,7 @@ export default function EditBranchPage() {
                                     item.value as keyof typeof field.value
                                   ]
                                 }
-                                className="data-[state=checked]:!bg-dark-orange"
+                                className="border-0 data-[state=checked]:!bg-dark-orange"
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
@@ -614,7 +614,7 @@ export default function EditBranchPage() {
                   ) : null}
                 </div>
 
-                <AccordionMultiSelect
+                <AccordionMultiSelectV2
                   label="Tag"
                   name="tagList"
                   options={memoizedTags || []}

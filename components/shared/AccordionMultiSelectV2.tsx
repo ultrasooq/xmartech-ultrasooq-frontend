@@ -1,0 +1,135 @@
+import React from "react";
+import { useFormContext } from "react-hook-form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
+
+type OptionProps = {
+  label: string;
+  value: string;
+};
+
+type AccordionMultiSelectV2Props = {
+  label: string;
+  name: string;
+  options?: OptionProps[];
+  placeholder?: string;
+  error?: string;
+};
+
+const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
+  label,
+  name,
+  options = [],
+  placeholder,
+  error,
+}) => {
+  const formContext = useFormContext();
+
+  const watcher = formContext.watch(name);
+
+  return (
+    <>
+      <label className="mb-3 block text-left text-sm font-medium leading-5 text-color-dark">
+        {label}
+      </label>
+
+      <Accordion
+        type="single"
+        collapsible
+        className="mb-4 w-full rounded border border-solid border-gray-300"
+      >
+        <AccordionItem value="item-1" className="border-b-0 px-5">
+          <AccordionTrigger className="flex h-auto min-h-[65px] justify-between py-0 hover:!no-underline">
+            <div className="my-2 flex flex-wrap">
+              {(watcher || [])?.map((item: OptionProps) => (
+                <p
+                  key={item.value}
+                  className="my-1 mr-2 inline-flex items-center justify-between rounded bg-zinc-100 px-3.5 py-3 text-sm font-normal capitalize leading-4 text-dark-cyan"
+                >
+                  {item.label}
+                </p>
+              ))}
+              {!(watcher || [])?.length ? (
+                <p className="capitalize">Select {placeholder}</p>
+              ) : null}
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="flex flex-col">
+              {options.map((item) => (
+                <FormField
+                  key={item.value}
+                  control={formContext.control}
+                  name={name}
+                  render={({ field }) => {
+                    return (
+                      <FormItem
+                        key={item.value}
+                        className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0"
+                      >
+                        <FormControl>
+                          <Checkbox
+                            checked={
+                              field.value?.filter(
+                                (ele: OptionProps) => ele.value === item.value,
+                              ).length > 0
+                            }
+                            onCheckedChange={(checked) => {
+                              let tempArr = field.value || [];
+                              // if true and does not exist in array then push
+                              if (
+                                checked &&
+                                !tempArr.find(
+                                  (ele: OptionProps) =>
+                                    ele.value === item.value,
+                                )
+                              ) {
+                                tempArr = [...tempArr, item];
+                              }
+                              // if false and exists in array then remove
+                              if (
+                                !checked &&
+                                tempArr.find(
+                                  (ele: OptionProps) =>
+                                    ele.value === item.value,
+                                )
+                              ) {
+                                tempArr = tempArr.filter(
+                                  (ele: OptionProps) =>
+                                    ele.value !== item.value,
+                                );
+                              }
+                              field.onChange(tempArr);
+                            }}
+                            className="border-0 data-[state=checked]:!bg-dark-orange"
+                          />
+                        </FormControl>
+                        <FormLabel className="text-sm font-normal">
+                          {item.label}
+                        </FormLabel>
+                      </FormItem>
+                    );
+                  }}
+                />
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      <p className="mb-3 text-sm text-red-500">{error}</p>
+    </>
+  );
+};
+
+export default AccordionMultiSelectV2;
