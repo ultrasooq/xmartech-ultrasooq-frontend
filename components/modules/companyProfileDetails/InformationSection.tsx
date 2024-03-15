@@ -15,7 +15,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
       const socialLinks = userDetails?.userSocialLink?.map(
         (item: any, index: number, array: any[]) => {
           return (
-            <div className="flex flex-row items-center">
+            <div className="flex flex-row items-center" key={item?.id}>
               <a href={item?.link} target="_blank" rel="noreferrer">
                 <Image
                   src="/images/share.png"
