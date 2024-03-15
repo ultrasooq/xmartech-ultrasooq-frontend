@@ -435,6 +435,7 @@ export default function FreelancerProfilePage() {
                           <FormControl>
                             <Input
                               type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
                               placeholder="Branch Contact Number"
                               className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
