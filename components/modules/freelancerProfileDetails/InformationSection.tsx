@@ -14,7 +14,20 @@ const InformationSection: React.FC<InformationSectionProps> = ({
     if (userDetails?.userSocialLink?.length > 0) {
       const socialLinks = userDetails?.userSocialLink?.map(
         (item: any, index: number, array: any[]) => {
-          return `${item?.linkType}${index !== array.length - 1 ? ", " : ""}`;
+          return (
+            <div className="flex flex-row items-center">
+              <a href={item?.link} target="_blank" rel="noreferrer">
+                <Image
+                  src="/images/share.png"
+                  height={20}
+                  width={20}
+                  alt="share-icon"
+                  className="mr-1"
+                />
+              </a>
+              {`${item?.linkType}${index !== array.length - 1 ? ", " : ""}`}
+            </div>
+          );
         },
       );
       return socialLinks;
@@ -77,9 +90,9 @@ const InformationSection: React.FC<InformationSectionProps> = ({
               </span>
             </div>
             <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0">
-              <p className="cursor-pointer text-base font-medium capitalize leading-4 text-color-dark">
+              <div className="flex gap-x-3 text-base font-medium capitalize leading-4 text-color-dark">
                 {getSocialLinks || "NA"}
-              </p>
+              </div>
             </div>
           </div>
         </div>
