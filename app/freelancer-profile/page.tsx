@@ -1,6 +1,6 @@
 "use client";
 import { useCreateFreelancerProfile } from "@/apis/queries/freelancer.queries";
-import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
+import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -12,13 +12,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -317,7 +317,7 @@ export default function FreelancerProfilePage() {
                       )}
                     />
 
-                    <AccordionMultiSelect
+                    <AccordionMultiSelectV2
                       label="Business Type"
                       name="businessTypeList"
                       options={memoizedTags || []}
@@ -540,7 +540,7 @@ export default function FreelancerProfilePage() {
                                     [item.value]: e ? 1 : 0,
                                   });
                                 }}
-                                className="data-[state=checked]:!bg-dark-orange"
+                                className="border-0 data-[state=checked]:!bg-dark-orange"
                                 checked={
                                   !!field.value[
                                     item.value as keyof typeof field.value
@@ -566,7 +566,7 @@ export default function FreelancerProfilePage() {
                   ) : null}
                 </div>
 
-                <AccordionMultiSelect
+                <AccordionMultiSelectV2
                   label="Tag"
                   name="tagList"
                   options={memoizedTags || []}

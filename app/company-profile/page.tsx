@@ -16,17 +16,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
-import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
+import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
@@ -614,7 +614,7 @@ export default function CompanyProfilePage() {
             {fieldArray.fields.map((field, index) => (
               <div key={field.id}>
                 <div className="mb-3.5 w-full">
-                  <AccordionMultiSelect
+                  <AccordionMultiSelectV2
                     label="Business Type"
                     name={`branchList.${index}.businessTypeList`}
                     options={memoizedTags || []}
@@ -922,7 +922,7 @@ export default function CompanyProfilePage() {
                                       item.value as keyof typeof field.value
                                     ]
                                   }
-                                  className="data-[state=checked]:!bg-dark-orange"
+                                  className="border-0 data-[state=checked]:!bg-dark-orange"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">
@@ -943,7 +943,7 @@ export default function CompanyProfilePage() {
                     ) : null}
                   </div>
 
-                  <AccordionMultiSelect
+                  <AccordionMultiSelectV2
                     label="Tag"
                     name={`branchList.${index}.tagList`}
                     options={memoizedTags || []}

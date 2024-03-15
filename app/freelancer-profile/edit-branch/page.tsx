@@ -1,6 +1,6 @@
 "use client";
 import { useUpdateFreelancerBranch } from "@/apis/queries/freelancer.queries";
-import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
+import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -285,7 +285,7 @@ export default function EditBranchPage() {
                 </div>
                 <div className="mb-3.5 w-full">
                   <div className="flex flex-wrap">
-                    <AccordionMultiSelect
+                    <AccordionMultiSelectV2
                       label="Business Type"
                       name="businessTypeList"
                       options={memoizedTags || []}
@@ -508,7 +508,7 @@ export default function EditBranchPage() {
                                     [item.value]: e ? 1 : 0,
                                   });
                                 }}
-                                className="data-[state=checked]:!bg-dark-orange"
+                                className="border-0 data-[state=checked]:!bg-dark-orange"
                                 checked={
                                   !!field.value[
                                     item.value as keyof typeof field.value
@@ -534,7 +534,7 @@ export default function EditBranchPage() {
                   ) : null}
                 </div>
 
-                <AccordionMultiSelect
+                <AccordionMultiSelectV2
                   label="Tag"
                   name="tagList"
                   options={memoizedTags || []}
