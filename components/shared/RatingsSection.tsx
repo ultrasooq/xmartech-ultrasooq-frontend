@@ -1,8 +1,20 @@
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import UserRatingCard from "./UserRatingCard";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  // DialogTitle,
+  // DialogTrigger,
+} from "@/components/ui/dialog";
 
 const RatingsSection = () => {
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const handleToggleReviewModal = () =>
+    setIsReviewModalOpen(!isReviewModalOpen);
+
   return (
     <div className="w-full">
       <div className="flex w-full flex-wrap items-center justify-between">
@@ -64,6 +76,7 @@ const RatingsSection = () => {
         <div className="w-auto">
           <button
             type="button"
+            onClick={handleToggleReviewModal}
             className="flex rounded-sm bg-dark-orange px-6 py-4 text-base font-bold leading-5 text-white"
           >
             <Image
@@ -126,6 +139,16 @@ const RatingsSection = () => {
           <img src="images/loader.png" className="mr-1.5" /> Load More
         </span>
       </div>
+
+      <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogDescription className="min-h-[300px]">
+              Form Content
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

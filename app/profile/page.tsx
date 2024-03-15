@@ -423,6 +423,7 @@ export default function ProfilePage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your Email"
+                            disabled
                             className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
@@ -550,9 +551,7 @@ export default function ProfilePage() {
                                 <span className="capitalize">Select Type</span>
                               )}
 
-                              <span className="capitalize">
-                                {watchSocialMedia[index]?.linkType}
-                              </span>
+                              <span>{watchSocialMedia[index]?.link}</span>
                             </div>
                             {/* TODO: remove this after discussing */}
                             {/* <div className="mr-3 flex flex-1 justify-end gap-x-3.5">

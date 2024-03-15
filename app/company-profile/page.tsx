@@ -25,14 +25,15 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DAYS_OF_WEEK } from "@/utils/constants";
+import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
 import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
-import TimePicker from "react-time-picker";
+// import TimePicker from "react-time-picker";
 import { Switch } from "@/components/ui/switch";
+import { getAmPm } from "@/utils/helper";
 
 const formSchema = z.object({
   companyName: z
@@ -273,7 +274,7 @@ export default function CompanyProfilePage() {
         description: response.message,
       });
       form.reset();
-      router.push("/home");
+      router.push("/company-profile-details");
     } else {
       toast({
         title: "Profile Create Failed",
@@ -877,12 +878,19 @@ export default function CompanyProfilePage() {
                           name={`branchList.${index}.startTime`}
                           control={form.control}
                           render={({ field }) => (
-                            <TimePicker
-                              onChange={field.onChange}
-                              value={field.value}
-                              disableClock={true}
-                              className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
-                            />
+                            <select
+                              {...field}
+                              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
+                            >
+                              <option value="">Select</option>
+                              {HOURS_24_FORMAT.map(
+                                (hour: string, index: number) => (
+                                  <option key={index} value={hour}>
+                                    {getAmPm(hour)}
+                                  </option>
+                                ),
+                              )}
+                            </select>
                           )}
                         />
                         <p className="text-[13px] text-red-500">
@@ -901,12 +909,19 @@ export default function CompanyProfilePage() {
                           name={`branchList.${index}.endTime`}
                           control={form.control}
                           render={({ field }) => (
-                            <TimePicker
-                              onChange={field.onChange}
-                              value={field.value}
-                              disableClock={true}
-                              className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
-                            />
+                            <select
+                              {...field}
+                              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
+                            >
+                              <option value="">Select</option>
+                              {HOURS_24_FORMAT.map(
+                                (hour: string, index: number) => (
+                                  <option key={index} value={hour}>
+                                    {getAmPm(hour)}
+                                  </option>
+                                ),
+                              )}
+                            </select>
                           )}
                         />
                         <p className="text-[13px] text-red-500">
