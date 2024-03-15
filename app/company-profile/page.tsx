@@ -273,7 +273,7 @@ export default function CompanyProfilePage() {
         description: response.message,
       });
       form.reset();
-      router.push("/home");
+      router.push("/company-profile-details");
     } else {
       toast({
         title: "Profile Create Failed",

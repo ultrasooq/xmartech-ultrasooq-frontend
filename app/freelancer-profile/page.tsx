@@ -181,7 +181,7 @@ export default function FreelancerProfilePage() {
         description: response.message,
       });
       form.reset();
-      router.push("/home");
+      router.push("/freelancer-profile-details");
     } else {
       toast({
         title: "Profile Create Failed",
