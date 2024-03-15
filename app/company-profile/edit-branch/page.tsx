@@ -260,7 +260,7 @@ export default function EditBranchPage() {
         });
       }
     }
-  }, [userDetails.data?.status]);
+  }, [userDetails.data?.data, memoizedTags?.length]);
 
   return (
     <section className="relative w-full py-7">
