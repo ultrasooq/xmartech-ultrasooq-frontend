@@ -63,7 +63,7 @@ const AccordionMultiSelect = ({
 
   useEffect(() => {
     formContext.setValue(name, selectedItems);
-  }, [selectedItems, name, formContext]);
+  }, [selectedItems, name]);
 
   return (
     <>
