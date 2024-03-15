@@ -16,111 +16,122 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DAYS_OF_WEEK } from "@/utils/constants";
+import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
 import AccordionMultiSelect from "@/components/shared/AccordionMultiSelect";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
-import TimePicker from "react-time-picker";
+// import TimePicker from "react-time-picker";
 import { Switch } from "@/components/ui/switch";
 import { useMe } from "@/apis/queries/user.queries";
+import { getAmPm } from "@/utils/helper";
 
-const formSchema = z.object({
-  businessTypeList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
+const formSchema = z
+  .object({
+    businessTypeList: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.number(),
+        }),
+      )
+      .min(1, {
+        message: "Business Type is required",
+      })
+      .transform((value) => {
+        let temp: any = [];
+        value.forEach((item) => {
+          temp.push({ businessTypeId: item.value });
+        });
+        return temp;
       }),
-    )
-    .min(1, {
-      message: "Business Type is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ businessTypeId: item.value });
-      });
-      return temp;
-    }),
-  address: z
-    .string()
-    .trim()
-    .min(2, { message: "Address is required" })
-    .max(50, {
-      message: "Address must be less than 50 characters",
-    }),
-  city: z.string().trim().min(2, { message: "City is required" }),
-  province: z.string().trim().min(2, { message: "Province is required" }),
-  country: z.string().trim().min(2, { message: "Country is required" }),
-  contactNumber: z
-    .string()
-    .trim()
-    .min(2, { message: "Branch Contact Number is required" })
-    .min(10, {
-      message: "Branch Contact Number must be equal to 10 digits",
-    })
-    .max(10, {
-      message: "Branch Contact Number must be equal to 10 digits",
-    }),
-  contactName: z
-    .string()
-    .trim()
-    .min(2, { message: "Branch Contact Name is required" }),
-  startTime: z.string().trim().min(1, {
-    message: "Start Time is required",
-  }),
-  endTime: z.string().trim().min(1, {
-    message: "End Time is required",
-  }),
-  workingDays: z
-    .object({
-      sun: z.number(),
-      mon: z.number(),
-      tue: z.number(),
-      wed: z.number(),
-      thu: z.number(),
-      fri: z.number(),
-      sat: z.number(),
-    })
-    .refine((value) => {
-      return (
-        value.sun !== 0 ||
-        value.mon !== 0 ||
-        value.tue !== 0 ||
-        value.wed !== 0 ||
-        value.thu !== 0 ||
-        value.fri !== 0 ||
-        value.sat !== 0
-      );
-    }),
-  tagList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
+    address: z
+      .string()
+      .trim()
+      .min(2, { message: "Address is required" })
+      .max(50, {
+        message: "Address must be less than 50 characters",
       }),
-    )
-    .min(1, {
-      message: "Tag is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ tagId: item.value });
-      });
-      return temp;
+    city: z.string().trim().min(2, { message: "City is required" }),
+    province: z.string().trim().min(2, { message: "Province is required" }),
+    country: z.string().trim().min(2, { message: "Country is required" }),
+    contactNumber: z
+      .string()
+      .trim()
+      .min(2, { message: "Branch Contact Number is required" })
+      .min(10, {
+        message: "Branch Contact Number must be equal to 10 digits",
+      })
+      .max(10, {
+        message: "Branch Contact Number must be equal to 10 digits",
+      }),
+    contactName: z
+      .string()
+      .trim()
+      .min(2, { message: "Branch Contact Name is required" }),
+    startTime: z.string().trim().min(1, {
+      message: "Start Time is required",
     }),
-});
+    endTime: z.string().trim().min(1, {
+      message: "End Time is required",
+    }),
+    workingDays: z
+      .object({
+        sun: z.number(),
+        mon: z.number(),
+        tue: z.number(),
+        wed: z.number(),
+        thu: z.number(),
+        fri: z.number(),
+        sat: z.number(),
+      })
+      .refine((value) => {
+        return (
+          value.sun !== 0 ||
+          value.mon !== 0 ||
+          value.tue !== 0 ||
+          value.wed !== 0 ||
+          value.thu !== 0 ||
+          value.fri !== 0 ||
+          value.sat !== 0
+        );
+      }),
+    tagList: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.number(),
+        }),
+      )
+      .min(1, {
+        message: "Tag is required",
+      })
+      .transform((value) => {
+        let temp: any = [];
+        value.forEach((item) => {
+          temp.push({ tagId: item.value });
+        });
+        return temp;
+      }),
+  })
+  .superRefine(({ startTime, endTime }, ctx) => {
+    if (startTime && endTime && startTime > endTime) {
+      ctx.addIssue({
+        code: "custom",
+        message: "End Time must be greater than Start Time",
+        path: ["endTime"],
+      });
+    }
+  });
 
 export default function EditBranchPage() {
   const router = useRouter();
@@ -505,12 +516,19 @@ export default function EditBranchPage() {
                         name="startTime"
                         control={form.control}
                         render={({ field }) => (
-                          <TimePicker
-                            onChange={field.onChange}
-                            value={field.value}
-                            disableClock={true}
-                            className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
-                          />
+                          <select
+                            {...field}
+                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
+                          >
+                            <option value="">Select</option>
+                            {HOURS_24_FORMAT.map(
+                              (hour: string, index: number) => (
+                                <option key={index} value={hour}>
+                                  {getAmPm(hour)}
+                                </option>
+                              ),
+                            )}
+                          </select>
                         )}
                       />
                       <p className="text-[13px] text-red-500">
@@ -526,12 +544,19 @@ export default function EditBranchPage() {
                         name="endTime"
                         control={form.control}
                         render={({ field }) => (
-                          <TimePicker
-                            onChange={field.onChange}
-                            value={field.value}
-                            disableClock={true}
-                            className="!h-[54px] rounded border border-gray-300 focus-visible:!ring-0"
-                          />
+                          <select
+                            {...field}
+                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
+                          >
+                            <option value="">Select</option>
+                            {HOURS_24_FORMAT.map(
+                              (hour: string, index: number) => (
+                                <option key={index} value={hour}>
+                                  {getAmPm(hour)}
+                                </option>
+                              ),
+                            )}
+                          </select>
                         )}
                       />
                       <p className="text-[13px] text-red-500">
