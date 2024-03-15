@@ -24,7 +24,7 @@ export const getAmPm = (time: string) => {
   if (!time) return;
   const [hoursStr, minutes] = time.split(":");
   const hours = parseInt(hoursStr, 10);
-  const ampm = hours >= 12 ? "pm" : "am";
+  const ampm = hours >= 12 ? "PM" : "AM";
   const hours12 = hours % 12 || 12;
   return `${hours12}:${minutes} ${ampm}`;
 };
