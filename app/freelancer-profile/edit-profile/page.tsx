@@ -89,7 +89,7 @@ export default function EditProfilePage() {
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                  Freelancer Profile
+                  My Profile
                 </h2>
               </div>
               <div className="flex w-full flex-wrap">
