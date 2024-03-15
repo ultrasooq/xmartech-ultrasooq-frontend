@@ -420,6 +420,7 @@ export default function CompanyProfilePage() {
                             <Input
                               placeholder="Annual Purchasing Volume"
                               type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
                               className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
@@ -830,6 +831,7 @@ export default function CompanyProfilePage() {
                           <FormControl>
                             <Input
                               type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
                               placeholder="Branch Contact Number"
                               className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
                               {...field}

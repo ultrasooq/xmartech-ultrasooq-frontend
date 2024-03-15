@@ -12,9 +12,11 @@ const InformationSection: React.FC<InformationSectionProps> = ({
 }) => {
   const getSocialLinks = useMemo(() => {
     if (userDetails?.userSocialLink?.length > 0) {
-      const socialLinks = userDetails?.userSocialLink?.map((item: any) => {
-        return `${item?.linkType}, `;
-      });
+      const socialLinks = userDetails?.userSocialLink?.map(
+        (item: any, index: number, array: any[]) => {
+          return `${item?.linkType}${index !== array.length - 1 ? ", " : ""}`;
+        },
+      );
       return socialLinks;
     }
   }, [userDetails?.userSocialLink?.length]);

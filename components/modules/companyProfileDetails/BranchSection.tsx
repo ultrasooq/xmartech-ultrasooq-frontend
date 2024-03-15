@@ -32,11 +32,13 @@ const BranchSection: React.FC<BranchSectionProps> = ({
         <AccordionTrigger className="flex h-auto min-h-[65px] justify-between py-0 hover:!no-underline">
           <div className="flex w-full items-center justify-between px-4 py-4">
             <div className="flex w-auto items-start text-base font-medium text-color-dark">
-              {branchDetails?.userBranchBusinessType?.map((item: any) => (
-                <span className="mr-1.5" key={item?.id}>
-                  {item?.userBranch_BusinessType_Tag?.tagName},
-                </span>
-              ))}
+              {branchDetails?.userBranchBusinessType?.map(
+                (item: any, index: number, array: any[]) => (
+                  <span className="mr-1.5" key={item?.id}>
+                    {`${item?.userBranch_BusinessType_Tag?.tagName}${index !== array.length - 1 ? ", " : ""}`}
+                  </span>
+                ),
+              )}
             </div>
           </div>
         </AccordionTrigger>
