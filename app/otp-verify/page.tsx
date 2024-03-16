@@ -6,7 +6,6 @@ import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useResendOtp, useVerifyOtp } from "@/apis/queries/auth.queries";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { useToast } from "@/components/ui/use-toast";
 import { setCookie } from "cookies-next";
 import Image from "next/image";
@@ -200,7 +199,13 @@ export default function OtpVerifyPage() {
                     >
                       {verifyOtp.isPending ? (
                         <>
-                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                          <Image
+                            src="/images/load.png"
+                            alt="loader-icon"
+                            width={20}
+                            height={20}
+                            className="mr-2 animate-spin"
+                          />
                           Please wait
                         </>
                       ) : (

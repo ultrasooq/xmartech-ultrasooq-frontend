@@ -16,7 +16,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRegister } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
@@ -395,25 +394,28 @@ export default function RegisterPage() {
                               </DialogTrigger>
                               <DialogContent>
                                 <DialogHeader>
-                                  <DialogDescription>
-                                    Lorem ipsum dolor sit amet consectetur
-                                    adipisicing elit. Voluptate quas accusamus
-                                    unde vero, earum, quo perspiciatis libero
-                                    adipisci tempore magni ad quia vitae, sint
-                                    dolore voluptatum repellendus exercitationem
-                                    dolores! Esse. Lorem ipsum dolor sit amet
-                                    consectetur adipisicing elit. Voluptate quas
-                                    accusamus unde vero, earum, quo perspiciatis
-                                    libero adipisci tempore magni ad quia vitae,
-                                    sint dolore voluptatum repellendus
-                                    exercitationem dolores! Esse. Lorem ipsum
-                                    dolor sit amet consectetur adipisicing elit.
-                                    Voluptate quas accusamus unde vero, earum,
-                                    quo perspiciatis libero adipisci tempore
-                                    magni ad quia vitae, sint dolore voluptatum
-                                    repellendus exercitationem dolores! Esse.
-                                  </DialogDescription>
+                                  <DialogTitle className="text-center">
+                                    Terms Of Use & Privacy Policy
+                                  </DialogTitle>
                                 </DialogHeader>
+                                <DialogDescription>
+                                  Lorem ipsum dolor sit amet consectetur
+                                  adipisicing elit. Voluptate quas accusamus
+                                  unde vero, earum, quo perspiciatis libero
+                                  adipisci tempore magni ad quia vitae, sint
+                                  dolore voluptatum repellendus exercitationem
+                                  dolores! Esse. Lorem ipsum dolor sit amet
+                                  consectetur adipisicing elit. Voluptate quas
+                                  accusamus unde vero, earum, quo perspiciatis
+                                  libero adipisci tempore magni ad quia vitae,
+                                  sint dolore voluptatum repellendus
+                                  exercitationem dolores! Esse. Lorem ipsum
+                                  dolor sit amet consectetur adipisicing elit.
+                                  Voluptate quas accusamus unde vero, earum, quo
+                                  perspiciatis libero adipisci tempore magni ad
+                                  quia vitae, sint dolore voluptatum repellendus
+                                  exercitationem dolores! Esse.
+                                </DialogDescription>
                               </DialogContent>
                             </Dialog>
                           </FormLabel>
@@ -430,7 +432,13 @@ export default function RegisterPage() {
                     >
                       {register.isPending ? (
                         <>
-                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                          <Image
+                            src="/images/load.png"
+                            alt="loader-icon"
+                            width={20}
+                            height={20}
+                            className="mr-2 animate-spin"
+                          />
                           Please wait
                         </>
                       ) : (

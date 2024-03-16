@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useMemo } from "react";
 import { useCreateCompanyProfile } from "@/apis/queries/company.queries";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
@@ -990,7 +989,13 @@ export default function CompanyProfilePage() {
             >
               {createCompanyProfile.isPending ? (
                 <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  <Image
+                    src="/images/load.png"
+                    alt="loader-icon"
+                    width={20}
+                    height={20}
+                    className="mr-2 animate-spin"
+                  />
                   Please wait
                 </>
               ) : (

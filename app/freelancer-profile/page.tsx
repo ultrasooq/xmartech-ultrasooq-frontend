@@ -22,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import React, { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -579,7 +578,13 @@ export default function FreelancerProfilePage() {
               >
                 {createFreelancerProfile.isPending ? (
                   <>
-                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    <Image
+                      src="/images/load.png"
+                      alt="loader-icon"
+                      width={20}
+                      height={20}
+                      className="mr-2 animate-spin"
+                    />
                     Please wait
                   </>
                 ) : (

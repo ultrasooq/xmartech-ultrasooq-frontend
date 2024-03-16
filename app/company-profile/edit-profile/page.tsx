@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useMemo } from "react";
 import { useUpdateCompanyProfile } from "@/apis/queries/company.queries";
 import { Controller, useForm } from "react-hook-form";
@@ -16,13 +15,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
@@ -448,7 +447,13 @@ export default function EditProfilePage() {
             >
               {updateCompanyProfile.isPending ? (
                 <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  <Image
+                    src="/images/load.png"
+                    alt="loader-icon"
+                    width={20}
+                    height={20}
+                    className="mr-2 animate-spin"
+                  />
                   Please wait
                 </>
               ) : (

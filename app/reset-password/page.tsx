@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { deleteCookie, setCookie } from "cookies-next";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -182,7 +181,13 @@ export default function ResetPasswordPage() {
                         >
                           {resetPassword.isPending ? (
                             <>
-                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                              <Image
+                                src="/images/load.png"
+                                alt="loader-icon"
+                                width={20}
+                                height={20}
+                                className="mr-2 animate-spin"
+                              />
                               Please wait
                             </>
                           ) : (

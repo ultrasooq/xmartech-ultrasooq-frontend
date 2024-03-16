@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -131,7 +130,13 @@ export default function EditProfilePage() {
               >
                 {updateFreelancerProfile.isPending ? (
                   <>
-                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    <Image
+                      src="/images/load.png"
+                      alt="loader-icon"
+                      width={20}
+                      height={20}
+                      className="mr-2 animate-spin"
+                    />
                     Please wait
                   </>
                 ) : (
