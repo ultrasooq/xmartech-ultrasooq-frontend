@@ -177,8 +177,6 @@ export default function EditBranchPage() {
       branchId: Number(activeBranchId),
     };
 
-    // console.log(data);
-    // return;
     const response = await updateCompanyBranch.mutateAsync(data);
 
     if (response.status && response.data) {

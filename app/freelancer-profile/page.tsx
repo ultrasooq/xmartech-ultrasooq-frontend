@@ -182,8 +182,6 @@ export default function FreelancerProfilePage() {
 
     delete data.branchList[0].aboutUs;
 
-    // console.log(data);
-    // return;
     const response = await createFreelancerProfile.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -210,7 +208,6 @@ export default function FreelancerProfilePage() {
   }, [tagsQuery?.data]);
 
   useEffect(() => {
-    // console.log(userDetails.data?.data);
     if (userDetails.data?.data) {
       const businessTypeList = userDetails.data?.data?.userBranch?.[0]
         ?.userBranchBusinessType

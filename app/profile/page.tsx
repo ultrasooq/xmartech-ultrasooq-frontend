@@ -165,9 +165,6 @@ export default function ProfilePage() {
       dateOfBirth: formData.dateOfBirth.toISOString(),
     };
 
-    // console.log(data);
-    // return;
-
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
       toast({
