@@ -14,9 +14,10 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
   onEditProfile,
   onEditBranch,
 }) => {
+  const workingDays = userDetails?.userBranch?.[0]?.workingDays;
   const memoizedParsedDays = useMemo(
     () => parsedDays(userDetails?.userBranch?.[0]?.workingDays),
-    [userDetails?.userBranch?.[0]?.workingDays],
+    [workingDays],
   );
 
   return (

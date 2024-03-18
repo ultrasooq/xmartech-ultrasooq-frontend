@@ -16,7 +16,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { useForgotPassword } from "@/apis/queries/auth.queries";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 
@@ -116,7 +115,13 @@ export default function ForgetPasswordPage() {
                     >
                       {forgotPassword.isPending ? (
                         <>
-                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                          <Image
+                            src="/images/load.png"
+                            alt="loader-icon"
+                            width={20}
+                            height={20}
+                            className="mr-2 animate-spin"
+                          />
                           Please wait
                         </>
                       ) : (

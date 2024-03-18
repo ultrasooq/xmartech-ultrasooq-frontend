@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useMemo, useState } from "react";
 import { useUpdateCompanyBranch } from "@/apis/queries/company.queries";
 import { Controller, useForm } from "react-hook-form";
@@ -177,8 +176,6 @@ export default function EditBranchPage() {
       branchId: Number(activeBranchId),
     };
 
-    // console.log(data);
-    // return;
     const response = await updateCompanyBranch.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -641,7 +638,13 @@ export default function EditBranchPage() {
             >
               {updateCompanyBranch.isPending ? (
                 <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  <Image
+                    src="/images/load.png"
+                    alt="loader-icon"
+                    width={20}
+                    height={20}
+                    className="mr-2 animate-spin"
+                  />
                   Please wait
                 </>
               ) : (

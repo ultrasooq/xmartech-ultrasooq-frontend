@@ -16,15 +16,26 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
     [userDetails?.firstName, userDetails?.lastName],
   );
 
-  const isOnlineToday = useMemo(
-    () =>
-      parsedDays(userDetails?.userBranch?.[0]?.workingDays)?.includes(
-        getCurrentDay(),
-      )
-        ? true
-        : false,
-    [userDetails?.userBranch?.[0]?.workingDays],
-  );
+  const workingDays = userDetails?.userBranch?.[0]?.workingDays;
+
+  const isOnlineToday = useMemo(() => {
+    // console.log(userDetails?.userBranch);
+    const getStartTime = userDetails?.userBranch?.[0]?.startTime;
+    const getEndTime = userDetails?.userBranch?.[0]?.endTime;
+    const getCurrentTime = new Date().toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+
+    console.log(getStartTime, getEndTime, getCurrentTime);
+
+    const getActiveDays = parsedDays(workingDays)?.includes(getCurrentDay())
+      ? true
+      : false;
+
+    return getActiveDays;
+  }, [workingDays]);
 
   return (
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">

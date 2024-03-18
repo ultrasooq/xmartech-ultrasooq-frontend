@@ -17,6 +17,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
   );
 
   const isOnlineToday = useMemo(() => {
+    // console.log(userDetails?.userBranch);
     const getActiveDays = userDetails?.userBranch
       ?.map((item: any) => {
         return parsedDays(item?.workingDays)?.includes(getCurrentDay());

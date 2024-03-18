@@ -136,7 +136,14 @@ const RatingsSection = () => {
       </div>
       <div className="flex w-full items-center justify-center text-center text-base font-bold text-dark-orange">
         <span className="flex">
-          <img src="images/loader.png" className="mr-1.5" /> Load More
+          <Image
+            src="/images/loader.png"
+            className="mr-1.5"
+            height={25}
+            width={25}
+            alt="loader-icon"
+          />
+          Load More
         </span>
       </div>
 

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import {
@@ -16,7 +16,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRegister } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
@@ -110,6 +109,7 @@ const formSchema = z
 export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -124,6 +124,8 @@ export default function RegisterPage() {
       acceptTerms: false,
     },
   });
+
+  const handleToggleTermsModal = () => setIsTermsModalOpen(!isTermsModalOpen);
 
   const register = useRegister();
 
@@ -374,7 +376,7 @@ export default function RegisterPage() {
                     control={form.control}
                     name="acceptTerms"
                     render={({ field }) => (
-                      <FormItem className="mb-4 flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="mb-4 flex flex-row items-center space-x-3 space-y-0">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -382,41 +384,25 @@ export default function RegisterPage() {
                             className="data-[state=checked]:!bg-dark-orange"
                           />
                         </FormControl>
-                        <div className="space-y-2 leading-none">
-                          <FormLabel className="text-light-gray">
-                            <Dialog>
-                              <DialogTrigger>
-                                I Agree The{" "}
-                                <span className="underline">Terms Of Use</span>{" "}
-                                &{" "}
-                                <span className="underline">
-                                  Privacy Policy
-                                </span>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <DialogHeader>
-                                  <DialogDescription>
-                                    Lorem ipsum dolor sit amet consectetur
-                                    adipisicing elit. Voluptate quas accusamus
-                                    unde vero, earum, quo perspiciatis libero
-                                    adipisci tempore magni ad quia vitae, sint
-                                    dolore voluptatum repellendus exercitationem
-                                    dolores! Esse. Lorem ipsum dolor sit amet
-                                    consectetur adipisicing elit. Voluptate quas
-                                    accusamus unde vero, earum, quo perspiciatis
-                                    libero adipisci tempore magni ad quia vitae,
-                                    sint dolore voluptatum repellendus
-                                    exercitationem dolores! Esse. Lorem ipsum
-                                    dolor sit amet consectetur adipisicing elit.
-                                    Voluptate quas accusamus unde vero, earum,
-                                    quo perspiciatis libero adipisci tempore
-                                    magni ad quia vitae, sint dolore voluptatum
-                                    repellendus exercitationem dolores! Esse.
-                                  </DialogDescription>
-                                </DialogHeader>
-                              </DialogContent>
-                            </Dialog>
-                          </FormLabel>
+                        <div className="flex flex-col leading-none">
+                          <div className="text-sm text-light-gray">
+                            <span>I Agree the </span>
+                            <Button
+                              onClick={handleToggleTermsModal}
+                              type="button"
+                              className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
+                            >
+                              <span className="text-light-gray underline">
+                                Terms Of Use
+                              </span>
+                              <span className="mx-1 text-light-gray underline">
+                                &
+                              </span>
+                              <span className="text-light-gray underline">
+                                Privacy Policy
+                              </span>
+                            </Button>
+                          </div>
                           <FormMessage />
                         </div>
                       </FormItem>
@@ -430,7 +416,13 @@ export default function RegisterPage() {
                     >
                       {register.isPending ? (
                         <>
-                          <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                          <Image
+                            src="/images/load.png"
+                            alt="loader-icon"
+                            width={20}
+                            height={20}
+                            className="mr-2 animate-spin"
+                          />
                           Please wait
                         </>
                       ) : (
@@ -455,6 +447,83 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
+
+      <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
+        <DialogContent className="md:!max-w-4xl">
+          <DialogHeader className="border-b border-light-gray pb-3">
+            <DialogTitle className="text-center">
+              Terms Of Use & Privacy Policy
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate
+            quas accusamus unde vero, earum, quo perspiciatis libero adipisci
+            tempore magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse. Lorem ipsum dolor sit amet consectetur
+            adipisicing elit. Voluptate quas accusamus unde vero, earum, quo
+            perspiciatis libero adipisci tempore magni ad quia vitae, sint
+            dolore voluptatum repellendus exercitationem dolores! Esse. Lorem
+            ipsum dolor sit amet consectetur adipisicing elit. Voluptate quas
+            accusamus unde vero, earum, quo perspiciatis libero adipisci tempore
+            magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse. Lorem ipsum dolor sit amet consectetur
+            adipisicing elit. Voluptate quas accusamus unde vero, earum, quo
+            perspiciatis libero adipisci tempore magni ad quia vitae, sint
+            dolore voluptatum repellendus exercitationem dolores! Esse. Lorem
+            ipsum dolor sit amet consectetur adipisicing elit. Voluptate quas
+            accusamus unde vero, earum, quo perspiciatis libero adipisci tempore
+            magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse. Lorem ipsum dolor sit amet consectetur
+            adipisicing elit. Voluptate quas accusamus unde vero, earum, quo
+            perspiciatis libero adipisci tempore magni ad quia vitae, sint
+            dolore voluptatum repellendus exercitationem dolores! Esse. Lorem
+            ipsum dolor sit amet consectetur adipisicing elit. Voluptate quas
+            accusamus unde vero, earum, quo perspiciatis libero adipisci tempore
+            magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse. Lorem ipsum dolor sit amet consectetur
+            adipisicing elit. Voluptate quas accusamus unde vero, earum, quo
+            perspiciatis libero adipisci tempore magni ad quia vitae, sint
+            dolore voluptatum repellendus exercitationem dolores! Esse. Lorem
+            ipsum dolor sit amet consectetur adipisicing elit. Voluptate quas
+            accusamus unde vero, earum, quo perspiciatis libero adipisci tempore
+            magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse.
+            <br />
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate
+            quas accusamus unde vero, earum, quo perspiciatis libero adipisci
+            tempore magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse. Lorem ipsum dolor sit amet consectetur
+            adipisicing elit. Voluptate quas accusamus unde vero, earum, quo
+            perspiciatis libero adipisci tempore magni ad quia vitae, sint
+            dolore voluptatum repellendus exercitationem dolores! Esse. Lorem
+            ipsum dolor sit amet consectetur adipisicing elit. Voluptate quas
+            accusamus unde vero, earum, quo perspiciatis libero adipisci tempore
+            magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse. Lorem ipsum dolor sit amet consectetur
+            adipisicing elit. Voluptate quas accusamus unde vero, earum, quo
+            perspiciatis libero adipisci tempore magni ad quia vitae, sint
+            dolore voluptatum repellendus exercitationem dolores! Esse. Lorem
+            ipsum dolor sit amet consectetur adipisicing elit. Voluptate quas
+            accusamus unde vero, earum, quo perspiciatis libero adipisci tempore
+            magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse. Lorem ipsum dolor sit amet consectetur
+            adipisicing elit. Voluptate quas accusamus unde vero, earum, quo
+            perspiciatis libero adipisci tempore magni ad quia vitae, sint
+            dolore voluptatum repellendus exercitationem dolores! Esse. Lorem
+            ipsum dolor sit amet consectetur adipisicing elit. Voluptate quas
+            accusamus unde vero, earum, quo perspiciatis libero adipisci tempore
+            magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse. Lorem ipsum dolor sit amet consectetur
+            adipisicing elit. Voluptate quas accusamus unde vero, earum, quo
+            perspiciatis libero adipisci tempore magni ad quia vitae, sint
+            dolore voluptatum repellendus exercitationem dolores! Esse. Lorem
+            ipsum dolor sit amet consectetur adipisicing elit. Voluptate quas
+            accusamus unde vero, earum, quo perspiciatis libero adipisci tempore
+            magni ad quia vitae, sint dolore voluptatum repellendus
+            exercitationem dolores! Esse.
+          </DialogDescription>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
