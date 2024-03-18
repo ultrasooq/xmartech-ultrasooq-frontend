@@ -52,6 +52,8 @@ const Header = () => {
     }
   };
 
+  const handleChangePasswordPage = () => router.push("/change-password");
+
   const handleLogout = () => {
     setIsLoggedIn(false);
     deleteCookie(PUREMOON_TOKEN_KEY);
@@ -172,7 +174,9 @@ const Header = () => {
                           Profile Information
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Change Password</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleChangePasswordPage}>
+                          Change Password
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={handleLogout}

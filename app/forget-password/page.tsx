@@ -46,19 +46,18 @@ export default function ForgetPasswordPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const response = await forgotPassword.mutateAsync(values);
 
-    if (response?.status) {
+    if (response?.status && response?.otp) {
       toast({
-        title: "Password Reset Link Sent",
+        title: "Reset OTP Link Sent",
         description: response?.message,
       });
+
+      sessionStorage.setItem("email", values.email.toLowerCase());
       form.reset();
-      if (response?.data) {
-        const token = response.data.split("?").at(-1);
-        router.push(`/reset-password?token=${token}`);
-      }
+      router.push("/password-reset-verify");
     } else {
       toast({
-        title: "Password Reset Failed",
+        title: "Reset OTP Failed",
         description: response?.message,
       });
     }
