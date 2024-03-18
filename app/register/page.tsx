@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -26,9 +26,10 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
+import countryCodes, { CountryProperty } from "country-codes-list";
+import { cn } from "@/lib/utils";
 
 const formSchema = z
   .object({
@@ -82,11 +83,11 @@ const formSchema = z
       .min(2, {
         message: "Phone Number is required",
       })
-      .min(10, {
-        message: "Phone Number must be equal to 10 digits",
+      .min(8, {
+        message: "Phone Number must be minimum of 8 digits",
       })
-      .max(10, {
-        message: "Phone Number must be equal to 10 digits",
+      .max(20, {
+        message: "Phone Number cannot be more than 20 digits",
       }),
     tradeRole: z.string().trim().min(2, {
       message: "Trade Role is required",
@@ -94,7 +95,9 @@ const formSchema = z
     acceptTerms: z.boolean().refine((val) => val, {
       message: "You must accept the terms",
     }),
-    cc: z.string().trim(),
+    cc: z.string().trim().min(2, {
+      message: "Country Code is required",
+    }),
   })
   .superRefine(({ initialPassword, password }, ctx) => {
     if (initialPassword !== password) {
@@ -119,7 +122,7 @@ export default function RegisterPage() {
       initialPassword: "",
       password: "",
       phoneNumber: "",
-      cc: "+91",
+      cc: "",
       tradeRole: "",
       acceptTerms: false,
     },
@@ -128,25 +131,22 @@ export default function RegisterPage() {
   const handleToggleTermsModal = () => setIsTermsModalOpen(!isTermsModalOpen);
 
   const register = useRegister();
+  const countryObjs = countryCodes.customList(
+    "countryNameEn" as CountryProperty.countryNameEn,
+    "+{countryCallingCode}",
+  );
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const data = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      email: values.email,
-      password: values.password,
-      phoneNumber: values.phoneNumber,
-      tradeRole: values.tradeRole,
-      cc: "+91",
-    };
-    const response = await register.mutateAsync(data);
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    // console.log(formData);
+    // return;
+    const response = await register.mutateAsync(formData);
 
     if (response?.status && response?.otp) {
       toast({
         title: "Otp Sent",
         description: "OTP has been sent to your email/phone",
       });
-      sessionStorage.setItem("email", values.email.toLowerCase());
+      sessionStorage.setItem("email", formData.email.toLowerCase());
       form.reset();
       router.push("/otp-verify");
     } else {
@@ -351,25 +351,65 @@ export default function RegisterPage() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            onWheel={(e) => e.currentTarget.blur()}
-                            placeholder="Enter Your Phone Number"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                  <div className="flex w-full">
+                    <div className="mb-4 flex w-full max-w-[120px] flex-col justify-between md:pr-3.5">
+                      <Label
+                        className={cn(
+                          form.formState.errors.cc?.message
+                            ? "text-red-500"
+                            : "",
+                          "mb-3 mt-[6px]",
+                        )}
+                      >
+                        Country Code
+                      </Label>
+                      <Controller
+                        name="cc"
+                        control={form.control}
+                        render={({ field }) => (
+                          <select
                             {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          >
+                            <option value="">Select</option>
+                            {Object.keys(countryObjs).map((key) => (
+                              <option
+                                key={key}
+                                value={
+                                  countryObjs[key as keyof typeof countryObjs]
+                                }
+                              >
+                                {key}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      />
+                      <p className="text-[13px] font-medium text-red-500">
+                        {form.formState.errors.cc?.message ? "Required" : ""}
+                      </p>
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem className="mb-4 w-full">
+                          <FormLabel>Phone Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
+                              placeholder="Enter Your Phone Number"
+                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
