@@ -66,9 +66,9 @@ export interface IForgotPasswordRequest {
 }
 
 export interface IForgotPassword {
+  otp: number;
   message: string;
   status: boolean;
-  data: string;
 }
 
 export interface IResetPasswordRequest {
@@ -81,4 +81,12 @@ export interface IResetPassword {
   status: boolean;
   data: any;
   statusCode: number;
+}
+
+export interface IPasswordResetVerifyOtpRequest extends IVerifyOtpRequest {}
+
+export interface IPasswordResetVerify {
+  status: boolean;
+  message: string;
+  accessToken: string;
 }

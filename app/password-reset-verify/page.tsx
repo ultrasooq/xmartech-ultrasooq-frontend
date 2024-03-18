@@ -5,13 +5,18 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useResendOtp, useVerifyOtp } from "@/apis/queries/auth.queries";
+import {
+  useForgotPassword,
+  useResendOtp,
+  useVerifyOtp,
+  userPasswordResetVerify,
+} from "@/apis/queries/auth.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { setCookie } from "cookies-next";
 import Image from "next/image";
-import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { PUREMOON_TEMP_TOKEN_KEY, PUREMOON_TOKEN_KEY } from "@/utils/constants";
 
-export default function OtpVerifyPage() {
+export default function PasswordResetVerifyPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
@@ -23,8 +28,9 @@ export default function OtpVerifyPage() {
     },
   });
 
-  const verifyOtp = useVerifyOtp();
+  const passwordResetVerify = userPasswordResetVerify();
   const resendOtp = useResendOtp();
+  const passwordResendVerify = useForgotPassword();
 
   const onSubmit = async (formData: any) => {
     if (otp.join("") === "") {
@@ -46,11 +52,11 @@ export default function OtpVerifyPage() {
       email: formData.email?.toLowerCase(),
       otp: Number(combinedOtp),
     };
-    const response = await verifyOtp.mutateAsync(data);
+    const response = await passwordResetVerify.mutateAsync(data);
 
     if (response?.status && response?.accessToken) {
       // store in cookie
-      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+      setCookie(PUREMOON_TEMP_TOKEN_KEY, response.accessToken);
       toast({
         title: "Verification Successful",
         description: response.message,
@@ -58,7 +64,7 @@ export default function OtpVerifyPage() {
       form.reset();
       setOtp(new Array(4).fill(""));
       sessionStorage.clear();
-      router.push("/profile");
+      router.push("/reset-password");
     } else {
       toast({
         title: "Verification Failed",
@@ -67,7 +73,7 @@ export default function OtpVerifyPage() {
     }
   };
 
-  const handleResendOtp = async () => {
+  const handlePasswordResendVerify = async () => {
     const email = sessionStorage.getItem("email") || "";
     const data = {
       email: email.toLowerCase(),
@@ -79,17 +85,19 @@ export default function OtpVerifyPage() {
       });
       return;
     }
-    const response = await resendOtp.mutateAsync(data);
+    const response = await passwordResendVerify.mutateAsync(data);
 
     if (response.status && response.otp) {
+      // form.setValue("otp", response.otp.toString());
+      // setOtp([...response.otp.toString().split("")]);
       toast({
-        title: "Otp Sent",
-        description: response.message,
+        title: "Reset OTP Link Sent",
+        description: response?.message,
       });
     } else {
       toast({
-        title: "Otp Failed",
-        description: response.message,
+        title: "Reset OTP Failed",
+        description: response?.message,
       });
     }
   };
@@ -188,11 +196,13 @@ export default function OtpVerifyPage() {
                   </div>
                   <div className="mb-4 w-full text-center">
                     <Button
-                      disabled={verifyOtp.isPending || resendOtp.isPending}
+                      disabled={
+                        passwordResetVerify.isPending || resendOtp.isPending
+                      }
                       type="submit"
                       className="m-auto h-14 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
-                      {verifyOtp.isPending ? (
+                      {passwordResetVerify.isPending ? (
                         <>
                           <Image
                             src="/images/load.png"
@@ -217,8 +227,10 @@ export default function OtpVerifyPage() {
                 <Button
                   type="button"
                   variant="link"
-                  disabled={verifyOtp.isPending || resendOtp.isPending}
-                  onClick={handleResendOtp}
+                  disabled={
+                    passwordResetVerify.isPending || resendOtp.isPending
+                  }
+                  onClick={handlePasswordResendVerify}
                   className="cursor-pointer p-0 font-medium text-dark-orange"
                 >
                   Resend

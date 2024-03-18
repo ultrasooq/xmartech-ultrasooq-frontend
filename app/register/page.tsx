@@ -147,7 +147,6 @@ export default function RegisterPage() {
         description: "OTP has been sent to your email/phone",
       });
       sessionStorage.setItem("email", values.email.toLowerCase());
-      sessionStorage.setItem("otp", response.otp.toString());
       form.reset();
       router.push("/otp-verify");
     } else {
