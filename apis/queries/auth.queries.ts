@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import {
   forgotPassword,
   login,
+  passwordResetVerify,
   register,
   resendOtp,
   resetPassword,
@@ -13,6 +14,8 @@ import {
   IForgotPasswordRequest,
   ILogin,
   ILoginRequest,
+  IPasswordResetVerify,
+  IPasswordResetVerifyOtpRequest,
   IRegister,
   IRegisterRequest,
   IResendOtp,
@@ -89,6 +92,22 @@ export const useResetPassword = () =>
   useMutation<IResetPassword, APIResponseError, IResetPasswordRequest>({
     mutationFn: async (payload) => {
       const res = await resetPassword(payload);
+      return res.data;
+    },
+    onSuccess: () => {},
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+
+export const userPasswordResetVerify = () =>
+  useMutation<
+    IPasswordResetVerify,
+    APIResponseError,
+    IPasswordResetVerifyOtpRequest
+  >({
+    mutationFn: async (payload) => {
+      const res = await passwordResetVerify(payload);
       return res.data;
     },
     onSuccess: () => {},

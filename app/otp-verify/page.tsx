@@ -53,7 +53,7 @@ export default function OtpVerifyPage() {
       setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
       toast({
         title: "Verification Successful",
-        description: "You have successfully verified",
+        description: response.message,
       });
       form.reset();
       setOtp(new Array(4).fill(""));
@@ -82,8 +82,6 @@ export default function OtpVerifyPage() {
     const response = await resendOtp.mutateAsync(data);
 
     if (response.status && response.otp) {
-      form.setValue("otp", response.otp.toString());
-      setOtp([...response.otp.toString().split("")]);
       toast({
         title: "Otp Sent",
         description: response.message,
@@ -138,12 +136,9 @@ export default function OtpVerifyPage() {
   useEffect(() => {
     if (window) {
       const storedEmail = sessionStorage.getItem("email");
-      const storedOTP = sessionStorage.getItem("otp");
 
-      if (storedEmail && storedOTP) {
+      if (storedEmail) {
         form.setValue("email", storedEmail.toLowerCase());
-        form.setValue("otp", storedOTP);
-        setOtp([...storedOTP.split("")]);
       }
     }
   }, []);

@@ -1,4 +1,5 @@
 export const PUREMOON_TOKEN_KEY: string = "puremoon_accessToken";
+export const PUREMOON_TEMP_TOKEN_KEY: string = "puremoon_temp_accessToken";
 
 export const DAYS_OF_WEEK: {
   label: string;

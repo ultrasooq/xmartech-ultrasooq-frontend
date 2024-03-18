@@ -1,7 +1,8 @@
-import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { PUREMOON_TEMP_TOKEN_KEY, PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import {
   IForgotPasswordRequest,
   ILoginRequest,
+  IPasswordResetVerifyOtpRequest,
   IRegisterRequest,
   IResendOtpRequest,
   IResetPasswordRequest,
@@ -58,7 +59,17 @@ export const resetPassword = (payload: IResetPasswordRequest) => {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+      Authorization: "Bearer " + getCookie(PUREMOON_TEMP_TOKEN_KEY),
     },
+  });
+};
+
+export const passwordResetVerify = (
+  payload: IPasswordResetVerifyOtpRequest,
+) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/verifyOtp`,
+    data: payload,
   });
 };
