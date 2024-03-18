@@ -16,6 +16,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
     [userDetails?.firstName, userDetails?.lastName],
   );
 
+  const workingDays = userDetails?.userBranch?.[0]?.workingDays;
   const isOnlineToday = useMemo(
     () =>
       parsedDays(userDetails?.userBranch?.[0]?.workingDays)?.includes(
@@ -23,7 +24,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
       )
         ? true
         : false,
-    [userDetails?.userBranch?.[0]?.workingDays],
+    [workingDays],
   );
 
   return (
