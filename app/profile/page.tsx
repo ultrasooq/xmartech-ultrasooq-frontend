@@ -45,9 +45,10 @@ import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCookie } from "cookies-next";
+import countryCodes, { CountryProperty } from "country-codes-list";
 
 const formSchema = z.object({
   profileImage: z.string().trim().optional(),
@@ -74,17 +75,20 @@ const formSchema = z.object({
     }),
   phoneNumberList: z.array(
     z.object({
+      cc: z.string().trim().min(2, {
+        message: "Country Code is required",
+      }),
       phoneNumber: z
         .string()
         .trim()
         .min(2, {
           message: "Phone Number is required",
         })
-        .min(10, {
-          message: "Phone Number must be equal to 10 digits",
+        .min(8, {
+          message: "Phone Number must be minimum of 8 digits",
         })
-        .max(10, {
-          message: "Phone Number must be equal to 10 digits",
+        .max(20, {
+          message: "Phone Number cannot be more than 20 digits",
         }),
     }),
   ),
@@ -115,6 +119,7 @@ export default function ProfilePage() {
       email: "",
       phoneNumberList: [
         {
+          cc: "",
           phoneNumber: "",
         },
       ],
@@ -131,6 +136,11 @@ export default function ProfilePage() {
   const me = useMe(!!accessToken);
   const updateProfile = useUpdateProfile();
 
+  const countryObjs = countryCodes.customList(
+    "countryNameEn" as CountryProperty.countryNameEn,
+    "+{countryCallingCode}",
+  );
+
   const fieldArrayForPhoneNumber = useFieldArray({
     control: form.control,
     name: "phoneNumberList",
@@ -143,6 +153,7 @@ export default function ProfilePage() {
 
   const appendPhoneNumber = () =>
     fieldArrayForPhoneNumber.append({
+      cc: "",
       phoneNumber: "",
     });
 
@@ -462,12 +473,53 @@ export default function ProfilePage() {
                       key={field.id}
                       className="relative mb-4 flex w-full flex-row items-center gap-x-3.5"
                     >
+                      <div className="flex w-full max-w-[120px] flex-col justify-between">
+                        <Label
+                          className={cn(
+                            // form.formState.errors.cc?.message
+                            //   ? "text-red-500"
+                            //   : "",
+                            "mb-3 mt-[6px]",
+                          )}
+                        >
+                          Country Code
+                        </Label>
+                        <Controller
+                          name={`phoneNumberList.${index}.cc`}
+                          control={form.control}
+                          render={({ field }) => (
+                            <select
+                              {...field}
+                              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            >
+                              <option value="">Select</option>
+                              {Object.keys(countryObjs).map((key) => (
+                                <option
+                                  key={key}
+                                  value={
+                                    countryObjs[key as keyof typeof countryObjs]
+                                  }
+                                >
+                                  {key}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        />
+                        <p className="text-[13px] font-medium text-red-500">
+                          {form.formState.errors.phoneNumberList?.[index]?.cc
+                            ? "Required"
+                            : ""}
+                        </p>
+                      </div>
+
                       <FormField
                         key={field.id}
                         control={form.control}
                         name={`phoneNumberList.${index}.phoneNumber`}
                         render={({ field }) => (
                           <FormItem className="w-full">
+                            <FormLabel>Number</FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
@@ -572,22 +624,8 @@ export default function ProfilePage() {
                                 </p>
                               </div>
                             </div>
-                            {/* TODO: remove this after discussing */}
-                            {/* <div className="mr-3 flex flex-1 justify-end gap-x-3.5">
-                              <Button
-                                type="button"
-                                onClick={() => {}}
-                                className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                              >
-                                <Image
-                                  src="/images/social-edit-icon.svg"
-                                  height={35}
-                                  width={35}
-                                  alt="social-edit-icon"
-                                />
-                              </Button>
-                            </div> */}
                           </AccordionTrigger>
+
                           <AccordionContent className="pb-0">
                             <FormField
                               control={form.control}
