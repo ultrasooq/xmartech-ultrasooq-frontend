@@ -1,5 +1,5 @@
 "use client";
-import { useResetPassword } from "@/apis/queries/auth.queries";
+import { useChangePassword } from "@/apis/queries/auth.queries";
 import PasswordChangeSuccessContent from "@/components/shared/PasswordChangeSuccessContent";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,13 +63,13 @@ export default function ChangePasswordPage() {
     },
   });
   const [showSuccess, setShowSuccess] = useState(false);
-  const resetPassword = useResetPassword();
+  const changePassword = useChangePassword();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const response = await resetPassword.mutateAsync(values, {
+    const response = await changePassword.mutateAsync(values, {
       onError: (err) => {
         toast({
-          title: "Password Reset Failed",
+          title: "Password Change Failed",
           description: err?.response?.data?.message,
         });
         form.reset();
@@ -86,7 +86,7 @@ export default function ChangePasswordPage() {
       deleteCookie(PUREMOON_TOKEN_KEY);
       setShowSuccess(true);
       setTimeout(() => {
-        router.push("/login");
+        router.push("/home");
         setShowSuccess(false);
       }, 3000);
     } else {
@@ -96,14 +96,6 @@ export default function ChangePasswordPage() {
       });
     }
   };
-
-  useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let accessToken = params.get("token");
-    if (accessToken) {
-      setCookie(PUREMOON_TOKEN_KEY, accessToken);
-    }
-  }, []);
 
   return (
     <section className="relative w-full py-7">
@@ -175,11 +167,11 @@ export default function ChangePasswordPage() {
 
                       <div className="mb-4 w-full">
                         <Button
-                          disabled={resetPassword.isPending}
+                          disabled={changePassword.isPending}
                           type="submit"
                           className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                         >
-                          {resetPassword.isPending ? (
+                          {changePassword.isPending ? (
                             <>
                               <Image
                                 src="/images/load.png"

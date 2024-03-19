@@ -90,3 +90,7 @@ export interface IPasswordResetVerify {
   message: string;
   accessToken: string;
 }
+
+export interface IChangePasswordRequest extends IResetPasswordRequest {}
+
+export interface IChangePassword extends IResetPassword {}
