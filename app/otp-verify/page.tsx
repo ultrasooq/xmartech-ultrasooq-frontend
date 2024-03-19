@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -15,6 +15,7 @@ export default function OtpVerifyPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
+  const [count, setCount] = useState(600);
   const refs = React.useRef<HTMLInputElement[]>([]);
   const form = useForm({
     defaultValues: {
@@ -25,6 +26,22 @@ export default function OtpVerifyPage() {
 
   const verifyOtp = useVerifyOtp();
   const resendOtp = useResendOtp();
+
+  const formatTime = useMemo(
+    () =>
+      (time: number): string => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      },
+    [],
+  );
+
+  const startTimer = () => {
+    return setInterval(() => {
+      setCount((prevCount) => prevCount - 1);
+    }, 1000);
+  };
 
   const onSubmit = async (formData: any) => {
     if (otp.join("") === "") {
@@ -86,6 +103,8 @@ export default function OtpVerifyPage() {
         title: "Otp Sent",
         description: response.message,
       });
+      setCount(600);
+      setOtp(new Array(4).fill(""));
     } else {
       toast({
         title: "Otp Failed",
@@ -142,6 +161,12 @@ export default function OtpVerifyPage() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    const countDown = startTimer();
+
+    return () => clearInterval(countDown);
+  }, [count]);
 
   return (
     <section className="relative w-full py-7">
@@ -224,6 +249,9 @@ export default function OtpVerifyPage() {
                   Resend
                 </Button>
               </div>
+              <p className="text-center text-sm font-medium leading-4 text-dark-orange">
+                OTP will expire in {formatTime(count)} minutes
+              </p>
             </div>
           </div>
         </div>

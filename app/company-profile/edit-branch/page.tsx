@@ -255,6 +255,7 @@ export default function EditBranchPage() {
           city: branch?.city || "",
           province: branch?.province || "",
           country: branch?.country || "",
+          cc: branch?.cc || "",
           contactNumber: branch?.contactNumber || "",
           contactName: branch?.contactName || "",
           workingDays,
@@ -495,6 +496,7 @@ export default function EditBranchPage() {
                                   countryObjs[key as keyof typeof countryObjs]
                                 }
                               >
+                                ({countryObjs[key as keyof typeof countryObjs]}){" "}
                                 {key}
                               </option>
                             ))}
@@ -635,7 +637,7 @@ export default function EditBranchPage() {
                                     item.value as keyof typeof field.value
                                   ]
                                 }
-                                className="border-0 data-[state=checked]:!bg-dark-orange"
+                                className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">

@@ -789,6 +789,12 @@ export default function CompanyProfilePage() {
                           </select>
                         )}
                       />
+                      <p className="text-[13px] font-medium text-red-500">
+                        {
+                          form.formState.errors.branchList?.[index]?.country
+                            ?.message
+                        }
+                      </p>
                     </div>
 
                     <div className="flex w-full md:w-6/12">
@@ -819,7 +825,9 @@ export default function CompanyProfilePage() {
                                     countryObjs[key as keyof typeof countryObjs]
                                   }
                                 >
-                                  {key}
+                                  (
+                                  {countryObjs[key as keyof typeof countryObjs]}
+                                  ) {key}
                                 </option>
                               ))}
                             </select>
@@ -967,7 +975,7 @@ export default function CompanyProfilePage() {
                                       item.value as keyof typeof field.value
                                     ]
                                   }
-                                  className="border-0 data-[state=checked]:!bg-dark-orange"
+                                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                                 />
                               </FormControl>
                               <div className="space-y-1 leading-none">

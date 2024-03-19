@@ -41,12 +41,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
       <div className="relative mx-auto h-40 w-40 rounded-full">
         <Avatar className="h-40 w-40">
-          <AvatarImage src="null" alt="image-icon" />
+          <AvatarImage src={userDetails?.profilePicture} alt="image-icon" />
           <AvatarFallback className="text-5xl font-bold">
             {memoizedInitials}
           </AvatarFallback>
         </Avatar>
-        <div className="absolute bottom-2 right-0 z-10 h-11 w-11 rounded-full bg-gray-300">
+        {/* <div className="absolute bottom-2 right-0 z-10 h-11 w-11 rounded-full bg-gray-300">
           <div className="flex h-full w-full cursor-pointer flex-wrap items-center justify-center">
             <Image
               src="/images/camera-icon.png"
@@ -62,7 +62,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
             name="file"
             className="absolute left-0 top-0 z-10 h-full w-full cursor-pointer opacity-0"
           />
-        </div>
+        </div> */}
       </div>
       <div className="w-full p-3 md:w-[calc(100%_-_10rem)] md:pl-7">
         <div className="flex w-full flex-wrap items-center justify-between">

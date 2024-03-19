@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { EMAIL_REGEX_LOWERCASE, PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { setCookie } from "cookies-next";
 import Image from "next/image";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   email: z
@@ -140,15 +141,18 @@ export default function LoginPage() {
 
                   <div className="mb-4 w-full">
                     <div className="flex w-auto items-center justify-between p-0 lg:w-full">
-                      <label className="flex w-auto items-center justify-start text-sm font-medium leading-4 text-color-dark">
-                        <input
-                          type="checkbox"
-                          name=""
-                          className="absolute h-0 w-0 cursor-pointer opacity-0 [&:checked+span]:border-dark-orange [&:checked+span]:bg-dark-orange"
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="remember"
+                          className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                         />
-                        <span className="relative mr-2.5 inline-block h-5 w-5 overflow-hidden rounded border-2 border-solid border-gray-400 bg-transparent before:absolute before:-top-1 before:bottom-0 before:left-0 before:right-0 before:m-auto before:block before:h-3 before:w-1.5 before:rotate-45 before:border-b-2 before:border-r-2 before:border-solid before:border-white before:content-['']"></span>
-                        Remember me
-                      </label>
+                        <label
+                          htmlFor="remember"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Remember me
+                        </label>
+                      </div>
                       <div className="w-auto">
                         <span
                           className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"

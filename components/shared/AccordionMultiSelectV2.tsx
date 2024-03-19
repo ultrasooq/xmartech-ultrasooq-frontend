@@ -112,7 +112,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
                               }
                               field.onChange(tempArr);
                             }}
-                            className="border-0 data-[state=checked]:!bg-dark-orange"
+                            className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                           />
                         </FormControl>
                         <FormLabel className="text-sm font-normal">

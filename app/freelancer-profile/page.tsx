@@ -418,6 +418,9 @@ export default function FreelancerProfilePage() {
                           </select>
                         )}
                       />
+                      <p className="text-[13px] font-medium text-red-500">
+                        {form.formState.errors.country?.message}
+                      </p>
                     </div>
 
                     <div className="flex w-full md:w-6/12">
@@ -448,7 +451,9 @@ export default function FreelancerProfilePage() {
                                     countryObjs[key as keyof typeof countryObjs]
                                   }
                                 >
-                                  {key}
+                                  (
+                                  {countryObjs[key as keyof typeof countryObjs]}
+                                  ) {key}
                                 </option>
                               ))}
                             </select>
@@ -580,7 +585,7 @@ export default function FreelancerProfilePage() {
                                     [item.value]: e ? 1 : 0,
                                   });
                                 }}
-                                className="border-0 data-[state=checked]:!bg-dark-orange"
+                                className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                                 checked={
                                   !!field.value[
                                     item.value as keyof typeof field.value
