@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -14,12 +14,13 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { setCookie } from "cookies-next";
 import Image from "next/image";
-import { PUREMOON_TEMP_TOKEN_KEY, PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { PUREMOON_TEMP_TOKEN_KEY } from "@/utils/constants";
 
 export default function PasswordResetVerifyPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
+  const [count, setCount] = useState(600);
   const refs = React.useRef<HTMLInputElement[]>([]);
   const form = useForm({
     defaultValues: {
@@ -31,6 +32,22 @@ export default function PasswordResetVerifyPage() {
   const passwordResetVerify = userPasswordResetVerify();
   const resendOtp = useResendOtp();
   const passwordResendVerify = useForgotPassword();
+
+  const formatTime = useMemo(
+    () =>
+      (time: number): string => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      },
+    [],
+  );
+
+  const startTimer = () => {
+    return setInterval(() => {
+      setCount((prevCount) => prevCount - 1);
+    }, 1000);
+  };
 
   const onSubmit = async (formData: any) => {
     if (otp.join("") === "") {
@@ -88,12 +105,12 @@ export default function PasswordResetVerifyPage() {
     const response = await passwordResendVerify.mutateAsync(data);
 
     if (response.status && response.otp) {
-      // form.setValue("otp", response.otp.toString());
-      // setOtp([...response.otp.toString().split("")]);
       toast({
         title: "Reset OTP Link Sent",
         description: response?.message,
       });
+      setCount(600);
+      setOtp(new Array(4).fill(""));
     } else {
       toast({
         title: "Reset OTP Failed",
@@ -150,6 +167,12 @@ export default function PasswordResetVerifyPage() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    const countDown = startTimer();
+
+    return () => clearInterval(countDown);
+  }, [count]);
 
   return (
     <section className="relative w-full py-7">
@@ -236,6 +259,9 @@ export default function PasswordResetVerifyPage() {
                   Resend
                 </Button>
               </div>
+              <p className="text-center text-sm font-medium leading-4 text-dark-orange">
+                OTP will expire in {formatTime(count)} minutes
+              </p>
             </div>
           </div>
         </div>
