@@ -373,6 +373,7 @@ export default function RegisterPage() {
                                   countryObjs[key as keyof typeof countryObjs]
                                 }
                               >
+                                ({countryObjs[key as keyof typeof countryObjs]}){" "}
                                 {key}
                               </option>
                             ))}
