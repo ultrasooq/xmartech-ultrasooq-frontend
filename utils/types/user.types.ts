@@ -45,7 +45,7 @@ export interface IFreeLancer {
 }
 
 export interface IBuyerRequest {
-  profileImage?: string;
+  profilePicture?: string;
   firstName: string;
   lastName: string;
   gender: string;
@@ -146,16 +146,16 @@ export interface IEditCompanyBranchRequest {
 export interface IEditCompanyProfileRequest {
   userProfileId: number;
   profileType: string;
-  companyLogo: string,
-  companyName: string,
-  annualPurchasingVolume: string,
-  businessTypeList: undefined,
-  address: string,
-  city: string,
-  province: string,
-  country: string,
-  yearOfEstablishment: string,
-  totalNoOfEmployee: string,
+  companyLogo: string;
+  companyName: string;
+  annualPurchasingVolume: string;
+  businessTypeList: undefined;
+  address: string;
+  city: string;
+  province: string;
+  country: string;
+  yearOfEstablishment: string;
+  totalNoOfEmployee: string;
   aboutUs: string;
 }
 
@@ -187,3 +187,9 @@ export interface IEditCompanyBranch {
 }
 
 export interface IEditCompanyProfile extends IEditCompanyBranch {}
+
+export interface IUploadFile {
+  status: boolean;
+  message: string;
+  data: string;
+}
