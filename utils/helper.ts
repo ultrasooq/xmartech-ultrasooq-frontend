@@ -1,4 +1,5 @@
 import { DAYS_NAME_LIST, WEEKDAYS_LIST } from "./constants";
+import countryCodes, { CountryProperty } from "country-codes-list";
 
 export const parsedDays = (data: string) => {
   if (!data) return;
@@ -34,3 +35,8 @@ export const getCurrentDay = () => {
   const day = date.getDay();
   return WEEKDAYS_LIST[day];
 };
+
+export const countryObjs = countryCodes.customList(
+  "countryNameEn" as CountryProperty.countryNameEn,
+  "+{countryCallingCode}",
+);

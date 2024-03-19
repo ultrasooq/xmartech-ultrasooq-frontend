@@ -48,7 +48,7 @@ import React, { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCookie } from "cookies-next";
-import countryCodes, { CountryProperty } from "country-codes-list";
+import { countryObjs } from "@/utils/helper";
 
 const formSchema = z.object({
   profileImage: z.string().trim().optional(),
@@ -135,11 +135,6 @@ export default function ProfilePage() {
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const me = useMe(!!accessToken);
   const updateProfile = useUpdateProfile();
-
-  const countryObjs = countryCodes.customList(
-    "countryNameEn" as CountryProperty.countryNameEn,
-    "+{countryCallingCode}",
-  );
 
   const fieldArrayForPhoneNumber = useFieldArray({
     control: form.control,
