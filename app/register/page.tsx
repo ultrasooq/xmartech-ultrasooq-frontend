@@ -28,8 +28,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
-import countryCodes, { CountryProperty } from "country-codes-list";
 import { cn } from "@/lib/utils";
+import { countryObjs } from "@/utils/helper";
 
 const formSchema = z
   .object({
@@ -77,6 +77,9 @@ const formSchema = z
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",
       }),
+    cc: z.string().trim().min(2, {
+      message: "Country Code is required",
+    }),
     phoneNumber: z
       .string()
       .trim()
@@ -94,9 +97,6 @@ const formSchema = z
     }),
     acceptTerms: z.boolean().refine((val) => val, {
       message: "You must accept the terms",
-    }),
-    cc: z.string().trim().min(2, {
-      message: "Country Code is required",
     }),
   })
   .superRefine(({ initialPassword, password }, ctx) => {
@@ -131,14 +131,8 @@ export default function RegisterPage() {
   const handleToggleTermsModal = () => setIsTermsModalOpen(!isTermsModalOpen);
 
   const register = useRegister();
-  const countryObjs = countryCodes.customList(
-    "countryNameEn" as CountryProperty.countryNameEn,
-    "+{countryCallingCode}",
-  );
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    // console.log(formData);
-    // return;
     const response = await register.mutateAsync(formData);
 
     if (response?.status && response?.otp) {

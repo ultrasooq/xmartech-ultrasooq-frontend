@@ -32,7 +32,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
-import { getAmPm } from "@/utils/helper";
+import { countryObjs, getAmPm } from "@/utils/helper";
+import { cn } from "@/lib/utils";
 
 const formSchema = z
   .object({
@@ -63,15 +64,18 @@ const formSchema = z
     city: z.string().trim().min(2, { message: "City is required" }),
     province: z.string().trim().min(2, { message: "Province is required" }),
     country: z.string().trim().min(2, { message: "Country is required" }),
+    cc: z.string().trim().min(2, {
+      message: "Country Code is required",
+    }),
     contactNumber: z
       .string()
       .trim()
       .min(2, { message: "Branch Contact Number is required" })
-      .min(10, {
-        message: "Branch Contact Number must be equal to 10 digits",
+      .min(8, {
+        message: "Branch Contact Number must be minimum of 8 digits",
       })
-      .max(10, {
-        message: "Branch Contact Number must be equal to 10 digits",
+      .max(20, {
+        message: "Branch Contact Number cannot be more than 20 digits",
       }),
     contactName: z
       .string()
@@ -143,6 +147,7 @@ export default function EditBranchPage() {
       city: "",
       province: "",
       country: "",
+      cc: "",
       contactNumber: "",
       contactName: "",
       startTime: "",
@@ -386,25 +391,64 @@ export default function EditBranchPage() {
                       />
                     </div>
 
-                    <FormField
-                      control={form.control}
-                      name="contactNumber"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
-                          <FormLabel>Branch Contact Number</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              onWheel={(e) => e.currentTarget.blur()}
-                              placeholder="Branch Contact Number"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                    <div className="flex w-full md:w-6/12">
+                      <div className="mb-4 flex w-full max-w-[120px] flex-col justify-between md:pr-3.5">
+                        <Label
+                          className={cn(
+                            form.formState.errors.cc?.message
+                              ? "text-red-500"
+                              : "",
+                            "mb-3 mt-[6px]",
+                          )}
+                        >
+                          Country Code
+                        </Label>
+                        <Controller
+                          name="cc"
+                          control={form.control}
+                          render={({ field }) => (
+                            <select
                               {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            >
+                              <option value="">Select</option>
+                              {Object.keys(countryObjs).map((key) => (
+                                <option
+                                  key={key}
+                                  value={
+                                    countryObjs[key as keyof typeof countryObjs]
+                                  }
+                                >
+                                  {key}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        />
+                        <p className="text-[13px] font-medium text-red-500">
+                          {form.formState.errors.cc?.message ? "Required" : ""}
+                        </p>
+                      </div>
+                      <FormField
+                        control={form.control}
+                        name="contactNumber"
+                        render={({ field }) => (
+                          <FormItem className="mb-4 w-full md:pr-3.5">
+                            <FormLabel>Branch Contact Number</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Branch Contact Number"
+                                className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
                     <FormField
                       control={form.control}
