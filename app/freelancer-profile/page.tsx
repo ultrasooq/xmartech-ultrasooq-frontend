@@ -585,7 +585,7 @@ export default function FreelancerProfilePage() {
                                     [item.value]: e ? 1 : 0,
                                   });
                                 }}
-                                className="border-0 data-[state=checked]:!bg-dark-orange"
+                                className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                                 checked={
                                   !!field.value[
                                     item.value as keyof typeof field.value

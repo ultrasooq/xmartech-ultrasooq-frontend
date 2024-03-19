@@ -637,7 +637,7 @@ export default function EditBranchPage() {
                                     item.value as keyof typeof field.value
                                   ]
                                 }
-                                className="border-0 data-[state=checked]:!bg-dark-orange"
+                                className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
