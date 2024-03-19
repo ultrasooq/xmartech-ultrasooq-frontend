@@ -47,22 +47,22 @@ export default function CompanyProfileDetailsPage() {
 
           <div className="mt-12 w-full">
             <Tabs defaultValue="profile-info">
-              <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
+              <TabsList className="mb-1 sm:grid sm:min-h-[80px] sm:w-[560px] sm:grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7 h-auto w-full flex flex-wrap">
                 <TabsTrigger
                   value="profile-info"
-                  className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
+                  className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto w-full"
                 >
                   Profile Info
                 </TabsTrigger>
                 <TabsTrigger
                   value="ratings"
-                  className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
+                  className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto w-full"
                 >
                   Ratings & Reviews
                 </TabsTrigger>
                 <TabsTrigger
                   value="services"
-                  className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
+                  className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto w-full"
                 >
                   Services
                 </TabsTrigger>
