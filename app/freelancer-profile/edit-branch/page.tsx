@@ -247,6 +247,7 @@ export default function EditBranchPage() {
         city: userDetails.data?.data?.userBranch?.[0]?.city || "",
         province: userDetails.data?.data?.userBranch?.[0]?.province || "",
         country: userDetails.data?.data?.userBranch?.[0]?.country || "",
+        cc: userDetails.data?.data?.userBranch?.[0]?.cc || "",
         contactNumber:
           userDetails.data?.data?.userBranch?.[0]?.contactNumber || "",
         contactName: userDetails.data?.data?.userBranch?.[0]?.contactName || "",
@@ -419,7 +420,9 @@ export default function EditBranchPage() {
                                     countryObjs[key as keyof typeof countryObjs]
                                   }
                                 >
-                                  {key}
+                                  (
+                                  {countryObjs[key as keyof typeof countryObjs]}
+                                  ) {key}
                                 </option>
                               ))}
                             </select>

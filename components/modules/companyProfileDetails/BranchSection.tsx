@@ -112,7 +112,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                   </div>
                   <div className="mr-1 flex w-7/12  items-center justify-start sm:mr-0">
                     <p className="text-base font-medium leading-4 text-color-dark">
-                      {branchDetails?.contactNumber || "NA"}
+                      {branchDetails?.cc} {branchDetails?.contactNumber || "NA"}
                     </p>
                   </div>
                 </div>

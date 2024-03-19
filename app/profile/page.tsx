@@ -211,6 +211,7 @@ export default function ProfilePage() {
         lastName,
         gender,
         email,
+        cc,
         phoneNumber,
         dateOfBirth,
         userPhone,
@@ -223,6 +224,7 @@ export default function ProfilePage() {
           }))
         : [
             {
+              cc: cc || "",
               phoneNumber: phoneNumber || "",
             },
           ];
@@ -495,7 +497,9 @@ export default function ProfilePage() {
                                     countryObjs[key as keyof typeof countryObjs]
                                   }
                                 >
-                                  {key}
+                                  (
+                                  {countryObjs[key as keyof typeof countryObjs]}
+                                  ) {key}
                                 </option>
                               ))}
                             </select>

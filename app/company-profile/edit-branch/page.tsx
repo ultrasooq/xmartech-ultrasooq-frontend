@@ -255,6 +255,7 @@ export default function EditBranchPage() {
           city: branch?.city || "",
           province: branch?.province || "",
           country: branch?.country || "",
+          cc: branch?.cc || "",
           contactNumber: branch?.contactNumber || "",
           contactName: branch?.contactName || "",
           workingDays,
@@ -495,6 +496,7 @@ export default function EditBranchPage() {
                                   countryObjs[key as keyof typeof countryObjs]
                                 }
                               >
+                                ({countryObjs[key as keyof typeof countryObjs]}){" "}
                                 {key}
                               </option>
                             ))}
