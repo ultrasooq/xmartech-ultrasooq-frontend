@@ -49,9 +49,11 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCookie } from "cookies-next";
 import { countryObjs } from "@/utils/helper";
+import { useUploadFile } from "@/apis/queries/upload.queries";
 
 const formSchema = z.object({
-  profileImage: z.string().trim().optional(),
+  uploadImage: z.any().optional(),
+  profilePicture: z.string().trim().optional(),
   firstName: z
     .string()
     .trim()
@@ -112,7 +114,8 @@ export default function ProfilePage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      profileImage: "",
+      uploadImage: undefined,
+      profilePicture: "",
       firstName: "",
       lastName: "",
       gender: "",
@@ -133,7 +136,10 @@ export default function ProfilePage() {
     },
   });
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  const [preview, setPreview] = React.useState<FileList | null>();
+  const [previewUrl, setPreviewUrl] = React.useState<Blob | MediaSource>();
   const me = useMe(!!accessToken);
+  const uploadImage = useUploadFile();
   const updateProfile = useUpdateProfile();
 
   const fieldArrayForPhoneNumber = useFieldArray({
@@ -164,12 +170,34 @@ export default function ProfilePage() {
   const removeSocialLinks = (index: number) =>
     fieldArrayForSocialMedia.remove(index);
 
+  const handleUploadedFile = async (files: FileList | null) => {
+    if (files) {
+      console.log(files[0]);
+      const formData = new FormData();
+      formData.append("content", files[0]);
+      const response = await uploadImage.mutateAsync(formData);
+      if (response.status && response.data) {
+        return response.data;
+      }
+    }
+  };
+
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const data = {
       ...formData,
       phoneNumber: formData.phoneNumberList[0].phoneNumber,
       dateOfBirth: formData.dateOfBirth.toISOString(),
     };
+    formData.uploadImage = preview;
+    let getImageUrl;
+    if (formData.uploadImage) {
+      getImageUrl = await handleUploadedFile(formData.uploadImage);
+    }
+    delete data.uploadImage;
+    if (getImageUrl) {
+      data.profilePicture = getImageUrl;
+    }
+    console.log(data);
 
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
@@ -220,6 +248,7 @@ export default function ProfilePage() {
 
       const phoneNumberList = userPhone.length
         ? userPhone.map((item: any) => ({
+            cc: item?.cc,
             phoneNumber: item?.phoneNumber,
           }))
         : [
@@ -253,6 +282,12 @@ export default function ProfilePage() {
     }
   }, [me.data]);
 
+  useEffect(() => {
+    if (preview) {
+      setPreviewUrl(preview[0]);
+    }
+  }, [preview]);
+
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -281,27 +316,52 @@ export default function ProfilePage() {
                 >
                   <FormField
                     control={form.control}
-                    name="profileImage"
+                    name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-4 w-full">
                         <FormControl>
-                          <div className="relative m-auto flex h-44 w-44 flex-wrap items-center justify-center rounded-full border-2 border-dashed border-gray-300 text-center">
-                            <div className="text-sm font-medium leading-4 text-color-dark">
-                              <Image
-                                src="/images/camera.png"
-                                className="m-auto mb-3"
-                                width={29}
-                                height={29}
-                                alt="camera"
-                              />
-                              <span> Upload Image</span>
-                            </div>
+                          <div>
+                            <div className="relative m-auto flex h-44 w-44 flex-wrap items-center justify-center rounded-full border-2 border-dashed border-gray-300 text-center">
+                              {me.data?.data?.profilePicture || previewUrl ? (
+                                <div className="relative h-44 w-44 rounded-full border-2 border-dashed border-gray-300">
+                                  <Image
+                                    src={
+                                      me.data?.data?.profilePicture
+                                        ? me.data?.data?.profilePicture
+                                        : previewUrl
+                                          ? URL.createObjectURL(previewUrl)
+                                          : "/images/company-logo.png"
+                                    }
+                                    alt="profile"
+                                    fill
+                                    className="rounded-full"
+                                    priority
+                                  />
+                                </div>
+                              ) : null}
 
-                            <Input
-                              type="file"
-                              className="absolute h-full rounded-full bg-red-200 opacity-0"
-                              {...field}
-                            />
+                              <div className="absolute text-sm font-medium leading-4 text-color-dark">
+                                <Image
+                                  src="/images/camera.png"
+                                  className="m-auto mb-3"
+                                  width={29}
+                                  height={29}
+                                  alt="camera"
+                                />
+                                <span> Upload Image</span>
+                              </div>
+
+                              <Input
+                                type="file"
+                                className="absolute h-full rounded-full bg-red-200 opacity-0"
+                                {...field}
+                                onChange={(event) => {
+                                  setPreview(event.target.files);
+                                  // handleUploadedFile(event.target.files);
+                                }}
+                                id="uploadImage"
+                              />
+                            </div>
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -713,11 +773,11 @@ export default function ProfilePage() {
                   </p>
 
                   <Button
-                    disabled={updateProfile.isPending}
+                    disabled={updateProfile.isPending || uploadImage.isPending}
                     type="submit"
                     className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                   >
-                    {updateProfile.isPending ? (
+                    {updateProfile.isPending || uploadImage.isPending ? (
                       <>
                         <Image
                           src="/images/load.png"
