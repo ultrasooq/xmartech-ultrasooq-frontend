@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
@@ -14,16 +14,32 @@ import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
 import { getInitials } from "@/utils/helper";
+// import { useCategory } from "@/apis/queries/category.queries";
+import { categoryResponse } from "@/utils/response";
+import { Button } from "@/components/ui/button";
+import { useClickOutside } from "use-events";
+
+const iconList = [
+  "/images/menu-icon-home.svg",
+  "/images/menu-icon-trending.svg",
+  "/images/menu-icon-buy.svg",
+  "/images/menu-icon-pos.svg",
+  "/images/menu-icon-rfq.svg",
+  "/images/menu-icon-service.svg",
+];
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [menuId, setMenuId] = useState();
+  const [categoryId, setCategoryId] = useState();
+  const [subCategoryId, setSubCategoryId] = useState();
 
   const userDetails = useMe(!!accessToken);
-
+  // const categoryQuery = useCategory(!!accessToken);
   const memoizedInitials = useMemo(
     () =>
       getInitials(
@@ -32,6 +48,53 @@ const Header = () => {
       ),
     [userDetails.data?.data?.firstName, userDetails.data?.data?.lastName],
   );
+
+  const memoizedMenu = useMemo(() => {
+    let tempArr: any = [];
+    if (categoryResponse.data) {
+      tempArr = categoryResponse.data?.children.map(
+        (item: any, index: number) => {
+          return {
+            name: item.name,
+            id: item.id,
+            icon: iconList[index],
+          };
+        },
+      );
+    }
+
+    return tempArr || [];
+  }, [categoryResponse.data]);
+
+  const memoizedCategory = useMemo(() => {
+    let tempArr: any = [];
+    if (categoryResponse.data) {
+      tempArr = categoryResponse.data?.children?.find(
+        (item) => item.id === menuId,
+      )?.children;
+    }
+    return tempArr || [];
+  }, [menuId]);
+
+  const memoizedSubCategory = useMemo(() => {
+    let tempArr: any = [];
+    if (memoizedCategory.length) {
+      tempArr = memoizedCategory?.find(
+        (item: any) => item.id === categoryId,
+      )?.children;
+    }
+    return tempArr || [];
+  }, [categoryId, menuId]);
+
+  const memoizedSubSubCategory = useMemo(() => {
+    let tempArr: any = [];
+    if (memoizedSubCategory.length) {
+      tempArr = memoizedSubCategory?.find(
+        (item: any) => item.id === subCategoryId,
+      )?.children;
+    }
+    return tempArr || [];
+  }, [subCategoryId, categoryId, menuId]);
 
   const handleProfile = () => {
     switch (userDetails?.data?.data?.tradeRole) {
@@ -51,14 +114,13 @@ const Header = () => {
     }
   };
 
-  const handleChangePasswordPage = () => router.push("/change-password");
-
   const handleLogout = () => {
     setIsLoggedIn(false);
     deleteCookie(PUREMOON_TOKEN_KEY);
     queryClient.clear();
     router.push("/login");
   };
+  const handleChangePasswordPage = () => router.push("/change-password");
   const handleLogin = () => router.push("/login");
   const handleRegister = () => router.push("/register");
 
@@ -68,8 +130,19 @@ const Header = () => {
     }
   }, [pathname, accessToken]);
 
+  const wrapperRef = useRef(null);
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) =>
+    console.log(event),
+  );
+
+  useEffect(() => {
+    if (isClickedOutside) {
+      setCategoryId(undefined);
+    }
+  }, [isClickedOutside]);
+
   return (
-    <header className="w-full">
+    <header className="relative w-full">
       <div className="w-full bg-dark-cyan">
         <div className="container m-auto px-3">
           <div className="hidden sm:hidden md:flex md:gap-x-2.5">
@@ -101,6 +174,7 @@ const Header = () => {
               </ul>
             </div>
           </div>
+
           <div className="flex flex-wrap sm:flex sm:flex-wrap md:flex md:flex-wrap">
             <div className="order-1 flex w-5/12 items-center py-4 sm:order-1 sm:w-5/12 md:order-1 md:w-2/12 lg:w-1/6">
               <a href="#">
@@ -219,54 +293,69 @@ const Header = () => {
               <img src="images/humberger-white-icon.svg" />
             </div>
           </div>
-          <div className="fixed left-0 top-0 z-20 hidden h-full w-full bg-dark-cyan px-3 md:static md:flex md:px-0">
-            <ul className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 md:flex-row md:justify-between">
-              <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
-                <a href="/home" className="flex gap-x-2">
-                  <img src="images/menu-icon-home.svg" /> Home
-                </a>
-              </li>
-              <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
-                <a href="#0" className="flex gap-x-2">
-                  <img src="images/menu-icon-trending.svg" /> Trending & Hot
-                  Deals
-                </a>
-              </li>
-              <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
-                <a href="#0" className="flex gap-x-2">
-                  <img src="images/menu-icon-buy.svg" /> buygroup
-                </a>
-              </li>
-              <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
-                <a href="#0" className="flex gap-x-2">
-                  <img src="images/menu-icon-rfq.svg" /> rfq
-                </a>
-              </li>
-              <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
-                <a href="#0" className="flex gap-x-2">
-                  <img src="images/menu-icon-pos.svg" /> pos store
-                </a>
-              </li>
-              <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
-                <a href="#0" className="flex gap-x-2">
-                  <img src="images/menu-icon-service.svg" /> Service
-                </a>
-              </li>
-            </ul>
+
+          <div className="hidden h-full w-full px-3 md:flex md:px-0">
+            <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 md:flex-row md:justify-start">
+              {memoizedMenu.map((item: any) => (
+                <Button
+                  key={item.id}
+                  onClick={() => {
+                    setMenuId(item.id);
+                    setCategoryId(undefined);
+                  }}
+                  variant="link"
+                  className="flex cursor-pointer px-10 py-3 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
+                >
+                  <p className="flex gap-x-3">
+                    <img src={item.icon} /> {item?.name}
+                  </p>
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
       <div className="w-full border-b border-solid border-gray-300 bg-white">
         <div className="container m-auto px-3">
-          <div className="flex">
-            <div className="flex w-5/12 py-3 md:w-2/6">
-              <img src="images/humberger-icon.svg" />
-              <span className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
-                All Categories
-              </span>
-              <img src="images/humberger-down-icon.svg" />
+          <div className="relative flex flex-row">
+            <div className="flex flex-1 gap-x-5">
+              <div className="flex items-center py-3">
+                <div>
+                  <Image
+                    src="/images/humberger-icon.svg"
+                    alt="hamburger-icon"
+                    width={16}
+                    height={14}
+                  />
+                </div>
+                <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
+                  All Categories
+                </p>
+                <div>
+                  <Image
+                    src="/images/humberger-down-icon.svg"
+                    alt="hamburger-down-icon"
+                    width={13}
+                    height={8}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-x-5">
+                {memoizedCategory.map((item: any) => (
+                  <Button
+                    key={item.id}
+                    onClick={() => setCategoryId(item.id)}
+                    variant="link"
+                    className="py-3 text-sm font-semibold capitalize text-color-dark sm:text-base"
+                  >
+                    <p>{item.name}</p>
+                  </Button>
+                ))}
+              </div>
             </div>
-            <div className="flex w-7/12 items-center justify-end md:w-4/6">
+
+            <div className="flex items-center justify-end">
               <ul className="flex items-center justify-end gap-x-4">
                 <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
                   <a href="#" className="text-light-gray">
@@ -280,6 +369,45 @@ const Header = () => {
                 </li>
               </ul>
             </div>
+          </div>
+          <div className="relative h-1" ref={wrapperRef}>
+            {categoryId ? (
+              <div className="absolute top-2 z-10 h-60 w-full rounded-sm border border-solid border-gray-300 bg-white p-1 shadow-md">
+                <div className="flex flex-row gap-x-2">
+                  {memoizedSubCategory.length ? (
+                    <div className="flex w-1/2 flex-col items-start border border-solid border-gray-300 p-3">
+                      {memoizedSubCategory.map((item: any) => (
+                        <Button
+                          key={item.id}
+                          variant="link"
+                          className="py-3 text-sm font-semibold capitalize text-color-dark sm:text-base"
+                          onClick={() => setSubCategoryId(item.id)}
+                        >
+                          <p>{item.name}</p>
+                        </Button>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {memoizedSubSubCategory.length ? (
+                    <div className="flex w-1/2 flex-col items-start border border-solid border-gray-300 p-3">
+                      {memoizedSubSubCategory.map((item: any) => (
+                        <Button
+                          key={item.id}
+                          variant="link"
+                          className="py-3 text-sm font-semibold capitalize text-color-dark sm:text-base"
+                        >
+                          <p>{item.name}</p>
+                        </Button>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <div className="w-1/2"></div>
+                  <div className="w-1/2"></div>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
