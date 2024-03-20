@@ -48,7 +48,7 @@ export default function ForgetPasswordPage() {
 
     if (response?.status && response?.otp) {
       toast({
-        title: "Reset OTP Link Sent",
+        title: "OTP Sent",
         description: response?.message,
       });
 
@@ -57,7 +57,7 @@ export default function ForgetPasswordPage() {
       router.push("/password-reset-verify");
     } else {
       toast({
-        title: "Reset OTP Failed",
+        title: "OTP Failed",
         description: response?.message,
       });
     }

@@ -106,14 +106,14 @@ export default function PasswordResetVerifyPage() {
 
     if (response.status && response.otp) {
       toast({
-        title: "Reset OTP Link Sent",
+        title: "OTP Sent",
         description: response?.message,
       });
       setCount(600);
       setOtp(new Array(4).fill(""));
     } else {
       toast({
-        title: "Reset OTP Failed",
+        title: "OTP Failed",
         description: response?.message,
       });
     }
