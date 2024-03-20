@@ -50,6 +50,7 @@ import { z } from "zod";
 import { getCookie } from "cookies-next";
 import { countryObjs } from "@/utils/helper";
 import { useUploadFile } from "@/apis/queries/upload.queries";
+import validator from "validator";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -96,13 +97,8 @@ const formSchema = z.object({
   ),
   socialLinkList: z.array(
     z.object({
-      linkType: z.string().trim().min(2, { message: "Type is required" }),
-      link: z
-        .string()
-        .trim()
-        .min(2, { message: "Link is required" })
-        .max(50, { message: "Link must be less than 50 characters" })
-        .url({ message: "Invalid URL" }),
+      linkType: z.string().trim(),
+      link: z.string().trim(),
     }),
   ),
   dateOfBirth: z.date({ required_error: "Date of Birth is required" }),
@@ -197,7 +193,21 @@ export default function ProfilePage() {
     if (getImageUrl) {
       data.profilePicture = getImageUrl;
     }
-    console.log(data);
+
+    data.socialLinkList = data.socialLinkList.filter(
+      (link) => link.link.trim() !== "" && link.linkType.trim() !== "",
+    );
+
+    if (
+      data.socialLinkList.length &&
+      data.socialLinkList.some((link) => !validator.isURL(link.link))
+    ) {
+      form.setError("socialLinkList", {
+        type: "custom",
+        message: "Invalid URL",
+      });
+      return;
+    }
 
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
@@ -767,9 +777,7 @@ export default function ProfilePage() {
                   ))}
 
                   <p className="mb-3 text-[13px] text-red-500">
-                    {form.formState.errors.socialLinkList?.length
-                      ? "Social Link is required"
-                      : null}
+                    {form.formState.errors.socialLinkList?.message}
                   </p>
 
                   <Button
