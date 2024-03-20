@@ -50,7 +50,7 @@ import { z } from "zod";
 import { getCookie } from "cookies-next";
 import { countryObjs } from "@/utils/helper";
 import { useUploadFile } from "@/apis/queries/upload.queries";
-import isEmail from "validator/lib/isEmail";
+import validator from "validator";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -200,7 +200,7 @@ export default function ProfilePage() {
 
     if (
       data.socialLinkList.length &&
-      data.socialLinkList.some((link) => !isEmail(link.link))
+      data.socialLinkList.some((link) => !validator.isURL(link.link))
     ) {
       form.setError("socialLinkList", {
         type: "custom",
