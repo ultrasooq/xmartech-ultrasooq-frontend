@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
 import { getInitials } from "@/utils/helper";
@@ -159,12 +158,21 @@ const Header = () => {
                   {isLoggedIn ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger>
-                        <Avatar className="h-[30px] w-[30px]">
-                          <AvatarImage src="null" alt="image-icon" />
-                          <AvatarFallback className="p-2 text-lg font-bold">
-                            {memoizedInitials}
-                          </AvatarFallback>
-                        </Avatar>
+                        {userDetails?.data?.data?.profilePicture ? (
+                          <Image
+                            alt="image-icon"
+                            src={userDetails?.data?.data?.profilePicture}
+                            height={44}
+                            width={44}
+                            className="rounded-full"
+                          />
+                        ) : (
+                          <div className="h-[44px] w-[44px] rounded-full bg-gray-300">
+                            <p className="p-2 text-lg font-bold">
+                              {memoizedInitials}
+                            </p>
+                          </div>
+                        )}
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         <DropdownMenuItem
@@ -187,9 +195,6 @@ const Header = () => {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (
-                    // <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
-                    //   <span onClick={handleLogout}>Logout</span>
-                    // </a>
                     <>
                       <Image
                         src="/images/login.svg"
