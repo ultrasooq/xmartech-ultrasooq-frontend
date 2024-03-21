@@ -1,9 +1,17 @@
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FREELANCER_UNIQUE_ID } from "@/utils/constants";
-import { getCurrentDay, getInitials, parsedDays } from "@/utils/helper";
+import { FREELANCER_UNIQUE_ID, HOURS_24_FORMAT } from "@/utils/constants";
+import {
+  getAmPm,
+  getCurrentDay,
+  getCurrentTime,
+  getInitials,
+  parsedDays,
+} from "@/utils/helper";
 import { cn } from "@/lib/utils";
+import { useUpdateFreelancerBranch } from "@/apis/queries/freelancer.queries";
+import { useToast } from "@/components/ui/use-toast";
 
 type ProfileCardProps = {
   userDetails: any;
@@ -11,31 +19,49 @@ type ProfileCardProps = {
 };
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
+  const { toast } = useToast();
+  const updateFreelancerBranch = useUpdateFreelancerBranch();
+
   const memoizedInitials = useMemo(
     () => getInitials(userDetails?.firstName, userDetails?.lastName),
     [userDetails?.firstName, userDetails?.lastName],
   );
 
   const workingDays = userDetails?.userBranch?.[0]?.workingDays;
+  const startTime = userDetails?.userBranch?.[0]?.startTime;
+  const endTime = userDetails?.userBranch?.[0]?.endTime;
 
   const isOnlineToday = useMemo(() => {
-    // console.log(userDetails?.userBranch);
-    const getStartTime = userDetails?.userBranch?.[0]?.startTime;
-    const getEndTime = userDetails?.userBranch?.[0]?.endTime;
-    const getCurrentTime = new Date().toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    });
-
-    console.log(getStartTime, getEndTime, getCurrentTime);
-
     const getActiveDays = parsedDays(workingDays)?.includes(getCurrentDay())
       ? true
       : false;
+    const isActiveInCurrentDay =
+      startTime <= getCurrentTime && endTime >= getCurrentTime;
+    return getActiveDays && isActiveInCurrentDay;
+  }, [workingDays, startTime, endTime]);
 
-    return getActiveDays;
-  }, [workingDays]);
+  const handleTimeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log(e.target.value);
+    const data: { branchId: number; endTime: string } = {
+      branchId: userDetails?.userBranch?.[0]?.id,
+      endTime: e.target.value,
+    };
+    console.log(data);
+    // return;
+
+    const response = await updateFreelancerBranch.mutateAsync(data);
+    if (response.status && response.data) {
+      toast({
+        title: "Time Update Successful",
+        description: response.message,
+      });
+    } else {
+      toast({
+        title: "Time Update Failed",
+        description: response.message,
+      });
+    }
+  };
 
   return (
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
@@ -138,15 +164,38 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
               </span>
             </p>
           </div>
-          <div className="my-2 flex flex-wrap items-center justify-between">
-            <span
-              className={cn(
-                "mr-2.5 text-sm font-bold leading-6",
-                isOnlineToday ? "text-light-green" : "text-red-500",
-              )}
+          <div className="flex">
+            <div className="my-2 flex flex-wrap items-center justify-between">
+              <span
+                className={cn(
+                  "mr-2.5 text-sm font-bold leading-6",
+                  isOnlineToday ? "text-light-green" : "text-red-500",
+                )}
+              >
+                {isOnlineToday ? "Online" : "Offline"}
+              </span>
+            </div>
+            <select
+              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+              onChange={handleTimeChange}
             >
-              {isOnlineToday ? "Online" : "Offline"}
-            </span>
+              <option value="">{isOnlineToday ? "Offline" : "Online"}</option>
+              {HOURS_24_FORMAT.map((hour: string, index: number) => (
+                <option
+                  key={index}
+                  value={hour}
+                  disabled={
+                    !isOnlineToday
+                      ? getCurrentTime > hour
+                      : isOnlineToday
+                        ? getCurrentTime < hour
+                        : false
+                  }
+                >
+                  {getAmPm(hour)}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
