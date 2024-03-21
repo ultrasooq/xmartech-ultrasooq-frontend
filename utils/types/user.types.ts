@@ -1,4 +1,4 @@
-export interface IFreeLancerRequest {
+export interface IFreelancerRequest {
   aboutUs: string;
   branchList: {
     address: string;
@@ -17,7 +17,7 @@ export interface IFreeLancerRequest {
   }[];
 }
 
-export interface IFreeLancer {
+export interface IFreelancer {
   data: any;
   status: boolean;
   message: string;
@@ -117,6 +117,13 @@ export interface IEditFreelancerBranchRequest {
   profileType: string;
   mainOffice: number;
 }
+
+export type TUnionEditFreelancerBranchRequest =
+  | IEditFreelancerBranchRequest
+  | {
+      branchId: number;
+      endTime: string;
+    };
 
 export interface IEditCompanyBranchRequest {
   branchId: number;
