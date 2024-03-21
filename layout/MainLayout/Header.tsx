@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
-import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { PUREMOON_TOKEN_KEY, menuBarIconList } from "@/utils/constants";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,19 +14,9 @@ import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
 import { getInitials } from "@/utils/helper";
-// import { useCategory } from "@/apis/queries/category.queries";
-import { categoryResponse } from "@/utils/response";
+import { useCategory } from "@/apis/queries/category.queries";
 import { Button } from "@/components/ui/button";
 import { useClickOutside } from "use-events";
-
-const iconList = [
-  "/images/menu-icon-home.svg",
-  "/images/menu-icon-trending.svg",
-  "/images/menu-icon-buy.svg",
-  "/images/menu-icon-pos.svg",
-  "/images/menu-icon-rfq.svg",
-  "/images/menu-icon-service.svg",
-];
 
 const Header = () => {
   const router = useRouter();
@@ -39,7 +29,8 @@ const Header = () => {
   const [subCategoryId, setSubCategoryId] = useState();
 
   const userDetails = useMe(!!accessToken);
-  // const categoryQuery = useCategory(!!accessToken);
+  const categoryQuery = useCategory();
+
   const memoizedInitials = useMemo(
     () =>
       getInitials(
@@ -51,26 +42,26 @@ const Header = () => {
 
   const memoizedMenu = useMemo(() => {
     let tempArr: any = [];
-    if (categoryResponse.data) {
-      tempArr = categoryResponse.data?.children.map(
+    if (categoryQuery.data?.data) {
+      tempArr = categoryQuery.data.data?.children.map(
         (item: any, index: number) => {
           return {
             name: item.name,
             id: item.id,
-            icon: iconList[index],
+            icon: menuBarIconList[index],
           };
         },
       );
     }
 
     return tempArr || [];
-  }, [categoryResponse.data]);
+  }, [categoryQuery.data?.data]);
 
   const memoizedCategory = useMemo(() => {
     let tempArr: any = [];
-    if (categoryResponse.data) {
-      tempArr = categoryResponse.data?.children?.find(
-        (item) => item.id === menuId,
+    if (categoryQuery.data?.data) {
+      tempArr = categoryQuery.data.data?.children?.find(
+        (item: { id: number }) => item.id === menuId,
       )?.children;
     }
     return tempArr || [];
@@ -132,7 +123,6 @@ const Header = () => {
 
   const wrapperRef = useRef(null);
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
-  // console.log(event),
 
   useEffect(() => {
     if (isClickedOutside) {
