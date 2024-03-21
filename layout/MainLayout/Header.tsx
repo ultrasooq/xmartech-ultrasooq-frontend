@@ -131,9 +131,8 @@ const Header = () => {
   }, [pathname, accessToken]);
 
   const wrapperRef = useRef(null);
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) =>
-    console.log(event),
-  );
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  // console.log(event),
 
   useEffect(() => {
     if (isClickedOutside) {
@@ -372,7 +371,7 @@ const Header = () => {
           </div>
           <div className="relative h-1" ref={wrapperRef}>
             {categoryId ? (
-              <div className="absolute top-2 z-10 h-60 w-full rounded-sm border border-solid border-gray-300 bg-white p-1 shadow-md">
+              <div className="absolute top-2 z-50 h-60 w-full rounded-sm border border-solid border-gray-300 bg-white p-1 shadow-md">
                 <div className="flex flex-row gap-x-2">
                   {memoizedSubCategory.length ? (
                     <div className="flex w-1/2 flex-col items-start border border-solid border-gray-300 p-3">
