@@ -1,3 +1,4 @@
+import Tiptap from "@/components/shared/Tiptap";
 import React from "react";
 
 const DescriptionAndSpecificationSection = () => {
@@ -17,6 +18,7 @@ const DescriptionAndSpecificationSection = () => {
               <label className="text-sm font-medium leading-none text-color-dark">
                 Description
               </label>
+              <Tiptap />
               <textarea className="!h-[200px] w-full resize-none rounded border !border-gray-300 px-3 py-1 text-sm focus:outline-none"></textarea>
             </div>
           </div>
@@ -25,6 +27,7 @@ const DescriptionAndSpecificationSection = () => {
               <label className="text-sm font-medium leading-none text-color-dark">
                 Specification
               </label>
+              <Tiptap />
               <textarea className="!h-[200px] w-full resize-none rounded border !border-gray-300 px-3 py-1 text-sm focus:outline-none"></textarea>
             </div>
           </div>
