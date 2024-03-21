@@ -40,3 +40,9 @@ export const countryObjs = countryCodes.customList(
   "countryNameEn" as CountryProperty.countryNameEn,
   "+{countryCallingCode}",
 );
+
+export const getCurrentTime = new Date().toLocaleTimeString("en-US", {
+  hour: "numeric",
+  minute: "numeric",
+  hour12: false,
+});

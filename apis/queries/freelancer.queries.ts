@@ -6,16 +6,16 @@ import {
   updateFreelancerProfile,
 } from "../requests/freelancer.requests";
 import {
-  IEditFreelancerBranchRequest,
   IEditFreelancerProfileRequest,
-  IFreeLancer,
-  IFreeLancerRequest,
+  IFreelancer,
+  IFreelancerRequest,
+  TUnionEditFreelancerBranchRequest,
 } from "@/utils/types/user.types";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useCreateFreelancerProfile = () => {
   const queryClient = useQueryClient();
-  return useMutation<IFreeLancer, APIResponseError, IFreeLancerRequest>({
+  return useMutation<IFreelancer, APIResponseError, IFreelancerRequest>({
     mutationFn: async (payload) => {
       const res = await createFreelancerProfile(payload);
       return res.data;
@@ -34,7 +34,7 @@ export const useCreateFreelancerProfile = () => {
 export const useUpdateFreelancerProfile = () => {
   const queryClient = useQueryClient();
   return useMutation<
-    IFreeLancer,
+    IFreelancer,
     APIResponseError,
     IEditFreelancerProfileRequest
   >({
@@ -56,9 +56,9 @@ export const useUpdateFreelancerProfile = () => {
 export const useUpdateFreelancerBranch = () => {
   const queryClient = useQueryClient();
   return useMutation<
-    IFreeLancer,
+    IFreelancer,
     APIResponseError,
-    IEditFreelancerBranchRequest
+    TUnionEditFreelancerBranchRequest
   >({
     mutationFn: async (payload) => {
       const res = await updateFreelancerBranch(payload);

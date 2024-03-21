@@ -1,7 +1,12 @@
 import React, { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
-import { getCurrentDay, getInitials, parsedDays } from "@/utils/helper";
+import {
+  getCurrentDay,
+  getCurrentTime,
+  getInitials,
+  parsedDays,
+} from "@/utils/helper";
 import { COMPANY_UNIQUE_ID } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 
@@ -17,14 +22,26 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
   );
 
   const isOnlineToday = useMemo(() => {
-    // console.log(userDetails?.userBranch);
     const getActiveDays = userDetails?.userBranch
       ?.map((item: any) => {
         return parsedDays(item?.workingDays)?.includes(getCurrentDay());
       })
       .includes(true);
-    return getActiveDays;
-  }, [userDetails?.userBranch?.length]);
+
+    const isActiveInCurrentDay = userDetails?.userBranch
+      ?.map((item: any) => {
+        return (
+          item?.startTime <= getCurrentTime && item?.endTime >= getCurrentTime
+        );
+      })
+      .includes(true);
+
+    return getActiveDays && isActiveInCurrentDay;
+  }, [
+    userDetails?.userBranch?.map((item: any) => item?.workingDays),
+    userDetails?.userBranch?.map((item: any) => item?.startTime),
+    userDetails?.userBranch?.map((item: any) => item?.endTime),
+  ]);
 
   return (
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
