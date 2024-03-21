@@ -2,7 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["puremoon.s3.amazonaws.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "puremoon.s3.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
   },
 };
 
