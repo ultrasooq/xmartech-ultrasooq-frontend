@@ -396,7 +396,7 @@ export default function EditBranchPage() {
                           <FormControl>
                             <Input
                               placeholder="Address"
-                              className="!h-[54px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -422,7 +422,7 @@ export default function EditBranchPage() {
                         <FormControl>
                           <Input
                             placeholder="City"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -440,7 +440,7 @@ export default function EditBranchPage() {
                         <FormControl>
                           <Input
                             placeholder="Province"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -457,7 +457,7 @@ export default function EditBranchPage() {
                       render={({ field }) => (
                         <select
                           {...field}
-                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
                           <option value="">Select Country</option>
                           <option value="USA">USA</option>
@@ -486,7 +486,7 @@ export default function EditBranchPage() {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                           >
                             <option value="">Select</option>
                             {Object.keys(countryObjs).map((key) => (
@@ -518,7 +518,7 @@ export default function EditBranchPage() {
                               type="number"
                               onWheel={(e) => e.currentTarget.blur()}
                               placeholder="Branch Contact Number"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -537,7 +537,7 @@ export default function EditBranchPage() {
                         <FormControl>
                           <Input
                             placeholder="Branch Contact Name"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -568,7 +568,7 @@ export default function EditBranchPage() {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
+                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                           >
                             <option value="">Select</option>
                             {HOURS_24_FORMAT.map(
@@ -596,7 +596,7 @@ export default function EditBranchPage() {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
+                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                           >
                             <option value="">Select</option>
                             {HOURS_24_FORMAT.map(
@@ -680,7 +680,7 @@ export default function EditBranchPage() {
             <Button
               disabled={updateCompanyBranch.isPending}
               type="submit"
-              className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+              className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
             >
               {updateCompanyBranch.isPending ? (
                 <>

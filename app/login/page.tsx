@@ -111,7 +111,7 @@ export default function LoginPage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your Email or Phone number or ID"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -130,7 +130,7 @@ export default function LoginPage() {
                           <Input
                             type="password"
                             placeholder="**********"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -167,7 +167,7 @@ export default function LoginPage() {
                     <Button
                       disabled={login.isPending}
                       type="submit"
-                      className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                      className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
                       {login.isPending ? (
                         <>

@@ -222,7 +222,7 @@ export default function EditProfilePage() {
                           <FormControl>
                             <Input
                               placeholder="Company Name"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -239,7 +239,7 @@ export default function EditProfilePage() {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                           >
                             {memoizedTags.map(
                               (item: { label: string; value: number }) => (
@@ -267,7 +267,7 @@ export default function EditProfilePage() {
                               placeholder="Annual Purchasing Volume"
                               type="number"
                               onWheel={(e) => e.currentTarget.blur()}
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -296,7 +296,7 @@ export default function EditProfilePage() {
                           <FormControl>
                             <Input
                               placeholder="Address"
-                              className="!h-[54px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -322,7 +322,7 @@ export default function EditProfilePage() {
                         <FormControl>
                           <Input
                             placeholder="City"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -340,7 +340,7 @@ export default function EditProfilePage() {
                         <FormControl>
                           <Input
                             placeholder="Province"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -357,7 +357,7 @@ export default function EditProfilePage() {
                       render={({ field }) => (
                         <select
                           {...field}
-                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
                           <option value="">Select Country</option>
                           <option value="USA">USA</option>
@@ -385,7 +385,7 @@ export default function EditProfilePage() {
                       render={({ field }) => (
                         <select
                           {...field}
-                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
                           <option value="1990">1990</option>
                           <option value="1991">1991</option>
@@ -407,7 +407,7 @@ export default function EditProfilePage() {
                       render={({ field }) => (
                         <select
                           {...field}
-                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
                           <option value="1000">1000</option>
                           <option value="2000">2000</option>
@@ -443,7 +443,7 @@ export default function EditProfilePage() {
             <Button
               disabled={updateCompanyProfile.isPending}
               type="submit"
-              className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+              className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
             >
               {updateCompanyProfile.isPending ? (
                 <>

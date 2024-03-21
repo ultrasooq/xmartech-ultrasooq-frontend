@@ -223,7 +223,7 @@ export default function PasswordResetVerifyPage() {
                         passwordResetVerify.isPending || resendOtp.isPending
                       }
                       type="submit"
-                      className="m-auto h-14 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                      className="m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
                       {passwordResetVerify.isPending ? (
                         <>

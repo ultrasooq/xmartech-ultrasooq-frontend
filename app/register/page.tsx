@@ -267,7 +267,7 @@ export default function RegisterPage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your First Name"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -285,7 +285,7 @@ export default function RegisterPage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your Last Name"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -303,7 +303,7 @@ export default function RegisterPage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your Email Address"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -322,7 +322,7 @@ export default function RegisterPage() {
                           <Input
                             type="password"
                             placeholder="Enter Your Login Password"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -341,7 +341,7 @@ export default function RegisterPage() {
                           <Input
                             type="password"
                             placeholder="Enter Your Login Password Again"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -368,7 +368,7 @@ export default function RegisterPage() {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                           >
                             <option value="">Select</option>
                             {Object.keys(countryObjs).map((key) => (
@@ -401,7 +401,7 @@ export default function RegisterPage() {
                               type="number"
                               onWheel={(e) => e.currentTarget.blur()}
                               placeholder="Enter Your Phone Number"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -455,7 +455,7 @@ export default function RegisterPage() {
                     <Button
                       disabled={register.isPending}
                       type="submit"
-                      className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                      className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
                       {register.isPending ? (
                         <>
