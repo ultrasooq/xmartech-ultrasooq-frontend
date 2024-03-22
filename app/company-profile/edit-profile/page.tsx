@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useUpdateCompanyProfile } from "@/apis/queries/company.queries";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -28,8 +28,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
 import { Label } from "@/components/ui/label";
+import { useUploadFile } from "@/apis/queries/upload.queries";
 
 const formSchema = z.object({
+  uploadImage: z.any().optional(),
+  logo: z.string().trim().optional(),
   companyName: z
     .string()
     .trim()
@@ -74,6 +77,8 @@ export default function EditProfilePage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      uploadImage: undefined,
+      logo: "",
       profileType: "COMPANY", // dont remove value
       companyLogo: "",
       companyName: "",
@@ -88,9 +93,22 @@ export default function EditProfilePage() {
       aboutUs: "",
     },
   });
+  const [imageFile, setImageFile] = useState<FileList | null>();
   const userDetails = useMe();
   const tagsQuery = useTags();
+  const upload = useUploadFile();
   const updateCompanyProfile = useUpdateCompanyProfile();
+
+  const handleUploadedFile = async (files: FileList | null) => {
+    if (files) {
+      const formData = new FormData();
+      formData.append("content", files[0]);
+      const response = await upload.mutateAsync(formData);
+      if (response.status && response.data) {
+        return response.data;
+      }
+    }
+  };
 
   const onSubmit = async (formData: any) => {
     let data = {
@@ -99,6 +117,17 @@ export default function EditProfilePage() {
       userProfileId: userDetails.data?.data?.userProfile?.[0]?.id as number,
     };
 
+    formData.uploadImage = imageFile;
+    let getImageUrl;
+    if (formData.uploadImage) {
+      getImageUrl = await handleUploadedFile(formData.uploadImage);
+    }
+    if (getImageUrl) {
+      data.logo = getImageUrl;
+    }
+    delete data.uploadImage;
+    console.log(data);
+    // return;
     const response = await updateCompanyProfile.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -129,6 +158,7 @@ export default function EditProfilePage() {
       const userProfile = userDetails.data?.data?.userProfile?.[0];
 
       form.reset({
+        logo: userProfile?.logo || "",
         address: userProfile?.address || "",
         city: userProfile?.city || "",
         province: userProfile?.province || "",
@@ -143,7 +173,7 @@ export default function EditProfilePage() {
           undefined,
       });
     }
-  }, []);
+  }, [userDetails.data?.data?.userProfile?.length]);
 
   return (
     <section className="relative w-full py-7">
@@ -179,32 +209,62 @@ export default function EditProfilePage() {
                 <div className="flex flex-wrap">
                   <FormField
                     control={form.control}
-                    name="companyLogo"
+                    name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5">
                         <FormLabel>Upload Company Logo</FormLabel>
                         <FormControl>
-                          <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
-                            <div className="text-sm font-medium leading-4 text-color-dark">
-                              <Image
-                                src="/images/upload.png"
-                                className="m-auto mb-3"
-                                width={30}
-                                height={30}
-                                alt="camera"
-                              />
-                              <span> Drop your Company Logo here, or </span>
-                              <span className="text-blue-500">browse</span>
-                              <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                (.jpg or .png only. Up to 16mb)
-                              </p>
-                            </div>
+                          <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
+                            <div className="relative h-full w-full">
+                              {imageFile ||
+                              userDetails.data?.data?.userProfile?.[0]?.logo ? (
+                                <Image
+                                  src={
+                                    imageFile
+                                      ? URL.createObjectURL(imageFile[0])
+                                      : userDetails.data?.data?.userProfile?.[0]
+                                            ?.logo
+                                        ? userDetails.data?.data
+                                            ?.userProfile?.[0]?.logo
+                                        : "/images/company-logo.png"
+                                  }
+                                  alt="profile"
+                                  fill
+                                  priority
+                                />
+                              ) : (
+                                <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                  <div className="flex h-full flex-col items-center justify-center">
+                                    <Image
+                                      src="/images/upload.png"
+                                      className="mb-3"
+                                      width={30}
+                                      height={30}
+                                      alt="camera"
+                                    />
+                                    <span>
+                                      Drop your Company Logo here, or{" "}
+                                    </span>
+                                    <span className="text-blue-500">
+                                      browse
+                                    </span>
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                      (.jpg or .png only. Up to 16mb)
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
 
-                            <Input
-                              type="file"
-                              className="absolute h-full rounded-full bg-red-200 opacity-0"
-                              {...field}
-                            />
+                              <Input
+                                type="file"
+                                className="!bottom-0 h-64 !w-full opacity-0"
+                                {...field}
+                                onChange={(event) => {
+                                  setImageFile(event.target.files);
+                                }}
+                                id="uploadImage"
+                              />
+                            </div>
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -441,11 +501,11 @@ export default function EditProfilePage() {
             </div>
 
             <Button
-              disabled={updateCompanyProfile.isPending}
+              disabled={updateCompanyProfile.isPending || upload.isPending}
               type="submit"
               className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
             >
-              {updateCompanyProfile.isPending ? (
+              {updateCompanyProfile.isPending || upload.isPending ? (
                 <>
                   <Image
                     src="/images/load.png"
