@@ -676,13 +676,19 @@ export default function ProfilePage() {
                               ) : (
                                 <span className="capitalize">Select Type</span>
                               )}
-                              <div className="relative">
+                              <div className="relative flex wrap break-all">
+                                <p
+                                  className="min-w-auto max-w-[80%] overflow-hidden pl-1 pr-1 text-left flex items-center"
+                                  title={watchSocialMedia[index]?.link}
+                                >
+                                  {watchSocialMedia[index]?.link}
+                                </p>
                                 {watchSocialMedia[index]?.link !== "" ? (
                                   <a
                                     href={watchSocialMedia[index]?.link}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="absolute left-[-5px] top-[-6px] px-2 py-1"
+                                    className=" px-2 py-0"
                                   >
                                     <Image
                                       src="/images/share.png"
@@ -692,12 +698,7 @@ export default function ProfilePage() {
                                     />
                                   </a>
                                 ) : null}
-                                <p
-                                  className="min-w-[280px] max-w-[280px] overflow-hidden pl-8 text-left"
-                                  title={watchSocialMedia[index]?.link}
-                                >
-                                  {watchSocialMedia[index]?.link}
-                                </p>
+                                
                               </div>
                             </div>
                           </AccordionTrigger>
