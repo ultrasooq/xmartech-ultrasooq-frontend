@@ -169,6 +169,7 @@ export default function PasswordResetVerifyPage() {
   }, []);
 
   useEffect(() => {
+    //TODO: persist timeer in session storage
     const countDown = startTimer();
 
     return () => clearInterval(countDown);
@@ -251,7 +252,9 @@ export default function PasswordResetVerifyPage() {
                   type="button"
                   variant="link"
                   disabled={
-                    passwordResetVerify.isPending || resendOtp.isPending
+                    passwordResetVerify.isPending ||
+                    resendOtp.isPending ||
+                    count > 480
                   }
                   onClick={handlePasswordResendVerify}
                   className="cursor-pointer p-0 font-medium text-dark-orange"
