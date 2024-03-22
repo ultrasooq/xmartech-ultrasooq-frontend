@@ -188,14 +188,27 @@ export default function ProfilePage() {
       dateOfBirth: formData.dateOfBirth.toISOString(),
     };
     formData.uploadImage = imageFile;
+    formData.uploadIdentityImage = identityImageFile;
+
     let getImageUrl;
+    let getIdentityImageUrl;
+
     if (formData.uploadImage) {
       getImageUrl = await handleUploadedFile(formData.uploadImage);
     }
+    if (formData.uploadIdentityImage) {
+      getIdentityImageUrl = await handleUploadedFile(
+        formData.uploadIdentityImage,
+      );
+    }
     //TODO: identity image upload
     delete data.uploadImage;
+    delete data.uploadIdentityImage;
     if (getImageUrl) {
       data.profilePicture = getImageUrl;
+    }
+    if (getIdentityImageUrl) {
+      data.identityProof = getIdentityImageUrl;
     }
 
     data.socialLinkList = data.socialLinkList.filter(
@@ -684,9 +697,9 @@ export default function ProfilePage() {
                               ) : (
                                 <span className="capitalize">Select Type</span>
                               )}
-                              <div className="relative flex wrap break-all">
+                              <div className="wrap relative flex break-all">
                                 <p
-                                  className="min-w-auto max-w-[80%] overflow-hidden pl-1 pr-1 text-left flex items-center"
+                                  className="min-w-auto flex max-w-[80%] items-center overflow-hidden pl-1 pr-1 text-left"
                                   title={watchSocialMedia[index]?.link}
                                 >
                                   {watchSocialMedia[index]?.link}
@@ -706,7 +719,6 @@ export default function ProfilePage() {
                                     />
                                   </a>
                                 ) : null}
-                                
                               </div>
                             </div>
                           </AccordionTrigger>

@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
 
 type BranchSectionProps = {
   branchDetails: any;
@@ -40,6 +41,16 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                 ),
               )}
             </div>
+            <p
+              className={cn(
+                branchDetails?.mainOffice === 1
+                  ? "text-red-600"
+                  : "text-dark-cyan",
+                "text-base font-semibold leading-5",
+              )}
+            >
+              {branchDetails?.mainOffice === 1 ? "Main Branch" : "Sub Branch"}
+            </p>
           </div>
         </AccordionTrigger>
         <AccordionContent>
