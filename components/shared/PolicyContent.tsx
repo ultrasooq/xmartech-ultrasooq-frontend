@@ -23,8 +23,8 @@ const PolicyContent = () => {
         as unauthorized access, disclosure, copying, use or modification.
       </p>
       <p className="mb-3">
-        We don't share any personally identifying information publicly or with
-        third-parties, except when required to by law.
+        We don&apos;t share any personally identifying information publicly or
+        with third-parties, except when required to by law.
       </p>
       <p className="mb-3">
         Our website may link to external sites that are not operated by us.
@@ -56,8 +56,8 @@ const PolicyContent = () => {
         as unauthorized access, disclosure, copying, use or modification.
       </p>
       <p className="mb-3">
-        We don't share any personally identifying information publicly or with
-        third-parties, except when required to by law.
+        We don&apos;t share any personally identifying information publicly or
+        with third-parties, except when required to by law.
       </p>
       <p className="mb-3">
         Our website may link to external sites that are not operated by us.
