@@ -242,7 +242,9 @@ export default function OtpVerifyPage() {
                 <Button
                   type="button"
                   variant="link"
-                  disabled={verifyOtp.isPending || resendOtp.isPending}
+                  disabled={
+                    verifyOtp.isPending || resendOtp.isPending || count > 480
+                  }
                   onClick={handleResendOtp}
                   className="cursor-pointer p-0 font-medium text-dark-orange"
                 >

@@ -41,13 +41,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
   }, [workingDays, startTime, endTime]);
 
   const handleTimeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(e.target.value);
     const data: { branchId: number; endTime: string } = {
       branchId: userDetails?.userBranch?.[0]?.id,
       endTime: e.target.value,
     };
-    console.log(data);
-    // return;
 
     const response = await updateFreelancerBranch.mutateAsync(data);
     if (response.status && response.data) {

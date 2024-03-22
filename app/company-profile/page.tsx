@@ -403,7 +403,9 @@ export default function CompanyProfilePage() {
                                 className="!bottom-0 h-64 !w-full opacity-0"
                                 {...field}
                                 onChange={(event) => {
-                                  setImageFile(event.target.files);
+                                  if (event.target.files?.[0]) {
+                                    setImageFile(event.target.files);
+                                  }
                                 }}
                                 id="uploadImage"
                               />
