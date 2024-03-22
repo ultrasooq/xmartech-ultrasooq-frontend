@@ -369,7 +369,7 @@ export default function CompanyProfilePage() {
                                   src={
                                     imageFile
                                       ? URL.createObjectURL(imageFile[0])
-                                      : "/images/company-logo.png"
+                                      : "/images/no-image.jpg"
                                   }
                                   alt="profile"
                                   fill

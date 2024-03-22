@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   useForgotPassword,
   useResendOtp,
-  useVerifyOtp,
   userPasswordResetVerify,
 } from "@/apis/queries/auth.queries";
 import { useToast } from "@/components/ui/use-toast";

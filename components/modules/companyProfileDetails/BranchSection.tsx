@@ -196,10 +196,15 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                       </span>
                     </div>
                     <div className="mr-1 flex w-full  items-center justify-start sm:mr-0">
-                      <div className="relative h-32 w-36 rounded-2xl">
+                      <div className="relative h-32 w-36 rounded-2xl border border-gray-300">
                         <Image
-                          src="/images/branch-front.png"
+                          src={
+                            branchDetails?.branchFrontPicture
+                              ? branchDetails.branchFrontPicture
+                              : "/images/no-image.jpg"
+                          }
                           alt="branch-image"
+                          className="object-cover"
                           fill
                         />
                       </div>
@@ -214,10 +219,15 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                       </span>
                     </div>
                     <div className="mr-1 flex w-full  items-center justify-start sm:mr-0">
-                      <div className="relative h-32 w-36 rounded-2xl">
+                      <div className="relative h-32 w-36 rounded-2xl border border-gray-300">
                         <Image
-                          src="/images/branch-address.png"
+                          src={
+                            branchDetails?.proofOfAddress
+                              ? branchDetails.proofOfAddress
+                              : "/images/no-image.jpg"
+                          }
                           alt="branch-image"
+                          className="object-cover"
                           fill
                         />
                       </div>
