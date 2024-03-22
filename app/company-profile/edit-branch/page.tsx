@@ -579,7 +579,7 @@ export default function EditBranchPage() {
                   </div>
 
                   <div className="flex w-full md:w-6/12">
-                    <div className="mb-4 flex w-full max-w-[120px] flex-col justify-between md:pr-3.5">
+                    <div className="mb-4 flex w-full max-w-[125px] flex-col justify-between md:pr-3.5">
                       <Label
                         className={cn(
                           form.formState.errors.cc?.message
@@ -606,7 +606,8 @@ export default function EditBranchPage() {
                                   countryObjs[key as keyof typeof countryObjs]
                                 }
                               >
-                                ({countryObjs[key as keyof typeof countryObjs]}){" "}
+                                ({countryObjs[key as keyof typeof countryObjs]}
+                                )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 {key}
                               </option>
                             ))}

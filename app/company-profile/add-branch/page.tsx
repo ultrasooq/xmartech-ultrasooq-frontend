@@ -505,7 +505,7 @@ const AddBranchPage = () => {
                     </div>
 
                     <div className="flex w-full md:w-6/12">
-                      <div className="mb-4 flex w-full max-w-[120px] flex-col justify-between md:pr-3.5">
+                      <div className="mb-4 flex w-full max-w-[125px] flex-col justify-between md:pr-3.5">
                         <Label
                           className={cn(
                             // form.formState.errors.cc?.message
@@ -534,7 +534,8 @@ const AddBranchPage = () => {
                                 >
                                   (
                                   {countryObjs[key as keyof typeof countryObjs]}
-                                  ) {key}
+                                  )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                  {key}
                                 </option>
                               ))}
                             </select>

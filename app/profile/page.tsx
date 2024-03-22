@@ -568,7 +568,7 @@ export default function ProfilePage() {
                       key={field.id}
                       className="relative mb-4 flex w-full flex-row items-center gap-x-3.5"
                     >
-                      <div className="flex w-full max-w-[120px] flex-col justify-between">
+                      <div className="flex w-full max-w-[125px] flex-col justify-between">
                         <Label
                           className={cn(
                             // form.formState.errors.cc?.message
@@ -597,7 +597,8 @@ export default function ProfilePage() {
                                 >
                                   (
                                   {countryObjs[key as keyof typeof countryObjs]}
-                                  ) {key}
+                                  )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                  {key}
                                 </option>
                               ))}
                             </select>

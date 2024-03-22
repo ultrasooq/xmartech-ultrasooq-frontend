@@ -351,7 +351,7 @@ export default function RegisterPage() {
                   />
 
                   <div className="flex w-full">
-                    <div className="mb-4 flex w-full max-w-[120px] flex-col justify-between md:pr-3.5">
+                    <div className="mb-4 flex w-full max-w-[125px] flex-col justify-between md:pr-3.5">
                       <Label
                         className={cn(
                           form.formState.errors.cc?.message
@@ -378,7 +378,8 @@ export default function RegisterPage() {
                                   countryObjs[key as keyof typeof countryObjs]
                                 }
                               >
-                                ({countryObjs[key as keyof typeof countryObjs]}){" "}
+                                ({countryObjs[key as keyof typeof countryObjs]})
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 {key}
                               </option>
                             ))}
@@ -492,22 +493,26 @@ export default function RegisterPage() {
       </div>
 
       <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
-        <DialogContent className="max-w-[90%] md:!max-w-[90%] lg:!max-w-5xl p-0 max-h-[93vh] gap-0">
+        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
           <DialogHeader className="border-b border-light-gray py-4">
-            <DialogTitle className="text-center text-xl font-bold">Puremoon Terms Of Use</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold">
+              Puremoon Terms Of Use
+            </DialogTitle>
           </DialogHeader>
-          <DialogDescription className="overflow-y-scroll max-h-[82vh] text-sm font-normal leading-7 text-color-dark p-4">
+          <DialogDescription className="max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
             <TermsContent />
           </DialogDescription>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
-        <DialogContent className="max-w-[90%] md:!max-w-[90%] lg:!max-w-5xl p-0 max-h-[93vh] gap-0">
+        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
           <DialogHeader className="border-b border-light-gray py-4">
-            <DialogTitle className="text-center text-xl font-bold">Puremoon Privacy Policy</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold">
+              Puremoon Privacy Policy
+            </DialogTitle>
           </DialogHeader>
-          <DialogDescription className="overflow-y-scroll max-h-[82vh] text-sm font-normal leading-7 text-color-dark p-4">
+          <DialogDescription className="max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
             <PolicyContent />
           </DialogDescription>
         </DialogContent>
