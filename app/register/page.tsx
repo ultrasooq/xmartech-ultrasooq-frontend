@@ -492,22 +492,22 @@ export default function RegisterPage() {
       </div>
 
       <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
-        <DialogContent className="md:!max-w-4xl">
-          <DialogHeader className="border-b border-light-gray pb-3">
-            <DialogTitle className="text-center">Terms Of Use</DialogTitle>
+        <DialogContent className="md:!max-w-4xl p-0">
+          <DialogHeader className="border-b border-light-gray py-4">
+            <DialogTitle className="text-center text-xl font-bold">Puremoon Terms Of Use</DialogTitle>
           </DialogHeader>
-          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark">
+          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark p-4">
             <TermsContent />
           </DialogDescription>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
-        <DialogContent className="md:!max-w-4xl">
-          <DialogHeader className="border-b border-light-gray pb-3">
-            <DialogTitle className="text-center">Privacy Policy</DialogTitle>
+        <DialogContent className="md:!max-w-4xl p-0">
+          <DialogHeader className="border-b border-light-gray py-4">
+            <DialogTitle className="text-center text-xl font-bold">Puremoon Privacy Policy</DialogTitle>
           </DialogHeader>
-          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark">
+          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark p-4">
             <PolicyContent />
           </DialogDescription>
         </DialogContent>
