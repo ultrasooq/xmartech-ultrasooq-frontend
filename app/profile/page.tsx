@@ -44,7 +44,7 @@ import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCookie } from "cookies-next";
@@ -132,10 +132,9 @@ export default function ProfilePage() {
     },
   });
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
-  const [preview, setPreview] = React.useState<FileList | null>();
-  const [previewUrl, setPreviewUrl] = React.useState<Blob | MediaSource>();
+  const [imageFile, setImageFile] = useState<FileList | null>();
   const me = useMe(!!accessToken);
-  const uploadImage = useUploadFile();
+  const upload = useUploadFile();
   const updateProfile = useUpdateProfile();
 
   const fieldArrayForPhoneNumber = useFieldArray({
@@ -168,10 +167,9 @@ export default function ProfilePage() {
 
   const handleUploadedFile = async (files: FileList | null) => {
     if (files) {
-      console.log(files[0]);
       const formData = new FormData();
       formData.append("content", files[0]);
-      const response = await uploadImage.mutateAsync(formData);
+      const response = await upload.mutateAsync(formData);
       if (response.status && response.data) {
         return response.data;
       }
@@ -184,7 +182,7 @@ export default function ProfilePage() {
       phoneNumber: formData.phoneNumberList[0].phoneNumber,
       dateOfBirth: formData.dateOfBirth.toISOString(),
     };
-    formData.uploadImage = preview;
+    formData.uploadImage = imageFile;
     let getImageUrl;
     if (formData.uploadImage) {
       getImageUrl = await handleUploadedFile(formData.uploadImage);
@@ -208,7 +206,8 @@ export default function ProfilePage() {
       });
       return;
     }
-
+    console.log(data);
+    // return;
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
       toast({
@@ -245,6 +244,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (me.data) {
       const {
+        profilePicture,
         firstName,
         lastName,
         gender,
@@ -281,6 +281,7 @@ export default function ProfilePage() {
           ];
 
       form.reset({
+        profilePicture: profilePicture || "",
         firstName,
         lastName,
         gender,
@@ -291,12 +292,6 @@ export default function ProfilePage() {
       });
     }
   }, [me.data]);
-
-  useEffect(() => {
-    if (preview) {
-      setPreviewUrl(preview[0]);
-    }
-  }, [preview]);
 
   return (
     <section className="relative w-full py-7">
@@ -330,16 +325,16 @@ export default function ProfilePage() {
                     render={({ field }) => (
                       <FormItem className="mb-4 w-full">
                         <FormControl>
-                          <div>
-                            <div className="relative m-auto flex h-44 w-44 flex-wrap items-center justify-center rounded-full border-2 border-dashed border-gray-300 text-center">
-                              {me.data?.data?.profilePicture || previewUrl ? (
-                                <div className="relative h-44 w-44 rounded-full border-2 border-dashed border-gray-300">
+                          <div className="relative m-auto h-44 w-44 rounded-full border-2 border-dashed border-gray-300">
+                            <div className="relative h-full w-full">
+                              {imageFile || me.data?.data?.profilePicture ? (
+                                <>
                                   <Image
                                     src={
-                                      me.data?.data?.profilePicture
-                                        ? me.data?.data?.profilePicture
-                                        : previewUrl
-                                          ? URL.createObjectURL(previewUrl)
+                                      imageFile
+                                        ? URL.createObjectURL(imageFile[0])
+                                        : me.data?.data?.profilePicture
+                                          ? me.data?.data?.profilePicture
                                           : "/images/company-logo.png"
                                     }
                                     alt="profile"
@@ -347,27 +342,39 @@ export default function ProfilePage() {
                                     className="rounded-full"
                                     priority
                                   />
+                                  <div className="absolute bottom-3 right-4 rounded-full bg-white p-1 shadow-md">
+                                    <Image
+                                      src="/images/camera.png"
+                                      width={29}
+                                      height={29}
+                                      alt="camera"
+                                      className=""
+                                    />
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                  <div className="flex h-full flex-col items-center justify-center">
+                                    <Image
+                                      src="/images/camera.png"
+                                      className="mb-3"
+                                      width={29}
+                                      height={29}
+                                      alt="camera"
+                                    />
+                                    <span>Upload Image</span>
+                                  </div>
                                 </div>
-                              ) : null}
-
-                              <div className="absolute text-sm font-medium leading-4 text-color-dark">
-                                <Image
-                                  src="/images/camera.png"
-                                  className="m-auto mb-3"
-                                  width={29}
-                                  height={29}
-                                  alt="camera"
-                                />
-                                <span> Upload Image</span>
-                              </div>
+                              )}
 
                               <Input
                                 type="file"
-                                className="absolute h-full rounded-full bg-red-200 opacity-0"
+                                className="!bottom-0 h-44 !w-full opacity-0"
                                 {...field}
                                 onChange={(event) => {
-                                  setPreview(event.target.files);
-                                  // handleUploadedFile(event.target.files);
+                                  if (event.target.files?.[0]) {
+                                    setImageFile(event.target.files);
+                                  }
                                 }}
                                 id="uploadImage"
                               />
@@ -781,11 +788,11 @@ export default function ProfilePage() {
                   </p>
 
                   <Button
-                    disabled={updateProfile.isPending || uploadImage.isPending}
+                    disabled={updateProfile.isPending || upload.isPending}
                     type="submit"
                     className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                   >
-                    {updateProfile.isPending || uploadImage.isPending ? (
+                    {updateProfile.isPending || upload.isPending ? (
                       <>
                         <Image
                           src="/images/load.png"
