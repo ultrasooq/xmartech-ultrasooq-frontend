@@ -26,10 +26,10 @@ const BranchSection: React.FC<BranchSectionProps> = ({
     <Accordion
       type="single"
       collapsible
-      className="mb-5 w-full rounded-lg border border-solid border-gray-300"
+      className="mb-5 w-full rounded-lg border border-solid border-gray-300 "
     >
-      <AccordionItem value="item-1" className="border-b-0 px-5">
-        <AccordionTrigger className="flex h-auto min-h-[65px] justify-between py-0 hover:!no-underline">
+      <AccordionItem value="item-1" className="border-b-0 !bg-[#FAFAFA] px-3">
+        <AccordionTrigger className="flex h-auto min-h-[48px] justify-between py-0 hover:!no-underline">
           <div className="flex w-full items-center justify-between px-4 py-4">
             <div className="flex w-auto items-start text-base font-medium text-color-dark">
               {branchDetails?.userBranchBusinessType?.map(
@@ -43,7 +43,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({
           </div>
         </AccordionTrigger>
         <AccordionContent>
-          <div className="w-full border-t border-solid border-gray-300 px-5 py-4">
+          <div className="w-full border-t border-solid border-gray-300 bg-white px-5 py-4">
             <div className="flex w-full justify-end">
               <button
                 type="button"

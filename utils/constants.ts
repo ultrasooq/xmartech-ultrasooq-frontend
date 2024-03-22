@@ -153,3 +153,12 @@ export const HOURS_24_FORMAT = [
   "23:00",
   "23:30",
 ];
+
+export const menuBarIconList: string[] = [
+  "/images/menu-icon-home.svg",
+  "/images/menu-icon-trending.svg",
+  "/images/menu-icon-buy.svg",
+  "/images/menu-icon-pos.svg",
+  "/images/menu-icon-rfq.svg",
+  "/images/menu-icon-service.svg",
+];

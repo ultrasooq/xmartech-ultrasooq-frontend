@@ -388,7 +388,7 @@ export default function ProfilePage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your First Name"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -406,7 +406,7 @@ export default function ProfilePage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your Last Name"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -456,7 +456,7 @@ export default function ProfilePage() {
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "!h-[54px] rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
+                                  "!h-12 rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
                                   !field.value && "text-muted-foreground",
                                 )}
                               >
@@ -499,7 +499,7 @@ export default function ProfilePage() {
                           <Input
                             placeholder="Enter Your Email"
                             disabled
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -557,7 +557,7 @@ export default function ProfilePage() {
                           render={({ field }) => (
                             <select
                               {...field}
-                              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                              className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                             >
                               <option value="">Select</option>
                               {Object.keys(countryObjs).map((key) => (
@@ -594,7 +594,7 @@ export default function ProfilePage() {
                                 type="number"
                                 onWheel={(e) => e.currentTarget.blur()}
                                 placeholder="Enter Your Phone Number"
-                                className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                                 {...field}
                               />
                             </FormControl>
@@ -707,7 +707,7 @@ export default function ProfilePage() {
                                     defaultValue={field.value}
                                   >
                                     <FormControl>
-                                      <SelectTrigger className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
+                                      <SelectTrigger className="!h-12 rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
                                         <SelectValue placeholder="Select Social Media" />
                                       </SelectTrigger>
                                     </FormControl>
@@ -750,7 +750,7 @@ export default function ProfilePage() {
                                   <FormControl>
                                     <Input
                                       placeholder="Enter Your Link"
-                                      className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                                      className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                                       {...field}
                                     />
                                   </FormControl>
@@ -783,7 +783,7 @@ export default function ProfilePage() {
                   <Button
                     disabled={updateProfile.isPending || uploadImage.isPending}
                     type="submit"
-                    className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                    className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                   >
                     {updateProfile.isPending || uploadImage.isPending ? (
                       <>

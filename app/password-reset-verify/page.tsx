@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -21,7 +21,7 @@ export default function PasswordResetVerifyPage() {
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
   const [count, setCount] = useState(600);
-  const refs = React.useRef<HTMLInputElement[]>([]);
+  const refs = useRef<HTMLInputElement[]>([]);
   const form = useForm({
     defaultValues: {
       email: "",
@@ -223,7 +223,7 @@ export default function PasswordResetVerifyPage() {
                         passwordResetVerify.isPending || resendOtp.isPending
                       }
                       type="submit"
-                      className="m-auto h-14 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                      className="m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
                       {passwordResetVerify.isPending ? (
                         <>

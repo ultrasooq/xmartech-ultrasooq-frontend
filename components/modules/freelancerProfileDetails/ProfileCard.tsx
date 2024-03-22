@@ -176,7 +176,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
               </span>
             </div>
             <select
-              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+              className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
               onChange={handleTimeChange}
             >
               <option value="">{isOnlineToday ? "Offline" : "Online"}</option>

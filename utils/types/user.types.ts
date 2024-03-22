@@ -44,6 +44,8 @@ export interface IFreelancer {
   // days: any;
 }
 
+export interface ICompany extends IFreelancer {}
+
 export interface IBuyerRequest {
   profilePicture?: string;
   firstName: string;

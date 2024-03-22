@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useCreateCompanyProfile } from "@/apis/queries/company.queries";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
@@ -34,8 +34,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { countryObjs, getAmPm } from "@/utils/helper";
 import { cn } from "@/lib/utils";
+import { useUploadFile } from "@/apis/queries/upload.queries";
 
 const formSchema = z.object({
+  uploadImage: z.any().optional(),
+  logo: z.string().trim().optional(),
   companyName: z
     .string()
     .trim()
@@ -172,6 +175,8 @@ export default function CompanyProfilePage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      uploadImage: undefined,
+      logo: "",
       profileType: "COMPANY", // dont remove value
       companyLogo: "",
       companyName: "",
@@ -214,8 +219,9 @@ export default function CompanyProfilePage() {
       ],
     },
   });
-
+  const [imageFile, setImageFile] = useState<FileList | null>();
   const tagsQuery = useTags();
+  const upload = useUploadFile();
   const createCompanyProfile = useCreateCompanyProfile();
 
   const fieldArray = useFieldArray({
@@ -253,6 +259,17 @@ export default function CompanyProfilePage() {
 
   const removeBranchList = (index: number) => fieldArray.remove(index);
 
+  const handleUploadedFile = async (files: FileList | null) => {
+    if (files) {
+      const formData = new FormData();
+      formData.append("content", files[0]);
+      const response = await upload.mutateAsync(formData);
+      if (response.status && response.data) {
+        return response.data;
+      }
+    }
+  };
+
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
@@ -270,6 +287,17 @@ export default function CompanyProfilePage() {
       data.branchList = updatedBranchList;
     }
 
+    formData.uploadImage = imageFile;
+    let getImageUrl;
+    if (formData.uploadImage) {
+      getImageUrl = await handleUploadedFile(formData.uploadImage);
+    }
+    delete data.uploadImage;
+    if (getImageUrl) {
+      data.logo = getImageUrl;
+    }
+    console.log(data);
+    // return;
     const response = await createCompanyProfile.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -329,32 +357,57 @@ export default function CompanyProfilePage() {
                 <div className="flex flex-wrap">
                   <FormField
                     control={form.control}
-                    name="companyLogo"
+                    name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5">
                         <FormLabel>Upload Company Logo</FormLabel>
                         <FormControl>
-                          <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
-                            <div className="text-sm font-medium leading-4 text-color-dark">
-                              <Image
-                                src="/images/upload.png"
-                                className="m-auto mb-3"
-                                width={30}
-                                height={30}
-                                alt="camera"
-                              />
-                              <span> Drop your Company Logo here, or </span>
-                              <span className="text-blue-500">browse</span>
-                              <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                (.jpg or .png only. Up to 16mb)
-                              </p>
-                            </div>
+                          <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
+                            <div className="relative h-full w-full">
+                              {imageFile ? (
+                                <Image
+                                  src={
+                                    imageFile
+                                      ? URL.createObjectURL(imageFile[0])
+                                      : "/images/company-logo.png"
+                                  }
+                                  alt="profile"
+                                  fill
+                                  priority
+                                />
+                              ) : (
+                                <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                  <div className="flex h-full flex-col items-center justify-center">
+                                    <Image
+                                      src="/images/upload.png"
+                                      className="mb-3"
+                                      width={30}
+                                      height={30}
+                                      alt="camera"
+                                    />
+                                    <span>
+                                      Drop your Company Logo here, or{" "}
+                                    </span>
+                                    <span className="text-blue-500">
+                                      browse
+                                    </span>
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                      (.jpg or .png only. Up to 16mb)
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
 
-                            <Input
-                              type="file"
-                              className="absolute h-full rounded-full bg-red-200 opacity-0"
-                              {...field}
-                            />
+                              <Input
+                                type="file"
+                                className="!bottom-0 h-64 !w-full opacity-0"
+                                {...field}
+                                onChange={(event) => {
+                                  setImageFile(event.target.files);
+                                }}
+                                id="uploadImage"
+                              />
+                            </div>
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -372,7 +425,7 @@ export default function CompanyProfilePage() {
                           <FormControl>
                             <Input
                               placeholder="Company Name"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -389,7 +442,7 @@ export default function CompanyProfilePage() {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                           >
                             <option value="">Select Type</option>
                             {memoizedTags.map(
@@ -418,7 +471,7 @@ export default function CompanyProfilePage() {
                               placeholder="Annual Purchasing Volume"
                               type="number"
                               onWheel={(e) => e.currentTarget.blur()}
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -447,7 +500,7 @@ export default function CompanyProfilePage() {
                           <FormControl>
                             <Input
                               placeholder="Address"
-                              className="!h-[54px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -473,7 +526,7 @@ export default function CompanyProfilePage() {
                         <FormControl>
                           <Input
                             placeholder="City"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -491,7 +544,7 @@ export default function CompanyProfilePage() {
                         <FormControl>
                           <Input
                             placeholder="Province"
-                            className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
                         </FormControl>
@@ -508,7 +561,7 @@ export default function CompanyProfilePage() {
                       render={({ field }) => (
                         <select
                           {...field}
-                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
                           <option value="">Select Country</option>
                           <option value="USA">USA</option>
@@ -536,7 +589,7 @@ export default function CompanyProfilePage() {
                       render={({ field }) => (
                         <select
                           {...field}
-                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
                           <option value="">Select Year</option>
                           <option value="1990">1990</option>
@@ -559,7 +612,7 @@ export default function CompanyProfilePage() {
                       render={({ field }) => (
                         <select
                           {...field}
-                          className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
                           <option value="">Select Number</option>
                           <option value="1000">1000</option>
@@ -719,7 +772,7 @@ export default function CompanyProfilePage() {
                             <FormControl>
                               <Input
                                 placeholder="Address"
-                                className="!h-[54px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                                className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
                                 {...field}
                               />
                             </FormControl>
@@ -745,7 +798,7 @@ export default function CompanyProfilePage() {
                           <FormControl>
                             <Input
                               placeholder="City"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -763,7 +816,7 @@ export default function CompanyProfilePage() {
                           <FormControl>
                             <Input
                               placeholder="Province"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -780,7 +833,7 @@ export default function CompanyProfilePage() {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                           >
                             <option value="">Select Country</option>
                             <option value="USA">USA</option>
@@ -815,7 +868,7 @@ export default function CompanyProfilePage() {
                           render={({ field }) => (
                             <select
                               {...field}
-                              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                              className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                             >
                               <option value="">Select</option>
                               {Object.keys(countryObjs).map((key) => (
@@ -850,7 +903,7 @@ export default function CompanyProfilePage() {
                                 type="number"
                                 onWheel={(e) => e.currentTarget.blur()}
                                 placeholder="Branch Contact Number"
-                                className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                                 {...field}
                               />
                             </FormControl>
@@ -869,7 +922,7 @@ export default function CompanyProfilePage() {
                           <FormControl>
                             <Input
                               placeholder="Branch Contact Name"
-                              className="!h-[54px] rounded border-gray-300 focus-visible:!ring-0"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -900,7 +953,7 @@ export default function CompanyProfilePage() {
                           render={({ field }) => (
                             <select
                               {...field}
-                              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
+                              className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
                               <option value="">Select</option>
                               {HOURS_24_FORMAT.map(
@@ -931,7 +984,7 @@ export default function CompanyProfilePage() {
                           render={({ field }) => (
                             <select
                               {...field}
-                              className="!h-[54px] w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
+                              className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
                               <option value="">Select</option>
                               {HOURS_24_FORMAT.map(
@@ -1038,11 +1091,11 @@ export default function CompanyProfilePage() {
             ))}
 
             <Button
-              disabled={createCompanyProfile.isPending}
+              disabled={createCompanyProfile.isPending || upload.isPending}
               type="submit"
-              className="h-14 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+              className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
             >
-              {createCompanyProfile.isPending ? (
+              {createCompanyProfile.isPending || upload.isPending ? (
                 <>
                   <Image
                     src="/images/load.png"

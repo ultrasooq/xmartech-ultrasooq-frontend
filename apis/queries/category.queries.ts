@@ -9,7 +9,7 @@ export const useCategory = (enabled = true) =>
         categoryId: 1,
         menuId: 1,
       };
-      const res = await fetchCategory(data);
+      const res = await fetchCategory();
       return res.data;
     },
     // onSuccess: () => {},
