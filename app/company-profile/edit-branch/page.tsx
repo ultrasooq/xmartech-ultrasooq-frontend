@@ -34,9 +34,14 @@ import { useMe } from "@/apis/queries/user.queries";
 import { countryObjs, getAmPm } from "@/utils/helper";
 import { cn } from "@/lib/utils";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
+import { useUploadFile } from "@/apis/queries/upload.queries";
 
 const formSchema = z
   .object({
+    uploadBranchImage: z.any().optional(),
+    uploadProofOfAddress: z.any().optional(),
+    branchFrontPicture: z.string().trim().optional(),
+    proofOfAddress: z.string().trim().optional(),
     businessTypeList: z
       .array(
         z.object({
@@ -142,6 +147,8 @@ export default function EditBranchPage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      uploadBranchImage: undefined,
+      uploadProofOfAddress: undefined,
       profileType: "COMPANY",
       businessTypeList: undefined,
       branchFrontPicture: "",
@@ -169,9 +176,25 @@ export default function EditBranchPage() {
     },
   });
   const [activeBranchId, setActiveBranchId] = useState<string | null>();
+  const [branchImageFile, setBranchImageFile] = useState<FileList | null>();
+  const [proofOfAddressImageFile, setProofOfAddressImageFile] =
+    useState<FileList | null>();
+
   const userDetails = useMe();
   const tagsQuery = useTags();
+  const upload = useUploadFile();
   const updateCompanyBranch = useUpdateCompanyBranch();
+
+  const handleUploadedFile = async (files: FileList | null) => {
+    if (files) {
+      const formData = new FormData();
+      formData.append("content", files[0]);
+      const response = await upload.mutateAsync(formData);
+      if (response.status && response.data) {
+        return response.data;
+      }
+    }
+  };
 
   const onSubmit = async (formData: any) => {
     let data = {
@@ -181,6 +204,32 @@ export default function EditBranchPage() {
       branchId: Number(activeBranchId),
     };
 
+    formData.uploadBranchImage = branchImageFile;
+    formData.uploadProofOfAddress = proofOfAddressImageFile;
+
+    let getBranchImageUrl;
+    let getProofOfAddressImageUrl;
+    if (formData.uploadBranchImage) {
+      getBranchImageUrl = await handleUploadedFile(formData.uploadBranchImage);
+    }
+
+    if (formData.uploadProofOfAddress) {
+      getProofOfAddressImageUrl = await handleUploadedFile(
+        formData.uploadProofOfAddress,
+      );
+    }
+
+    delete data.uploadBranchImage;
+    delete data.uploadProofOfAddress;
+    if (getBranchImageUrl) {
+      data.branchFrontPicture = getBranchImageUrl;
+    }
+    if (getProofOfAddressImageUrl) {
+      data.proofOfAddress = getProofOfAddressImageUrl;
+    }
+
+    console.log(data);
+    // return;
     const response = await updateCompanyBranch.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -308,32 +357,67 @@ export default function EditBranchPage() {
 
                 <FormField
                   control={form.control}
-                  name="branchFrontPicture"
+                  name="uploadBranchImage"
                   render={({ field }) => (
                     <FormItem className="mb-3.5 w-full">
                       <FormLabel>Upload Branch Front Picture</FormLabel>
                       <FormControl>
-                        <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
-                          <div className="text-sm font-medium leading-4 text-color-dark">
-                            <Image
-                              src="/images/upload.png"
-                              className="m-auto mb-3"
-                              width={30}
-                              height={30}
-                              alt="camera"
-                            />
-                            <span> Drop your Company Logo here, or </span>
-                            <span className="text-blue-500">browse</span>
-                            <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                              (.jpg or .png only. Up to 16mb)
-                            </p>
-                          </div>
+                        <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
+                          <div className="relative h-full w-full">
+                            {branchImageFile ? (
+                              //  || userDetails.data?.data
+                              <Image
+                                src={
+                                  branchImageFile
+                                    ? URL.createObjectURL(branchImageFile[0])
+                                    : "/images/no-image.jpg"
+                                }
+                                // src={
+                                //   branchImageFile
+                                //     ? URL.createObjectURL(branchImageFile[0])
+                                //     : userDetails.data?.data?.userProfile?.[0]
+                                //           ?.logo
+                                //       ? userDetails.data?.branchFrontPicture
+                                //           ?.userProfile?.[0]?.branchFrontPicture
+                                //       : "/images/no-image.jpg"
+                                // }
+                                alt="profile"
+                                fill
+                                priority
+                              />
+                            ) : (
+                              <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                <div className="flex h-full flex-col items-center justify-center">
+                                  <Image
+                                    src="/images/upload.png"
+                                    className="mb-3"
+                                    width={30}
+                                    height={30}
+                                    alt="camera"
+                                  />
+                                  <span>
+                                    Drop your Branch Front Picture here, or{" "}
+                                  </span>
+                                  <span className="text-blue-500">browse</span>
+                                  <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                    (.jpg or .png only. Up to 16mb)
+                                  </p>
+                                </div>
+                              </div>
+                            )}
 
-                          <Input
-                            type="file"
-                            className="absolute h-full rounded-full bg-red-200 opacity-0"
-                            {...field}
-                          />
+                            <Input
+                              type="file"
+                              className="!bottom-0 h-64 !w-full opacity-0"
+                              {...field}
+                              onChange={(event) => {
+                                if (event.target.files?.[0]) {
+                                  setBranchImageFile(event.target.files);
+                                }
+                              }}
+                              id="uploadImage"
+                            />
+                          </div>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -343,32 +427,71 @@ export default function EditBranchPage() {
 
                 <FormField
                   control={form.control}
-                  name="proofOfAddress"
+                  name="uploadProofOfAddress"
                   render={({ field }) => (
                     <FormItem className="mb-3.5 w-full">
                       <FormLabel>Proof Of Address</FormLabel>
                       <FormControl>
-                        <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
-                          <div className="text-sm font-medium leading-4 text-color-dark">
-                            <Image
-                              src="/images/upload.png"
-                              className="m-auto mb-3"
-                              width={30}
-                              height={30}
-                              alt="camera"
-                            />
-                            <span> Drop your Company Logo here, or </span>
-                            <span className="text-blue-500">browse</span>
-                            <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                              (.jpg or .png only. Up to 16mb)
-                            </p>
-                          </div>
+                        <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
+                          <div className="relative h-full w-full">
+                            {proofOfAddressImageFile ? (
+                              //  || userDetails.data?.data
+                              <Image
+                                src={
+                                  proofOfAddressImageFile
+                                    ? URL.createObjectURL(
+                                        proofOfAddressImageFile[0],
+                                      )
+                                    : "/images/company-logo.png"
+                                }
+                                // src={
+                                //   branchImageFile
+                                //     ? URL.createObjectURL(branchImageFile[0])
+                                //     : userDetails.data?.data?.userProfile?.[0]
+                                //           ?.proofOfAddress
+                                //       ? userDetails.data?.data
+                                //           ?.userProfile?.[0]?.proofOfAddress
+                                //       : "/images/no-image.jpg"
+                                // }
+                                alt="profile"
+                                fill
+                                priority
+                              />
+                            ) : (
+                              <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                <div className="flex h-full flex-col items-center justify-center">
+                                  <Image
+                                    src="/images/upload.png"
+                                    className="mb-3"
+                                    width={30}
+                                    height={30}
+                                    alt="camera"
+                                  />
+                                  <span>
+                                    Drop your Proof of Address here, or{" "}
+                                  </span>
+                                  <span className="text-blue-500">browse</span>
+                                  <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                    (.jpg or .png only. Up to 16mb)
+                                  </p>
+                                </div>
+                              </div>
+                            )}
 
-                          <Input
-                            type="file"
-                            className="absolute h-full rounded-full bg-red-200 opacity-0"
-                            {...field}
-                          />
+                            <Input
+                              type="file"
+                              className="!bottom-0 h-64 !w-full opacity-0"
+                              {...field}
+                              onChange={(event) => {
+                                if (event.target.files?.[0]) {
+                                  setProofOfAddressImageFile(
+                                    event.target.files,
+                                  );
+                                }
+                              }}
+                              id="uploadImage"
+                            />
+                          </div>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -678,11 +801,11 @@ export default function EditBranchPage() {
             </div>
 
             <Button
-              disabled={updateCompanyBranch.isPending}
+              disabled={updateCompanyBranch.isPending || upload.isPending}
               type="submit"
               className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
             >
-              {updateCompanyBranch.isPending ? (
+              {updateCompanyBranch.isPending || upload.isPending ? (
                 <>
                   <Image
                     src="/images/load.png"

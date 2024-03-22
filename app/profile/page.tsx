@@ -54,7 +54,9 @@ import validator from "validator";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
+  uploadIdentityImage: z.any().optional(),
   profilePicture: z.string().trim().optional(),
+  identityProof: z.string().trim().optional(),
   firstName: z
     .string()
     .trim()
@@ -111,7 +113,9 @@ export default function ProfilePage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       uploadImage: undefined,
+      uploadIdentityImage: undefined,
       profilePicture: "",
+      identityProof: "",
       firstName: "",
       lastName: "",
       gender: "",
@@ -133,6 +137,7 @@ export default function ProfilePage() {
   });
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [imageFile, setImageFile] = useState<FileList | null>();
+  const [identityImageFile, setIdentityImageFile] = useState<FileList | null>();
   const me = useMe(!!accessToken);
   const upload = useUploadFile();
   const updateProfile = useUpdateProfile();
@@ -187,6 +192,7 @@ export default function ProfilePage() {
     if (formData.uploadImage) {
       getImageUrl = await handleUploadedFile(formData.uploadImage);
     }
+    //TODO: identity image upload
     delete data.uploadImage;
     if (getImageUrl) {
       data.profilePicture = getImageUrl;
@@ -245,6 +251,7 @@ export default function ProfilePage() {
     if (me.data) {
       const {
         profilePicture,
+        identityProof,
         firstName,
         lastName,
         gender,
@@ -282,6 +289,7 @@ export default function ProfilePage() {
 
       form.reset({
         profilePicture: profilePicture || "",
+        identityProof: identityProof || "",
         firstName,
         lastName,
         gender,
@@ -782,6 +790,75 @@ export default function ProfilePage() {
                       </Button>
                     </div>
                   ))}
+
+                  {me.data?.data?.tradeRole !== "BUYER" ? (
+                    <FormField
+                      control={form.control}
+                      name="uploadIdentityImage"
+                      render={({ field }) => (
+                        <FormItem className="mb-3.5 w-full">
+                          <FormLabel>Upload Identity Proof</FormLabel>
+                          <FormControl>
+                            <div className="relative m-auto h-48 w-full border-2 border-dashed border-gray-300">
+                              <div className="relative h-full w-full">
+                                {identityImageFile ||
+                                me.data?.data?.identityProof ? (
+                                  <Image
+                                    src={
+                                      identityImageFile
+                                        ? URL.createObjectURL(
+                                            identityImageFile[0],
+                                          )
+                                        : me.data?.data?.identityProof
+                                          ? me.data?.data?.identityProof
+                                          : "/images/company-logo.png"
+                                    }
+                                    alt="profile"
+                                    fill
+                                    priority
+                                  />
+                                ) : (
+                                  <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                    <div className="flex h-full flex-col items-center justify-center">
+                                      <Image
+                                        src="/images/upload.png"
+                                        className="mb-3"
+                                        width={30}
+                                        height={30}
+                                        alt="camera"
+                                      />
+                                      <span>
+                                        Drop your Identify proof here, or{" "}
+                                      </span>
+                                      <span className="text-blue-500">
+                                        browse
+                                      </span>
+                                      <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                        (.jpg or .png only. Up to 16mb)
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+
+                                <Input
+                                  type="file"
+                                  className="!bottom-0 h-48 !w-full opacity-0"
+                                  {...field}
+                                  onChange={(event) => {
+                                    if (event.target.files?.[0]) {
+                                      setIdentityImageFile(event.target.files);
+                                    }
+                                  }}
+                                  id="uploadIdentityImage"
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ) : null}
 
                   <p className="mb-3 text-[13px] text-red-500">
                     {form.formState.errors.socialLinkList?.message}
