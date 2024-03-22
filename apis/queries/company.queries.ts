@@ -7,6 +7,7 @@ import {
 } from "../requests/company.requests";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  ICompany,
   IEditCompanyBranch,
   IEditCompanyBranchRequest,
   IEditCompanyProfile,
@@ -16,7 +17,8 @@ import {
 export const useCreateCompanyProfile = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  //TODO: add types definition
+  return useMutation<ICompany, APIResponseError, {}>({
     mutationFn: async (payload) => {
       const res = await createCompanyProfile(payload);
       return res.data;
