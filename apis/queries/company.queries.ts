@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { APIResponseError } from "@/utils/types/common.types";
 import {
+  createCompanyBranch,
   createCompanyProfile,
   updateCompanyBranch,
   updateCompanyProfile,
@@ -65,6 +66,24 @@ export const useUpdateCompanyBranch = () => {
   >({
     mutationFn: async (payload) => {
       const res = await updateCompanyBranch(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["me"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useCreateCompanyBranch = () => {
+  const queryClient = useQueryClient();
+  return useMutation<{}, APIResponseError, {}>({
+    mutationFn: async (payload) => {
+      const res = await createCompanyBranch(payload);
       return res.data;
     },
     onSuccess: () => {
