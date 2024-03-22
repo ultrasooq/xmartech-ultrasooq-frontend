@@ -111,6 +111,7 @@ const Header = () => {
     queryClient.clear();
     router.push("/login");
   };
+  const handleChangeEmailPage = () => router.push("/change-email");
   const handleChangePasswordPage = () => router.push("/change-password");
   const handleLogin = () => router.push("/login");
   const handleRegister = () => router.push("/register");
@@ -243,6 +244,10 @@ const Header = () => {
                           className="cursor-pointer"
                         >
                           Profile Information
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleChangeEmailPage}>
+                          Change Email
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleChangePasswordPage}>

@@ -287,7 +287,7 @@ export default function ProfilePage() {
         gender,
         email,
         phoneNumberList: phoneNumberList,
-        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : new Date(),
+        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
         socialLinkList: socialLinkList,
       });
     }
