@@ -202,3 +202,35 @@ export interface IUploadFile {
   message: string;
   data: string;
 }
+
+export interface ICreateCompanyBranchRequest {
+  userProfileId: number;
+  profileType: string;
+  businessTypeList: undefined;
+  address: string;
+  city: string;
+  province: string;
+  country: string;
+  contactNumber: string;
+  contactName: string;
+  startTime: string;
+  endTime: string;
+  workingDays: {
+    sun: number;
+    mon: number;
+    tue: number;
+    wed: number;
+    thu: number;
+    fri: number;
+    sat: number;
+  };
+  tagList?: { tagId: number }[];
+  mainOffice: number;
+}
+
+export interface ICreateCompanyBranch {
+  data: any;
+  status: boolean;
+  message: string;
+  error: string;
+}
