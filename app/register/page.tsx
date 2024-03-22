@@ -492,22 +492,22 @@ export default function RegisterPage() {
       </div>
 
       <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
-        <DialogContent className="md:!max-w-4xl p-0">
+        <DialogContent className="max-w-[90%] md:!max-w-[90%] lg:!max-w-5xl p-0 max-h-[93vh] gap-0">
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">Puremoon Terms Of Use</DialogTitle>
           </DialogHeader>
-          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark p-4">
+          <DialogDescription className="overflow-y-scroll max-h-[82vh] text-sm font-normal leading-7 text-color-dark p-4">
             <TermsContent />
           </DialogDescription>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
-        <DialogContent className="md:!max-w-4xl p-0">
+        <DialogContent className="max-w-[90%] md:!max-w-[90%] lg:!max-w-5xl p-0 max-h-[93vh] gap-0">
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">Puremoon Privacy Policy</DialogTitle>
           </DialogHeader>
-          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark p-4">
+          <DialogDescription className="overflow-y-scroll max-h-[82vh] text-sm font-normal leading-7 text-color-dark p-4">
             <PolicyContent />
           </DialogDescription>
         </DialogContent>
