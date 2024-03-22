@@ -1,7 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useMemo, useState } from "react";
-import { useUpdateCompanyBranch } from "@/apis/queries/company.queries";
+import {
+  useFetchCompanyBranchById,
+  useUpdateCompanyBranch,
+} from "@/apis/queries/company.queries";
 import { Controller, useForm } from "react-hook-form";
 import {
   Form,
@@ -15,22 +18,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
-// import TimePicker from "react-time-picker";
 import { Switch } from "@/components/ui/switch";
-import { useMe } from "@/apis/queries/user.queries";
 import { countryObjs, getAmPm } from "@/utils/helper";
 import { cn } from "@/lib/utils";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
@@ -130,6 +124,10 @@ const formSchema = z
         });
         return temp;
       }),
+    mainOffice: z
+      .boolean()
+      .transform((value) => (value ? 1 : 0))
+      .optional(),
   })
   .superRefine(({ startTime, endTime }, ctx) => {
     if (startTime && endTime && startTime > endTime) {
@@ -180,9 +178,12 @@ export default function EditBranchPage() {
   const [proofOfAddressImageFile, setProofOfAddressImageFile] =
     useState<FileList | null>();
 
-  const userDetails = useMe();
   const tagsQuery = useTags();
   const upload = useUploadFile();
+  const branchQueryById = useFetchCompanyBranchById(
+    activeBranchId ? activeBranchId : "",
+    !!activeBranchId,
+  );
   const updateCompanyBranch = useUpdateCompanyBranch();
 
   const handleUploadedFile = async (files: FileList | null) => {
@@ -200,7 +201,6 @@ export default function EditBranchPage() {
     let data = {
       ...formData,
       profileType: "COMPANY",
-      mainOffice: 1,
       branchId: Number(activeBranchId),
     };
 
@@ -259,60 +259,60 @@ export default function EditBranchPage() {
     const params = new URLSearchParams(document.location.search);
     let branchId = params.get("branchId");
     setActiveBranchId(branchId);
+  }, []);
 
-    if (userDetails.data?.data && branchId) {
-      const branch = userDetails.data?.data?.userBranch?.filter(
-        (item: any) => item?.id === Number(branchId),
-      )[0];
+  useEffect(() => {
+    if (branchQueryById.data?.data) {
+      const branch = branchQueryById.data?.data;
 
-      if (branch) {
-        const businessTypeList = branch?.userBranchBusinessType
-          ? branch?.userBranchBusinessType?.map((item: any) => {
-              return {
-                label: item?.userBranch_BusinessType_Tag?.tagName,
-                value: item?.userBranch_BusinessType_Tag?.id,
-              };
-            })
-          : [];
-
-        const workingDays = branch?.workingDays
-          ? JSON.parse(branch.workingDays)
-          : {
-              sun: 0,
-              mon: 0,
-              tue: 0,
-              wed: 0,
-              thu: 0,
-              fri: 0,
-              sat: 0,
+      const businessTypeList = branch?.userBranchBusinessType
+        ? branch?.userBranchBusinessType?.map((item: any) => {
+            return {
+              label: item?.userBranch_BusinessType_Tag?.tagName,
+              value: item?.userBranch_BusinessType_Tag?.id,
             };
+          })
+        : [];
 
-        const tagList = branch?.userBranchTags
-          ? branch?.userBranchTags?.map((item: any) => {
-              return {
-                label: item?.userBranchTagsTag?.tagName,
-                value: item?.userBranchTagsTag?.id,
-              };
-            })
-          : [];
+      const workingDays = branch?.workingDays
+        ? JSON.parse(branch.workingDays)
+        : {
+            sun: 0,
+            mon: 0,
+            tue: 0,
+            wed: 0,
+            thu: 0,
+            fri: 0,
+            sat: 0,
+          };
 
-        form.reset({
-          businessTypeList: businessTypeList || undefined,
-          startTime: branch?.startTime || "",
-          endTime: branch?.endTime || "",
-          address: branch?.address || "",
-          city: branch?.city || "",
-          province: branch?.province || "",
-          country: branch?.country || "",
-          cc: branch?.cc || "",
-          contactNumber: branch?.contactNumber || "",
-          contactName: branch?.contactName || "",
-          workingDays,
-          tagList: tagList || undefined,
-        });
-      }
+      const tagList = branch?.userBranchTags
+        ? branch?.userBranchTags?.map((item: any) => {
+            return {
+              label: item?.userBranchTagsTag?.tagName,
+              value: item?.userBranchTagsTag?.id,
+            };
+          })
+        : [];
+
+      //TODO: main office prefilled but not working. API issue
+      form.reset({
+        mainOffice: branch?.mainOffice || 0,
+        businessTypeList: businessTypeList || undefined,
+        startTime: branch?.startTime || "",
+        endTime: branch?.endTime || "",
+        address: branch?.address || "",
+        city: branch?.city || "",
+        province: branch?.province || "",
+        country: branch?.country || "",
+        cc: branch?.cc || "",
+        contactNumber: branch?.contactNumber || "",
+        contactName: branch?.contactName || "",
+        workingDays,
+        tagList: tagList || undefined,
+      });
     }
-  }, [userDetails.data?.data, memoizedTags?.length]);
+  }, [branchQueryById.data?.data, memoizedTags?.length]);
 
   return (
     <section className="relative w-full py-7">
@@ -364,23 +364,17 @@ export default function EditBranchPage() {
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                           <div className="relative h-full w-full">
-                            {branchImageFile ? (
-                              //  || userDetails.data?.data
+                            {branchImageFile || branchQueryById.data?.data ? (
                               <Image
                                 src={
                                   branchImageFile
                                     ? URL.createObjectURL(branchImageFile[0])
-                                    : "/images/no-image.jpg"
+                                    : branchQueryById.data?.data
+                                          ?.branchFrontPicture
+                                      ? branchQueryById.data.data
+                                          .branchFrontPicture
+                                      : "/images/no-image.jpg"
                                 }
-                                // src={
-                                //   branchImageFile
-                                //     ? URL.createObjectURL(branchImageFile[0])
-                                //     : userDetails.data?.data?.userProfile?.[0]
-                                //           ?.logo
-                                //       ? userDetails.data?.branchFrontPicture
-                                //           ?.userProfile?.[0]?.branchFrontPicture
-                                //       : "/images/no-image.jpg"
-                                // }
                                 alt="profile"
                                 fill
                                 priority
@@ -434,25 +428,18 @@ export default function EditBranchPage() {
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                           <div className="relative h-full w-full">
-                            {proofOfAddressImageFile ? (
-                              //  || userDetails.data?.data
+                            {proofOfAddressImageFile ||
+                            branchQueryById.data?.data ? (
                               <Image
                                 src={
                                   proofOfAddressImageFile
                                     ? URL.createObjectURL(
                                         proofOfAddressImageFile[0],
                                       )
-                                    : "/images/company-logo.png"
+                                    : branchQueryById.data?.data?.proofOfAddress
+                                      ? branchQueryById.data.data.proofOfAddress
+                                      : "/images/no-image.jpg"
                                 }
-                                // src={
-                                //   branchImageFile
-                                //     ? URL.createObjectURL(branchImageFile[0])
-                                //     : userDetails.data?.data?.userProfile?.[0]
-                                //           ?.proofOfAddress
-                                //       ? userDetails.data?.data
-                                //           ?.userProfile?.[0]?.proofOfAddress
-                                //       : "/images/no-image.jpg"
-                                // }
                                 alt="profile"
                                 fill
                                 priority
@@ -788,15 +775,24 @@ export default function EditBranchPage() {
                   error={form.formState.errors.tagList?.message}
                 />
               </div>
-              <div className="mb-3.5 flex w-full justify-end border-b-2 border-dashed border-gray-300 pb-4">
-                <div className="flex w-full items-center space-x-2 ">
-                  <Label htmlFor="airplane-mode">Main Office:</Label>
-                  <Switch
-                    aria-readonly
-                    checked
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
-                </div>
+
+              <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
+                <FormField
+                  control={form.control}
+                  name="mainOffice"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
+                      <FormLabel>Main Office:</FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={!!field.value}
+                          onCheckedChange={field.onChange}
+                          className="!mt-0 data-[state=checked]:!bg-dark-orange"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 
