@@ -1,7 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useMemo, useState } from "react";
-import { useUpdateCompanyBranch } from "@/apis/queries/company.queries";
+import {
+  useFetchCompanyBranchById,
+  useUpdateCompanyBranch,
+} from "@/apis/queries/company.queries";
 import { Controller, useForm } from "react-hook-form";
 import {
   Form,
@@ -15,28 +18,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
-// import TimePicker from "react-time-picker";
 import { Switch } from "@/components/ui/switch";
-import { useMe } from "@/apis/queries/user.queries";
 import { countryObjs, getAmPm } from "@/utils/helper";
 import { cn } from "@/lib/utils";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
+import { useUploadFile } from "@/apis/queries/upload.queries";
 
 const formSchema = z
   .object({
+    uploadBranchImage: z.any().optional(),
+    uploadProofOfAddress: z.any().optional(),
+    branchFrontPicture: z.string().trim().optional(),
+    proofOfAddress: z.string().trim().optional(),
     businessTypeList: z
       .array(
         z.object({
@@ -125,6 +124,10 @@ const formSchema = z
         });
         return temp;
       }),
+    mainOffice: z
+      .boolean()
+      .transform((value) => (value ? 1 : 0))
+      .optional(),
   })
   .superRefine(({ startTime, endTime }, ctx) => {
     if (startTime && endTime && startTime > endTime) {
@@ -142,6 +145,8 @@ export default function EditBranchPage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      uploadBranchImage: undefined,
+      uploadProofOfAddress: undefined,
       profileType: "COMPANY",
       businessTypeList: undefined,
       branchFrontPicture: "",
@@ -169,18 +174,62 @@ export default function EditBranchPage() {
     },
   });
   const [activeBranchId, setActiveBranchId] = useState<string | null>();
-  const userDetails = useMe();
+  const [branchImageFile, setBranchImageFile] = useState<FileList | null>();
+  const [proofOfAddressImageFile, setProofOfAddressImageFile] =
+    useState<FileList | null>();
+
   const tagsQuery = useTags();
+  const upload = useUploadFile();
+  const branchQueryById = useFetchCompanyBranchById(
+    activeBranchId ? activeBranchId : "",
+    !!activeBranchId,
+  );
   const updateCompanyBranch = useUpdateCompanyBranch();
+
+  const handleUploadedFile = async (files: FileList | null) => {
+    if (files) {
+      const formData = new FormData();
+      formData.append("content", files[0]);
+      const response = await upload.mutateAsync(formData);
+      if (response.status && response.data) {
+        return response.data;
+      }
+    }
+  };
 
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
       profileType: "COMPANY",
-      mainOffice: 1,
       branchId: Number(activeBranchId),
     };
 
+    formData.uploadBranchImage = branchImageFile;
+    formData.uploadProofOfAddress = proofOfAddressImageFile;
+
+    let getBranchImageUrl;
+    let getProofOfAddressImageUrl;
+    if (formData.uploadBranchImage) {
+      getBranchImageUrl = await handleUploadedFile(formData.uploadBranchImage);
+    }
+
+    if (formData.uploadProofOfAddress) {
+      getProofOfAddressImageUrl = await handleUploadedFile(
+        formData.uploadProofOfAddress,
+      );
+    }
+
+    delete data.uploadBranchImage;
+    delete data.uploadProofOfAddress;
+    if (getBranchImageUrl) {
+      data.branchFrontPicture = getBranchImageUrl;
+    }
+    if (getProofOfAddressImageUrl) {
+      data.proofOfAddress = getProofOfAddressImageUrl;
+    }
+
+    console.log(data);
+    // return;
     const response = await updateCompanyBranch.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -210,60 +259,60 @@ export default function EditBranchPage() {
     const params = new URLSearchParams(document.location.search);
     let branchId = params.get("branchId");
     setActiveBranchId(branchId);
+  }, []);
 
-    if (userDetails.data?.data && branchId) {
-      const branch = userDetails.data?.data?.userBranch?.filter(
-        (item: any) => item?.id === Number(branchId),
-      )[0];
+  useEffect(() => {
+    if (branchQueryById.data?.data) {
+      const branch = branchQueryById.data?.data;
 
-      if (branch) {
-        const businessTypeList = branch?.userBranchBusinessType
-          ? branch?.userBranchBusinessType?.map((item: any) => {
-              return {
-                label: item?.userBranch_BusinessType_Tag?.tagName,
-                value: item?.userBranch_BusinessType_Tag?.id,
-              };
-            })
-          : [];
-
-        const workingDays = branch?.workingDays
-          ? JSON.parse(branch.workingDays)
-          : {
-              sun: 0,
-              mon: 0,
-              tue: 0,
-              wed: 0,
-              thu: 0,
-              fri: 0,
-              sat: 0,
+      const businessTypeList = branch?.userBranchBusinessType
+        ? branch?.userBranchBusinessType?.map((item: any) => {
+            return {
+              label: item?.userBranch_BusinessType_Tag?.tagName,
+              value: item?.userBranch_BusinessType_Tag?.id,
             };
+          })
+        : [];
 
-        const tagList = branch?.userBranchTags
-          ? branch?.userBranchTags?.map((item: any) => {
-              return {
-                label: item?.userBranchTagsTag?.tagName,
-                value: item?.userBranchTagsTag?.id,
-              };
-            })
-          : [];
+      const workingDays = branch?.workingDays
+        ? JSON.parse(branch.workingDays)
+        : {
+            sun: 0,
+            mon: 0,
+            tue: 0,
+            wed: 0,
+            thu: 0,
+            fri: 0,
+            sat: 0,
+          };
 
-        form.reset({
-          businessTypeList: businessTypeList || undefined,
-          startTime: branch?.startTime || "",
-          endTime: branch?.endTime || "",
-          address: branch?.address || "",
-          city: branch?.city || "",
-          province: branch?.province || "",
-          country: branch?.country || "",
-          cc: branch?.cc || "",
-          contactNumber: branch?.contactNumber || "",
-          contactName: branch?.contactName || "",
-          workingDays,
-          tagList: tagList || undefined,
-        });
-      }
+      const tagList = branch?.userBranchTags
+        ? branch?.userBranchTags?.map((item: any) => {
+            return {
+              label: item?.userBranchTagsTag?.tagName,
+              value: item?.userBranchTagsTag?.id,
+            };
+          })
+        : [];
+
+      //TODO: main office prefilled but not working. API issue
+      form.reset({
+        mainOffice: branch?.mainOffice || 0,
+        businessTypeList: businessTypeList || undefined,
+        startTime: branch?.startTime || "",
+        endTime: branch?.endTime || "",
+        address: branch?.address || "",
+        city: branch?.city || "",
+        province: branch?.province || "",
+        country: branch?.country || "",
+        cc: branch?.cc || "",
+        contactNumber: branch?.contactNumber || "",
+        contactName: branch?.contactName || "",
+        workingDays,
+        tagList: tagList || undefined,
+      });
     }
-  }, [userDetails.data?.data, memoizedTags?.length]);
+  }, [branchQueryById.data?.data, memoizedTags?.length]);
 
   return (
     <section className="relative w-full py-7">
@@ -308,32 +357,61 @@ export default function EditBranchPage() {
 
                 <FormField
                   control={form.control}
-                  name="branchFrontPicture"
+                  name="uploadBranchImage"
                   render={({ field }) => (
                     <FormItem className="mb-3.5 w-full">
                       <FormLabel>Upload Branch Front Picture</FormLabel>
                       <FormControl>
-                        <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
-                          <div className="text-sm font-medium leading-4 text-color-dark">
-                            <Image
-                              src="/images/upload.png"
-                              className="m-auto mb-3"
-                              width={30}
-                              height={30}
-                              alt="camera"
-                            />
-                            <span> Drop your Company Logo here, or </span>
-                            <span className="text-blue-500">browse</span>
-                            <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                              (.jpg or .png only. Up to 16mb)
-                            </p>
-                          </div>
+                        <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
+                          <div className="relative h-full w-full">
+                            {branchImageFile || branchQueryById.data?.data ? (
+                              <Image
+                                src={
+                                  branchImageFile
+                                    ? URL.createObjectURL(branchImageFile[0])
+                                    : branchQueryById.data?.data
+                                          ?.branchFrontPicture
+                                      ? branchQueryById.data.data
+                                          .branchFrontPicture
+                                      : "/images/no-image.jpg"
+                                }
+                                alt="profile"
+                                fill
+                                priority
+                              />
+                            ) : (
+                              <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                <div className="flex h-full flex-col items-center justify-center">
+                                  <Image
+                                    src="/images/upload.png"
+                                    className="mb-3"
+                                    width={30}
+                                    height={30}
+                                    alt="camera"
+                                  />
+                                  <span>
+                                    Drop your Branch Front Picture here, or{" "}
+                                  </span>
+                                  <span className="text-blue-500">browse</span>
+                                  <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                    (.jpg or .png only. Up to 16mb)
+                                  </p>
+                                </div>
+                              </div>
+                            )}
 
-                          <Input
-                            type="file"
-                            className="absolute h-full rounded-full bg-red-200 opacity-0"
-                            {...field}
-                          />
+                            <Input
+                              type="file"
+                              className="!bottom-0 h-64 !w-full opacity-0"
+                              {...field}
+                              onChange={(event) => {
+                                if (event.target.files?.[0]) {
+                                  setBranchImageFile(event.target.files);
+                                }
+                              }}
+                              id="uploadImage"
+                            />
+                          </div>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -343,32 +421,64 @@ export default function EditBranchPage() {
 
                 <FormField
                   control={form.control}
-                  name="proofOfAddress"
+                  name="uploadProofOfAddress"
                   render={({ field }) => (
                     <FormItem className="mb-3.5 w-full">
                       <FormLabel>Proof Of Address</FormLabel>
                       <FormControl>
-                        <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
-                          <div className="text-sm font-medium leading-4 text-color-dark">
-                            <Image
-                              src="/images/upload.png"
-                              className="m-auto mb-3"
-                              width={30}
-                              height={30}
-                              alt="camera"
-                            />
-                            <span> Drop your Company Logo here, or </span>
-                            <span className="text-blue-500">browse</span>
-                            <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                              (.jpg or .png only. Up to 16mb)
-                            </p>
-                          </div>
+                        <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
+                          <div className="relative h-full w-full">
+                            {proofOfAddressImageFile ||
+                            branchQueryById.data?.data ? (
+                              <Image
+                                src={
+                                  proofOfAddressImageFile
+                                    ? URL.createObjectURL(
+                                        proofOfAddressImageFile[0],
+                                      )
+                                    : branchQueryById.data?.data?.proofOfAddress
+                                      ? branchQueryById.data.data.proofOfAddress
+                                      : "/images/no-image.jpg"
+                                }
+                                alt="profile"
+                                fill
+                                priority
+                              />
+                            ) : (
+                              <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                <div className="flex h-full flex-col items-center justify-center">
+                                  <Image
+                                    src="/images/upload.png"
+                                    className="mb-3"
+                                    width={30}
+                                    height={30}
+                                    alt="camera"
+                                  />
+                                  <span>
+                                    Drop your Proof of Address here, or{" "}
+                                  </span>
+                                  <span className="text-blue-500">browse</span>
+                                  <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                    (.jpg or .png only. Up to 16mb)
+                                  </p>
+                                </div>
+                              </div>
+                            )}
 
-                          <Input
-                            type="file"
-                            className="absolute h-full rounded-full bg-red-200 opacity-0"
-                            {...field}
-                          />
+                            <Input
+                              type="file"
+                              className="!bottom-0 h-64 !w-full opacity-0"
+                              {...field}
+                              onChange={(event) => {
+                                if (event.target.files?.[0]) {
+                                  setProofOfAddressImageFile(
+                                    event.target.files,
+                                  );
+                                }
+                              }}
+                              id="uploadImage"
+                            />
+                          </div>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -469,7 +579,7 @@ export default function EditBranchPage() {
                   </div>
 
                   <div className="flex w-full md:w-6/12">
-                    <div className="mb-4 flex w-full max-w-[120px] flex-col justify-between md:pr-3.5">
+                    <div className="mb-4 flex w-full max-w-[125px] flex-col justify-between md:pr-3.5">
                       <Label
                         className={cn(
                           form.formState.errors.cc?.message
@@ -496,7 +606,8 @@ export default function EditBranchPage() {
                                   countryObjs[key as keyof typeof countryObjs]
                                 }
                               >
-                                ({countryObjs[key as keyof typeof countryObjs]}){" "}
+                                ({countryObjs[key as keyof typeof countryObjs]}
+                                )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 {key}
                               </option>
                             ))}
@@ -665,24 +776,33 @@ export default function EditBranchPage() {
                   error={form.formState.errors.tagList?.message}
                 />
               </div>
-              <div className="mb-3.5 flex w-full justify-end border-b-2 border-dashed border-gray-300 pb-4">
-                <div className="flex w-full items-center space-x-2 ">
-                  <Label htmlFor="airplane-mode">Main Office:</Label>
-                  <Switch
-                    aria-readonly
-                    checked
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
-                </div>
+
+              <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
+                <FormField
+                  control={form.control}
+                  name="mainOffice"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
+                      <FormLabel>Main Office:</FormLabel>
+                      <FormControl>
+                        <Switch
+                          checked={!!field.value}
+                          onCheckedChange={field.onChange}
+                          className="!mt-0 data-[state=checked]:!bg-dark-orange"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 
             <Button
-              disabled={updateCompanyBranch.isPending}
+              disabled={updateCompanyBranch.isPending || upload.isPending}
               type="submit"
               className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
             >
-              {updateCompanyBranch.isPending ? (
+              {updateCompanyBranch.isPending || upload.isPending ? (
                 <>
                   <Image
                     src="/images/load.png"

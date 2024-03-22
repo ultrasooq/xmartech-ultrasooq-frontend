@@ -54,7 +54,9 @@ import validator from "validator";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
+  uploadIdentityImage: z.any().optional(),
   profilePicture: z.string().trim().optional(),
+  identityProof: z.string().trim().optional(),
   firstName: z
     .string()
     .trim()
@@ -111,7 +113,9 @@ export default function ProfilePage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       uploadImage: undefined,
+      uploadIdentityImage: undefined,
       profilePicture: "",
+      identityProof: "",
       firstName: "",
       lastName: "",
       gender: "",
@@ -133,6 +137,7 @@ export default function ProfilePage() {
   });
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [imageFile, setImageFile] = useState<FileList | null>();
+  const [identityImageFile, setIdentityImageFile] = useState<FileList | null>();
   const me = useMe(!!accessToken);
   const upload = useUploadFile();
   const updateProfile = useUpdateProfile();
@@ -183,13 +188,27 @@ export default function ProfilePage() {
       dateOfBirth: formData.dateOfBirth.toISOString(),
     };
     formData.uploadImage = imageFile;
+    formData.uploadIdentityImage = identityImageFile;
+
     let getImageUrl;
+    let getIdentityImageUrl;
+
     if (formData.uploadImage) {
       getImageUrl = await handleUploadedFile(formData.uploadImage);
     }
+    if (formData.uploadIdentityImage) {
+      getIdentityImageUrl = await handleUploadedFile(
+        formData.uploadIdentityImage,
+      );
+    }
+    //TODO: identity image upload
     delete data.uploadImage;
+    delete data.uploadIdentityImage;
     if (getImageUrl) {
       data.profilePicture = getImageUrl;
+    }
+    if (getIdentityImageUrl) {
+      data.identityProof = getIdentityImageUrl;
     }
 
     data.socialLinkList = data.socialLinkList.filter(
@@ -245,6 +264,7 @@ export default function ProfilePage() {
     if (me.data) {
       const {
         profilePicture,
+        identityProof,
         firstName,
         lastName,
         gender,
@@ -282,6 +302,7 @@ export default function ProfilePage() {
 
       form.reset({
         profilePicture: profilePicture || "",
+        identityProof: identityProof || "",
         firstName,
         lastName,
         gender,
@@ -547,7 +568,7 @@ export default function ProfilePage() {
                       key={field.id}
                       className="relative mb-4 flex w-full flex-row items-center gap-x-3.5"
                     >
-                      <div className="flex w-full max-w-[120px] flex-col justify-between">
+                      <div className="flex w-full max-w-[125px] flex-col justify-between">
                         <Label
                           className={cn(
                             // form.formState.errors.cc?.message
@@ -576,7 +597,8 @@ export default function ProfilePage() {
                                 >
                                   (
                                   {countryObjs[key as keyof typeof countryObjs]}
-                                  ) {key}
+                                  )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                  {key}
                                 </option>
                               ))}
                             </select>
@@ -676,13 +698,19 @@ export default function ProfilePage() {
                               ) : (
                                 <span className="capitalize">Select Type</span>
                               )}
-                              <div className="relative">
+                              <div className="wrap relative flex break-all">
+                                <p
+                                  className="min-w-auto flex max-w-[80%] items-center overflow-hidden pl-1 pr-1 text-left"
+                                  title={watchSocialMedia[index]?.link}
+                                >
+                                  {watchSocialMedia[index]?.link}
+                                </p>
                                 {watchSocialMedia[index]?.link !== "" ? (
                                   <a
                                     href={watchSocialMedia[index]?.link}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="absolute left-[-5px] top-[-6px] px-2 py-1"
+                                    className=" px-2 py-0"
                                   >
                                     <Image
                                       src="/images/share.png"
@@ -692,12 +720,6 @@ export default function ProfilePage() {
                                     />
                                   </a>
                                 ) : null}
-                                <p
-                                  className="min-w-[280px] max-w-[280px] overflow-hidden pl-8 text-left"
-                                  title={watchSocialMedia[index]?.link}
-                                >
-                                  {watchSocialMedia[index]?.link}
-                                </p>
                               </div>
                             </div>
                           </AccordionTrigger>
@@ -782,6 +804,75 @@ export default function ProfilePage() {
                       </Button>
                     </div>
                   ))}
+
+                  {me.data?.data?.tradeRole !== "BUYER" ? (
+                    <FormField
+                      control={form.control}
+                      name="uploadIdentityImage"
+                      render={({ field }) => (
+                        <FormItem className="mb-3.5 w-full">
+                          <FormLabel>Upload Identity Proof</FormLabel>
+                          <FormControl>
+                            <div className="relative m-auto h-48 w-full border-2 border-dashed border-gray-300">
+                              <div className="relative h-full w-full">
+                                {identityImageFile ||
+                                me.data?.data?.identityProof ? (
+                                  <Image
+                                    src={
+                                      identityImageFile
+                                        ? URL.createObjectURL(
+                                            identityImageFile[0],
+                                          )
+                                        : me.data?.data?.identityProof
+                                          ? me.data?.data?.identityProof
+                                          : "/images/company-logo.png"
+                                    }
+                                    alt="profile"
+                                    fill
+                                    priority
+                                  />
+                                ) : (
+                                  <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                    <div className="flex h-full flex-col items-center justify-center">
+                                      <Image
+                                        src="/images/upload.png"
+                                        className="mb-3"
+                                        width={30}
+                                        height={30}
+                                        alt="camera"
+                                      />
+                                      <span>
+                                        Drop your Identify proof here, or{" "}
+                                      </span>
+                                      <span className="text-blue-500">
+                                        browse
+                                      </span>
+                                      <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                        (.jpg or .png only. Up to 16mb)
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+
+                                <Input
+                                  type="file"
+                                  className="!bottom-0 h-48 !w-full opacity-0"
+                                  {...field}
+                                  onChange={(event) => {
+                                    if (event.target.files?.[0]) {
+                                      setIdentityImageFile(event.target.files);
+                                    }
+                                  }}
+                                  id="uploadIdentityImage"
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ) : null}
 
                   <p className="mb-3 text-[13px] text-red-500">
                     {form.formState.errors.socialLinkList?.message}

@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
-import { useForgotPassword } from "@/apis/queries/auth.queries";
+import { useChangeEmail } from "@/apis/queries/auth.queries";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -41,10 +41,10 @@ export default function ChangeEmailPage() {
       email: "",
     },
   });
-  const forgotPassword = useForgotPassword();
+  const changeEmail = useChangeEmail();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const response = await forgotPassword.mutateAsync(values);
+    const response = await changeEmail.mutateAsync(values);
 
     if (response?.status && response?.otp) {
       toast({
@@ -54,7 +54,7 @@ export default function ChangeEmailPage() {
 
       sessionStorage.setItem("email", values.email.toLowerCase());
       form.reset();
-      router.push("/password-reset-verify");
+      router.push("/email-change-verify");
     } else {
       toast({
         title: "OTP Failed",
@@ -108,12 +108,11 @@ export default function ChangeEmailPage() {
                   />
                   <div className="mb-4 w-full">
                     <Button
-                      //   disabled={forgotPassword.isPending}
-                      disabled
+                      disabled={changeEmail.isPending}
                       type="submit"
                       className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
-                      {forgotPassword.isPending ? (
+                      {changeEmail.isPending ? (
                         <>
                           <Image
                             src="/images/load.png"

@@ -11,12 +11,15 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ServicesSection from "@/components/shared/ServicesSection";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 export default function CompanyProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
 
   const handleCompanyProfilePage = () => router.push("/profile");
+  const handleAddCompanyBranchPage = () =>
+    router.push("/company-profile/add-branch");
   const handleEditCompanyPage = () =>
     router.push("/company-profile/edit-profile");
   const handleEditCompanyBranchPage = (branchId: number) =>
@@ -47,7 +50,7 @@ export default function CompanyProfileDetailsPage() {
 
           <div className="mt-12 w-full">
             <Tabs defaultValue="profile-info">
-              <TabsList className="mb-1 flex h-auto w-full flex-wrap gap-x-6 rounded-none bg-transparent px-0 pt-7 sm:grid sm:min-h-[80px] sm:w-[560px] sm:grid-cols-3">
+              <TabsList className="flex h-auto w-full flex-wrap gap-x-6 rounded-none bg-transparent px-0 pt-7 sm:grid sm:min-h-[80px] sm:w-[560px] sm:grid-cols-3">
                 <TabsTrigger
                   value="profile-info"
                   className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
@@ -79,10 +82,22 @@ export default function CompanyProfileDetailsPage() {
                   />
                   {/* Branch Section */}
                   <div className="mb-4 w-full pt-4">
-                    <div className="flex w-full flex-wrap items-center justify-between pb-5">
-                      <h2 className="left-8 text-2xl font-semibold text-color-dark">
-                        Branch Information
-                      </h2>
+                    <div className="mb-5 flex w-full items-center justify-between">
+                      <div className="flex w-full flex-wrap items-center justify-between">
+                        <h2 className="left-8 text-2xl font-semibold text-color-dark">
+                          Branch Information
+                        </h2>
+                      </div>
+                      <div className="w-auto">
+                        <button
+                          type="button"
+                          onClick={handleAddCompanyBranchPage}
+                          className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                        >
+                          <PlusIcon className="mr-1 h-5 w-5" />
+                          Add
+                        </button>
+                      </div>
                     </div>
                     {userDetails.data?.data?.userBranch.map((item: any) => (
                       <React.Fragment key={item.id}>

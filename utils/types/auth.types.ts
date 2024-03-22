@@ -94,3 +94,15 @@ export interface IPasswordResetVerify {
 export interface IChangePasswordRequest extends IResetPasswordRequest {}
 
 export interface IChangePassword extends IResetPassword {}
+
+export interface IChangeEmailRequest extends IForgotPasswordRequest {}
+
+export interface IChangeEmail extends IForgotPassword {}
+
+export interface IChangeEmailVerifyRequest extends IVerifyOtpRequest {}
+
+export interface IChangeEmailVerify {
+  data: {};
+  message: string;
+  status: boolean;
+}

@@ -6,16 +6,13 @@ import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  useForgotPassword,
-  useResendOtp,
-  userPasswordResetVerify,
+  useChangeEmail,
+  useChangeEmailVerify,
 } from "@/apis/queries/auth.queries";
 import { useToast } from "@/components/ui/use-toast";
-import { setCookie } from "cookies-next";
 import Image from "next/image";
-import { PUREMOON_TEMP_TOKEN_KEY } from "@/utils/constants";
 
-export default function PasswordResetVerifyPage() {
+export default function EmailChangeVerifyPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
@@ -28,9 +25,8 @@ export default function PasswordResetVerifyPage() {
     },
   });
 
-  const passwordResetVerify = userPasswordResetVerify();
-  const resendOtp = useResendOtp();
-  const passwordResendVerify = useForgotPassword();
+  const changeEmailVerify = useChangeEmailVerify();
+  const resendChangeEmailVerify = useChangeEmail();
 
   const formatTime = useMemo(
     () =>
@@ -68,28 +64,28 @@ export default function PasswordResetVerifyPage() {
       email: formData.email?.toLowerCase(),
       otp: Number(combinedOtp),
     };
-    const response = await passwordResetVerify.mutateAsync(data);
+    const response = await changeEmailVerify.mutateAsync(data);
 
-    if (response?.status && response?.accessToken) {
-      // store in cookie
-      setCookie(PUREMOON_TEMP_TOKEN_KEY, response.accessToken);
+    if (response?.status) {
       toast({
-        title: "Verification Successful",
+        title: "Update Successful",
         description: response.message,
       });
       form.reset();
       setOtp(new Array(4).fill(""));
       sessionStorage.clear();
-      router.push("/reset-password");
+      setTimeout(() => {
+        router.push("/home");
+      }, 3000);
     } else {
       toast({
-        title: "Verification Failed",
+        title: "Update Failed",
         description: response.message,
       });
     }
   };
 
-  const handlePasswordResendVerify = async () => {
+  const handleChangeEmailResendVerify = async () => {
     const email = sessionStorage.getItem("email") || "";
     const data = {
       email: email.toLowerCase(),
@@ -101,7 +97,7 @@ export default function PasswordResetVerifyPage() {
       });
       return;
     }
-    const response = await passwordResendVerify.mutateAsync(data);
+    const response = await resendChangeEmailVerify.mutateAsync(data);
 
     if (response.status && response.otp) {
       toast({
@@ -220,12 +216,14 @@ export default function PasswordResetVerifyPage() {
                   <div className="mb-4 w-full text-center">
                     <Button
                       disabled={
-                        passwordResetVerify.isPending || resendOtp.isPending
+                        changeEmailVerify.isPending ||
+                        resendChangeEmailVerify.isPending
                       }
                       type="submit"
                       className="m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                     >
-                      {passwordResetVerify.isPending ? (
+                      {changeEmailVerify.isPending ||
+                      resendChangeEmailVerify.isPending ? (
                         <>
                           <Image
                             src="/images/load.png"
@@ -251,11 +249,11 @@ export default function PasswordResetVerifyPage() {
                   type="button"
                   variant="link"
                   disabled={
-                    passwordResetVerify.isPending ||
-                    resendOtp.isPending ||
+                    changeEmailVerify.isPending ||
+                    resendChangeEmailVerify.isPending ||
                     count > 480
                   }
-                  onClick={handlePasswordResendVerify}
+                  onClick={handleChangeEmailResendVerify}
                   className="cursor-pointer p-0 font-medium text-dark-orange"
                 >
                   Resend

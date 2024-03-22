@@ -45,12 +45,18 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
 
   return (
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
-      <Avatar className="h-40 w-40 rounded-2xl">
-        <AvatarImage src={userDetails?.profilePicture} alt="image-icon" />
-        <AvatarFallback className="text-5xl font-bold">
-          {memoizedInitials || "NA"}
-        </AvatarFallback>
-      </Avatar>
+      <div className="relative h-40 w-40 rounded-2xl">
+        <Image
+          src={
+            userDetails?.profilePicture
+              ? userDetails.profilePicture
+              : "/images/no-image.jpg"
+          }
+          alt="image-icon"
+          className="rounded-2xl object-cover"
+          fill
+        />
+      </div>
       {/* <div className="relative mt-4 h-40 w-40 rounded-full">
         <div className="h-full w-full overflow-hidden rounded-2xl">
           <img

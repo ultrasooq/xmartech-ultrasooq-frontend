@@ -1,6 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  changeEmail,
   changePassword,
+  emailChangeVerify,
   forgotPassword,
   login,
   passwordResetVerify,
@@ -11,6 +13,10 @@ import {
 } from "../requests/auth.requests";
 import { APIResponseError } from "@/utils/types/common.types";
 import {
+  IChangeEmail,
+  IChangeEmailRequest,
+  IChangeEmailVerify,
+  IChangeEmailVerifyRequest,
   IChangePassword,
   IChangePasswordRequest,
   IForgotPassword,
@@ -28,7 +34,6 @@ import {
   IVerifyOtp,
   IVerifyOtpRequest,
 } from "@/utils/types/auth.types";
-import { useToast } from "@/components/ui/use-toast";
 
 export const useRegister = () =>
   useMutation<IRegister, APIResponseError, IRegisterRequest>({
@@ -130,3 +135,38 @@ export const useChangePassword = () =>
       console.log(err);
     },
   });
+
+export const useChangeEmail = () =>
+  useMutation<IChangeEmail, APIResponseError, IChangeEmailRequest>({
+    mutationFn: async (payload) => {
+      const res = await changeEmail(payload);
+      return res.data;
+    },
+    onSuccess: () => {},
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+
+export const useChangeEmailVerify = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    IChangeEmailVerify,
+    APIResponseError,
+    IChangeEmailVerifyRequest
+  >({
+    mutationFn: async (payload) => {
+      const res = await emailChangeVerify(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["me"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};

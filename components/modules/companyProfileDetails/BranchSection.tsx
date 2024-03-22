@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
 
 type BranchSectionProps = {
   branchDetails: any;
@@ -40,6 +41,16 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                 ),
               )}
             </div>
+            <p
+              className={cn(
+                branchDetails?.mainOffice === 1
+                  ? "text-red-600"
+                  : "text-dark-cyan",
+                "text-base font-semibold leading-5",
+              )}
+            >
+              {branchDetails?.mainOffice === 1 ? "Main Branch" : "Sub Branch"}
+            </p>
           </div>
         </AccordionTrigger>
         <AccordionContent>
@@ -196,10 +207,15 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                       </span>
                     </div>
                     <div className="mr-1 flex w-full  items-center justify-start sm:mr-0">
-                      <div className="relative h-32 w-36 rounded-2xl">
+                      <div className="relative h-32 w-36 rounded-2xl border border-gray-300">
                         <Image
-                          src="/images/branch-front.png"
+                          src={
+                            branchDetails?.branchFrontPicture
+                              ? branchDetails.branchFrontPicture
+                              : "/images/no-image.jpg"
+                          }
                           alt="branch-image"
+                          className="object-cover"
                           fill
                         />
                       </div>
@@ -214,10 +230,15 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                       </span>
                     </div>
                     <div className="mr-1 flex w-full  items-center justify-start sm:mr-0">
-                      <div className="relative h-32 w-36 rounded-2xl">
+                      <div className="relative h-32 w-36 rounded-2xl border border-gray-300">
                         <Image
-                          src="/images/branch-address.png"
+                          src={
+                            branchDetails?.proofOfAddress
+                              ? branchDetails.proofOfAddress
+                              : "/images/no-image.jpg"
+                          }
                           alt="branch-image"
+                          className="object-cover"
                           fill
                         />
                       </div>
