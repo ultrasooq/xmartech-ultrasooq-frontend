@@ -124,7 +124,7 @@ const TermsContent = () => {
         other Website information so long as the link: (a) is not in any way
         deceptive; (b) does not falsely imply sponsorship, endorsement or
         approval of the linking party and its products and/or services; and (c)
-        fits within the context of the linking party’s site.
+        fits within the context of the linking party&apos;s site.
       </p>
 
       <p className="mb-4">
@@ -169,7 +169,8 @@ const TermsContent = () => {
         These organizations may link to our home page so long as the link: (a)
         is not in any way deceptive; (b) does not falsely imply sponsorship,
         endorsement or approval of the linking party and its products or
-        services; and (c) fits within the context of the linking party's site.
+        services; and (c) fits within the context of the linking party&apos;s
+        site.
       </p>
 
       <p className="mb-4">
@@ -196,13 +197,13 @@ const TermsContent = () => {
         <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           By use of any other description of our Website being linked to that
           makes sense within the context and format of content on the linking
-          party's site.
+          party&apos;s site.
         </li>
       </ul>
 
       <p className="mb-4">
-        No use of [Website/Service]'s logo or other artwork will be allowed for
-        linking absent a trademark license agreement.
+        No use of [Website/Service]&apos;s logo or other artwork will be allowed
+        for linking absent a trademark license agreement.
       </p>
 
       <h4 className="mt-4 text-base font-bold capitalize text-color-dark">
