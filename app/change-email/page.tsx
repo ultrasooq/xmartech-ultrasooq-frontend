@@ -48,7 +48,7 @@ export default function ChangeEmailPage() {
 
     if (response?.status && response?.otp) {
       toast({
-        title: "OTP Sent",
+        title: "Verification code sent",
         description: response?.message,
       });
 
@@ -57,7 +57,7 @@ export default function ChangeEmailPage() {
       router.push("/email-change-verify");
     } else {
       toast({
-        title: "OTP Failed",
+        title: "Verification error!",
         description: response?.message,
       });
     }

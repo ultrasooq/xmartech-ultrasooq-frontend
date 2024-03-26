@@ -100,14 +100,14 @@ export default function OtpVerifyPage() {
 
     if (response.status && response.otp) {
       toast({
-        title: "Otp Sent",
+        title: "Verification code sent",
         description: response.message,
       });
       setCount(600);
       setOtp(new Array(4).fill(""));
     } else {
       toast({
-        title: "Otp Failed",
+        title: "Verification error!",
         description: response.message,
       });
     }

@@ -142,7 +142,7 @@ export default function RegisterPage() {
 
     if (response?.status && response?.otp) {
       toast({
-        title: "Otp Sent",
+        title: "Verification code sent",
         description: "OTP has been sent to your email/phone",
       });
       sessionStorage.setItem("email", formData.email.toLowerCase());
