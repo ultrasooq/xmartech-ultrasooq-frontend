@@ -178,7 +178,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       <span>Drop your Image or </span>
                       <span className="text-blue-500">browse</span>
                       <p className="text-normal mt-1 text-xs leading-4 text-gray-300">
-                        (.jpg or .png only. Up to 16mb)
+                        (.jpg or .png only. Up to 1mb)
                       </p>
                     </div>
 
@@ -199,7 +199,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       <span>Drop your Image or </span>
                       <span className="text-blue-500">browse</span>
                       <p className="text-normal mt-1 text-xs leading-4 text-gray-300">
-                        (Up to 16mb)
+                        (Up to 1mb)
                       </p>
                     </div>
                     <input
@@ -219,7 +219,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       <span>Drop your Image or </span>
                       <span className="text-blue-500">browse</span>
                       <p className="text-normal mt-1 text-xs leading-4 text-gray-300">
-                        (.jpg or .png only. Up to 16mb)
+                        (.jpg or .png only. Up to 1mb)
                       </p>
                     </div>
 
