@@ -1,0 +1,543 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import React, { useEffect, useMemo, useState } from "react";
+import { useUpdateCompanyProfile } from "@/apis/queries/company.queries";
+import { Controller, useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useTags } from "@/apis/queries/tags.queries";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import { useMe } from "@/apis/queries/user.queries";
+import { Label } from "@/components/ui/label";
+import { useUploadFile } from "@/apis/queries/upload.queries";
+import { getLastTwoHundredYears } from "@/utils/helper";
+
+const formSchema = z.object({
+  uploadImage: z.any().optional(),
+  logo: z.string().trim().optional(),
+  companyName: z
+    .string()
+    .trim()
+    .min(2, { message: "Company Name is required" })
+    .max(50, { message: "Company Name must be less than 50 characters" }),
+  businessTypeList: z
+    .string()
+    .transform((value) => [{ businessTypeId: Number(value) }]),
+  annualPurchasingVolume: z
+    .string()
+    .trim()
+    .min(2, { message: "Annual Purchasing Volume is required" })
+    .max(50, {
+      message: "Annual Purchasing Volume must be less than 20 characters",
+    }),
+  address: z
+    .string()
+    .trim()
+    .min(2, { message: "Address is required" })
+    .max(50, {
+      message: "Address must be less than 50 characters",
+    }),
+  city: z.string().trim().min(2, { message: "City is required" }),
+  province: z.string().trim().min(2, { message: "Province is required" }),
+  country: z.string().trim().min(2, { message: "Country is required" }),
+  yearOfEstablishment: z
+    .string()
+    .trim()
+    .min(2, { message: "Year Of Establishment is required" })
+    .transform((value) => Number(value)),
+  totalNoOfEmployee: z
+    .string()
+    .trim()
+    .min(2, { message: "Total No Of Employee is required" }),
+  aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
+});
+
+export default function EditProfilePage() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      uploadImage: undefined,
+      logo: "",
+      profileType: "COMPANY", // dont remove value
+      companyLogo: "",
+      companyName: "",
+      annualPurchasingVolume: "",
+      businessTypeList: undefined,
+      address: "",
+      city: "",
+      province: "",
+      country: "",
+      yearOfEstablishment: "",
+      totalNoOfEmployee: "",
+      aboutUs: "",
+    },
+  });
+  const [imageFile, setImageFile] = useState<FileList | null>();
+  const userDetails = useMe();
+  const tagsQuery = useTags();
+  const upload = useUploadFile();
+  const updateCompanyProfile = useUpdateCompanyProfile();
+
+  const handleUploadedFile = async (files: FileList | null) => {
+    if (files) {
+      const formData = new FormData();
+      formData.append("content", files[0]);
+      const response = await upload.mutateAsync(formData);
+      if (response.status && response.data) {
+        return response.data;
+      }
+    }
+  };
+
+  const onSubmit = async (formData: any) => {
+    let data = {
+      ...formData,
+      profileType: "COMPANY",
+      userProfileId: userDetails.data?.data?.userProfile?.[0]?.id as number,
+    };
+
+    formData.uploadImage = imageFile;
+    let getImageUrl;
+    if (formData.uploadImage) {
+      getImageUrl = await handleUploadedFile(formData.uploadImage);
+    }
+    if (getImageUrl) {
+      data.logo = getImageUrl;
+    }
+    delete data.uploadImage;
+    console.log(data);
+    // return;
+    const response = await updateCompanyProfile.mutateAsync(data);
+
+    if (response.status && response.data) {
+      toast({
+        title: "Profile Edit Successful",
+        description: response.message,
+      });
+      form.reset();
+      router.push("/company-profile-details");
+    } else {
+      toast({
+        title: "Profile Edit Failed",
+        description: response.message,
+      });
+    }
+  };
+
+  const memoizedLastTwoHundredYears = useMemo(() => {
+    return getLastTwoHundredYears() || [];
+  }, [getLastTwoHundredYears().length]);
+
+  const memoizedTags = useMemo(() => {
+    return (
+      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
+        return { label: item.tagName, value: item.id };
+      }) || []
+    );
+  }, [tagsQuery?.data]);
+
+  useEffect(() => {
+    if (userDetails.data?.data) {
+      const userProfile = userDetails.data?.data?.userProfile?.[0];
+
+      form.reset({
+        logo: userProfile?.logo || "",
+        address: userProfile?.address || "",
+        city: userProfile?.city || "",
+        province: userProfile?.province || "",
+        country: userProfile?.country || "",
+        yearOfEstablishment: userProfile?.yearOfEstablishment?.toString() || "",
+        totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
+        annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
+        aboutUs: userProfile?.aboutUs || "",
+        companyName: userProfile?.companyName || "",
+        businessTypeList:
+          userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() ||
+          undefined,
+      });
+    }
+  }, [userDetails.data?.data?.userProfile?.length]);
+
+  return (
+    <section className="relative w-full py-7">
+      <div className="absolute left-0 top-0 -z-10 h-full w-full">
+        <Image
+          src="/images/before-login-bg.png"
+          className="h-full w-full object-cover object-center"
+          alt="background"
+          fill
+          priority
+        />
+      </div>
+      <div className="container relative z-10 m-auto">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
+          >
+            <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                Profile
+              </h2>
+            </div>
+            <div className="flex w-full flex-wrap">
+              <div className="mb-4 w-full">
+                <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
+                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                    Company Information
+                  </label>
+                </div>
+              </div>
+              <div className="mb-3.5 w-full">
+                <div className="flex flex-wrap">
+                  <FormField
+                    control={form.control}
+                    name="uploadImage"
+                    render={({ field }) => (
+                      <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5">
+                        <FormLabel>Upload Company Logo</FormLabel>
+                        <FormControl>
+                          <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
+                            <div className="relative h-full w-full">
+                              {imageFile ||
+                              userDetails.data?.data?.userProfile?.[0]?.logo ? (
+                                <Image
+                                  src={
+                                    imageFile
+                                      ? URL.createObjectURL(imageFile[0])
+                                      : userDetails.data?.data?.userProfile?.[0]
+                                            ?.logo
+                                        ? userDetails.data?.data
+                                            ?.userProfile?.[0]?.logo
+                                        : "/images/company-logo.png"
+                                  }
+                                  alt="profile"
+                                  fill
+                                  priority
+                                />
+                              ) : (
+                                <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                  <div className="flex h-full flex-col items-center justify-center">
+                                    <Image
+                                      src="/images/upload.png"
+                                      className="mb-3"
+                                      width={30}
+                                      height={30}
+                                      alt="camera"
+                                    />
+                                    <span>
+                                      Drop your Company Logo here, or{" "}
+                                    </span>
+                                    <span className="text-blue-500">
+                                      browse
+                                    </span>
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                      (.jpg or .png only. Up to 16mb)
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                multiple={false}
+                                className="!bottom-0 h-64 !w-full opacity-0"
+                                {...field}
+                                onChange={(event) => {
+                                  if (event.target.files?.[0]) {
+                                    if (event.target.files[0].size > 1048576) {
+                                      toast({
+                                        title:
+                                          "Image size should be less than 1MB",
+                                      });
+                                      return;
+                                    }
+                                    setImageFile(event.target.files);
+                                  }
+                                }}
+                                id="uploadImage"
+                              />
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="mb-3.5 w-full md:w-6/12 md:pl-3.5">
+                    <FormField
+                      control={form.control}
+                      name="companyName"
+                      render={({ field }) => (
+                        <FormItem className="mb-4 w-full">
+                          <FormLabel>Company Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Company Name"
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="mb-4 flex w-full flex-col justify-between space-y-3">
+                      <Label>Business Type</Label>
+                      <Controller
+                        name="businessTypeList"
+                        control={form.control}
+                        render={({ field }) => (
+                          <select
+                            {...field}
+                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          >
+                            {memoizedTags.map(
+                              (item: { label: string; value: number }) => (
+                                <option
+                                  value={item.value?.toString()}
+                                  key={item.value}
+                                >
+                                  {item.label}
+                                </option>
+                              ),
+                            )}
+                          </select>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="annualPurchasingVolume"
+                      render={({ field }) => (
+                        <FormItem className="mb-4 w-full">
+                          <FormLabel>Annual Purchasing Volume</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Annual Purchasing Volume"
+                              type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
+                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-3.5 w-full">
+                <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
+                  <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
+                    Registration Address
+                  </label>
+                </div>
+                <div className="flex flex-wrap">
+                  <div className="relative mb-4 w-full md:w-6/12 md:pr-3.5">
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Address</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Address"
+                              className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Image
+                      src="/images/location.svg"
+                      alt="location-icon"
+                      height={17}
+                      width={17}
+                      className="absolute right-6 top-[50px]"
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="City"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="province"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
+                        <FormLabel>Province</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Province"
+                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
+                    <Label>Country</Label>
+                    <Controller
+                      name="country"
+                      control={form.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                        >
+                          <option value="">Select Country</option>
+                          <option value="USA">USA</option>
+                          <option value="UK">UK</option>
+                          <option value="India">India</option>
+                        </select>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-3.5 w-full">
+                <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
+                  <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
+                    More Information
+                  </label>
+                </div>
+                <div className="flex flex-wrap">
+                  <div className="mb-4 flex w-full flex-col justify-between space-y-4 md:w-6/12 md:pr-3.5">
+                    <Label>Year Of Establishment</Label>
+                    <Controller
+                      name="yearOfEstablishment"
+                      control={form.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                        >
+                          <option value="">Select Year</option>
+                          {memoizedLastTwoHundredYears.map((year) => (
+                            <option key={year} value={year}>
+                              {year}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    />
+                  </div>
+
+                  <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
+                    <Label>Total Number of Employees</Label>
+                    <Controller
+                      name="totalNoOfEmployee"
+                      control={form.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                        >
+                          <option value="">Select</option>
+                          <option value="1-10">1-10</option>
+                          <option value="11-50">11-50</option>
+                          <option value="51-500">51-500</option>
+                          <option value="500+">500+</option>
+                        </select>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="aboutUs"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full">
+                        <FormLabel>About Us</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Write Here...."
+                            className="rounded border-gray-300 focus-visible:!ring-0"
+                            rows={6}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Button
+              disabled={updateCompanyProfile.isPending || upload.isPending}
+              type="submit"
+              className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+            >
+              {updateCompanyProfile.isPending || upload.isPending ? (
+                <>
+                  <Image
+                    src="/images/load.png"
+                    alt="loader-icon"
+                    width={20}
+                    height={20}
+                    className="mr-2 animate-spin"
+                  />
+                  Please wait
+                </>
+              ) : (
+                "Edit changes"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </section>
+  );
+}

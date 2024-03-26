@@ -1,6 +1,7 @@
 
 
-## Getting Started Prasanta
+## Getting Started Prasanta 
+Node v17.3.0
 
 First, run the development server:
 
@@ -13,7 +14,7 @@ yarn dev
 ### `npm run dev`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:4000](http://localhost:4000) to view it in the browser.
 
 You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
