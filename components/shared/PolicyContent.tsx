@@ -7,24 +7,24 @@ const PolicyContent = () => {
       <p className="mb-3 text-base font-bold capitalize text-color-dark">
         Welcome to Puremoon!
       </p>
-      Your privacy is important to us. It is [Website/Service]'s policy to
+      Your privacy is important to us. It is [Website/Service]&apos;s policy to
       respect your privacy regarding any information we may collect from you
       across our puremoon, www.puremoon.com, and other sites we own and operate.
       <p className="mb-3">
         We only ask for personal information when we truly need it to provide a
         service to you. We collect it by fair and lawful means, with your
-        knowledge and consent. We also let you know why we're collecting it and
-        how it will be used.
+        knowledge and consent. We also let you know why we&apos;re collecting it
+        and how it will be used.
       </p>
       <p className="mb-3">
         We only retain collected information for as long as necessary to provide
-        you with your requested service. What data we store, we’ll protect
+        you with your requested service. What data we store, we&apos;ll protect
         within commercially acceptable means to prevent loss and theft, as well
         as unauthorized access, disclosure, copying, use or modification.
       </p>
       <p className="mb-3">
-        We don't share any personally identifying information publicly or with
-        third-parties, except when required to by law.
+        We don&apos;t share any personally identifying information publicly or
+        with third-parties, except when required to by law.
       </p>
       <p className="mb-3">
         Our website may link to external sites that are not operated by us.
@@ -46,18 +46,18 @@ const PolicyContent = () => {
       <p className="mb-3">
         We only ask for personal information when we truly need it to provide a
         service to you. We collect it by fair and lawful means, with your
-        knowledge and consent. We also let you know why we're collecting it and
-        how it will be used.
+        knowledge and consent. We also let you know why we&apos;re collecting it
+        and how it will be used.
       </p>
       <p className="mb-3">
         We only retain collected information for as long as necessary to provide
-        you with your requested service. What data we store, we’ll protect
+        you with your requested service. What data we store, we&apos;ll protect
         within commercially acceptable means to prevent loss and theft, as well
         as unauthorized access, disclosure, copying, use or modification.
       </p>
       <p className="mb-3">
-        We don't share any personally identifying information publicly or with
-        third-parties, except when required to by law.
+        We don&apos;t share any personally identifying information publicly or
+        with third-parties, except when required to by law.
       </p>
       <p className="mb-3">
         Our website may link to external sites that are not operated by us.
