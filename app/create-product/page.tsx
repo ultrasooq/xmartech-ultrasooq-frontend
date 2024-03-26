@@ -11,6 +11,8 @@ import ProductDetailsSection from "@/components/modules/createProduct/ProductDet
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
 import SuggestedProductsListCard from "@/components/modules/createProduct/SuggestedProductsListCard";
+import { useCreateProduct } from "@/apis/queries/product.queries";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   productName: z
@@ -36,33 +38,41 @@ const formSchema = z.object({
     .min(2, { message: "SKU No. is required" })
     .max(50, { message: "SKU No. must be less than 50 characters" }),
   tagList: z
-    .array(z.object({ label: z.string(), value: z.string() }))
+    .array(
+      z.object({
+        label: z.string().trim(),
+        value: z.number(),
+      }),
+    )
+    .min(1, {
+      message: "Tag is required",
+    })
     .transform((value) => {
       let temp: any = [];
       value.forEach((item) => {
-        temp.push({ tagName: item.label });
+        temp.push({ tagId: item.value });
       });
       return temp;
     }),
   productPrice: z
-    .number()
-    .min(1, { message: "Product Price is required" })
-    .max(1000000, { message: "Product Price must be less than 1,000,000" }),
-  offerPrice: z
-    .number()
-    .min(1, { message: "Offer Price is required" })
-    .max(1000000, { message: "Offer Price must be less than 1,000,000" }),
+    .string()
+    .trim()
+    .min(1, { message: "Product Price is required" }),
+  offerPrice: z.string().trim().min(1, { message: "Offer Price is required" }),
   colorList: z
     .array(
       z.object({
         label: z.string().trim(),
-        value: z.string().trim(),
+        value: z.number(),
       }),
     )
+    .min(1, {
+      message: "Color is required",
+    })
     .transform((value) => {
       let temp: any = [];
       value.forEach((item) => {
-        temp.push({ colorName: item.label, colorCode: item.value });
+        temp.push({ tagId: item.value });
       });
       return temp;
     }),
@@ -70,13 +80,16 @@ const formSchema = z.object({
     .array(
       z.object({
         label: z.string().trim(),
-        value: z.string().trim(),
+        value: z.number(),
       }),
     )
+    .min(1, {
+      message: "Function is required",
+    })
     .transform((value) => {
       let temp: any = [];
       value.forEach((item) => {
-        temp.push({ function: item.label });
+        temp.push({ tagId: item.value });
       });
       return temp;
     }),
@@ -123,6 +136,7 @@ const formSchema = z.object({
 });
 
 const CreateProductPage = () => {
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -132,8 +146,8 @@ const CreateProductPage = () => {
       brand: "",
       skuNo: "",
       tagList: undefined,
-      productPrice: 0,
-      offerPrice: 0,
+      productPrice: "",
+      offerPrice: "",
       colorList: undefined,
       functionList: undefined,
       placeOfOrigin: "",
@@ -149,6 +163,7 @@ const CreateProductPage = () => {
   });
 
   const tagsQuery = useTags();
+  const createProduct = useCreateProduct();
 
   const memoizedTags = useMemo(() => {
     return (
@@ -160,6 +175,21 @@ const CreateProductPage = () => {
 
   const onSubmit = async (formData: any) => {
     console.log(formData);
+
+    return;
+    const response = await createProduct.mutateAsync(formData);
+    if (response.status && response.data) {
+      toast({
+        title: "Product Create Successful",
+        description: response.message,
+      });
+      form.reset();
+    } else {
+      toast({
+        title: "Product Create Failed",
+        description: response.message,
+      });
+    }
   };
 
   return (
@@ -198,6 +228,7 @@ const CreateProductPage = () => {
                   </button>
                   <button
                     type="submit"
+                    disabled={createProduct.isPending}
                     className="mt-3 rounded-sm bg-dark-orange px-10 py-4 text-lg font-bold leading-6 text-white"
                   >
                     Continue

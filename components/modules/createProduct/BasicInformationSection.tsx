@@ -188,6 +188,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     />
                   </div>
                 </div>
+
                 <div className="mb-3 w-full px-2 sm:w-[50%] lg:w-[33.33%] xl:w-[22%]">
                   <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
                     <div className="text-sm font-medium leading-4 text-color-dark">
@@ -208,28 +209,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     />
                   </div>
                 </div>
-                <div className="mb-3 w-full px-2 sm:w-[50%] lg:w-[33.33%] xl:w-[22%]">
-                  <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                    <div className="text-sm font-medium leading-4 text-color-dark">
-                      <img
-                        src="/images/upload.png"
-                        className="m-auto mb-3"
-                        alt="camera"
-                      />
-                      <span>Drop your Image or </span>
-                      <span className="text-blue-500">browse</span>
-                      <p className="text-normal mt-1 text-xs leading-4 text-gray-300">
-                        (.jpg or .png only. Up to 1mb)
-                      </p>
-                    </div>
 
-                    <input
-                      type="file"
-                      className="absolute h-full w-full rounded-full bg-red-200 opacity-0"
-                    />
-                  </div>
-                </div>
-                <div className="mb-3 w-full pl-2 sm:w-[50%] lg:w-[33.33%] xl:w-[12%]">
+                <div className="mb-3 w-full pl-2 sm:w-[50%] lg:w-[33.33%] xl:w-[22%]">
                   <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
                     <div className="text-sm font-medium leading-4 text-color-dark">
                       <img
