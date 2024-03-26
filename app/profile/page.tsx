@@ -456,6 +456,7 @@ export default function ProfilePage() {
                             className="!mt-0 flex items-center gap-4"
                             onValueChange={field.onChange}
                             defaultValue="MALE"
+                            value={field.value}
                           >
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="MALE" id="MALE" />
