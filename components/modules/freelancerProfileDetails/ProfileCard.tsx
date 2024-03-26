@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FREELANCER_UNIQUE_ID, HOURS_24_FORMAT } from "@/utils/constants";
+import { FREELANCER_UNIQUE_ID } from "@/utils/constants";
 import {
   getAmPm,
   getCurrentDay,
@@ -10,7 +10,7 @@ import {
   parsedDays,
 } from "@/utils/helper";
 import { cn } from "@/lib/utils";
-import { useUpdateFreelancerBranch } from "@/apis/queries/freelancer.queries";
+import { useUpdatFreelancerActiveStatus } from "@/apis/queries/freelancer.queries";
 import { useToast } from "@/components/ui/use-toast";
 
 type ProfileCardProps = {
@@ -20,7 +20,7 @@ type ProfileCardProps = {
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
   const { toast } = useToast();
-  const updateFreelancerBranch = useUpdateFreelancerBranch();
+  const updateFeelancerAvailabilityStatus = useUpdatFreelancerActiveStatus();
 
   const memoizedInitials = useMemo(
     () => getInitials(userDetails?.firstName, userDetails?.lastName),
@@ -37,24 +37,41 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
       : false;
     const isActiveInCurrentDay =
       startTime <= getCurrentTime && endTime >= getCurrentTime;
-    return getActiveDays && isActiveInCurrentDay;
-  }, [workingDays, startTime, endTime]);
+
+    // const lastOnlineDate = new Date("2024-03-25T09:20:42.901Z");
+    const lastOnlineDate = new Date(userDetails?.onlineOfflineDateStatus);
+    lastOnlineDate.setUTCHours(0, 0, 0, 0);
+    const todaysDate = new Date();
+    todaysDate.setUTCHours(0, 0, 0, 0);
+    const isToday =
+      userDetails?.onlineOffline === "1" &&
+      todaysDate.getTime() === lastOnlineDate.getTime();
+
+    console.log(isToday, getActiveDays, isActiveInCurrentDay);
+
+    return isToday || (getActiveDays && isActiveInCurrentDay);
+  }, [workingDays, startTime, endTime, userDetails?.onlineOffline]);
 
   const handleTimeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const data: { branchId: number; endTime: string } = {
-      branchId: userDetails?.userBranch?.[0]?.id,
-      endTime: e.target.value,
+    if (!e.target.value) return;
+    const getCurrentDateInISO = new Date().toISOString();
+
+    const data: { onlineOffline: string; onlineOfflineDateStatus: string } = {
+      onlineOffline: e.target.value,
+      onlineOfflineDateStatus: getCurrentDateInISO,
     };
 
-    const response = await updateFreelancerBranch.mutateAsync(data);
+    // console.log(data);
+    // return;
+    const response = await updateFeelancerAvailabilityStatus.mutateAsync(data);
     if (response.status && response.data) {
       toast({
-        title: "Time Update Successful",
+        title: "Status Update Successful",
         description: response.message,
       });
     } else {
       toast({
-        title: "Time Update Failed",
+        title: "Status Update Failed",
         description: response.message,
       });
     }
@@ -176,7 +193,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
               className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
               onChange={handleTimeChange}
             >
-              <option value="">{isOnlineToday ? "Offline" : "Online"}</option>
+              <option value="">Select</option>
+              <option value="0" disabled={userDetails?.onlineOffline === "0"}>
+                Offline
+              </option>
+              <option value="1" disabled={userDetails?.onlineOffline === "1"}>
+                Online
+              </option>
+              {/* <option value="">{isOnlineToday ? "Offline" : "Online"}</option>
               {HOURS_24_FORMAT.map((hour: string, index: number) => (
                 <option
                   key={index}
@@ -191,7 +215,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
                 >
                   {getAmPm(hour)}
                 </option>
-              ))}
+              ))} */}
             </select>
           </div>
         </div>
