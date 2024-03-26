@@ -111,6 +111,7 @@ const Header = () => {
     queryClient.clear();
     router.push("/login");
   };
+  const handleAddProductPage = () => router.push("/create-product");
   const handleChangeEmailPage = () => router.push("/change-email");
   const handleChangePasswordPage = () => router.push("/change-password");
   const handleLogin = () => router.push("/login");
@@ -246,6 +247,14 @@ const Header = () => {
                           Profile Information
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
+                        {userDetails?.data?.data?.tradeRole !== "BUYER" ? (
+                          <>
+                            <DropdownMenuItem onClick={handleAddProductPage}>
+                              Add Product
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                          </>
+                        ) : null}
                         <DropdownMenuItem onClick={handleChangeEmailPage}>
                           Change Email
                         </DropdownMenuItem>
