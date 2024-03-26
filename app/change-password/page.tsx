@@ -23,6 +23,15 @@ import { z } from "zod";
 
 const formSchema = z
   .object({
+    oldPassword: z
+      .string()
+      .trim()
+      .min(2, {
+        message: "Old Password is required",
+      })
+      .min(8, {
+        message: "Password must be longer than or equal to 8 characters",
+      }),
     newPassword: z
       .string()
       .trim()
@@ -58,6 +67,7 @@ export default function ChangePasswordPage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      oldPassword: "",
       newPassword: "",
       confirmPassword: "",
     },
@@ -127,6 +137,25 @@ export default function ChangePasswordPage() {
                       className="flex flex-wrap"
                       onSubmit={form.handleSubmit(onSubmit)}
                     >
+                      <FormField
+                        control={form.control}
+                        name="oldPassword"
+                        render={({ field }) => (
+                          <FormItem className="mb-4 w-full">
+                            <FormLabel>Old Password</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="**********"
+                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
                       <FormField
                         control={form.control}
                         name="newPassword"
