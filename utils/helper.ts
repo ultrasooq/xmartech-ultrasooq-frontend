@@ -46,3 +46,12 @@ export const getCurrentTime = new Date().toLocaleTimeString("en-US", {
   minute: "numeric",
   hour12: false,
 });
+
+export const getLastTwoHundredYears = () => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let i = 0; i <= 200; i++) {
+    years.push(currentYear - i);
+  }
+  return years;
+};
