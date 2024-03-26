@@ -234,3 +234,15 @@ export interface ICreateCompanyBranch {
   message: string;
   error: string;
 }
+
+export interface IFreelancerStatus {
+  data: any;
+  status: boolean;
+  message: string;
+  error?: string;
+}
+
+export interface IFreelancerStatusRequest {
+  onlineOffline: string;
+  onlineOfflineDateStatus: string;
+}

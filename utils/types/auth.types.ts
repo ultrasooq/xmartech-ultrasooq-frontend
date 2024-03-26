@@ -92,7 +92,7 @@ export interface IPasswordResetVerify {
 }
 
 export interface IChangePasswordRequest extends IResetPasswordRequest {
-  oldPassword: string;
+  password: string;
 }
 
 export interface IChangePassword extends IResetPassword {}
