@@ -32,7 +32,7 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 // import TimePicker from "react-time-picker";
 import { Switch } from "@/components/ui/switch";
-import { countryObjs, getAmPm } from "@/utils/helper";
+import { countryObjs, getAmPm, getLastTwoHundredYears } from "@/utils/helper";
 import { cn } from "@/lib/utils";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 
@@ -72,7 +72,7 @@ const formSchema = z.object({
   totalNoOfEmployee: z
     .string()
     .trim()
-    .min(2, { message: "Total No Of Employee is required" })
+    .min(2, { message: "Total No Of Employee is required" }) //TODO: change to string
     .transform((value) => Number(value)),
   aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
   branchList: z.array(
@@ -322,6 +322,10 @@ export default function CompanyProfilePage() {
       }) || []
     );
   }, [tagsQuery?.data]);
+
+  const memoizedLastTwoHundredYears = useMemo(() => {
+    return getLastTwoHundredYears() || [];
+  }, [getLastTwoHundredYears().length]);
 
   return (
     <section className="relative w-full py-7">
@@ -594,13 +598,11 @@ export default function CompanyProfilePage() {
                           className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
                           <option value="">Select Year</option>
-                          <option value="1990">1990</option>
-                          <option value="1991">1991</option>
-                          <option value="1992">1992</option>
-                          <option value="1993">1993</option>
-                          <option value="1994">1994</option>
-                          <option value="1995">1995</option>
-                          <option value="1996">1996</option>
+                          {memoizedLastTwoHundredYears.map((year) => (
+                            <option key={year} value={year}>
+                              {year}
+                            </option>
+                          ))}
                         </select>
                       )}
                     />
