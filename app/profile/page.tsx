@@ -390,10 +390,19 @@ export default function ProfilePage() {
 
                               <Input
                                 type="file"
+                                accept="image/*"
+                                multiple={false}
                                 className="!bottom-0 h-44 !w-full opacity-0"
                                 {...field}
                                 onChange={(event) => {
                                   if (event.target.files?.[0]) {
+                                    if (event.target.files[0].size > 1048576) {
+                                      toast({
+                                        title:
+                                          "Image size should be less than 1MB",
+                                      });
+                                      return;
+                                    }
                                     setImageFile(event.target.files);
                                   }
                                 }}
@@ -857,10 +866,21 @@ export default function ProfilePage() {
 
                                 <Input
                                   type="file"
+                                  accept="image/*"
+                                  multiple={false}
                                   className="!bottom-0 h-48 !w-full opacity-0"
                                   {...field}
                                   onChange={(event) => {
                                     if (event.target.files?.[0]) {
+                                      if (
+                                        event.target.files[0].size > 1048576
+                                      ) {
+                                        toast({
+                                          title:
+                                            "Image size should be less than 1MB",
+                                        });
+                                        return;
+                                      }
                                       setIdentityImageFile(event.target.files);
                                     }
                                   }}

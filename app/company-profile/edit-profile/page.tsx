@@ -67,8 +67,7 @@ const formSchema = z.object({
   totalNoOfEmployee: z
     .string()
     .trim()
-    .min(2, { message: "Total No Of Employee is required" }) //TODO: change to string
-    .transform((value) => Number(value)),
+    .min(2, { message: "Total No Of Employee is required" }),
   aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
 });
 
@@ -262,10 +261,19 @@ export default function EditProfilePage() {
 
                               <Input
                                 type="file"
+                                accept="image/*"
+                                multiple={false}
                                 className="!bottom-0 h-64 !w-full opacity-0"
                                 {...field}
                                 onChange={(event) => {
                                   if (event.target.files?.[0]) {
+                                    if (event.target.files[0].size > 1048576) {
+                                      toast({
+                                        title:
+                                          "Image size should be less than 1MB",
+                                      });
+                                      return;
+                                    }
                                     setImageFile(event.target.files);
                                   }
                                 }}
@@ -475,6 +483,7 @@ export default function EditProfilePage() {
                           {...field}
                           className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
+                          <option value="">Select</option>
                           <option value="1-10">1-10</option>
                           <option value="11-50">11-50</option>
                           <option value="51-500">51-500</option>
