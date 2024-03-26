@@ -113,7 +113,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
                 <div className="w-9/12 text-base font-medium leading-4 text-color-dark md:w-6/12">
                   <p>
                     {userDetails?.userBranch?.[0]?.cc}{" "}
-                    {userDetails?.userBranch?.[0]?.contactName || "NA"}
+                    {userDetails?.userBranch?.[0]?.contactNumber || "NA"}
                   </p>
                 </div>
               </div>
@@ -134,7 +134,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
                   <span>Branch Contact Name:</span>
                 </div>
                 <div className="w-9/12 text-base font-medium leading-4 text-color-dark md:w-6/12">
-                  <p>{userDetails?.userBranch?.[0]?.contactNumber}</p>
+                  <p>{userDetails?.userBranch?.[0]?.contactName}</p>
                 </div>
               </div>
             </div>

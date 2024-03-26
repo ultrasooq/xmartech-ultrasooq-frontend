@@ -66,12 +66,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
     const response = await updateFeelancerAvailabilityStatus.mutateAsync(data);
     if (response.status && response.data) {
       toast({
-        title: "Status Update Successful",
+        title: "Branch Status Update Successful",
         description: response.message,
       });
     } else {
       toast({
-        title: "Status Update Failed",
+        title: "Branch Status Update Failed",
         description: response.message,
       });
     }
@@ -192,6 +192,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
             <select
               className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
               onChange={handleTimeChange}
+              value={userDetails?.onlineOffline || "0"}
             >
               <option value="">Select</option>
               <option value="0" disabled={userDetails?.onlineOffline === "0"}>
