@@ -210,7 +210,7 @@ export default function CompanyProfilePage() {
             sat: 0,
           },
           tagList: undefined,
-          mainOffice: 0,
+          mainOffice: false,
         },
       ],
     },
@@ -250,7 +250,7 @@ export default function CompanyProfilePage() {
         sat: 0,
       },
       tagList: undefined,
-      mainOffice: 0,
+      mainOffice: false,
     });
 
   const removeBranchList = (index: number) => fieldArray.remove(index);
@@ -266,6 +266,7 @@ export default function CompanyProfilePage() {
     }
   };
 
+  console.log(form.formState.errors);
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
@@ -273,6 +274,24 @@ export default function CompanyProfilePage() {
     };
 
     if (data.branchList) {
+      if (
+        data.branchList.filter((item: any) => item.mainOffice === 1).length < 1
+      ) {
+        toast({
+          title: "Please select atleast one main office",
+        });
+        return;
+      }
+
+      if (
+        data.branchList.filter((item: any) => item.mainOffice === 1).length > 1
+      ) {
+        toast({
+          title: "Please select only one main office",
+        });
+        return;
+      }
+
       const updatedBranchList = data.branchList.map(
         (item: any, index: number) => ({
           ...item,
@@ -293,7 +312,7 @@ export default function CompanyProfilePage() {
       data.logo = getImageUrl;
     }
     console.log(data);
-    // return;
+    return;
     const response = await createCompanyProfile.mutateAsync(data);
 
     if (response.status && response.data) {
