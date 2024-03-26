@@ -14,16 +14,16 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { deleteCookie, setCookie } from "cookies-next";
+import { deleteCookie } from "cookies-next";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z
   .object({
-    oldPassword: z
+    password: z
       .string()
       .trim()
       .min(2, {
@@ -67,7 +67,7 @@ export default function ChangePasswordPage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      oldPassword: "",
+      password: "",
       newPassword: "",
       confirmPassword: "",
     },
@@ -139,7 +139,7 @@ export default function ChangePasswordPage() {
                     >
                       <FormField
                         control={form.control}
-                        name="oldPassword"
+                        name="password"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full">
                             <FormLabel>Old Password</FormLabel>

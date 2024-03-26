@@ -99,19 +99,21 @@ export default function CompanyProfileDetailsPage() {
                         </button>
                       </div>
                     </div>
-                    {userDetails.data?.data?.userBranch.map((item: any) => (
-                      <React.Fragment key={item.id}>
-                        <BranchSection
-                          branchDetails={item}
-                          onEditBranch={() =>
-                            handleEditCompanyBranchPage(item.id)
-                          }
-                        />
-                        <div className="border-b-2 border-dashed border-gray-200" />
-                        <TagInformationSection tagDetails={item} />
-                        <div className="mb-5 border-b-2 border-dashed border-gray-200" />
-                      </React.Fragment>
-                    ))}
+                    {userDetails.data?.data?.userBranch
+                      .sort((a: any, b: any) => b?.mainOffice - a?.mainOffice)
+                      .map((item: any) => (
+                        <React.Fragment key={item.id}>
+                          <BranchSection
+                            branchDetails={item}
+                            onEditBranch={() =>
+                              handleEditCompanyBranchPage(item.id)
+                            }
+                          />
+                          <div className="border-b-2 border-dashed border-gray-200" />
+                          <TagInformationSection tagDetails={item} />
+                          <div className="mb-5 border-b-2 border-dashed border-gray-200" />
+                        </React.Fragment>
+                      ))}
                   </div>
                 </div>
               </TabsContent>
