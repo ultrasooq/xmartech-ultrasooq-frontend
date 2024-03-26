@@ -15,13 +15,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
@@ -32,7 +25,7 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 // import TimePicker from "react-time-picker";
 import { Switch } from "@/components/ui/switch";
-import { countryObjs, getAmPm } from "@/utils/helper";
+import { countryObjs, getAmPm, getLastTwoHundredYears } from "@/utils/helper";
 import { cn } from "@/lib/utils";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 
@@ -72,8 +65,7 @@ const formSchema = z.object({
   totalNoOfEmployee: z
     .string()
     .trim()
-    .min(2, { message: "Total No Of Employee is required" })
-    .transform((value) => Number(value)),
+    .min(2, { message: "Total No Of Employee is required" }),
   aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
   branchList: z.array(
     z.object({
@@ -165,6 +157,10 @@ const formSchema = z.object({
           });
           return temp;
         }),
+      mainOffice: z
+        .boolean()
+        .transform((value) => (value ? 1 : 0))
+        .optional(),
     }),
   ),
 });
@@ -281,7 +277,7 @@ export default function CompanyProfilePage() {
         (item: any, index: number) => ({
           ...item,
           profileType: "COMPANY",
-          mainOffice: index === 0 ? 1 : 0,
+          // mainOffice: index === 0 ? 1 : 0,
         }),
       );
       data.branchList = updatedBranchList;
@@ -322,6 +318,10 @@ export default function CompanyProfilePage() {
       }) || []
     );
   }, [tagsQuery?.data]);
+
+  const memoizedLastTwoHundredYears = useMemo(() => {
+    return getLastTwoHundredYears() || [];
+  }, [getLastTwoHundredYears().length]);
 
   return (
     <section className="relative w-full py-7">
@@ -400,10 +400,19 @@ export default function CompanyProfilePage() {
 
                               <Input
                                 type="file"
+                                accept="image/*"
+                                multiple={false}
                                 className="!bottom-0 h-64 !w-full opacity-0"
                                 {...field}
                                 onChange={(event) => {
                                   if (event.target.files?.[0]) {
+                                    if (event.target.files[0].size > 1048576) {
+                                      toast({
+                                        title:
+                                          "Image size should be less than 1MB",
+                                      });
+                                      return;
+                                    }
                                     setImageFile(event.target.files);
                                   }
                                 }}
@@ -594,13 +603,11 @@ export default function CompanyProfilePage() {
                           className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
                           <option value="">Select Year</option>
-                          <option value="1990">1990</option>
-                          <option value="1991">1991</option>
-                          <option value="1992">1992</option>
-                          <option value="1993">1993</option>
-                          <option value="1994">1994</option>
-                          <option value="1995">1995</option>
-                          <option value="1996">1996</option>
+                          {memoizedLastTwoHundredYears.map((year) => (
+                            <option key={year} value={year}>
+                              {year}
+                            </option>
+                          ))}
                         </select>
                       )}
                     />
@@ -616,11 +623,11 @@ export default function CompanyProfilePage() {
                           {...field}
                           className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                         >
-                          <option value="">Select Number</option>
-                          <option value="1000">1000</option>
-                          <option value="2000">2000</option>
-                          <option value="3000">3000</option>
-                          <option value="4000">4000</option>
+                          <option value="">Select</option>
+                          <option value="1-10">1-10</option>
+                          <option value="11-50">11-50</option>
+                          <option value="51-500">51-500</option>
+                          <option value="500+">500+</option>
                         </select>
                       )}
                     />
@@ -709,6 +716,8 @@ export default function CompanyProfilePage() {
 
                             <Input
                               type="file"
+                              accept="image/*"
+                              multiple={false}
                               className="absolute h-full rounded-full bg-red-200 opacity-0"
                               {...field}
                             />
@@ -744,6 +753,8 @@ export default function CompanyProfilePage() {
 
                             <Input
                               type="file"
+                              accept="image/*"
+                              multiple={false}
                               className="absolute h-full rounded-full bg-red-200 opacity-0"
                               {...field}
                             />
@@ -1064,16 +1075,24 @@ export default function CompanyProfilePage() {
                   />
                 </div>
                 <div className="mb-3.5 flex w-full justify-end border-b-2 border-dashed border-gray-300 pb-4">
-                  {index === 0 ? (
-                    <div className="flex w-full items-center space-x-2 ">
-                      <Label htmlFor="airplane-mode">Main Office:</Label>
-                      <Switch
-                        aria-readonly
-                        checked
-                        className="data-[state=checked]:!bg-dark-orange"
-                      />
-                    </div>
-                  ) : null}
+                  <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
+                    <FormField
+                      control={form.control}
+                      name={`branchList.${index}.mainOffice`}
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
+                          <FormLabel>Main Office:</FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={!!field.value}
+                              onCheckedChange={field.onChange}
+                              className="!mt-0 data-[state=checked]:!bg-dark-orange"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {index !== 0 ? (
                     <Button

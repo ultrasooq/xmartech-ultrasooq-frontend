@@ -402,10 +402,19 @@ export default function EditBranchPage() {
 
                             <Input
                               type="file"
+                              accept="image/*"
+                              multiple={false}
                               className="!bottom-0 h-64 !w-full opacity-0"
                               {...field}
                               onChange={(event) => {
                                 if (event.target.files?.[0]) {
+                                  if (event.target.files[0].size > 1048576) {
+                                    toast({
+                                      title:
+                                        "Image size should be less than 1MB",
+                                    });
+                                    return;
+                                  }
                                   setBranchImageFile(event.target.files);
                                 }
                               }}
@@ -467,10 +476,19 @@ export default function EditBranchPage() {
 
                             <Input
                               type="file"
+                              accept="image/*"
+                              multiple={false}
                               className="!bottom-0 h-64 !w-full opacity-0"
                               {...field}
                               onChange={(event) => {
                                 if (event.target.files?.[0]) {
+                                  if (event.target.files[0].size > 1048576) {
+                                    toast({
+                                      title:
+                                        "Image size should be less than 1MB",
+                                    });
+                                    return;
+                                  }
                                   setProofOfAddressImageFile(
                                     event.target.files,
                                   );

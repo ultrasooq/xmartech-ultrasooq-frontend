@@ -48,7 +48,7 @@ export default function ForgetPasswordPage() {
 
     if (response?.status && response?.otp) {
       toast({
-        title: "OTP Sent",
+        title: "Verification code sent",
         description: response?.message,
       });
 
@@ -57,7 +57,7 @@ export default function ForgetPasswordPage() {
       router.push("/password-reset-verify");
     } else {
       toast({
-        title: "OTP Failed",
+        title: "Verification error!",
         description: response?.message,
       });
     }

@@ -64,10 +64,10 @@ export default function CompanyProfileDetailsPage() {
                   Ratings & Reviews
                 </TabsTrigger>
                 <TabsTrigger
-                  value="services"
+                  value="products"
                   className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
                 >
-                  Services
+                  Products
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="profile-info" className="mt-0">
@@ -99,19 +99,21 @@ export default function CompanyProfileDetailsPage() {
                         </button>
                       </div>
                     </div>
-                    {userDetails.data?.data?.userBranch.map((item: any) => (
-                      <React.Fragment key={item.id}>
-                        <BranchSection
-                          branchDetails={item}
-                          onEditBranch={() =>
-                            handleEditCompanyBranchPage(item.id)
-                          }
-                        />
-                        <div className="border-b-2 border-dashed border-gray-200" />
-                        <TagInformationSection tagDetails={item} />
-                        <div className="mb-5 border-b-2 border-dashed border-gray-200" />
-                      </React.Fragment>
-                    ))}
+                    {userDetails.data?.data?.userBranch
+                      .sort((a: any, b: any) => b?.mainOffice - a?.mainOffice)
+                      .map((item: any) => (
+                        <React.Fragment key={item.id}>
+                          <BranchSection
+                            branchDetails={item}
+                            onEditBranch={() =>
+                              handleEditCompanyBranchPage(item.id)
+                            }
+                          />
+                          <div className="border-b-2 border-dashed border-gray-200" />
+                          <TagInformationSection tagDetails={item} />
+                          <div className="mb-5 border-b-2 border-dashed border-gray-200" />
+                        </React.Fragment>
+                      ))}
                   </div>
                 </div>
               </TabsContent>
@@ -120,7 +122,7 @@ export default function CompanyProfileDetailsPage() {
                   <RatingsSection />
                 </div>
               </TabsContent>
-              <TabsContent value="services" className="mt-0">
+              <TabsContent value="products" className="mt-0">
                 <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                   <ServicesSection />
                 </div>
