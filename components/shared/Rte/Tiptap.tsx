@@ -245,8 +245,8 @@ const MenuBar = () => {
 // define your extension array
 const extensions = [
   Color.configure({ types: [TextStyle.name, ListItem.name] }),
-  TextStyle.configure({ types: [ListItem.name] }),
-  Underline.configure({ types: [TextStyle.name, ListItem.name] }),
+  TextStyle.configure({}),
+  Underline.configure({}),
   StarterKit.configure({
     bulletList: {
       keepMarks: true,
@@ -273,8 +273,7 @@ const Tiptap = () => {
         extensions={extensions}
         content={content}
       >
-        <FloatingMenu>This is the floating menu</FloatingMenu>
-        <BubbleMenu>This is the bubble menu</BubbleMenu>
+        {" "}
       </EditorProvider>
     </div>
   );
