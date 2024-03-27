@@ -13,6 +13,7 @@ import Footer from "@/components/shared/Footer";
 import SuggestedProductsListCard from "@/components/modules/createProduct/SuggestedProductsListCard";
 import { useCreateProduct } from "@/apis/queries/product.queries";
 import { useToast } from "@/components/ui/use-toast";
+import { v4 as uuidv4 } from "uuid";
 
 const formSchema = z.object({
   productName: z
@@ -98,41 +99,41 @@ const formSchema = z.object({
     .trim()
     .min(2, { message: "Place of Origin is required" })
     .max(50, { message: "Place of Origin must be less than 50 characters" }),
-  style: z
-    .string()
-    .trim()
-    .min(2, { message: "Style is required" })
-    .max(50, { message: "Style must be less than 50 characters" }),
-  batteryLife: z
-    .string()
-    .trim()
-    .min(2, { message: "Battery Life is required" })
-    .max(50, { message: "Battery Life must be less than 50 characters" }),
-  screen: z
-    .string()
-    .trim()
-    .min(2, { message: "Screen is required" })
-    .max(50, { message: "Screen must be less than 50 characters" }),
-  memorySize: z
-    .string()
-    .trim()
-    .min(2, { message: "Memory Size is required" })
-    .max(50, { message: "Memory Size must be less than 50 characters" }),
-  modelNumber: z
-    .string()
-    .trim()
-    .min(2, { message: "Model No is required" })
-    .max(50, { message: "Model No must be less than 50 characters" }),
-  brandName: z
-    .string()
-    .trim()
-    .min(2, { message: "Brand Name is required" })
-    .max(50, { message: "Brand Name must be less than 50 characters" }),
-  detailsAttribute: z
-    .string()
-    .trim()
-    .min(2, { message: "Attribute is required" }),
-  detailsValue: z.string().trim().min(2, { message: "Value is required" }),
+  // style: z
+  //   .string()
+  //   .trim()
+  //   .min(2, { message: "Style is required" })
+  //   .max(50, { message: "Style must be less than 50 characters" }),
+  // batteryLife: z
+  //   .string()
+  //   .trim()
+  //   .min(2, { message: "Battery Life is required" })
+  //   .max(50, { message: "Battery Life must be less than 50 characters" }),
+  // screen: z
+  //   .string()
+  //   .trim()
+  //   .min(2, { message: "Screen is required" })
+  //   .max(50, { message: "Screen must be less than 50 characters" }),
+  // memorySize: z
+  //   .string()
+  //   .trim()
+  //   .min(2, { message: "Memory Size is required" })
+  //   .max(50, { message: "Memory Size must be less than 50 characters" }),
+  // modelNumber: z
+  //   .string()
+  //   .trim()
+  //   .min(2, { message: "Model No is required" })
+  //   .max(50, { message: "Model No must be less than 50 characters" }),
+  // brandName: z
+  //   .string()
+  //   .trim()
+  //   .min(2, { message: "Brand Name is required" })
+  //   .max(50, { message: "Brand Name must be less than 50 characters" }),
+  // detailsAttribute: z
+  //   .string()
+  //   .trim()
+  //   .min(2, { message: "Attribute is required" }),
+  // detailsValue: z.string().trim().min(2, { message: "Value is required" }),
 });
 
 const CreateProductPage = () => {
@@ -151,14 +152,20 @@ const CreateProductPage = () => {
       colorList: undefined,
       functionList: undefined,
       placeOfOrigin: "",
-      style: "",
-      batteryLife: "",
-      screen: "",
-      memorySize: "",
-      modelNumber: "",
-      brandName: "",
-      detailsAttribute: "",
-      detailsValue: "",
+      // style: "",
+      // batteryLife: "",
+      // screen: "",
+      // memorySize: "",
+      // modelNumber: "",
+      // brandName: "",
+      // detailsAttribute: "",
+      // detailsValue: "",
+      productImages: [
+        {
+          path: "",
+          id: uuidv4(),
+        },
+      ],
     },
   });
 
