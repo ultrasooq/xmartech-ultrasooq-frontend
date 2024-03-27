@@ -204,7 +204,10 @@ export default function EmailChangeVerifyPage() {
                       {otp?.map((value, index) => (
                         <Input
                           value={value}
-                          ref={(el) => el && (refs.current[index] = el)}
+                          // ref={(el) => el && (refs.current[index] = el)}
+                          ref={(el) => {
+                            if (el) refs.current[index] = el;
+                          }}
                           type="text"
                           onChange={(e) => handleChange(e, index)}
                           onClick={() => handleClick(index)}
