@@ -31,7 +31,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
       </div>
       <div className="mb-3.5 w-full">
         <div className="flex flex-wrap">
-          <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+          {/* <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
             <div className="flex w-full flex-col gap-y-2">
               <Label>Place of Origin</Label>
               <Controller
@@ -76,9 +76,9 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                 {formContext.formState.errors["style"]?.message as string}
               </p>
             </div>
-          </div>
+          </div> */}
 
-          <div className="w-full">
+          {/* <div className="w-full">
             <AccordionMultiSelectV2
               label="Color"
               name="colorList"
@@ -88,9 +88,9 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                 formContext.formState.errors["colorList"]?.message as string
               }
             />
-          </div>
+          </div> */}
 
-          <div className="w-full">
+          {/* <div className="w-full">
             <AccordionMultiSelectV2
               label="Function"
               name="functionList"
@@ -100,9 +100,9 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                 formContext.formState.errors["functionList"]?.message as string
               }
             />
-          </div>
+          </div> */}
 
-          <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+          {/* <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
             <div className="flex w-full flex-col gap-y-2">
               <Label>Battery Life</Label>
               <Controller
@@ -144,9 +144,9 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                 {formContext.formState.errors["screen"]?.message as string}
               </p>
             </div>
-          </div>
+          </div> */}
 
-          <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+          {/* <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
             <div className="flex w-full flex-col gap-y-2">
               <Label>Memory Size</Label>
               <Controller
@@ -187,9 +187,9 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                 )}
               />
             </div>
-          </div>
+          </div> */}
 
-          <div className="grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+          {/* <div className="grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
             <FormField
               control={formContext.control}
               name="brandName"
@@ -250,7 +250,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                 Please fill in both attribute name & value ( e.g, color:Red)
               </span>
             </div>
-          </div>
+          </div> */}
 
           <div className="relative mb-4 w-full">
             <div className="space-y-2">
