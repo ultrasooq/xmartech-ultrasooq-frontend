@@ -43,7 +43,7 @@ const Header = () => {
   const memoizedMenu = useMemo(() => {
     let tempArr: any = [];
     if (categoryQuery.data?.data) {
-      tempArr = categoryQuery.data.data?.children.map(
+      tempArr = categoryQuery.data.data?.children?.map(
         (item: any, index: number) => {
           return {
             name: item.name,
