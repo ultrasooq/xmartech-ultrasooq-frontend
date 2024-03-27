@@ -102,7 +102,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
                 </div>
                 <div className="mr-1 flex w-8/12  items-center justify-start sm:mr-0">
                   <div className="flex gap-x-3 text-base font-medium capitalize leading-4 text-color-dark">
-                    {getSocialLinks || "NA"}
+                    {getSocialLinks}
                   </div>
                 </div>
               </div>

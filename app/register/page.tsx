@@ -98,7 +98,7 @@ const formSchema = z
       message: "Trade Role is required",
     }),
     acceptTerms: z.boolean().refine((val) => val, {
-      message: "You must accept the terms",
+      message: "You must accept the Terms Of Use & Privacy Policy",
     }),
   })
   .superRefine(({ initialPassword, password }, ctx) => {
@@ -496,7 +496,7 @@ export default function RegisterPage() {
         <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">
-              Puremoon Terms Of Use
+              Terms Of Use
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
@@ -509,7 +509,7 @@ export default function RegisterPage() {
         <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">
-              Puremoon Privacy Policy
+              Privacy Policy
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">

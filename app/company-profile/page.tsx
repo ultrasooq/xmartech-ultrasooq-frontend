@@ -69,6 +69,8 @@ const formSchema = z.object({
   aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
   branchList: z.array(
     z.object({
+      branchFrontPicture: z.string().trim().optional(),
+      proofOfAddress: z.string().trim().optional(),
       businessTypeList: z
         .array(
           z.object({
@@ -210,7 +212,7 @@ export default function CompanyProfilePage() {
             sat: 0,
           },
           tagList: undefined,
-          mainOffice: 0,
+          mainOffice: false,
         },
       ],
     },
@@ -250,7 +252,7 @@ export default function CompanyProfilePage() {
         sat: 0,
       },
       tagList: undefined,
-      mainOffice: 0,
+      mainOffice: false,
     });
 
   const removeBranchList = (index: number) => fieldArray.remove(index);
@@ -273,6 +275,24 @@ export default function CompanyProfilePage() {
     };
 
     if (data.branchList) {
+      if (
+        data.branchList.filter((item: any) => item.mainOffice === 1).length < 1
+      ) {
+        toast({
+          title: "Please select atleast one main office",
+        });
+        return;
+      }
+
+      if (
+        data.branchList.filter((item: any) => item.mainOffice === 1).length > 1
+      ) {
+        toast({
+          title: "Please select only one main office",
+        });
+        return;
+      }
+
       const updatedBranchList = data.branchList.map(
         (item: any, index: number) => ({
           ...item,
@@ -392,7 +412,7 @@ export default function CompanyProfilePage() {
                                       browse
                                     </span>
                                     <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                      (.jpg or .png only. Up to 16mb)
+                                      (.jpg or .png only. Up to 1mb)
                                     </p>
                                   </div>
                                 </div>
@@ -698,29 +718,68 @@ export default function CompanyProfilePage() {
                       <FormItem className="mb-3.5 w-full">
                         <FormLabel>Upload Branch Front Picture</FormLabel>
                         <FormControl>
-                          <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
-                            <div className="text-sm font-medium leading-4 text-color-dark">
-                              <Image
-                                src="/images/upload.png"
-                                className="m-auto mb-3"
-                                width={30}
-                                height={30}
-                                alt="camera"
-                              />
-                              <span> Drop your Company Logo here, or </span>
-                              <span className="text-blue-500">browse</span>
-                              <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                (.jpg or .png only. Up to 16mb)
-                              </p>
-                            </div>
+                          <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
+                            <div className="relative h-full w-full">
+                              {form.getValues()?.branchList[index]
+                                ?.branchFrontPicture ? (
+                                <Image
+                                  src={
+                                    form.getValues()?.branchList[index]
+                                      ?.branchFrontPicture ||
+                                    "/images/no-image.jpg"
+                                  }
+                                  alt="profile"
+                                  fill
+                                  priority
+                                />
+                              ) : (
+                                <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                  <div className="flex h-full flex-col items-center justify-center">
+                                    <Image
+                                      src="/images/upload.png"
+                                      className="mb-3"
+                                      width={30}
+                                      height={30}
+                                      alt="camera"
+                                    />
+                                    <span>
+                                      Drop your Branch Front Picture here, or{" "}
+                                    </span>
+                                    <span className="text-blue-500">
+                                      browse
+                                    </span>
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                      (.jpg or .png only. Up to 1mb)
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
 
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              multiple={false}
-                              className="absolute h-full rounded-full bg-red-200 opacity-0"
-                              {...field}
-                            />
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                multiple={false}
+                                className="!bottom-0 h-64 !w-full opacity-0"
+                                // {...field}
+                                value=""
+                                onChange={async (event) => {
+                                  if (event.target.files?.[0]) {
+                                    if (event.target.files[0].size > 1048576) {
+                                      toast({
+                                        title:
+                                          "Image size should be less than 1MB",
+                                      });
+                                      return;
+                                    }
+                                    const response = await handleUploadedFile(
+                                      event.target.files,
+                                    );
+                                    field.onChange(response);
+                                  }
+                                }}
+                                id={`branchList.${index}.branchFrontPicture`}
+                              />
+                            </div>
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -735,29 +794,68 @@ export default function CompanyProfilePage() {
                       <FormItem className="mb-3.5 w-full">
                         <FormLabel>Proof Of Address</FormLabel>
                         <FormControl>
-                          <div className="relative m-auto flex h-64 w-full flex-wrap items-center justify-center border-2 border-dashed border-gray-300 text-center">
-                            <div className="text-sm font-medium leading-4 text-color-dark">
-                              <Image
-                                src="/images/upload.png"
-                                className="m-auto mb-3"
-                                width={30}
-                                height={30}
-                                alt="camera"
-                              />
-                              <span> Drop your Company Logo here, or </span>
-                              <span className="text-blue-500">browse</span>
-                              <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                (.jpg or .png only. Up to 16mb)
-                              </p>
-                            </div>
+                          <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
+                            <div className="relative h-full w-full">
+                              {form.getValues()?.branchList[index]
+                                ?.proofOfAddress ? (
+                                <Image
+                                  src={
+                                    form.getValues()?.branchList[index]
+                                      ?.proofOfAddress || "/images/no-image.jpg"
+                                  }
+                                  alt="profile"
+                                  fill
+                                  priority
+                                />
+                              ) : (
+                                <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                  <div className="flex h-full flex-col items-center justify-center">
+                                    <Image
+                                      src="/images/upload.png"
+                                      className="mb-3"
+                                      width={30}
+                                      height={30}
+                                      alt="camera"
+                                    />
+                                    <span>
+                                      Drop your Proof of Address here, or{" "}
+                                    </span>
+                                    <span className="text-blue-500">
+                                      browse
+                                    </span>
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                      (.jpg or .png only. Up to 1mb)
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
 
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              multiple={false}
-                              className="absolute h-full rounded-full bg-red-200 opacity-0"
-                              {...field}
-                            />
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                multiple={false}
+                                className="!bottom-0 h-64 !w-full opacity-0"
+                                // {...field}
+                                value=""
+                                onChange={async (event) => {
+                                  if (event.target.files?.[0]) {
+                                    if (event.target.files[0].size > 1048576) {
+                                      toast({
+                                        title:
+                                          "Image size should be less than 1MB",
+                                      });
+                                      return;
+                                    }
+                                    const response = await handleUploadedFile(
+                                      event.target.files,
+                                    );
+
+                                    field.onChange(response);
+                                  }
+                                }}
+                                id={`branchList.${index}.proofOfAddress`}
+                              />
+                            </div>
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -1074,6 +1172,7 @@ export default function CompanyProfilePage() {
                     }
                   />
                 </div>
+
                 <div className="mb-3.5 flex w-full justify-end border-b-2 border-dashed border-gray-300 pb-4">
                   <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
                     <FormField

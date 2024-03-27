@@ -858,7 +858,7 @@ export default function ProfilePage() {
                                         browse
                                       </span>
                                       <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                        (.jpg or .png only. Up to 16mb)
+                                        (.jpg or .png only. Up to 1mb)
                                       </p>
                                     </div>
                                   </div>

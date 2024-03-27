@@ -170,7 +170,7 @@ export default function EditBranchPage() {
         sat: 0,
       },
       tagList: [],
-      mainOffice: 0,
+      mainOffice: false,
     },
   });
   const [activeBranchId, setActiveBranchId] = useState<string | null>();
@@ -297,7 +297,8 @@ export default function EditBranchPage() {
 
       //TODO: main office prefilled but not working. API issue
       form.reset({
-        mainOffice: branch?.mainOffice || 0,
+        mainOffice:
+          branch?.mainOffice && branch?.mainOffice === 1 ? true : false,
         businessTypeList: businessTypeList || undefined,
         startTime: branch?.startTime || "",
         endTime: branch?.endTime || "",
@@ -394,7 +395,7 @@ export default function EditBranchPage() {
                                   </span>
                                   <span className="text-blue-500">browse</span>
                                   <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                    (.jpg or .png only. Up to 16mb)
+                                    (.jpg or .png only. Up to 1mb)
                                   </p>
                                 </div>
                               </div>
@@ -468,7 +469,7 @@ export default function EditBranchPage() {
                                   </span>
                                   <span className="text-blue-500">browse</span>
                                   <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                    (.jpg or .png only. Up to 16mb)
+                                    (.jpg or .png only. Up to 1mb)
                                   </p>
                                 </div>
                               </div>

@@ -43,8 +43,8 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
                     <option value="">Select Place of Origin</option>
-                    <option value="">Origin 1</option>
-                    <option value="">Origin 2</option>
+                    <option value="Origin 1">Origin 1</option>
+                    <option value="Origin 2">Origin 2</option>
                   </select>
                 )}
               />
@@ -67,8 +67,8 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
                     <option value="">Select Style</option>
-                    <option value="">Style 1</option>
-                    <option value="">Style 2</option>
+                    <option value="Style 1">Style 1</option>
+                    <option value="Style 2">Style 2</option>
                   </select>
                 )}
               />
@@ -114,8 +114,8 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
                     <option value="">Select Batter Life</option>
-                    <option value="">Battery Life 1</option>
-                    <option value="">Battery Life 2</option>
+                    <option value="Battery Life 1">Battery Life 1</option>
+                    <option value="Battery Life 2">Battery Life 2</option>
                   </select>
                 )}
               />
@@ -135,8 +135,8 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
                     <option value="">Select Screen</option>
-                    <option value="">Screen 1</option>
-                    <option value="">Screen 2</option>
+                    <option value="Screen 1">Screen 1</option>
+                    <option value="Screen 2">Screen 2</option>
                   </select>
                 )}
               />
@@ -158,8 +158,8 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
                     <option value="">Select Memory Size</option>
-                    <option value="">Memory Size 1</option>
-                    <option value="">Memory Size 2</option>
+                    <option value="Memory Size 1">Memory Size 1</option>
+                    <option value="Memory Size 2">Memory Size 2</option>
                   </select>
                 )}
               />

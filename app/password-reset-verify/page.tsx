@@ -19,7 +19,7 @@ export default function PasswordResetVerifyPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
-  const [count, setCount] = useState(600);
+  const [count, setCount] = useState(120);
   const refs = useRef<HTMLInputElement[]>([]);
   const form = useForm({
     defaultValues: {
@@ -43,6 +43,9 @@ export default function PasswordResetVerifyPage() {
   );
 
   const startTimer = () => {
+    if (count === 0) {
+      return;
+    }
     return setInterval(() => {
       setCount((prevCount) => prevCount - 1);
     }, 1000);
@@ -108,7 +111,7 @@ export default function PasswordResetVerifyPage() {
         title: "Verification code sent",
         description: response?.message,
       });
-      setCount(600);
+      setCount(120);
       setOtp(new Array(4).fill(""));
     } else {
       toast({
@@ -253,7 +256,7 @@ export default function PasswordResetVerifyPage() {
                   disabled={
                     passwordResetVerify.isPending ||
                     resendOtp.isPending ||
-                    count > 480
+                    count !== 0
                   }
                   onClick={handlePasswordResendVerify}
                   className="cursor-pointer p-0 font-medium text-dark-orange"
@@ -261,9 +264,11 @@ export default function PasswordResetVerifyPage() {
                   Resend
                 </Button>
               </div>
-              <p className="text-center text-sm font-medium leading-4 text-dark-orange">
-                OTP will expire in {formatTime(count)} minutes
-              </p>
+              {count !== 0 ? (
+                <p className="text-center text-sm font-medium leading-4 text-dark-orange">
+                  OTP will expire in {formatTime(count)} minutes
+                </p>
+              ) : null}
             </div>
           </div>
         </div>
