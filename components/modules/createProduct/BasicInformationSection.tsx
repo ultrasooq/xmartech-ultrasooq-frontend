@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,6 +20,16 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import { v4 as uuidv4 } from "uuid";
+import { useBrands, useCountries } from "@/apis/queries/masters.queries";
+import {
+  IBrands,
+  ICountries,
+  ISelectOptions,
+} from "@/utils/types/common.types";
+import {
+  useCategories,
+  useSubCategoryById,
+} from "@/apis/queries/category.queries";
 
 type ProductImageProps = {
   path: string;
@@ -35,7 +45,52 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 }) => {
   const formContext = useFormContext();
   const { toast } = useToast();
+
+  const watchCategoryId = formContext.watch("categoryId");
+
   const upload = useUploadFile();
+  const categoriesQuery = useCategories();
+  const brandsQuery = useBrands();
+  const countriesQuery = useCountries();
+  const subCategoryById = useSubCategoryById(
+    watchCategoryId,
+    !!watchCategoryId,
+  );
+  const watcher = formContext.watch("productImages");
+
+  const memoizedCategories = useMemo(() => {
+    return (
+      categoriesQuery?.data?.data
+        .filter((item: any) => item.menuId !== 1)
+        .map((item: any) => {
+          return { label: item.name, value: item.id };
+        }) || []
+    );
+  }, [categoriesQuery?.data?.data?.length]);
+
+  const memoizedSubCategories = useMemo(() => {
+    return (
+      subCategoryById?.data?.data?.children?.map((item: any) => {
+        return { label: item.name, value: item.id };
+      }) || []
+    );
+  }, [subCategoryById?.data?.data?.children?.length]);
+
+  const memoizedBrands = useMemo(() => {
+    return (
+      brandsQuery?.data?.data.map((item: IBrands) => {
+        return { label: item.brandName, value: item.id };
+      }) || []
+    );
+  }, [brandsQuery?.data?.data?.length]);
+
+  const memoizedCountries = useMemo(() => {
+    return (
+      countriesQuery?.data?.data.map((item: ICountries) => {
+        return { label: item.countryName, value: item.id };
+      }) || []
+    );
+  }, [countriesQuery?.data?.data?.length]);
 
   const handleProductImages = () => {
     formContext.setValue("productImages", [
@@ -84,8 +139,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     }
   };
 
-  const watcher = formContext.watch("productImages");
-  console.log(watcher);
   return (
     <div className="flex w-full flex-wrap">
       <div className="mb-4 w-full">
@@ -101,7 +154,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             <div className="flex w-full flex-col gap-y-2">
               <Label>Product Category</Label>
               <Controller
-                name="productCategory"
+                name="categoryId"
                 control={formContext.control}
                 render={({ field }) => (
                   <select
@@ -109,24 +162,23 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
                     <option value="">Select Category</option>
-                    <option value="Shoes">Shoes</option>
-                    <option value="Cloths">Cloths</option>
-                    <option value="Addidas">Electronics</option>
+                    {memoizedCategories.map((item: ISelectOptions) => (
+                      <option value={item.value?.toString()} key={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
                   </select>
                 )}
               />
               <p className="text-[13px] font-medium text-red-500">
-                {
-                  formContext.formState.errors["productCategory"]
-                    ?.message as string
-                }
+                {formContext.formState.errors["categoryId"]?.message as string}
               </p>
             </div>
 
             <div className="flex w-full flex-col gap-y-2">
               <Label>Product Sub-Category</Label>
               <Controller
-                name="productSubCategory"
+                name="subCategoryId"
                 control={formContext.control}
                 render={({ field }) => (
                   <select
@@ -134,15 +186,17 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
                     <option value="">Select Sub-Category</option>
-                    <option value="Shoes">Shoes</option>
-                    <option value="sneakers">Sneakers</option>
-                    <option value="Lofers">Lofers</option>
+                    {memoizedSubCategories.map((item: ISelectOptions) => (
+                      <option value={item.value?.toString()} key={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
                   </select>
                 )}
               />
               <p className="text-[13px] font-medium text-red-500">
                 {
-                  formContext.formState.errors["productSubCategory"]
+                  formContext.formState.errors["subCategoryId"]
                     ?.message as string
                 }
               </p>
@@ -169,57 +223,58 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             />
           </div>
 
-          <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            <div className="flex w-full flex-col gap-y-2">
+          <div className="grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+            <div className="mb-4 flex w-full flex-col justify-between">
               <Label>Brand</Label>
               <Controller
-                name="brand"
+                name="brandId"
                 control={formContext.control}
                 render={({ field }) => (
                   <select
                     {...field}
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                    className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
                     <option value="">Select Brand</option>
-                    <option value="Nike">Nike</option>
-                    <option value="Addidas">Addidas</option>
-                    <option value="Puma">Puma</option>
+                    {memoizedBrands.map((item: ISelectOptions) => (
+                      <option value={item.value?.toString()} key={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
                   </select>
                 )}
               />
               <p className="text-[13px] font-medium text-red-500">
-                {formContext.formState.errors["brand"]?.message as string}
+                {formContext.formState.errors["brandId"]?.message as string}
               </p>
             </div>
 
-            <div className="flex w-full flex-col gap-y-2">
-              <Label>SKU No</Label>
-              <Controller
-                name="skuNo"
-                control={formContext.control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                  >
-                    <option value="">Select SKU No</option>
-                    <option value="SF1133569600-1">SF1133569600-1</option>
-                    <option value="SF1133569600-1">SF1133569600-1</option>
-                  </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {formContext.formState.errors["skuNo"]?.message as string}
-              </p>
-            </div>
+            <FormField
+              control={formContext.control}
+              name="skuNo"
+              render={({ field }) => (
+                <FormItem className="mb-4 w-full">
+                  <FormLabel>SKU No</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter SKU No"
+                      className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <AccordionMultiSelectV2
             label="Tag"
-            name="tagList"
+            name="productTagList"
             options={tagsList || []}
             placeholder="Tag"
-            error={formContext.formState.errors["tagList"]?.message as string}
+            error={
+              formContext.formState.errors["productTagList"]?.message as string
+            }
           />
 
           <div className="relative mb-4 w-full">
@@ -398,7 +453,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             <div className="flex w-full flex-col gap-y-2">
               <Label>Place of Origin</Label>
               <Controller
-                name="placeOfOrigin"
+                name="placeOfOriginId"
                 control={formContext.control}
                 render={({ field }) => (
                   <select
@@ -406,14 +461,17 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
                     <option value="">Select Place of Origin</option>
-                    <option value="Origin 1">Origin 1</option>
-                    <option value="Origin 2">Origin 2</option>
+                    {memoizedCountries.map((item: ISelectOptions) => (
+                      <option value={item.value?.toString()} key={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
                   </select>
                 )}
               />
               <p className="text-[13px] font-medium text-red-500">
                 {
-                  formContext.formState.errors["placeOfOrigin"]
+                  formContext.formState.errors["placeOfOriginId"]
                     ?.message as string
                 }
               </p>

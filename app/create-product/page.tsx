@@ -14,31 +14,37 @@ import SuggestedProductsListCard from "@/components/modules/createProduct/Sugges
 import { useCreateProduct } from "@/apis/queries/product.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   productName: z
     .string()
     .trim()
-    .min(2, { message: "Product Name is required" }),
-  productCategory: z
+    .min(2, { message: "Product Name is required" })
+    .max(50, { message: "Product Name must be less than 50 characters" }),
+  categoryId: z
     .string()
     .trim()
-    .min(2, { message: "Product Category is required" }),
-  productSubCategory: z
+    .min(1, { message: "Product Category is required" })
+    .transform((value) => Number(value)),
+  subCategoryId: z
     .string()
     .trim()
-    .min(2, { message: "Product Sub Category is required" }),
-  brand: z
+    .min(1, { message: "Product Sub Category is required" })
+    .transform((value) => Number(value)),
+  brandId: z
     .string()
     .trim()
-    .min(2, { message: "Brand is required" })
-    .max(50, { message: "Brand must be less than 50 characters" }),
+    .min(1, { message: "Brand is required" })
+    .max(50, { message: "Brand must be less than 50 characters" })
+    .transform((value) => Number(value)),
   skuNo: z
     .string()
     .trim()
     .min(2, { message: "SKU No. is required" })
     .max(50, { message: "SKU No. must be less than 50 characters" }),
-  tagList: z
+  productTagList: z
     .array(
       z.object({
         label: z.string().trim(),
@@ -55,111 +61,44 @@ const formSchema = z.object({
       });
       return temp;
     }),
+  productImagesList: z.any().optional(),
   productPrice: z
     .string()
     .trim()
-    .min(1, { message: "Product Price is required" }),
-  offerPrice: z.string().trim().min(1, { message: "Offer Price is required" }),
-  colorList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
-      }),
-    )
-    .min(1, {
-      message: "Color is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ tagId: item.value });
-      });
-      return temp;
-    }),
-  functionList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
-      }),
-    )
-    .min(1, {
-      message: "Function is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ tagId: item.value });
-      });
-      return temp;
-    }),
-  placeOfOrigin: z
+    .min(1, { message: "Product Price is required" })
+    .transform((value) => Number(value)),
+  offerPrice: z
     .string()
     .trim()
-    .min(2, { message: "Place of Origin is required" })
-    .max(50, { message: "Place of Origin must be less than 50 characters" }),
-  // style: z
-  //   .string()
-  //   .trim()
-  //   .min(2, { message: "Style is required" })
-  //   .max(50, { message: "Style must be less than 50 characters" }),
-  // batteryLife: z
-  //   .string()
-  //   .trim()
-  //   .min(2, { message: "Battery Life is required" })
-  //   .max(50, { message: "Battery Life must be less than 50 characters" }),
-  // screen: z
-  //   .string()
-  //   .trim()
-  //   .min(2, { message: "Screen is required" })
-  //   .max(50, { message: "Screen must be less than 50 characters" }),
-  // memorySize: z
-  //   .string()
-  //   .trim()
-  //   .min(2, { message: "Memory Size is required" })
-  //   .max(50, { message: "Memory Size must be less than 50 characters" }),
-  // modelNumber: z
-  //   .string()
-  //   .trim()
-  //   .min(2, { message: "Model No is required" })
-  //   .max(50, { message: "Model No must be less than 50 characters" }),
-  // brandName: z
-  //   .string()
-  //   .trim()
-  //   .min(2, { message: "Brand Name is required" })
-  //   .max(50, { message: "Brand Name must be less than 50 characters" }),
-  // detailsAttribute: z
-  //   .string()
-  //   .trim()
-  //   .min(2, { message: "Attribute is required" }),
-  // detailsValue: z.string().trim().min(2, { message: "Value is required" }),
+    .min(1, { message: "Offer Price is required" })
+    .transform((value) => Number(value)),
+  placeOfOriginId: z
+    .string()
+    .trim()
+    .min(1, { message: "Place of Origin is required" })
+    .transform((value) => Number(value)),
+  description: z.string().trim(),
+  specification: z.string().trim(),
 });
 
 const CreateProductPage = () => {
+  const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       productName: "",
-      productCategory: "",
-      productSubCategory: "",
-      brand: "",
+      categoryId: "",
+      subCategoryId: "",
+      brandId: "",
       skuNo: "",
-      tagList: undefined,
+      productTagList: undefined,
+      productImagesList: undefined,
       productPrice: "",
       offerPrice: "",
-      colorList: undefined,
-      functionList: undefined,
-      placeOfOrigin: "",
-      // style: "",
-      // batteryLife: "",
-      // screen: "",
-      // memorySize: "",
-      // modelNumber: "",
-      // brandName: "",
-      // detailsAttribute: "",
-      // detailsValue: "",
+      placeOfOriginId: "",
+      description: "",
+      specification: "",
       productImages: [
         {
           path: "",
@@ -181,9 +120,18 @@ const CreateProductPage = () => {
   }, [tagsQuery?.data]);
 
   const onSubmit = async (formData: any) => {
-    console.log(formData);
-
-    return;
+    if (form.getValues("productImages").length) {
+      formData.productImagesList = form
+        .getValues("productImages")
+        .filter((item) => item.path !== "")
+        .map((item) => ({
+          imageName: item.id,
+          image: item.path,
+        }));
+    }
+    delete formData.productImages;
+    // console.log(formData);
+    // return;
     const response = await createProduct.mutateAsync(formData);
     if (response.status && response.data) {
       toast({
@@ -191,6 +139,7 @@ const CreateProductPage = () => {
         description: response.message,
       });
       form.reset();
+      router.push("/product-list");
     } else {
       toast({
         title: "Product Create Failed",
@@ -230,16 +179,30 @@ const CreateProductPage = () => {
                   <DescriptionAndSpecificationSection />
                 </div>
                 <div className="mb-4 mt-4 inline-flex w-full items-center justify-end">
-                  <button className="mt-3 rounded-sm bg-transparent px-4 py-4 text-lg font-bold leading-6 text-[#7F818D]">
+                  <button className="rounded-sm bg-transparent px-4 py-4 text-lg font-bold leading-6 text-[#7F818D]">
                     Save as Draft
                   </button>
-                  <button
-                    type="submit"
+
+                  <Button
                     disabled={createProduct.isPending}
-                    className="mt-3 rounded-sm bg-dark-orange px-10 py-4 text-lg font-bold leading-6 text-white"
+                    type="submit"
+                    className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                   >
-                    Continue
-                  </button>
+                    {createProduct.isPending ? (
+                      <>
+                        <Image
+                          src="/images/load.png"
+                          alt="loader-icon"
+                          width={20}
+                          height={20}
+                          className="mr-2 animate-spin"
+                        />
+                        Please wait
+                      </>
+                    ) : (
+                      "Continue"
+                    )}
+                  </Button>
                 </div>
               </form>
             </Form>

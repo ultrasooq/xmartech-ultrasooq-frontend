@@ -267,7 +267,7 @@ export default function RegisterPage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your First Name"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                            className="theme-form-control-s1"
                             {...field}
                           />
                         </FormControl>
@@ -285,7 +285,7 @@ export default function RegisterPage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your Last Name"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                            className="theme-form-control-s1"
                             {...field}
                           />
                         </FormControl>
@@ -303,7 +303,7 @@ export default function RegisterPage() {
                         <FormControl>
                           <Input
                             placeholder="Enter Your Email Address"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                            className="theme-form-control-s1"
                             {...field}
                           />
                         </FormControl>
@@ -322,7 +322,7 @@ export default function RegisterPage() {
                           <Input
                             type="password"
                             placeholder="Enter Your Login Password"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                            className="theme-form-control-s1"
                             {...field}
                           />
                         </FormControl>
@@ -341,7 +341,7 @@ export default function RegisterPage() {
                           <Input
                             type="password"
                             placeholder="Enter Your Login Password Again"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                            className="theme-form-control-s1"
                             {...field}
                           />
                         </FormControl>
@@ -350,67 +350,58 @@ export default function RegisterPage() {
                     )}
                   />
 
-                  <div className="flex w-full">
-                    <div className="mb-4 flex w-full max-w-[125px] flex-col justify-between md:pr-3.5">
-                      <Label
-                        className={cn(
-                          form.formState.errors.cc?.message
-                            ? "text-red-500"
-                            : "",
-                          "mb-3 mt-[6px]",
-                        )}
-                      >
-                        Country Code
-                      </Label>
-                      <Controller
-                        name="cc"
-                        control={form.control}
-                        render={({ field }) => (
-                          <select
-                            {...field}
-                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                          >
-                            <option value="">Select</option>
-                            {Object.keys(countryObjs).map((key) => (
-                              <option
-                                key={key}
-                                value={
-                                  countryObjs[key as keyof typeof countryObjs]
-                                }
-                              >
-                                ({countryObjs[key as keyof typeof countryObjs]})
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                {key}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                      />
-                      <p className="text-[13px] font-medium text-red-500">
-                        {form.formState.errors.cc?.message ? "Required" : ""}
-                      </p>
-                    </div>
+                  <FormField
+                    control={form.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full">
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <div className="phone-no-with-country-select-s1">
+                            <div className="country-select">
+                              <Controller
+                                name="cc"
+                                control={form.control}
+                                render={({ field }) => (
+                                  <select
+                                    {...field}
+                                    className="theme-form-control-s1"
+                                  >
+                                    <option value="">Select</option>
+                                    {Object.keys(countryObjs).map((key) => (
+                                      <option
+                                        key={key}
+                                        value={
+                                          countryObjs[key as keyof typeof countryObjs]
+                                        }
+                                      >
+                                        ({countryObjs[key as keyof typeof countryObjs]})
+                                        {key}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
+                              />
+                            </div>
+                            <div className="phone-no">
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Enter Your Phone Number"
+                                className="theme-form-control-s1"
+                                {...field}
+                              />
+                            </div>
+                          </div>
 
-                    <FormField
-                      control={form.control}
-                      name="phoneNumber"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full">
-                          <FormLabel>Phone Number</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              onWheel={(e) => e.currentTarget.blur()}
-                              placeholder="Enter Your Phone Number"
-                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                        </FormControl>
+                        <p className="text-[13px] font-medium text-red-500">
+                          {form.formState.errors.cc?.message ? "Required Country Code" : ""}
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <FormField
                     control={form.control}
@@ -456,7 +447,7 @@ export default function RegisterPage() {
                     <Button
                       disabled={register.isPending}
                       type="submit"
-                      className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                      className="h-12 w-full rounded text-center text-lg font-bold leading-6 theme-primary-btn"
                     >
                       {register.isPending ? (
                         <>

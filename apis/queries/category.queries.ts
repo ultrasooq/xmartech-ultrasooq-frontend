@@ -1,5 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchCategory } from "../requests/category.requests";
+import {
+  fetchCategories,
+  fetchCategory,
+  fetchSubCategoriesById,
+} from "../requests/category.requests";
 
 export const useCategory = (enabled = true) =>
   useQuery({
@@ -12,7 +16,32 @@ export const useCategory = (enabled = true) =>
       const res = await fetchCategory();
       return res.data;
     },
-    // onSuccess: () => {},
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useCategories = (enabled = true) =>
+  useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const res = await fetchCategories();
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useSubCategoryById = (id: string, enabled = true) =>
+  useQuery({
+    queryKey: ["sub-category-by-id", id],
+    queryFn: async () => {
+      const res = await fetchSubCategoriesById({ categoryId: id });
+      return res.data;
+    },
     // onError: (err: APIResponseError) => {
     //   console.log(err);
     // },

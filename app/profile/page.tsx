@@ -278,27 +278,27 @@ export default function ProfilePage() {
 
       const phoneNumberList = userPhone.length
         ? userPhone.map((item: any) => ({
-            cc: item?.cc,
-            phoneNumber: item?.phoneNumber,
-          }))
+          cc: item?.cc,
+          phoneNumber: item?.phoneNumber,
+        }))
         : [
-            {
-              cc: cc || "",
-              phoneNumber: phoneNumber || "",
-            },
-          ];
+          {
+            cc: cc || "",
+            phoneNumber: phoneNumber || "",
+          },
+        ];
 
       const socialLinkList = userSocialLink.length
         ? userSocialLink.map((item: any) => ({
-            linkType: item?.linkType,
-            link: item?.link,
-          }))
+          linkType: item?.linkType,
+          link: item?.link,
+        }))
         : [
-            {
-              linkType: "",
-              link: "",
-            },
-          ];
+          {
+            linkType: "",
+            link: "",
+          },
+        ];
 
       form.reset({
         profilePicture: profilePicture || "",
@@ -578,49 +578,6 @@ export default function ProfilePage() {
                       key={field.id}
                       className="relative mb-4 flex w-full flex-row items-center gap-x-3.5"
                     >
-                      <div className="flex w-full max-w-[125px] flex-col justify-between">
-                        <Label
-                          className={cn(
-                            // form.formState.errors.cc?.message
-                            //   ? "text-red-500"
-                            //   : "",
-                            "mb-3 mt-[6px]",
-                          )}
-                        >
-                          Country Code
-                        </Label>
-                        <Controller
-                          name={`phoneNumberList.${index}.cc`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <select
-                              {...field}
-                              className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                            >
-                              <option value="">Select</option>
-                              {Object.keys(countryObjs).map((key) => (
-                                <option
-                                  key={key}
-                                  value={
-                                    countryObjs[key as keyof typeof countryObjs]
-                                  }
-                                >
-                                  (
-                                  {countryObjs[key as keyof typeof countryObjs]}
-                                  )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                  {key}
-                                </option>
-                              ))}
-                            </select>
-                          )}
-                        />
-                        <p className="text-[13px] font-medium text-red-500">
-                          {form.formState.errors.phoneNumberList?.[index]?.cc
-                            ? "Required"
-                            : ""}
-                        </p>
-                      </div>
-
                       <FormField
                         key={field.id}
                         control={form.control}
@@ -629,32 +586,70 @@ export default function ProfilePage() {
                           <FormItem className="w-full">
                             <FormLabel>Number</FormLabel>
                             <FormControl>
-                              <Input
-                                type="number"
-                                onWheel={(e) => e.currentTarget.blur()}
-                                placeholder="Enter Your Phone Number"
-                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                                {...field}
-                              />
+                              <div className="phone-no-with-country-select-s1">
+                                <div className="country-select">
+                                  <Controller
+                                    name={`phoneNumberList.${index}.cc`}
+                                    control={form.control}
+                                    render={({ field }) => (
+                                      <select
+                                        {...field}
+                                        className="theme-form-control-s1"
+                                      >
+                                        <option value="">Select</option>
+                                        {Object.keys(countryObjs).map((key) => (
+                                          <option
+                                            key={key}
+                                            value={
+                                              countryObjs[key as keyof typeof countryObjs]
+                                            }
+                                          >
+                                            (
+                                            {countryObjs[key as keyof typeof countryObjs]}
+                                            )
+                                            {key}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    )}
+                                  />
+                                </div>
+                                <div className="phone-no">
+                                  <Input
+                                    type="number"
+                                    onWheel={(e) => e.currentTarget.blur()}
+                                    placeholder="Enter Your Phone Number"
+                                    className="theme-form-control-s1 pr-[45px]"
+                                    {...field}
+                                  />
+                                  {index !== 0 ? (
+                                    <Button
+                                      type="button"
+                                      onClick={() => removePhoneNumber(index)}
+                                      className="absolute -translate-y-2/4 right-1 top-2/4 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                                    >
+                                      <Image
+                                        src="/images/social-delete-icon.svg"
+                                        height={35}
+                                        width={35}
+                                        alt="social-delete-icon"
+                                      />
+                                    </Button>
+                                  ) : null}
+                                </div>
+                              </div>
+
                             </FormControl>
+                            <p className="text-[13px] font-medium text-red-500">
+                              {form.formState.errors.phoneNumberList?.[index]?.cc
+                                ? "Required Country Code"
+                                : ""}
+                            </p>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      {index !== 0 ? (
-                        <Button
-                          type="button"
-                          onClick={() => removePhoneNumber(index)}
-                          className="absolute right-4 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                        >
-                          <Image
-                            src="/images/social-delete-icon.svg"
-                            height={35}
-                            width={35}
-                            alt="social-delete-icon"
-                          />
-                        </Button>
-                      ) : null}
+
                     </div>
                   ))}
 
@@ -697,7 +692,7 @@ export default function ProfilePage() {
                                 <Image
                                   src={
                                     SOCIAL_MEDIA_ICON[
-                                      watchSocialMedia[index]?.linkType
+                                    watchSocialMedia[index]?.linkType
                                     ]
                                   }
                                   className="mr-1.5"
@@ -826,13 +821,13 @@ export default function ProfilePage() {
                             <div className="relative m-auto h-48 w-full border-2 border-dashed border-gray-300">
                               <div className="relative h-full w-full">
                                 {identityImageFile ||
-                                me.data?.data?.identityProof ? (
+                                  me.data?.data?.identityProof ? (
                                   <Image
                                     src={
                                       identityImageFile
                                         ? URL.createObjectURL(
-                                            identityImageFile[0],
-                                          )
+                                          identityImageFile[0],
+                                        )
                                         : me.data?.data?.identityProof
                                           ? me.data?.data?.identityProof
                                           : "/images/company-logo.png"
@@ -902,7 +897,7 @@ export default function ProfilePage() {
                   <Button
                     disabled={updateProfile.isPending || upload.isPending}
                     type="submit"
-                    className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                    className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6  theme-primary-btn"
                   >
                     {updateProfile.isPending || upload.isPending ? (
                       <>
