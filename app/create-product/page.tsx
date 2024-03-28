@@ -31,7 +31,6 @@ const formSchema = z.object({
   subCategoryId: z
     .string()
     .trim()
-    .min(1, { message: "Product Sub Category is required" })
     .transform((value) => Number(value)),
   brandId: z
     .string()
