@@ -1,28 +1,25 @@
 export interface ICreateProductRequest {
   productName: string;
-  productCategory: string;
-  productSubCategory: string;
-  brand: string;
+  categoryId: number;
+  subCategoryId: number;
+  brandId: number;
   skuNo: string;
-  tagList: undefined;
-  productPrice: string;
-  offerPrice: string;
-  colorList: undefined;
-  functionList: undefined;
-  placeOfOrigin: string;
-  style: string;
-  batteryLife: string;
-  screen: string;
-  memorySize: string;
-  modelNumber: string;
-  brandName: string;
-  detailsAttribute: string;
-  detailsValue: string;
+  productTagList?: Array<{
+    tagId: number;
+  }>;
+  productImagesList?: Array<{
+    imageName: string;
+    image: string;
+  }>;
+  placeOfOriginId: number;
+  productPrice: number;
+  offerPrice: number;
+  description: string;
+  specification: string;
 }
 
 export interface ICreateProduct {
   data: any;
   status: boolean;
   message: string;
-  error?: string;
 }
