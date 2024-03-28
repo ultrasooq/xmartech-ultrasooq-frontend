@@ -124,7 +124,7 @@ export default function ResetPasswordPage() {
             ) : (
               <>
                 <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                  <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                  <h2 className="mb-3 text-center text-3xl font-semibold leading-8  theme-primary-btn">
                     Reset Password
                   </h2>
                   <p>Reset Your Password</p>
@@ -177,7 +177,7 @@ export default function ResetPasswordPage() {
                         <Button
                           disabled={resetPassword.isPending}
                           type="submit"
-                          className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                          className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 theme-primary-btn"
                         >
                           {resetPassword.isPending ? (
                             <>

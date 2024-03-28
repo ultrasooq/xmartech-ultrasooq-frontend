@@ -167,7 +167,7 @@ export default function LoginPage() {
                     <Button
                       disabled={login.isPending}
                       type="submit"
-                      className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                      className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 theme-primary-btn"
                     >
                       {login.isPending ? (
                         <>

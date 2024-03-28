@@ -164,7 +164,7 @@ const ProductListPage = () => {
             </div>
             <ul className="theme-pagination-s1">
               <li>
-                <Button type="button" className="theme-btn-s1 frist"><img src="/images/pagination-frist.svg" alt="" /> Frist</Button>
+                <Button type="button" className="theme-primary-btn frist"><img src="/images/pagination-frist.svg" alt="" /> Frist</Button>
               </li>
               <li>
                 <Button type="button" className="nextPrev"><img src="/images/pagination-prev.svg" alt="" /></Button>
@@ -188,7 +188,7 @@ const ProductListPage = () => {
                 <Button type="button" className="nextPrev"><img src="/images/pagination-next.svg" alt="" /></Button>
               </li>
               <li>
-                <Button type="button" className="theme-btn-s1 last">Last <img src="/images/pagination-last.svg" alt="" /></Button>
+                <Button type="button" className="theme-primary-btn last">Last <img src="/images/pagination-last.svg" alt="" /></Button>
               </li>
             </ul>
           </Card>

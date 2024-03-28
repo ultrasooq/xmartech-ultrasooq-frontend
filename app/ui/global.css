@@ -35,6 +35,7 @@
     --radius: 0.5rem;
     /* theme colors */
     --theme-primary-color: #DB2302;
+    --theme-secondary-color: #022335;
     --theme-gray-light: #F3F3F3;
     --theme-gray-dark: #E8E8E8;
   }
@@ -93,13 +94,152 @@
     @apply w-[100%] overflow-x-auto;
   }
 
-  .theme-btn-s1 {
+  /* start: theme-primary-btn */
+  @-webkit-keyframes criss-cross-right {
+    0% {
+        right: -20px;
+    }
+
+    50% {
+        right: 50%;
+        width: 20px;
+        height: 20px;
+    }
+
+    100% {
+        right: 50%;
+        width: 875px;
+        height: 875px;
+    }
+}
+
+@keyframes criss-cross-right {
+    0% {
+        right: -20px;
+    }
+
+    50% {
+        right: 50%;
+        width: 20px;
+        height: 20px;
+    }
+
+    100% {
+        right: 50%;
+        width: 875px;
+        height: 875px;
+    }
+}
+
+@-webkit-keyframes criss-cross-left {
+    0% {
+        left: -20px;
+    }
+
+    50% {
+        left: 50%;
+        width: 20px;
+        height: 20px;
+    }
+
+    100% {
+        left: 50%;
+        width: 875px;
+        height: 875px;
+    }
+}
+
+@keyframes criss-cross-left {
+    0% {
+        left: -20px;
+    }
+
+    50% {
+        left: 50%;
+        width: 20px;
+        height: 20px;
+    }
+
+    100% {
+        left: 50%;
+        width: 375px;
+        height: 375px;
+    }
+}
+  .theme-primary-btn {
     @apply bg-[var(--theme-primary-color)] text-white !important;
-    @apply transition !important;
+    @apply relative z-[1] overflow-hidden;
+    transition: all 0.5s !important;
   }
-  .theme-btn-s1:hover{
-    @apply shadow-[1px_1px_11px_#9f9f9f];
+
+  .theme-primary-btn::before,
+  .theme-primary-btn::after {
+    transition: all 0.5s !important;
+    @apply z-[-1];
   }
+
+
+  .theme-primary-btn:hover {
+    @apply text-[color:var(--white-color)] shadow-[1px_3px_12px_#afafaf];
+  }
+
+  .theme-primary-btn:before,
+  .theme-primary-btn:after {
+    @apply absolute content-[''] w-5 h-5 rounded-[50%] top-2/4 bg-[var(--theme-secondary-color)];
+  }
+
+  .theme-primary-btn:before {
+    @apply -translate-x-2/4 -translate-y-2/4 -left-5;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+  }
+
+  .theme-primary-btn:after {
+    @apply translate-x-2/4 -translate-y-2/4 -right-5;
+    -webkit-transform: translate(50%, -50%);
+    -ms-transform: translate(50%, -50%);
+  }
+
+  .theme-primary-btn:hover:before {
+    -webkit-animation: criss-cross-left 0.8s both;
+    animation: criss-cross-left 0.8s both;
+  }
+
+  .theme-primary-btn:hover:after {
+    -webkit-animation: criss-cross-right 0.8s both;
+    animation: criss-cross-right 0.8s both;
+  }
+
+  /* end: theme-primary-btn */
+  .theme-form-control-s1 {
+    @apply !h-12 w-full rounded border !border-gray-300 px-3 text-sm;
+  }
+
+  .theme-form-control-s1:focus {
+    box-shadow: none !important;
+    outline: none !important;
+    @apply border-[var(--theme-primary-color)] !important;
+  }
+
+  /* start: phone-no-with-country-select-s1 */
+  .phone-no-with-country-select-s1 {
+    @apply relative;
+  }
+
+  .phone-no-with-country-select-s1 .country-select {
+    @apply absolute z-[2] w-20 h-full left-0 top-0;
+  }
+
+  .phone-no-with-country-select-s1 .country-select select {
+    @apply bg-transparent rounded-none border-l-0 border-y-0;
+    @apply h-full !important;
+  }
+
+  .phone-no-with-country-select-s1 .phone-no .theme-form-control-s1 {
+    @apply pl-[90px] !important;
+  }
+
+  /* end: phone-no-with-country-select-s1 */
   /* end: common */
   /* start: theme-table-s1 */
   .theme-table-s1 table {
@@ -170,19 +310,19 @@
     @apply flex flex-wrap justify-center w-full gap-x-1.5 pt-12 pb-8 px-0;
   }
 
-  .theme-pagination-s1 button:not(.theme-btn-s1) {
+  .theme-pagination-s1 button:not(.theme-primary-btn) {
     @apply w-[30px] h-[30px] border bg-white text-black text-[13px] not-italic font-medium leading-[13px] p-0 rounded-none border-solid border-[#E0E0E0];
   }
 
-  .theme-pagination-s1 button.theme-btn-s1 {
+  .theme-pagination-s1 button.theme-primary-btn {
     @apply h-[30px] w-[71px] gap-x-1.5 p-0 rounded-[1.96px];
   }
 
-  .theme-pagination-s1 button.theme-btn-s1.frist {
+  .theme-pagination-s1 button.theme-primary-btn.frist {
     @apply mr-2.5;
   }
 
-  .theme-pagination-s1 button.theme-btn-s1.last {
+  .theme-pagination-s1 button.theme-primary-btn.last {
     @apply ml-2.5;
   }
 
