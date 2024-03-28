@@ -318,7 +318,7 @@
     @apply h-[30px] w-[71px] gap-x-1.5 p-0 rounded-[1.96px];
   }
 
-  .theme-pagination-s1 button.theme-primary-btn.frist {
+  .theme-pagination-s1 button.theme-primary-btn.first {
     @apply mr-2.5;
   }
 

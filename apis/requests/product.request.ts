@@ -16,3 +16,10 @@ export const createProduct = (payload: any) => {
     },
   });
 };
+
+export const fetchProducts = () => {
+  return axios({
+    method: "GET",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/findAll`,
+  });
+};

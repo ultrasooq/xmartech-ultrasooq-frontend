@@ -27,3 +27,13 @@ export interface ISelectOptions {
   label: string;
   value: number;
 }
+
+export interface IRenderProduct {
+  id: number;
+  productImage: string;
+  productName: string;
+  categoryName: string;
+  skuNo: string;
+  brandName: string;
+  productPrice: string;
+}

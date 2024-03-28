@@ -1,6 +1,6 @@
 import { APIResponseError } from "@/utils/types/common.types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createProduct } from "../requests/product.request";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createProduct, fetchProducts } from "../requests/product.request";
 import {
   ICreateProduct,
   ICreateProductRequest,
@@ -15,7 +15,7 @@ export const useCreateProduct = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["me"],
+        queryKey: ["products"],
       });
     },
     onError: (err: APIResponseError) => {
@@ -23,3 +23,16 @@ export const useCreateProduct = () => {
     },
   });
 };
+
+export const useProducts = (enabled = true) =>
+  useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const res = await fetchProducts();
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
