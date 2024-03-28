@@ -120,8 +120,17 @@ const CreateProductPage = () => {
   }, [tagsQuery?.data]);
 
   const onSubmit = async (formData: any) => {
-    console.log(formData);
-
+    if (form.getValues("productImages").length) {
+      formData.productImagesList = form
+        .getValues("productImages")
+        .filter((item) => item.path !== "")
+        .map((item) => ({
+          imageName: item.id,
+          image: item.path,
+        }));
+    }
+    delete formData.productImages;
+    // console.log(formData);
     // return;
     const response = await createProduct.mutateAsync(formData);
     if (response.status && response.data) {
@@ -138,9 +147,6 @@ const CreateProductPage = () => {
       });
     }
   };
-
-  // console.log(form.getValues());
-  // console.log(form.formState.errors);
 
   return (
     <>
