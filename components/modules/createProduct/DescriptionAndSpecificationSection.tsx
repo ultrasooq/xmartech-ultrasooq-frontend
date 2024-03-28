@@ -1,5 +1,6 @@
 import Tiptap from "@/components/shared/Rte/Tiptap";
 import React from "react";
+import { Controller } from "react-hook-form";
 
 const DescriptionAndSpecificationSection = () => {
   return (
@@ -18,8 +19,13 @@ const DescriptionAndSpecificationSection = () => {
               <label className="text-sm font-medium leading-none text-color-dark">
                 Description
               </label>
-              <Tiptap />
-              {/* <textarea className="!h-[200px] w-full resize-none rounded border !border-gray-300 px-3 py-1 text-sm focus:outline-none"></textarea> */}
+              <Controller
+                name="description"
+                defaultValue=""
+                render={({ field }) => (
+                  <Tiptap onChange={field.onChange} description={field.value} />
+                )}
+              />
             </div>
           </div>
           <div className="relative mb-4 w-full">
@@ -27,8 +33,13 @@ const DescriptionAndSpecificationSection = () => {
               <label className="text-sm font-medium leading-none text-color-dark">
                 Specification
               </label>
-              <Tiptap />
-              {/* <textarea className="!h-[200px] w-full resize-none rounded border !border-gray-300 px-3 py-1 text-sm focus:outline-none"></textarea> */}
+              <Controller
+                name="specification"
+                defaultValue=""
+                render={({ field }) => (
+                  <Tiptap onChange={field.onChange} description={field.value} />
+                )}
+              />
             </div>
           </div>
         </div>
