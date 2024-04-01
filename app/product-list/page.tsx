@@ -21,6 +21,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import DeleteContent from "@/components/shared/DeleteContent";
 import { useToast } from "@/components/ui/use-toast";
 import { useMe } from "@/apis/queries/user.queries";
+import AddIcon from "@mui/icons-material/Add";
 
 const ProductListPage = () => {
   const router = useRouter();
@@ -91,21 +92,26 @@ const ProductListPage = () => {
     <section className="body-content-s1">
       <div className="custom-container-s1">
         <Card className="body-content-s1-card">
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              onClick={handleAddProductPage}
-              className="theme-primary-btn mb-4 h-8 "
-            >
-              Add Product
-            </Button>
-          </div>
           <CardHeader className="body-content-s1-search">
-            <Input
-              type="email"
-              placeholder="Search Product"
-              className="search-box"
-            />
+            <ul className="right-filter-lists">
+              <li>
+                <Input
+                  type="email"
+                  placeholder="Search Product"
+                  className="search-box"
+                />
+              </li>
+              <li>
+                <Button
+                  type="submit"
+                  onClick={handleAddProductPage}
+                  className="theme-primary-btn add-btn"
+                >
+                  <AddIcon />
+                  <span className="d-none-mobile">Add Product</span>
+                </Button>
+              </li>
+            </ul>
           </CardHeader>
 
           <CardContent className="main-content">
