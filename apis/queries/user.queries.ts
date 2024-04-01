@@ -29,7 +29,6 @@ export const useMe = (enabled = true) =>
       const res = await fetchMe();
       return res.data;
     },
-    // onSuccess: () => {},
     // onError: (err: APIResponseError) => {
     //   console.log(err);
     // },
