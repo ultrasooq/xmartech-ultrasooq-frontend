@@ -169,6 +169,7 @@
 
   .theme-primary-btn {
     @apply bg-[var(--theme-primary-color)] text-[16px] text-white !important;
+    border-radius: 2px;
     @apply relative z-[1] overflow-hidden flex items-center justify-center text-center cursor-pointer capitalize font-medium !important;
     transition: all 0.5s !important;
   }
@@ -346,7 +347,7 @@
   /* end: theme-table-s1 */
   /* start: body-content-s1 */
   .body-content-s1 {
-    @apply py-[52px];
+    @apply py-[42px];
   }
 
   .custom-container-s1 {
@@ -495,6 +496,105 @@
   } */
 
   /* end: theme-inside-auth-sec */
+
+  /* start: custom-inner-banner-s1 */
+  .custom-inner-banner-s1 {}
+
+  .custom-inner-banner-s1-captionBox {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 32px;
+    padding: 34px 60px 40px 80px;
+  }
+
+  .custom-inner-banner-s1-captionBox .bg-image {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .custom-inner-banner-s1-captionBox .text-container {}
+
+  .page-indicator {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    column-gap: 10px;
+  }
+
+  .page-indicator li {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 28.8px;
+    letter-spacing: 0.14px;
+    text-transform: uppercase;
+    color: #7F818D;
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+  }
+
+  .page-indicator li a {
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    color: var(--theme-primary-color);
+  }
+
+  .custom-inner-banner-s1-captionBox h2 {
+    color: #333;
+    font-size: 35px;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: capitalize;
+    margin-top: 16px;
+  }
+
+  .custom-inner-banner-s1-captionBox h5 {
+    color: #7F818D;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 24px;
+    margin-top: 20px;
+  }
+
+  .custom-inner-banner-s1-captionBox h4 {
+    color: #669D03;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+
+  .custom-inner-banner-s1-captionBox .action-btns {
+    display: flex;
+    margin-top: 28px;
+  }
+
+  .custom-inner-banner-s1-captionBox .action-btns .custom-btn {
+    width: 110px;
+    height: 39px;
+  }
+  .custom-inner-banner-s1-captionBox .text-container{
+    width: 100%;
+    max-width: 346px;
+  }
+  .custom-inner-banner-s1-captionBox .image-container{
+    width: 100%;
+    max-width: 548px;
+  }
+  .custom-inner-banner-s1-captionBox .image-container img{
+    width: 100%;
+  }
+  /* end: custom-inner-banner-s1 */
 }
 
 .react-time-picker__wrapper {
