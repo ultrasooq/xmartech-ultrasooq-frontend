@@ -45,11 +45,11 @@ const ProductListPage = () => {
     <section className="body-content-s1">
       <div className="custom-container-s1">
         <Card className="body-content-s1-card">
-          <div className="text-right">
+          <div className="flex justify-end">
             <Button
               type="submit"
               onClick={handleAddProductPage}
-              className="mb-4 h-8 rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+              className="theme-primary-btn mb-4 h-8 "
             >
               Add Product
             </Button>
