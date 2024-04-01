@@ -371,7 +371,15 @@
   .body-content-s1-search .search-box::placeholder {
     opacity: 0.7;
   }
-
+  .body-content-s1-search .right-filter-lists{
+    display: flex;
+    align-items: center;
+    column-gap: 16px;
+    margin-left: auto;
+  }
+  .body-content-s1-search .right-filter-lists .search-box{
+    width: 320px;
+  }
   input:focus {
     box-shadow: none !important;
     @apply border-[var(--theme-primary-color)] !important;
