@@ -20,13 +20,19 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import DeleteContent from "@/components/shared/DeleteContent";
 import { useToast } from "@/components/ui/use-toast";
+import { useMe } from "@/apis/queries/user.queries";
 
 const ProductListPage = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number>();
-  const productsQuery = useProducts();
+  const userDetails = useMe();
+
+  const productsQuery = useProducts(
+    { userId: String(userDetails?.data?.data?.id), page: 1, limit: 10 },
+    !!userDetails?.data?.data?.id,
+  );
   const deleteProduct = useDeleteProduct();
 
   const handleAddProductPage = () => router.push("/create-product");
@@ -38,7 +44,7 @@ const ProductListPage = () => {
   };
 
   const memoizedProducts = useMemo(() => {
-    return productsQuery.data?.data.map((item: any) => {
+    return productsQuery.data?.data?.map((item: any) => {
       return {
         id: item?.id,
         productImage: item?.productImages?.[0]?.image,
@@ -85,11 +91,11 @@ const ProductListPage = () => {
     <section className="body-content-s1">
       <div className="custom-container-s1">
         <Card className="body-content-s1-card">
-          <div className="text-right">
+          <div className="flex justify-end">
             <Button
               type="submit"
               onClick={handleAddProductPage}
-              className="mb-4 h-8 rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+              className="theme-primary-btn mb-4 h-8 "
             >
               Add Product
             </Button>

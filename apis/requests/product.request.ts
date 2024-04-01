@@ -20,10 +20,23 @@ export const createProduct = (payload: any) => {
   });
 };
 
-export const fetchProducts = () => {
+export const fetchProducts = (payload: {
+  page: number;
+  limit: number;
+  userId: string;
+}) => {
+  const query = new URLSearchParams({
+    page: payload.page.toString(),
+    limit: payload.limit.toString(),
+  });
+
+  if (!isEmpty(payload.userId)) {
+    query.append("userId", String(payload.userId));
+  }
+
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/findAll`,
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/findAll?${query}`,
   });
 };
 
