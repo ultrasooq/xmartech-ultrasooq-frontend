@@ -23,3 +23,15 @@ export interface ICreateProduct {
   status: boolean;
   message: string;
 }
+
+export interface IDeleteProductRequest {
+  productId: string;
+}
+
+export interface IDeleteProduct extends ICreateProduct {}
+
+export interface IUpdateProductRequest extends ICreateProductRequest {
+  productId: number;
+}
+
+export interface IUpdateProduct extends ICreateProduct {}
