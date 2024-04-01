@@ -75,7 +75,6 @@ export const useLogin = () =>
   useMutation<ILogin, APIResponseError, ILoginRequest>({
     mutationFn: async (payload) => {
       const res = await login(payload);
-
       return res.data;
     },
     onSuccess: () => {},

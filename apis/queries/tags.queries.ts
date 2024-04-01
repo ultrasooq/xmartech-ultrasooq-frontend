@@ -8,7 +8,6 @@ export const useTags = (enabled = true) =>
       const res = await fetchTags();
       return res.data;
     },
-    // onSuccess: () => {},
     // onError: (err: APIResponseError) => {
     //   console.log(err);
     // },
