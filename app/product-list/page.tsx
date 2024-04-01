@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,20 +11,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useProducts } from "@/apis/queries/product.queries";
+import { useDeleteProduct, useProducts } from "@/apis/queries/product.queries";
 import { IRenderProduct } from "@/utils/types/common.types";
 import Image from "next/image";
 import validator from "validator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import DeleteContent from "@/components/shared/DeleteContent";
+import { useToast } from "@/components/ui/use-toast";
 
 const ProductListPage = () => {
   const router = useRouter();
+  const { toast } = useToast();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<number>();
   const productsQuery = useProducts();
+  const deleteProduct = useDeleteProduct();
 
   const handleAddProductPage = () => router.push("/create-product");
-
-  console.log(productsQuery.data?.data);
+  const handleEditProductPage = (id: number) =>
+    router.push(`/create-product?productId=${id}`);
+  const handleToggleDeleteModal = () => {
+    setIsDeleteModalOpen(!isDeleteModalOpen);
+    setSelectedProductId(undefined);
+  };
 
   const memoizedProducts = useMemo(() => {
     return productsQuery.data?.data.map((item: any) => {
@@ -40,7 +51,36 @@ const ProductListPage = () => {
     });
   }, [productsQuery.data?.data]);
 
-  // console.log(memoizedProducts);
+  const handleConfirmation = async (isConfirmed: boolean) => {
+    if (!isConfirmed) {
+      setIsDeleteModalOpen(false);
+      setSelectedProductId(undefined);
+      return;
+    }
+
+    if (!selectedProductId) return;
+
+    const response = await deleteProduct.mutateAsync({
+      productId: String(selectedProductId),
+    });
+    if (response.status && response.data) {
+      setIsDeleteModalOpen(false);
+    }
+    if (response.status && response.data) {
+      toast({
+        title: "Product Delete Successful",
+        description: response.message,
+      });
+      setIsDeleteModalOpen(false);
+      setSelectedProductId(undefined);
+    } else {
+      toast({
+        title: "Product Delete Failed",
+        description: response.message,
+      });
+    }
+  };
+
   return (
     <section className="body-content-s1">
       <div className="custom-container-s1">
@@ -109,6 +149,7 @@ const ProductListPage = () => {
                           <div className="td-action-btns">
                             <Button
                               type="button"
+                              onClick={() => handleEditProductPage(item?.id)}
                               className="td-circle-btn edit"
                             >
                               <Image
@@ -120,6 +161,10 @@ const ProductListPage = () => {
                             </Button>
                             <Button
                               type="button"
+                              onClick={() => {
+                                handleToggleDeleteModal();
+                                setSelectedProductId(item?.id);
+                              }}
                               className="td-circle-btn trash"
                             >
                               <Image
@@ -201,6 +246,16 @@ const ProductListPage = () => {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={isDeleteModalOpen} onOpenChange={handleToggleDeleteModal}>
+        <DialogContent className="gap-0 p-0">
+          <DeleteContent
+            onClose={() => handleConfirmation(false)}
+            onConfirm={() => handleConfirmation(true)}
+            isLoading={deleteProduct.isPending}
+          />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

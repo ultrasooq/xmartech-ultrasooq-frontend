@@ -111,7 +111,6 @@ export const useFetchCompanyBranchById = (id: string, enabled = true) =>
       const res = await fetchCompanyBranchById({ branchId: id });
       return res.data;
     },
-    // onSuccess: () => {},
     // onError: (err: APIResponseError) => {
     //   console.log(err);
     // },
