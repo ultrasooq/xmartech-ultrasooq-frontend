@@ -15,8 +15,6 @@ import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import { cn } from "@/lib/utils";
 import * as Icons from "./Icons";
-import { useEffect, useRef } from "react";
-import { on } from "events";
 
 // const MenuBar = () => {
 //   const { editor } = useCurrentEditor();
