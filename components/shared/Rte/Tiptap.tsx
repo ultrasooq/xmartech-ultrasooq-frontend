@@ -15,6 +15,8 @@ import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import { cn } from "@/lib/utils";
 import * as Icons from "./Icons";
+import { useEffect, useRef } from "react";
+import { on } from "events";
 
 // const MenuBar = () => {
 //   const { editor } = useCurrentEditor();
@@ -273,14 +275,20 @@ type TiptapProps = {
 };
 
 const Tiptap: React.FC<TiptapProps> = ({ onChange, description }) => {
-  const editor = useEditor({
-    extensions,
-    content: description,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+  const editor = useEditor(
+    {
+      extensions,
+      content: description,
+      onUpdate: ({ editor }) => {
+        onChange(editor.getHTML());
+      },
     },
-  });
+    // TODO: fix prefill on mount
+    [description],
+  );
+
   if (!editor) return null;
+
   return (
     <div className="rounded border !border-gray-300 px-4 pb-4">
       {/* <EditorProvider

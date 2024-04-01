@@ -245,7 +245,7 @@ const CreateProductPage = () => {
       });
     }
   }, [productQueryById?.data?.data]);
-  console.log(form.getValues());
+
   return (
     <>
       <section className="relative w-full py-7">
