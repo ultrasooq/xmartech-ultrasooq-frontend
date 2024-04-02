@@ -13,11 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-
-type OptionProps = {
-  label: string;
-  value: string;
-};
+import { OptionProps } from "@/utils/types/common.types";
 
 type AccordionMultiSelectV2Props = {
   label: string;

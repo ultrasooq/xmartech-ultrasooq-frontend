@@ -34,11 +34,14 @@ export const useCreateProduct = () => {
   });
 };
 
-export const useProducts = (enabled = true) =>
+export const useProducts = (
+  query: { userId: string; page: number; limit: number },
+  enabled = true,
+) =>
   useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", query],
     queryFn: async () => {
-      const res = await fetchProducts();
+      const res = await fetchProducts(query);
       return res.data;
     },
     // onError: (err: APIResponseError) => {

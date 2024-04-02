@@ -1,7 +1,9 @@
-import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
-import { Label } from "@/components/ui/label";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import CustomFieldContent from "@/components/shared/CustomFieldContent";
 import {
   FormControl,
   FormField,
@@ -10,145 +12,109 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { v4 as uuidv4 } from "uuid";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { format } from "date-fns";
 
-type ProductDetailsSectionProps = {
-  tagsList?: any;
-};
+type ProductDetailsSectionProps = {};
 
-const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
-  tagsList,
-}) => {
+const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
   const formContext = useFormContext();
+  const [isCustomFieldModalOpen, setIsCustomFieldModalOpen] = useState(false);
+  const [customfields, setCustomFields] = useState<
+    {
+      key: string;
+      type: string;
+      field: JSX.Element;
+    }[]
+  >([]);
+  const handleToggleCustomFieldModal = () => {
+    setIsCustomFieldModalOpen(!isCustomFieldModalOpen);
+  };
 
-  return (
-    <div className="flex w-full flex-wrap">
-      <div className="mb-4 w-full">
-        <div className="mt-2.5 w-full">
-          <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-            Product Details
-          </label>
-        </div>
-      </div>
-      <div className="mb-3.5 w-full">
-        <div className="flex flex-wrap">
-          {/* <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            <div className="flex w-full flex-col gap-y-2">
-              <Label>Place of Origin</Label>
-              <Controller
-                name="placeOfOrigin"
-                control={formContext.control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                  >
-                    <option value="">Select Place of Origin</option>
-                    <option value="Origin 1">Origin 1</option>
-                    <option value="Origin 2">Origin 2</option>
-                  </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {
-                  formContext.formState.errors["placeOfOrigin"]
-                    ?.message as string
-                }
-              </p>
-            </div>
+  const deleteCustomField = (key: string) => {
+    setCustomFields(customfields.filter((item) => item.key !== key));
+  };
 
-            <div className="flex w-full flex-col gap-y-2">
-              <Label>Style</Label>
-              <Controller
-                name="style"
-                control={formContext.control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                  >
-                    <option value="">Select Style</option>
-                    <option value="Style 1">Style 1</option>
-                    <option value="Style 2">Style 2</option>
-                  </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {formContext.formState.errors["style"]?.message as string}
-              </p>
-            </div>
-          </div> */}
+  const handleCustomFields = (type: string) => {
+    const tempArr: {
+      key: string;
+      type: string;
+      field: JSX.Element;
+    }[] = [];
 
-          {/* <div className="w-full">
-            <AccordionMultiSelectV2
-              label="Color"
-              name="colorList"
-              options={tagsList || []}
-              placeholder="Color"
-              error={
-                formContext.formState.errors["colorList"]?.message as string
-              }
+    switch (type) {
+      case "text":
+        tempArr.push({
+          key: uuidv4(),
+          type: "text",
+          field: (
+            <FormField
+              key={uuidv4()}
+              control={formContext.control}
+              name="brandName"
+              render={({ field }) => (
+                <FormItem className="mb-4 w-full">
+                  <FormLabel>Input Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter Input Name"
+                      className="!h-[48px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div> */}
-
-          {/* <div className="w-full">
-            <AccordionMultiSelectV2
-              label="Function"
-              name="functionList"
-              options={tagsList || []}
-              placeholder="Function"
-              error={
-                formContext.formState.errors["functionList"]?.message as string
-              }
+          ),
+        });
+        break;
+      case "textarea":
+        tempArr.push({
+          key: uuidv4(),
+          type: "textarea",
+          field: (
+            <FormField
+              key={uuidv4()}
+              control={formContext.control}
+              name="aboutUs"
+              render={({ field }) => (
+                <FormItem className="mb-4 w-full">
+                  <FormLabel>Input Name</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Write Here...."
+                      className="rounded border-gray-300 focus-visible:!ring-0"
+                      rows={6}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div> */}
-
-          {/* <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            <div className="flex w-full flex-col gap-y-2">
-              <Label>Battery Life</Label>
-              <Controller
-                name="batteryLife"
-                control={formContext.control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                  >
-                    <option value="">Select Batter Life</option>
-                    <option value="Battery Life 1">Battery Life 1</option>
-                    <option value="Battery Life 2">Battery Life 2</option>
-                  </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {formContext.formState.errors["batteryLife"]?.message as string}
-              </p>
-            </div>
-
-            <div className="flex w-full flex-col gap-y-2">
-              <Label>Screen</Label>
-              <Controller
-                name="screen"
-                control={formContext.control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                  >
-                    <option value="">Select Screen</option>
-                    <option value="Screen 1">Screen 1</option>
-                    <option value="Screen 2">Screen 2</option>
-                  </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {formContext.formState.errors["screen"]?.message as string}
-              </p>
-            </div>
-          </div> */}
-
-          {/* <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            <div className="flex w-full flex-col gap-y-2">
-              <Label>Memory Size</Label>
+          ),
+        });
+        break;
+      case "dropdown":
+        tempArr.push({
+          key: uuidv4(),
+          type: "dropdown",
+          field: (
+            <div key={uuidv4()} className="mb-4 flex w-full flex-col gap-y-2">
+              <Label>Input Name</Label>
               <Controller
                 name="memorySize"
                 control={formContext.control}
@@ -157,7 +123,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                     {...field}
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                   >
-                    <option value="">Select Memory Size</option>
+                    <option value="">Select</option>
                     <option value="Memory Size 1">Memory Size 1</option>
                     <option value="Memory Size 2">Memory Size 2</option>
                   </select>
@@ -167,104 +133,202 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
                 {formContext.formState.errors["memorySize"]?.message as string}
               </p>
             </div>
-
-            <div className="flex w-full flex-col gap-y-2">
-              <FormField
-                control={formContext.control}
-                name="modelNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Model No</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Model No"
-                        className="!h-[48px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div> */}
-
-          {/* <div className="grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+          ),
+        });
+        break;
+      case "checkbox":
+        tempArr.push({
+          key: uuidv4(),
+          type: "checkbox",
+          field: (
             <FormField
               control={formContext.control}
-              name="brandName"
+              name="mobile"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Brand Name</FormLabel>
+                <FormItem className="mb-4 mr-4 flex flex-col items-start space-x-3 space-y-0">
+                  <FormLabel className="mb-3 mr-6 capitalize">
+                    Input Name
+                  </FormLabel>
+                  <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                      />
+                    </FormControl>
+                    <FormLabel className="text-sm font-normal">
+                      Input Name
+                    </FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+          ),
+        });
+        break;
+      case "radio":
+        tempArr.push({
+          key: uuidv4(),
+          type: "radio",
+          field: (
+            <FormField
+              control={formContext.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem className="mb-5 flex w-full flex-col items-start">
+                  <FormLabel className="mb-3 mr-6 capitalize">
+                    Input Name
+                  </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter Product Name"
-                      className="!h-[48px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                      {...field}
-                    />
+                    <RadioGroup
+                      className="!mt-0 flex items-center gap-4"
+                      onValueChange={field.onChange}
+                      defaultValue="MALE"
+                      value={field.value}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="MALE" id="MALE" />
+                        <Label htmlFor="MALE">Option A</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="FEMALE" id="FEMALE" />
+                        <Label htmlFor="FEMALE">Option B</Label>
+                      </div>
+                    </RadioGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            <div>
-              <div className="mb-2 grid w-full gap-x-6 md:grid-cols-2">
-                <FormField
-                  control={formContext.control}
-                  name="detailsAttribute"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>More Details</FormLabel>
+          ),
+        });
+        break;
+      case "date":
+        tempArr.push({
+          key: uuidv4(),
+          type: "date",
+          field: (
+            <FormField
+              control={formContext.control}
+              name="dateOfBirth"
+              render={({ field }) => (
+                <FormItem className="mb-4 flex w-full flex-col">
+                  <FormLabel>Input Name</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
                       <FormControl>
-                        <Input
-                          placeholder="Attribute -e.g color"
-                          className="!h-[48px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                          {...field}
-                        />
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "!h-12 rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
+                            !field.value && "text-muted-foreground",
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Select</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                        toYear={new Date().getFullYear() - 18}
+                        fromYear={new Date().getFullYear() - 100}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ),
+        });
 
-                <FormField
-                  control={formContext.control}
-                  name="detailsValue"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col self-end">
-                      <FormControl>
-                        <Input
-                          placeholder="value -e.g color"
-                          className="!h-[48px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+        break;
+      default:
+        break;
+    }
 
-              <span className="text-sm font-normal text-[#7F818D]">
-                Please fill in both attribute name & value ( e.g, color:Red)
-              </span>
-            </div>
-          </div> */}
+    setCustomFields((prevState) => [...prevState, ...tempArr]);
+  };
 
-          <div className="relative mb-4 w-full">
-            <div className="space-y-2">
-              <a
-                href="#"
-                className="flex items-center justify-start text-sm font-semibold capitalize text-dark-orange"
+  return (
+    <div className="flex w-full flex-wrap">
+      <div className="mt-2.5 w-full">
+        <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+          Product Details
+        </label>
+      </div>
+
+      <div className="mb-3.5 w-full">
+        <div className="flex flex-wrap">
+          {customfields.map((item) => (
+            <div key={uuidv4()} className="flex w-full items-start">
+              <button
+                type="button"
+                className="w-full flex-1 text-left"
+                onClick={() => {}}
               >
-                <img src="/images/plus-orange.png" className="mr-2" />
-                Add Custom Field
-              </a>
+                {item.field}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => deleteCustomField(item.key)}
+                className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+              >
+                <Image
+                  src="/images/social-delete-icon.svg"
+                  height={35}
+                  width={35}
+                  alt="social-delete-icon"
+                />
+              </button>
             </div>
+          ))}
+
+          <div className="relative w-full">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={handleToggleCustomFieldModal}
+              className="border-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:text-dark-orange"
+            >
+              <Image
+                src="/images/plus-orange.png"
+                className="mr-2"
+                alt="plus-orange-icon"
+                height={14}
+                width={14}
+              />
+              Add Custom Field
+            </Button>
           </div>
         </div>
       </div>
+
+      <Dialog
+        open={isCustomFieldModalOpen}
+        onOpenChange={handleToggleCustomFieldModal}
+      >
+        <DialogContent className="gap-0 p-0">
+          <CustomFieldContent
+            setFieldType={handleCustomFields}
+            onClose={handleToggleCustomFieldModal}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

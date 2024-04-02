@@ -20,13 +20,20 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import DeleteContent from "@/components/shared/DeleteContent";
 import { useToast } from "@/components/ui/use-toast";
-import AddIcon from '@mui/icons-material/Add';
+import { useMe } from "@/apis/queries/user.queries";
+import AddIcon from "@mui/icons-material/Add";
+
 const ProductListPage = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number>();
-  const productsQuery = useProducts();
+  const userDetails = useMe();
+
+  const productsQuery = useProducts(
+    { userId: String(userDetails?.data?.data?.id), page: 1, limit: 10 },
+    !!userDetails?.data?.data?.id,
+  );
   const deleteProduct = useDeleteProduct();
 
   const handleAddProductPage = () => router.push("/create-product");
@@ -38,7 +45,7 @@ const ProductListPage = () => {
   };
 
   const memoizedProducts = useMemo(() => {
-    return productsQuery.data?.data.map((item: any) => {
+    return productsQuery.data?.data?.map((item: any) => {
       return {
         id: item?.id,
         productImage: item?.productImages?.[0]?.image,
@@ -130,7 +137,7 @@ const ProductListPage = () => {
                               <Image
                                 src={
                                   item?.productImage &&
-                                    validator.isURL(item.productImage)
+                                  validator.isURL(item.productImage)
                                     ? item.productImage
                                     : "/images/product-placeholder.png"
                                 }
