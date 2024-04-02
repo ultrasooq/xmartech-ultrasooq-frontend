@@ -20,10 +20,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   productName: z
@@ -278,57 +274,7 @@ const CreateProductPage = () => {
                   </div>
                 </div>
 
-                <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    <ProductDetailsSection />
-                  </div>
-                  <div className="col-span-1 w-full">
-                    <Card className="w-full pt-6">
-                      <CardContent>
-                        <div className="mb-4 space-y-2">
-                          <Label className="text-sm font-normal">Label</Label>
-                          <Input />
-                        </div>
-
-                        <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
-                          <Checkbox
-                            // checked={field.value}
-                            // onCheckedChange={field.onChange}
-                            className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                          />
-                          <Label className="text-sm font-normal">
-                            Required
-                          </Label>
-                        </div>
-
-                        <div className="mb-4 flex w-full flex-col gap-y-2">
-                          <Label>Size</Label>
-                          <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                            <option value="">Select</option>
-                            <option value="full">Full</option>
-                            <option value="small">Small</option>
-                          </select>
-                        </div>
-
-                        <div className="mb-4 flex w-full flex-col gap-y-2">
-                          <Label>Input Type</Label>
-                          <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                            <option value="">Select</option>
-                            <option value="characters">Characters</option>
-                            <option value="numbers">Numbers</option>
-                          </select>
-                        </div>
-
-                        <div className="mb-4 space-y-2">
-                          <Label className="text-sm font-normal">
-                            Placeholder
-                          </Label>
-                          <Input />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
+                <ProductDetailsSection />
 
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">

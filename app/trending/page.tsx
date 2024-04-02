@@ -228,10 +228,12 @@ const TrendingPage = () => {
         {/* end: trending-search-sec */}
         <div className="product-list-s1">
           <div className="product-list-s1-col">
-          <div className="product-list-s1-box">
-
+            <div className="product-list-s1-box">
+              <div className="image-container">
+                
+              </div>
+            </div>
           </div>
-        </div>
         </div>
 
       </div>
