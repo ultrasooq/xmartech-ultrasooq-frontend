@@ -1,5 +1,6 @@
 import { url } from "inspector";
 import React from "react";
+import { Slider } from "@/components/ui/slider";
 
 const TrendingPage = () => {
   return (
@@ -175,7 +176,15 @@ const TrendingPage = () => {
                     </button>
                   </div>
                 </div>
+
                 <div className="filter-body-part">
+                  <div className="mb-4">
+                    <Slider
+                      defaultValue={[50]}
+                      max={100}
+                      step={1}
+                    />
+                  </div>
                   <div className="range-price-left-right-info">
                     <select className="custom-form-control-s1 select1">
                       <option>$0</option>
@@ -222,19 +231,217 @@ const TrendingPage = () => {
                   </ul>
                 </div>
               </div>
+              <div className="product-list-s1">
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-list-s1-col">
+                  <div className="product-list-s1-box">
+                    <div className="image-container">
+                      <span className="discount">-14%</span>
+                      <img src="/images/trending-product1.png" alt="" />
+                    </div>
+                    <div className="text-container">
+                      <h4>young shop</h4>
+                      <p>Lorem Ipsum is simply dummy text..</p>
+                      <div className="rating_stars">
+                        <img src="/images/rating_stars.svg" alt="" />
+                        <span>02</span>
+                      </div>
+                      <h5>$332.38</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
         {/* end: trending-search-sec */}
-        <div className="product-list-s1">
-          <div className="product-list-s1-col">
-            <div className="product-list-s1-box">
-              <div className="image-container">
-                
-              </div>
-            </div>
-          </div>
-        </div>
 
       </div>
     </>
