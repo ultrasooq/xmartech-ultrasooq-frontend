@@ -14,11 +14,11 @@ export const useCountries = (enabled = true) =>
     enabled,
   });
 
-export const useBrands = (enabled = true) =>
+export const useBrands = (payload: { term?: string }, enabled = true) =>
   useQuery({
-    queryKey: ["brands"],
+    queryKey: ["brands", payload],
     queryFn: async () => {
-      const res = await fetchBrands();
+      const res = await fetchBrands(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {

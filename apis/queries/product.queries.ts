@@ -36,13 +36,13 @@ export const useCreateProduct = () => {
 };
 
 export const useProducts = (
-  query: { userId: string; page: number; limit: number },
+  payload: { userId: string; page: number; limit: number },
   enabled = true,
 ) =>
   useQuery({
-    queryKey: ["products", query],
+    queryKey: ["products", payload],
     queryFn: async () => {
-      const res = await fetchProducts(query);
+      const res = await fetchProducts(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
@@ -101,21 +101,21 @@ export const useUpdateProduct = () => {
 };
 
 export const useAllProducts = (
-  query: {
+  payload: {
     page: number;
     limit: number;
     term?: string;
-    sort: string;
-    brandIds?: string[];
+    sort?: string;
+    brandIds?: string;
     priceMin?: number;
     priceMax?: number;
   },
   enabled = true,
 ) =>
   useQuery({
-    queryKey: ["all-products", query],
+    queryKey: ["all-products", payload],
     queryFn: async () => {
-      const res = await fetchAllProducts(query);
+      const res = await fetchAllProducts(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {

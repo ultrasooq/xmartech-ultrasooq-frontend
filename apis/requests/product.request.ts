@@ -1,6 +1,7 @@
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import axios from "axios";
+import urlcat from "urlcat";
 import { isEmpty } from "lodash";
 import {
   IDeleteProductRequest,
@@ -87,35 +88,41 @@ export const fetchAllProducts = (payload: {
   page: number;
   limit: number;
   term?: string;
-  sort: string;
-  brandIds?: string[];
+  sort?: string;
+  brandIds?: string;
   priceMin?: number;
   priceMax?: number;
 }) => {
-  const query = new URLSearchParams({
-    page: payload.page.toString(),
-    limit: payload.limit.toString(),
-    sort: payload.sort.toString(),
-  });
+  // const query = new URLSearchParams({
+  //   page: payload.page.toString(),
+  //   limit: payload.limit.toString(),
+  // });
 
-  if (!isEmpty(payload.term)) {
-    query.append("term", String(payload.term));
-  }
+  // if (!isEmpty(payload.term)) {
+  //   query.append("term", String(payload.term));
+  // }
 
-  if (!isEmpty(payload.brandIds)) {
-    query.append("brandIds", String(payload.brandIds));
-  }
+  // if (!isEmpty(payload.sort)) {
+  //   query.append("sort", String(payload.sort));
+  // }
 
-  if (!isEmpty(payload.sort)) {
-    query.append("priceMin", String(payload.priceMin));
-  }
+  // if (!isEmpty(payload.brandIds)) {
+  //   query.append("brandIds", String(payload.brandIds));
+  // }
 
-  if (!isEmpty(payload.priceMax)) {
-    query.append("priceMax", String(payload.priceMax));
-  }
+  // if (!isEmpty(payload.priceMin)) {
+  //   query.append("priceMin", String(payload.priceMin));
+  // }
+
+  // if (!isEmpty(payload.priceMax)) {
+  //   query.append("priceMax", String(payload.priceMax));
+  // }
 
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProduct?${query}`,
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProduct`,
+      payload,
+    ),
   });
 };

@@ -42,3 +42,14 @@ export type OptionProps = {
   label: string;
   value: string;
 };
+
+export interface TrendingProduct {
+  id: number;
+  productName: string;
+  productPrice: number;
+  offerPrice: number;
+  productImage: string;
+  categoryName: string;
+  brandName: string;
+  skuNo: string;
+}
