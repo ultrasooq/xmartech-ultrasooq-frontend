@@ -31,7 +31,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
         <div className="flex gap-4">
           {productDetails?.productImages?.map((item: any, index: number) =>
             index !== 0 ? (
-              <div className="relative h-36 w-36">
+              <div className="relative h-36 w-36" key={item?.id}>
                 <Image
                   src={
                     item?.image && validator.isURL(item.image)
