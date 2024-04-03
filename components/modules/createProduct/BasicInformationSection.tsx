@@ -50,7 +50,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
   const upload = useUploadFile();
   const categoriesQuery = useCategories();
-  const brandsQuery = useBrands();
+  const brandsQuery = useBrands({});
   const countriesQuery = useCountries();
   const subCategoryById = useSubCategoryById(
     watchCategoryId,
