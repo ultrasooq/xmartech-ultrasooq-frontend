@@ -218,7 +218,9 @@ const TrendingPage = () => {
                             `Thumb value ${state.valueNow}`
                           }
                           renderThumb={(props, state) => (
-                            <div {...props}>{state.valueNow}</div>
+                            <div {...props} key={props.key}>
+                              {state.valueNow}
+                            </div>
                           )}
                           pearling
                           minDistance={10}
