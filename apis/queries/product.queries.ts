@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createProduct,
   deleteProduct,
+  fetchAllProducts,
   fetchProductById,
   fetchProducts,
   updateProduct,
@@ -98,3 +99,27 @@ export const useUpdateProduct = () => {
     },
   });
 };
+
+export const useAllProducts = (
+  query: {
+    page: number;
+    limit: number;
+    term?: string;
+    sort: string;
+    brandIds?: string[];
+    priceMin?: number;
+    priceMax?: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["all-products", query],
+    queryFn: async () => {
+      const res = await fetchAllProducts(query);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
