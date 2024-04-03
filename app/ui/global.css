@@ -756,25 +756,27 @@
   .product-list-s1 .product-list-s1-box:hover {
     @apply border-[#DBDBDB];
   }
+
   .product-list-s1.outline-style .product-list-s1-box {
     @apply border pt-[42px] pb-2 px-2 border-solid border-[#DBDBDB];
   }
+
   .product-list-s1.outline-style .product-list-s1-box .discount {
     @apply right-2 top-2 !important;
   }
+
   .product-list-s1 .product-list-s1-box .multiple-action-container {
     @apply flex items-center justify-center gap-x-[3px] relative z-[1] -mb-3 -top-3;
   }
+
   .product-list-s1 .product-list-s1-box .multiple-action-container .circle-btn {
     @apply flex justify-center items-center w-9 h-9 bg-transparent p-0 rounded-[50%];
   }
-  .product-list-s1
-    .product-list-s1-box
-    .multiple-action-container
-    .circle-btn
-    img {
+
+  .product-list-s1 .product-list-s1-box .multiple-action-container .circle-btn img {
     @apply w-4 h-4;
   }
+
   .product-list-s1 .product-list-s1-box .image-container {
     @apply h-[155px] w-full;
   }
@@ -1075,6 +1077,64 @@
   }
 
   /* end: product-view-s1-left-details-with-right-suggestion */
+  /* start: responsive */
+  @media (max-width: 1199px) {
+    .product-list-s1 .product-list-s1-col {
+      max-width: 33.33%;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .product-list-s1 .product-list-s1-col {
+      max-width: 50%;
+    }
+
+    .products-header-filter p {
+      font-size: 14px;
+    }
+
+    .products-header-filter h3 {
+      font-size: 16px;
+    }
+
+    .products-header-filter {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .products-header-filter .custom-form-control-s1 {
+      width: 150px;
+    }
+
+    .products-header-filter .rg-filter {
+      column-gap: 10px;
+    }
+
+    .products-header-filter ul {
+      column-gap: 10px;
+    }
+    .trending-search-sec .right-products{
+      max-width: unset;
+    }
+    .trending-search-sec .left-filter{
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #fff;
+      z-index: 999;
+      height: 100%;
+      transform: translate(-100%);
+      transition: .5s;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .container {
+      max-width: 90%;
+    }
+  }
+
+  /* end: responsive */
 }
 
 .react-time-picker__wrapper {
