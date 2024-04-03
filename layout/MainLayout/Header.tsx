@@ -305,6 +305,13 @@ const Header = () => {
                   onClick={() => {
                     setMenuId(item.id);
                     setCategoryId(undefined);
+                    // if (item.name.toLowerCase().includes("buy group")) {
+                    //   router.push("/buygroup");
+                    // }
+
+                    if (item.name.toLowerCase().includes("store")) {
+                      router.push("/trending");
+                    }
                   }}
                   variant="link"
                   className="flex cursor-pointer px-10 py-3 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
