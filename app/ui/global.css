@@ -1075,6 +1075,13 @@
   }
 
   /* end: product-view-s1-left-details-with-right-suggestion */
+  /* start: responsive */
+  @media (max-width: 1199px){
+    .product-list-s1 .product-list-s1-col{
+      max-width: 33.33%;
+    }
+  }
+  /* end: responsive */
 }
 
 .react-time-picker__wrapper {
