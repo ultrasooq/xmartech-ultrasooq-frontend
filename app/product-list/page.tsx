@@ -22,19 +22,30 @@ import DeleteContent from "@/components/shared/DeleteContent";
 import { useToast } from "@/components/ui/use-toast";
 import { useMe } from "@/apis/queries/user.queries";
 import AddIcon from "@mui/icons-material/Add";
+import { debounce } from "lodash";
 
 const ProductListPage = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number>();
+  const [searchTerm, setSearchTerm] = useState("");
   const userDetails = useMe();
 
   const productsQuery = useProducts(
-    { userId: String(userDetails?.data?.data?.id), page: 1, limit: 10 },
+    {
+      userId: String(userDetails?.data?.data?.id),
+      page: 1,
+      limit: 10,
+      term: searchTerm !== "" ? searchTerm : undefined,
+    },
     !!userDetails?.data?.data?.id,
   );
   const deleteProduct = useDeleteProduct();
+
+  const handleDebounce = debounce((event: any) => {
+    setSearchTerm(event.target.value);
+  }, 1000);
 
   const handleAddProductPage = () => router.push("/create-product");
   const handleEditProductPage = (id: number) =>
@@ -99,6 +110,7 @@ const ProductListPage = () => {
                   type="email"
                   placeholder="Search Product"
                   className="search-box"
+                  onChange={handleDebounce}
                 />
               </li>
               <li>

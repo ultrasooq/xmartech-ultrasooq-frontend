@@ -25,19 +25,11 @@ export const fetchProducts = (payload: {
   page: number;
   limit: number;
   userId: string;
+  term?: string;
 }) => {
-  const query = new URLSearchParams({
-    page: payload.page.toString(),
-    limit: payload.limit.toString(),
-  });
-
-  if (!isEmpty(payload.userId)) {
-    query.append("userId", String(payload.userId));
-  }
-
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/findAll?${query}`,
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/findAll`, payload),
   });
 };
 
@@ -93,31 +85,6 @@ export const fetchAllProducts = (payload: {
   priceMin?: number;
   priceMax?: number;
 }) => {
-  // const query = new URLSearchParams({
-  //   page: payload.page.toString(),
-  //   limit: payload.limit.toString(),
-  // });
-
-  // if (!isEmpty(payload.term)) {
-  //   query.append("term", String(payload.term));
-  // }
-
-  // if (!isEmpty(payload.sort)) {
-  //   query.append("sort", String(payload.sort));
-  // }
-
-  // if (!isEmpty(payload.brandIds)) {
-  //   query.append("brandIds", String(payload.brandIds));
-  // }
-
-  // if (!isEmpty(payload.priceMin)) {
-  //   query.append("priceMin", String(payload.priceMin));
-  // }
-
-  // if (!isEmpty(payload.priceMax)) {
-  //   query.append("priceMax", String(payload.priceMax));
-  // }
-
   return axios({
     method: "GET",
     url: urlcat(
