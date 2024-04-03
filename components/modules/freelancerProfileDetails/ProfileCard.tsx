@@ -47,7 +47,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
       userDetails?.onlineOffline === "1" &&
       todaysDate.getTime() === lastOnlineDate.getTime();
 
-    console.log(isToday, getActiveDays, isActiveInCurrentDay);
+    // console.log(isToday, getActiveDays, isActiveInCurrentDay);
 
     return isToday || (getActiveDays && isActiveInCurrentDay);
   }, [workingDays, startTime, endTime, userDetails?.onlineOffline]);

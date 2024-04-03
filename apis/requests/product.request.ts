@@ -1,6 +1,7 @@
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import axios from "axios";
+import urlcat from "urlcat";
 import { isEmpty } from "lodash";
 import {
   IDeleteProductRequest,
@@ -24,19 +25,11 @@ export const fetchProducts = (payload: {
   page: number;
   limit: number;
   userId: string;
+  term?: string;
 }) => {
-  const query = new URLSearchParams({
-    page: payload.page.toString(),
-    limit: payload.limit.toString(),
-  });
-
-  if (!isEmpty(payload.userId)) {
-    query.append("userId", String(payload.userId));
-  }
-
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/findAll?${query}`,
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/findAll`, payload),
   });
 };
 
@@ -80,5 +73,23 @@ export const updateProduct = (payload: IUpdateProductRequest) => {
       Accept: "application/json",
       Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
     },
+  });
+};
+
+export const fetchAllProducts = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  sort?: string;
+  brandIds?: string;
+  priceMin?: number;
+  priceMax?: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProduct`,
+      payload,
+    ),
   });
 };
