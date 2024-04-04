@@ -139,8 +139,14 @@ const CreateProductPage = () => {
         }));
     }
     delete formData.productImages;
-    console.log(formData);
-    return;
+    if (formData.subCategoryId !== "") {
+      formData.categoryId = formData.subCategoryId;
+      delete formData.subCategoryId;
+    }
+    const currentTime = new Date();
+    formData.skuNo = formData.skuNo + "-" + currentTime.getTime();
+    // console.log(formData);
+    // return;
     if (activeProductId) {
       // edit
       const updatedFormData = {

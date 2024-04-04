@@ -46,7 +46,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 }) => {
   const formContext = useFormContext();
   const { toast } = useToast();
-  const [nestedCategoryList, setNestedCategoryList] = useState([]);
+  const [nestedCategoryList, setNestedCategoryList] = useState<any[]>([]);
 
   const watchCategoryId = formContext.watch("categoryId");
   const watchSubCategoryId = formContext.watch("subCategoryId");
@@ -137,18 +137,13 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       subCategoryById?.data?.data &&
       subCategoryById?.data?.data?.children.length
     ) {
-      // if (
-      //   !nestedCategoryList?.some(
-      //     (item: any) => item.id === subCategoryById?.data?.data?.id,
-      //   )
-      // )
       if (
         nestedCategoryList
-          .map((item) => item?.type)
+          .map((item: any) => item?.type)
           .includes(subCategoryById?.data?.data?.type)
       ) {
         const index = nestedCategoryList.findIndex(
-          (item) => item?.type === subCategoryById?.data?.data?.type,
+          (item: any) => item?.type === subCategoryById?.data?.data?.type,
         );
 
         nestedCategoryList.splice(index, 1, subCategoryById?.data?.data);
@@ -168,7 +163,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     }
   }, [watchCategoryId]);
 
-  // console.log(nestedCategoryList);
+  console.log(nestedCategoryList);
 
   return (
     <div className="flex w-full flex-wrap">
@@ -215,6 +210,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   <select
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                     onChange={(e) => {
+                      console.log(nestedCategoryList);
                       if (!item?.children.length) return;
                       formContext.setValue("subCategoryId", e.target.value);
                     }}
