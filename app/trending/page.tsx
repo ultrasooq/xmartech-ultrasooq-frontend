@@ -325,16 +325,8 @@ const TrendingPage = () => {
                   <p>{memoizedProductList.length} Products found</p>
                   <ul>
                     <li>
-                      {/* <select
-                        className="custom-form-control-s1 select"
-                        onChange={(e) => setSortBy(e.target.value)}
-                        value={sortBy}
-                      >
-                        <option value="desc">Sort by latest</option>
-                        <option value="asc">Sort by oldest</option>
-                      </select> */}
                       <Select onValueChange={(e) => setSortBy(e)}>
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="custom-form-control-s1 bg-white">
                           <SelectValue placeholder="Sort by" />
                         </SelectTrigger>
                         <SelectContent>
