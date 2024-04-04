@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,6 +28,7 @@ import {
 } from "@/utils/types/common.types";
 import {
   useCategories,
+  useCategory,
   useSubCategoryById,
 } from "@/apis/queries/category.queries";
 
@@ -45,36 +46,28 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 }) => {
   const formContext = useFormContext();
   const { toast } = useToast();
+  const [nestedCategoryList, setNestedCategoryList] = useState([]);
 
   const watchCategoryId = formContext.watch("categoryId");
+  const watchSubCategoryId = formContext.watch("subCategoryId");
 
   const upload = useUploadFile();
-  const categoriesQuery = useCategories();
+  const categoryQuery = useCategory();
   const brandsQuery = useBrands({});
   const countriesQuery = useCountries();
   const subCategoryById = useSubCategoryById(
-    watchCategoryId,
-    !!watchCategoryId,
+    watchSubCategoryId,
+    !!watchSubCategoryId,
   );
   const watcher = formContext.watch("productImages");
 
   const memoizedCategories = useMemo(() => {
     return (
-      categoriesQuery?.data?.data
-        .filter((item: any) => item.menuId !== 1)
-        .map((item: any) => {
-          return { label: item.name, value: item.id };
-        }) || []
-    );
-  }, [categoriesQuery?.data?.data?.length]);
-
-  const memoizedSubCategories = useMemo(() => {
-    return (
-      subCategoryById?.data?.data?.children?.map((item: any) => {
+      categoryQuery?.data?.data?.children.map((item: any) => {
         return { label: item.name, value: item.id };
       }) || []
     );
-  }, [subCategoryById?.data?.data?.children?.length]);
+  }, [categoryQuery?.data?.data?.children?.length]);
 
   const memoizedBrands = useMemo(() => {
     return (
@@ -139,6 +132,44 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (
+      subCategoryById?.data?.data &&
+      subCategoryById?.data?.data?.children.length
+    ) {
+      // if (
+      //   !nestedCategoryList?.some(
+      //     (item: any) => item.id === subCategoryById?.data?.data?.id,
+      //   )
+      // )
+      if (
+        nestedCategoryList
+          .map((item) => item?.type)
+          .includes(subCategoryById?.data?.data?.type)
+      ) {
+        const index = nestedCategoryList.findIndex(
+          (item) => item?.type === subCategoryById?.data?.data?.type,
+        );
+
+        nestedCategoryList.splice(index, 1, subCategoryById?.data?.data);
+        console.log(nestedCategoryList);
+
+        setNestedCategoryList([...nestedCategoryList]);
+      } else {
+        setNestedCategoryList((prev) => [...prev, subCategoryById?.data?.data]);
+      }
+    }
+  }, [subCategoryById?.data?.data]);
+
+  useEffect(() => {
+    setNestedCategoryList([]);
+    if (watchCategoryId) {
+      formContext.setValue("subCategoryId", watchCategoryId);
+    }
+  }, [watchCategoryId]);
+
+  // console.log(nestedCategoryList);
+
   return (
     <div className="flex w-full flex-wrap">
       <div className="mb-4 w-full">
@@ -150,8 +181,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       </div>
       <div className="mb-3.5 w-full">
         <div className="flex flex-wrap">
-          <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            <div className="flex w-full flex-col gap-y-2">
+          <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
+            <div className="flex w-full flex-col justify-between gap-y-2">
               <Label>Product Category</Label>
               <Controller
                 name="categoryId"
@@ -175,32 +206,28 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
               </p>
             </div>
 
-            <div className="flex w-full flex-col gap-y-2">
-              <Label>Product Sub-Category</Label>
-              <Controller
-                name="subCategoryId"
-                control={formContext.control}
-                render={({ field }) => (
+            {nestedCategoryList.length > 0 &&
+              nestedCategoryList.map((item: any) => (
+                <div
+                  className="mb-2 flex w-full flex-col  justify-end gap-y-2"
+                  key={item.id}
+                >
                   <select
-                    {...field}
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                    onChange={(e) => {
+                      if (!item?.children.length) return;
+                      formContext.setValue("subCategoryId", e.target.value);
+                    }}
                   >
-                    <option value="">Select Sub-Category</option>
-                    {memoizedSubCategories.map((item: ISelectOptions) => (
-                      <option value={item.value?.toString()} key={item.value}>
-                        {item.label}
+                    <option value="">Select Category</option>
+                    {item?.children?.map((item: any) => (
+                      <option value={item.id?.toString()} key={item.id}>
+                        {item.name}
                       </option>
                     ))}
                   </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {
-                  formContext.formState.errors["subCategoryId"]
-                    ?.message as string
-                }
-              </p>
-            </div>
+                </div>
+              ))}
           </div>
 
           <div className="relative mb-4 w-full">

@@ -139,7 +139,8 @@ const CreateProductPage = () => {
         }));
     }
     delete formData.productImages;
-
+    console.log(formData);
+    return;
     if (activeProductId) {
       // edit
       const updatedFormData = {

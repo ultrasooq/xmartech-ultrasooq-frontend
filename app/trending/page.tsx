@@ -31,20 +31,26 @@ import {
 } from "@/components/ui/accordion";
 import ReactSlider from "react-slider";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const TrendingPage = () => {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([]);
+  const [minPriceInput, setMinPriceInput] = useState("");
+  const [maxPriceInput, setMaxPriceInput] = useState("");
   const [sortBy, setSortBy] = useState("desc");
 
   const allProductsQuery = useAllProducts({
     page: 1,
     limit: 20,
     sort: sortBy,
-    priceMin: priceRange[0] === 0 ? 0 : priceRange[0] ?? undefined,
-    priceMax: priceRange[1] || undefined,
+    priceMin:
+      priceRange[0] === 0
+        ? 0
+        : (priceRange[0] || Number(minPriceInput)) ?? undefined,
+    priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
     brandIds:
       selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
   });
@@ -66,6 +72,16 @@ const TrendingPage = () => {
 
   const handlePriceDebounce = debounce((event: any) => {
     setPriceRange(event);
+  }, 1000);
+
+  const handleMinPriceChange = debounce((event: any) => {
+    setMinPriceInput(event.target.value);
+    // setPriceRange([ Number(event.target.value),500]);
+  }, 1000);
+
+  const handleMaxPriceChange = debounce((event: any) => {
+    setMaxPriceInput(event.target.value);
+    // setPriceRange([0, Number(event.target.value)]);
   }, 1000);
 
   const handleBrandChange = (
@@ -103,6 +119,7 @@ const TrendingPage = () => {
     priceRange[1],
   ]);
 
+  // console.log(minPriceInput, maxPriceInput);
   return (
     <>
       <div className="body-content-s1">
@@ -154,19 +171,23 @@ const TrendingPage = () => {
         <div className="trending-search-sec">
           <div className="container m-auto px-3">
             <div className="left-filter">
-              <Accordion type="multiple" className="filter-col">
-                <AccordionItem value="item-1">
+              <Accordion
+                type="single"
+                defaultValue="brand"
+                className="filter-col"
+              >
+                <AccordionItem value="brand">
                   <AccordionTrigger className="px-3 text-base hover:!no-underline">
                     By Brand
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="filter-sub-header">
-                      <input
+                      <Input
                         type="text"
-                        className="custom-form-control-s1 searchInput"
                         placeholder="Search Brand"
+                        className="custom-form-control-s1 searchInput rounded-none"
                         onChange={handleDebounce}
-                      ></input>
+                      />
                     </div>
                     <div className="filter-body-part">
                       <div className="filter-checklists">
@@ -200,12 +221,12 @@ const TrendingPage = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="item-2">
+                <AccordionItem value="price">
                   <AccordionTrigger className="px-3 text-base hover:!no-underline">
                     Price
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="filter-body-part">
+                    <div className="px-4">
                       <div className="px-2">
                         {/* <Slider defaultValue={[50]} max={100} step={1} /> */}
                         <ReactSlider
@@ -240,13 +261,19 @@ const TrendingPage = () => {
                         </Button>
                       </div>
                       <div className="range-price-left-right-info">
-                        <select className="custom-form-control-s1 select1">
-                          <option>$0</option>
-                        </select>
+                        <Input
+                          type="number"
+                          placeholder="$0"
+                          className="custom-form-control-s1 rounded-none"
+                          onChange={handleMinPriceChange}
+                        />
                         <div className="center-divider"></div>
-                        <select className="custom-form-control-s1 select1">
-                          <option>$500</option>
-                        </select>
+                        <Input
+                          type="number"
+                          placeholder="$500"
+                          className="custom-form-control-s1 rounded-none"
+                          onChange={handleMaxPriceChange}
+                        />
                       </div>
                     </div>
                   </AccordionContent>
