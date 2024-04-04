@@ -1,7 +1,6 @@
 export interface ICreateProductRequest {
   productName: string;
   categoryId: number;
-  subCategoryId: number;
   brandId: number;
   skuNo: string;
   productTagList?: Array<{

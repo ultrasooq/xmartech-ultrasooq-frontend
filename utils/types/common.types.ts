@@ -26,6 +26,7 @@ export interface IBrands {
 export interface ISelectOptions {
   label: string;
   value: number;
+  children: any[];
 }
 
 export interface IRenderProduct {
@@ -53,3 +54,8 @@ export interface TrendingProduct {
   brandName: string;
   skuNo: string;
 }
+
+export type ProductImageProps = {
+  path: string;
+  id: string;
+};

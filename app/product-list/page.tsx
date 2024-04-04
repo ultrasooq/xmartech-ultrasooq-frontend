@@ -107,7 +107,7 @@ const ProductListPage = () => {
             <ul className="right-filter-lists">
               <li>
                 <Input
-                  type="email"
+                  type="text"
                   placeholder="Search Product"
                   className="search-box"
                   onChange={handleDebounce}

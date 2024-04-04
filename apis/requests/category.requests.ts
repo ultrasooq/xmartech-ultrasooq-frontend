@@ -6,7 +6,7 @@ import { isEmpty } from "lodash";
 export const fetchCategory = () => {
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/category/findOne?categoryId=1&menuId=1`,
+    url: `${process.env.NEXT_PUBLIC_API_URL}/category/findOne?categoryId=1`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
