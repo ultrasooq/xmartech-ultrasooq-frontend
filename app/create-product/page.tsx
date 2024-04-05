@@ -20,72 +20,85 @@ import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
-const formSchema = z.object({
-  productName: z
-    .string()
-    .trim()
-    .min(2, { message: "Product Name is required" })
-    .max(50, { message: "Product Name must be less than 50 characters" }),
-  categoryId: z
-    .string()
-    .trim()
-    .min(1, { message: "Product Category is required" })
-    .transform((value) => Number(value)),
-  subCategoryId: z
-    .string()
-    .trim()
-    .transform((value) => Number(value)),
-  brandId: z
-    .string()
-    .trim()
-    .min(1, { message: "Brand is required" })
-    .max(50, { message: "Brand must be less than 50 characters" })
-    .transform((value) => Number(value)),
-  skuNo: z
-    .string()
-    .trim()
-    .min(2, { message: "SKU No. is required" })
-    .max(50, { message: "SKU No. must be less than 50 characters" }),
-  productTagList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
+const formSchema = z
+  .object({
+    productName: z
+      .string()
+      .trim()
+      .min(2, { message: "Product Name is required" })
+      .max(50, { message: "Product Name must be less than 50 characters" }),
+    categoryId: z
+      .string()
+      .trim()
+      .min(1, { message: "Product Category is required" })
+      .transform((value) => Number(value)),
+    subCategoryId: z
+      .string()
+      .trim()
+      .transform((value) => Number(value))
+      .optional(),
+    brandId: z
+      .string()
+      .trim()
+      .min(1, { message: "Brand is required" })
+      .max(50, { message: "Brand must be less than 50 characters" })
+      .transform((value) => Number(value)),
+    skuNo: z
+      .string()
+      .trim()
+      .min(2, { message: "SKU No. is required" })
+      .max(50, { message: "SKU No. must be less than 50 characters" }),
+    productTagList: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.number(),
+        }),
+      )
+      .min(1, {
+        message: "Tag is required",
+      })
+      .transform((value) => {
+        let temp: any = [];
+        value.forEach((item) => {
+          temp.push({ tagId: item.value });
+        });
+        return temp;
       }),
-    )
-    .min(1, {
-      message: "Tag is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ tagId: item.value });
+    productImagesList: z.any().optional(),
+    productPrice: z
+      .string()
+      .trim()
+      .min(1, { message: "Product Price is required" })
+      .transform((value) => Number(value)),
+    offerPrice: z
+      .string()
+      .trim()
+      .min(1, { message: "Offer Price is required" })
+      .transform((value) => Number(value)),
+    placeOfOriginId: z
+      .string()
+      .trim()
+      .min(1, { message: "Place of Origin is required" })
+      .transform((value) => Number(value)),
+    description: z.string().trim(),
+    specification: z.string().trim(),
+  })
+  .superRefine(({ productPrice, offerPrice }, ctx) => {
+    if (Number(productPrice) < Number(offerPrice)) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Offer Price must be less than Product Price",
+        path: ["offerPrice"],
       });
-      return temp;
-    }),
-  productImagesList: z.any().optional(),
-  productPrice: z
-    .string()
-    .trim()
-    .min(1, { message: "Product Price is required" })
-    .transform((value) => Number(value)),
-  offerPrice: z
-    .string()
-    .trim()
-    .min(1, { message: "Offer Price is required" })
-    .transform((value) => Number(value)),
-  placeOfOriginId: z
-    .string()
-    .trim()
-    .min(1, { message: "Place of Origin is required" })
-    .transform((value) => Number(value)),
-  description: z.string().trim(),
-  specification: z.string().trim(),
-});
+    }
+  });
 
 const CreateProductPage = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -143,8 +156,6 @@ const CreateProductPage = () => {
       formData.categoryId = formData.subCategoryId;
       delete formData.subCategoryId;
     }
-    const currentTime = new Date();
-    formData.skuNo = formData.skuNo + "-" + currentTime.getTime();
     // console.log(formData);
     // return;
     if (activeProductId) {
@@ -161,6 +172,11 @@ const CreateProductPage = () => {
           description: response.message,
         });
         form.reset();
+
+        queryClient.invalidateQueries({
+          queryKey: ["product-by-id", activeProductId],
+        });
+
         router.push("/product-list");
       } else {
         toast({

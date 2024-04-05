@@ -13,8 +13,10 @@ import { Color } from "@tiptap/extension-color";
 import ListItem from "@tiptap/extension-list-item";
 import TextStyle from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
+import Placeholder from "@tiptap/extension-placeholder";
 import { cn } from "@/lib/utils";
 import * as Icons from "./Icons";
+import React, { useEffect, useState } from "react";
 
 // const MenuBar = () => {
 //   const { editor } = useCurrentEditor();
@@ -248,6 +250,9 @@ import * as Icons from "./Icons";
 const extensions = [
   Color.configure({ types: [TextStyle.name, ListItem.name] }),
   TextStyle.configure({}),
+  Placeholder.configure({
+    placeholder: "Write here...",
+  }),
   Underline.configure({}),
   StarterKit.configure({
     bulletList: {
@@ -261,29 +266,50 @@ const extensions = [
   }),
 ];
 
-const content = `
-<h2>
-  Type Here
-</h2>
-`;
-
 type TiptapProps = {
   onChange: (value: string) => void;
   description: string;
 };
 
 const Tiptap: React.FC<TiptapProps> = ({ onChange, description }) => {
+  const [editorContent, setEditorContent] = useState<string>("");
   const editor = useEditor(
     {
       extensions,
-      content: description,
-      onUpdate: ({ editor }) => {
+      content: editorContent,
+      onBlur: ({ editor }) => {
+        setEditorContent(editor.getHTML());
         onChange(editor.getHTML());
       },
+      // onUpdate: ({ editor }) => {
+      //   onChange(editor.getHTML());
+      // },
     },
-    // TODO: fix prefill on mount
-    [description],
+    [editorContent],
   );
+
+  // useEffect(() => {
+  //   console.log(description);
+  //   if (editor?.isEmpty && description !== "<p></p>")
+  //     editor?.commands.setContent(description);
+  // }, [description, editor]);
+
+  // useEffect(() => {
+  //   return () => {
+  //     editor?.commands.clearContent();
+  //   };
+  // }, [editor]);
+
+  // useEffect(() => {
+  //   editor?.off("update");
+  //   editor?.on("update", ({ editor: updatedEditor }) =>
+  //     onChange(updatedEditor.getHTML()),
+  //   );
+  // }, [editor, onChange]);
+
+  useEffect(() => {
+    setEditorContent(description);
+  }, [description]);
 
   if (!editor) return null;
 
