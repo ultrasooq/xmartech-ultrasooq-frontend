@@ -60,11 +60,11 @@ const ProductListPage = () => {
       return {
         id: item?.id,
         productImage: item?.productImages?.[0]?.image,
-        productName: item?.productName,
-        categoryName: item?.category?.name,
-        skuNo: item?.skuNo,
-        brandName: item?.brand?.brandName,
-        productPrice: item?.productPrice,
+        productName: item?.productName || "-",
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo || "-",
+        brandName: item?.brand?.brandName || "-",
+        productPrice: item?.productPrice || "-",
       };
     });
   }, [productsQuery.data?.data]);
