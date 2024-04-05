@@ -621,6 +621,10 @@
     @apply w-full max-w-[225px] flex flex-col gap-y-[30px];
   }
 
+  .trending-search-sec .left-filter-overlay {
+    display: none;
+  }
+
   .trending-search-sec .right-products {
     @apply w-full max-w-[calc(100%_-_225px)];
   }
@@ -1070,6 +1074,27 @@
     .product-list-s1 .product-list-s1-col {
       @apply max-w-[33.33%];
     }
+
+    .products-header-filter {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .products-header-filter h3 {
+      font-size: 16px;
+    }
+
+    .products-header-filter ul {
+      column-gap: 10px;
+    }
+
+    .products-header-filter .rg-filter {
+      column-gap: 10px;
+    }
+
+    .products-header-filter p {
+      font-size: 14px;
+    }
   }
 
   @media (max-width: 1024.98px) {
@@ -1107,6 +1132,23 @@
 
     .trending-search-sec .left-filter {
       @apply fixed bg-white z-[999] h-full -translate-x-full transition-[0.5s] left-0 top-0;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .trending-search-sec .left-filter.show {
+      transform: translate(0);
+    }
+
+    .trending-search-sec .left-filter.show~.left-filter-overlay {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 998;
     }
 
     .custom-inner-banner-s1-captionBox {
@@ -1170,6 +1212,97 @@
 
     .body-content-s1 .main-content-card.border .table-responsive {
       @apply p-2.5 pb-0 !important;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+
+    /*
+  Based on TailwindCSS recommendations,
+  consider using classes instead of the `@apply` directive
+  @see https://tailwindcss.com/docs/reusing-styles#avoiding-premature-abstraction
+*/
+    .products-header-filter {
+      @apply flex-col gap-y-1 h-[unset] p-2.5;
+    }
+
+    .products-header-filter .rg-filter {
+      @apply flex-wrap w-full justify-center gap-y-2;
+    }
+
+    .product-list-s1 {
+      @apply mt-[-5px] mr-[-5px] mb-[-5px] ml-[-5px];
+    }
+
+    .product-list-s1 .product-list-s1-col {
+      @apply p-[5px];
+    }
+
+    .product-list-s1 .product-list-s1-box .image-container .discount {
+      @apply text-[13px] h-7 w-14;
+    }
+
+    .product-list-s1 .product-list-s1-box .text-container p {
+      @apply text-sm;
+    }
+
+    .product-list-s1 .product-list-s1-box .text-container h5 {
+      @apply text-sm;
+    }
+
+    .product-list-s1 .product-list-s1-box .image-container {
+      @apply h-[120px];
+    }
+
+    .custom-inner-banner-s1-captionBox .image-container {
+      @apply max-w-[224px];
+    }
+
+    .custom-inner-banner-s1-captionBox .text-container {
+      @apply max-w-[calc(100%_-_224px)];
+    }
+
+    .custom-inner-banner-s1-captionBox h2 {
+      @apply text-2xl mt-2.5;
+    }
+
+    .custom-inner-banner-s1-captionBox h5 {
+      @apply text-sm mt-2;
+    }
+
+    .custom-inner-banner-s1-captionBox h4 {
+      @apply text-sm;
+    }
+
+    .theme-primary-btn {
+      @apply text-sm !important;
+    }
+
+    .trending-search-sec {
+      @apply mt-8;
+    }
+
+  }
+
+  @media (max-width: 575px) {
+    .custom-inner-banner-s1-captionBox {
+      @apply flex-col p-4;
+    }
+
+    .custom-inner-banner-s1-captionBox .text-container {
+      @apply max-w-[unset];
+    }
+
+    .custom-inner-banner-s1-captionBox h2 {
+      @apply text-xl mt-2;
+    }
+
+    .page-indicator li {
+      @apply text-[13px] gap-x-1.5;
+    }
+
+    .body-content-s1 {
+      @apply py-6;
     }
   }
 
