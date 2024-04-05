@@ -163,8 +163,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     }
   }, [watchCategoryId]);
 
-  console.log(nestedCategoryList);
-
   return (
     <div className="flex w-full flex-wrap">
       <div className="mb-4 w-full">

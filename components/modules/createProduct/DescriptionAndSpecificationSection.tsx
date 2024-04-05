@@ -1,4 +1,5 @@
-import Tiptap from "@/components/shared/Rte/Tiptap";
+import QuillEditor from "@/components/shared/Quill/QuillEditor";
+// import Tiptap from "@/components/shared/Rte/Tiptap";
 import React from "react";
 import { Controller } from "react-hook-form";
 
@@ -23,7 +24,11 @@ const DescriptionAndSpecificationSection = () => {
                 name="description"
                 defaultValue=""
                 render={({ field }) => (
-                  <Tiptap onChange={field.onChange} description={field.value} />
+                  // <Tiptap onChange={field.onChange} description={field.value} />
+                  <QuillEditor
+                    onChange={field.onChange}
+                    description={field.value}
+                  />
                 )}
               />
             </div>
@@ -37,7 +42,11 @@ const DescriptionAndSpecificationSection = () => {
                 name="specification"
                 defaultValue=""
                 render={({ field }) => (
-                  <Tiptap onChange={field.onChange} description={field.value} />
+                  // <Tiptap onChange={field.onChange} description={field.value} />
+                  <QuillEditor
+                    onChange={field.onChange}
+                    description={field.value}
+                  />
                 )}
               />
             </div>
