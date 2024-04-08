@@ -129,7 +129,6 @@ export default function ChangePasswordPage() {
                   <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
                     Change Password
                   </h2>
-                  <p>Change Your Password</p>
                 </div>
                 <div className="w-full">
                   <Form {...form}>
