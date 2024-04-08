@@ -81,7 +81,6 @@ export default function ChangeEmailPage() {
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
                 Change Email
               </h2>
-              <p>Change Your Email</p>
             </div>
             <div className="w-full">
               <Form {...form}>
