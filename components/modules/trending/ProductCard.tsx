@@ -36,7 +36,7 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
               <img src="/images/rating_stars.svg" alt="" />
               <span>02</span>
             </div>
-            <h5>${item.productPrice}</h5>
+            <h5>${item.offerPrice}</h5>
           </div>
         </a>
       </div>
