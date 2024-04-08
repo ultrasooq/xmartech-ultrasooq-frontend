@@ -2,15 +2,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import _ from "lodash";
 import { useLogin } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
@@ -21,6 +13,7 @@ import { EMAIL_REGEX_LOWERCASE, PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { setCookie } from "cookies-next";
 import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 
 const formSchema = z.object({
   email: z
@@ -102,41 +95,17 @@ export default function LoginPage() {
                   className="flex flex-wrap"
                   onSubmit={form.handleSubmit(onSubmit)}
                 >
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="Email or Phone number or ID"
                     name="email"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Email or Phone number or ID</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Your Email or Phone number or ID"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your Email or Phone number or ID"
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="Password"
                     name="password"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="**********"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="**********"
+                    type="password"
                   />
 
                   <div className="mb-4 w-full">
@@ -167,7 +136,7 @@ export default function LoginPage() {
                     <Button
                       disabled={login.isPending}
                       type="submit"
-                      className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 theme-primary-btn"
+                      className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                     >
                       {login.isPending ? (
                         <>
