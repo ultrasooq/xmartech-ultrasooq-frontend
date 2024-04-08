@@ -10,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,12 +26,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
+import { EMAIL_REGEX_LOWERCASE, TRADE_ROLE_LIST } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import PolicyContent from "@/components/shared/PolicyContent";
 import TermsContent from "@/components/shared/TermsContent";
 import PhoneInput, { CountryData } from "react-phone-input-2";
 import "react-phone-input-2/lib/bootstrap.css";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 
 const formSchema = z
   .object({
@@ -242,21 +242,20 @@ export default function RegisterPage() {
                               className="!mt-0 flex items-center gap-4"
                               onValueChange={field.onChange}
                             >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="BUYER" id="BUYER" />
-                                <Label htmlFor="BUYER">Buyer</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value="FREELANCER"
-                                  id="FREELANCER"
-                                />
-                                <Label htmlFor="FREELANCER">Freelancer</Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="COMPANY" id="COMPANY" />
-                                <Label htmlFor="COMPANY">Company</Label>
-                              </div>
+                              {TRADE_ROLE_LIST.map((role) => (
+                                <div
+                                  key={role.value}
+                                  className="flex items-center space-x-2"
+                                >
+                                  <RadioGroupItem
+                                    value={role.value}
+                                    id={role.value}
+                                  />
+                                  <Label htmlFor={role.value}>
+                                    {role.label}
+                                  </Label>
+                                </div>
+                              ))}
                             </RadioGroup>
                           </FormControl>
                           <FormMessage />
@@ -265,100 +264,48 @@ export default function RegisterPage() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="First Name"
                     name="firstName"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Your First Name"
-                            className="theme-form-control-s1"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your First Name"
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="Last Name"
                     name="lastName"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Your Last Name"
-                            className="theme-form-control-s1"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your Last Name"
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="Email Address"
                     name="email"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Email Address</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Your Email Address"
-                            className="theme-form-control-s1"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your Email Address"
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="Login Password"
                     name="initialPassword"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Login Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="Enter Your Login Password"
-                            className="theme-form-control-s1"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your Login Password"
+                    type="password"
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="Confirm Password"
                     name="password"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Confirm Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="Enter Your Login Password Again"
-                            className="theme-form-control-s1"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your Login Password Again"
+                    type="password"
                   />
 
                   <div className="mb-4 flex w-full flex-col justify-between space-y-3">
-                    <Label>Phone Number</Label>
+                    <Label
+                      className={cn(
+                        form.formState.errors.phoneNumber
+                          ? "!text-red-500"
+                          : "",
+                      )}
+                    >
+                      Phone Number
+                    </Label>
                     <Controller
                       control={form.control}
                       name="phoneNumber"

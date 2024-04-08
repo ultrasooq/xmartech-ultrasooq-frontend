@@ -166,3 +166,18 @@ export const menuBarIconList: string[] = [
 // TODO: remove later
 export const ADMIN_BEARER =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwic3ViIjoxLCJpYXQiOjE3MTAzMTI0NTksImV4cCI6MTc0MTg3MDA1OX0.XiU8kkLVYPBxZ5dy8tk8XP5ooVTrAJTvlOUfqbrLyHI";
+
+export const TRADE_ROLE_LIST: { label: string; value: string }[] = [
+  {
+    label: "Buyer",
+    value: "BUYER",
+  },
+  {
+    label: "Freelancer",
+    value: "FREELANCER",
+  },
+  {
+    label: "Company",
+    value: "COMPANY",
+  },
+];
