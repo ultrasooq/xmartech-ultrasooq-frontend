@@ -48,9 +48,10 @@ import React, { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCookie } from "cookies-next";
-import { countryObjs } from "@/utils/helper";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import validator from "validator";
+import PhoneInput, { CountryData } from "react-phone-input-2";
+import "react-phone-input-2/lib/bootstrap.css";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -80,9 +81,7 @@ const formSchema = z.object({
     }),
   phoneNumberList: z.array(
     z.object({
-      cc: z.string().trim().min(2, {
-        message: "Country Code is required",
-      }),
+      cc: z.string().trim(),
       phoneNumber: z
         .string()
         .trim()
@@ -278,27 +277,27 @@ export default function ProfilePage() {
 
       const phoneNumberList = userPhone.length
         ? userPhone.map((item: any) => ({
-          cc: item?.cc,
-          phoneNumber: item?.phoneNumber,
-        }))
+            cc: item?.cc,
+            phoneNumber: item?.phoneNumber,
+          }))
         : [
-          {
-            cc: cc || "",
-            phoneNumber: phoneNumber || "",
-          },
-        ];
+            {
+              cc: cc || "",
+              phoneNumber: phoneNumber || "",
+            },
+          ];
 
       const socialLinkList = userSocialLink.length
         ? userSocialLink.map((item: any) => ({
-          linkType: item?.linkType,
-          link: item?.link,
-        }))
+            linkType: item?.linkType,
+            link: item?.link,
+          }))
         : [
-          {
-            linkType: "",
-            link: "",
-          },
-        ];
+            {
+              linkType: "",
+              link: "",
+            },
+          ];
 
       form.reset({
         profilePicture: profilePicture || "",
@@ -576,80 +575,50 @@ export default function ProfilePage() {
                   {fieldArrayForPhoneNumber.fields.map((field, index) => (
                     <div
                       key={field.id}
-                      className="relative mb-4 flex w-full flex-row items-center gap-x-3.5"
+                      className="relative mb-4 flex w-full flex-col justify-between space-y-3"
                     >
-                      <FormField
-                        key={field.id}
+                      <Controller
                         control={form.control}
                         name={`phoneNumberList.${index}.phoneNumber`}
                         render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel>Number</FormLabel>
-                            <FormControl>
-                              <div className="phone-no-with-country-select-s1">
-                                <div className="country-select">
-                                  <Controller
-                                    name={`phoneNumberList.${index}.cc`}
-                                    control={form.control}
-                                    render={({ field }) => (
-                                      <select
-                                        {...field}
-                                        className="theme-form-control-s1"
-                                      >
-                                        <option value="">Select</option>
-                                        {Object.keys(countryObjs).map((key) => (
-                                          <option
-                                            key={key}
-                                            value={
-                                              countryObjs[key as keyof typeof countryObjs]
-                                            }
-                                          >
-                                            (
-                                            {countryObjs[key as keyof typeof countryObjs]}
-                                            )
-                                            {key}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    )}
-                                  />
-                                </div>
-                                <div className="phone-no">
-                                  <Input
-                                    type="number"
-                                    onWheel={(e) => e.currentTarget.blur()}
-                                    placeholder="Enter Your Phone Number"
-                                    className="theme-form-control-s1 pr-[45px]"
-                                    {...field}
-                                  />
-                                  {index !== 0 ? (
-                                    <Button
-                                      type="button"
-                                      onClick={() => removePhoneNumber(index)}
-                                      className="absolute -translate-y-2/4 right-1 top-2/4 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                                    >
-                                      <Image
-                                        src="/images/social-delete-icon.svg"
-                                        height={35}
-                                        width={35}
-                                        alt="social-delete-icon"
-                                      />
-                                    </Button>
-                                  ) : null}
-                                </div>
-                              </div>
-
-                            </FormControl>
-                            <p className="text-[13px] font-medium text-red-500">
-                              {form.formState.errors.phoneNumberList?.[index]?.cc
-                                ? "Required Country Code"
-                                : ""}
-                            </p>
-                            <FormMessage />
-                          </FormItem>
+                          <PhoneInput
+                            country={"eg"}
+                            enableSearch={true}
+                            value={field.value}
+                            onChange={(phone: string, country: CountryData) => {
+                              form.setValue(
+                                `phoneNumberList.${index}.cc`,
+                                `+${country.dialCode}`,
+                              );
+                              // TODO: for multiple phone number append + pending
+                              field.onChange(phone);
+                            }}
+                            inputClass="!h-12 !w-full text-sm"
+                            placeholder="Enter Your Phone Number"
+                          />
                         )}
                       />
+                      <p className="text-[13px] font-medium text-red-500">
+                        {form.formState.errors.phoneNumberList?.[index]
+                          ?.phoneNumber
+                          ? "Phone Number is required"
+                          : ""}
+                      </p>
 
+                      {index !== 0 ? (
+                        <Button
+                          type="button"
+                          onClick={() => removePhoneNumber(index)}
+                          className="absolute right-1 top-3 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                        >
+                          <Image
+                            src="/images/social-delete-icon.svg"
+                            height={35}
+                            width={35}
+                            alt="social-delete-icon"
+                          />
+                        </Button>
+                      ) : null}
                     </div>
                   ))}
 
@@ -692,7 +661,7 @@ export default function ProfilePage() {
                                 <Image
                                   src={
                                     SOCIAL_MEDIA_ICON[
-                                    watchSocialMedia[index]?.linkType
+                                      watchSocialMedia[index]?.linkType
                                     ]
                                   }
                                   className="mr-1.5"
@@ -821,13 +790,13 @@ export default function ProfilePage() {
                             <div className="relative m-auto h-48 w-full border-2 border-dashed border-gray-300">
                               <div className="relative h-full w-full">
                                 {identityImageFile ||
-                                  me.data?.data?.identityProof ? (
+                                me.data?.data?.identityProof ? (
                                   <Image
                                     src={
                                       identityImageFile
                                         ? URL.createObjectURL(
-                                          identityImageFile[0],
-                                        )
+                                            identityImageFile[0],
+                                          )
                                         : me.data?.data?.identityProof
                                           ? me.data?.data?.identityProof
                                           : "/images/company-logo.png"
@@ -897,7 +866,7 @@ export default function ProfilePage() {
                   <Button
                     disabled={updateProfile.isPending || upload.isPending}
                     type="submit"
-                    className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6  theme-primary-btn"
+                    className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold  leading-6"
                   >
                     {updateProfile.isPending || upload.isPending ? (
                       <>
