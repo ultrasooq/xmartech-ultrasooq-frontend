@@ -243,18 +243,25 @@ export default function RegisterPage() {
                               onValueChange={field.onChange}
                             >
                               {TRADE_ROLE_LIST.map((role) => (
-                                <div
+                                <FormItem
                                   key={role.value}
-                                  className="flex items-center space-x-2"
+                                  className="flex items-center space-x-3 space-y-0"
                                 >
-                                  <RadioGroupItem
-                                    value={role.value}
-                                    id={role.value}
-                                  />
-                                  <Label htmlFor={role.value}>
-                                    {role.label}
-                                  </Label>
-                                </div>
+                                  <FormControl>
+                                    <div
+                                      key={role.value}
+                                      className="flex items-center space-x-2"
+                                    >
+                                      <RadioGroupItem
+                                        value={role.value}
+                                        id={role.value}
+                                      />
+                                      <FormLabel htmlFor={role.value}>
+                                        {role.label}
+                                      </FormLabel>
+                                    </div>
+                                  </FormControl>
+                                </FormItem>
                               ))}
                             </RadioGroup>
                           </FormControl>
