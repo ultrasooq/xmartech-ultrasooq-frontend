@@ -35,21 +35,29 @@ export const DAYS_OF_WEEK: {
   },
 ];
 
-export const SOCIAL_MEDIA_LIST: { type: string; icon: string }[] = [
+export const SOCIAL_MEDIA_LIST: {
+  label: string;
+  value: string;
+  icon: string;
+}[] = [
   {
-    type: "facebook",
+    label: "Facebook",
+    value: "facebook",
     icon: "/images/social-facebook-icon.svg",
   },
   {
-    type: "twitter",
+    label: "Twitter",
+    value: "twitter",
     icon: "/images/social-twitter-icon.svg",
   },
   {
-    type: "instagram",
+    label: "Instagram",
+    value: "instagram",
     icon: "/images/social-instagram-icon.svg",
   },
   {
-    type: "linkedIn",
+    label: "LinkedIn",
+    value: "linkedIn",
     icon: "/images/social-linkedin-icon.svg",
   },
 ];
@@ -179,5 +187,16 @@ export const TRADE_ROLE_LIST: { label: string; value: string }[] = [
   {
     label: "Company",
     value: "COMPANY",
+  },
+];
+
+export const GENDER_LIST: { label: string; value: string }[] = [
+  {
+    label: "Male",
+    value: "MALE",
+  },
+  {
+    label: "Female",
+    value: "FEMALE",
   },
 ];
