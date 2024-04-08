@@ -1,15 +1,7 @@
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
@@ -18,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 
 const formSchema = z.object({
   email: z
@@ -89,28 +82,17 @@ export default function ForgetPasswordPage() {
                   className="flex flex-wrap"
                   onSubmit={form.handleSubmit(onSubmit)}
                 >
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="Email or Phone number or ID"
                     name="email"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Email or Phone number or ID</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Your Email or Phone number or ID"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your Email or Phone number or ID"
                   />
+
                   <div className="mb-4 w-full">
                     <Button
                       disabled={forgotPassword.isPending}
                       type="submit"
-                      className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6  theme-primary-btn"
+                      className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold  leading-6"
                     >
                       {forgotPassword.isPending ? (
                         <>
