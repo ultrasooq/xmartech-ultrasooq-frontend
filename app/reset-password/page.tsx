@@ -1,16 +1,9 @@
 "use client";
 import { useResetPassword } from "@/apis/queries/auth.queries";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import PasswordChangeSuccessContent from "@/components/shared/PasswordChangeSuccessContent";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -124,7 +117,7 @@ export default function ResetPasswordPage() {
             ) : (
               <>
                 <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                  <h2 className="mb-3 text-center text-3xl font-semibold leading-8  theme-primary-btn">
+                  <h2 className="theme-primary-btn mb-3 text-center text-3xl font-semibold  leading-8">
                     Reset Password
                   </h2>
                   <p>Reset Your Password</p>
@@ -135,49 +128,25 @@ export default function ResetPasswordPage() {
                       className="flex flex-wrap"
                       onSubmit={form.handleSubmit(onSubmit)}
                     >
-                      <FormField
-                        control={form.control}
+                      <ControlledTextInput
+                        label="New Password"
                         name="newPassword"
-                        render={({ field }) => (
-                          <FormItem className="mb-4 w-full">
-                            <FormLabel>New Password</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="password"
-                                placeholder="**********"
-                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                        placeholder="**********"
+                        type="password"
                       />
 
-                      <FormField
-                        control={form.control}
+                      <ControlledTextInput
+                        label="Re-Enter New Password"
                         name="confirmPassword"
-                        render={({ field }) => (
-                          <FormItem className="mb-4 w-full">
-                            <FormLabel>Re-Enter New Password</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="password"
-                                placeholder="**********"
-                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                        placeholder="**********"
+                        type="password"
                       />
 
                       <div className="mb-4 w-full">
                         <Button
                           disabled={resetPassword.isPending}
                           type="submit"
-                          className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 theme-primary-btn"
+                          className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                         >
                           {resetPassword.isPending ? (
                             <>

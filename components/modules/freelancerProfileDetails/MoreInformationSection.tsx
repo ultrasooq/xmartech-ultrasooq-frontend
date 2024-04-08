@@ -111,10 +111,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
                   <span>Branch Contact Number:</span>
                 </div>
                 <div className="w-9/12 text-base font-medium leading-4 text-color-dark md:w-6/12">
-                  <p>
-                    {userDetails?.userBranch?.[0]?.cc}{" "}
-                    {userDetails?.userBranch?.[0]?.contactNumber || "NA"}
-                  </p>
+                  <p>{userDetails?.userBranch?.[0]?.contactNumber || "NA"}</p>
                 </div>
               </div>
             </div>

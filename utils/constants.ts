@@ -35,21 +35,29 @@ export const DAYS_OF_WEEK: {
   },
 ];
 
-export const SOCIAL_MEDIA_LIST: { type: string; icon: string }[] = [
+export const SOCIAL_MEDIA_LIST: {
+  label: string;
+  value: string;
+  icon: string;
+}[] = [
   {
-    type: "facebook",
+    label: "Facebook",
+    value: "facebook",
     icon: "/images/social-facebook-icon.svg",
   },
   {
-    type: "twitter",
+    label: "Twitter",
+    value: "twitter",
     icon: "/images/social-twitter-icon.svg",
   },
   {
-    type: "instagram",
+    label: "Instagram",
+    value: "instagram",
     icon: "/images/social-instagram-icon.svg",
   },
   {
-    type: "linkedIn",
+    label: "LinkedIn",
+    value: "linkedIn",
     icon: "/images/social-linkedin-icon.svg",
   },
 ];
@@ -166,3 +174,29 @@ export const menuBarIconList: string[] = [
 // TODO: remove later
 export const ADMIN_BEARER =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwic3ViIjoxLCJpYXQiOjE3MTAzMTI0NTksImV4cCI6MTc0MTg3MDA1OX0.XiU8kkLVYPBxZ5dy8tk8XP5ooVTrAJTvlOUfqbrLyHI";
+
+export const TRADE_ROLE_LIST: { label: string; value: string }[] = [
+  {
+    label: "Buyer",
+    value: "BUYER",
+  },
+  {
+    label: "Freelancer",
+    value: "FREELANCER",
+  },
+  {
+    label: "Company",
+    value: "COMPANY",
+  },
+];
+
+export const GENDER_LIST: { label: string; value: string }[] = [
+  {
+    label: "Male",
+    value: "MALE",
+  },
+  {
+    label: "Female",
+    value: "FEMALE",
+  },
+];

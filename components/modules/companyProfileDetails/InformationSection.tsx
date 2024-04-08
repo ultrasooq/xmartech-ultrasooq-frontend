@@ -88,7 +88,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
                 </div>
                 <div className="mr-1 flex w-7/12  items-center justify-start sm:mr-0">
                   <p className="text-base font-medium leading-4 text-color-dark">
-                    {userDetails?.cc} {userDetails?.phoneNumber || "N/A"}
+                    {userDetails?.phoneNumber || "N/A"}
                   </p>
                 </div>
               </div>
