@@ -149,7 +149,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
                 alt="profile-mail-icon"
               />
               <a href="tel:1 000 0000 0000">
-                {userDetails?.cc} {userDetails?.phoneNumber || "NA"}
+                {userDetails?.phoneNumber || "NA"}
               </a>
             </li>
           </ul>

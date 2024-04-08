@@ -29,9 +29,10 @@ import {
 } from "@/components/ui/dialog";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 import { cn } from "@/lib/utils";
-import { countryObjs } from "@/utils/helper";
 import PolicyContent from "@/components/shared/PolicyContent";
 import TermsContent from "@/components/shared/TermsContent";
+import PhoneInput, { CountryData } from "react-phone-input-2";
+import "react-phone-input-2/lib/bootstrap.css";
 
 const formSchema = z
   .object({
@@ -79,9 +80,7 @@ const formSchema = z
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",
       }),
-    cc: z.string().trim().min(2, {
-      message: "Country Code is required",
-    }),
+    cc: z.string().trim(),
     phoneNumber: z
       .string()
       .trim()
@@ -138,7 +137,15 @@ export default function RegisterPage() {
   const register = useRegister();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    const response = await register.mutateAsync(formData);
+    const data = {
+      ...formData,
+      phoneNumber: `+${formData.phoneNumber}`,
+    };
+
+    // console.log(data);
+    // return;
+
+    const response = await register.mutateAsync(data);
 
     if (response?.status && response?.otp) {
       toast({
@@ -350,58 +357,31 @@ export default function RegisterPage() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <div className="phone-no-with-country-select-s1">
-                            <div className="country-select">
-                              <Controller
-                                name="cc"
-                                control={form.control}
-                                render={({ field }) => (
-                                  <select
-                                    {...field}
-                                    className="theme-form-control-s1"
-                                  >
-                                    <option value="">Select</option>
-                                    {Object.keys(countryObjs).map((key) => (
-                                      <option
-                                        key={key}
-                                        value={
-                                          countryObjs[key as keyof typeof countryObjs]
-                                        }
-                                      >
-                                        ({countryObjs[key as keyof typeof countryObjs]})
-                                        {key}
-                                      </option>
-                                    ))}
-                                  </select>
-                                )}
-                              />
-                            </div>
-                            <div className="phone-no">
-                              <Input
-                                type="number"
-                                onWheel={(e) => e.currentTarget.blur()}
-                                placeholder="Enter Your Phone Number"
-                                className="theme-form-control-s1"
-                                {...field}
-                              />
-                            </div>
-                          </div>
-
-                        </FormControl>
-                        <p className="text-[13px] font-medium text-red-500">
-                          {form.formState.errors.cc?.message ? "Required Country Code" : ""}
-                        </p>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="mb-4 flex w-full flex-col justify-between space-y-3">
+                    <Label>Phone Number</Label>
+                    <Controller
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <PhoneInput
+                          country={"eg"}
+                          enableSearch={true}
+                          value={field.value}
+                          onChange={(phone: string, country: CountryData) => {
+                            form.setValue("cc", `+${country.dialCode}`);
+                            field.onChange(phone);
+                          }}
+                          inputClass="!h-12 !w-full text-sm"
+                          placeholder="Enter Your Phone Number"
+                        />
+                      )}
+                    />
+                    <p className="text-[13px] font-medium text-red-500">
+                      {form.formState.errors.phoneNumber?.message
+                        ? "Phone Number is required"
+                        : ""}
+                    </p>
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -447,7 +427,7 @@ export default function RegisterPage() {
                     <Button
                       disabled={register.isPending}
                       type="submit"
-                      className="h-12 w-full rounded text-center text-lg font-bold leading-6 theme-primary-btn"
+                      className="theme-primary-btn h-12 w-full rounded text-center text-lg font-bold leading-6"
                     >
                       {register.isPending ? (
                         <>
