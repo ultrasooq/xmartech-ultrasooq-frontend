@@ -160,6 +160,22 @@ export default function EditBranchPage() {
   const tagsQuery = useTags();
   const updateFreelancerBranch = useUpdateFreelancerBranch();
 
+  const memoizedCountries = useMemo(() => {
+    return (
+      countriesQuery?.data?.data.map((item: ICountries) => {
+        return { label: item.countryName, value: item.id };
+      }) || []
+    );
+  }, [countriesQuery?.data?.data?.length]);
+
+  const memoizedTags = useMemo(() => {
+    return (
+      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
+        return { label: item.tagName, value: item.id };
+      }) || []
+    );
+  }, [tagsQuery?.data]);
+
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const data = {
       ...formData,
@@ -184,22 +200,6 @@ export default function EditBranchPage() {
       });
     }
   };
-
-  const memoizedCountries = useMemo(() => {
-    return (
-      countriesQuery?.data?.data.map((item: ICountries) => {
-        return { label: item.countryName, value: item.id };
-      }) || []
-    );
-  }, [countriesQuery?.data?.data?.length]);
-
-  const memoizedTags = useMemo(() => {
-    return (
-      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
-        return { label: item.tagName, value: item.id };
-      }) || []
-    );
-  }, [tagsQuery?.data]);
 
   useEffect(() => {
     if (userDetails.data?.data) {

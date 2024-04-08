@@ -9,9 +9,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
@@ -28,6 +26,7 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { ICountries, ISelectOptions } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
+import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 
 const formSchema = z
   .object({
@@ -164,6 +163,22 @@ export default function FreelancerProfilePage() {
   const tagsQuery = useTags();
   const createFreelancerProfile = useCreateFreelancerProfile();
 
+  const memoizedCountries = useMemo(() => {
+    return (
+      countriesQuery?.data?.data.map((item: ICountries) => {
+        return { label: item.countryName, value: item.id };
+      }) || []
+    );
+  }, [countriesQuery?.data?.data?.length]);
+
+  const memoizedTags = useMemo(() => {
+    return (
+      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
+        return { label: item.tagName, value: item.id };
+      }) || []
+    );
+  }, [tagsQuery?.data]);
+
   const onSubmit = async (formData: any) => {
     const data = {
       aboutUs: formData.aboutUs,
@@ -197,22 +212,6 @@ export default function FreelancerProfilePage() {
       });
     }
   };
-
-  const memoizedCountries = useMemo(() => {
-    return (
-      countriesQuery?.data?.data.map((item: ICountries) => {
-        return { label: item.countryName, value: item.id };
-      }) || []
-    );
-  }, [countriesQuery?.data?.data?.length]);
-
-  const memoizedTags = useMemo(() => {
-    return (
-      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
-        return { label: item.tagName, value: item.id };
-      }) || []
-    );
-  }, [tagsQuery?.data]);
 
   useEffect(() => {
     if (userDetails.data?.data) {
@@ -302,23 +301,11 @@ export default function FreelancerProfilePage() {
                 </div>
                 <div className="mb-3.5 w-full">
                   <div className="flex flex-wrap">
-                    <FormField
-                      control={form.control}
+                    <ControlledTextareaInput
+                      label="About Us"
                       name="aboutUs"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full">
-                          <FormLabel>About Us</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Write Here...."
-                              className="rounded border-gray-300 focus-visible:!ring-0"
-                              rows={6}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      placeholder="Write Here...."
+                      rows={6}
                     />
 
                     <AccordionMultiSelectV2
