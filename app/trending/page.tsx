@@ -11,6 +11,7 @@ import { useAllProducts } from "@/apis/queries/product.queries";
 import ProductCard from "@/components/modules/trending/ProductCard";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
+import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
 import { cn } from "@/lib/utils";
 import ProductTable from "@/components/modules/trending/ProductTable";
 import { debounce } from "lodash";
@@ -41,6 +42,7 @@ const TrendingPage = () => {
   const [minPriceInput, setMinPriceInput] = useState("");
   const [maxPriceInput, setMaxPriceInput] = useState("");
   const [sortBy, setSortBy] = useState("desc");
+  const [productFilter,setProductFilter] = useState(false);
 
   const allProductsQuery = useAllProducts({
     page: 1,
@@ -170,7 +172,7 @@ const TrendingPage = () => {
         {/* start: trending-search-sec */}
         <div className="trending-search-sec">
           <div className="container m-auto px-3">
-            <div className="left-filter">
+            <div className={productFilter ? "left-filter show" : "left-filter"}>
               <Accordion
                 type="single"
                 defaultValue="brand"
@@ -343,6 +345,7 @@ const TrendingPage = () => {
                 </div>
               </div> */}
             </div>
+            <div className="left-filter-overlay" onClick={()=> setProductFilter(false)}></div>
             <div className="right-products">
               <div className="products-header-filter">
                 <div className="le-info">
@@ -387,6 +390,15 @@ const TrendingPage = () => {
                         onClick={() => setViewType("list")}
                       >
                         <ListIcon />
+                      </button>
+                    </li>
+                    <li>
+                    <button
+                        type="button"
+                        className="view-type-btn"
+                        onClick={()=> setProductFilter(true)}
+                      >
+                        <FilterMenuIcon />
                       </button>
                     </li>
                   </ul>
