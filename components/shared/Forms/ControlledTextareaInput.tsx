@@ -6,15 +6,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input, InputProps } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
+import { Textarea, TextareaProps } from "@/components/ui/textarea";
 
-interface ControlledTextInputProps extends InputProps {
+interface ControlledTextareaInputProps extends TextareaProps {
   label: string;
   name: string;
 }
 
-const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
+const ControlledTextareaInput: React.FC<ControlledTextareaInputProps> = ({
   label,
   name,
   ...props
@@ -29,7 +29,11 @@ const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
         <FormItem className="mb-4 w-full">
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input {...props} className="theme-form-control-s1" {...field} />
+            <Textarea
+              {...props}
+              className="theme-form-control-s1 !h-auto"
+              {...field}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -38,4 +42,4 @@ const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
   );
 };
 
-export default ControlledTextInput;
+export default ControlledTextareaInput;
