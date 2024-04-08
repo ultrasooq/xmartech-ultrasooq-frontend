@@ -277,6 +277,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   <FormLabel>SKU No</FormLabel>
                   <FormControl>
                     <Input
+                      type="number"
+                      onWheel={(e) => e.currentTarget.blur()}
                       placeholder="Enter SKU No"
                       className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                       {...field}
