@@ -25,14 +25,15 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { countryObjs, getAmPm } from "@/utils/helper";
-import { cn } from "@/lib/utils";
+import { getAmPm } from "@/utils/helper";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import { ICountries, ISelectOptions } from "@/utils/types/common.types";
+import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z
   .object({
@@ -144,6 +145,7 @@ const formSchema = z
 export default function EditBranchPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -188,6 +190,22 @@ export default function EditBranchPage() {
     !!activeBranchId,
   );
   const updateCompanyBranch = useUpdateCompanyBranch();
+
+  const memoizedCountries = useMemo(() => {
+    return (
+      countriesQuery?.data?.data.map((item: ICountries) => {
+        return { label: item.countryName, value: item.countryName };
+      }) || []
+    );
+  }, [countriesQuery?.data?.data?.length]);
+
+  const memoizedTags = useMemo(() => {
+    return (
+      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
+        return { label: item.tagName, value: item.id };
+      }) || []
+    );
+  }, [tagsQuery?.data]);
 
   const handleUploadedFile = async (files: FileList | null) => {
     if (files) {
@@ -241,6 +259,9 @@ export default function EditBranchPage() {
         description: response.message,
       });
       form.reset();
+      queryClient.invalidateQueries({
+        queryKey: ["branch-by-id", activeBranchId],
+      });
       router.push("/company-profile-details");
     } else {
       toast({
@@ -249,22 +270,6 @@ export default function EditBranchPage() {
       });
     }
   };
-
-  const memoizedCountries = useMemo(() => {
-    return (
-      countriesQuery?.data?.data.map((item: ICountries) => {
-        return { label: item.countryName, value: item.id };
-      }) || []
-    );
-  }, [countriesQuery?.data?.data?.length]);
-
-  const memoizedTags = useMemo(() => {
-    return (
-      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
-        return { label: item.tagName, value: item.id };
-      }) || []
-    );
-  }, [tagsQuery?.data]);
 
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
@@ -324,7 +329,11 @@ export default function EditBranchPage() {
         tagList: tagList || undefined,
       });
     }
-  }, [branchQueryById.data?.data, memoizedTags?.length]);
+  }, [
+    branchQueryById.data?.data,
+    memoizedTags?.length,
+    memoizedCountries?.length,
+  ]);
 
   return (
     <section className="relative w-full py-7">
@@ -526,50 +535,40 @@ export default function EditBranchPage() {
                   </div>
                 </div>
                 <div className="flex flex-wrap">
-                  <div className="relative mb-4 w-full md:w-6/12 md:pr-3.5">
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Address"
-                              className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Image
-                      src="/images/location.svg"
-                      alt="location-icon"
-                      height={16}
-                      width={16}
-                      className="absolute right-6 top-[50px]"
+                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                    <div className="relative">
+                      <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Address</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Address"
+                                className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Image
+                        src="/images/location.svg"
+                        alt="location-icon"
+                        height={16}
+                        width={16}
+                        className="absolute right-6 top-[50px]"
+                      />
+                    </div>
+
+                    <ControlledTextInput
+                      label="City"
+                      name="city"
+                      placeholder="City"
                     />
                   </div>
-
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="City"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <ControlledTextInput
@@ -577,30 +576,12 @@ export default function EditBranchPage() {
                       name="province"
                       placeholder="Province"
                     />
-                    <div className="mb-4 flex w-full flex-col justify-between">
-                      <Label>Country</Label>
 
-                      <Controller
-                        name="country"
-                        control={form.control}
-                        render={({ field }) => (
-                          <select
-                            {...field}
-                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                          >
-                            <option value="">Select Country</option>
-                            {memoizedCountries.map((item: ISelectOptions) => (
-                              <option value={item.label} key={item.value}>
-                                {item.label}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                      />
-                      <p className="text-[13px] font-medium text-red-500">
-                        {form.formState.errors.country?.message}
-                      </p>
-                    </div>
+                    <ControlledSelectInput
+                      label="Country"
+                      name="country"
+                      options={memoizedCountries}
+                    />
                   </div>
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">

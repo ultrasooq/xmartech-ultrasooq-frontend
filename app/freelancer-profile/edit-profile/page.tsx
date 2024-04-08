@@ -1,15 +1,7 @@
 "use client";
 import { useUpdateFreelancerProfile } from "@/apis/queries/freelancer.queries";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import React, { useEffect } from "react";
@@ -18,6 +10,7 @@ import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
+import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 
 const formSchema = z.object({
   aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
@@ -99,28 +92,13 @@ export default function EditProfilePage() {
                     </label>
                   </div>
                 </div>
-                <div className="mb-3.5 w-full">
-                  <div className="flex flex-wrap">
-                    <FormField
-                      control={form.control}
-                      name="aboutUs"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full">
-                          <FormLabel>About Us</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Write Here...."
-                              className="rounded border-gray-300 focus-visible:!ring-0"
-                              rows={6}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
+
+                <ControlledTextareaInput
+                  label="About Us"
+                  name="aboutUs"
+                  placeholder="Write Here...."
+                  rows={6}
+                />
               </div>
 
               <Button
