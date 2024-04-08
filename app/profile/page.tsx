@@ -7,7 +7,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -17,31 +16,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
   EMAIL_REGEX_LOWERCASE,
+  GENDER_LIST,
   PUREMOON_TOKEN_KEY,
   SOCIAL_MEDIA_ICON,
   SOCIAL_MEDIA_LIST,
 } from "@/utils/constants";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -52,6 +37,9 @@ import { useUploadFile } from "@/apis/queries/upload.queries";
 import validator from "validator";
 import PhoneInput, { CountryData } from "react-phone-input-2";
 import "react-phone-input-2/lib/bootstrap.css";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -415,40 +403,16 @@ export default function ProfilePage() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="First Name"
                     name="firstName"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Your First Name"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your First Name"
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="Last Name"
                     name="lastName"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Your Last Name"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your Last Name"
                   />
 
                   <FormField
@@ -466,14 +430,24 @@ export default function ProfilePage() {
                             defaultValue="MALE"
                             value={field.value}
                           >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="MALE" id="MALE" />
-                              <Label htmlFor="MALE">Male</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="FEMALE" id="FEMALE" />
-                              <Label htmlFor="FEMALE">Female</Label>
-                            </div>
+                            {GENDER_LIST.map((type) => (
+                              <FormItem
+                                key={type.value}
+                                className="flex items-center space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem
+                                      value={type.value}
+                                      id={type.value}
+                                    />
+                                    <FormLabel htmlFor={type.value}>
+                                      {type.label}
+                                    </FormLabel>
+                                  </div>
+                                </FormControl>
+                              </FormItem>
+                            ))}
                           </RadioGroup>
                         </FormControl>
                         <FormMessage />
@@ -481,76 +455,27 @@ export default function ProfilePage() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledDatePicker
+                    label="Date of Birth"
                     name="dateOfBirth"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 flex w-full flex-col">
-                        <FormLabel>Date of Birth</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "!h-12 rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>Enter Your Date of Birth</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date("1900-01-01")
-                              }
-                              initialFocus
-                              toYear={new Date().getFullYear() - 18}
-                              fromYear={new Date().getFullYear() - 100}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
                   />
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="Email"
                     name="email"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Your Email"
-                            disabled
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Enter Your Email"
+                    disabled
                   />
 
                   <div className="mb-1 w-full">
                     <div className="flex w-full items-center justify-between">
                       <label
-                        className={
-                          "block text-left text-sm font-medium capitalize leading-4 text-color-dark"
-                        }
+                        className={cn(
+                          "block text-left text-sm font-medium capitalize leading-4 text-color-dark",
+                          form.formState.errors.phoneNumberList
+                            ? "!text-red-500"
+                            : "",
+                        )}
                       >
                         Phone Number
                       </label>
@@ -699,67 +624,16 @@ export default function ProfilePage() {
                           </AccordionTrigger>
 
                           <AccordionContent className="pb-0">
-                            <FormField
-                              control={form.control}
-                              name={`socialLinkList.${index}.linkType`}
-                              render={({ field }) => (
-                                <FormItem className="mt-3">
-                                  <FormLabel>Type</FormLabel>
-                                  <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                  >
-                                    <FormControl>
-                                      <SelectTrigger className="!h-12 rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
-                                        <SelectValue placeholder="Select Social Media" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      {SOCIAL_MEDIA_LIST.map((item) => (
-                                        <SelectItem
-                                          key={item.type}
-                                          value={item.type}
-                                        >
-                                          <div className="flex flex-row items-center py-2">
-                                            <Image
-                                              src={item.icon}
-                                              className="mr-2"
-                                              width={20}
-                                              height={20}
-                                              alt="social-icon"
-                                            />
-
-                                            <span className="capitalize">
-                                              {item.type}
-                                            </span>
-                                          </div>
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                            <ControlledSelectInput
+                              label="Type"
+                              name={`socialLinkList.${index}.socialMedia`}
+                              options={SOCIAL_MEDIA_LIST}
                             />
 
-                            <FormField
-                              key={field.id}
-                              control={form.control}
+                            <ControlledTextInput
+                              label="Link"
                               name={`socialLinkList.${index}.link`}
-                              render={({ field }) => (
-                                <FormItem className="mb-4 mt-3 w-full">
-                                  <FormLabel>Link</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Enter Your Link"
-                                      className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                              placeholder="Enter Your Link"
                             />
                           </AccordionContent>
                         </AccordionItem>
