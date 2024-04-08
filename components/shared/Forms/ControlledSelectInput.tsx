@@ -15,11 +15,12 @@ import {
 } from "@/components/ui/select";
 import { useFormContext } from "react-hook-form";
 import Image from "next/image";
+import { ControlledSelectOptions } from "@/utils/types/common.types";
 
 interface ControlledSelectInputProps {
   label: string;
   name: string;
-  options: { label: string; value: string; icon?: string }[];
+  options: ControlledSelectOptions[];
 }
 
 const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
@@ -34,12 +35,12 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
       control={formContext.control}
       name={name}
       render={({ field }) => (
-        <FormItem className="mb-4 mt-3">
+        <FormItem className="mb-4">
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} value={field.value}>
             <FormControl>
-              <SelectTrigger className="!h-12 rounded border-gray-300 focus-visible:!ring-0 data-[placeholder]:text-muted-foreground">
-                <SelectValue placeholder="Select Social Media" />
+              <SelectTrigger className="theme-form-control-s1 data-[placeholder]:text-muted-foreground">
+                <SelectValue placeholder={`Select ${label}`} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>

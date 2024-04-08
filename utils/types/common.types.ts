@@ -59,3 +59,7 @@ export type ProductImageProps = {
   path: string;
   id: string;
 };
+
+export interface ControlledSelectOptions extends OptionProps {
+  icon?: string;
+}

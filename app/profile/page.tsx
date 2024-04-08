@@ -555,7 +555,7 @@ export default function ProfilePage() {
                           className="mt-2 border-b-0"
                         >
                           <AccordionTrigger className="flex justify-between py-0 hover:!no-underline">
-                            <div className="flex items-center text-sm font-normal leading-4 text-color-dark">
+                            <div className="mb-2 flex items-center text-sm font-normal leading-4 text-color-dark">
                               {watchSocialMedia[index]?.linkType !== "" ? (
                                 <Image
                                   src={
@@ -600,7 +600,7 @@ export default function ProfilePage() {
                           <AccordionContent className="pb-0">
                             <ControlledSelectInput
                               label="Type"
-                              name={`socialLinkList.${index}.socialMedia`}
+                              name={`socialLinkList.${index}.linkType`}
                               options={SOCIAL_MEDIA_LIST}
                             />
 

@@ -17,16 +17,15 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
     <div className="product-list-s1-col">
       <div className="product-list-s1-box  cursor-pointer hover:bg-slate-100">
         <a href={`/buygroup?id=${item.id}`} className="">
-          <div className="image-container relative">
+          <div className="image-container ">
             <span className="discount">{offerPercentage}%</span>
-            <Image
+            <img
               src={
                 item?.productImage && validator.isURL(item.productImage)
                   ? item.productImage
                   : "/images/product-placeholder.png"
               }
               alt="product-image"
-              fill
             />
           </div>
           <div className="text-container">

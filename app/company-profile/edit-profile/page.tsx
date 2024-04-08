@@ -15,13 +15,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
@@ -99,6 +92,18 @@ export default function EditProfilePage() {
   const upload = useUploadFile();
   const updateCompanyProfile = useUpdateCompanyProfile();
 
+  const memoizedLastTwoHundredYears = useMemo(() => {
+    return getLastTwoHundredYears() || [];
+  }, [getLastTwoHundredYears().length]);
+
+  const memoizedTags = useMemo(() => {
+    return (
+      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
+        return { label: item.tagName, value: item.id };
+      }) || []
+    );
+  }, [tagsQuery?.data]);
+
   const handleUploadedFile = async (files: FileList | null) => {
     if (files) {
       const formData = new FormData();
@@ -144,18 +149,6 @@ export default function EditProfilePage() {
       });
     }
   };
-
-  const memoizedLastTwoHundredYears = useMemo(() => {
-    return getLastTwoHundredYears() || [];
-  }, [getLastTwoHundredYears().length]);
-
-  const memoizedTags = useMemo(() => {
-    return (
-      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
-        return { label: item.tagName, value: item.id };
-      }) || []
-    );
-  }, [tagsQuery?.data]);
 
   useEffect(() => {
     if (userDetails.data?.data) {

@@ -24,11 +24,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { countryObjs, getAmPm, getLastTwoHundredYears } from "@/utils/helper";
-import { cn } from "@/lib/utils";
+import { getAmPm, getLastTwoHundredYears } from "@/utils/helper";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
+import { ICountries, ISelectOptions } from "@/utils/types/common.types";
+import { useCountries } from "@/apis/queries/masters.queries";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -217,6 +219,7 @@ export default function CompanyProfilePage() {
     },
   });
   const [imageFile, setImageFile] = useState<FileList | null>();
+  const countriesQuery = useCountries();
   const tagsQuery = useTags();
   const upload = useUploadFile();
   const createCompanyProfile = useCreateCompanyProfile();
@@ -255,6 +258,26 @@ export default function CompanyProfilePage() {
     });
 
   const removeBranchList = (index: number) => fieldArray.remove(index);
+
+  const memoizedCountries = useMemo(() => {
+    return (
+      countriesQuery?.data?.data.map((item: ICountries) => {
+        return { label: item.countryName, value: item.id };
+      }) || []
+    );
+  }, [countriesQuery?.data?.data?.length]);
+
+  const memoizedTags = useMemo(() => {
+    return (
+      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
+        return { label: item.tagName, value: item.id };
+      }) || []
+    );
+  }, [tagsQuery?.data]);
+
+  const memoizedLastTwoHundredYears = useMemo(() => {
+    return getLastTwoHundredYears() || [];
+  }, [getLastTwoHundredYears().length]);
 
   const handleUploadedFile = async (files: FileList | null) => {
     if (files) {
@@ -330,19 +353,6 @@ export default function CompanyProfilePage() {
     }
   };
 
-  const memoizedTags = useMemo(() => {
-    return (
-      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
-        return { label: item.tagName, value: item.id };
-      }) || []
-    );
-  }, [tagsQuery?.data]);
-
-  const memoizedLastTwoHundredYears = useMemo(() => {
-    return getLastTwoHundredYears() || [];
-  }, [getLastTwoHundredYears().length]);
-
-  console.log(form.formState.errors);
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -447,22 +457,10 @@ export default function CompanyProfilePage() {
                   />
 
                   <div className="mb-3.5 w-full md:w-6/12 md:pl-3.5">
-                    <FormField
-                      control={form.control}
+                    <ControlledTextInput
+                      label="Company Name"
                       name="companyName"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full">
-                          <FormLabel>Company Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Company Name"
-                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      placeholder="Company Name"
                     />
 
                     <div className="mb-4 flex w-full flex-col justify-between space-y-3">
@@ -491,24 +489,12 @@ export default function CompanyProfilePage() {
                       />
                     </div>
 
-                    <FormField
-                      control={form.control}
+                    <ControlledTextInput
+                      label="Annual Purchasing Volume"
                       name="annualPurchasingVolume"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full">
-                          <FormLabel>Annual Purchasing Volume</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Annual Purchasing Volume"
-                              type="number"
-                              onWheel={(e) => e.currentTarget.blur()}
-                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      placeholder="Annual Purchasing Volume"
+                      type="number"
+                      // onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
                 </div>
@@ -521,86 +507,60 @@ export default function CompanyProfilePage() {
                   </label>
                 </div>
                 <div className="flex flex-wrap">
-                  <div className="relative mb-4 w-full md:w-6/12 md:pr-3.5">
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Address"
-                              className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Image
-                      src="/images/location.svg"
-                      alt="location-icon"
-                      height={17}
-                      width={17}
-                      className="absolute right-6 top-[50px]"
+                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                    <div className="relative w-full">
+                      <ControlledTextInput
+                        label="Address"
+                        name="address"
+                        placeholder="Address"
+                      />
+
+                      <Image
+                        src="/images/location.svg"
+                        alt="location-icon"
+                        height={16}
+                        width={16}
+                        className="absolute right-6 top-[50px]"
+                      />
+                    </div>
+
+                    <ControlledTextInput
+                      label="City"
+                      name="city"
+                      placeholder="City"
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="City"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="province"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
-                        <FormLabel>Province</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Province"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
-                    <Label>Country</Label>
-                    <Controller
-                      name="country"
-                      control={form.control}
-                      render={({ field }) => (
-                        <select
-                          {...field}
-                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                        >
-                          <option value="">Select Country</option>
-                          <option value="USA">USA</option>
-                          <option value="UK">UK</option>
-                          <option value="India">India</option>
-                        </select>
-                      )}
+                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                    <ControlledTextInput
+                      label="Province"
+                      name="province"
+                      placeholder="Province"
                     />
+                    <div className="mb-4 flex w-full flex-col justify-between">
+                      <Label>Country</Label>
+
+                      <Controller
+                        name="country"
+                        control={form.control}
+                        render={({ field }) => (
+                          <select
+                            {...field}
+                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          >
+                            <option value="">Select Country</option>
+                            {memoizedCountries.map((item: ISelectOptions) => (
+                              <option value={item.label} key={item.value}>
+                                {item.label}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      />
+                      <p className="text-[13px] font-medium text-red-500">
+                        {form.formState.errors.country?.message}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -653,23 +613,11 @@ export default function CompanyProfilePage() {
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextareaInput
+                    label="About Us"
                     name="aboutUs"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>About Us</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Write Here...."
-                            className="rounded border-gray-300 focus-visible:!ring-0"
-                            rows={6}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Write Here...."
+                    rows={6}
                   />
                 </div>
               </div>
