@@ -23,11 +23,12 @@ import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
-// import TimePicker from "react-time-picker";
 import { Switch } from "@/components/ui/switch";
 import { countryObjs, getAmPm, getLastTwoHundredYears } from "@/utils/helper";
 import { cn } from "@/lib/utils";
 import { useUploadFile } from "@/apis/queries/upload.queries";
+import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -98,9 +99,7 @@ const formSchema = z.object({
       city: z.string().trim().min(2, { message: "City is required" }),
       province: z.string().trim().min(2, { message: "Province is required" }),
       country: z.string().trim().min(2, { message: "Country is required" }),
-      cc: z.string().trim().min(2, {
-        message: "Country Code is required",
-      }),
+      cc: z.string().trim(),
       contactNumber: z
         .string()
         .trim()
@@ -343,6 +342,7 @@ export default function CompanyProfilePage() {
     return getLastTwoHundredYears() || [];
   }, [getLastTwoHundredYears().length]);
 
+  console.log(form.formState.errors);
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -961,87 +961,20 @@ export default function CompanyProfilePage() {
                       </p>
                     </div>
 
-                    <div className="flex w-full md:w-6/12">
-                      <div className="mb-4 flex w-full max-w-[125px] flex-col justify-between md:pr-3.5">
-                        <Label
-                          className={cn(
-                            // form.formState.errors.cc?.message
-                            //   ? "text-red-500"
-                            //   : "",
-                            "mb-3 mt-[6px]",
-                          )}
-                        >
-                          Country Code
-                        </Label>
-                        <Controller
-                          name={`branchList.${index}.cc`}
-                          control={form.control}
-                          render={({ field }) => (
-                            <select
-                              {...field}
-                              className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                            >
-                              <option value="">Select</option>
-                              {Object.keys(countryObjs).map((key) => (
-                                <option
-                                  key={key}
-                                  value={
-                                    countryObjs[key as keyof typeof countryObjs]
-                                  }
-                                >
-                                  (
-                                  {countryObjs[key as keyof typeof countryObjs]}
-                                  )&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                  {key}
-                                </option>
-                              ))}
-                            </select>
-                          )}
-                        />
-                        <p className="text-[13px] font-medium text-red-500">
-                          {form.formState.errors.branchList?.[index]?.cc
-                            ? "Required"
-                            : ""}
-                        </p>
-                      </div>
-                      <FormField
-                        control={form.control}
+                    <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                      <ControlledPhoneInput
+                        label="Branch Contact Number"
                         name={`branchList.${index}.contactNumber`}
-                        render={({ field }) => (
-                          <FormItem className="mb-4 w-full md:pr-3.5">
-                            <FormLabel>Branch Contact Number</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                onWheel={(e) => e.currentTarget.blur()}
-                                placeholder="Branch Contact Number"
-                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                        countryName="cc"
+                        placeholder="Branch Contact Number"
+                      />
+
+                      <ControlledTextInput
+                        label="Branch Contact Name"
+                        name={`branchList.${index}.contactName`}
+                        placeholder="Branch Contact Name"
                       />
                     </div>
-
-                    <FormField
-                      control={form.control}
-                      name={`branchList.${index}.contactName`}
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                          <FormLabel>Branch Contact Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Branch Contact Name"
-                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
                 </div>
 
