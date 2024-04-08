@@ -497,7 +497,7 @@ export default function ProfilePage() {
                   </div>
 
                   {fieldArrayForPhoneNumber.fields.map((field, index) => (
-                    <div className="relative w-full">
+                    <div key={field.id} className="relative w-full">
                       <ControlledPhoneInput
                         name={`phoneNumberList.${index}.phoneNumber`}
                         countryName={`phoneNumberList.${index}.cc`}
