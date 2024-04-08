@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRegister } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
@@ -27,12 +26,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { EMAIL_REGEX_LOWERCASE, TRADE_ROLE_LIST } from "@/utils/constants";
-import { cn } from "@/lib/utils";
 import PolicyContent from "@/components/shared/PolicyContent";
 import TermsContent from "@/components/shared/TermsContent";
-import PhoneInput, { CountryData } from "react-phone-input-2";
-import "react-phone-input-2/lib/bootstrap.css";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 
 const formSchema = z
   .object({
@@ -137,15 +134,9 @@ export default function RegisterPage() {
   const register = useRegister();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    const data = {
-      ...formData,
-      phoneNumber: `+${formData.phoneNumber}`,
-    };
-
-    // console.log(data);
+    // console.log(formData);
     // return;
-
-    const response = await register.mutateAsync(data);
+    const response = await register.mutateAsync(formData);
 
     if (response?.status && response?.otp) {
       toast({
@@ -303,39 +294,12 @@ export default function RegisterPage() {
                     type="password"
                   />
 
-                  <div className="mb-4 flex w-full flex-col justify-between space-y-3">
-                    <Label
-                      className={cn(
-                        form.formState.errors.phoneNumber
-                          ? "!text-red-500"
-                          : "",
-                      )}
-                    >
-                      Phone Number
-                    </Label>
-                    <Controller
-                      control={form.control}
-                      name="phoneNumber"
-                      render={({ field }) => (
-                        <PhoneInput
-                          country={"eg"}
-                          enableSearch={true}
-                          value={field.value}
-                          onChange={(phone: string, country: CountryData) => {
-                            form.setValue("cc", `+${country.dialCode}`);
-                            field.onChange(phone);
-                          }}
-                          inputClass="!h-12 !w-full text-sm"
-                          placeholder="Enter Your Phone Number"
-                        />
-                      )}
-                    />
-                    <p className="text-[13px] font-medium text-red-500">
-                      {form.formState.errors.phoneNumber?.message
-                        ? "Phone Number is required"
-                        : ""}
-                    </p>
-                  </div>
+                  <ControlledPhoneInput
+                    label="Phone Number"
+                    name="phoneNumber"
+                    countryName="cc"
+                    placeholder="Enter Your Phone Number"
+                  />
 
                   <FormField
                     control={form.control}

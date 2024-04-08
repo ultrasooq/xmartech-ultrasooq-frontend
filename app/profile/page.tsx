@@ -30,16 +30,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCookie } from "cookies-next";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import validator from "validator";
-import PhoneInput, { CountryData } from "react-phone-input-2";
-import "react-phone-input-2/lib/bootstrap.css";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -212,7 +211,7 @@ export default function ProfilePage() {
       });
       return;
     }
-    console.log(data);
+    // console.log(data);
     // return;
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
@@ -467,7 +466,7 @@ export default function ProfilePage() {
                     disabled
                   />
 
-                  <div className="mb-1 w-full">
+                  <div className="w-full">
                     <div className="flex w-full items-center justify-between">
                       <label
                         className={cn(
@@ -498,48 +497,23 @@ export default function ProfilePage() {
                   </div>
 
                   {fieldArrayForPhoneNumber.fields.map((field, index) => (
-                    <div
-                      key={field.id}
-                      className="relative mb-4 flex w-full flex-col justify-between space-y-3"
-                    >
-                      <Controller
-                        control={form.control}
+                    <div className="relative w-full">
+                      <ControlledPhoneInput
                         name={`phoneNumberList.${index}.phoneNumber`}
-                        render={({ field }) => (
-                          <PhoneInput
-                            country={"eg"}
-                            enableSearch={true}
-                            value={field.value}
-                            onChange={(phone: string, country: CountryData) => {
-                              form.setValue(
-                                `phoneNumberList.${index}.cc`,
-                                `+${country.dialCode}`,
-                              );
-                              // TODO: for multiple phone number append + pending
-                              field.onChange(phone);
-                            }}
-                            inputClass="!h-12 !w-full text-sm"
-                            placeholder="Enter Your Phone Number"
-                          />
-                        )}
+                        countryName={`phoneNumberList.${index}.cc`}
+                        placeholder="Enter Your Phone Number"
                       />
-                      <p className="text-[13px] font-medium text-red-500">
-                        {form.formState.errors.phoneNumberList?.[index]
-                          ?.phoneNumber
-                          ? "Phone Number is required"
-                          : ""}
-                      </p>
 
                       {index !== 0 ? (
                         <Button
                           type="button"
                           onClick={() => removePhoneNumber(index)}
-                          className="absolute right-1 top-3 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                          className="absolute right-2 top-9 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
                         >
                           <Image
                             src="/images/social-delete-icon.svg"
-                            height={35}
-                            width={35}
+                            height={32}
+                            width={32}
                             alt="social-delete-icon"
                           />
                         </Button>
