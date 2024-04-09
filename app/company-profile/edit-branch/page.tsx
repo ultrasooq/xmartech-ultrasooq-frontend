@@ -249,7 +249,7 @@ export default function EditBranchPage() {
       data.proofOfAddress = getProofOfAddressImageUrl;
     }
 
-    console.log(data);
+    // console.log(data);
     // return;
     const response = await updateCompanyBranch.mutateAsync(data);
 
@@ -534,70 +534,58 @@ export default function EditBranchPage() {
                     </label>
                   </div>
                 </div>
-                <div className="flex flex-wrap">
-                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                    <div className="relative">
-                      <FormField
-                        control={form.control}
-                        name="address"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Address</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Address"
-                                className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Image
-                        src="/images/location.svg"
-                        alt="location-icon"
-                        height={16}
-                        width={16}
-                        className="absolute right-6 top-[50px]"
-                      />
-                    </div>
 
+                <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                  <div className="relative w-full">
                     <ControlledTextInput
-                      label="City"
-                      name="city"
-                      placeholder="City"
+                      label="Address"
+                      name="address"
+                      placeholder="Address"
+                    />
+
+                    <Image
+                      src="/images/location.svg"
+                      alt="location-icon"
+                      height={16}
+                      width={16}
+                      className="absolute right-6 top-[50px]"
                     />
                   </div>
 
-                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                    <ControlledTextInput
-                      label="Province"
-                      name="province"
-                      placeholder="Province"
-                    />
+                  <ControlledTextInput
+                    label="City"
+                    name="city"
+                    placeholder="City"
+                  />
+                </div>
 
-                    <ControlledSelectInput
-                      label="Country"
-                      name="country"
-                      options={memoizedCountries}
-                    />
-                  </div>
+                <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                  <ControlledTextInput
+                    label="Province"
+                    name="province"
+                    placeholder="Province"
+                  />
 
-                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                    <ControlledPhoneInput
-                      label="Branch Contact Number"
-                      name="contactNumber"
-                      countryName="cc"
-                      placeholder="Branch Contact Number"
-                    />
+                  <ControlledSelectInput
+                    label="Country"
+                    name="country"
+                    options={memoizedCountries}
+                  />
+                </div>
 
-                    <ControlledTextInput
-                      label="Branch Contact Name"
-                      name="contactName"
-                      placeholder="Branch Contact Name"
-                    />
-                  </div>
+                <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                  <ControlledPhoneInput
+                    label="Branch Contact Number"
+                    name="contactNumber"
+                    countryName="cc"
+                    placeholder="Branch Contact Number"
+                  />
+
+                  <ControlledTextInput
+                    label="Branch Contact Name"
+                    name="contactName"
+                    placeholder="Branch Contact Name"
+                  />
                 </div>
               </div>
 
