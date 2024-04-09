@@ -1282,12 +1282,18 @@
       @apply mt-8;
     }
 
+
   }
 
   @media (max-width: 575px) {
     .custom-inner-banner-s1-captionBox {
       @apply flex-col p-4;
     }
+
+    .text-base {
+      @apply text-sm leading-[22px];
+    }
+    
 
     .custom-inner-banner-s1-captionBox .text-container {
       @apply max-w-[unset];
@@ -1303,12 +1309,6 @@
 
     .body-content-s1 {
       @apply py-6;
-    }
-  }
-
-  @media (min-width: 768px) {
-    .container {
-      @apply max-w-[90%];
     }
   }
 
