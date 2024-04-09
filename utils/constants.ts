@@ -200,3 +200,48 @@ export const GENDER_LIST: { label: string; value: string }[] = [
     value: "FEMALE",
   },
 ];
+
+export const NO_OF_EMPLOYEES_LIST: { label: string; value: string }[] = [
+  {
+    label: "1-10",
+    value: "1-10",
+  },
+  {
+    label: "10-50",
+    value: "10-50",
+  },
+  {
+    label: "50-100",
+    value: "50-100",
+  },
+  {
+    label: "100-500",
+    value: "100-500",
+  },
+  {
+    label: "500+",
+    value: "500+",
+  },
+];
+
+export const INPUT_TYPE_LIST: { label: string; value: string }[] = [
+  {
+    label: "Text",
+    value: "text",
+  },
+  {
+    label: "Number",
+    value: "number",
+  },
+];
+
+export const SIZE_LIST: { label: string; value: string }[] = [
+  {
+    label: "Full",
+    value: "full",
+  },
+  {
+    label: "Small",
+    value: "small",
+  },
+];
