@@ -42,7 +42,7 @@ const TrendingPage = () => {
   const [minPriceInput, setMinPriceInput] = useState("");
   const [maxPriceInput, setMaxPriceInput] = useState("");
   const [sortBy, setSortBy] = useState("desc");
-  const [productFilter,setProductFilter] = useState(false);
+  const [productFilter, setProductFilter] = useState(false);
 
   const allProductsQuery = useAllProducts({
     page: 1,
@@ -268,6 +268,7 @@ const TrendingPage = () => {
                           placeholder="$0"
                           className="custom-form-control-s1 rounded-none"
                           onChange={handleMinPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
                         />
                         <div className="center-divider"></div>
                         <Input
@@ -275,6 +276,7 @@ const TrendingPage = () => {
                           placeholder="$500"
                           className="custom-form-control-s1 rounded-none"
                           onChange={handleMaxPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
                         />
                       </div>
                     </div>
@@ -345,7 +347,10 @@ const TrendingPage = () => {
                 </div>
               </div> */}
             </div>
-            <div className="left-filter-overlay" onClick={()=> setProductFilter(false)}></div>
+            <div
+              className="left-filter-overlay"
+              onClick={() => setProductFilter(false)}
+            ></div>
             <div className="right-products">
               <div className="products-header-filter">
                 <div className="le-info">
@@ -393,10 +398,10 @@ const TrendingPage = () => {
                       </button>
                     </li>
                     <li>
-                    <button
+                      <button
                         type="button"
                         className="view-type-btn"
-                        onClick={()=> setProductFilter(true)}
+                        onClick={() => setProductFilter(true)}
                       >
                         <FilterMenuIcon />
                       </button>
