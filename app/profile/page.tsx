@@ -43,8 +43,10 @@ import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput
 const formSchema = z.object({
   uploadImage: z.any().optional(),
   uploadIdentityImage: z.any().optional(),
+  uploadIdentityBackImage: z.any().optional(),
   profilePicture: z.string().trim().optional(),
   identityProof: z.string().trim().optional(),
+  identityProofBack: z.string().trim().optional(),
   firstName: z
     .string()
     .trim()
@@ -100,8 +102,10 @@ export default function ProfilePage() {
     defaultValues: {
       uploadImage: undefined,
       uploadIdentityImage: undefined,
+      uploadIdentityBackImage: undefined,
       profilePicture: "",
       identityProof: "",
+      identityProofBack: "",
       firstName: "",
       lastName: "",
       gender: "",
@@ -124,6 +128,8 @@ export default function ProfilePage() {
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [imageFile, setImageFile] = useState<FileList | null>();
   const [identityImageFile, setIdentityImageFile] = useState<FileList | null>();
+  const [identityBackImageFile, setIdentityBackImageFile] =
+    useState<FileList | null>();
   const me = useMe(!!accessToken);
   const upload = useUploadFile();
   const updateProfile = useUpdateProfile();
@@ -175,9 +181,11 @@ export default function ProfilePage() {
     };
     formData.uploadImage = imageFile;
     formData.uploadIdentityImage = identityImageFile;
+    formData.uploadIdentityBackImage = identityBackImageFile;
 
     let getImageUrl;
     let getIdentityImageUrl;
+    let getIdentityBackImageUrl;
 
     if (formData.uploadImage) {
       getImageUrl = await handleUploadedFile(formData.uploadImage);
@@ -187,6 +195,12 @@ export default function ProfilePage() {
         formData.uploadIdentityImage,
       );
     }
+    if (formData.uploadIdentityBackImage) {
+      getIdentityBackImageUrl = await handleUploadedFile(
+        formData.uploadIdentityBackImage,
+      );
+    }
+
     //TODO: identity image upload
     delete data.uploadImage;
     delete data.uploadIdentityImage;
@@ -195,6 +209,9 @@ export default function ProfilePage() {
     }
     if (getIdentityImageUrl) {
       data.identityProof = getIdentityImageUrl;
+    }
+    if (getIdentityBackImageUrl) {
+      data.identityProofBack = getIdentityBackImageUrl;
     }
 
     data.socialLinkList = data.socialLinkList.filter(
@@ -254,6 +271,7 @@ export default function ProfilePage() {
       const {
         profilePicture,
         identityProof,
+        identityProofBack,
         firstName,
         lastName,
         gender,
@@ -267,31 +285,32 @@ export default function ProfilePage() {
 
       const phoneNumberList = userPhone.length
         ? userPhone.map((item: any) => ({
-          cc: item?.cc,
-          phoneNumber: item?.phoneNumber,
-        }))
+            cc: item?.cc,
+            phoneNumber: item?.phoneNumber,
+          }))
         : [
-          {
-            cc: cc || "",
-            phoneNumber: phoneNumber || "",
-          },
-        ];
+            {
+              cc: cc || "",
+              phoneNumber: phoneNumber || "",
+            },
+          ];
 
       const socialLinkList = userSocialLink.length
         ? userSocialLink.map((item: any) => ({
-          linkType: item?.linkType,
-          link: item?.link,
-        }))
+            linkType: item?.linkType,
+            link: item?.link,
+          }))
         : [
-          {
-            linkType: "",
-            link: "",
-          },
-        ];
+            {
+              linkType: "",
+              link: "",
+            },
+          ];
 
       form.reset({
         profilePicture: profilePicture || "",
         identityProof: identityProof || "",
+        identityProofBack: identityProofBack || "",
         firstName,
         lastName,
         gender,
@@ -563,7 +582,7 @@ export default function ProfilePage() {
                                 <Image
                                   src={
                                     SOCIAL_MEDIA_ICON[
-                                    watchSocialMedia[index]?.linkType
+                                      watchSocialMedia[index]?.linkType
                                     ]
                                   }
                                   className="mr-1.5"
@@ -636,23 +655,32 @@ export default function ProfilePage() {
                       name="uploadIdentityImage"
                       render={({ field }) => (
                         <FormItem className="mb-3.5 w-full">
-                          <FormLabel className="block">Upload Identity Proof</FormLabel>
+                          <FormLabel className="block">
+                            Upload Identity Proof
+                          </FormLabel>
                           <div className="upload-identity-proof-both-side">
                             <div className="upload-identity-proof-both-side-col">
-                              
                               <FormLabel className="block">Front</FormLabel>
                               <FormControl>
-                                <div className="relative upload-identity-proof-box w-full border-2 border-dashed border-gray-300">
+                                <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
-                                    <button type="button" className="common-close-btn-uploader-s1"><img src="/images/close-white.svg" alt=""></img></button>
+                                    <button
+                                      type="button"
+                                      className="common-close-btn-uploader-s1"
+                                    >
+                                      <img
+                                        src="/images/close-white.svg"
+                                        alt=""
+                                      ></img>
+                                    </button>
                                     {identityImageFile ||
-                                      me.data?.data?.identityProof ? (
+                                    me.data?.data?.identityProof ? (
                                       <Image
                                         src={
                                           identityImageFile
                                             ? URL.createObjectURL(
-                                              identityImageFile[0],
-                                            )
+                                                identityImageFile[0],
+                                              )
                                             : me.data?.data?.identityProof
                                               ? me.data?.data?.identityProof
                                               : "/images/company-logo.png"
@@ -701,7 +729,10 @@ export default function ProfilePage() {
                                             });
                                             return;
                                           }
-                                          setIdentityImageFile(event.target.files);
+
+                                          setIdentityImageFile(
+                                            event.target.files,
+                                          );
                                         }
                                       }}
                                       id="uploadIdentityImage"
@@ -713,19 +744,27 @@ export default function ProfilePage() {
                             <div className="upload-identity-proof-both-side-col">
                               <FormLabel className="block">Back</FormLabel>
                               <FormControl>
-                                <div className="relative upload-identity-proof-box w-full border-2 border-dashed border-gray-300">
+                                <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
-                                  <button type="button" className="common-close-btn-uploader-s1"><img src="/images/close-white.svg" alt=""></img></button>
-                                    {identityImageFile ||
-                                      me.data?.data?.identityProof ? (
+                                    <button
+                                      type="button"
+                                      className="common-close-btn-uploader-s1"
+                                    >
+                                      <img
+                                        src="/images/close-white.svg"
+                                        alt=""
+                                      ></img>
+                                    </button>
+                                    {identityBackImageFile ||
+                                    me.data?.data?.identityProofBack ? (
                                       <Image
                                         src={
-                                          identityImageFile
+                                          identityBackImageFile
                                             ? URL.createObjectURL(
-                                              identityImageFile[0],
-                                            )
-                                            : me.data?.data?.identityProof
-                                              ? me.data?.data?.identityProof
+                                                identityBackImageFile[0],
+                                              )
+                                            : me.data?.data?.identityProofBack
+                                              ? me.data?.data?.identityProofBack
                                               : "/images/company-logo.png"
                                         }
                                         alt="profile"
@@ -772,10 +811,13 @@ export default function ProfilePage() {
                                             });
                                             return;
                                           }
-                                          setIdentityImageFile(event.target.files);
+
+                                          setIdentityBackImageFile(
+                                            event.target.files,
+                                          );
                                         }
                                       }}
-                                      id="uploadIdentityImage"
+                                      id="uploadIdentityBackImage"
                                     />
                                   </div>
                                 </div>
