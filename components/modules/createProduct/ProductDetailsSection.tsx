@@ -26,6 +26,7 @@ type Field = {
   type: string;
   field: JSX.Element;
   size?: string;
+  isRequired?: boolean;
 };
 
 const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
@@ -139,8 +140,20 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
       default:
         break;
     }
-
+    console.log(tempArr);
     setCustomFields((prevState) => [...prevState, ...tempArr]);
+  };
+
+  const handleRequiredField = (e: boolean) => {
+    const updatedTempCustomFields: Field[] = customfields.map((item) => {
+      if (item.key === customFieldType?.key) {
+        return { ...item, isRequired: e };
+      }
+
+      return item;
+    });
+
+    setCustomFields(updatedTempCustomFields);
   };
 
   const handleItemSize = (e: string) => {
@@ -163,7 +176,6 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
     if (fieldIndex !== -1) {
       const tempFields = [...customfields];
 
-      // Modify the rendering of the field at the found index
       tempFields[fieldIndex] = {
         ...tempFields[fieldIndex],
         field: (
@@ -184,6 +196,8 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
     }
   };
 
+  console.log(customfields);
+
   return (
     <div className="grid w-full grid-cols-4 gap-x-5">
       <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
@@ -202,7 +216,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className={cn(
                     "relative my-2 flex w-full items-start px-2",
                     item.size === "small" ? "w-1/2" : "",
-                    customFieldType?.key === item.key ? "bg-slate-100" : "",
+                    customFieldType?.key === item.key ? "bg-[#F9F9F9]" : "",
                   )}
                 >
                   <div className="w-full flex-1 py-2 text-left">
@@ -292,13 +306,12 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     if (fieldIndex !== -1) {
                       const tempFields = [...customfields];
 
-                      // Modify the rendering of the field at the found index
                       tempFields[fieldIndex] = {
                         ...tempFields[fieldIndex],
                         field: (
                           <ControlledTextInput
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value}
+                            label={e.target.value || "Enter Label"}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
@@ -313,11 +326,19 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                       setCustomFields(tempFields);
                     }
                   }}
+                  defaultValue={
+                    customfields.filter(
+                      (item) => item.key === customFieldType?.key,
+                    )?.[0]?.field?.props?.label || "Enter Label"
+                  }
                 />
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
-                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+                <Checkbox
+                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
+                />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
@@ -352,7 +373,6 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     if (fieldIndex !== -1) {
                       const tempFields = [...customfields];
 
-                      // Modify the rendering of the field at the found index
                       tempFields[fieldIndex] = {
                         ...tempFields[fieldIndex],
                         field: (
@@ -374,6 +394,11 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                       setCustomFields(tempFields);
                     }
                   }}
+                  defaultValue={
+                    customfields.filter(
+                      (item) => item.key === customFieldType?.key,
+                    )?.[0]?.field?.props?.placeholder || "Enter Label"
+                  }
                 />
               </div>
             </CardContent>
@@ -394,13 +419,12 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     if (fieldIndex !== -1) {
                       const tempFields = [...customfields];
 
-                      // Modify the rendering of the field at the found index
                       tempFields[fieldIndex] = {
                         ...tempFields[fieldIndex],
                         field: (
                           <ControlledTextareaInput
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value}
+                            label={e.target.value || "Enter Label"}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
@@ -415,11 +439,19 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                       setCustomFields(tempFields);
                     }
                   }}
+                  defaultValue={
+                    customfields.filter(
+                      (item) => item.key === customFieldType?.key,
+                    )?.[0]?.field?.props?.label || "Enter Label"
+                  }
                 />
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
-                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+                <Checkbox
+                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
+                />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
@@ -445,7 +477,6 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     if (fieldIndex !== -1) {
                       const tempFields = [...customfields];
 
-                      // Modify the rendering of the field at the found index
                       tempFields[fieldIndex] = {
                         ...tempFields[fieldIndex],
                         field: (
@@ -487,18 +518,17 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     if (fieldIndex !== -1) {
                       const tempFields = [...customfields];
 
-                      // Modify the rendering of the field at the found index
                       tempFields[fieldIndex] = {
                         ...tempFields[fieldIndex],
                         field: (
                           <ControlledSelectInput
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value}
+                            label={e.target.value || "Enter Label"}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
                             }
-                            options={[]}
+                            options={tempFields[fieldIndex].field.props.options}
                           />
                         ),
                       };
@@ -509,7 +539,10 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
-                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+                <Checkbox
+                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
+                />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
@@ -591,8 +624,6 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    console.log(item);
-
                                     const fieldIndex = customfields.findIndex(
                                       (item) =>
                                         item.key === customFieldType?.key &&
@@ -659,9 +690,6 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                 <Label className="text-sm font-normal">Label</Label>
                 <Input
                   onChange={(e) => {
-                    const tempList = [];
-                    tempList.push({ label: selectOption, value: uuidv4() });
-
                     const fieldIndex = customfields.findIndex(
                       (item) =>
                         item.key === customFieldType?.key &&
@@ -671,21 +699,17 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     if (fieldIndex !== -1) {
                       const tempFields = [...customfields];
 
-                      // Modify the rendering of the field at the found index
                       tempFields[fieldIndex] = {
                         ...tempFields[fieldIndex],
                         field: (
                           <ControlledCheckboxInput
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value}
+                            label={e.target.value || "Enter Label"}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
                             }
-                            options={[
-                              ...tempFields[fieldIndex].field.props.options,
-                              ...tempList,
-                            ]}
+                            options={tempFields[fieldIndex].field.props.options}
                           />
                         ),
                       };
@@ -696,7 +720,10 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
-                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+                <Checkbox
+                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
+                />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
@@ -716,7 +743,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     const fieldIndex = customfields.findIndex(
                       (item) =>
                         item.key === customFieldType?.key &&
-                        item.type === "radio",
+                        item.type === "checkbox",
                     );
 
                     if (fieldIndex !== -1) {
@@ -768,18 +795,17 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     if (fieldIndex !== -1) {
                       const tempFields = [...customfields];
 
-                      // Modify the rendering of the field at the found index
                       tempFields[fieldIndex] = {
                         ...tempFields[fieldIndex],
                         field: (
                           <ControlledRadioInput
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value}
+                            label={e.target.value || "Enter Label"}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
                             }
-                            options={[]}
+                            options={tempFields[fieldIndex].field.props.options}
                           />
                         ),
                       };
@@ -790,7 +816,10 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
-                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+                <Checkbox
+                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
+                />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
@@ -863,8 +892,6 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    console.log(item);
-
                                     const fieldIndex = customfields.findIndex(
                                       (item) =>
                                         item.key === customFieldType?.key &&
@@ -940,13 +967,12 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     if (fieldIndex !== -1) {
                       const tempFields = [...customfields];
 
-                      // Modify the rendering of the field at the found index
                       tempFields[fieldIndex] = {
                         ...tempFields[fieldIndex],
                         field: (
                           <ControlledDatePicker
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value}
+                            label={e.target.value || "Enter Label"}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
@@ -961,7 +987,10 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
-                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+                <Checkbox
+                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
+                />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 

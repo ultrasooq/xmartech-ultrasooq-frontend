@@ -38,7 +38,7 @@ const ControlledCheckboxInput: React.FC<ControlledCheckboxInputProps> = ({
             <FormField
               key={item.value}
               control={formContext.control}
-              name="items"
+              name={name}
               render={({ field }) => {
                 return (
                   <FormItem
@@ -47,15 +47,21 @@ const ControlledCheckboxInput: React.FC<ControlledCheckboxInputProps> = ({
                   >
                     <FormControl>
                       <Checkbox
+                        className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                         checked={field.value?.includes(item.value)}
                         onCheckedChange={(checked) => {
+                          console.log(field, item);
+                          // return;
+                          // return checked
+                          //   ? field.onChange([...field.value, item.value])
+                          //   : field.onChange(
+                          //       field.value?.filter(
+                          //         (value: string) => value !== item.value,
+                          //       ),
+                          //     );
                           return checked
-                            ? field.onChange([...field.value, item.value])
-                            : field.onChange(
-                                field.value?.filter(
-                                  (value: string) => value !== item.value,
-                                ),
-                              );
+                            ? field.onChange([item.value])
+                            : field.onChange([]);
                         }}
                       />
                     </FormControl>
