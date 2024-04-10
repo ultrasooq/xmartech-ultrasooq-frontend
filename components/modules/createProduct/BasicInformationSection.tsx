@@ -82,6 +82,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const memoizedCountries = useMemo(() => {
     return (
       countriesQuery?.data?.data.map((item: ICountries) => {
+        //TODO: check id or countryName
         return { label: item.countryName, value: item.countryName };
       }) || []
     );
@@ -247,52 +248,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             />
           </div>
 
-          {/* <div className="grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            <div className="mb-4 flex w-full flex-col justify-between">
-              <Label>Brand</Label>
-              <Controller
-                name="brandId"
-                control={formContext.control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                  >
-                    <option value="">Select Brand</option>
-                    {memoizedBrands.map((item: ISelectOptions) => (
-                      <option value={item.value?.toString()} key={item.value}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {formContext.formState.errors["brandId"]?.message as string}
-              </p>
-            </div>
-
-            <FormField
-              control={formContext.control}
-              name="skuNo"
-              render={({ field }) => (
-                <FormItem className="mb-4 w-full">
-                  <FormLabel>SKU No</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      onWheel={(e) => e.currentTarget.blur()}
-                      placeholder="Enter SKU No"
-                      className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div> */}
-
           <AccordionMultiSelectV2
             label="Tag"
             name="productTagList"
@@ -350,42 +305,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                     accept="image/*"
                                     multiple={false}
                                     className="!bottom-0 h-44 !w-full cursor-pointer opacity-0 "
-                                    // onChange={async (event) => {
-                                    //   if (event.target.files?.[0]) {
-                                    //     if (
-                                    //       event.target.files[0].size > 1048576
-                                    //     ) {
-                                    //       toast({
-                                    //         title:
-                                    //           "Image size should be less than 1MB",
-                                    //       });
-                                    //       return;
-                                    //     }
-                                    //     const response =
-                                    //       await handleUploadedFile(
-                                    //         event.target.files,
-                                    //       );
-
-                                    //     if (response) {
-                                    //       if (
-                                    //         field.value.length &&
-                                    //         field.value.some(
-                                    //           (val: ProductImageProps) =>
-                                    //             val.id === item.id,
-                                    //         )
-                                    //       ) {
-                                    //         field.onChange(
-                                    //           field.value.map(
-                                    //             (val: ProductImageProps) =>
-                                    //               val.id === item.id
-                                    //                 ? { ...val, path: response }
-                                    //                 : val,
-                                    //           ),
-                                    //         );
-                                    //       }
-                                    //     }
-                                    //   }
-                                    // }}
                                     onChange={(event) =>
                                       handleFileChanges(event, field, item)
                                     }
