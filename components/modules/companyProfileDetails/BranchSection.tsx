@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import TagInformationSection from "./TagInformationSection";
 
 type BranchSectionProps = {
   branchDetails: any;
@@ -55,7 +56,11 @@ const BranchSection: React.FC<BranchSectionProps> = ({
         </AccordionTrigger>
         <AccordionContent>
           <div className="w-full border-t border-solid border-gray-300 bg-white px-5 py-4">
-            <div className="flex w-full justify-end">
+            <div className="flex w-full items-center justify-between">
+              <h2 className="left-8 text-lg font-semibold text-color-dark">
+                Branch Information
+              </h2>
+
               <button
                 type="button"
                 onClick={onEditBranch}
@@ -246,6 +251,8 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                   </div>
                 </div>
               </div>
+
+              <TagInformationSection tagDetails={branchDetails} />
             </div>
           </div>
         </AccordionContent>

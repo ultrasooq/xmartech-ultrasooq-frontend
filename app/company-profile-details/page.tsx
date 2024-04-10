@@ -4,7 +4,6 @@ import BranchSection from "@/components/modules/companyProfileDetails/BranchSect
 import InformationSection from "@/components/modules/companyProfileDetails/InformationSection";
 import MoreInformationSection from "@/components/modules/companyProfileDetails/MoreInformationSection";
 import ProfileCard from "@/components/modules/companyProfileDetails/ProfileCard";
-import TagInformationSection from "@/components/modules/companyProfileDetails/TagInformationSection";
 import RatingsSection from "@/components/shared/RatingsSection";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -82,22 +81,15 @@ export default function CompanyProfileDetailsPage() {
                   />
                   {/* Branch Section */}
                   <div className="mb-4 w-full pt-4">
-                    <div className="mb-5 flex w-full items-center justify-between">
-                      <div className="flex w-full flex-wrap items-center justify-between">
-                        <h2 className="left-8 text-2xl font-semibold text-color-dark">
-                          Branch Information
-                        </h2>
-                      </div>
-                      <div className="w-auto">
-                        <button
-                          type="button"
-                          onClick={handleAddCompanyBranchPage}
-                          className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
-                        >
-                          <PlusIcon className="mr-1 h-5 w-5" />
-                          Add
-                        </button>
-                      </div>
+                    <div className="mb-5 flex w-full items-center justify-end">
+                      <button
+                        type="button"
+                        onClick={handleAddCompanyBranchPage}
+                        className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                      >
+                        <PlusIcon className="mr-1 h-5 w-5" />
+                        Add
+                      </button>
                     </div>
                     {userDetails.data?.data?.userBranch
                       .sort((a: any, b: any) => b?.mainOffice - a?.mainOffice)
@@ -109,9 +101,6 @@ export default function CompanyProfileDetailsPage() {
                               handleEditCompanyBranchPage(item.id)
                             }
                           />
-                          <div className="border-b-2 border-dashed border-gray-200" />
-                          <TagInformationSection tagDetails={item} />
-                          <div className="mb-5 border-b-2 border-dashed border-gray-200" />
                         </React.Fragment>
                       ))}
                   </div>

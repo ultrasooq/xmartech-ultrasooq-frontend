@@ -1069,6 +1069,85 @@
   }
 
   /* end: product-view-s1-left-details-with-right-suggestion */
+  /* start: auth-page-main */
+  .auth-page-main {}
+
+  .react-tel-input .country-list .search {
+    @apply px-2 py-[5px] !important;
+  }
+
+  .react-tel-input .country-list .search-box {
+    @apply w-full h-8 font-light bg-[url(../../assets/images/search-icon-gray.svg)] bg-no-repeat bg-[left_8px_center] m-0 pl-8 !important;
+  }
+
+  .react-tel-input .country-list .country {
+    @apply pl-10 pr-2 py-[5px] !important;
+  }
+
+  .react-tel-input .country-list .country .flag {
+    @apply mt-0 left-2 top-[3px] !important;
+  }
+
+  .auth-page-main .agreeText button {
+    @apply h-[unset] !important;
+  }
+
+  /* end: auth-page-main */
+
+  /* start: shadcn-toast-custom */
+  .shadcn-toast-custom {
+    @apply border-l-4 border-solid !important;
+  }
+
+  .shadcn-toast-custom.success {
+    @apply text-[#27c927] bg-[#f4fff4] border-[#27c927] !important;
+  }
+
+  .shadcn-toast-custom.error {
+    @apply text-[#f44336] bg-[#fff2f1] border-[#F44336] !important;
+  }
+
+  /* end: shadcn-toast-custom */
+
+  /* start: upload-identity-proof-both-side */
+  .upload-identity-proof-both-side {
+    display: flex;
+    margin: -8px;
+  }
+
+  .upload-identity-proof-both-side .upload-identity-proof-both-side-col {
+    padding: 8px;
+    width: 100%;
+    max-width: 50%;
+  }
+  .common-close-btn-uploader-s1{
+    position: absolute;
+    z-index: 2;
+    border: 1px solid var(--theme-primary-color);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    top: 3px;
+    right: 3px;
+    background-color: var(--theme-primary-color);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .common-close-btn-uploader-s1 img{
+    width: 10px;
+  }
+  .upload-identity-proof-both-side .upload-identity-proof-both-side-col label {
+    margin-bottom: 8px;
+  }
+
+  .upload-identity-proof-both-side .upload-identity-proof-box {
+    height: 165px;
+  }
+
+  /* end: upload-identity-proof-both-side */
+
   /* start: responsive */
   @media (max-width: 1199.98px) {
     .product-list-s1 .product-list-s1-col {
@@ -1076,24 +1155,23 @@
     }
 
     .products-header-filter {
-      padding-left: 16px;
-      padding-right: 16px;
+      @apply px-4;
     }
 
     .products-header-filter h3 {
-      font-size: 16px;
+      @apply text-base;
     }
 
     .products-header-filter ul {
-      column-gap: 10px;
+      @apply gap-x-2.5;
     }
 
     .products-header-filter .rg-filter {
-      column-gap: 10px;
+      @apply gap-x-2.5;
     }
 
     .products-header-filter p {
-      font-size: 14px;
+      @apply text-sm;
     }
   }
 
@@ -1216,7 +1294,15 @@
   }
 
   @media (max-width: 767.98px) {
-
+    .upload-identity-proof-both-side {
+      flex-wrap: wrap;
+    }
+    .upload-identity-proof-both-side .upload-identity-proof-both-side-col {
+      max-width: unset;
+    }
+    .upload-identity-proof-both-side .upload-identity-proof-box{
+      height: 40vw;
+    }
     /*
   Based on TailwindCSS recommendations,
   consider using classes instead of the `@apply` directive
@@ -1282,7 +1368,20 @@
       @apply mt-8;
     }
 
+    .auth-page-main .auth-page-box {
+      padding: 24px 16px;
+    }
 
+    .auth-page-main .auth-page-box h2 {
+      font-size: 24px;
+      line-height: 30px;
+      margin-bottom: 8px;
+    }
+
+    .auth-page-main .agreeText,
+    .auth-page-main .agreeText button {
+      font-size: 13px;
+    }
   }
 
   @media (max-width: 575px) {
@@ -1293,7 +1392,7 @@
     .text-base {
       @apply text-sm leading-[22px];
     }
-    
+
 
     .custom-inner-banner-s1-captionBox .text-container {
       @apply max-w-[unset];

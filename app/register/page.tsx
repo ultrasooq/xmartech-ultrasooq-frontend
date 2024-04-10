@@ -140,6 +140,7 @@ export default function RegisterPage() {
 
     if (response?.status && response?.otp) {
       toast({
+        className: "shadcn-toast-custom success",
         title: "Verification code sent",
         description: "OTP has been sent to your email/phone",
       });
@@ -148,6 +149,7 @@ export default function RegisterPage() {
       router.push("/otp-verify");
     } else {
       toast({
+        className: "shadcn-toast-custom error",
         title: "Registration Failed",
         description: response.message,
       });
@@ -155,7 +157,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <section className="relative w-full py-7">
+    <section className="relative w-full py-7 auth-page-main">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
           src="/images/before-login-bg.png"
@@ -167,7 +169,7 @@ export default function RegisterPage() {
       </div>
       <div className="container relative z-10 m-auto">
         <div className="flex">
-          <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
+          <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
                 Registration
@@ -314,7 +316,7 @@ export default function RegisterPage() {
                           />
                         </FormControl>
                         <div className="flex flex-col leading-none">
-                          <div className="text-sm text-light-gray">
+                          <div className="text-sm text-light-gray agreeText">
                             <span>I Agree the </span>
                             <Button
                               onClick={handleToggleTermsModal}
@@ -382,7 +384,7 @@ export default function RegisterPage() {
       </div>
 
       <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
-        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
+        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl" style={{borderRadius: "3px"}}>
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">
               Terms Of Use
@@ -394,7 +396,7 @@ export default function RegisterPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
+      <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal} style={{borderRadius: "3px"}}>
         <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">

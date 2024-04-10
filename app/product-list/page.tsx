@@ -56,17 +56,19 @@ const ProductListPage = () => {
   };
 
   const memoizedProducts = useMemo(() => {
-    return productsQuery.data?.data?.map((item: any) => {
-      return {
-        id: item?.id,
-        productImage: item?.productImages?.[0]?.image,
-        productName: item?.productName || "-",
-        categoryName: item?.category?.name || "-",
-        skuNo: item?.skuNo || "-",
-        brandName: item?.brand?.brandName || "-",
-        productPrice: item?.productPrice || "-",
-      };
-    });
+    return (
+      productsQuery.data?.data?.map((item: any) => {
+        return {
+          id: item?.id,
+          productImage: item?.productImages?.[0]?.image,
+          productName: item?.productName || "-",
+          categoryName: item?.category?.name || "-",
+          skuNo: item?.skuNo || "-",
+          brandName: item?.brand?.brandName || "-",
+          productPrice: item?.productPrice || "-",
+        };
+      }) || []
+    );
   }, [productsQuery.data?.data]);
 
   const handleConfirmation = async (isConfirmed: boolean) => {
@@ -204,68 +206,64 @@ const ProductListPage = () => {
                     ))}
                   </TableBody>
                 </Table>
+                {!memoizedProducts.length && !memoizedProducts.isLoading ? (
+                  <p className="py-10 text-center text-sm font-medium">
+                    No data found
+                  </p>
+                ) : null}
               </div>
-              <ul className="theme-pagination-s1">
-                <li>
-                  <Button type="button" className="theme-primary-btn first">
-                    <Image
-                      src="/images/pagination-first.svg"
-                      alt="next-icon"
-                      height={10}
-                      width={7}
-                    />
-                    First
-                  </Button>
-                </li>
-                <li>
-                  <Button type="button" className="nextPrev">
-                    <Image
-                      src="/images/pagination-prev.svg"
-                      alt="prev-icon"
-                      height={12}
-                      width={8}
-                    />
-                  </Button>
-                </li>
-                <li>
-                  <Button type="button" className="current">
-                    1
-                  </Button>
-                </li>
-                <li>
-                  <Button type="button">2</Button>
-                </li>
-                <li>
-                  <Button type="button">3</Button>
-                </li>
-                <li>
-                  <Button type="button">4</Button>
-                </li>
-                <li>
-                  <Button type="button">5</Button>
-                </li>
-                <li>
-                  <Button type="button" className="nextPrev">
-                    <Image
-                      src="/images/pagination-next.svg"
-                      alt="next-icon"
-                      height={12}
-                      width={8}
-                    />
-                  </Button>
-                </li>
-                <li>
-                  <Button type="button" className="theme-primary-btn last">
-                    Last
-                    <Image
-                      src="/images/pagination-last.svg"
-                      alt="next-icon"
-                      height={10}
-                      width={7}
-                    />
-                  </Button>
-                </li>
-              </ul>
+              {memoizedProducts.length ? (
+                <ul className="theme-pagination-s1">
+                  <li>
+                    <Button type="button" className="theme-primary-btn first">
+                      <Image
+                        src="/images/pagination-first.svg"
+                        alt="next-icon"
+                        height={10}
+                        width={7}
+                      />
+                      First
+                    </Button>
+                  </li>
+                  <li>
+                    <Button type="button" className="nextPrev">
+                      <Image
+                        src="/images/pagination-prev.svg"
+                        alt="prev-icon"
+                        height={12}
+                        width={8}
+                      />
+                    </Button>
+                  </li>
+                  <li>
+                    <Button type="button" className="current">
+                      1
+                    </Button>
+                  </li>
+
+                  <li>
+                    <Button type="button" className="nextPrev">
+                      <Image
+                        src="/images/pagination-next.svg"
+                        alt="next-icon"
+                        height={12}
+                        width={8}
+                      />
+                    </Button>
+                  </li>
+                  <li>
+                    <Button type="button" className="theme-primary-btn last">
+                      Last
+                      <Image
+                        src="/images/pagination-last.svg"
+                        alt="next-icon"
+                        height={10}
+                        width={7}
+                      />
+                    </Button>
+                  </li>
+                </ul>
+              ) : null}
             </Card>
           </CardContent>
         </Card>
