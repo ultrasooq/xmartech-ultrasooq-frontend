@@ -103,6 +103,7 @@ export default function OtpVerifyPage() {
 
     if (response.status && response.otp) {
       toast({
+        className: "shadcn-toast-custom success",
         title: "Verification code sent",
         description: response.message,
       });
@@ -110,6 +111,7 @@ export default function OtpVerifyPage() {
       setOtp(new Array(4).fill(""));
     } else {
       toast({
+        className: "shadcn-toast-custom error",
         title: "Verification error!",
         description: response.message,
       });

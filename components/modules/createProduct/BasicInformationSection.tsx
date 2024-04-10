@@ -321,6 +321,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             <FormControl>
                               <div className="relative mb-3 w-full px-2">
                                 <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                                <button type="button" className="common-close-btn-uploader-s1"><img src="/images/close-white.svg" alt=""></img></button>
                                   {item.path && item.path !== "" ? (
                                     <Image
                                       src={item.path || "/images/no-image.jpg"}
