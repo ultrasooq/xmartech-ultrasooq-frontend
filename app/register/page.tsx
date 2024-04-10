@@ -384,7 +384,7 @@ export default function RegisterPage() {
       </div>
 
       <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
-        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
+        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl" style={{borderRadius: "3px"}}>
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">
               Terms Of Use
@@ -396,7 +396,7 @@ export default function RegisterPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
+      <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal} style={{borderRadius: "3px"}}>
         <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">
