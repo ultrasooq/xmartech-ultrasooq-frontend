@@ -1,7 +1,5 @@
-import QuillEditor from "@/components/shared/Quill/QuillEditor";
-// import Tiptap from "@/components/shared/Rte/Tiptap";
 import React from "react";
-import { Controller } from "react-hook-form";
+import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 
 const DescriptionAndSpecificationSection = () => {
   return (
@@ -14,43 +12,14 @@ const DescriptionAndSpecificationSection = () => {
         </div>
       </div>
       <div className="mb-3.5 w-full">
-        <div className="flex flex-wrap">
-          <div className="relative mb-4 w-full">
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none text-color-dark">
-                Description
-              </label>
-              <Controller
-                name="description"
-                defaultValue=""
-                render={({ field }) => (
-                  // <Tiptap onChange={field.onChange} description={field.value} />
-                  <QuillEditor
-                    onChange={field.onChange}
-                    description={field.value}
-                  />
-                )}
-              />
-            </div>
-          </div>
-          <div className="relative mb-4 w-full">
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none text-color-dark">
-                Specification
-              </label>
-              <Controller
-                name="specification"
-                defaultValue=""
-                render={({ field }) => (
-                  // <Tiptap onChange={field.onChange} description={field.value} />
-                  <QuillEditor
-                    onChange={field.onChange}
-                    description={field.value}
-                  />
-                )}
-              />
-            </div>
-          </div>
+        <div className="relative mb-4 w-full">
+          <ControlledRichTextEditor label="Description" name="description" />
+        </div>
+        <div className="relative mb-4 w-full">
+          <ControlledRichTextEditor
+            label="Specification"
+            name="specification"
+          />
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useMemo, useState } from "react";
 import { useUpdateCompanyProfile } from "@/apis/queries/company.queries";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -15,14 +15,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
-import { Label } from "@/components/ui/label";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import { getLastTwoHundredYears } from "@/utils/helper";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import { useCountries } from "@/apis/queries/masters.queries";
+import { ICountries } from "@/utils/types/common.types";
+import { NO_OF_EMPLOYEES_LIST } from "@/utils/constants";
+import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -88,6 +92,7 @@ export default function EditProfilePage() {
   });
   const [imageFile, setImageFile] = useState<FileList | null>();
   const userDetails = useMe();
+  const countriesQuery = useCountries();
   const tagsQuery = useTags();
   const upload = useUploadFile();
   const updateCompanyProfile = useUpdateCompanyProfile();
@@ -95,6 +100,14 @@ export default function EditProfilePage() {
   const memoizedLastTwoHundredYears = useMemo(() => {
     return getLastTwoHundredYears() || [];
   }, [getLastTwoHundredYears().length]);
+
+  const memoizedCountries = useMemo(() => {
+    return (
+      countriesQuery?.data?.data.map((item: ICountries) => {
+        return { label: item.countryName, value: item.countryName };
+      }) || []
+    );
+  }, [countriesQuery?.data?.data?.length]);
 
   const memoizedTags = useMemo(() => {
     return (
@@ -131,7 +144,7 @@ export default function EditProfilePage() {
       data.logo = getImageUrl;
     }
     delete data.uploadImage;
-    console.log(data);
+    // console.log(data);
     // return;
     const response = await updateCompanyProfile.mutateAsync(data);
 
@@ -281,67 +294,25 @@ export default function EditProfilePage() {
                   />
 
                   <div className="mb-3.5 w-full md:w-6/12 md:pl-3.5">
-                    <FormField
-                      control={form.control}
+                    <ControlledTextInput
+                      label="Company Name"
                       name="companyName"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full">
-                          <FormLabel>Company Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Company Name"
-                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      placeholder="Company Name"
                     />
 
-                    <div className="mb-4 flex w-full flex-col justify-between space-y-3">
-                      <Label>Business Type</Label>
-                      <Controller
-                        name="businessTypeList"
-                        control={form.control}
-                        render={({ field }) => (
-                          <select
-                            {...field}
-                            className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                          >
-                            {memoizedTags.map(
-                              (item: { label: string; value: number }) => (
-                                <option
-                                  value={item.value?.toString()}
-                                  key={item.value}
-                                >
-                                  {item.label}
-                                </option>
-                              ),
-                            )}
-                          </select>
-                        )}
-                      />
-                    </div>
+                    {/* TODO:fix this */}
+                    <ControlledSelectInput
+                      label="Business Type"
+                      name="businessTypeList"
+                      options={memoizedTags}
+                    />
 
-                    <FormField
-                      control={form.control}
+                    <ControlledTextInput
+                      label="Annual Purchasing Volume"
                       name="annualPurchasingVolume"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full">
-                          <FormLabel>Annual Purchasing Volume</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Annual Purchasing Volume"
-                              type="number"
-                              onWheel={(e) => e.currentTarget.blur()}
-                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      placeholder="Annual Purchasing Volume"
+                      type="number"
+                      onWheel={(e) => e.currentTarget.blur()}
                     />
                   </div>
                 </div>
@@ -353,88 +324,43 @@ export default function EditProfilePage() {
                     Registration Address
                   </label>
                 </div>
-                <div className="flex flex-wrap">
-                  <div className="relative mb-4 w-full md:w-6/12 md:pr-3.5">
-                    <FormField
-                      control={form.control}
+
+                <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                  <div className="relative w-full">
+                    <ControlledTextInput
+                      label="Address"
                       name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Address"
-                              className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      placeholder="Address"
                     />
+
                     <Image
                       src="/images/location.svg"
                       alt="location-icon"
-                      height={17}
-                      width={17}
+                      height={16}
+                      width={16}
                       className="absolute right-6 top-[50px]"
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
+                  <ControlledTextInput
+                    label="City"
                     name="city"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="City"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="City"
                   />
+                </div>
 
-                  <FormField
-                    control={form.control}
+                <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                  <ControlledTextInput
+                    label="Province"
                     name="province"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full md:w-6/12 md:pr-3.5">
-                        <FormLabel>Province</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Province"
-                            className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    placeholder="Province"
                   />
 
-                  <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
-                    <Label>Country</Label>
-                    <Controller
-                      name="country"
-                      control={form.control}
-                      render={({ field }) => (
-                        <select
-                          {...field}
-                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                        >
-                          <option value="">Select Country</option>
-                          <option value="USA">USA</option>
-                          <option value="UK">UK</option>
-                          <option value="India">India</option>
-                        </select>
-                      )}
-                    />
-                  </div>
+                  <ControlledSelectInput
+                    label="Country"
+                    name="country"
+                    options={memoizedCountries}
+                  />
                 </div>
               </div>
 
@@ -444,67 +370,31 @@ export default function EditProfilePage() {
                     More Information
                   </label>
                 </div>
-                <div className="flex flex-wrap">
-                  <div className="mb-4 flex w-full flex-col justify-between space-y-4 md:w-6/12 md:pr-3.5">
-                    <Label>Year Of Establishment</Label>
-                    <Controller
-                      name="yearOfEstablishment"
-                      control={form.control}
-                      render={({ field }) => (
-                        <select
-                          {...field}
-                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                        >
-                          <option value="">Select Year</option>
-                          {memoizedLastTwoHundredYears.map((year) => (
-                            <option key={year} value={year}>
-                              {year}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    />
-                  </div>
 
-                  <div className="mb-4 flex w-full flex-col justify-between md:w-6/12 md:pl-3.5">
-                    <Label>Total Number of Employees</Label>
-                    <Controller
-                      name="totalNoOfEmployee"
-                      control={form.control}
-                      render={({ field }) => (
-                        <select
-                          {...field}
-                          className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                        >
-                          <option value="">Select</option>
-                          <option value="1-10">1-10</option>
-                          <option value="11-50">11-50</option>
-                          <option value="51-500">51-500</option>
-                          <option value="500+">500+</option>
-                        </select>
-                      )}
-                    />
-                  </div>
+                <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                  {/* TODO: fix submit value type */}
+                  <ControlledSelectInput
+                    label="Year Of Establishment"
+                    name="yearOfEstablishment"
+                    options={memoizedLastTwoHundredYears?.map((item) => ({
+                      label: item.toString(),
+                      value: item.toString(),
+                    }))}
+                  />
 
-                  <FormField
-                    control={form.control}
-                    name="aboutUs"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel>About Us</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Write Here...."
-                            className="rounded border-gray-300 focus-visible:!ring-0"
-                            rows={6}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                  <ControlledSelectInput
+                    label="Total Number of Employees"
+                    name="totalNoOfEmployee"
+                    options={NO_OF_EMPLOYEES_LIST}
                   />
                 </div>
+
+                <ControlledTextareaInput
+                  label="About Us"
+                  name="aboutUs"
+                  placeholder="Write Here...."
+                  rows={6}
+                />
               </div>
             </div>
 

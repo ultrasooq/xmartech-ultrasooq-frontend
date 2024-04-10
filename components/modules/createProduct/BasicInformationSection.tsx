@@ -31,6 +31,8 @@ import {
   useCategory,
   useSubCategoryById,
 } from "@/apis/queries/category.queries";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 
 type ProductImageProps = {
   path: string;
@@ -80,7 +82,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const memoizedCountries = useMemo(() => {
     return (
       countriesQuery?.data?.data.map((item: ICountries) => {
-        return { label: item.countryName, value: item.id };
+        return { label: item.countryName, value: item.countryName };
       }) || []
     );
   }, [countriesQuery?.data?.data?.length]);
@@ -224,27 +226,28 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
               ))}
           </div>
 
-          <div className="relative mb-4 w-full">
-            <FormField
-              control={formContext.control}
-              name="productName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Product Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter Product Name"
-                      className="!h-[48px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+          <ControlledTextInput
+            label="Product Name"
+            name="productName"
+            placeholder="Product Name"
+          />
+
+          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+            <ControlledSelectInput
+              label="Brand"
+              name="brandId"
+              options={memoizedBrands}
+            />
+            <ControlledTextInput
+              label="SKU No"
+              name="skuNo"
+              placeholder="Enter SKU No"
+              type="number"
+              onWheel={(e) => e.currentTarget.blur()}
             />
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+          {/* <div className="grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
             <div className="mb-4 flex w-full flex-col justify-between">
               <Label>Brand</Label>
               <Controller
@@ -288,7 +291,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                 </FormItem>
               )}
             />
-          </div>
+          </div> */}
 
           <AccordionMultiSelectV2
             label="Tag"

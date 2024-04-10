@@ -26,6 +26,7 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { ICountries, ISelectOptions } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 
 const formSchema = z
   .object({
@@ -163,7 +164,7 @@ export default function EditBranchPage() {
   const memoizedCountries = useMemo(() => {
     return (
       countriesQuery?.data?.data.map((item: ICountries) => {
-        return { label: item.countryName, value: item.id };
+        return { label: item.countryName, value: item.countryName };
       }) || []
     );
   }, [countriesQuery?.data?.data?.length]);
@@ -338,30 +339,12 @@ export default function EditBranchPage() {
                         name="province"
                         placeholder="Province"
                       />
-                      <div className="mb-4 flex w-full flex-col justify-between">
-                        <Label>Country</Label>
 
-                        <Controller
-                          name="country"
-                          control={form.control}
-                          render={({ field }) => (
-                            <select
-                              {...field}
-                              className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                            >
-                              <option value="">Select Country</option>
-                              {memoizedCountries.map((item: ISelectOptions) => (
-                                <option value={item.label} key={item.value}>
-                                  {item.label}
-                                </option>
-                              ))}
-                            </select>
-                          )}
-                        />
-                        <p className="text-[13px] font-medium text-red-500">
-                          {form.formState.errors.country?.message}
-                        </p>
-                      </div>
+                      <ControlledSelectInput
+                        label="Country"
+                        name="country"
+                        options={memoizedCountries}
+                      />
                     </div>
 
                     <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">

@@ -1,32 +1,23 @@
 import React, { useState } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import CustomFieldContent from "@/components/shared/CustomFieldContent";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { v4 as uuidv4 } from "uuid";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { format } from "date-fns";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
+import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import SelectInput from "@/components/shared/SelectInput";
+import { INPUT_TYPE_LIST, SIZE_LIST } from "@/utils/constants";
+import ControlledRadioInput from "@/components/shared/Forms/ControlledRadioInput";
+import ControlledCheckboxInput from "@/components/shared/Forms/ControlledCheckboxInput";
 
 type ProductDetailsSectionProps = {};
 
@@ -34,13 +25,19 @@ type Field = {
   key: string;
   type: string;
   field: JSX.Element;
+  size?: string;
+  isRequired?: boolean;
 };
 
 const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
   const formContext = useFormContext();
+  const [selectOption, setSelectOption] = useState<string>();
   const [isCustomFieldModalOpen, setIsCustomFieldModalOpen] = useState(false);
   const [customfields, setCustomFields] = useState<Field[]>([]);
-  const [customFieldType, setCustomFieldType] = useState<string>();
+  const [customFieldType, setCustomFieldType] = useState<{
+    type: string;
+    key: string | undefined;
+  }>();
 
   const handleToggleCustomFieldModal = () => {
     setIsCustomFieldModalOpen(!isCustomFieldModalOpen);
@@ -60,23 +57,11 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           key: uuidv4(),
           type: "text",
           field: (
-            <FormField
+            <ControlledTextInput
               key={uuidv4()}
-              control={formContext.control}
-              name="brandName"
-              render={({ field }) => (
-                <FormItem className="mb-4 w-full">
-                  <FormLabel>Input Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter Input Name"
-                      className="!h-[48px] rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Input Name"
+              name="textInput"
+              placeholder="Write Here..."
             />
           ),
         });
@@ -86,24 +71,12 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           key: uuidv4(),
           type: "textarea",
           field: (
-            <FormField
+            <ControlledTextareaInput
               key={uuidv4()}
-              control={formContext.control}
-              name="aboutUs"
-              render={({ field }) => (
-                <FormItem className="mb-4 w-full">
-                  <FormLabel>Input Name</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Write Here...."
-                      className="rounded border-gray-300 focus-visible:!ring-0"
-                      rows={6}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Input Name"
+              name="textarea"
+              placeholder="Write Here..."
+              rows={6}
             />
           ),
         });
@@ -113,26 +86,12 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           key: uuidv4(),
           type: "dropdown",
           field: (
-            <div key={uuidv4()} className="mb-4 flex w-full flex-col gap-y-2">
-              <Label>Input Name</Label>
-              <Controller
-                name="memorySize"
-                control={formContext.control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                  >
-                    <option value="">Select</option>
-                    <option value="Memory Size 1">Memory Size 1</option>
-                    <option value="Memory Size 2">Memory Size 2</option>
-                  </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {formContext.formState.errors["memorySize"]?.message as string}
-              </p>
-            </div>
+            <ControlledSelectInput
+              key={uuidv4()}
+              label="Input Name"
+              name="select"
+              options={[]}
+            />
           ),
         });
         break;
@@ -141,28 +100,11 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           key: uuidv4(),
           type: "checkbox",
           field: (
-            <FormField
-              control={formContext.control}
-              name="mobile"
-              render={({ field }) => (
-                <FormItem className="mb-4 mr-4 flex flex-col items-start space-x-3 space-y-0">
-                  <FormLabel className="mb-3 mr-6 capitalize">
-                    Input Name
-                  </FormLabel>
-                  <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                      />
-                    </FormControl>
-                    <FormLabel className="text-sm font-normal">
-                      Input Name
-                    </FormLabel>
-                  </div>
-                </FormItem>
-              )}
+            <ControlledCheckboxInput
+              key={uuidv4()}
+              label="Input Name"
+              name="checkbox"
+              options={[]}
             />
           ),
         });
@@ -172,34 +114,11 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           key: uuidv4(),
           type: "radio",
           field: (
-            <FormField
-              control={formContext.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem className="mb-5 flex w-full flex-col items-start">
-                  <FormLabel className="mb-3 mr-6 capitalize">
-                    Input Name
-                  </FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      className="!mt-0 flex items-center gap-4"
-                      onValueChange={field.onChange}
-                      defaultValue="MALE"
-                      value={field.value}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="MALE" id="MALE" />
-                        <Label htmlFor="MALE">Option A</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="FEMALE" id="FEMALE" />
-                        <Label htmlFor="FEMALE">Option B</Label>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <ControlledRadioInput
+              key={uuidv4()}
+              label="Input Name"
+              name="radio"
+              options={[]}
             />
           ),
         });
@@ -209,48 +128,10 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           key: uuidv4(),
           type: "date",
           field: (
-            <FormField
-              control={formContext.control}
-              name="dateOfBirth"
-              render={({ field }) => (
-                <FormItem className="mb-4 flex w-full flex-col">
-                  <FormLabel>Input Name</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "!h-12 rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Select</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                        toYear={new Date().getFullYear() - 18}
-                        fromYear={new Date().getFullYear() - 100}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <ControlledDatePicker
+              key={uuidv4()}
+              label="Input Name"
+              name="datePicker"
             />
           ),
         });
@@ -259,9 +140,63 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
       default:
         break;
     }
-
+    console.log(tempArr);
     setCustomFields((prevState) => [...prevState, ...tempArr]);
   };
+
+  const handleRequiredField = (e: boolean) => {
+    const updatedTempCustomFields: Field[] = customfields.map((item) => {
+      if (item.key === customFieldType?.key) {
+        return { ...item, isRequired: e };
+      }
+
+      return item;
+    });
+
+    setCustomFields(updatedTempCustomFields);
+  };
+
+  const handleItemSize = (e: string) => {
+    const updatedTempCustomFields: Field[] = customfields.map((item) => {
+      if (item.key === customFieldType?.key) {
+        return { ...item, size: e };
+      }
+
+      return item;
+    });
+
+    setCustomFields(updatedTempCustomFields);
+  };
+
+  const handleItemInputType = (e: string) => {
+    const fieldIndex = customfields.findIndex(
+      (item) => item.key === customFieldType?.key && item.type === "text",
+    );
+
+    if (fieldIndex !== -1) {
+      const tempFields = [...customfields];
+
+      tempFields[fieldIndex] = {
+        ...tempFields[fieldIndex],
+        field: (
+          <ControlledTextInput
+            key={tempFields[fieldIndex].key}
+            label={tempFields[fieldIndex].field.props.label || "Enter Label"}
+            name={tempFields[fieldIndex].field.props.name || "customFields"}
+            placeholder={
+              tempFields[fieldIndex].field.props.placeholder ||
+              "Enter Placeholder"
+            }
+            type={e}
+          />
+        ),
+      };
+
+      setCustomFields(tempFields);
+    }
+  };
+
+  console.log(customfields);
 
   return (
     <div className="grid w-full grid-cols-4 gap-x-5">
@@ -276,27 +211,47 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <div className="mb-3.5 w-full">
             <div className="flex flex-wrap">
               {customfields.map((item) => (
-                <div key={uuidv4()} className="flex w-full items-start">
-                  <button
-                    type="button"
-                    className="w-full flex-1 text-left"
-                    onClick={() => setCustomFieldType(item.type)}
-                  >
+                <div
+                  key={uuidv4()}
+                  className={cn(
+                    "relative my-2 flex w-full items-start px-2",
+                    item.size === "small" ? "w-1/2" : "",
+                    customFieldType?.key === item.key ? "bg-[#F9F9F9]" : "",
+                  )}
+                >
+                  <div className="w-full flex-1 py-2 text-left">
                     {item.field}
-                  </button>
+                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => deleteCustomField(item.key)}
-                    className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                  >
-                    <Image
-                      src="/images/social-delete-icon.svg"
-                      height={35}
-                      width={35}
-                      alt="social-delete-icon"
-                    />
-                  </button>
+                  <div className="absolute right-0 flex gap-x-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCustomFieldType({ type: item.type, key: item.key })
+                      }
+                      className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                    >
+                      <Image
+                        src="/images/edit-pencil.png"
+                        height={24}
+                        width={24}
+                        alt="edit-icon"
+                      />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => deleteCustomField(item.key)}
+                      className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                    >
+                      <Image
+                        src="/images/remove-pencil.png"
+                        height={23}
+                        width={23}
+                        alt="remove-icon"
+                      />
+                    </button>
+                  </div>
                 </div>
               ))}
 
@@ -335,178 +290,717 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
       </div>
 
       <div className="col-span-1 w-full">
-        {customFieldType === "text" ? (
+        {customFieldType?.type === "text" ? (
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
                 <Label className="text-sm font-normal">Label</Label>
-                <Input />
+                <Input
+                  onChange={(e) => {
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "text",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledTextInput
+                            key={tempFields[fieldIndex].key}
+                            label={e.target.value || "Enter Label"}
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            placeholder={
+                              tempFields[fieldIndex].field.props.placeholder ||
+                              "Enter Placeholder"
+                            }
+                          />
+                        ),
+                      };
+                      setCustomFields(tempFields);
+                    }
+                  }}
+                  defaultValue={
+                    customfields.filter(
+                      (item) => item.key === customFieldType?.key,
+                    )?.[0]?.field?.props?.label || "Enter Label"
+                  }
+                />
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
                 <Checkbox
-                  // checked={field.value}
-                  // onCheckedChange={field.onChange}
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
                 />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
                 <Label>Size</Label>
-                <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                  <option value="">Select</option>
-                  <option value="full">Full</option>
-                  <option value="small">Small</option>
-                </select>
+                <SelectInput
+                  label="Size"
+                  options={SIZE_LIST}
+                  onValueChange={handleItemSize}
+                />
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
                 <Label>Input Type</Label>
-                <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                  <option value="">Select</option>
-                  <option value="characters">Characters</option>
-                  <option value="numbers">Numbers</option>
-                </select>
+                <SelectInput
+                  label="Input Type"
+                  options={INPUT_TYPE_LIST}
+                  onValueChange={handleItemInputType}
+                />
               </div>
 
               <div className="mb-4 space-y-2">
                 <Label className="text-sm font-normal">Placeholder</Label>
-                <Input />
+                <Input
+                  onChange={(e) => {
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "text",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledTextInput
+                            key={tempFields[fieldIndex].key}
+                            label={
+                              tempFields[fieldIndex].field.props.label ||
+                              "Enter Label"
+                            }
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            placeholder={e.target.value}
+                          />
+                        ),
+                      };
+
+                      setCustomFields(tempFields);
+                    }
+                  }}
+                  defaultValue={
+                    customfields.filter(
+                      (item) => item.key === customFieldType?.key,
+                    )?.[0]?.field?.props?.placeholder || "Enter Label"
+                  }
+                />
               </div>
             </CardContent>
           </Card>
-        ) : customFieldType === "textarea" ? (
+        ) : customFieldType?.type === "textarea" ? (
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
                 <Label className="text-sm font-normal">Label</Label>
-                <Input />
+                <Input
+                  onChange={(e) => {
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "textarea",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledTextareaInput
+                            key={tempFields[fieldIndex].key}
+                            label={e.target.value || "Enter Label"}
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            placeholder={
+                              tempFields[fieldIndex].field.props.placeholder ||
+                              "Enter Placeholder"
+                            }
+                          />
+                        ),
+                      };
+                      setCustomFields(tempFields);
+                    }
+                  }}
+                  defaultValue={
+                    customfields.filter(
+                      (item) => item.key === customFieldType?.key,
+                    )?.[0]?.field?.props?.label || "Enter Label"
+                  }
+                />
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
                 <Checkbox
-                  // checked={field.value}
-                  // onCheckedChange={field.onChange}
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
                 />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
                 <Label>Size</Label>
-                <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                  <option value="">Select</option>
-                  <option value="full">Full</option>
-                  <option value="small">Small</option>
-                </select>
+                <SelectInput
+                  label="Size"
+                  options={SIZE_LIST}
+                  onValueChange={handleItemSize}
+                />
               </div>
 
               <div className="mb-4 space-y-2">
                 <Label className="text-sm font-normal">Placeholder</Label>
-                <Input />
+                <Input
+                  onChange={(e) => {
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "textarea",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledTextareaInput
+                            key={tempFields[fieldIndex].key}
+                            label={
+                              tempFields[fieldIndex].field.props.label ||
+                              "Enter Label"
+                            }
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            placeholder={e.target.value}
+                          />
+                        ),
+                      };
+
+                      setCustomFields(tempFields);
+                    }
+                  }}
+                />
               </div>
             </CardContent>
           </Card>
-        ) : customFieldType === "dropdown" ? (
+        ) : customFieldType?.type === "dropdown" ? (
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
                 <Label className="text-sm font-normal">Label</Label>
-                <Input />
+                <Input
+                  onChange={(e) => {
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "dropdown",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledSelectInput
+                            key={tempFields[fieldIndex].key}
+                            label={e.target.value || "Enter Label"}
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            options={tempFields[fieldIndex].field.props.options}
+                          />
+                        ),
+                      };
+                      setCustomFields(tempFields);
+                    }
+                  }}
+                />
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
                 <Checkbox
-                  // checked={field.value}
-                  // onCheckedChange={field.onChange}
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
                 />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
                 <Label>Size</Label>
-                <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                  <option value="">Select</option>
-                  <option value="full">Full</option>
-                  <option value="small">Small</option>
-                </select>
+                <SelectInput
+                  label="Size"
+                  options={SIZE_LIST}
+                  onValueChange={handleItemSize}
+                />
               </div>
 
-              <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Add</Label>
+              <div className="mb-4 flex flex-row">
+                <Input
+                  className="rounded-none"
+                  onChange={(e) => setSelectOption(e.target.value)}
+                  value={selectOption}
+                />
+                <Button
+                  type="button"
+                  className="rounded-none bg-dark-orange"
+                  onClick={() => {
+                    const tempList = [];
+                    tempList.push({ label: selectOption, value: uuidv4() });
+
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "dropdown",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledSelectInput
+                            key={tempFields[fieldIndex].key}
+                            label={
+                              tempFields[fieldIndex].field.props.label ||
+                              "Enter Label"
+                            }
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            options={[
+                              ...tempFields[fieldIndex].field.props.options,
+                              ...tempList,
+                            ]}
+                          />
+                        ),
+                      };
+
+                      setCustomFields(tempFields);
+                      setSelectOption("");
+                    }
+                  }}
+                >
+                  Add
+                </Button>
+              </div>
+              <div>
+                <ul>
+                  {customfields.map((item) => {
+                    if (
+                      item.key === customFieldType?.key &&
+                      item.type === "dropdown"
+                    ) {
+                      return item.field.props.options.map(
+                        (
+                          item: { label: string; value: string },
+                          index: number,
+                        ) => (
+                          <li key={index}>
+                            <Card className="mb-2 flex items-center justify-between rounded-sm bg-gray-100 p-3">
+                              {item.label}
+                              <div>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const fieldIndex = customfields.findIndex(
+                                      (item) =>
+                                        item.key === customFieldType?.key &&
+                                        item.type === "dropdown",
+                                    );
+
+                                    if (fieldIndex !== -1) {
+                                      const tempFields = [...customfields];
+                                      tempFields[fieldIndex] = {
+                                        ...tempFields[fieldIndex],
+                                        field: (
+                                          <ControlledSelectInput
+                                            key={tempFields[fieldIndex].key}
+                                            label={
+                                              tempFields[fieldIndex].field.props
+                                                .label || "Enter Label"
+                                            }
+                                            name={
+                                              tempFields[fieldIndex].field.props
+                                                .name || "customFields"
+                                            }
+                                            options={[
+                                              ...tempFields[
+                                                fieldIndex
+                                              ].field.props.options.filter(
+                                                (option: {
+                                                  label: string;
+                                                  value: string;
+                                                }) =>
+                                                  option.value !== item.value,
+                                              ),
+                                            ]}
+                                          />
+                                        ),
+                                      };
+
+                                      setCustomFields(tempFields);
+                                    }
+                                  }}
+                                  className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                                >
+                                  <Image
+                                    src="/images/social-delete-icon.svg"
+                                    height={35}
+                                    width={35}
+                                    alt="social-delete-icon"
+                                  />
+                                </button>
+                              </div>
+                            </Card>
+                          </li>
+                        ),
+                      );
+                    }
+                  })}
+                </ul>
               </div>
             </CardContent>
           </Card>
-        ) : customFieldType === "checkbox" ? (
+        ) : customFieldType?.type === "checkbox" ? (
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
                 <Label className="text-sm font-normal">Label</Label>
-                <Input />
+                <Input
+                  onChange={(e) => {
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "checkbox",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledCheckboxInput
+                            key={tempFields[fieldIndex].key}
+                            label={e.target.value || "Enter Label"}
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            options={tempFields[fieldIndex].field.props.options}
+                          />
+                        ),
+                      };
+                      setCustomFields(tempFields);
+                    }
+                  }}
+                />
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
                 <Checkbox
-                  // checked={field.value}
-                  // onCheckedChange={field.onChange}
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
                 />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
-              <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Add</Label>
+              <div className="mb-4 flex flex-row">
+                <Input
+                  className="rounded-none"
+                  onChange={(e) => setSelectOption(e.target.value)}
+                  value={selectOption}
+                />
+                <Button
+                  type="button"
+                  className="rounded-none bg-dark-orange"
+                  onClick={() => {
+                    const tempList = [];
+                    tempList.push({ label: selectOption, value: uuidv4() });
+
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "checkbox",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledCheckboxInput
+                            key={tempFields[fieldIndex].key}
+                            label={
+                              tempFields[fieldIndex].field.props.label ||
+                              "Enter Label"
+                            }
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            options={[
+                              ...tempFields[fieldIndex].field.props.options,
+                              ...tempList,
+                            ]}
+                          />
+                        ),
+                      };
+
+                      setCustomFields(tempFields);
+                      setSelectOption("");
+                    }
+                  }}
+                >
+                  Add
+                </Button>
               </div>
             </CardContent>
           </Card>
-        ) : customFieldType === "radio" ? (
+        ) : customFieldType?.type === "radio" ? (
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
                 <Label className="text-sm font-normal">Label</Label>
-                <Input />
+                <Input
+                  onChange={(e) => {
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "radio",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledRadioInput
+                            key={tempFields[fieldIndex].key}
+                            label={e.target.value || "Enter Label"}
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            options={tempFields[fieldIndex].field.props.options}
+                          />
+                        ),
+                      };
+                      setCustomFields(tempFields);
+                    }
+                  }}
+                />
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
                 <Checkbox
-                  // checked={field.value}
-                  // onCheckedChange={field.onChange}
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
                 />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
-              <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Add</Label>
+              <div className="mb-4 flex flex-row">
+                <Input
+                  className="rounded-none"
+                  onChange={(e) => setSelectOption(e.target.value)}
+                  value={selectOption}
+                />
+                <Button
+                  type="button"
+                  className="rounded-none bg-dark-orange"
+                  onClick={() => {
+                    const tempList = [];
+                    tempList.push({ label: selectOption, value: uuidv4() });
+
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "radio",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledRadioInput
+                            key={tempFields[fieldIndex].key}
+                            label={
+                              tempFields[fieldIndex].field.props.label ||
+                              "Enter Label"
+                            }
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                            options={[
+                              ...tempFields[fieldIndex].field.props.options,
+                              ...tempList,
+                            ]}
+                          />
+                        ),
+                      };
+
+                      setCustomFields(tempFields);
+                      setSelectOption("");
+                    }
+                  }}
+                >
+                  Add
+                </Button>
+              </div>
+              <div>
+                <ul>
+                  {customfields.map((item) => {
+                    if (
+                      item.key === customFieldType?.key &&
+                      item.type === "radio"
+                    ) {
+                      return item.field.props.options.map(
+                        (
+                          item: { label: string; value: string },
+                          index: number,
+                        ) => (
+                          <li key={index}>
+                            <Card className="mb-2 flex items-center justify-between rounded-sm bg-gray-100 p-3">
+                              {item.label}
+                              <div>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const fieldIndex = customfields.findIndex(
+                                      (item) =>
+                                        item.key === customFieldType?.key &&
+                                        item.type === "radio",
+                                    );
+
+                                    if (fieldIndex !== -1) {
+                                      const tempFields = [...customfields];
+                                      tempFields[fieldIndex] = {
+                                        ...tempFields[fieldIndex],
+                                        field: (
+                                          <ControlledRadioInput
+                                            key={tempFields[fieldIndex].key}
+                                            label={
+                                              tempFields[fieldIndex].field.props
+                                                .label || "Enter Label"
+                                            }
+                                            name={
+                                              tempFields[fieldIndex].field.props
+                                                .name || "customFields"
+                                            }
+                                            options={[
+                                              ...tempFields[
+                                                fieldIndex
+                                              ].field.props.options.filter(
+                                                (option: {
+                                                  label: string;
+                                                  value: string;
+                                                }) =>
+                                                  option.value !== item.value,
+                                              ),
+                                            ]}
+                                          />
+                                        ),
+                                      };
+
+                                      setCustomFields(tempFields);
+                                    }
+                                  }}
+                                  className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                                >
+                                  <Image
+                                    src="/images/social-delete-icon.svg"
+                                    height={35}
+                                    width={35}
+                                    alt="social-delete-icon"
+                                  />
+                                </button>
+                              </div>
+                            </Card>
+                          </li>
+                        ),
+                      );
+                    }
+                  })}
+                </ul>
               </div>
             </CardContent>
           </Card>
-        ) : customFieldType === "date" ? (
+        ) : customFieldType?.type === "date" ? (
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
                 <Label className="text-sm font-normal">Label</Label>
-                <Input />
+                <Input
+                  onChange={(e) => {
+                    const fieldIndex = customfields.findIndex(
+                      (item) =>
+                        item.key === customFieldType?.key &&
+                        item.type === "date",
+                    );
+
+                    if (fieldIndex !== -1) {
+                      const tempFields = [...customfields];
+
+                      tempFields[fieldIndex] = {
+                        ...tempFields[fieldIndex],
+                        field: (
+                          <ControlledDatePicker
+                            key={tempFields[fieldIndex].key}
+                            label={e.target.value || "Enter Label"}
+                            name={
+                              tempFields[fieldIndex].field.props.name ||
+                              "customFields"
+                            }
+                          />
+                        ),
+                      };
+                      setCustomFields(tempFields);
+                    }
+                  }}
+                />
               </div>
 
               <div className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0">
                 <Checkbox
-                  // checked={field.value}
-                  // onCheckedChange={field.onChange}
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  onCheckedChange={handleRequiredField}
                 />
                 <Label className="text-sm font-normal">Required</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
                 <Label>Size</Label>
-                <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                  <option value="">Select</option>
-                  <option value="full">Full</option>
-                  <option value="small">Small</option>
-                </select>
+                <SelectInput
+                  label="Size"
+                  options={SIZE_LIST}
+                  onValueChange={handleItemSize}
+                />
               </div>
             </CardContent>
           </Card>

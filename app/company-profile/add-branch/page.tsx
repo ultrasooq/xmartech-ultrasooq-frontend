@@ -28,8 +28,9 @@ import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import { ICountries, ISelectOptions } from "@/utils/types/common.types";
+import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 
 const formSchema = z.object({
   uploadBranchImage: z.any().optional(),
@@ -175,7 +176,7 @@ const AddBranchPage = () => {
   const memoizedCountries = useMemo(() => {
     return (
       countriesQuery?.data?.data.map((item: ICountries) => {
-        return { label: item.countryName, value: item.id };
+        return { label: item.countryName, value: item.countryName };
       }) || []
     );
   }, [countriesQuery?.data?.data?.length]);
@@ -230,7 +231,7 @@ const AddBranchPage = () => {
       data.proofOfAddress = getProofOfAddressImageUrl;
     }
 
-    console.log(data);
+    // console.log(data);
     // return;
     const response = await createCompanyBranch.mutateAsync(data);
 
@@ -446,25 +447,15 @@ const AddBranchPage = () => {
                       </label>
                     </div>
                   </div>
-                  <div className="flex flex-wrap">
-                    <div className="relative mb-4 w-full md:w-6/12 md:pr-3.5">
-                      <FormField
-                        control={form.control}
+
+                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                    <div className="relative w-full">
+                      <ControlledTextInput
+                        label="Address"
                         name="address"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Address</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Address"
-                                className="!h-12 rounded border-gray-300 pr-10 focus-visible:!ring-0"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                        placeholder="Address"
                       />
+
                       <Image
                         src="/images/location.svg"
                         alt="location-icon"
@@ -474,70 +465,40 @@ const AddBranchPage = () => {
                       />
                     </div>
 
-                    <FormField
-                      control={form.control}
+                    <ControlledTextInput
+                      label="City"
                       name="city"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 w-full md:w-6/12 md:pl-3.5">
-                          <FormLabel>City</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="City"
-                              className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      placeholder="City"
+                    />
+                  </div>
+
+                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                    <ControlledTextInput
+                      label="Province"
+                      name="province"
+                      placeholder="Province"
                     />
 
-                    <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                      <ControlledTextInput
-                        label="Province"
-                        name="province"
-                        placeholder="Province"
-                      />
-                      <div className="mb-4 flex w-full flex-col justify-between">
-                        <Label>Country</Label>
+                    <ControlledSelectInput
+                      label="Country"
+                      name="country"
+                      options={memoizedCountries}
+                    />
+                  </div>
 
-                        <Controller
-                          name="country"
-                          control={form.control}
-                          render={({ field }) => (
-                            <select
-                              {...field}
-                              className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                            >
-                              <option value="">Select Country</option>
-                              {memoizedCountries.map((item: ISelectOptions) => (
-                                <option value={item.label} key={item.value}>
-                                  {item.label}
-                                </option>
-                              ))}
-                            </select>
-                          )}
-                        />
-                        <p className="text-[13px] font-medium text-red-500">
-                          {form.formState.errors.country?.message}
-                        </p>
-                      </div>
-                    </div>
+                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                    <ControlledPhoneInput
+                      label="Branch Contact Number"
+                      name="contactNumber"
+                      countryName="cc"
+                      placeholder="Branch Contact Number"
+                    />
 
-                    <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                      <ControlledPhoneInput
-                        label="Branch Contact Number"
-                        name="contactNumber"
-                        countryName="cc"
-                        placeholder="Branch Contact Number"
-                      />
-
-                      <ControlledTextInput
-                        label="Branch Contact Name"
-                        name="contactName"
-                        placeholder="Branch Contact Name"
-                      />
-                    </div>
+                    <ControlledTextInput
+                      label="Branch Contact Name"
+                      name="contactName"
+                      placeholder="Branch Contact Name"
+                    />
                   </div>
                 </div>
 
