@@ -216,6 +216,8 @@ export default function ProfilePage() {
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
       toast({
+        className: "shadcn-toast-custom success",
+        duration: 100000,
         title: "Profile Updated",
         description: "Your profile has been updated successfully",
       });
@@ -238,6 +240,7 @@ export default function ProfilePage() {
       }
     } else {
       toast({
+        className: "shadcn-toast-custom error",
         title: "Profile Update Failed",
         description: response.message,
       });
@@ -264,27 +267,27 @@ export default function ProfilePage() {
 
       const phoneNumberList = userPhone.length
         ? userPhone.map((item: any) => ({
-            cc: item?.cc,
-            phoneNumber: item?.phoneNumber,
-          }))
+          cc: item?.cc,
+          phoneNumber: item?.phoneNumber,
+        }))
         : [
-            {
-              cc: cc || "",
-              phoneNumber: phoneNumber || "",
-            },
-          ];
+          {
+            cc: cc || "",
+            phoneNumber: phoneNumber || "",
+          },
+        ];
 
       const socialLinkList = userSocialLink.length
         ? userSocialLink.map((item: any) => ({
-            linkType: item?.linkType,
-            link: item?.link,
-          }))
+          linkType: item?.linkType,
+          link: item?.link,
+        }))
         : [
-            {
-              linkType: "",
-              link: "",
-            },
-          ];
+          {
+            linkType: "",
+            link: "",
+          },
+        ];
 
       form.reset({
         profilePicture: profilePicture || "",
@@ -560,7 +563,7 @@ export default function ProfilePage() {
                                 <Image
                                   src={
                                     SOCIAL_MEDIA_ICON[
-                                      watchSocialMedia[index]?.linkType
+                                    watchSocialMedia[index]?.linkType
                                     ]
                                   }
                                   className="mr-1.5"
@@ -633,74 +636,152 @@ export default function ProfilePage() {
                       name="uploadIdentityImage"
                       render={({ field }) => (
                         <FormItem className="mb-3.5 w-full">
-                          <FormLabel>Upload Identity Proof</FormLabel>
-                          <FormControl>
-                            <div className="relative m-auto h-48 w-full border-2 border-dashed border-gray-300">
-                              <div className="relative h-full w-full">
-                                {identityImageFile ||
-                                me.data?.data?.identityProof ? (
-                                  <Image
-                                    src={
-                                      identityImageFile
-                                        ? URL.createObjectURL(
-                                            identityImageFile[0],
-                                          )
-                                        : me.data?.data?.identityProof
-                                          ? me.data?.data?.identityProof
-                                          : "/images/company-logo.png"
-                                    }
-                                    alt="profile"
-                                    fill
-                                    priority
-                                  />
-                                ) : (
-                                  <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                    <div className="flex h-full flex-col items-center justify-center">
+                          <FormLabel className="block">Upload Identity Proof</FormLabel>
+                          <div className="upload-identity-proof-both-side">
+                            <div className="upload-identity-proof-both-side-col">
+                              
+                              <FormLabel className="block">Front</FormLabel>
+                              <FormControl>
+                                <div className="relative upload-identity-proof-box w-full border-2 border-dashed border-gray-300">
+                                  <div className="relative h-full w-full">
+                                    <button type="button" className="common-close-btn-uploader-s1"><img src="/images/close-white.svg" alt=""></img></button>
+                                    {identityImageFile ||
+                                      me.data?.data?.identityProof ? (
                                       <Image
-                                        src="/images/upload.png"
-                                        className="mb-3"
-                                        width={30}
-                                        height={30}
-                                        alt="camera"
+                                        src={
+                                          identityImageFile
+                                            ? URL.createObjectURL(
+                                              identityImageFile[0],
+                                            )
+                                            : me.data?.data?.identityProof
+                                              ? me.data?.data?.identityProof
+                                              : "/images/company-logo.png"
+                                        }
+                                        alt="profile"
+                                        fill
+                                        priority
                                       />
-                                      <span>
-                                        Drop your Identify proof here, or{" "}
-                                      </span>
-                                      <span className="text-blue-500">
-                                        browse
-                                      </span>
-                                      <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                        (.jpg or .png only. Up to 1mb)
-                                      </p>
-                                    </div>
-                                  </div>
-                                )}
+                                    ) : (
+                                      <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                        <div className="flex h-full flex-col items-center justify-center">
+                                          <Image
+                                            src="/images/upload.png"
+                                            className="mb-3"
+                                            width={30}
+                                            height={30}
+                                            alt="camera"
+                                          />
+                                          <span>
+                                            Drop your Identify proof here, or{" "}
+                                          </span>
+                                          <span className="text-blue-500">
+                                            browse
+                                          </span>
+                                          <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                            (.jpg or .png only. Up to 1mb)
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )}
 
-                                <Input
-                                  type="file"
-                                  accept="image/*"
-                                  multiple={false}
-                                  className="!bottom-0 h-48 !w-full opacity-0"
-                                  {...field}
-                                  onChange={(event) => {
-                                    if (event.target.files?.[0]) {
-                                      if (
-                                        event.target.files[0].size > 1048576
-                                      ) {
-                                        toast({
-                                          title:
-                                            "Image size should be less than 1MB",
-                                        });
-                                        return;
-                                      }
-                                      setIdentityImageFile(event.target.files);
-                                    }
-                                  }}
-                                  id="uploadIdentityImage"
-                                />
-                              </div>
+                                    <Input
+                                      type="file"
+                                      accept="image/*"
+                                      multiple={false}
+                                      className="!bottom-0 h-48 !w-full opacity-0"
+                                      {...field}
+                                      onChange={(event) => {
+                                        if (event.target.files?.[0]) {
+                                          if (
+                                            event.target.files[0].size > 1048576
+                                          ) {
+                                            toast({
+                                              title:
+                                                "Image size should be less than 1MB",
+                                            });
+                                            return;
+                                          }
+                                          setIdentityImageFile(event.target.files);
+                                        }
+                                      }}
+                                      id="uploadIdentityImage"
+                                    />
+                                  </div>
+                                </div>
+                              </FormControl>
                             </div>
-                          </FormControl>
+                            <div className="upload-identity-proof-both-side-col">
+                              <FormLabel className="block">Back</FormLabel>
+                              <FormControl>
+                                <div className="relative upload-identity-proof-box w-full border-2 border-dashed border-gray-300">
+                                  <div className="relative h-full w-full">
+                                  <button type="button" className="common-close-btn-uploader-s1"><img src="/images/close-white.svg" alt=""></img></button>
+                                    {identityImageFile ||
+                                      me.data?.data?.identityProof ? (
+                                      <Image
+                                        src={
+                                          identityImageFile
+                                            ? URL.createObjectURL(
+                                              identityImageFile[0],
+                                            )
+                                            : me.data?.data?.identityProof
+                                              ? me.data?.data?.identityProof
+                                              : "/images/company-logo.png"
+                                        }
+                                        alt="profile"
+                                        fill
+                                        priority
+                                      />
+                                    ) : (
+                                      <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                        <div className="flex h-full flex-col items-center justify-center">
+                                          <Image
+                                            src="/images/upload.png"
+                                            className="mb-3"
+                                            width={30}
+                                            height={30}
+                                            alt="camera"
+                                          />
+                                          <span>
+                                            Drop your Identify proof here, or{" "}
+                                          </span>
+                                          <span className="text-blue-500">
+                                            browse
+                                          </span>
+                                          <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                            (.jpg or .png only. Up to 1mb)
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    <Input
+                                      type="file"
+                                      accept="image/*"
+                                      multiple={false}
+                                      className="!bottom-0 h-48 !w-full opacity-0"
+                                      {...field}
+                                      onChange={(event) => {
+                                        if (event.target.files?.[0]) {
+                                          if (
+                                            event.target.files[0].size > 1048576
+                                          ) {
+                                            toast({
+                                              title:
+                                                "Image size should be less than 1MB",
+                                            });
+                                            return;
+                                          }
+                                          setIdentityImageFile(event.target.files);
+                                        }
+                                      }}
+                                      id="uploadIdentityImage"
+                                    />
+                                  </div>
+                                </div>
+                              </FormControl>
+                            </div>
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}

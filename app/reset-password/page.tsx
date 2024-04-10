@@ -62,6 +62,7 @@ export default function ResetPasswordPage() {
     const response = await resetPassword.mutateAsync(values, {
       onError: (err) => {
         toast({
+          className: "shadcn-toast-custom error",
           title: "Password Reset Failed",
           description: err?.response?.data?.message,
         });
@@ -72,6 +73,7 @@ export default function ResetPasswordPage() {
 
     if (response?.status && response?.data) {
       toast({
+        className: "shadcn-toast-custom success",
         title: "Password Reset Successful",
         description: response?.message,
       });
@@ -84,6 +86,7 @@ export default function ResetPasswordPage() {
       }, 3000);
     } else {
       toast({
+        className: "shadcn-toast-custom error",
         title: "Password Reset Failed",
         description: response?.message,
       });
