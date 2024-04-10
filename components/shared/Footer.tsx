@@ -152,7 +152,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal} style={{borderRadius: "3px"}}>
+      <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
         <DialogContent className="md:!max-w-4xl">
           <DialogHeader className="border-b border-light-gray pb-3">
             <DialogTitle className="text-center">Terms Of Use</DialogTitle>
@@ -163,7 +163,11 @@ const Footer = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal} style={{borderRadius: "3px"}}>
+      <Dialog
+        open={isPrivacyModalOpen}
+        onOpenChange={handleTogglePrivacyModal}
+        style={{ borderRadius: "3px" }}
+      >
         <DialogContent className="md:!max-w-4xl">
           <DialogHeader className="border-b border-light-gray pb-3">
             <DialogTitle className="text-center">Privacy Policy</DialogTitle>
