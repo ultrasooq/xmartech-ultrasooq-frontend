@@ -636,9 +636,11 @@ export default function ProfilePage() {
                       name="uploadIdentityImage"
                       render={({ field }) => (
                         <FormItem className="mb-3.5 w-full">
+                          <FormLabel className="block">Upload Identity Proof</FormLabel>
                           <div className="upload-identity-proof-both-side">
                             <div className="upload-identity-proof-both-side-col">
-                              <FormLabel className="block">Upload Identity Proof Front</FormLabel>
+                              
+                              <FormLabel className="block">Front</FormLabel>
                               <FormControl>
                                 <div className="relative upload-identity-proof-box w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
@@ -709,7 +711,7 @@ export default function ProfilePage() {
                               </FormControl>
                             </div>
                             <div className="upload-identity-proof-both-side-col">
-                              <FormLabel className="block">Upload Identity Proof Back</FormLabel>
+                              <FormLabel className="block">Back</FormLabel>
                               <FormControl>
                                 <div className="relative upload-identity-proof-box w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
