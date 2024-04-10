@@ -157,7 +157,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <section className="relative w-full py-7 auth-page-main">
+    <section className="auth-page-main relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
           src="/images/before-login-bg.png"
@@ -316,7 +316,7 @@ export default function RegisterPage() {
                           />
                         </FormControl>
                         <div className="flex flex-col leading-none">
-                          <div className="text-sm text-light-gray agreeText">
+                          <div className="agreeText text-sm text-light-gray">
                             <span>I Agree the </span>
                             <Button
                               onClick={handleToggleTermsModal}
@@ -384,7 +384,7 @@ export default function RegisterPage() {
       </div>
 
       <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
-        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl" style={{borderRadius: "3px"}}>
+        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">
               Terms Of Use
@@ -396,7 +396,7 @@ export default function RegisterPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal} style={{borderRadius: "3px"}}>
+      <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
         <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
           <DialogHeader className="border-b border-light-gray py-4">
             <DialogTitle className="text-center text-xl font-bold">
