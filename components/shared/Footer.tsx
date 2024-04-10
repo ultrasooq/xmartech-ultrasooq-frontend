@@ -163,11 +163,7 @@ const Footer = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog
-        open={isPrivacyModalOpen}
-        onOpenChange={handleTogglePrivacyModal}
-        style={{ borderRadius: "3px" }}
-      >
+      <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
         <DialogContent className="md:!max-w-4xl">
           <DialogHeader className="border-b border-light-gray pb-3">
             <DialogTitle className="text-center">Privacy Policy</DialogTitle>
