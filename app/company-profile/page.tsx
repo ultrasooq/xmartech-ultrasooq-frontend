@@ -32,7 +32,7 @@ import { useUploadFile } from "@/apis/queries/upload.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
-import { ICountries } from "@/utils/types/common.types";
+import { ICountries, OptionProps } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 
@@ -75,100 +75,110 @@ const formSchema = z.object({
     .min(2, { message: "Total No Of Employee is required" }),
   aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
   branchList: z.array(
-    z.object({
-      branchFrontPicture: z.string().trim().optional(),
-      proofOfAddress: z.string().trim().optional(),
-      businessTypeList: z
-        .array(
-          z.object({
-            label: z.string().trim(),
-            value: z.number(),
+    z
+      .object({
+        branchFrontPicture: z.string().trim().optional(),
+        proofOfAddress: z.string().trim().optional(),
+        businessTypeList: z
+          .array(
+            z.object({
+              label: z.string().trim(),
+              value: z.number(),
+            }),
+          )
+          .min(1, {
+            message: "Business Type is required",
+          })
+          .transform((value) => {
+            let temp: any = [];
+            value.forEach((item) => {
+              temp.push({ businessTypeId: item.value });
+            });
+            return temp;
           }),
-        )
-        .min(1, {
-          message: "Business Type is required",
-        })
-        .transform((value) => {
-          let temp: any = [];
-          value.forEach((item) => {
-            temp.push({ businessTypeId: item.value });
-          });
-          return temp;
-        }),
-      address: z
-        .string()
-        .trim()
-        .min(2, { message: "Address is required" })
-        .max(50, {
-          message: "Address must be less than 50 characters",
-        }),
-      city: z.string().trim().min(2, { message: "City is required" }),
-      province: z.string().trim().min(2, { message: "Province is required" }),
-      country: z.string().trim().min(2, { message: "Country is required" }),
-      cc: z.string().trim(),
-      contactNumber: z
-        .string()
-        .trim()
-        .min(2, { message: "Branch Contact Number is required" })
-        .min(8, {
-          message: "Branch Contact Number must be minimum of 8 digits",
-        })
-        .max(20, {
-          message: "Branch Contact Number cannot be more than 20 digits",
-        }),
-      contactName: z
-        .string()
-        .trim()
-        .min(2, { message: "Branch Contact Name is required" }),
-      startTime: z.string().trim().min(1, {
-        message: "Start Time is required",
-      }),
-      endTime: z.string().trim().min(1, {
-        message: "End Time is required",
-      }),
-      workingDays: z
-        .object({
-          sun: z.number(),
-          mon: z.number(),
-          tue: z.number(),
-          wed: z.number(),
-          thu: z.number(),
-          fri: z.number(),
-          sat: z.number(),
-        })
-        .refine((value) => {
-          return (
-            value.sun !== 0 ||
-            value.mon !== 0 ||
-            value.tue !== 0 ||
-            value.wed !== 0 ||
-            value.thu !== 0 ||
-            value.fri !== 0 ||
-            value.sat !== 0
-          );
-        }),
-      tagList: z
-        .array(
-          z.object({
-            label: z.string().trim(),
-            value: z.number(),
+        address: z
+          .string()
+          .trim()
+          .min(2, { message: "Address is required" })
+          .max(50, {
+            message: "Address must be less than 50 characters",
           }),
-        )
-        .min(1, {
-          message: "Tag is required",
-        })
-        .transform((value) => {
-          let temp: any = [];
-          value.forEach((item) => {
-            temp.push({ tagId: item.value });
-          });
-          return temp;
+        city: z.string().trim().min(2, { message: "City is required" }),
+        province: z.string().trim().min(2, { message: "Province is required" }),
+        country: z.string().trim().min(2, { message: "Country is required" }),
+        cc: z.string().trim(),
+        contactNumber: z
+          .string()
+          .trim()
+          .min(2, { message: "Branch Contact Number is required" })
+          .min(8, {
+            message: "Branch Contact Number must be minimum of 8 digits",
+          })
+          .max(20, {
+            message: "Branch Contact Number cannot be more than 20 digits",
+          }),
+        contactName: z
+          .string()
+          .trim()
+          .min(2, { message: "Branch Contact Name is required" }),
+        startTime: z.string().trim().min(1, {
+          message: "Start Time is required",
         }),
-      mainOffice: z
-        .boolean()
-        .transform((value) => (value ? 1 : 0))
-        .optional(),
-    }),
+        endTime: z.string().trim().min(1, {
+          message: "End Time is required",
+        }),
+        workingDays: z
+          .object({
+            sun: z.number(),
+            mon: z.number(),
+            tue: z.number(),
+            wed: z.number(),
+            thu: z.number(),
+            fri: z.number(),
+            sat: z.number(),
+          })
+          .refine((value) => {
+            return (
+              value.sun !== 0 ||
+              value.mon !== 0 ||
+              value.tue !== 0 ||
+              value.wed !== 0 ||
+              value.thu !== 0 ||
+              value.fri !== 0 ||
+              value.sat !== 0
+            );
+          }),
+        tagList: z
+          .array(
+            z.object({
+              label: z.string().trim(),
+              value: z.number(),
+            }),
+          )
+          .min(1, {
+            message: "Tag is required",
+          })
+          .transform((value) => {
+            let temp: any = [];
+            value.forEach((item) => {
+              temp.push({ tagId: item.value });
+            });
+            return temp;
+          }),
+        mainOffice: z
+          .boolean()
+          .transform((value) => (value ? 1 : 0))
+          .optional(),
+      })
+      .superRefine(({ startTime, endTime }, ctx) => {
+        if (startTime && endTime && startTime >= endTime) {
+          ctx.addIssue({
+            code: "custom",
+            message: "End Time must be greater than Start Time",
+            path: ["endTime"],
+          });
+        }
+      }),
   ),
 });
 
@@ -277,7 +287,7 @@ export default function CompanyProfilePage() {
         return { label: item.tagName, value: item.id };
       }) || []
     );
-  }, [tagsQuery?.data]);
+  }, [tagsQuery?.data?.data?.length]);
 
   const memoizedLastTwoHundredYears = useMemo(() => {
     return getLastTwoHundredYears() || [];
@@ -321,13 +331,10 @@ export default function CompanyProfilePage() {
         return;
       }
 
-      const updatedBranchList = data.branchList.map(
-        (item: any, index: number) => ({
-          ...item,
-          profileType: "COMPANY",
-          // mainOffice: index === 0 ? 1 : 0,
-        }),
-      );
+      const updatedBranchList = data.branchList.map((item: any) => ({
+        ...item,
+        profileType: "COMPANY",
+      }));
       data.branchList = updatedBranchList;
     }
 
@@ -340,8 +347,8 @@ export default function CompanyProfilePage() {
     if (getImageUrl) {
       data.logo = getImageUrl;
     }
-    // console.log(data);
-    // return;
+    console.log(data);
+    return;
     const response = await createCompanyProfile.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -360,6 +367,8 @@ export default function CompanyProfilePage() {
       });
     }
   };
+
+  // console.log(form.formState.errors, form.getValues());
 
   return (
     <section className="relative w-full py-7">
@@ -476,7 +485,10 @@ export default function CompanyProfilePage() {
                     <ControlledSelectInput
                       label="Business Type"
                       name="businessTypeList"
-                      options={memoizedTags}
+                      options={memoizedTags.map((item: OptionProps) => ({
+                        value: item.value?.toString(),
+                        label: item.label,
+                      }))}
                     />
 
                     <ControlledTextInput
@@ -804,7 +816,7 @@ export default function CompanyProfilePage() {
 
                     <ControlledSelectInput
                       label="Country"
-                      name="country"
+                      name={`branchList.${index}.country`}
                       options={memoizedCountries}
                     />
                   </div>
