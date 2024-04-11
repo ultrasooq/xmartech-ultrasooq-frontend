@@ -191,6 +191,7 @@ export default function EditBranchPage() {
       toast({
         title: "Profile Edit Successful",
         description: response.message,
+        variant: "success",
       });
       form.reset();
       router.push("/freelancer-profile-details");
@@ -198,6 +199,7 @@ export default function EditBranchPage() {
       toast({
         title: "Profile Edit Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };

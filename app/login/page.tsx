@@ -58,17 +58,17 @@ export default function LoginPage() {
       // store in cookie
       setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
       toast({
-        className: "shadcn-toast-custom success",
         title: "Login Successful",
         description: "You have successfully logged in.",
+        variant: "success",
       });
       form.reset();
       router.push("/home");
     } else {
       toast({
-        className: "shadcn-toast-custom error",
         title: "Login Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };

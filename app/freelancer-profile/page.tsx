@@ -203,6 +203,7 @@ export default function FreelancerProfilePage() {
       toast({
         title: "Profile Create Successful",
         description: response.message,
+        variant: "success",
       });
       form.reset();
       router.push("/freelancer-profile-details");
@@ -210,6 +211,7 @@ export default function FreelancerProfilePage() {
       toast({
         title: "Profile Create Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };

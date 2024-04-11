@@ -55,6 +55,7 @@ export default function PasswordResetVerifyPage() {
     if (otp.join("") === "") {
       toast({
         title: "OTP is required",
+        variant: "danger",
       });
       return;
     }
@@ -64,6 +65,7 @@ export default function PasswordResetVerifyPage() {
     if (combinedOtp.length !== 4) {
       toast({
         title: "OTP length should be 4 digits",
+        variant: "danger",
       });
       return;
     }
@@ -79,6 +81,7 @@ export default function PasswordResetVerifyPage() {
       toast({
         title: "Verification Successful",
         description: response.message,
+        variant: "success",
       });
       form.reset();
       setOtp(new Array(4).fill(""));
@@ -88,6 +91,7 @@ export default function PasswordResetVerifyPage() {
       toast({
         title: "Verification Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };
@@ -101,6 +105,7 @@ export default function PasswordResetVerifyPage() {
     if (!data.email) {
       toast({
         title: "Email is required",
+        variant: "danger",
       });
       return;
     }
@@ -108,17 +113,17 @@ export default function PasswordResetVerifyPage() {
 
     if (response.status && response.otp) {
       toast({
-        className: "shadcn-toast-custom success",
         title: "Verification code sent",
         description: response?.message,
+        variant: "success",
       });
       setCount(120);
       setOtp(new Array(4).fill(""));
     } else {
       toast({
-        className: "shadcn-toast-custom error",
         title: "Verification error!",
         description: response?.message,
+        variant: "danger",
       });
     }
   };
@@ -231,7 +236,7 @@ export default function PasswordResetVerifyPage() {
                         passwordResetVerify.isPending || resendOtp.isPending
                       }
                       type="submit"
-                      className="m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 theme-primary-btn"
+                      className="theme-primary-btn m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6"
                     >
                       {passwordResetVerify.isPending ? (
                         <>

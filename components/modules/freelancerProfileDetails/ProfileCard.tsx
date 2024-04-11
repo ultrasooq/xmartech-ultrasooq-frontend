@@ -68,11 +68,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
       toast({
         title: "Branch Status Update Successful",
         description: response.message,
+        variant: "success",
       });
     } else {
       toast({
         title: "Branch Status Update Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };

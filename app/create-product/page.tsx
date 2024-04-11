@@ -170,6 +170,7 @@ const CreateProductPage = () => {
         toast({
           title: "Product Update Successful",
           description: response.message,
+          variant: "success",
         });
         form.reset();
 
@@ -182,6 +183,7 @@ const CreateProductPage = () => {
         toast({
           title: "Product Update Failed",
           description: response.message,
+          variant: "danger",
         });
       }
     } else {
@@ -191,6 +193,7 @@ const CreateProductPage = () => {
         toast({
           title: "Product Create Successful",
           description: response.message,
+          variant: "success",
         });
         form.reset();
         router.push("/product-list");
@@ -198,6 +201,7 @@ const CreateProductPage = () => {
         toast({
           title: "Product Create Failed",
           description: response.message,
+          variant: "danger",
         });
       }
     }

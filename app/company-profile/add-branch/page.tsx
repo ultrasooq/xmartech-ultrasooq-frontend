@@ -239,6 +239,7 @@ const AddBranchPage = () => {
       toast({
         title: "Branch Add Successful",
         description: response.message,
+        variant: "success",
       });
       form.reset();
       router.push("/company-profile-details");
@@ -246,6 +247,7 @@ const AddBranchPage = () => {
       toast({
         title: "Branch Add Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };
@@ -347,6 +349,7 @@ const AddBranchPage = () => {
                                       toast({
                                         title:
                                           "Image size should be less than 1MB",
+                                        variant: "danger",
                                       });
                                       return;
                                     }
@@ -420,6 +423,7 @@ const AddBranchPage = () => {
                                       toast({
                                         title:
                                           "Image size should be less than 1MB",
+                                        variant: "danger",
                                       });
                                       return;
                                     }

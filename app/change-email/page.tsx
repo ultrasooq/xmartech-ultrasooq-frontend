@@ -50,6 +50,7 @@ export default function ChangeEmailPage() {
       toast({
         title: "Verification code sent",
         description: response?.message,
+        variant: "success",
       });
 
       sessionStorage.setItem("email", values.email.toLowerCase());
@@ -59,6 +60,7 @@ export default function ChangeEmailPage() {
       toast({
         title: "Verification error!",
         description: response?.message,
+        variant: "danger",
       });
     }
   };

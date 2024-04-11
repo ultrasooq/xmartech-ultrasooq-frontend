@@ -306,6 +306,7 @@ export default function CompanyProfilePage() {
       ) {
         toast({
           title: "Please select atleast one main office",
+          variant: "danger",
         });
         return;
       }
@@ -315,6 +316,7 @@ export default function CompanyProfilePage() {
       ) {
         toast({
           title: "Please select only one main office",
+          variant: "danger",
         });
         return;
       }
@@ -346,6 +348,7 @@ export default function CompanyProfilePage() {
       toast({
         title: "Profile Create Successful",
         description: response.message,
+        variant: "success",
       });
       form.reset();
       router.push("/company-profile-details");
@@ -353,6 +356,7 @@ export default function CompanyProfilePage() {
       toast({
         title: "Profile Create Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };
@@ -444,6 +448,7 @@ export default function CompanyProfilePage() {
                                       toast({
                                         title:
                                           "Image size should be less than 1MB",
+                                        variant: "danger",
                                       });
                                       return;
                                     }
@@ -659,6 +664,7 @@ export default function CompanyProfilePage() {
                                       toast({
                                         title:
                                           "Image size should be less than 1MB",
+                                        variant: "danger",
                                       });
                                       return;
                                     }
@@ -734,6 +740,7 @@ export default function CompanyProfilePage() {
                                       toast({
                                         title:
                                           "Image size should be less than 1MB",
+                                        variant: "danger",
                                       });
                                       return;
                                     }

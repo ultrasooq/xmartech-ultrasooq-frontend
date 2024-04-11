@@ -81,6 +81,7 @@ export default function ChangePasswordPage() {
         toast({
           title: "Password Change Failed",
           description: err?.response?.data?.message,
+          variant: "danger",
         });
         form.reset();
         deleteCookie(PUREMOON_TOKEN_KEY);
@@ -91,6 +92,7 @@ export default function ChangePasswordPage() {
       toast({
         title: "Password Change Successful",
         description: response?.message,
+        variant: "success",
       });
       form.reset();
       deleteCookie(PUREMOON_TOKEN_KEY);
@@ -103,6 +105,7 @@ export default function ChangePasswordPage() {
       toast({
         title: "Password Change Failed",
         description: response?.message,
+        variant: "danger",
       });
     }
   };
