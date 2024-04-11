@@ -27,6 +27,7 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
   label,
   name,
   options,
+  ...props
 }) => {
   const formContext = useFormContext();
 
@@ -37,7 +38,7 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
       render={({ field }) => (
         <FormItem className="mb-4">
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
+          <Select onValueChange={field.onChange} value={field.value} {...props}>
             <FormControl>
               <SelectTrigger className="theme-form-control-s1 data-[placeholder]:text-muted-foreground">
                 <SelectValue placeholder={`Select ${label}`} />

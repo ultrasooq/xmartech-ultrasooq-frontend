@@ -664,15 +664,21 @@ export default function ProfilePage() {
                               <FormControl>
                                 <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
-                                    <button
-                                      type="button"
-                                      className="common-close-btn-uploader-s1"
-                                    >
-                                      <img
-                                        src="/images/close-white.svg"
-                                        alt=""
-                                      ></img>
-                                    </button>
+                                    {identityImageFile ||
+                                    me.data?.data?.identityProof ? (
+                                      <button
+                                        type="button"
+                                        className="common-close-btn-uploader-s1"
+                                        onClick={() => {
+                                          setIdentityImageFile(null);
+                                        }}
+                                      >
+                                        <img
+                                          src="/images/close-white.svg"
+                                          alt="close-icon"
+                                        />
+                                      </button>
+                                    ) : null}
                                     {identityImageFile ||
                                     me.data?.data?.identityProof ? (
                                       <Image
@@ -747,15 +753,21 @@ export default function ProfilePage() {
                               <FormControl>
                                 <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
-                                    <button
-                                      type="button"
-                                      className="common-close-btn-uploader-s1"
-                                    >
-                                      <img
-                                        src="/images/close-white.svg"
-                                        alt=""
-                                      ></img>
-                                    </button>
+                                    {identityBackImageFile ||
+                                    me.data?.data?.identityProof ? (
+                                      <button
+                                        type="button"
+                                        className="common-close-btn-uploader-s1"
+                                        onClick={() => {
+                                          setIdentityBackImageFile(null);
+                                        }}
+                                      >
+                                        <img
+                                          src="/images/close-white.svg"
+                                          alt="close-icon"
+                                        />
+                                      </button>
+                                    ) : null}
                                     {identityBackImageFile ||
                                     me.data?.data?.identityProofBack ? (
                                       <Image
