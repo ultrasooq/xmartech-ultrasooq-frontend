@@ -140,18 +140,18 @@ export default function RegisterPage() {
 
     if (response?.status && response?.otp) {
       toast({
-        className: "shadcn-toast-custom success",
         title: "Verification code sent",
         description: "OTP has been sent to your email/phone",
+        variant: "success",
       });
       sessionStorage.setItem("email", formData.email.toLowerCase());
       form.reset();
       router.push("/otp-verify");
     } else {
       toast({
-        className: "shadcn-toast-custom error",
         title: "Registration Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };

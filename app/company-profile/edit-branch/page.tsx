@@ -257,6 +257,7 @@ export default function EditBranchPage() {
       toast({
         title: "Profile Edit Successful",
         description: response.message,
+        variant: "success",
       });
       form.reset();
       queryClient.invalidateQueries({
@@ -267,6 +268,7 @@ export default function EditBranchPage() {
       toast({
         title: "Profile Edit Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };
@@ -433,6 +435,7 @@ export default function EditBranchPage() {
                                     toast({
                                       title:
                                         "Image size should be less than 1MB",
+                                      variant: "danger",
                                     });
                                     return;
                                   }
@@ -507,6 +510,7 @@ export default function EditBranchPage() {
                                     toast({
                                       title:
                                         "Image size should be less than 1MB",
+                                      variant: "danger",
                                     });
                                     return;
                                   }

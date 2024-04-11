@@ -90,6 +90,7 @@ const ProductListPage = () => {
       toast({
         title: "Product Delete Successful",
         description: response.message,
+        variant: "success",
       });
       setIsDeleteModalOpen(false);
       setSelectedProductId(undefined);
@@ -97,6 +98,7 @@ const ProductListPage = () => {
       toast({
         title: "Product Delete Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };

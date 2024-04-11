@@ -233,10 +233,9 @@ export default function ProfilePage() {
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
       toast({
-        className: "shadcn-toast-custom success",
-        duration: 100000,
         title: "Profile Updated",
         description: "Your profile has been updated successfully",
+        variant: "success",
       });
       form.reset();
       const tradeRole = response.data?.tradeRole;
@@ -257,9 +256,9 @@ export default function ProfilePage() {
       }
     } else {
       toast({
-        className: "shadcn-toast-custom error",
         title: "Profile Update Failed",
         description: response.message,
+        variant: "danger",
       });
     }
   };
@@ -408,6 +407,7 @@ export default function ProfilePage() {
                                       toast({
                                         title:
                                           "Image size should be less than 1MB",
+                                        variant: "danger",
                                       });
                                       return;
                                     }
@@ -726,6 +726,7 @@ export default function ProfilePage() {
                                             toast({
                                               title:
                                                 "Image size should be less than 1MB",
+                                              variant: "danger",
                                             });
                                             return;
                                           }
@@ -808,6 +809,7 @@ export default function ProfilePage() {
                                             toast({
                                               title:
                                                 "Image size should be less than 1MB",
+                                              variant: "danger",
                                             });
                                             return;
                                           }
