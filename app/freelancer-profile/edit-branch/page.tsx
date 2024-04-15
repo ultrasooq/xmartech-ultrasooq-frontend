@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
 import { getAmPm } from "@/utils/helper";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import { ICountries, ISelectOptions } from "@/utils/types/common.types";
+import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
@@ -206,19 +206,18 @@ export default function EditBranchPage() {
 
   useEffect(() => {
     if (userDetails.data?.data) {
-      const businessTypeList = userDetails.data?.data?.userBranch?.[0]
-        ?.userBranchBusinessType
-        ? userDetails.data?.data?.userBranch?.[0]?.userBranchBusinessType?.map(
-            (item: any) => {
-              return {
-                label: item?.userBranch_BusinessType_Tag?.tagName,
-                value: item?.userBranch_BusinessType_Tag?.id,
-              };
-            },
-          )
+      const userBranch = userDetails.data?.data?.userBranch?.[0];
+
+      const businessTypeList = userBranch?.userBranchBusinessType
+        ? userBranch?.userBranchBusinessType?.map((item: any) => {
+            return {
+              label: item?.userBranch_BusinessType_Tag?.tagName,
+              value: item?.userBranch_BusinessType_Tag?.id,
+            };
+          })
         : [];
 
-      const workingDays = userDetails.data?.data?.userBranch?.[0]?.workingDays
+      const workingDays = userBranch?.workingDays
         ? JSON.parse(userDetails.data.data.userBranch[0].workingDays)
         : {
             sun: 0,
@@ -230,34 +229,31 @@ export default function EditBranchPage() {
             sat: 0,
           };
 
-      const tagList = userDetails.data?.data?.userBranch?.[0]?.userBranchTags
-        ? userDetails.data?.data?.userBranch?.[0]?.userBranchTags?.map(
-            (item: any) => {
-              return {
-                label: item?.userBranchTagsTag?.tagName,
-                value: item?.userBranchTagsTag?.id,
-              };
-            },
-          )
+      const tagList = userBranch?.userBranchTags
+        ? userBranch?.userBranchTags?.map((item: any) => {
+            return {
+              label: item?.userBranchTagsTag?.tagName,
+              value: item?.userBranchTagsTag?.id,
+            };
+          })
         : [];
 
       form.reset({
         businessTypeList: businessTypeList || undefined,
-        startTime: userDetails.data?.data?.userBranch?.[0]?.startTime || "",
-        endTime: userDetails.data?.data?.userBranch?.[0]?.endTime || "",
-        address: userDetails.data?.data?.userBranch?.[0]?.address || "",
-        city: userDetails.data?.data?.userBranch?.[0]?.city || "",
-        province: userDetails.data?.data?.userBranch?.[0]?.province || "",
-        country: userDetails.data?.data?.userBranch?.[0]?.country || "",
-        cc: userDetails.data?.data?.userBranch?.[0]?.cc || "",
-        contactNumber:
-          userDetails.data?.data?.userBranch?.[0]?.contactNumber || "",
-        contactName: userDetails.data?.data?.userBranch?.[0]?.contactName || "",
+        startTime: userBranch?.startTime || "",
+        endTime: userBranch?.endTime || "",
+        address: userBranch?.address || "",
+        city: userBranch?.city || "",
+        province: userBranch?.province || "",
+        country: userBranch?.country || "",
+        cc: userBranch?.cc || "",
+        contactNumber: userBranch?.contactNumber || "",
+        contactName: userBranch?.contactName || "",
         workingDays,
         tagList: tagList || undefined,
       });
     }
-  }, [userDetails.data?.status]);
+  }, [userDetails.data?.data, memoizedTags?.length, memoizedCountries?.length]);
 
   return (
     <section className="relative w-full py-7">
