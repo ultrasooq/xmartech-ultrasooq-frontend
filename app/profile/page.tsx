@@ -29,7 +29,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCookie } from "cookies-next";
@@ -98,6 +98,8 @@ const formSchema = z.object({
 export default function ProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
+  const frontIdentityRef = useRef<HTMLInputElement>(null);
+  const backIdentityRef = useRef<HTMLInputElement>(null);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -192,12 +194,18 @@ export default function ProfilePage() {
     if (formData.uploadImage) {
       getImageUrl = await handleUploadedFile(formData.uploadImage);
     }
-    if (formData.uploadIdentityFrontImage) {
+    if (
+      formData.uploadIdentityFrontImage &&
+      typeof formData.uploadIdentityFrontImage === "object"
+    ) {
       getIdentityImageUrl = await handleUploadedFile(
         formData.uploadIdentityFrontImage,
       );
     }
-    if (formData.uploadIdentityBackImage) {
+    if (
+      formData.uploadIdentityBackImage &&
+      typeof formData.uploadIdentityBackImage === "object"
+    ) {
       getIdentityBackImageUrl = await handleUploadedFile(
         formData.uploadIdentityBackImage,
       );
@@ -679,6 +687,9 @@ export default function ProfilePage() {
                                             "uploadIdentityFrontImage",
                                             undefined,
                                           );
+                                          form.setValue("identityProof", "");
+                                          if (frontIdentityRef.current)
+                                            frontIdentityRef.current.value = "";
                                           // TODO: remove from S3
                                         }}
                                       >
@@ -706,7 +717,7 @@ export default function ProfilePage() {
                                         priority
                                       />
                                     ) : (
-                                      <AddImageContent />
+                                      <AddImageContent description="Drop your Identify proof here, or " />
                                     )}
 
                                     <Input
@@ -734,6 +745,7 @@ export default function ProfilePage() {
                                         }
                                       }}
                                       id="uploadIdentityImage"
+                                      ref={frontIdentityRef}
                                     />
                                   </div>
                                 </div>
@@ -754,6 +766,12 @@ export default function ProfilePage() {
                                             "uploadIdentityBackImage",
                                             undefined,
                                           );
+                                          form.setValue(
+                                            "identityProofBack",
+                                            "",
+                                          );
+                                          if (backIdentityRef.current)
+                                            backIdentityRef.current.value = "";
                                           // TODO: remove from S3
                                         }}
                                       >
@@ -781,7 +799,7 @@ export default function ProfilePage() {
                                         priority
                                       />
                                     ) : (
-                                      <AddImageContent />
+                                      <AddImageContent description="Drop your Identify proof here, or " />
                                     )}
 
                                     <Input
@@ -809,6 +827,7 @@ export default function ProfilePage() {
                                         }
                                       }}
                                       id="uploadIdentityBackImage"
+                                      ref={backIdentityRef}
                                     />
                                   </div>
                                 </div>
