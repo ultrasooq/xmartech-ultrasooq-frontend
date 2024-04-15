@@ -18,13 +18,13 @@ import { Input } from "@/components/ui/input";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { useMe } from "@/apis/queries/user.queries";
+import { useUniqueUser } from "@/apis/queries/user.queries";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import { getLastTwoHundredYears } from "@/utils/helper";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import { useCountries } from "@/apis/queries/masters.queries";
-import { ICountries } from "@/utils/types/common.types";
+import { ICountries, OptionProps } from "@/utils/types/common.types";
 import { NO_OF_EMPLOYEES_LIST } from "@/utils/constants";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 
@@ -91,7 +91,13 @@ export default function EditProfilePage() {
     },
   });
   const [imageFile, setImageFile] = useState<FileList | null>();
-  const userDetails = useMe();
+  const [activeUserId, setActiveUserId] = useState<string | null>();
+
+  const uniqueUser = useUniqueUser(
+    { userId: activeUserId ? Number(activeUserId) : undefined },
+    !!activeUserId,
+  );
+
   const countriesQuery = useCountries();
   const tagsQuery = useTags();
   const upload = useUploadFile();
@@ -115,7 +121,7 @@ export default function EditProfilePage() {
         return { label: item.tagName, value: item.id };
       }) || []
     );
-  }, [tagsQuery?.data]);
+  }, [tagsQuery?.data?.data?.length]);
 
   const handleUploadedFile = async (files: FileList | null) => {
     if (files) {
@@ -132,7 +138,7 @@ export default function EditProfilePage() {
     let data = {
       ...formData,
       profileType: "COMPANY",
-      userProfileId: userDetails.data?.data?.userProfile?.[0]?.id as number,
+      userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number,
     };
 
     formData.uploadImage = imageFile;
@@ -166,8 +172,14 @@ export default function EditProfilePage() {
   };
 
   useEffect(() => {
-    if (userDetails.data?.data) {
-      const userProfile = userDetails.data?.data?.userProfile?.[0];
+    const params = new URLSearchParams(document.location.search);
+    let userId = params.get("userId");
+    setActiveUserId(userId);
+  }, []);
+
+  useEffect(() => {
+    if (uniqueUser.data?.data) {
+      const userProfile = uniqueUser.data?.data?.userProfile?.[0];
 
       form.reset({
         logo: userProfile?.logo || "",
@@ -185,7 +197,12 @@ export default function EditProfilePage() {
           undefined,
       });
     }
-  }, [userDetails.data?.data?.userProfile?.length]);
+  }, [
+    uniqueUser.data?.data?.userProfile?.length,
+    memoizedTags?.length,
+    memoizedCountries?.length,
+    memoizedLastTwoHundredYears?.length,
+  ]);
 
   return (
     <section className="relative w-full py-7">
@@ -229,14 +246,14 @@ export default function EditProfilePage() {
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
                               {imageFile ||
-                              userDetails.data?.data?.userProfile?.[0]?.logo ? (
+                              uniqueUser.data?.data?.userProfile?.[0]?.logo ? (
                                 <Image
                                   src={
                                     imageFile
                                       ? URL.createObjectURL(imageFile[0])
-                                      : userDetails.data?.data?.userProfile?.[0]
+                                      : uniqueUser.data?.data?.userProfile?.[0]
                                             ?.logo
-                                        ? userDetails.data?.data
+                                        ? uniqueUser.data?.data
                                             ?.userProfile?.[0]?.logo
                                         : "/images/company-logo.png"
                                   }
@@ -307,7 +324,10 @@ export default function EditProfilePage() {
                     <ControlledSelectInput
                       label="Business Type"
                       name="businessTypeList"
-                      options={memoizedTags}
+                      options={memoizedTags.map((item: OptionProps) => ({
+                        value: item.value?.toString(),
+                        label: item.label,
+                      }))}
                     />
 
                     <ControlledTextInput

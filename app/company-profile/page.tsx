@@ -348,7 +348,7 @@ export default function CompanyProfilePage() {
       data.logo = getImageUrl;
     }
     console.log(data);
-    return;
+    // return;
     const response = await createCompanyProfile.mutateAsync(data);
 
     if (response.status && response.data) {

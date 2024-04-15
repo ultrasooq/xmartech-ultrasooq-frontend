@@ -13,20 +13,21 @@ import {
 import { DAYS_OF_WEEK, HOURS_24_FORMAT } from "@/utils/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useRouter } from "next/navigation";
-import { useMe } from "@/apis/queries/user.queries";
 import { getAmPm } from "@/utils/helper";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import { ICountries, ISelectOptions } from "@/utils/types/common.types";
+import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import { useFetchCompanyBranchById } from "@/apis/queries/company.queries";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z
   .object({
@@ -130,6 +131,7 @@ const formSchema = z
 export default function EditBranchPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -155,10 +157,14 @@ export default function EditBranchPage() {
       tagList: undefined,
     },
   });
+  const [activeBranchId, setActiveBranchId] = useState<string | null>();
 
-  const userDetails = useMe();
   const countriesQuery = useCountries();
   const tagsQuery = useTags();
+  const branchQueryById = useFetchCompanyBranchById(
+    activeBranchId ? activeBranchId : "",
+    !!activeBranchId,
+  );
   const updateFreelancerBranch = useUpdateFreelancerBranch();
 
   const memoizedCountries = useMemo(() => {
@@ -175,14 +181,14 @@ export default function EditBranchPage() {
         return { label: item.tagName, value: item.id };
       }) || []
     );
-  }, [tagsQuery?.data]);
+  }, [tagsQuery?.data?.data?.length]);
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const data = {
       ...formData,
       profileType: "FREELANCER",
       mainOffice: 1,
-      branchId: userDetails.data?.data?.userBranch?.[0]?.id as number,
+      branchId: Number(activeBranchId),
     };
 
     const response = await updateFreelancerBranch.mutateAsync(data);
@@ -194,6 +200,9 @@ export default function EditBranchPage() {
         variant: "success",
       });
       form.reset();
+      queryClient.invalidateQueries({
+        queryKey: ["branch-by-id", activeBranchId],
+      });
       router.push("/freelancer-profile-details");
     } else {
       toast({
@@ -205,21 +214,26 @@ export default function EditBranchPage() {
   };
 
   useEffect(() => {
-    if (userDetails.data?.data) {
-      const businessTypeList = userDetails.data?.data?.userBranch?.[0]
-        ?.userBranchBusinessType
-        ? userDetails.data?.data?.userBranch?.[0]?.userBranchBusinessType?.map(
-            (item: any) => {
-              return {
-                label: item?.userBranch_BusinessType_Tag?.tagName,
-                value: item?.userBranch_BusinessType_Tag?.id,
-              };
-            },
-          )
+    const params = new URLSearchParams(document.location.search);
+    let branchId = params.get("branchId");
+    setActiveBranchId(branchId);
+  }, []);
+
+  useEffect(() => {
+    if (branchQueryById.data?.data) {
+      const branch = branchQueryById.data?.data;
+
+      const businessTypeList = branch?.userBranchBusinessType
+        ? branch?.userBranchBusinessType?.map((item: any) => {
+            return {
+              label: item?.userBranch_BusinessType_Tag?.tagName,
+              value: item?.userBranch_BusinessType_Tag?.id,
+            };
+          })
         : [];
 
-      const workingDays = userDetails.data?.data?.userBranch?.[0]?.workingDays
-        ? JSON.parse(userDetails.data.data.userBranch[0].workingDays)
+      const workingDays = branch?.workingDays
+        ? JSON.parse(branch.workingDays)
         : {
             sun: 0,
             mon: 0,
@@ -230,34 +244,35 @@ export default function EditBranchPage() {
             sat: 0,
           };
 
-      const tagList = userDetails.data?.data?.userBranch?.[0]?.userBranchTags
-        ? userDetails.data?.data?.userBranch?.[0]?.userBranchTags?.map(
-            (item: any) => {
-              return {
-                label: item?.userBranchTagsTag?.tagName,
-                value: item?.userBranchTagsTag?.id,
-              };
-            },
-          )
+      const tagList = branch?.userBranchTags
+        ? branch?.userBranchTags?.map((item: any) => {
+            return {
+              label: item?.userBranchTagsTag?.tagName,
+              value: item?.userBranchTagsTag?.id,
+            };
+          })
         : [];
 
       form.reset({
         businessTypeList: businessTypeList || undefined,
-        startTime: userDetails.data?.data?.userBranch?.[0]?.startTime || "",
-        endTime: userDetails.data?.data?.userBranch?.[0]?.endTime || "",
-        address: userDetails.data?.data?.userBranch?.[0]?.address || "",
-        city: userDetails.data?.data?.userBranch?.[0]?.city || "",
-        province: userDetails.data?.data?.userBranch?.[0]?.province || "",
-        country: userDetails.data?.data?.userBranch?.[0]?.country || "",
-        cc: userDetails.data?.data?.userBranch?.[0]?.cc || "",
-        contactNumber:
-          userDetails.data?.data?.userBranch?.[0]?.contactNumber || "",
-        contactName: userDetails.data?.data?.userBranch?.[0]?.contactName || "",
+        startTime: branch?.startTime || "",
+        endTime: branch?.endTime || "",
+        address: branch?.address || "",
+        city: branch?.city || "",
+        province: branch?.province || "",
+        country: branch?.country || "",
+        cc: branch?.cc || "",
+        contactNumber: branch?.contactNumber || "",
+        contactName: branch?.contactName || "",
         workingDays,
         tagList: tagList || undefined,
       });
     }
-  }, [userDetails.data?.status]);
+  }, [
+    branchQueryById.data?.data,
+    memoizedTags?.length,
+    memoizedCountries?.length,
+  ]);
 
   return (
     <section className="relative w-full py-7">

@@ -16,9 +16,11 @@ export default function FreelancerProfileDetailsPage() {
 
   const handleFreelancerProfilePage = () => router.push("/profile");
   const handleEditFreelancerProfilePage = () =>
-    router.push("/freelancer-profile/edit-profile");
+    router.push(`/freelancer-profile/edit-profile`);
   const handleEditFreelancerBranchPage = () =>
-    router.push("/freelancer-profile/edit-branch");
+    router.push(
+      `/freelancer-profile/edit-branch?branchId=${userDetails.data?.data?.userBranch?.[0]?.id}`,
+    );
 
   return (
     <section className="relative w-full py-7">
