@@ -26,3 +26,16 @@ export const fetchMe = () => {
     },
   });
 };
+
+export const fetchUniqueUser = (payload: { userId: number | undefined }) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/findUnique`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

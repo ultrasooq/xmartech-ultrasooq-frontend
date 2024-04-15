@@ -1,6 +1,10 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { fetchMe, updateUserProfile } from "../requests/user.requests";
+import {
+  fetchMe,
+  fetchUniqueUser,
+  updateUserProfile,
+} from "../requests/user.requests";
 import { IBuyer, IBuyerRequest } from "@/utils/types/user.types";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -32,5 +36,18 @@ export const useMe = (enabled = true) =>
     // onError: (err: APIResponseError) => {
     //   console.log(err);
     // },
+    enabled,
+  });
+
+export const useUniqueUser = (
+  payload: { userId: number | undefined },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["unique-user", payload],
+    queryFn: async () => {
+      const res = await fetchUniqueUser(payload);
+      return res.data;
+    },
     enabled,
   });
