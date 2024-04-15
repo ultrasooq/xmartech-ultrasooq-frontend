@@ -18,7 +18,10 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { useUploadFile } from "@/apis/queries/upload.queries";
+import {
+  useUploadFile,
+  useUploadMultipleFile,
+} from "@/apis/queries/upload.queries";
 import { v4 as uuidv4 } from "uuid";
 import { useBrands, useCountries } from "@/apis/queries/masters.queries";
 import {
@@ -33,6 +36,7 @@ import {
 } from "@/apis/queries/category.queries";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import AddImageContent from "../profile/AddImageContent";
 
 type ProductImageProps = {
   path: string;
@@ -49,11 +53,15 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const formContext = useFormContext();
   const { toast } = useToast();
   const [nestedCategoryList, setNestedCategoryList] = useState<any[]>([]);
+  const [previewMultipleImages, setPreviewMultipleImages] = useState<
+    { [key: string]: string }[]
+  >([]);
 
   const watchCategoryId = formContext.watch("categoryId");
   const watchSubCategoryId = formContext.watch("subCategoryId");
 
   const upload = useUploadFile();
+  const uploadMultiple = useUploadMultipleFile();
   const categoryQuery = useCategory();
   const brandsQuery = useBrands({});
   const countriesQuery = useCountries();
@@ -61,7 +69,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     watchSubCategoryId,
     !!watchSubCategoryId,
   );
-  const watcher = formContext.watch("productImages");
+  const watchProductImages = formContext.watch("productImages");
 
   const memoizedCategories = useMemo(() => {
     return (
@@ -93,6 +101,18 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       ...formContext.getValues("productImages"),
       { path: "", id: uuidv4() },
     ]);
+  };
+
+  const handleEditPreviewImage = (id: string, item: FileList) => {
+    const filteredItem = previewMultipleImages.filter((item) => item.id === id);
+    if (filteredItem.length) {
+      filteredItem[0].path = URL.createObjectURL(item[0]);
+      setPreviewMultipleImages([...previewMultipleImages]);
+    }
+  };
+
+  const handleRemovePreviewImage = (id: string) => {
+    setPreviewMultipleImages((prev) => prev.filter((item) => item.id !== id));
   };
 
   const handleUploadedFile = async (files: FileList | null) => {
@@ -266,75 +286,70 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
               </label>
               <div className="flex w-full flex-wrap">
                 <div className="grid grid-cols-5">
-                  {(watcher || [])?.map(
-                    (item: ProductImageProps, index: number) => (
-                      <FormField
-                        control={formContext.control}
-                        name="productImages"
-                        key={index}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <div className="relative mb-3 w-full px-2">
-                                <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                  {previewMultipleImages?.map((item: any, index: number) => (
+                    <FormField
+                      control={formContext.control}
+                      name="productImages"
+                      key={index}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="relative mb-3 w-full px-2">
+                              <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                                {previewMultipleImages?.length ? (
                                   <button
                                     type="button"
                                     className="common-close-btn-uploader-s1"
-                                  >
-                                    <img
-                                      src="/images/close-white.svg"
-                                      alt=""
-                                    ></img>
-                                  </button>
-                                  {item.path && item.path !== "" ? (
-                                    <Image
-                                      src={item.path || "/images/no-image.jpg"}
-                                      alt="profile"
-                                      fill
-                                      priority
-                                    />
-                                  ) : (
-                                    <div className="absolute my-auto text-sm font-medium leading-4 text-color-dark">
-                                      <img
-                                        src="/images/upload.png"
-                                        className="m-auto mb-3"
-                                        alt="camera"
-                                      />
-                                      <span>Drop your Image or </span>
-                                      <span className="text-blue-500">
-                                        browse
-                                      </span>
-                                      <p className="text-normal mt-1 text-xs leading-4 text-gray-300">
-                                        (.jpg or .png only. Up to 1mb)
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  <Input
-                                    type="file"
-                                    accept="image/*"
-                                    multiple={false}
-                                    className="!bottom-0 h-44 !w-full cursor-pointer opacity-0 "
-                                    onChange={(event) =>
-                                      handleFileChanges(event, field, item)
+                                    onClick={() =>
+                                      handleRemovePreviewImage(item?.id)
                                     }
-                                    id="productImages"
+                                  >
+                                    <Image
+                                      src="/images/close-white.svg"
+                                      alt="close-icon"
+                                      height={22}
+                                      width={22}
+                                    />
+                                  </button>
+                                ) : null}
+                                {item.path && item.path !== "" ? (
+                                  <Image
+                                    src={item.path || "/images/no-image.jpg"}
+                                    alt="profile"
+                                    fill
+                                    priority
                                   />
-                                </div>
+                                ) : (
+                                  <AddImageContent description="Drop your Image , or " />
+                                )}
+
+                                <Input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple={false}
+                                  className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                  onChange={(event) =>
+                                    // handleFileChanges(event, field, item)
+                                    {
+                                      if (event.target.files) {
+                                        handleEditPreviewImage(
+                                          item?.id,
+                                          event.target.files,
+                                        );
+                                      }
+                                    }
+                                  }
+                                  id="productImages"
+                                />
                               </div>
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    ),
-                  )}
-                  <div className="mb-3 w-full pl-2">
-                    <Button
-                      variant="outline"
-                      type="button"
-                      onClick={handleProductImages}
-                      className="relative m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center"
-                    >
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  ))}
+                  <div className="relative mb-3 w-full pl-2">
+                    <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
                       <div className="text-sm font-medium leading-4 text-color-dark">
                         <Image
                           src="/images/plus.png"
@@ -345,7 +360,40 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         />
                         <span>Add More</span>
                       </div>
-                    </Button>
+                    </div>
+
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
+                      onChange={(event) =>
+                        // handleFileChanges(event, field, item)
+                        {
+                          if (event.target.files) {
+                            const filesArray = Array.from(event.target.files);
+                            const newImages = filesArray.map((file) => ({
+                              path: URL.createObjectURL(file),
+                              id: uuidv4(),
+                            }));
+                            // const updatedProductImages = [
+                            //   ...productImages,
+                            //   ...newImages,
+                            // ];
+                            // formContext.setValue(
+                            //   "productImages",
+                            //   updatedProductImages,
+                            // );
+                            console.log(filesArray, newImages);
+                            setPreviewMultipleImages([
+                              ...previewMultipleImages,
+                              ...newImages,
+                            ]);
+                          }
+                        }
+                      }
+                      id="productImages"
+                    />
                   </div>
                 </div>
               </div>
