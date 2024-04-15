@@ -20,7 +20,9 @@ export default function CompanyProfileDetailsPage() {
   const handleAddCompanyBranchPage = () =>
     router.push("/company-profile/add-branch");
   const handleEditCompanyPage = () =>
-    router.push("/company-profile/edit-profile");
+    router.push(
+      `/company-profile/edit-profile?userId=${userDetails.data?.data.id}`,
+    );
   const handleEditCompanyBranchPage = (branchId: number) =>
     router.push(`/company-profile/edit-branch?branchId=${branchId}`);
 
