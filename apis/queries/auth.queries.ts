@@ -107,7 +107,7 @@ export const useResetPassword = () =>
     },
   });
 
-export const userPasswordResetVerify = () =>
+export const usePasswordResetVerify = () =>
   useMutation<
     IPasswordResetVerify,
     APIResponseError,

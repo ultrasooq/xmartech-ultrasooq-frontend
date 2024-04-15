@@ -29,7 +29,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCookie } from "cookies-next";
@@ -39,10 +39,11 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
+import AddImageContent from "@/components/modules/profile/AddImageContent";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
-  uploadIdentityImage: z.any().optional(),
+  uploadIdentityFrontImage: z.any().optional(),
   uploadIdentityBackImage: z.any().optional(),
   profilePicture: z.string().trim().optional(),
   identityProof: z.string().trim().optional(),
@@ -97,11 +98,13 @@ const formSchema = z.object({
 export default function ProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
+  const frontIdentityRef = useRef<HTMLInputElement>(null);
+  const backIdentityRef = useRef<HTMLInputElement>(null);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       uploadImage: undefined,
-      uploadIdentityImage: undefined,
+      uploadIdentityFrontImage: undefined,
       uploadIdentityBackImage: undefined,
       profilePicture: "",
       identityProof: "",
@@ -127,7 +130,8 @@ export default function ProfilePage() {
   });
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [imageFile, setImageFile] = useState<FileList | null>();
-  const [identityImageFile, setIdentityImageFile] = useState<FileList | null>();
+  const [identityFrontImageFile, setIdentityFrontImageFile] =
+    useState<FileList | null>();
   const [identityBackImageFile, setIdentityBackImageFile] =
     useState<FileList | null>();
   const me = useMe(!!accessToken);
@@ -180,7 +184,7 @@ export default function ProfilePage() {
       dateOfBirth: formData.dateOfBirth.toISOString(),
     };
     formData.uploadImage = imageFile;
-    formData.uploadIdentityImage = identityImageFile;
+    formData.uploadIdentityFrontImage = identityFrontImageFile;
     formData.uploadIdentityBackImage = identityBackImageFile;
 
     let getImageUrl;
@@ -190,12 +194,18 @@ export default function ProfilePage() {
     if (formData.uploadImage) {
       getImageUrl = await handleUploadedFile(formData.uploadImage);
     }
-    if (formData.uploadIdentityImage) {
+    if (
+      formData.uploadIdentityFrontImage &&
+      typeof formData.uploadIdentityFrontImage === "object"
+    ) {
       getIdentityImageUrl = await handleUploadedFile(
-        formData.uploadIdentityImage,
+        formData.uploadIdentityFrontImage,
       );
     }
-    if (formData.uploadIdentityBackImage) {
+    if (
+      formData.uploadIdentityBackImage &&
+      typeof formData.uploadIdentityBackImage === "object"
+    ) {
       getIdentityBackImageUrl = await handleUploadedFile(
         formData.uploadIdentityBackImage,
       );
@@ -203,7 +213,8 @@ export default function ProfilePage() {
 
     //TODO: identity image upload
     delete data.uploadImage;
-    delete data.uploadIdentityImage;
+    delete data.uploadIdentityFrontImage;
+    delete data.uploadIdentityBackImage;
     if (getImageUrl) {
       data.profilePicture = getImageUrl;
     }
@@ -318,6 +329,8 @@ export default function ProfilePage() {
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
         socialLinkList: socialLinkList,
       });
+      setIdentityFrontImageFile(identityProof || "");
+      setIdentityBackImageFile(identityProofBack || "");
     }
   }, [me.data]);
 
@@ -652,7 +665,7 @@ export default function ProfilePage() {
                   {me.data?.data?.tradeRole !== "BUYER" ? (
                     <FormField
                       control={form.control}
-                      name="uploadIdentityImage"
+                      name="uploadIdentityFrontImage"
                       render={({ field }) => (
                         <FormItem className="mb-3.5 w-full">
                           <FormLabel className="block">
@@ -664,13 +677,20 @@ export default function ProfilePage() {
                               <FormControl>
                                 <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
-                                    {identityImageFile ||
-                                    me.data?.data?.identityProof ? (
+                                    {identityFrontImageFile ? (
                                       <button
                                         type="button"
                                         className="common-close-btn-uploader-s1"
                                         onClick={() => {
-                                          setIdentityImageFile(null);
+                                          setIdentityFrontImageFile(null);
+                                          form.setValue(
+                                            "uploadIdentityFrontImage",
+                                            undefined,
+                                          );
+                                          form.setValue("identityProof", "");
+                                          if (frontIdentityRef.current)
+                                            frontIdentityRef.current.value = "";
+                                          // TODO: remove from S3
                                         }}
                                       >
                                         <img
@@ -679,13 +699,14 @@ export default function ProfilePage() {
                                         />
                                       </button>
                                     ) : null}
-                                    {identityImageFile ||
-                                    me.data?.data?.identityProof ? (
+                                    {identityFrontImageFile ? (
                                       <Image
                                         src={
-                                          identityImageFile
+                                          identityFrontImageFile &&
+                                          typeof identityFrontImageFile ===
+                                            "object"
                                             ? URL.createObjectURL(
-                                                identityImageFile[0],
+                                                identityFrontImageFile[0],
                                               )
                                             : me.data?.data?.identityProof
                                               ? me.data?.data?.identityProof
@@ -696,26 +717,7 @@ export default function ProfilePage() {
                                         priority
                                       />
                                     ) : (
-                                      <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                        <div className="flex h-full flex-col items-center justify-center">
-                                          <Image
-                                            src="/images/upload.png"
-                                            className="mb-3"
-                                            width={30}
-                                            height={30}
-                                            alt="camera"
-                                          />
-                                          <span>
-                                            Drop your Identify proof here, or{" "}
-                                          </span>
-                                          <span className="text-blue-500">
-                                            browse
-                                          </span>
-                                          <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                            (.jpg or .png only. Up to 1mb)
-                                          </p>
-                                        </div>
-                                      </div>
+                                      <AddImageContent description="Drop your Identify proof here, or " />
                                     )}
 
                                     <Input
@@ -737,12 +739,13 @@ export default function ProfilePage() {
                                             return;
                                           }
 
-                                          setIdentityImageFile(
+                                          setIdentityFrontImageFile(
                                             event.target.files,
                                           );
                                         }
                                       }}
                                       id="uploadIdentityImage"
+                                      ref={frontIdentityRef}
                                     />
                                   </div>
                                 </div>
@@ -753,13 +756,23 @@ export default function ProfilePage() {
                               <FormControl>
                                 <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
-                                    {identityBackImageFile ||
-                                    me.data?.data?.identityProof ? (
+                                    {identityBackImageFile ? (
                                       <button
                                         type="button"
                                         className="common-close-btn-uploader-s1"
                                         onClick={() => {
                                           setIdentityBackImageFile(null);
+                                          form.setValue(
+                                            "uploadIdentityBackImage",
+                                            undefined,
+                                          );
+                                          form.setValue(
+                                            "identityProofBack",
+                                            "",
+                                          );
+                                          if (backIdentityRef.current)
+                                            backIdentityRef.current.value = "";
+                                          // TODO: remove from S3
                                         }}
                                       >
                                         <img
@@ -768,11 +781,12 @@ export default function ProfilePage() {
                                         />
                                       </button>
                                     ) : null}
-                                    {identityBackImageFile ||
-                                    me.data?.data?.identityProofBack ? (
+                                    {identityBackImageFile ? (
                                       <Image
                                         src={
-                                          identityBackImageFile
+                                          identityBackImageFile &&
+                                          typeof identityBackImageFile ===
+                                            "object"
                                             ? URL.createObjectURL(
                                                 identityBackImageFile[0],
                                               )
@@ -785,26 +799,7 @@ export default function ProfilePage() {
                                         priority
                                       />
                                     ) : (
-                                      <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                        <div className="flex h-full flex-col items-center justify-center">
-                                          <Image
-                                            src="/images/upload.png"
-                                            className="mb-3"
-                                            width={30}
-                                            height={30}
-                                            alt="camera"
-                                          />
-                                          <span>
-                                            Drop your Identify proof here, or{" "}
-                                          </span>
-                                          <span className="text-blue-500">
-                                            browse
-                                          </span>
-                                          <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                            (.jpg or .png only. Up to 1mb)
-                                          </p>
-                                        </div>
-                                      </div>
+                                      <AddImageContent description="Drop your Identify proof here, or " />
                                     )}
 
                                     <Input
@@ -832,6 +827,7 @@ export default function ProfilePage() {
                                         }
                                       }}
                                       id="uploadIdentityBackImage"
+                                      ref={backIdentityRef}
                                     />
                                   </div>
                                 </div>

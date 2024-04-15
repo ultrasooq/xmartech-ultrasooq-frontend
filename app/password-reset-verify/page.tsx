@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   useForgotPassword,
   useResendOtp,
-  userPasswordResetVerify,
+  usePasswordResetVerify,
 } from "@/apis/queries/auth.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { setCookie } from "cookies-next";
@@ -28,7 +28,7 @@ export default function PasswordResetVerifyPage() {
     },
   });
 
-  const passwordResetVerify = userPasswordResetVerify();
+  const passwordResetVerify = usePasswordResetVerify();
   const resendOtp = useResendOtp();
   const passwordResendVerify = useForgotPassword();
 
