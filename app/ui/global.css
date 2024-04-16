@@ -1445,6 +1445,7 @@
   background: var(--theme-primary-color);
 }
 
+/* browser password toggle visibility */
 input::-ms-reveal,
 input::-ms-clear {
   display: none;
@@ -1492,4 +1493,9 @@ input::-ms-clear {
   outline: none;
   height: 10px;
   line-height: 38px;
+}
+
+/* editor */
+.ql-editor{
+  min-height:160px;
 }
