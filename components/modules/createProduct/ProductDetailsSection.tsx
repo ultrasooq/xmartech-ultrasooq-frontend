@@ -196,8 +196,6 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
     }
   };
 
-  console.log(customfields);
-
   return (
     <div className="grid w-full grid-cols-4 gap-x-5">
       <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
