@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { Label } from "@/components/ui/label";
 import {
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import { v4 as uuidv4 } from "uuid";
@@ -33,6 +32,7 @@ import {
 } from "@/apis/queries/category.queries";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import AddImageContent from "../profile/AddImageContent";
 
 type ProductImageProps = {
   path: string;
@@ -49,6 +49,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const formContext = useFormContext();
   const { toast } = useToast();
   const [nestedCategoryList, setNestedCategoryList] = useState<any[]>([]);
+  const photosRef = useRef<HTMLInputElement>(null);
 
   const watchCategoryId = formContext.watch("categoryId");
   const watchSubCategoryId = formContext.watch("subCategoryId");
@@ -61,7 +62,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     watchSubCategoryId,
     !!watchSubCategoryId,
   );
-  const watcher = formContext.watch("productImages");
+  const watchProductImages = formContext.watch("productImages");
 
   const memoizedCategories = useMemo(() => {
     return (
@@ -74,7 +75,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const memoizedBrands = useMemo(() => {
     return (
       brandsQuery?.data?.data.map((item: IBrands) => {
-        return { label: item.brandName, value: item.id };
+        return { label: item.brandName, value: item.id?.toString() };
       }) || []
     );
   }, [brandsQuery?.data?.data?.length]);
@@ -82,59 +83,70 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const memoizedCountries = useMemo(() => {
     return (
       countriesQuery?.data?.data.map((item: ICountries) => {
-        //TODO: check id or countryName
-        return { label: item.countryName, value: item.countryName };
+        return { label: item.countryName, value: item.id?.toString() };
       }) || []
     );
   }, [countriesQuery?.data?.data?.length]);
 
-  const handleProductImages = () => {
+  const handleEditPreviewImage = (id: string, item: FileList) => {
+    const tempArr = watchProductImages || [];
+    const filteredFormItem = tempArr.filter(
+      (item: ProductImageProps) => item.id === id,
+    );
+    if (filteredFormItem.length) {
+      filteredFormItem[0].path = item[0];
+      formContext.setValue("productImages", [...tempArr]);
+    }
+  };
+
+  const handleRemovePreviewImage = (id: string) => {
     formContext.setValue("productImages", [
-      ...formContext.getValues("productImages"),
-      { path: "", id: uuidv4() },
+      ...(watchProductImages || []).filter(
+        (item: ProductImageProps) => item.id !== id,
+      ),
     ]);
   };
 
-  const handleUploadedFile = async (files: FileList | null) => {
-    if (files) {
-      const formData = new FormData();
-      formData.append("content", files[0]);
-      const response = await upload.mutateAsync(formData);
-      if (response.status && response.data) {
-        return response.data;
-      }
-    }
-  };
+  // const handleUploadedFile = async (files: FileList | null) => {
+  //   if (files) {
+  //     const formData = new FormData();
+  //     formData.append("content", files[0]);
+  //     const response = await upload.mutateAsync(formData);
+  //     if (response.status && response.data) {
+  //       return response.data;
+  //     }
+  //   }
+  // };
 
-  const handleFileChanges = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-    field: ControllerRenderProps<FieldValues, "productImages">,
-    item: ProductImageProps,
-  ) => {
-    if (event.target.files?.[0]) {
-      if (event.target.files[0].size > 1048576) {
-        toast({
-          title: "Image size should be less than 1MB",
-          variant: "danger",
-        });
-        return;
-      }
-      const response = await handleUploadedFile(event.target.files);
+  // const handleFileChanges = async (
+  //   event: React.ChangeEvent<HTMLInputElement>,
+  //   field: ControllerRenderProps<FieldValues, "productImages">,
+  //   item: ProductImageProps,
+  // ) => {
+  //   if (event.target.files?.[0]) {
+  //     if (event.target.files[0].size > 1048576) {
+  //       toast({
+  //         title: "Image size should be less than 1MB",
+  //         variant: "danger",
+  //       });
+  //       return;
+  //     }
+  //     const response = await handleUploadedFile(event.target.files);
 
-      if (response) {
-        if (
-          field.value.length &&
-          field.value.some((val: ProductImageProps) => val.id === item.id)
-        ) {
-          field.onChange(
-            field.value.map((val: ProductImageProps) =>
-              val.id === item.id ? { ...val, path: response } : val,
-            ),
-          );
-        }
-      }
-    }
-  };
+  //     if (response) {
+  //       if (
+  //         field.value.length &&
+  //         field.value.some((val: ProductImageProps) => val.id === item.id)
+  //       ) {
+  //         field.onChange(
+  //           field.value.map((val: ProductImageProps) =>
+  //             val.id === item.id ? { ...val, path: response } : val,
+  //           ),
+  //         );
+  //       }
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     if (
@@ -266,75 +278,78 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
               </label>
               <div className="flex w-full flex-wrap">
                 <div className="grid grid-cols-5">
-                  {(watcher || [])?.map(
-                    (item: ProductImageProps, index: number) => (
-                      <FormField
-                        control={formContext.control}
-                        name="productImages"
-                        key={index}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <div className="relative mb-3 w-full px-2">
-                                <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                  {watchProductImages?.map((item: any, index: number) => (
+                    <FormField
+                      control={formContext.control}
+                      name="productImages"
+                      key={index}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="relative mb-3 w-full px-2">
+                              <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                                {watchProductImages?.length ? (
                                   <button
                                     type="button"
                                     className="common-close-btn-uploader-s1"
+                                    onClick={() => {
+                                      handleRemovePreviewImage(item?.id);
+                                      if (photosRef.current)
+                                        photosRef.current.value = "";
+                                    }}
                                   >
-                                    <img
-                                      src="/images/close-white.svg"
-                                      alt=""
-                                    ></img>
-                                  </button>
-                                  {item.path && item.path !== "" ? (
                                     <Image
-                                      src={item.path || "/images/no-image.jpg"}
-                                      alt="profile"
-                                      fill
-                                      priority
+                                      src="/images/close-white.svg"
+                                      alt="close-icon"
+                                      height={22}
+                                      width={22}
                                     />
-                                  ) : (
-                                    <div className="absolute my-auto text-sm font-medium leading-4 text-color-dark">
-                                      <img
-                                        src="/images/upload.png"
-                                        className="m-auto mb-3"
-                                        alt="camera"
-                                      />
-                                      <span>Drop your Image or </span>
-                                      <span className="text-blue-500">
-                                        browse
-                                      </span>
-                                      <p className="text-normal mt-1 text-xs leading-4 text-gray-300">
-                                        (.jpg or .png only. Up to 1mb)
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  <Input
-                                    type="file"
-                                    accept="image/*"
-                                    multiple={false}
-                                    className="!bottom-0 h-44 !w-full cursor-pointer opacity-0 "
-                                    onChange={(event) =>
-                                      handleFileChanges(event, field, item)
+                                  </button>
+                                ) : null}
+                                {item.path ? (
+                                  <Image
+                                    src={
+                                      typeof item.path === "object"
+                                        ? URL.createObjectURL(item.path)
+                                        : typeof item.path === "string"
+                                          ? item.path
+                                          : "/images/no-image.jpg"
                                     }
-                                    id="productImages"
+                                    alt="profile"
+                                    fill
+                                    priority
                                   />
-                                </div>
+                                ) : (
+                                  <AddImageContent description="Drop your Image , or " />
+                                )}
+
+                                <Input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple={false}
+                                  className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                  onChange={(event) =>
+                                    // handleFileChanges(event, field, item)
+                                    {
+                                      if (event.target.files) {
+                                        handleEditPreviewImage(
+                                          item?.id,
+                                          event.target.files,
+                                        );
+                                      }
+                                    }
+                                  }
+                                  id="productImages"
+                                />
                               </div>
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    ),
-                  )}
-                  <div className="mb-3 w-full pl-2">
-                    <Button
-                      variant="outline"
-                      type="button"
-                      onClick={handleProductImages}
-                      className="relative m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center"
-                    >
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  ))}
+                  <div className="relative mb-3 w-full pl-2">
+                    <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
                       <div className="text-sm font-medium leading-4 text-color-dark">
                         <Image
                           src="/images/plus.png"
@@ -345,7 +360,48 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         />
                         <span>Add More</span>
                       </div>
-                    </Button>
+                    </div>
+
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
+                      onChange={(event) =>
+                        // handleFileChanges(event, field, item)
+                        {
+                          if (event.target.files) {
+                            const filesArray = Array.from(event.target.files);
+                            console.log(filesArray);
+                            if (
+                              filesArray.some((file) => file.size > 1048576)
+                            ) {
+                              toast({
+                                title:
+                                  "One of your image size should be less than 1MB",
+                                variant: "danger",
+                              });
+                              return;
+                            }
+
+                            const newImages = filesArray.map((file) => ({
+                              path: file,
+                              id: uuidv4(),
+                            }));
+                            const updatedProductImages = [
+                              ...(watchProductImages || []),
+                              ...newImages,
+                            ];
+                            formContext.setValue(
+                              "productImages",
+                              updatedProductImages,
+                            );
+                          }
+                        }
+                      }
+                      id="productImages"
+                      ref={photosRef}
+                    />
                   </div>
                 </div>
               </div>
@@ -405,32 +461,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
           </div>
 
           <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            <div className="flex w-full flex-col gap-y-2">
-              <Label>Place of Origin</Label>
-              <Controller
-                name="placeOfOriginId"
-                control={formContext.control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                  >
-                    <option value="">Select Place of Origin</option>
-                    {memoizedCountries.map((item: ISelectOptions) => (
-                      <option value={item.value?.toString()} key={item.value}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {
-                  formContext.formState.errors["placeOfOriginId"]
-                    ?.message as string
-                }
-              </p>
-            </div>
+            <ControlledSelectInput
+              label="Place of Origin"
+              name="placeOfOriginId"
+              options={memoizedCountries}
+            />
           </div>
         </div>
       </div>

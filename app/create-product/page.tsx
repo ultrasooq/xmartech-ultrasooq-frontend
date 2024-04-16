@@ -21,6 +21,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 
 const formSchema = z
   .object({
@@ -115,16 +116,12 @@ const CreateProductPage = () => {
       placeOfOriginId: "",
       description: "",
       specification: "",
-      productImages: [
-        {
-          path: "",
-          id: uuidv4(),
-        },
-      ],
+      productImages: [],
     },
   });
   const [activeProductId, setActiveProductId] = useState<string | null>();
 
+  const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
@@ -132,6 +129,7 @@ const CreateProductPage = () => {
     activeProductId ? activeProductId : "",
     !!activeProductId,
   );
+  const watchProductImages = form.watch("productImages");
 
   const memoizedTags = useMemo(() => {
     return (
@@ -141,30 +139,81 @@ const CreateProductPage = () => {
     );
   }, [tagsQuery?.data]);
 
+  const handleUploadedFile = async (list: any[]) => {
+    if (list?.length) {
+      const formData = new FormData();
+
+      list.forEach((item: { path: File; id: string }) => {
+        formData.append("content", item.path);
+      });
+
+      const response = await uploadMultiple.mutateAsync(formData);
+      if (response.status && response.data) {
+        return response.data;
+      }
+    }
+  };
+
   const onSubmit = async (formData: any) => {
-    if (form.getValues("productImages").length) {
-      formData.productImagesList = form
-        .getValues("productImages")
-        .filter((item) => item.path !== "")
-        .map((item) => ({
-          imageName: item.id,
-          image: item.path,
+    const updatedFormData = { ...formData };
+    if (watchProductImages.length) {
+      const fileTypeArrays = watchProductImages.filter(
+        (item: any) => typeof item.path === "object",
+      );
+
+      const imageUrlArray: any = fileTypeArrays?.length
+        ? await handleUploadedFile(fileTypeArrays)
+        : [];
+
+      if (activeProductId) {
+        // edit
+        const stringTypeArrays = watchProductImages
+          .filter((item: any) => typeof item.path !== "object")
+          .map((item: any) => ({ image: item?.path, imageName: item?.path }));
+
+        const formattedimageUrlArrays = imageUrlArray?.map((item: any) => ({
+          image: item,
+          imageName: item,
         }));
+        updatedFormData.productImages = [
+          ...stringTypeArrays,
+          ...formattedimageUrlArrays,
+        ];
+
+        if (updatedFormData.productImages.length) {
+          updatedFormData.productImagesList = updatedFormData.productImages.map(
+            (item: any) => ({
+              image: item?.image,
+              imageName: item?.imageName,
+            }),
+          );
+        }
+      } else {
+        // add
+        updatedFormData.productImages = [...imageUrlArray];
+
+        if (updatedFormData.productImages.length) {
+          updatedFormData.productImagesList = updatedFormData.productImages.map(
+            (item: string) => ({
+              image: item,
+              imageName: item,
+            }),
+          );
+        }
+      }
     }
-    delete formData.productImages;
-    if (formData.subCategoryId !== "") {
-      formData.categoryId = formData.subCategoryId;
-      delete formData.subCategoryId;
+
+    delete updatedFormData.productImages;
+    if (updatedFormData.subCategoryId !== "") {
+      updatedFormData.categoryId = updatedFormData.subCategoryId;
+      delete updatedFormData.subCategoryId;
     }
-    // console.log(formData);
-    // return;
+
     if (activeProductId) {
       // edit
-      const updatedFormData = {
-        ...formData,
-        productId: Number(activeProductId),
-      };
-
+      updatedFormData.productId = Number(activeProductId);
+      // console.log(updatedFormData);
+      // return;
       const response = await updateProduct.mutateAsync(updatedFormData);
       if (response.status && response.data) {
         toast({
@@ -188,7 +237,9 @@ const CreateProductPage = () => {
       }
     } else {
       // add
-      const response = await createProduct.mutateAsync(formData);
+      // console.log(updatedFormData);
+      // return;
+      const response = await createProduct.mutateAsync(updatedFormData);
       if (response.status && response.data) {
         toast({
           title: "Product Create Successful",
@@ -230,21 +281,16 @@ const CreateProductPage = () => {
         ? product?.productImages?.map((item: any) => {
             return {
               path: item?.image,
-              id: item?.imageName,
+              id: uuidv4(),
             };
           })
-        : [
-            {
-              path: "",
-              id: uuidv4(),
-            },
-          ];
+        : [];
 
       const productImagesList = product?.productImages
         ? product?.productImages?.map((item: any) => {
             return {
-              imageName: item?.image,
               image: item?.imageName,
+              imageName: item?.image,
             };
           })
         : undefined;
@@ -255,12 +301,7 @@ const CreateProductPage = () => {
         brandId: product?.brandId ? String(product?.brandId) : "",
         skuNo: product?.skuNo,
         productTagList: productTagList || undefined,
-        productImages: productImages || [
-          {
-            path: "",
-            id: uuidv4(),
-          },
-        ],
+        productImages: productImages || [],
         productImagesList: productImagesList || undefined,
         productPrice: product?.productPrice,
         offerPrice: product?.offerPrice,
@@ -313,7 +354,9 @@ const CreateProductPage = () => {
 
                       <Button
                         disabled={
-                          createProduct.isPending || updateProduct.isPending
+                          createProduct.isPending ||
+                          updateProduct.isPending ||
+                          uploadMultiple.isPending
                         }
                         type="submit"
                         className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"

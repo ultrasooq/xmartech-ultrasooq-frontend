@@ -210,7 +210,7 @@ const ProductListPage = () => {
                 </Table>
                 {!memoizedProducts.length && !memoizedProducts.isLoading ? (
                   <p className="py-10 text-center text-sm font-medium">
-                    No data found
+                    No Product Found
                   </p>
                 ) : null}
               </div>
