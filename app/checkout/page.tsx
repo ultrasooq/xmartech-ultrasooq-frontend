@@ -1,6 +1,13 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const CheckoutPage = () => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const handleToggleAddModal = () => setIsAddModalOpen(!isAddModalOpen);
+
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
@@ -10,111 +17,172 @@ const CheckoutPage = () => {
           </div>
         </div>
         <div className="cart-page-wrapper">
-
           <div className="cart-page-left">
-
             <div className="bodyPart">
               <div className="card-item selected-address">
                 <div className="selected-address-lists">
                   <div className="selected-address-item">
                     <div className="check-with-infocardbox">
-                    <div className="check-col">
-                      <input type="radio" id="addressSel1" name="addressSel" className="custom-radio-s1" />
-                    </div>
-                    <label htmlFor="addressSel1" className="infocardbox">
-                      <div className="selectTag-lists">
-                        <div className="selectTag">Home</div>
+                      <div className="check-col">
+                        <input
+                          type="radio"
+                          id="addressSel1"
+                          name="addressSel"
+                          className="custom-radio-s1"
+                        />
                       </div>
-                      <div className="left-address-with-right-btn">
-                        <div className="left-address">
-                          <h4>John Doe</h4>
-                          <ul>
-                            <li>
-                              <a href="tel:100000000000">
-                                <span className="icon-container"><img src="/images/phoneicon.svg" alt="" /></span>
-                                <span className="text-container">+1 000 0000 0000</span>
-                              </a>
-                            </li>
-                            <li>
-                              <p>
-                                <span className="icon-container"><img src="/images/locationicon.svg" alt="" /></span>
-                                <span className="text-container">2207 Jericho Turnpike Commack North Dakota 11725</span>
-                              </p>
-                            </li>
-                          </ul>
+                      <label htmlFor="addressSel1" className="infocardbox">
+                        <div className="selectTag-lists">
+                          <div className="selectTag">Home</div>
                         </div>
-                        <div className="right-action">
-                          <div className="custom-hover-dropdown">
-                            <button type="button" className="btn">
-                              <img src="/images/custom-hover-dropdown-btn.svg" alt="" />
-                            </button>
-                            <div className="custom-hover-dropdown-menu">
-                              <a href="" className="custom-hover-dropdown-item">
-                                <img src="/images/edit.svg" alt="" />
-                                Edit</a>
-                              <a href="" className="custom-hover-dropdown-item">
-                                <img src="/images/trash.svg" alt="" />Delete</a>
+                        <div className="left-address-with-right-btn">
+                          <div className="left-address">
+                            <h4>John Doe</h4>
+                            <ul>
+                              <li>
+                                <a href="tel:100000000000">
+                                  <span className="icon-container">
+                                    <img src="/images/phoneicon.svg" alt="" />
+                                  </span>
+                                  <span className="text-container">
+                                    +1 000 0000 0000
+                                  </span>
+                                </a>
+                              </li>
+                              <li>
+                                <p>
+                                  <span className="icon-container">
+                                    <img
+                                      src="/images/locationicon.svg"
+                                      alt=""
+                                    />
+                                  </span>
+                                  <span className="text-container">
+                                    2207 Jericho Turnpike Commack North Dakota
+                                    11725
+                                  </span>
+                                </p>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="right-action">
+                            <div className="custom-hover-dropdown">
+                              <button type="button" className="btn">
+                                <img
+                                  src="/images/custom-hover-dropdown-btn.svg"
+                                  alt=""
+                                />
+                              </button>
+                              <div className="custom-hover-dropdown-menu">
+                                <a
+                                  href=""
+                                  className="custom-hover-dropdown-item"
+                                >
+                                  <img src="/images/edit.svg" alt="" />
+                                  Edit
+                                </a>
+                                <a
+                                  href=""
+                                  className="custom-hover-dropdown-item"
+                                >
+                                  <img src="/images/trash.svg" alt="" />
+                                  Delete
+                                </a>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </label>
-                  </div>
+                      </label>
+                    </div>
                   </div>
                   <div className="selected-address-item">
                     <div className="check-with-infocardbox">
-                    <div className="check-col">
-                      <input type="radio" id="addressSel1" name="addressSel" className="custom-radio-s1" />
-                    </div>
-                    <label htmlFor="addressSel1" className="infocardbox">
-                      <div className="selectTag-lists">
-                        <div className="selectTag">Home</div>
+                      <div className="check-col">
+                        <input
+                          type="radio"
+                          id="addressSel1"
+                          name="addressSel"
+                          className="custom-radio-s1"
+                        />
                       </div>
-                      <div className="left-address-with-right-btn">
-                        <div className="left-address">
-                          <h4>John Doe</h4>
-                          <ul>
-                            <li>
-                              <a href="tel:100000000000">
-                                <span className="icon-container"><img src="/images/phoneicon.svg" alt="" /></span>
-                                <span className="text-container">+1 000 0000 0000</span>
-                              </a>
-                            </li>
-                            <li>
-                              <p>
-                                <span className="icon-container"><img src="/images/locationicon.svg" alt="" /></span>
-                                <span className="text-container">2207 Jericho Turnpike Commack North Dakota 11725</span>
-                              </p>
-                            </li>
-                          </ul>
+                      <label htmlFor="addressSel1" className="infocardbox">
+                        <div className="selectTag-lists">
+                          <div className="selectTag">Home</div>
                         </div>
-                        <div className="right-action">
-                          <div className="custom-hover-dropdown">
-                            <button type="button" className="btn">
-                              <img src="/images/custom-hover-dropdown-btn.svg" alt="" />
-                            </button>
-                            <div className="custom-hover-dropdown-menu">
-                              <a href="" className="custom-hover-dropdown-item">
-                                <img src="/images/edit.svg" alt="" />
-                                Edit</a>
-                              <a href="" className="custom-hover-dropdown-item">
-                                <img src="/images/trash.svg" alt="" />Delete</a>
+                        <div className="left-address-with-right-btn">
+                          <div className="left-address">
+                            <h4>John Doe</h4>
+                            <ul>
+                              <li>
+                                <a href="tel:100000000000">
+                                  <span className="icon-container">
+                                    <img src="/images/phoneicon.svg" alt="" />
+                                  </span>
+                                  <span className="text-container">
+                                    +1 000 0000 0000
+                                  </span>
+                                </a>
+                              </li>
+                              <li>
+                                <p>
+                                  <span className="icon-container">
+                                    <img
+                                      src="/images/locationicon.svg"
+                                      alt=""
+                                    />
+                                  </span>
+                                  <span className="text-container">
+                                    2207 Jericho Turnpike Commack North Dakota
+                                    11725
+                                  </span>
+                                </p>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="right-action">
+                            <div className="custom-hover-dropdown">
+                              <button type="button" className="btn">
+                                <img
+                                  src="/images/custom-hover-dropdown-btn.svg"
+                                  alt=""
+                                />
+                              </button>
+                              <div className="custom-hover-dropdown-menu">
+                                <a
+                                  href=""
+                                  className="custom-hover-dropdown-item"
+                                >
+                                  <img src="/images/edit.svg" alt="" />
+                                  Edit
+                                </a>
+                                <a
+                                  href=""
+                                  className="custom-hover-dropdown-item"
+                                >
+                                  <img src="/images/trash.svg" alt="" />
+                                  Delete
+                                </a>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </label>
-                  </div>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
               <div className="card-item cart-items for-add">
                 <div className="top-heading">
-                  <a href="" className="add-new-address-btn"><img src="/images/addbtn.svg" alt=""/> add a new Address</a>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="add-new-address-btn border-none p-0 shadow-none"
+                    onClick={handleToggleAddModal}
+                  >
+                    <img src="/images/addbtn.svg" alt="" /> add a new Address
+                  </Button>
                 </div>
-
               </div>
-
             </div>
           </div>
           <div className="cart-page-right">
@@ -143,11 +211,18 @@ const CheckoutPage = () => {
               </div>
             </div>
             <div className="order-action-btn">
-              <a href="" className="theme-primary-btn order-btn">Continue</a>
+              <a href="" className="theme-primary-btn order-btn">
+                Continue
+              </a>
             </div>
           </div>
         </div>
       </div>
+      <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
+        <DialogContent className="gap-0 p-0">
+          <div className="p-5">Write JSX here</div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
