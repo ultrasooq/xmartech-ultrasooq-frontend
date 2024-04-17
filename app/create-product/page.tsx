@@ -310,6 +310,7 @@ const CreateProductPage = () => {
         placeOfOriginId: product?.placeOfOriginId
           ? String(product?.placeOfOriginId)
           : "",
+        shortDescription: product?.shortDescription,
         description: product?.description,
         specification: product?.specification,
       });
