@@ -25,10 +25,10 @@ const CartListPage = () => {
                     <h4>John Doe</h4>
                     <ul>
                       <li>
-                        <a href="tel:100000000000">
+                        <p>
                           <span className="icon-container"><img src="/images/phoneicon.svg" alt="" /></span>
                           <span className="text-container">+1 000 0000 0000</span>
-                        </a>
+                        </p>
                       </li>
                       <li>
                         <p>
