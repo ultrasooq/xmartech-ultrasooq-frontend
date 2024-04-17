@@ -33,6 +33,7 @@ import {
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import AddImageContent from "../profile/AddImageContent";
+import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 
 type ProductImageProps = {
   path: string;
@@ -465,6 +466,13 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
               label="Place of Origin"
               name="placeOfOriginId"
               options={memoizedCountries}
+            />
+          </div>
+
+          <div className="grid w-full grid-cols-1">
+            <ControlledRichTextEditor
+              label="Product Description"
+              name="shortDescription"
             />
           </div>
         </div>
