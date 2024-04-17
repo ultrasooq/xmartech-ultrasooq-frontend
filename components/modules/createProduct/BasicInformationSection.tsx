@@ -471,7 +471,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
           <div className="grid w-full grid-cols-1">
             <ControlledRichTextEditor
-              label="Product Description"
+              label="Short Description"
               name="shortDescription"
             />
           </div>

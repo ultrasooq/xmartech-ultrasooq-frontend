@@ -37,6 +37,7 @@ export interface IRenderProduct {
   skuNo: string;
   brandName: string;
   productPrice: string;
+  status?: string;
 }
 
 export type OptionProps = {
