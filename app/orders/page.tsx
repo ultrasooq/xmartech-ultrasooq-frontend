@@ -89,9 +89,11 @@ const OrdersPage = () => {
           </div>
           <div className="cart-page-right">
             <div className="card-item priceDetails">
-              <div className="top-heading">
-                <h4>Price Details</h4>
-              </div>
+            <div className="card-inner-headerPart">
+                  <div className="lediv">
+                    <h3>Price Details</h3>
+                  </div>
+                </div>
               <div className="priceDetails-body">
                 <ul>
                   <li>

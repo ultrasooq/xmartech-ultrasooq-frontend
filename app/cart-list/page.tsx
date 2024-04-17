@@ -46,8 +46,10 @@ const CartListPage = () => {
               </div>
               </div>
               <div className="card-item cart-items">
-                <div className="top-heading">
-                  <h4>cart items</h4>
+              <div className="card-inner-headerPart">
+                  <div className="lediv">
+                    <h3>cart items</h3>
+                  </div>
                 </div>
                 <div className="cart-item-lists">
                   <div className="cart-item-list-col">
@@ -237,9 +239,12 @@ const CartListPage = () => {
           </div>
           <div className="cart-page-right">
             <div className="card-item priceDetails">
-              <div className="top-heading">
-                <h4>Price Details</h4>
-              </div>
+              
+              <div className="card-inner-headerPart">
+                  <div className="lediv">
+                    <h3>Price Details</h3>
+                  </div>
+                </div>
               <div className="priceDetails-body">
                 <ul>
                   <li>

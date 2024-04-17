@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const CheckoutPage = () => {
@@ -15,10 +15,13 @@ const CheckoutPage = () => {
         <div className="cart-page-wrapper">
           <div className="cart-page-left">
             <div className="bodyPart">
-            <div className="card-item cart-items">
-                <div className="top-heading">
-                  <h4>cart items</h4>
+              <div className="card-item cart-items">
+              <div className="card-inner-headerPart">
+                  <div className="lediv">
+                    <h3>cart items</h3>
+                  </div>
                 </div>
+               
                 <div className="cart-item-lists">
                   <div className="cart-item-list-col">
                     <figure>
@@ -56,7 +59,7 @@ const CheckoutPage = () => {
                       <h5>$332.38</h5>
                     </div>
                   </div>
-                <div className="cart-item-list-col">
+                  <div className="cart-item-list-col">
                     <figure>
                       <div className="image-container">
                         <img src="/images/prodvr1.png" alt="" />
@@ -92,7 +95,7 @@ const CheckoutPage = () => {
                       <h5>$332.38</h5>
                     </div>
                   </div>
-                
+
                 </div>
               </div>
               <div className="card-item selected-address">
@@ -161,7 +164,7 @@ const CheckoutPage = () => {
                             <h4>John Doe</h4>
                             <ul>
                               <li>
-                              <p>
+                                <p>
                                   <span className="icon-container"><img src="/images/phoneicon.svg" alt="" /></span>
                                   <span className="text-container">+1 000 0000 0000</span>
                                 </p>
@@ -222,7 +225,7 @@ const CheckoutPage = () => {
                             <h4>John Doe</h4>
                             <ul>
                               <li>
-                              <p>
+                                <p>
                                   <span className="icon-container"><img src="/images/phoneicon.svg" alt="" /></span>
                                   <span className="text-container">+1 000 0000 0000</span>
                                 </p>
@@ -267,7 +270,7 @@ const CheckoutPage = () => {
                             <h4>John Doe</h4>
                             <ul>
                               <li>
-                              <p>
+                                <p>
                                   <span className="icon-container"><img src="/images/phoneicon.svg" alt="" /></span>
                                   <span className="text-container">+1 000 0000 0000</span>
                                 </p>
@@ -303,7 +306,7 @@ const CheckoutPage = () => {
 
               <div className="card-item cart-items for-add">
                 <div className="top-heading">
-                <Button
+                  <Button
                     variant="outline"
                     type="button"
                     className="add-new-address-btn border-none p-0 shadow-none"
@@ -317,9 +320,11 @@ const CheckoutPage = () => {
           </div>
           <div className="cart-page-right">
             <div className="card-item priceDetails">
-              <div className="top-heading">
-                <h4>Price Details</h4>
-              </div>
+            <div className="card-inner-headerPart">
+                  <div className="lediv">
+                    <h3>Price Details</h3>
+                  </div>
+                </div>
               <div className="priceDetails-body">
                 <ul>
                   <li>
@@ -349,8 +354,150 @@ const CheckoutPage = () => {
         </div>
       </div>
       <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
-        <DialogContent className="gap-0 p-0">
-          <div className="p-5">Write JSX here</div>
+
+        <DialogContent className="gap-0 p-0 add-new-address-modal">
+          <div className="modal-header">
+            <DialogTitle className="text-center text-xl font-bold">
+              Add New Address
+            </DialogTitle>
+          </div>
+          <div className="card-item card-payment-form px-5 pt-3 pb-5">
+            <div className="flex flex-wrap">
+              <div className="grid grid-cols-2 gap-4 w-full">
+                <div className="space-y-2 mb-4 ">
+                  <label className="text-sm font-medium 
+                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >Name</label>
+                  <div className="relative">
+                    <input className="flex h-9 w-full rounded-md border 
+                      border-input bg-transparent px-3 py-1 text-sm shadow-sm
+                       transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                        placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+                        focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 theme-form-control-s1"
+                      placeholder="Enter Name" />
+                  </div>
+                </div>
+                <div className="space-y-2 mb-4 ">
+                  <label className="text-sm font-medium 
+                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >Phone Number</label>
+                  <div className="relative">
+                    <input className="flex h-9 w-full rounded-md border 
+                      border-input bg-transparent px-3 py-1 text-sm shadow-sm
+                       transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                        placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+                        focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 theme-form-control-s1"
+                      placeholder="Enter Phone Number" />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 w-full">
+                <div className="space-y-2 mb-4 ">
+                  <label className="text-sm font-medium 
+                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >Pincode</label>
+                  <div className="relative">
+                    <input className="flex h-9 w-full rounded-md border 
+                      border-input bg-transparent px-3 py-1 text-sm shadow-sm
+                       transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                        placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+                        focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 theme-form-control-s1"
+                      placeholder="Enter Pincode" />
+                  </div>
+                </div>
+                <div className="space-y-2 mb-4 ">
+                  <label className="text-sm font-medium 
+                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >locality</label>
+                  <div className="relative">
+                    <input className="flex h-9 w-full rounded-md border 
+                      border-input bg-transparent px-3 py-1 text-sm shadow-sm
+                       transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                        placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+                        focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 theme-form-control-s1"
+                      placeholder="Enter locality" />
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2 mb-4 w-full">
+                <label className="text-sm font-medium 
+                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >Address (Area and Street)</label>
+                <div className="relative">
+                  <input className="flex h-9 w-full rounded-md border border-input
+                       bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 
+                       file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground 
+                       focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed 
+                       disabled:opacity-50 theme-form-control-s1" placeholder="Enter Address (Area and Street)"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 w-full">
+                <div className="space-y-2 mb-4 ">
+                  <label className="text-sm font-medium 
+                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >City/District/Town</label>
+                  <div className="relative">
+                    <input className="flex h-9 w-full rounded-md border 
+                      border-input bg-transparent px-3 py-1 text-sm shadow-sm
+                       transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                        placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+                        focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 theme-form-control-s1"
+                      placeholder="Enter City/District/Town" />
+                  </div>
+                </div>
+                <div className="space-y-2 mb-4 ">
+                  <label className="text-sm font-medium 
+                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >State</label>
+                  <div className="relative">
+                    <select className="flex h-9 w-full rounded-md border 
+                      border-input bg-transparent px-3 py-1 text-sm shadow-sm
+                       transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                        placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+                        focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 theme-form-control-s1">
+                      <option>Select</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+
+              <div className="grid grid-cols-2 gap-4 w-full">
+                <div className="space-y-2 mb-4 ">
+                  <label className="text-sm font-medium 
+                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >Landmark (Optional)</label>
+                  <div className="relative">
+                    <input className="flex h-9 w-full rounded-md border 
+                      border-input bg-transparent px-3 py-1 text-sm shadow-sm
+                       transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                        placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+                        focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 theme-form-control-s1"
+                      placeholder="Enter Landmark" />
+                  </div>
+                </div>
+                <div className="space-y-2 mb-4 ">
+                  <label className="text-sm font-medium 
+                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >Alternate Phone (Optional)</label>
+                  <div className="relative">
+                    <input className="flex h-9 w-full rounded-md border 
+                      border-input bg-transparent px-3 py-1 text-sm shadow-sm
+                       transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                        placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+                        focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 theme-form-control-s1"
+                      placeholder="Enter Alternate Phone (Optional)" />
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div className="order-action-btn">
+              <a href="" className="theme-primary-btn order-btn">Save and deliver here</a>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
