@@ -208,13 +208,23 @@ const ProductListPage = () => {
                     ))}
                   </TableBody>
                 </Table>
+
+                {productsQuery?.isLoading ? (
+                  <div className="my-2 space-y-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Skeleton key={i} className="h-24 w-full" />
+                    ))}
+                  </div>
+                ) : null}
+
                 {!memoizedProducts.length && !memoizedProducts.isLoading ? (
                   <p className="py-10 text-center text-sm font-medium">
                     No Product Found
                   </p>
                 ) : null}
               </div>
-              {memoizedProducts.length ? (
+
+              {memoizedProducts.length > 10 ? (
                 <ul className="theme-pagination-s1">
                   <li>
                     <Button type="button" className="theme-primary-btn first">

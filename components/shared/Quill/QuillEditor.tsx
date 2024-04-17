@@ -20,6 +20,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({ onChange, description }) => {
     <ReactQuill
       theme="snow"
       value={value}
+      placeholder="Write here..."
       onChange={(e) => {
         setValue(e);
         onChange(e);
