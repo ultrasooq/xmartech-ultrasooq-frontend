@@ -2026,6 +2026,13 @@ input::-ms-clear {
 }
 
 /* editor */
-.ql-editor {
-  min-height: 160px;
+.ql-editor{
+  min-height:160px;
+}
+
+.quill > .ql-container > .ql-editor.ql-blank::before{
+  font-size: 1rem;
+  color: #7f818d;
+  font-style: normal;
+  font-family: 'Inter';
 }

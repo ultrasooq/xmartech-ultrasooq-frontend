@@ -36,7 +36,13 @@ export const useCreateProduct = () => {
 };
 
 export const useProducts = (
-  payload: { userId: string; page: number; limit: number, term?:string },
+  payload: {
+    userId: string;
+    page: number;
+    limit: number;
+    term?: string;
+    status?: string;
+  },
   enabled = true,
 ) =>
   useQuery({

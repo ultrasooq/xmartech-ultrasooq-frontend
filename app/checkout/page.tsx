@@ -1,14 +1,19 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const CheckoutPage = () => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const handleToggleAddModal = () => setIsAddModalOpen(!isAddModalOpen);
+
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
 
         <div className="cart-page-wrapper">
-
           <div className="cart-page-left">
-
             <div className="bodyPart">
             <div className="card-item cart-items">
                 <div className="top-heading">
@@ -298,11 +303,16 @@ const CheckoutPage = () => {
 
               <div className="card-item cart-items for-add">
                 <div className="top-heading">
-                  <a href="" className="add-new-address-btn"><img src="/images/addbtn.svg" alt="" /> add a new Address</a>
+                <Button
+                    variant="outline"
+                    type="button"
+                    className="add-new-address-btn border-none p-0 shadow-none"
+                    onClick={handleToggleAddModal}
+                  >
+                    <img src="/images/addbtn.svg" alt="" /> add a new Address
+                  </Button>
                 </div>
-
               </div>
-
             </div>
           </div>
           <div className="cart-page-right">
@@ -331,11 +341,18 @@ const CheckoutPage = () => {
               </div>
             </div>
             <div className="order-action-btn">
-              <a href="" className="theme-primary-btn order-btn">Continue</a>
+              <a href="" className="theme-primary-btn order-btn">
+                Continue
+              </a>
             </div>
           </div>
         </div>
       </div>
+      <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
+        <DialogContent className="gap-0 p-0">
+          <div className="p-5">Write JSX here</div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

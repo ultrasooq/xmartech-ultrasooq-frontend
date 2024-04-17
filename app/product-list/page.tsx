@@ -23,6 +23,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { useMe } from "@/apis/queries/user.queries";
 import AddIcon from "@mui/icons-material/Add";
 import { debounce } from "lodash";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const ProductListPage = () => {
   const router = useRouter();
@@ -38,6 +40,7 @@ const ProductListPage = () => {
       page: 1,
       limit: 10,
       term: searchTerm !== "" ? searchTerm : undefined,
+      status: "ALL",
     },
     !!userDetails?.data?.data?.id,
   );
@@ -66,6 +69,7 @@ const ProductListPage = () => {
           skuNo: item?.skuNo || "-",
           brandName: item?.brand?.brandName || "-",
           productPrice: item?.productPrice || "-",
+          status: item?.status || "-",
         };
       }) || []
     );
@@ -141,6 +145,7 @@ const ProductListPage = () => {
                       <TableHead>SKU No</TableHead>
                       <TableHead>Brand</TableHead>
                       <TableHead>Price</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>Action</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -172,6 +177,17 @@ const ProductListPage = () => {
                         <TableCell th-name="Brand">{item?.brandName}</TableCell>
                         <TableCell th-name="Price">
                           ${item?.productPrice}
+                        </TableCell>
+                        <TableCell th-name="Status">
+                          <Badge
+                            className={cn(
+                              item?.status === "ACTIVE"
+                                ? "!bg-green-500"
+                                : "!bg-red-500",
+                            )}
+                          >
+                            {item?.status}
+                          </Badge>
                         </TableCell>
                         <TableCell th-name="Action">
                           <div className="td-action-btns">
@@ -208,13 +224,23 @@ const ProductListPage = () => {
                     ))}
                   </TableBody>
                 </Table>
+
+                {productsQuery?.isLoading ? (
+                  <div className="my-2 space-y-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Skeleton key={i} className="h-24 w-full" />
+                    ))}
+                  </div>
+                ) : null}
+
                 {!memoizedProducts.length && !memoizedProducts.isLoading ? (
                   <p className="py-10 text-center text-sm font-medium">
                     No Product Found
                   </p>
                 ) : null}
               </div>
-              {memoizedProducts.length ? (
+
+              {memoizedProducts.length > 10 ? (
                 <ul className="theme-pagination-s1">
                   <li>
                     <Button type="button" className="theme-primary-btn first">

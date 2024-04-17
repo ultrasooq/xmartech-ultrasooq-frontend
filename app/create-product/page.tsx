@@ -84,6 +84,7 @@ const formSchema = z
       .trim()
       .min(1, { message: "Place of Origin is required" })
       .transform((value) => Number(value)),
+    shortDescription: z.string().trim(),
     description: z.string().trim(),
     specification: z.string().trim(),
   })
@@ -114,6 +115,7 @@ const CreateProductPage = () => {
       productPrice: "",
       offerPrice: "",
       placeOfOriginId: "",
+      shortDescription: "",
       description: "",
       specification: "",
       productImages: [],
@@ -308,6 +310,7 @@ const CreateProductPage = () => {
         placeOfOriginId: product?.placeOfOriginId
           ? String(product?.placeOfOriginId)
           : "",
+        shortDescription: product?.shortDescription,
         description: product?.description,
         specification: product?.specification,
       });

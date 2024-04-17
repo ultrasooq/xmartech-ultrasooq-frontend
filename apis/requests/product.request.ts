@@ -26,6 +26,7 @@ export const fetchProducts = (payload: {
   limit: number;
   userId: string;
   term?: string;
+  status?: string;
 }) => {
   return axios({
     method: "GET",
