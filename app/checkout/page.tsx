@@ -1,12 +1,88 @@
 "use client";
-import React, { useState } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import React, { useMemo, useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import ProductCard from "@/components/modules/checkout/ProductCard";
+import {
+  useCartListByUserId,
+  useDeleteCartItem,
+  useUpdateCartWithLogin,
+} from "@/apis/queries/cart.queries";
+import AddressCard from "@/components/modules/checkout/AddressCard";
+import AddressForm from "@/components/modules/checkout/AddressForm";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
 
 const CheckoutPage = () => {
+  const { toast } = useToast();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  const cartListByUser = useCartListByUserId({
+    page: 1,
+    limit: 10,
+  });
+  const updateCartWithLogin = useUpdateCartWithLogin();
+  const deleteCartItem = useDeleteCartItem();
+
   const handleToggleAddModal = () => setIsAddModalOpen(!isAddModalOpen);
+
+  const memoizedCartList = useMemo(() => {
+    return cartListByUser.data?.data;
+  }, [cartListByUser.data?.data]);
+
+  const memoizedTotalAmount = useMemo(() => {
+    if (cartListByUser.data?.data?.length) {
+      return cartListByUser.data?.data?.reduce(
+        (
+          acc: number,
+          curr: {
+            productDetails: {
+              offerPrice: string;
+            };
+            quantity: number;
+          },
+        ) => {
+          return acc + +curr.productDetails.offerPrice * curr.quantity;
+        },
+        0,
+      );
+    }
+  }, [cartListByUser.data?.data?.length]);
+
+  const handleAddToCart = async (
+    quantity: number,
+    productId: number,
+    actionType: "add" | "remove",
+  ) => {
+    console.log("add to cart:", quantity, actionType);
+    // return;
+    const response = await updateCartWithLogin.mutateAsync({
+      productId,
+      quantity,
+    });
+
+    if (response.status) {
+      toast({
+        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
+
+  const handleRemoveItemFromCart = async (cartId: number) => {
+    console.log("cart id:", cartId);
+    // return;
+    const response = await deleteCartItem.mutateAsync({ cartId });
+    if (response.status) {
+      toast({
+        title: "Item removed from cart",
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
 
   return (
     <div className="cart-page">
@@ -22,94 +98,40 @@ const CheckoutPage = () => {
                 </div>
 
                 <div className="cart-item-lists">
-                  <div className="cart-item-list-col">
-                    <figure>
-                      <div className="image-container">
-                        <img src="/images/prodvr1.png" alt="" />
+                  <div className="px-3">
+                    {cartListByUser.isLoading ? (
+                      <div className="my-3 space-y-3">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                          <Skeleton key={i} className="h-28 w-full" />
+                        ))}
                       </div>
-                      <figcaption>
-                        <h4>
-                          <a href="">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit,
-                          </a>
-                        </h4>
-                        <div className="custom-form-group">
-                          <label>Quantity</label>
-                          <div className="qty-up-down-s1-with-rgMenuAction">
-                            <div className="qty-up-down-s1">
-                              <input
-                                type="number"
-                                className="custom-form-control-s1"
-                              ></input>
-                              <button type="button" className="upDownBtn minus">
-                                <img src="images/upDownBtn-minus.svg" alt="" />
-                              </button>
-                              <button type="button" className="upDownBtn plus">
-                                <img src="images/upDownBtn-plus.svg" alt="" />
-                              </button>
-                            </div>
-                            <ul className="rgMenuAction-lists">
-                              <li>
-                                <a>Remove</a>
-                              </li>
-                              <li>
-                                <a>Move to wishlist</a>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </figcaption>
-                    </figure>
-                    <div className="right-info">
-                      <h6>Price</h6>
-                      <h5>$332.38</h5>
-                    </div>
+                    ) : null}
                   </div>
-                  <div className="cart-item-list-col">
-                    <figure>
-                      <div className="image-container">
-                        <img src="/images/prodvr1.png" alt="" />
-                      </div>
-                      <figcaption>
-                        <h4>
-                          <a href="">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit,
-                          </a>
-                        </h4>
-                        <div className="custom-form-group">
-                          <label>Quantity</label>
-                          <div className="qty-up-down-s1-with-rgMenuAction">
-                            <div className="qty-up-down-s1">
-                              <input
-                                type="number"
-                                className="custom-form-control-s1"
-                              ></input>
-                              <button type="button" className="upDownBtn minus">
-                                <img src="images/upDownBtn-minus.svg" alt="" />
-                              </button>
-                              <button type="button" className="upDownBtn plus">
-                                <img src="images/upDownBtn-plus.svg" alt="" />
-                              </button>
-                            </div>
-                            <ul className="rgMenuAction-lists">
-                              <li>
-                                <a>Remove</a>
-                              </li>
-                              <li>
-                                <a>Move to wishlist</a>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </figcaption>
-                    </figure>
-                    <div className="right-info">
-                      <h6>Price</h6>
-                      <h5>$332.38</h5>
-                    </div>
-                  </div>
+
+                  {memoizedCartList?.map(
+                    (item: {
+                      id: number;
+                      productId: number;
+                      productDetails: {
+                        productName: string;
+                        offerPrice: string;
+                        productImages: { id: number; image: string }[];
+                      };
+                      quantity: number;
+                    }) => (
+                      <ProductCard
+                        key={item.id}
+                        cartId={item.id}
+                        productId={item.productId}
+                        productName={item.productDetails.productName}
+                        offerPrice={item.productDetails.offerPrice}
+                        productQuantity={item.quantity}
+                        productImages={item.productDetails.productImages}
+                        onAdd={handleAddToCart}
+                        onRemove={handleRemoveItemFromCart}
+                      />
+                    ),
+                  )}
                 </div>
               </div>
               <div className="card-item selected-address">
@@ -119,154 +141,8 @@ const CheckoutPage = () => {
                   </div>
                 </div>
                 <div className="selected-address-lists">
-                  <div className="selected-address-item">
-                    <div className="check-with-infocardbox">
-                      <div className="check-col">
-                        <input
-                          type="radio"
-                          id="addressSel1"
-                          name="addressSel"
-                          className="custom-radio-s1"
-                        />
-                      </div>
-                      <label htmlFor="addressSel1" className="infocardbox">
-                        <div className="selectTag-lists">
-                          <div className="selectTag">Home</div>
-                        </div>
-                        <div className="left-address-with-right-btn">
-                          <div className="left-address">
-                            <h4>John Doe</h4>
-                            <ul>
-                              <li>
-                                <p>
-                                  <span className="icon-container">
-                                    <img src="/images/phoneicon.svg" alt="" />
-                                  </span>
-                                  <span className="text-container">
-                                    +1 000 0000 0000
-                                  </span>
-                                </p>
-                              </li>
-                              <li>
-                                <p>
-                                  <span className="icon-container">
-                                    <img
-                                      src="/images/locationicon.svg"
-                                      alt=""
-                                    />
-                                  </span>
-                                  <span className="text-container">
-                                    2207 Jericho Turnpike Commack North Dakota
-                                    11725
-                                  </span>
-                                </p>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="right-action">
-                            <div className="custom-hover-dropdown">
-                              <button type="button" className="btn">
-                                <img
-                                  src="/images/custom-hover-dropdown-btn.svg"
-                                  alt=""
-                                />
-                              </button>
-                              <div className="custom-hover-dropdown-menu">
-                                <a
-                                  href=""
-                                  className="custom-hover-dropdown-item"
-                                >
-                                  <img src="/images/edit.svg" alt="" />
-                                  Edit
-                                </a>
-                                <a
-                                  href=""
-                                  className="custom-hover-dropdown-item"
-                                >
-                                  <img src="/images/trash.svg" alt="" />
-                                  Delete
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="selected-address-item">
-                    <div className="check-with-infocardbox">
-                      <div className="check-col">
-                        <input
-                          type="radio"
-                          id="addressSel1"
-                          name="addressSel"
-                          className="custom-radio-s1"
-                        />
-                      </div>
-                      <label htmlFor="addressSel1" className="infocardbox">
-                        <div className="selectTag-lists">
-                          <div className="selectTag">Home</div>
-                        </div>
-                        <div className="left-address-with-right-btn">
-                          <div className="left-address">
-                            <h4>John Doe</h4>
-                            <ul>
-                              <li>
-                                <p>
-                                  <span className="icon-container">
-                                    <img src="/images/phoneicon.svg" alt="" />
-                                  </span>
-                                  <span className="text-container">
-                                    +1 000 0000 0000
-                                  </span>
-                                </p>
-                              </li>
-                              <li>
-                                <p>
-                                  <span className="icon-container">
-                                    <img
-                                      src="/images/locationicon.svg"
-                                      alt=""
-                                    />
-                                  </span>
-                                  <span className="text-container">
-                                    2207 Jericho Turnpike Commack North Dakota
-                                    11725
-                                  </span>
-                                </p>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="right-action">
-                            <div className="custom-hover-dropdown">
-                              <button type="button" className="btn">
-                                <img
-                                  src="/images/custom-hover-dropdown-btn.svg"
-                                  alt=""
-                                />
-                              </button>
-                              <div className="custom-hover-dropdown-menu">
-                                <a
-                                  href=""
-                                  className="custom-hover-dropdown-item"
-                                >
-                                  <img src="/images/edit.svg" alt="" />
-                                  Edit
-                                </a>
-                                <a
-                                  href=""
-                                  className="custom-hover-dropdown-item"
-                                >
-                                  <img src="/images/trash.svg" alt="" />
-                                  Delete
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
+                  <AddressCard />
+                  <AddressCard />
                 </div>
               </div>
 
@@ -287,154 +163,8 @@ const CheckoutPage = () => {
                   </div>
                 </div>
                 <div className="selected-address-lists">
-                  <div className="selected-address-item">
-                    <div className="check-with-infocardbox">
-                      <div className="check-col">
-                        <input
-                          type="radio"
-                          id="addressSel1"
-                          name="addressSel"
-                          className="custom-radio-s1"
-                        />
-                      </div>
-                      <label htmlFor="addressSel1" className="infocardbox">
-                        <div className="selectTag-lists">
-                          <div className="selectTag">Home</div>
-                        </div>
-                        <div className="left-address-with-right-btn">
-                          <div className="left-address">
-                            <h4>John Doe</h4>
-                            <ul>
-                              <li>
-                                <p>
-                                  <span className="icon-container">
-                                    <img src="/images/phoneicon.svg" alt="" />
-                                  </span>
-                                  <span className="text-container">
-                                    +1 000 0000 0000
-                                  </span>
-                                </p>
-                              </li>
-                              <li>
-                                <p>
-                                  <span className="icon-container">
-                                    <img
-                                      src="/images/locationicon.svg"
-                                      alt=""
-                                    />
-                                  </span>
-                                  <span className="text-container">
-                                    2207 Jericho Turnpike Commack North Dakota
-                                    11725
-                                  </span>
-                                </p>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="right-action">
-                            <div className="custom-hover-dropdown">
-                              <button type="button" className="btn">
-                                <img
-                                  src="/images/custom-hover-dropdown-btn.svg"
-                                  alt=""
-                                />
-                              </button>
-                              <div className="custom-hover-dropdown-menu">
-                                <a
-                                  href=""
-                                  className="custom-hover-dropdown-item"
-                                >
-                                  <img src="/images/edit.svg" alt="" />
-                                  Edit
-                                </a>
-                                <a
-                                  href=""
-                                  className="custom-hover-dropdown-item"
-                                >
-                                  <img src="/images/trash.svg" alt="" />
-                                  Delete
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-                  <div className="selected-address-item">
-                    <div className="check-with-infocardbox">
-                      <div className="check-col">
-                        <input
-                          type="radio"
-                          id="addressSel1"
-                          name="addressSel"
-                          className="custom-radio-s1"
-                        />
-                      </div>
-                      <label htmlFor="addressSel1" className="infocardbox">
-                        <div className="selectTag-lists">
-                          <div className="selectTag">Home</div>
-                        </div>
-                        <div className="left-address-with-right-btn">
-                          <div className="left-address">
-                            <h4>John Doe</h4>
-                            <ul>
-                              <li>
-                                <p>
-                                  <span className="icon-container">
-                                    <img src="/images/phoneicon.svg" alt="" />
-                                  </span>
-                                  <span className="text-container">
-                                    +1 000 0000 0000
-                                  </span>
-                                </p>
-                              </li>
-                              <li>
-                                <p>
-                                  <span className="icon-container">
-                                    <img
-                                      src="/images/locationicon.svg"
-                                      alt=""
-                                    />
-                                  </span>
-                                  <span className="text-container">
-                                    2207 Jericho Turnpike Commack North Dakota
-                                    11725
-                                  </span>
-                                </p>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="right-action">
-                            <div className="custom-hover-dropdown">
-                              <button type="button" className="btn">
-                                <img
-                                  src="/images/custom-hover-dropdown-btn.svg"
-                                  alt=""
-                                />
-                              </button>
-                              <div className="custom-hover-dropdown-menu">
-                                <a
-                                  href=""
-                                  className="custom-hover-dropdown-item"
-                                >
-                                  <img src="/images/edit.svg" alt="" />
-                                  Edit
-                                </a>
-                                <a
-                                  href=""
-                                  className="custom-hover-dropdown-item"
-                                >
-                                  <img src="/images/trash.svg" alt="" />
-                                  Delete
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
+                  <AddressCard />
+                  <AddressCard />
                 </div>
               </div>
 
@@ -463,7 +193,7 @@ const CheckoutPage = () => {
                 <ul>
                   <li>
                     <p>Subtotal</p>
-                    <h5>$3332.38</h5>
+                    <h5>${memoizedTotalAmount}</h5>
                   </li>
                   <li>
                     <p>Shipping</p>
@@ -476,206 +206,20 @@ const CheckoutPage = () => {
               </div>
               <div className="priceDetails-footer">
                 <h4>Total Amount</h4>
-                <h4 className="amount-value">$3332.38</h4>
+                <h4 className="amount-value">${memoizedTotalAmount}</h4>
               </div>
             </div>
             <div className="order-action-btn">
-              <a href="" className="theme-primary-btn order-btn">
+              <Link href="/orders" className="theme-primary-btn order-btn">
                 Continue
-              </a>
+              </Link>
             </div>
           </div>
         </div>
       </div>
       <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
         <DialogContent className="add-new-address-modal gap-0 p-0">
-          <div className="modal-header">
-            <DialogTitle className="text-center text-xl font-bold">
-              Add New Address
-            </DialogTitle>
-          </div>
-          <div className="card-item card-payment-form px-5 pb-5 pt-3">
-            <div className="flex flex-wrap">
-              <div className="grid w-full grid-cols-2 gap-4">
-                <div className="mb-4 space-y-2 ">
-                  <label
-                    className="text-sm font-medium 
-                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Name
-                  </label>
-                  <div className="relative">
-                    <input
-                      className="theme-form-control-s1 flex h-9 w-full rounded-md 
-                      border border-input bg-transparent px-3 py-1 text-sm
-                       shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                        file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                        focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="Enter Name"
-                    />
-                  </div>
-                </div>
-                <div className="mb-4 space-y-2 ">
-                  <label
-                    className="text-sm font-medium 
-                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <input
-                      className="theme-form-control-s1 flex h-9 w-full rounded-md 
-                      border border-input bg-transparent px-3 py-1 text-sm
-                       shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                        file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                        focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="Enter Phone Number"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="grid w-full grid-cols-2 gap-4">
-                <div className="mb-4 space-y-2 ">
-                  <label
-                    className="text-sm font-medium 
-                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Pincode
-                  </label>
-                  <div className="relative">
-                    <input
-                      className="theme-form-control-s1 flex h-9 w-full rounded-md 
-                      border border-input bg-transparent px-3 py-1 text-sm
-                       shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                        file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                        focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="Enter Pincode"
-                    />
-                  </div>
-                </div>
-                <div className="mb-4 space-y-2 ">
-                  <label
-                    className="text-sm font-medium 
-                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    locality
-                  </label>
-                  <div className="relative">
-                    <input
-                      className="theme-form-control-s1 flex h-9 w-full rounded-md 
-                      border border-input bg-transparent px-3 py-1 text-sm
-                       shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                        file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                        focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="Enter locality"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="mb-4 w-full space-y-2">
-                <label
-                  className="text-sm font-medium 
-                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Address (Area and Street)
-                </label>
-                <div className="relative">
-                  <input
-                    className="theme-form-control-s1 flex h-9 w-full rounded-md border
-                       border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors 
-                       file:border-0 file:bg-transparent file:text-sm file:font-medium 
-                       placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
-                       disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Enter Address (Area and Street)"
-                  />
-                </div>
-              </div>
-
-              <div className="grid w-full grid-cols-2 gap-4">
-                <div className="mb-4 space-y-2 ">
-                  <label
-                    className="text-sm font-medium 
-                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    City/District/Town
-                  </label>
-                  <div className="relative">
-                    <input
-                      className="theme-form-control-s1 flex h-9 w-full rounded-md 
-                      border border-input bg-transparent px-3 py-1 text-sm
-                       shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                        file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                        focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="Enter City/District/Town"
-                    />
-                  </div>
-                </div>
-                <div className="mb-4 space-y-2 ">
-                  <label
-                    className="text-sm font-medium 
-                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    State
-                  </label>
-                  <div className="relative">
-                    <select
-                      className="theme-form-control-s1 flex h-9 w-full rounded-md 
-                      border border-input bg-transparent px-3 py-1 text-sm
-                       shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                        file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                        focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <option>Select</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid w-full grid-cols-2 gap-4">
-                <div className="mb-4 space-y-2 ">
-                  <label
-                    className="text-sm font-medium 
-                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Landmark (Optional)
-                  </label>
-                  <div className="relative">
-                    <input
-                      className="theme-form-control-s1 flex h-9 w-full rounded-md 
-                      border border-input bg-transparent px-3 py-1 text-sm
-                       shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                        file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                        focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="Enter Landmark"
-                    />
-                  </div>
-                </div>
-                <div className="mb-4 space-y-2 ">
-                  <label
-                    className="text-sm font-medium 
-                    leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Alternate Phone (Optional)
-                  </label>
-                  <div className="relative">
-                    <input
-                      className="theme-form-control-s1 flex h-9 w-full rounded-md 
-                      border border-input bg-transparent px-3 py-1 text-sm
-                       shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                        file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                        focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="Enter Alternate Phone (Optional)"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="order-action-btn">
-              <a href="" className="theme-primary-btn order-btn">
-                Save and deliver here
-              </a>
-            </div>
-          </div>
+          <AddressForm />
         </DialogContent>
       </Dialog>
     </div>
