@@ -30,7 +30,7 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
           </div>
           <div className="text-container">
             <h4>{item.productName}</h4>
-            <p>Lorem Ipsum is simply dummy text..</p>
+            <p>{item.shortDescription}</p>
             <div className="rating_stars">
               <img src="/images/rating_stars.svg" alt="" />
               <span>02</span>

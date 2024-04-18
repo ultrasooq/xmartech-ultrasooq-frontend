@@ -54,6 +54,7 @@ export interface TrendingProduct {
   categoryName: string;
   brandName: string;
   skuNo: string;
+  shortDescription: string;
 }
 
 export type ProductImageProps = {
