@@ -1,0 +1,44 @@
+import axios from "axios";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import urlcat from "urlcat";
+
+export const fetchCartListByUserId = (payload: {
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/list`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const updateCartWithLogin = (payload: any) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/update`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const deleteCartItem = (payload: { cartId: number }) => {
+  return axios({
+    method: "DELETE",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/delete`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
