@@ -14,83 +14,69 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       <div className="info-col">
         <h2>{productDetails?.productName}</h2>
       </div>
-      <div className="info-col">
+      <div className="info-col mb-2">
+        <div className="brand_sold_info">
+          <div className="lediv">
+            <h5><span>Brand:</span> new</h5>
+          </div>
+          <div className="rgdiv">
+            <h5><span>Sold By:</span> YOUNG SHOP</h5>
+          </div>
+        </div>
+        <div className="rating">
+          <img src="images/star.png" alt="" />
+          <span>(5 Reviews)</span>
+        </div>
         <h3>
           ${productDetails?.offerPrice}{" "}
           <span>${productDetails?.productPrice}</span>
         </h3>
+
       </div>
       <div className="info-col">
         <div className="row">
+
           <div className="col-12 col-md-12">
-            <div className="form-group">
-              <label>TIME LEFT:</label>
-              <div className="time-left-lists-s1">
-                <div className="time-left-list-col">
-                  <div className="dayDigit">3</div>
-                  <div className="dayText">days</div>
-                </div>
-                <div className="time-left-list-col">
-                  <div className="dayDigit">18</div>
-                  <div className="dayText">Hours</div>
-                </div>
-                <div className="time-left-list-col">
-                  <div className="dayDigit">29</div>
-                  <div className="dayText">Minutes</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-12 col-md-12">
-            <div className="form-group">
-              <p>Group Buy deal ends May 31, 2022, 12:00 am</p>
-              <p>Timezone: UTC+0</p>
-            </div>
             <div className="col-12 col-md-12">
               <div className="form-group">
                 <ul className="ul-lists-style-s1">
-                  <li>Minimum: 50</li>
-                  <li>Maximum: 100</li>
-                  <li>Deals sold: 0</li>
+                  <li>The standard chunk of Lorem Ipsum</li>
+                  <li>The standard chunk of Lorem Ipsum</li>
+                  <li>It is a long established fact that a reader</li>
+                  <li>Double-ended Coil Cord with 3.5mm Stereo Plugs Included</li>
+                  <li>It is a long established fact that a reader</li>
                 </ul>
               </div>
             </div>
-            <div className="col-12 col-md-12">
-              <div className="form-group mb-0">
-                <Slider defaultValue={[50]} max={100} step={1} />
-                <div className="slider-btm-range-value">
-                  <div className="value_text">0</div>
-                  <div className="value_text">100</div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
-      <div className="info-col">
-        <div className="row">
-          <div className="col-12 col-md-12">
-            <div className="form-group mb-0">
+      <div className="info-col top-btm-border">
+        <div className="form-group mb-0">
+          <div className="quantity-with-right-payment-info">
+            <div className="left-qty">
               <label>Quantity</label>
-              <div className="quantity_select_with_full_size_btn">
-                <div className="quantity_selector">
-                  <span className="minus">
-                    <img src="/images/quantity_selector_minus.svg" alt="" />
-                  </span>
-                  <input
-                    type="number"
-                    className="theme-form-control-s1"
-                  ></input>
-                  <span className="plus">
-                    <img src="/images/quantity_selector_plus.svg" alt="" />
-                  </span>
-                </div>
-                <div className="selector_submit_btn">
-                  <Button type="button" className="theme-primary-btn">
-                    Buy Now
-                  </Button>
-                </div>
+              <div className="qty-up-down-s1">
+                <input type="number" className="custom-form-control-s1"></input>
+                <button type="button" className="upDownBtn minus">
+                  <img src="images/upDownBtn-minus.svg" alt="" />
+                </button>
+                <button type="button" className="upDownBtn plus">
+                  <img src="images/upDownBtn-plus.svg" alt="" />
+                </button>
               </div>
+            </div>
+            <div className="right-payment-info">
+              <ul>
+                <li>
+                <img src="/images/securePaymenticon.svg" alt=""/>
+                  <span>Secure Payment</span>
+                </li>
+                <li>
+                  <img src="/images/support-24hr.svg" alt=""/>
+                  <span>Secure Payment</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -99,15 +85,15 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         <div className="row">
           <div className="col-12 col-md-12">
             <div className="form-group mb-0">
-              <label>HIGHLIGHTS</label>
+              <label>Report Abuse</label>
               <p>
-                <span className="color-text">colour:</span> Red & Black
+                <span className="color-text">SKU:</span> SF1133569600-1
               </p>
               <p>
-                <span className="color-text">Outer Material:</span> Mesh
+                <span className="color-text">Categories:</span> Consumer Electronics, Refrigerator Babies & Moms
               </p>
               <p>
-                <span className="color-text">Closure:</span> Laced
+                <span className="color-text">Tags:</span> sofa, technologies, wireless
               </p>
             </div>
           </div>
