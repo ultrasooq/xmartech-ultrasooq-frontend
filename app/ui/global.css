@@ -2221,3 +2221,12 @@ input::-ms-clear {
   font-style: normal;
   font-family: 'Inter';
 }
+
+/* .readonly-quill .ql-editor {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.readonly-quill .ql-container.ql-snow {
+  border: none !important;
+} */
