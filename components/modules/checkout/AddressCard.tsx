@@ -1,6 +1,38 @@
 import React from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
-const AddressCard = () => {
+type AddressCardProps = {
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  address: string;
+  city: string;
+  country: string;
+  province: string;
+  postCode: string;
+  onEdit: () => void;
+  onDelete: () => void;
+};
+
+const AddressCard: React.FC<AddressCardProps> = ({
+  firstName,
+  lastName,
+  phoneNumber,
+  address,
+  city,
+  country,
+  province,
+  postCode,
+  onEdit,
+  onDelete,
+}) => {
   return (
     <div className="selected-address-item">
       <div className="check-with-infocardbox">
@@ -13,19 +45,18 @@ const AddressCard = () => {
           />
         </div>
         <label htmlFor="addressSel1" className="infocardbox">
-          {/* <div className="selectTag-lists">
-        <div className="selectTag">Home</div>
-      </div> */}
           <div className="left-address-with-right-btn">
             <div className="left-address">
-              <h4>John Doe</h4>
+              <h4>
+                {firstName} {lastName}
+              </h4>
               <ul>
                 <li>
                   <p>
                     <span className="icon-container">
                       <img src="/images/phoneicon.svg" alt="" />
                     </span>
-                    <span className="text-container">+1 000 0000 0000</span>
+                    <span className="text-container">{phoneNumber}</span>
                   </p>
                 </li>
                 <li>
@@ -34,28 +65,30 @@ const AddressCard = () => {
                       <img src="/images/locationicon.svg" alt="" />
                     </span>
                     <span className="text-container">
-                      2207 Jericho Turnpike Commack North Dakota 11725
+                      {address} {city}, {province}, {postCode}, {country}
                     </span>
                   </p>
                 </li>
               </ul>
             </div>
-            <div className="right-action">
-              <div className="custom-hover-dropdown">
-                <button type="button" className="btn">
-                  <img src="/images/custom-hover-dropdown-btn.svg" alt="" />
-                </button>
-                <div className="custom-hover-dropdown-menu">
-                  <a href="" className="custom-hover-dropdown-item">
-                    <img src="/images/edit.svg" alt="" />
-                    Edit
-                  </a>
-                  <a href="" className="custom-hover-dropdown-item">
-                    <img src="/images/trash.svg" alt="" />
-                    Delete
-                  </a>
-                </div>
-              </div>
+
+            <div>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Image
+                    alt="image-icon"
+                    src="/images/custom-hover-dropdown-btn.svg"
+                    height={25}
+                    width={25}
+                    className="rounded-full"
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={onDelete}>Delete</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </label>
