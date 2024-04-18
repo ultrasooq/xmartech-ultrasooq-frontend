@@ -1,4 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ProductDescriptionCardProps = {
   productName: string;
@@ -8,8 +12,10 @@ type ProductDescriptionCardProps = {
   skuNo: string;
   productTags: any[];
   category: string;
+  productShortDescription: string;
   productQuantity: number;
   onAdd: (args0: number) => void;
+  isLoading: boolean;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -20,8 +26,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   skuNo,
   productTags,
   category,
+  productShortDescription,
   productQuantity,
   onAdd,
+  isLoading,
 }) => {
   const [quantity, setQuantity] = useState(1);
 
@@ -31,57 +39,69 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
   return (
     <div className="product-view-s1-right">
+      {isLoading ? <Skeleton className="mb-2 h-10 w-full" /> : null}
       <div className="info-col">
         <h2>{productName}</h2>
       </div>
-      <div className="info-col mb-2">
-        <div className="brand_sold_info">
-          <div className="lediv">
-            <h5>
-              <span>Brand:</span> {brand}
-            </h5>
+      {isLoading ? (
+        <Skeleton className="mb-2 h-28 w-full" />
+      ) : (
+        <div className="info-col mb-2">
+          <div className="brand_sold_info">
+            <div className="lediv">
+              <h5>
+                <span>Brand:</span> {brand}
+              </h5>
+            </div>
+            <div className="rgdiv">
+              <h5>
+                <span>Sold By:</span> YOUNG SHOP
+              </h5>
+            </div>
           </div>
-          <div className="rgdiv">
-            <h5>
-              <span>Sold By:</span> YOUNG SHOP
-            </h5>
+          <div className="rating">
+            <img src="images/star.png" alt="" />
+            <span>(5 Reviews)</span>
           </div>
+          <h3>
+            ${offerPrice} <span>${productPrice}</span>
+          </h3>
         </div>
-        <div className="rating">
-          <img src="images/star.png" alt="" />
-          <span>(5 Reviews)</span>
-        </div>
-        <h3>
-          ${offerPrice} <span>${productPrice}</span>
-        </h3>
-      </div>
-      <div className="info-col">
-        <div className="row">
-          <div className="col-12 col-md-12">
+      )}
+
+      {isLoading ? (
+        <Skeleton className="h-44 w-full" />
+      ) : (
+        <div className="info-col">
+          <div className="row">
             <div className="col-12 col-md-12">
-              <div className="form-group">
-                <ul className="ul-lists-style-s1">
-                  <li>The standard chunk of Lorem Ipsum</li>
-                  <li>The standard chunk of Lorem Ipsum</li>
-                  <li>It is a long established fact that a reader</li>
-                  <li>
-                    Double-ended Coil Cord with 3.5mm Stereo Plugs Included
-                  </li>
-                  <li>It is a long established fact that a reader</li>
-                </ul>
+              <div className="col-12 col-md-12">
+                <div className="form-group">
+                  {productShortDescription ? (
+                    <ReactQuill
+                      theme="snow"
+                      value={productShortDescription}
+                      readOnly
+                      modules={{
+                        toolbar: false,
+                      }}
+                      className="readonly-quill"
+                    />
+                  ) : (
+                    <p>No Description</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
       <div className="info-col top-btm-border">
         <div className="form-group mb-0">
           <div className="quantity-with-right-payment-info">
             <div className="left-qty">
               <label>Quantity</label>
               <div className="flex w-28 items-center justify-center gap-x-8">
-                {/* <div className="qty-up-down-s1"> */}
-                {/* <input type="number" className="custom-form-control-s1"></input> */}
                 <button
                   type="button"
                   className="upDownBtn minus"
@@ -108,6 +128,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 </button>
               </div>
             </div>
+
             <div className="right-payment-info">
               <ul>
                 <li>
@@ -123,27 +144,32 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           </div>
         </div>
       </div>
-      <div className="info-col">
-        <div className="row">
-          <div className="col-12 col-md-12">
-            <div className="form-group mb-0">
-              <label>Report Abuse</label>
-              <p>
-                <span className="color-text">SKU:</span> {skuNo}
-              </p>
-              <p>
-                <span className="color-text">Categories:</span> {category}
-              </p>
-              <p>
-                <span className="color-text">Tags:</span>{" "}
-                {productTags
-                  ?.map((item) => item.productTagsTag?.tagName)
-                  .join(", ")}
-              </p>
+
+      {isLoading ? (
+        <Skeleton className="h-28 w-full" />
+      ) : (
+        <div className="info-col">
+          <div className="row">
+            <div className="col-12 col-md-12">
+              <div className="form-group mb-0">
+                <label>Report Abuse</label>
+                <p>
+                  <span className="color-text">SKU:</span> {skuNo}
+                </p>
+                <p>
+                  <span className="color-text">Categories:</span> {category}
+                </p>
+                <p>
+                  <span className="color-text">Tags:</span>{" "}
+                  {productTags
+                    ?.map((item) => item.productTagsTag?.tagName)
+                    .join(", ")}
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
