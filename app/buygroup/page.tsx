@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useFetchProductById } from "@/apis/queries/product.queries";
 import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
 import RelatedProductsSection from "@/components/modules/productDetails/RelatedProductsSection";
-import DescriptionSection from "@/components/modules/productDetails/DescriptionSection";
+// import DescriptionSection from "@/components/modules/productDetails/DescriptionSection";
 import SameBrandSection from "@/components/modules/productDetails/SameBrandSection";
 import ProductDescriptionCard from "@/components/modules/productDetails/ProductDescriptionCard";
 import ProductImagesCard from "@/components/modules/productDetails/ProductImagesCard";
@@ -14,6 +14,9 @@ import {
 } from "@/apis/queries/cart.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
 
 const BuyGroupPage = () => {
   const { toast } = useToast();
@@ -52,10 +55,20 @@ const BuyGroupPage = () => {
         description: "Check your cart for more details",
         variant: "success",
       });
+
+      return response.status;
     }
   };
 
   const handleCartPage = () => router.push("/cart-list");
+  const handleCheckoutPage = async () => {
+    const response = await handleAddToCart(1);
+    if (response) {
+      setTimeout(() => {
+        router.push("/checkout");
+      }, 2000);
+    }
+  };
 
   return (
     <div className="body-content-s1">
@@ -64,12 +77,14 @@ const BuyGroupPage = () => {
           <ProductImagesCard
             productDetails={productDetails}
             onAdd={() => handleAddToCart(1)}
-            onNavigate={handleCartPage}
+            onToCart={handleCartPage}
+            onToCheckout={handleCheckoutPage}
             hasItem={
               !!cartListByUser.data?.data?.find(
                 (item: any) => item.productId === Number(activeProductId),
               )
             }
+            isLoading={!productQueryById.isFetched}
           />
           <ProductDescriptionCard
             productName={productDetails?.productName}
@@ -79,79 +94,105 @@ const BuyGroupPage = () => {
             skuNo={productDetails?.skuNo}
             category={productDetails?.category?.name}
             productTags={productDetails?.productTags}
+            productShortDescription={productDetails?.shortDescription}
             productQuantity={
               cartListByUser.data?.data?.find(
                 (item: any) => item.productId === Number(activeProductId),
               )?.quantity
             }
             onAdd={handleAddToCart}
+            isLoading={!productQueryById.isFetched}
           />
         </div>
       </div>
       <div className="product-view-s1-left-details-with-right-suggestion">
         <div className="container m-auto px-3">
           <div className="product-view-s1-left-details">
-            <div className="theme-tab-s1">
-              <ul>
-                <li>
-                  <a href="#" className="active">
-                    Description
-                  </a>
-                </li>
-                <li>
-                  <a href="#">Specification</a>
-                </li>
-                <li>
-                  <a href="#">Vendor</a>
-                </li>
-                <li>
-                  <a href="#">Reviews</a>
-                </li>
-                <li>
-                  <a href="#">Questions and Answers</a>
-                </li>
-                <li>
-                  <a href="#">More Offers</a>
-                </li>
-              </ul>
-            </div>
-
             <div className="w-full">
               <Tabs defaultValue="description">
-                <TabsList className="flex h-auto w-full flex-wrap gap-x-6 rounded-none bg-transparent px-0 sm:grid sm:min-h-[80px] sm:w-[560px] sm:grid-cols-3">
+                <TabsList className="flex h-auto w-full flex-wrap rounded-none bg-transparent px-0 sm:grid sm:min-h-[80px] sm:grid-cols-6">
                   <TabsTrigger
                     value="description"
-                    className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
+                    className="w-full rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] py-4 text-base font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto"
                   >
                     Description
                   </TabsTrigger>
                   <TabsTrigger
                     value="specification"
-                    className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
+                    className="w-full rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] py-4 text-base font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto"
                   >
                     Specification
                   </TabsTrigger>
                   <TabsTrigger
                     value="vendor"
-                    className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
+                    className="w-full rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] py-4 text-base font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto"
                   >
                     Vendor
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="reviews"
+                    className="w-full rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] py-4 text-base font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto"
+                  >
+                    Reviews
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="qanda"
+                    className="w-full rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] py-4 text-base font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto"
+                  >
+                    Questions
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="offers"
+                    className="w-full rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] py-4 text-base font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto"
+                  >
+                    More Offers
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="description" className="mt-0">
                   <div className="w-full bg-white">
-                    <DescriptionSection />
+                    <ReactQuill
+                      theme="snow"
+                      value={productDetails?.description}
+                      readOnly
+                      modules={{
+                        toolbar: false,
+                      }}
+                      className="readonly-quill"
+                    />
                   </div>
                 </TabsContent>
                 <TabsContent value="specification" className="mt-0">
                   <div className="w-full bg-white">
-                    <p>Specification</p>
+                    <ReactQuill
+                      theme="snow"
+                      value={productDetails?.specification}
+                      readOnly
+                      modules={{
+                        toolbar: false,
+                      }}
+                      className="readonly-quill"
+                    />
                   </div>
                 </TabsContent>
                 <TabsContent value="vendor" className="mt-0">
                   <div className="w-full bg-white">
                     <p>Vendor</p>
+                  </div>
+                </TabsContent>
+                <TabsContent value="reviews" className="mt-0">
+                  <div className="w-full bg-white">
+                    <p>Reviews</p>
+                  </div>
+                </TabsContent>
+                <TabsContent value="qanda" className="mt-0">
+                  <div className="w-full bg-white">
+                    <p>Questions and Answers</p>
+                  </div>
+                </TabsContent>
+                <TabsContent value="offers" className="mt-0">
+                  <div className="w-full bg-white">
+                    <p>More Offers</p>
                   </div>
                 </TabsContent>
               </Tabs>
