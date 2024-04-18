@@ -26,7 +26,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    setQuantity(productQuantity);
+    setQuantity(productQuantity || 1);
   }, [productQuantity]);
 
   return (
