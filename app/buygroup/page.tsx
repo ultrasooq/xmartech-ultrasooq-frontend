@@ -27,7 +27,8 @@ const BuyGroupPage = () => {
 
   return (
     <div className="body-content-s1">
-      <div className="product-view-s1-left-right">
+     
+      <div className="product-view-s1-left-right type2">
         <div className="container m-auto px-3">
           <ProductImagesCard productDetails={productDetails} />
           <ProductDescriptionCard productDetails={productDetails} />

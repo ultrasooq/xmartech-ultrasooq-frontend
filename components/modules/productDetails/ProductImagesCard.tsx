@@ -13,8 +13,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
     <div className="product-view-s1-left">
       <div className="product-view-s1">
         <div className="product-view-s1-big-image">
-          <div className="relative h-full w-full">
-            <Image
+            <img
               src={
                 productDetails?.productImages?.[0]?.image &&
                 validator.isURL(productDetails.productImages[0].image)
@@ -22,30 +21,31 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                   : "/images/product-placeholder.png"
               }
               alt="primary-image"
-              fill
-              className="object-cover"
             />
-          </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="product-view-s1-thumb-lists">
           {productDetails?.productImages?.map((item: any, index: number) =>
             index !== 0 ? (
-              <div className="relative h-36 w-36" key={item?.id}>
-                <Image
+              <div className="thumb-item" key={item?.id}>
+                <div className="image-container">
+                <img
                   src={
                     item?.image && validator.isURL(item.image)
                       ? item.image
                       : "/images/product-placeholder.png"
                   }
                   alt="primary-image"
-                  fill
-                  className="object-cover"
                 />
+              </div>
               </div>
             ) : null,
           )}
         </div>
+      </div>
+      <div className="cart-actions">
+        <button type="button" className="custom-btn cart-btn">Add To Cart</button>
+        <button type="button" className="custom-btn theme-primary-btn">Buy Now</button>
       </div>
     </div>
   );
