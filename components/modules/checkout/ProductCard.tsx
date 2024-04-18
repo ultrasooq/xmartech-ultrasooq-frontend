@@ -46,17 +46,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <label>Quantity</label>
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-5">
-                {/* <input type="number" className="custom-form-control-s1"></input> */}
                 <button
                   type="button"
                   className="upDownBtn minus"
                   onClick={() => {
-                    if (quantity > 1) {
-                      setQuantity(quantity - 1);
-                      onAdd(quantity - 1, productId, "remove");
-                    }
+                    setQuantity(quantity - 1);
+                    onAdd(quantity - 1, productId, "remove");
                   }}
-                  disabled={quantity === 1}
                 >
                   <img src="images/upDownBtn-minus.svg" alt="" />
                 </button>
@@ -83,7 +79,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   </Button>
                 </li>
                 <li>
-                  <Button variant="ghost" className="px-2 underline">
+                  <Button disabled variant="ghost" className="px-2 underline">
                     Move to wishlist
                   </Button>
                 </li>
