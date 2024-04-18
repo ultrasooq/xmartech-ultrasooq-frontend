@@ -12,11 +12,21 @@ import AddressCard from "@/components/modules/checkout/AddressCard";
 import AddressForm from "@/components/modules/checkout/AddressForm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
-import Link from "next/link";
+import {
+  useAllUserAddress,
+  useDeleteAddress,
+} from "@/apis/queries/address.queries";
+import { useRouter } from "next/navigation";
+import { CartItem } from "@/utils/types/cart.types";
+import { AddressItem } from "@/utils/types/address.types";
 
 const CheckoutPage = () => {
+  const router = useRouter();
   const { toast } = useToast();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<
+    number | undefined
+  >();
 
   const cartListByUser = useCartListByUserId({
     page: 1,
@@ -24,14 +34,19 @@ const CheckoutPage = () => {
   });
   const updateCartWithLogin = useUpdateCartWithLogin();
   const deleteCartItem = useDeleteCartItem();
+  const allUserAddressQuery = useAllUserAddress({
+    page: 1,
+    limit: 10,
+  });
+  const delteAddress = useDeleteAddress();
 
   const handleToggleAddModal = () => setIsAddModalOpen(!isAddModalOpen);
 
   const memoizedCartList = useMemo(() => {
-    return cartListByUser.data?.data;
+    return cartListByUser.data?.data || [];
   }, [cartListByUser.data?.data]);
 
-  const memoizedTotalAmount = useMemo(() => {
+  const calculateTotalAmount = () => {
     if (cartListByUser.data?.data?.length) {
       return cartListByUser.data?.data?.reduce(
         (
@@ -48,7 +63,11 @@ const CheckoutPage = () => {
         0,
       );
     }
-  }, [cartListByUser.data?.data?.length]);
+  };
+
+  const memoziedAddressList = useMemo(() => {
+    return allUserAddressQuery.data?.data || [];
+  }, [allUserAddressQuery.data?.data]);
 
   const handleAddToCart = async (
     quantity: number,
@@ -84,6 +103,19 @@ const CheckoutPage = () => {
     }
   };
 
+  const handleDeleteAddress = async (userAddressId: number) => {
+    console.log("address id:", userAddressId);
+    // return;
+    const response = await delteAddress.mutateAsync({ userAddressId });
+    if (response.status) {
+      toast({
+        title: "Address removed",
+        description: "Check your address for more details",
+        variant: "success",
+      });
+    }
+  };
+
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
@@ -98,40 +130,35 @@ const CheckoutPage = () => {
                 </div>
 
                 <div className="cart-item-lists">
+                  {!memoizedCartList.length && !cartListByUser.isLoading ? (
+                    <div className="px-3 py-6">
+                      <p className="my-3 text-center">No items in cart</p>
+                    </div>
+                  ) : null}
+
                   <div className="px-3">
                     {cartListByUser.isLoading ? (
                       <div className="my-3 space-y-3">
-                        {Array.from({ length: 3 }).map((_, i) => (
+                        {Array.from({ length: 2 }).map((_, i) => (
                           <Skeleton key={i} className="h-28 w-full" />
                         ))}
                       </div>
                     ) : null}
                   </div>
 
-                  {memoizedCartList?.map(
-                    (item: {
-                      id: number;
-                      productId: number;
-                      productDetails: {
-                        productName: string;
-                        offerPrice: string;
-                        productImages: { id: number; image: string }[];
-                      };
-                      quantity: number;
-                    }) => (
-                      <ProductCard
-                        key={item.id}
-                        cartId={item.id}
-                        productId={item.productId}
-                        productName={item.productDetails.productName}
-                        offerPrice={item.productDetails.offerPrice}
-                        productQuantity={item.quantity}
-                        productImages={item.productDetails.productImages}
-                        onAdd={handleAddToCart}
-                        onRemove={handleRemoveItemFromCart}
-                      />
-                    ),
-                  )}
+                  {memoizedCartList?.map((item: CartItem) => (
+                    <ProductCard
+                      key={item.id}
+                      cartId={item.id}
+                      productId={item.productId}
+                      productName={item.productDetails.productName}
+                      offerPrice={item.productDetails.offerPrice}
+                      productQuantity={item.quantity}
+                      productImages={item.productDetails.productImages}
+                      onAdd={handleAddToCart}
+                      onRemove={handleRemoveItemFromCart}
+                    />
+                  ))}
                 </div>
               </div>
               <div className="card-item selected-address">
@@ -141,8 +168,40 @@ const CheckoutPage = () => {
                   </div>
                 </div>
                 <div className="selected-address-lists">
-                  <AddressCard />
-                  <AddressCard />
+                  {!memoziedAddressList.length &&
+                  !allUserAddressQuery.isLoading ? (
+                    <div className="px-3 py-6">
+                      <p className="my-3 text-center">No address added</p>
+                    </div>
+                  ) : null}
+                  <div className="px-3">
+                    {allUserAddressQuery.isLoading ? (
+                      <div className="my-3 space-y-3">
+                        {Array.from({ length: 2 }).map((_, i) => (
+                          <Skeleton key={i} className="h-28 w-full" />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {memoziedAddressList?.map((item: AddressItem) => (
+                    <AddressCard
+                      key={item.id}
+                      firstName={item.firstName}
+                      lastName={item.lastName}
+                      phoneNumber={item.phoneNumber}
+                      address={item.address}
+                      city={item.city}
+                      country={item.country}
+                      province={item.province}
+                      postCode={item.postCode}
+                      onEdit={() => {
+                        setSelectedAddressId(item.id);
+                        handleToggleAddModal();
+                      }}
+                      onDelete={() => handleDeleteAddress(item.id)}
+                    />
+                  ))}
                 </div>
               </div>
 
@@ -163,8 +222,41 @@ const CheckoutPage = () => {
                   </div>
                 </div>
                 <div className="selected-address-lists">
-                  <AddressCard />
-                  <AddressCard />
+                  {!memoziedAddressList.length &&
+                  !allUserAddressQuery.isLoading ? (
+                    <div className="px-3 py-6">
+                      <p className="my-3 text-center">No address added</p>
+                    </div>
+                  ) : null}
+
+                  <div className="px-3">
+                    {allUserAddressQuery.isLoading ? (
+                      <div className="my-3 space-y-3">
+                        {Array.from({ length: 2 }).map((_, i) => (
+                          <Skeleton key={i} className="h-28 w-full" />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {memoziedAddressList?.map((item: AddressItem) => (
+                    <AddressCard
+                      key={item.id}
+                      firstName={item.firstName}
+                      lastName={item.lastName}
+                      phoneNumber={item.phoneNumber}
+                      address={item.address}
+                      city={item.city}
+                      country={item.country}
+                      province={item.province}
+                      postCode={item.postCode}
+                      onEdit={() => {
+                        setSelectedAddressId(item.id);
+                        handleToggleAddModal();
+                      }}
+                      onDelete={() => handleDeleteAddress(item.id)}
+                    />
+                  ))}
                 </div>
               </div>
 
@@ -193,33 +285,40 @@ const CheckoutPage = () => {
                 <ul>
                   <li>
                     <p>Subtotal</p>
-                    <h5>${memoizedTotalAmount}</h5>
+                    <h5>${calculateTotalAmount() || 0}</h5>
                   </li>
                   <li>
                     <p>Shipping</p>
                     <h5>Free</h5>
                   </li>
-                  {/* <li>
-                    <button type="button" className="apply-code-btn">Add coupon code <img src="/images/arow01.svg" alt=""/></button>
-                  </li> */}
                 </ul>
               </div>
               <div className="priceDetails-footer">
                 <h4>Total Amount</h4>
-                <h4 className="amount-value">${memoizedTotalAmount}</h4>
+                <h4 className="amount-value">${calculateTotalAmount() || 0}</h4>
               </div>
             </div>
             <div className="order-action-btn">
-              <Link href="/orders" className="theme-primary-btn order-btn">
+              <Button
+                onClick={() => router.push("/orders")}
+                disabled={!memoizedCartList?.length}
+                className="theme-primary-btn order-btn"
+              >
                 Continue
-              </Link>
+              </Button>
             </div>
           </div>
         </div>
       </div>
       <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
         <DialogContent className="add-new-address-modal gap-0 p-0">
-          <AddressForm />
+          <AddressForm
+            onClose={() => {
+              setIsAddModalOpen(false);
+              setSelectedAddressId(undefined);
+            }}
+            addressId={selectedAddressId}
+          />
         </DialogContent>
       </Dialog>
     </div>
