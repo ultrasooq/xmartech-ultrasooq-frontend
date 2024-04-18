@@ -8,13 +8,27 @@ import SameBrandSection from "@/components/modules/productDetails/SameBrandSecti
 import ProductDescriptionCard from "@/components/modules/productDetails/ProductDescriptionCard";
 import ProductImagesCard from "@/components/modules/productDetails/ProductImagesCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  useCartListByUserId,
+  useUpdateCartWithLogin,
+} from "@/apis/queries/cart.queries";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const BuyGroupPage = () => {
+  const { toast } = useToast();
+  const router = useRouter();
   const [activeProductId, setActiveProductId] = useState<string | null>();
+
   const productQueryById = useFetchProductById(
     activeProductId ? activeProductId : "",
     !!activeProductId,
   );
+  const cartListByUser = useCartListByUserId({
+    page: 1,
+    limit: 10,
+  });
+  const updateCartWithLogin = useUpdateCartWithLogin();
 
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
@@ -23,15 +37,55 @@ const BuyGroupPage = () => {
   }, []);
 
   const productDetails = productQueryById.data?.data;
-  console.log(productDetails);
+
+  const handleAddToCart = async (quantity: number) => {
+    console.log("add to cart:", quantity);
+    // return;
+    const response = await updateCartWithLogin.mutateAsync({
+      productId: Number(activeProductId),
+      quantity,
+    });
+
+    if (response.status) {
+      toast({
+        title: "Item added to cart",
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
+
+  const handleCartPage = () => router.push("/cart-list");
 
   return (
     <div className="body-content-s1">
-     
       <div className="product-view-s1-left-right type2">
         <div className="container m-auto px-3">
-          <ProductImagesCard productDetails={productDetails} />
-          <ProductDescriptionCard productDetails={productDetails} />
+          <ProductImagesCard
+            productDetails={productDetails}
+            onAdd={() => handleAddToCart(1)}
+            onNavigate={handleCartPage}
+            hasItem={
+              !!cartListByUser.data?.data?.find(
+                (item: any) => item.productId === Number(activeProductId),
+              )
+            }
+          />
+          <ProductDescriptionCard
+            productName={productDetails?.productName}
+            brand={productDetails?.brand?.brandName}
+            productPrice={productDetails?.productPrice}
+            offerPrice={productDetails?.offerPrice}
+            skuNo={productDetails?.skuNo}
+            category={productDetails?.category?.name}
+            productTags={productDetails?.productTags}
+            productQuantity={
+              cartListByUser.data?.data?.find(
+                (item: any) => item.productId === Number(activeProductId),
+              )?.quantity
+            }
+            onAdd={handleAddToCart}
+          />
         </div>
       </div>
       <div className="product-view-s1-left-details-with-right-suggestion">
