@@ -101,6 +101,10 @@ const TrendingPage = () => {
     setSelectedBrandIds(tempArr);
   };
 
+  const stripHTML = (text: string) => {
+    return text.replace(/<[^>]*>/g, "");
+  };
+
   const memoizedProductList = useMemo(() => {
     return (
       allProductsQuery?.data?.data?.map((item: any) => ({
@@ -112,6 +116,9 @@ const TrendingPage = () => {
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
         brandName: item?.brand?.brandName || "-",
+        shortDescription: item?.shortDescription
+          ? stripHTML(item?.shortDescription)
+          : "-",
       })) || []
     );
   }, [
@@ -121,11 +128,10 @@ const TrendingPage = () => {
     priceRange[1],
   ]);
 
-  // console.log(minPriceInput, maxPriceInput);
+  console.log(memoizedProductList);
   return (
     <>
       <div className="body-content-s1">
-        {/* start: custom-inner-banner-s1 */}
         <div className="custom-inner-banner-s1">
           <div className="container m-auto px-3">
             <div className="custom-inner-banner-s1-captionBox">
@@ -167,9 +173,7 @@ const TrendingPage = () => {
             </div>
           </div>
         </div>
-        {/* end: custom-inner-banner-s1 */}
 
-        {/* start: trending-search-sec */}
         <div className="trending-search-sec">
           <div className="container m-auto px-3">
             <div className={productFilter ? "left-filter show" : "left-filter"}>
@@ -230,7 +234,6 @@ const TrendingPage = () => {
                   <AccordionContent>
                     <div className="px-4">
                       <div className="px-2">
-                        {/* <Slider defaultValue={[50]} max={100} step={1} /> */}
                         <ReactSlider
                           className="horizontal-slider"
                           thumbClassName="example-thumb"
@@ -283,69 +286,6 @@ const TrendingPage = () => {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-
-              {/* <div className="filter-col">
-                <div className="filter-sub-header">
-                  <div className="filter-name-with-arow">
-                    <h3>By Brand</h3>
-                    <button type="button" className="arow-btn">
-                      <img src="/images/down-arow-lg.svg" alt="" />
-                    </button>
-                  </div>
-          
-                  <input
-                    type="text"
-                    className="custom-form-control-s1 searchInput"
-                    placeholder="Search Brand"
-                  ></input>
-                </div>
-                <div className="filter-body-part">
-                  <div className="filter-checklists">
-                    {memoizedBrands.map((item: ISelectOptions) => (
-                      <div key={item.value} className="div-li">
-                        <Checkbox
-                          id={item.label}
-                          className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                        />
-                        <div className="grid gap-1.5 leading-none">
-                          <label
-                            htmlFor={item.label}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {item.label}
-                          </label>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div> */}
-
-              {/* <div className="filter-col">
-                <div className="filter-sub-header">
-                  <div className="filter-name-with-arow">
-                    <h3>Price</h3>
-                    <button type="button" className="arow-btn">
-                      <img src="/images/down-arow-lg.svg" alt="" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="filter-body-part">
-                  <div className="mb-4">
-                    <Slider defaultValue={[50]} max={100} step={1} />
-                  </div>
-                  <div className="range-price-left-right-info">
-                    <select className="custom-form-control-s1 select1">
-                      <option>$0</option>
-                    </select>
-                    <div className="center-divider"></div>
-                    <select className="custom-form-control-s1 select1">
-                      <option>$500</option>
-                    </select>
-                  </div>
-                </div>
-              </div> */}
             </div>
             <div
               className="left-filter-overlay"
@@ -372,7 +312,7 @@ const TrendingPage = () => {
                         </SelectContent>
                       </Select>
                     </li>
-                    {/* <li>View</li> */}
+
                     <li>
                       <button
                         type="button"
@@ -412,14 +352,9 @@ const TrendingPage = () => {
 
               {allProductsQuery.isLoading && viewType === "grid" ? (
                 <div className="grid grid-cols-4 gap-5">
-                  <Skeleton className="h-80 w-full" />
-                  <Skeleton className="h-80 w-full" />
-                  <Skeleton className="h-80 w-full" />
-                  <Skeleton className="h-80 w-full" />
-                  <Skeleton className="h-80 w-full" />
-                  <Skeleton className="h-80 w-full" />
-                  <Skeleton className="h-80 w-full" />
-                  <Skeleton className="h-80 w-full" />
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <Skeleton key={index} className="h-80 w-full" />
+                  ))}
                 </div>
               ) : null}
 
@@ -443,7 +378,6 @@ const TrendingPage = () => {
             </div>
           </div>
         </div>
-        {/* end: trending-search-sec */}
       </div>
     </>
   );
