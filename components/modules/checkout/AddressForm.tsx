@@ -1,7 +1,186 @@
+import React, { useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@/components/ui/form";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { DialogTitle } from "@/components/ui/dialog";
-import React from "react";
+import { Button } from "@/components/ui/button";
+import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
+import { useCountries } from "@/apis/queries/masters.queries";
+import { ICountries } from "@/utils/types/common.types";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  useAddAddress,
+  useAddressById,
+  useUpdateAddress,
+} from "@/apis/queries/address.queries";
+import Image from "next/image";
 
-const AddressForm = () => {
+type AddressFormProps = {
+  addressId?: number;
+  onClose: () => void;
+};
+
+const formSchema = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .min(2, {
+      message: "First Name is required",
+    })
+    .max(50, {
+      message: "First Name must be less than 50 characters",
+    }),
+  lastName: z
+    .string()
+    .trim()
+    .min(2, { message: "Last Name is required" })
+    .max(50, {
+      message: "Last Name must be less than 50 characters",
+    }),
+  cc: z.string().trim(),
+  phoneNumber: z
+    .string()
+    .trim()
+    .min(2, {
+      message: "Phone Number is required",
+    })
+    .min(8, {
+      message: "Phone Number must be minimum of 8 digits",
+    })
+    .max(20, {
+      message: "Phone Number cannot be more than 20 digits",
+    }),
+  address: z
+    .string()
+    .trim()
+    .min(2, { message: "Address is required" })
+    .max(50, {
+      message: "Address must be less than 50 characters",
+    }),
+  city: z.string().trim().min(2, { message: "City is required" }).max(50, {
+    message: "City must be less than 50 characters",
+  }),
+  province: z
+    .string()
+    .trim()
+    .min(2, { message: "Province is required" })
+    .max(50, {
+      message: "Province must be less than 50 characters",
+    }),
+  country: z
+    .string()
+    .trim()
+    .min(2, { message: "Country is required" })
+    .max(50, {
+      message: "Country must be less than 50 characters",
+    }),
+  postCode: z
+    .string()
+    .trim()
+    .min(2, { message: "Post Code is required" })
+    .max(50, {
+      message: "Post Code must be less than 50 characters",
+    }),
+});
+
+const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
+  const { toast } = useToast();
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      cc: "",
+      address: "",
+      city: "",
+      province: "",
+      country: "",
+      postCode: "",
+    },
+  });
+
+  const createAddress = useAddAddress();
+  const updateAddress = useUpdateAddress();
+  const addressByIdQuery = useAddressById(
+    addressId ? String(addressId) : "",
+    !!addressId,
+  );
+  const countriesQuery = useCountries();
+
+  const memoizedCountries = useMemo(() => {
+    return (
+      countriesQuery?.data?.data.map((item: ICountries) => {
+        return { label: item.countryName, value: item.countryName };
+      }) || []
+    );
+  }, [countriesQuery?.data?.data?.length]);
+
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    console.log(formData);
+    // return;
+
+    if (addressId) {
+      const updatedFormData = {
+        ...formData,
+        userAddressId: addressId,
+      };
+      const response = await updateAddress.mutateAsync(updatedFormData);
+
+      if (response.status) {
+        toast({
+          description: "Address edited successfully",
+        });
+        form.reset();
+        onClose();
+      } else {
+        toast({
+          description: response.message,
+        });
+      }
+    } else {
+      const response = await createAddress.mutateAsync(formData);
+
+      if (response.status) {
+        toast({
+          description: "Address added successfully",
+        });
+        form.reset();
+        onClose();
+      } else {
+        toast({
+          description: response.message,
+        });
+      }
+    }
+  };
+
+  console.log(addressByIdQuery.data?.data);
+
+  useEffect(() => {
+    if (addressByIdQuery.data?.data) {
+      const addressDetails = addressByIdQuery.data?.data;
+      form.reset({
+        firstName: addressDetails?.firstName,
+        lastName: addressDetails?.lastName,
+        phoneNumber: addressDetails?.phoneNumber,
+        cc: addressDetails?.cc,
+        address: addressDetails?.address,
+        city: addressDetails?.city,
+        province: addressDetails?.province,
+        country: addressDetails?.country,
+        postCode: addressDetails?.postCode,
+      });
+    }
+  }, [
+    addressByIdQuery.data?.data,
+    countriesQuery?.data?.data?.length,
+    addressId,
+  ]);
+
   return (
     <>
       <div className="modal-header">
@@ -9,188 +188,90 @@ const AddressForm = () => {
           Add New Address
         </DialogTitle>
       </div>
-      <div className="card-item card-payment-form px-5 pb-5 pt-3">
-        <div className="flex flex-wrap">
-          <div className="grid w-full grid-cols-2 gap-4">
-            <div className="mb-4 space-y-2 ">
-              <label
-                className="text-sm font-medium 
-            leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Name
-              </label>
-              <div className="relative">
-                <input
-                  className="theme-form-control-s1 flex h-9 w-full rounded-md 
-              border border-input bg-transparent px-3 py-1 text-sm
-               shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Enter Name"
-                />
-              </div>
-            </div>
-            <div className="mb-4 space-y-2 ">
-              <label
-                className="text-sm font-medium 
-            leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Phone Number
-              </label>
-              <div className="relative">
-                <input
-                  className="theme-form-control-s1 flex h-9 w-full rounded-md 
-              border border-input bg-transparent px-3 py-1 text-sm
-               shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Enter Phone Number"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="grid w-full grid-cols-2 gap-4">
-            <div className="mb-4 space-y-2 ">
-              <label
-                className="text-sm font-medium 
-            leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Pincode
-              </label>
-              <div className="relative">
-                <input
-                  className="theme-form-control-s1 flex h-9 w-full rounded-md 
-              border border-input bg-transparent px-3 py-1 text-sm
-               shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Enter Pincode"
-                />
-              </div>
-            </div>
-            <div className="mb-4 space-y-2 ">
-              <label
-                className="text-sm font-medium 
-            leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                locality
-              </label>
-              <div className="relative">
-                <input
-                  className="theme-form-control-s1 flex h-9 w-full rounded-md 
-              border border-input bg-transparent px-3 py-1 text-sm
-               shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Enter locality"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="mb-4 w-full space-y-2">
-            <label
-              className="text-sm font-medium 
-            leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Address (Area and Street)
-            </label>
-            <div className="relative">
-              <input
-                className="theme-form-control-s1 flex h-9 w-full rounded-md border
-               border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors 
-               file:border-0 file:bg-transparent file:text-sm file:font-medium 
-               placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
-               disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="Enter Address (Area and Street)"
-              />
-            </div>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="card-item card-payment-form px-5 pb-5 pt-3"
+        >
+          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+            <ControlledTextInput
+              label="First Name"
+              name="firstName"
+              placeholder="Enter Your First Name"
+            />
+
+            <ControlledTextInput
+              label="Last Name"
+              name="lastName"
+              placeholder="Enter Your Last Name"
+            />
           </div>
 
-          <div className="grid w-full grid-cols-2 gap-4">
-            <div className="mb-4 space-y-2 ">
-              <label
-                className="text-sm font-medium 
-            leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                City/District/Town
-              </label>
-              <div className="relative">
-                <input
-                  className="theme-form-control-s1 flex h-9 w-full rounded-md 
-              border border-input bg-transparent px-3 py-1 text-sm
-               shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Enter City/District/Town"
-                />
-              </div>
-            </div>
-            <div className="mb-4 space-y-2 ">
-              <label
-                className="text-sm font-medium 
-            leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                State
-              </label>
-              <div className="relative">
-                <select
-                  className="theme-form-control-s1 flex h-9 w-full rounded-md 
-              border border-input bg-transparent px-3 py-1 text-sm
-               shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <option>Select</option>
-                </select>
-              </div>
-            </div>
+          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-1">
+            <ControlledPhoneInput
+              label="Phone Number"
+              name="phoneNumber"
+              countryName="cc"
+              placeholder="Enter Your Phone Number"
+            />
           </div>
 
-          <div className="grid w-full grid-cols-2 gap-4">
-            <div className="mb-4 space-y-2 ">
-              <label
-                className="text-sm font-medium 
-            leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Landmark (Optional)
-              </label>
-              <div className="relative">
-                <input
-                  className="theme-form-control-s1 flex h-9 w-full rounded-md 
-              border border-input bg-transparent px-3 py-1 text-sm
-               shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Enter Landmark"
-                />
-              </div>
-            </div>
-            <div className="mb-4 space-y-2 ">
-              <label
-                className="text-sm font-medium 
-            leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Alternate Phone (Optional)
-              </label>
-              <div className="relative">
-                <input
-                  className="theme-form-control-s1 flex h-9 w-full rounded-md 
-              border border-input bg-transparent px-3 py-1 text-sm
-               shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-                file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-                focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Enter Alternate Phone (Optional)"
-                />
-              </div>
-            </div>
+          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-1">
+            <ControlledTextInput
+              label="Address"
+              name="address"
+              placeholder="Address"
+            />
           </div>
-        </div>
-        <div className="order-action-btn">
-          <a href="" className="theme-primary-btn order-btn">
-            Save and deliver here
-          </a>
-        </div>
-      </div>
+
+          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+            <ControlledTextInput label="City" name="city" placeholder="City" />
+
+            <ControlledTextInput
+              label="Province"
+              name="province"
+              placeholder="Province"
+            />
+          </div>
+
+          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+            <ControlledTextInput
+              label="Post Code"
+              name="postCode"
+              placeholder="Post Code"
+            />
+
+            <ControlledSelectInput
+              label="Country"
+              name="country"
+              options={memoizedCountries}
+            />
+          </div>
+
+          <Button
+            disabled={createAddress.isPending || updateAddress.isPending}
+            type="submit"
+            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+          >
+            {createAddress.isPending || updateAddress.isPending ? (
+              <>
+                <Image
+                  src="/images/load.png"
+                  alt="loader-icon"
+                  width={20}
+                  height={20}
+                  className="mr-2 animate-spin"
+                />
+                Please wait
+              </>
+            ) : addressId ? (
+              "Edit Address"
+            ) : (
+              "Save and deliver here"
+            )}
+          </Button>
+        </form>
+      </Form>
     </>
   );
 };
