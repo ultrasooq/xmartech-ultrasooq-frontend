@@ -1,11 +1,13 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/modules/checkout/ProductCard";
 import {
+  useCartListByDevice,
   useCartListByUserId,
   useDeleteCartItem,
+  useUpdateCartByDevice,
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import AddressCard from "@/components/modules/checkout/AddressCard";
@@ -19,36 +21,80 @@ import {
 import { useRouter } from "next/navigation";
 import { CartItem } from "@/utils/types/cart.types";
 import { AddressItem } from "@/utils/types/address.types";
+import { useClickOutside } from "use-events";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { getOrCreateDeviceId } from "@/utils/helper";
 
 const CheckoutPage = () => {
   const router = useRouter();
+  const wrapperRef = useRef(null);
   const { toast } = useToast();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<
     number | undefined
   >();
+  const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
+  const deviceId = getOrCreateDeviceId() || "";
 
-  const cartListByUser = useCartListByUserId({
-    page: 1,
-    limit: 10,
-  });
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 10,
+      deviceId,
+    },
+    !hasAccessToken,
+  );
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 10,
+    },
+    hasAccessToken,
+  );
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
-  const allUserAddressQuery = useAllUserAddress({
-    page: 1,
-    limit: 10,
-  });
+  const allUserAddressQuery = useAllUserAddress(
+    {
+      page: 1,
+      limit: 10,
+    },
+    hasAccessToken,
+  );
   const delteAddress = useDeleteAddress();
 
   const handleToggleAddModal = () => setIsAddModalOpen(!isAddModalOpen);
 
   const memoizedCartList = useMemo(() => {
-    return cartListByUser.data?.data || [];
-  }, [cartListByUser.data?.data]);
+    if (cartListByUser.data?.data) {
+      return cartListByUser.data?.data || [];
+    } else if (cartListByDeviceQuery.data?.data) {
+      return cartListByDeviceQuery.data?.data || [];
+    }
+    return [];
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const calculateTotalAmount = () => {
     if (cartListByUser.data?.data?.length) {
       return cartListByUser.data?.data?.reduce(
+        (
+          acc: number,
+          curr: {
+            productDetails: {
+              offerPrice: string;
+            };
+            quantity: number;
+          },
+        ) => {
+          return acc + +curr.productDetails.offerPrice * curr.quantity;
+        },
+        0,
+      );
+    } else if (cartListByDeviceQuery.data?.data?.length) {
+      return cartListByDeviceQuery.data?.data?.reduce(
         (
           acc: number,
           curr: {
@@ -76,17 +122,32 @@ const CheckoutPage = () => {
   ) => {
     console.log("add to cart:", quantity, actionType);
     // return;
-    const response = await updateCartWithLogin.mutateAsync({
-      productId,
-      quantity,
-    });
-
-    if (response.status) {
-      toast({
-        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-        description: "Check your cart for more details",
-        variant: "success",
+    if (hasAccessToken) {
+      const response = await updateCartWithLogin.mutateAsync({
+        productId,
+        quantity,
       });
+
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+      }
+    } else {
+      const response = await updateCartByDevice.mutateAsync({
+        productId,
+        quantity,
+        deviceId,
+      });
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+      }
     }
   };
 
@@ -115,6 +176,12 @@ const CheckoutPage = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (isClickedOutside) {
+      setSelectedAddressId(undefined);
+    }
+  }, [isClickedOutside]);
 
   return (
     <div className="cart-page">
@@ -265,10 +332,10 @@ const CheckoutPage = () => {
                   <Button
                     variant="outline"
                     type="button"
-                    className="add-new-address-btn border-none p-0 shadow-none"
+                    className="add-new-address-btn border-none p-0 !normal-case shadow-none"
                     onClick={handleToggleAddModal}
                   >
-                    <img src="/images/addbtn.svg" alt="" /> add a new Address
+                    <img src="/images/addbtn.svg" alt="" /> Add a new address
                   </Button>
                 </div>
               </div>
@@ -311,11 +378,15 @@ const CheckoutPage = () => {
         </div>
       </div>
       <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
-        <DialogContent className="add-new-address-modal gap-0 p-0">
+        <DialogContent
+          className="add-new-address-modal gap-0 p-0"
+          ref={wrapperRef}
+        >
           <AddressForm
             onClose={() => {
               setIsAddModalOpen(false);
               setSelectedAddressId(undefined);
+              console.log("je;;p");
             }}
             addressId={selectedAddressId}
           />

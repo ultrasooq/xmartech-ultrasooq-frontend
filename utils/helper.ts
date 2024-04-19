@@ -55,3 +55,26 @@ export const getLastTwoHundredYears = () => {
   }
   return years;
 };
+
+export const generateDeviceId = () => {
+  const timestamp = new Date().getTime();
+  const randomString =
+    Math.random().toString(36).substring(2, 10) +
+    Math.random().toString(36).substring(2, 10);
+  const deviceId = `device_${timestamp}_${randomString}`;
+  return deviceId;
+};
+
+export const isBrowser = (): boolean => {
+  return typeof window !== "undefined";
+};
+
+export const getOrCreateDeviceId = () => {
+  if (!isBrowser()) return;
+  let deviceId = localStorage.getItem("deviceId");
+  if (!deviceId) {
+    deviceId = generateDeviceId();
+    localStorage.setItem("deviceId", deviceId);
+  }
+  return deviceId;
+};

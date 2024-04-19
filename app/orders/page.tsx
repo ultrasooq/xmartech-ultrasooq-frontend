@@ -8,14 +8,34 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useCartListByUserId } from "@/apis/queries/cart.queries";
+import {
+  useCartListByDevice,
+  useCartListByUserId,
+} from "@/apis/queries/cart.queries";
 import { Button } from "@/components/ui/button";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { getOrCreateDeviceId } from "@/utils/helper";
 
 const OrdersPage = () => {
-  const cartListByUser = useCartListByUserId({
-    page: 1,
-    limit: 10,
-  });
+  const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
+  const deviceId = getOrCreateDeviceId() || "";
+
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 10,
+      deviceId,
+    },
+    !hasAccessToken,
+  );
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 10,
+    },
+    hasAccessToken,
+  );
 
   // const memoizedCartList = useMemo(() => {
   //   return cartListByUser.data?.data || [];
@@ -24,6 +44,21 @@ const OrdersPage = () => {
   const calculateTotalAmount = () => {
     if (cartListByUser.data?.data?.length) {
       return cartListByUser.data?.data?.reduce(
+        (
+          acc: number,
+          curr: {
+            productDetails: {
+              offerPrice: string;
+            };
+            quantity: number;
+          },
+        ) => {
+          return acc + +curr.productDetails.offerPrice * curr.quantity;
+        },
+        0,
+      );
+    } else if (cartListByDeviceQuery.data?.data?.length) {
+      return cartListByDeviceQuery.data?.data?.reduce(
         (
           acc: number,
           curr: {

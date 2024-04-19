@@ -128,7 +128,6 @@ const TrendingPage = () => {
     priceRange[1],
   ]);
 
-  console.log(memoizedProductList);
   return (
     <>
       <div className="body-content-s1">

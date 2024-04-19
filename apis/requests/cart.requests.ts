@@ -3,10 +3,7 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import urlcat from "urlcat";
 
-export const fetchCartListByUserId = (payload: {
-  page: number;
-  limit: number;
-}) => {
+export const fetchCartByUserId = (payload: { page: number; limit: number }) => {
   return axios({
     method: "GET",
     url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/list`, payload),
@@ -15,6 +12,17 @@ export const fetchCartListByUserId = (payload: {
       Accept: "application/json",
       Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
     },
+  });
+};
+
+export const fetchCartByDevice = (payload: {
+  page: number;
+  limit: number;
+  deviceId: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/listUnAuth`, payload),
   });
 };
 
@@ -31,10 +39,35 @@ export const updateCartWithLogin = (payload: any) => {
   });
 };
 
+export const updateCartByDevice = (payload: {
+  productId: number;
+  quantity: number;
+  deviceId: string;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateUnAuth`,
+    data: payload,
+  });
+};
+
 export const deleteCartItem = (payload: { cartId: number }) => {
   return axios({
     method: "DELETE",
     url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/delete`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const updateUserCartByDeviceId = (payload: { deviceId: string }) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateUserIdBydeviceId`,
+    data: payload,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

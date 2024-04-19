@@ -45,28 +45,39 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="custom-form-group">
             <label>Quantity</label>
             <div className="qty-up-down-s1-with-rgMenuAction">
-              <div className="flex items-center gap-x-5">
-                <button
-                  type="button"
-                  className="upDownBtn minus"
+              <div className="flex items-center gap-x-4">
+                <Button
+                  variant="outline"
+                  className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity - 1);
                     onAdd(quantity - 1, productId, "remove");
                   }}
+                  disabled={quantity === 0}
                 >
-                  <img src="images/upDownBtn-minus.svg" alt="" />
-                </button>
+                  <Image
+                    src="/images/upDownBtn-minus.svg"
+                    alt="minus-icon"
+                    fill
+                    className="p-3"
+                  />
+                </Button>
                 <p>{quantity}</p>
-                <button
-                  type="button"
-                  className="upDownBtn plus"
+                <Button
+                  variant="outline"
+                  className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity + 1);
                     onAdd(quantity + 1, productId, "add");
                   }}
                 >
-                  <img src="images/upDownBtn-plus.svg" alt="" />
-                </button>
+                  <Image
+                    src="/images/upDownBtn-plus.svg"
+                    alt="plus-icon"
+                    fill
+                    className="p-3"
+                  />
+                </Button>
               </div>
               <ul className="rgMenuAction-lists">
                 <li>

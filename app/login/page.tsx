@@ -14,6 +14,8 @@ import { setCookie } from "cookies-next";
 import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import { useUpdateUserCartByDeviceId } from "@/apis/queries/cart.queries";
+import { getOrCreateDeviceId } from "@/utils/helper";
 
 const formSchema = z.object({
   email: z
@@ -47,7 +49,10 @@ export default function LoginPage() {
       password: "",
     },
   });
+  const deviceId = getOrCreateDeviceId() || "";
+
   const login = useLogin();
+  const updateCart = useUpdateUserCartByDeviceId();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // console.log(formData);
@@ -57,6 +62,9 @@ export default function LoginPage() {
     if (response?.status && response?.accessToken) {
       // store in cookie
       setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+
+      // update cart
+      await updateCart.mutateAsync({ deviceId });
       toast({
         title: "Login Successful",
         description: "You have successfully logged in.",

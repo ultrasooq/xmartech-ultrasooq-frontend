@@ -1,5 +1,6 @@
 import { TrendingProduct } from "@/utils/types/common.types";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useMemo } from "react";
 import validator from "validator";
 
@@ -16,7 +17,7 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box  cursor-pointer hover:bg-slate-100">
-        <a href={`/buygroup?id=${item.id}`} className="">
+        <Link href={`/buygroup?id=${item.id}`}>
           <div className="image-container ">
             <span className="discount">{offerPercentage}%</span>
             <img
@@ -37,7 +38,7 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
             </div>
             <h5>${item.offerPrice}</h5>
           </div>
-        </a>
+        </Link>
       </div>
     </div>
   );
