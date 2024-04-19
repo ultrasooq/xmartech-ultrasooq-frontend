@@ -21,7 +21,7 @@ const CartListPage = () => {
   const router = useRouter();
   const { toast } = useToast();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
-  const deviceId = getOrCreateDeviceId();
+  const deviceId = getOrCreateDeviceId() || "";
 
   const cartListByDeviceQuery = useCartListByDevice(
     {

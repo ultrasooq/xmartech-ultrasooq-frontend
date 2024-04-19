@@ -35,7 +35,7 @@ const CheckoutPage = () => {
     number | undefined
   >();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
-  const deviceId = getOrCreateDeviceId();
+  const deviceId = getOrCreateDeviceId() || "";
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 

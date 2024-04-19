@@ -28,7 +28,7 @@ const BuyGroupPage = () => {
   const router = useRouter();
   const [activeProductId, setActiveProductId] = useState<string | null>();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
-  const deviceId = getOrCreateDeviceId();
+  const deviceId = getOrCreateDeviceId() || "";
 
   const productQueryById = useFetchProductById(
     activeProductId ? activeProductId : "",

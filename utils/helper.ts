@@ -65,7 +65,12 @@ export const generateDeviceId = () => {
   return deviceId;
 };
 
+export const isBrowser = (): boolean => {
+  return typeof window !== "undefined";
+};
+
 export const getOrCreateDeviceId = () => {
+  if (!isBrowser()) return;
   let deviceId = localStorage.getItem("deviceId");
   if (!deviceId) {
     deviceId = generateDeviceId();

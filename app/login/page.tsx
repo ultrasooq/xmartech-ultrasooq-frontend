@@ -49,7 +49,7 @@ export default function LoginPage() {
       password: "",
     },
   });
-  const deviceId = getOrCreateDeviceId();
+  const deviceId = getOrCreateDeviceId() || "";
 
   const login = useLogin();
   const updateCart = useUpdateUserCartByDeviceId();
