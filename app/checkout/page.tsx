@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/modules/checkout/ProductCard";
@@ -19,14 +19,18 @@ import {
 import { useRouter } from "next/navigation";
 import { CartItem } from "@/utils/types/cart.types";
 import { AddressItem } from "@/utils/types/address.types";
+import { useClickOutside } from "use-events";
 
 const CheckoutPage = () => {
   const router = useRouter();
+  const wrapperRef = useRef(null);
   const { toast } = useToast();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<
     number | undefined
   >();
+
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
   const cartListByUser = useCartListByUserId({
     page: 1,
@@ -115,6 +119,12 @@ const CheckoutPage = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (isClickedOutside) {
+      setSelectedAddressId(undefined);
+    }
+  }, [isClickedOutside]);
 
   return (
     <div className="cart-page">
@@ -265,10 +275,10 @@ const CheckoutPage = () => {
                   <Button
                     variant="outline"
                     type="button"
-                    className="add-new-address-btn border-none p-0 shadow-none"
+                    className="add-new-address-btn border-none p-0 !normal-case shadow-none"
                     onClick={handleToggleAddModal}
                   >
-                    <img src="/images/addbtn.svg" alt="" /> add a new Address
+                    <img src="/images/addbtn.svg" alt="" /> Add a new address
                   </Button>
                 </div>
               </div>
@@ -311,11 +321,15 @@ const CheckoutPage = () => {
         </div>
       </div>
       <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
-        <DialogContent className="add-new-address-modal gap-0 p-0">
+        <DialogContent
+          className="add-new-address-modal gap-0 p-0"
+          ref={wrapperRef}
+        >
           <AddressForm
             onClose={() => {
               setIsAddModalOpen(false);
               setSelectedAddressId(undefined);
+              console.log("je;;p");
             }}
             addressId={selectedAddressId}
           />

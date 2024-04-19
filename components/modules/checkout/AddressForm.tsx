@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -132,13 +132,17 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
 
       if (response.status) {
         toast({
-          description: "Address edited successfully",
+          title: "Address Edit Successful",
+          description: response.message,
+          variant: "success",
         });
         form.reset();
         onClose();
       } else {
         toast({
+          title: "Address Edit Failed",
           description: response.message,
+          variant: "danger",
         });
       }
     } else {
@@ -146,13 +150,17 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
 
       if (response.status) {
         toast({
-          description: "Address added successfully",
+          title: "Address Add Successful",
+          description: response.message,
+          variant: "success",
         });
         form.reset();
         onClose();
       } else {
         toast({
+          title: "Address Add Failed",
           description: response.message,
+          variant: "danger",
         });
       }
     }
@@ -161,7 +169,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   console.log(addressByIdQuery.data?.data);
 
   useEffect(() => {
-    if (addressByIdQuery.data?.data) {
+    if (addressId && addressByIdQuery.data?.data) {
       const addressDetails = addressByIdQuery.data?.data;
       form.reset({
         firstName: addressDetails?.firstName,
@@ -185,7 +193,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
     <>
       <div className="modal-header">
         <DialogTitle className="text-center text-xl font-bold">
-          Add New Address
+          {`${addressId ? "Edit" : "Add"} New Address`}
         </DialogTitle>
       </div>
       <Form {...form}>
@@ -267,7 +275,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             ) : addressId ? (
               "Edit Address"
             ) : (
-              "Save and deliver here"
+              "Add Address"
             )}
           </Button>
         </form>
