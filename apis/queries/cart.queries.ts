@@ -5,6 +5,8 @@ import {
   deleteCartItem,
   fetchCartByDevice,
   fetchCartByUserId,
+  fetchCartCountByDeviceId,
+  fetchCartCountWithLogin,
   updateCartByDevice,
   updateCartWithLogin,
   updateUserCartByDeviceId,
@@ -64,6 +66,9 @@ export const useUpdateCartWithLogin = () => {
       queryClient.invalidateQueries({
         queryKey: ["cart-by-user"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -85,6 +90,9 @@ export const useUpdateCartByDevice = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["cart-by-device"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-without-login"],
       });
     },
     onError: (err: APIResponseError) => {
@@ -111,6 +119,12 @@ export const useDeleteCartItem = () => {
       queryClient.invalidateQueries({
         queryKey: ["cart-by-device"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-without-login"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -133,12 +147,37 @@ export const useUpdateUserCartByDeviceId = () => {
       queryClient.invalidateQueries({
         queryKey: ["cart-by-user"],
       });
-      // queryClient.invalidateQueries({
-      //   queryKey: ["cart-by-device"],
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-without-login"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
     },
+  });
+};
+
+export const useCartCountWithLogin = (enabled = true) => {
+  return useQuery({
+    queryKey: ["cart-count-with-login"],
+    queryFn: async () => {
+      const res = await fetchCartCountWithLogin();
+      return res.data;
+    },
+    enabled,
+  });
+};
+
+export const useCartCountWithoutLogin = (
+  payload: { deviceId: string },
+  enabled = true,
+) => {
+  return useQuery({
+    queryKey: ["cart-count-without-login"],
+    queryFn: async () => {
+      const res = await fetchCartCountByDeviceId(payload);
+      return res.data;
+    },
+    enabled,
   });
 };

@@ -166,8 +166,6 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
     }
   };
 
-  console.log(addressByIdQuery.data?.data);
-
   useEffect(() => {
     if (addressId && addressByIdQuery.data?.data) {
       const addressDetails = addressByIdQuery.data?.data;
@@ -249,11 +247,17 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
               placeholder="Post Code"
             />
 
-            <ControlledSelectInput
+            <ControlledTextInput
+              label="Country"
+              name="country"
+              placeholder="Country"
+            />
+
+            {/* <ControlledSelectInput
               label="Country"
               name="country"
               options={memoizedCountries}
-            />
+            /> */}
           </div>
 
           <Button
