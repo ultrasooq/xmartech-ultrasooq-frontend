@@ -13,11 +13,16 @@ import {
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
-import { getInitials } from "@/utils/helper";
+import { getInitials, getOrCreateDeviceId } from "@/utils/helper";
 import { useCategory } from "@/apis/queries/category.queries";
 import { Button } from "@/components/ui/button";
 import { useClickOutside } from "use-events";
 import Link from "next/link";
+import {
+  useCartCountWithLogin,
+  useCartCountWithoutLogin,
+} from "@/apis/queries/cart.queries";
+import { isArray } from "lodash";
 
 const Header = () => {
   const router = useRouter();
@@ -28,7 +33,14 @@ const Header = () => {
   const [menuId, setMenuId] = useState();
   const [categoryId, setCategoryId] = useState();
   const [subCategoryId, setSubCategoryId] = useState();
+  const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
+  const deviceId = getOrCreateDeviceId() || "";
 
+  const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
+  const cartCountWithoutLogin = useCartCountWithoutLogin(
+    { deviceId },
+    !hasAccessToken,
+  );
   const userDetails = useMe(!!accessToken);
   const categoryQuery = useCategory();
 
@@ -118,14 +130,14 @@ const Header = () => {
   const handleLogin = () => router.push("/login");
   const handleRegister = () => router.push("/register");
 
+  const wrapperRef = useRef(null);
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+
   useEffect(() => {
     if (accessToken) {
       setIsLoggedIn(true);
     }
   }, [pathname, accessToken]);
-
-  const wrapperRef = useRef(null);
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
   useEffect(() => {
     if (isClickedOutside) {
@@ -219,7 +231,13 @@ const Header = () => {
                   >
                     <img src="images/cart.svg" />
                     <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
-                      0
+                      {hasAccessToken
+                        ? !isArray(cartCountWithLogin.data?.data)
+                          ? cartCountWithLogin.data?.data
+                          : 0
+                        : !isArray(cartCountWithoutLogin.data?.data)
+                          ? cartCountWithoutLogin.data?.data
+                          : 0}
                     </div>
                   </Link>
                 </li>
