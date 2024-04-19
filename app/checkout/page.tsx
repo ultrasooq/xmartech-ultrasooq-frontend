@@ -4,8 +4,10 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/modules/checkout/ProductCard";
 import {
+  useCartListByDevice,
   useCartListByUserId,
   useDeleteCartItem,
+  useUpdateCartByDevice,
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import AddressCard from "@/components/modules/checkout/AddressCard";
@@ -20,6 +22,9 @@ import { useRouter } from "next/navigation";
 import { CartItem } from "@/utils/types/cart.types";
 import { AddressItem } from "@/utils/types/address.types";
 import { useClickOutside } from "use-events";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { getOrCreateDeviceId } from "@/utils/helper";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -29,30 +34,67 @@ const CheckoutPage = () => {
   const [selectedAddressId, setSelectedAddressId] = useState<
     number | undefined
   >();
+  const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
+  const deviceId = getOrCreateDeviceId();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const cartListByUser = useCartListByUserId({
-    page: 1,
-    limit: 10,
-  });
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 10,
+      deviceId,
+    },
+    !hasAccessToken,
+  );
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 10,
+    },
+    hasAccessToken,
+  );
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
-  const allUserAddressQuery = useAllUserAddress({
-    page: 1,
-    limit: 10,
-  });
+  const allUserAddressQuery = useAllUserAddress(
+    {
+      page: 1,
+      limit: 10,
+    },
+    hasAccessToken,
+  );
   const delteAddress = useDeleteAddress();
 
   const handleToggleAddModal = () => setIsAddModalOpen(!isAddModalOpen);
 
   const memoizedCartList = useMemo(() => {
-    return cartListByUser.data?.data || [];
-  }, [cartListByUser.data?.data]);
+    if (cartListByUser.data?.data) {
+      return cartListByUser.data?.data || [];
+    } else if (cartListByDeviceQuery.data?.data) {
+      return cartListByDeviceQuery.data?.data || [];
+    }
+    return [];
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const calculateTotalAmount = () => {
     if (cartListByUser.data?.data?.length) {
       return cartListByUser.data?.data?.reduce(
+        (
+          acc: number,
+          curr: {
+            productDetails: {
+              offerPrice: string;
+            };
+            quantity: number;
+          },
+        ) => {
+          return acc + +curr.productDetails.offerPrice * curr.quantity;
+        },
+        0,
+      );
+    } else if (cartListByDeviceQuery.data?.data?.length) {
+      return cartListByDeviceQuery.data?.data?.reduce(
         (
           acc: number,
           curr: {
@@ -80,17 +122,32 @@ const CheckoutPage = () => {
   ) => {
     console.log("add to cart:", quantity, actionType);
     // return;
-    const response = await updateCartWithLogin.mutateAsync({
-      productId,
-      quantity,
-    });
-
-    if (response.status) {
-      toast({
-        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-        description: "Check your cart for more details",
-        variant: "success",
+    if (hasAccessToken) {
+      const response = await updateCartWithLogin.mutateAsync({
+        productId,
+        quantity,
       });
+
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+      }
+    } else {
+      const response = await updateCartByDevice.mutateAsync({
+        productId,
+        quantity,
+        deviceId,
+      });
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+      }
     }
   };
 

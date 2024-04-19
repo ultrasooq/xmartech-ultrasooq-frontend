@@ -9,7 +9,9 @@ import ProductDescriptionCard from "@/components/modules/productDetails/ProductD
 import ProductImagesCard from "@/components/modules/productDetails/ProductImagesCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  useCartListByDevice,
   useCartListByUserId,
+  useUpdateCartByDevice,
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,52 +19,104 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { getOrCreateDeviceId } from "@/utils/helper";
 
 const BuyGroupPage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [activeProductId, setActiveProductId] = useState<string | null>();
+  const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
+  const deviceId = getOrCreateDeviceId();
 
   const productQueryById = useFetchProductById(
     activeProductId ? activeProductId : "",
     !!activeProductId,
   );
-  const cartListByUser = useCartListByUserId({
-    page: 1,
-    limit: 10,
-  });
-  const updateCartWithLogin = useUpdateCartWithLogin();
 
-  useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let productId = params.get("id");
-    setActiveProductId(productId);
-  }, []);
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 10,
+      deviceId,
+    },
+    !hasAccessToken,
+  );
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 10,
+    },
+    hasAccessToken,
+  );
+  const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartByDevice = useUpdateCartByDevice();
 
   const productDetails = productQueryById.data?.data;
 
-  const handleAddToCart = async (quantity: number) => {
+  const handleAddToCart = async (
+    quantity: number,
+    actionType: "add" | "remove",
+  ) => {
     console.log("add to cart:", quantity);
     // return;
-    const response = await updateCartWithLogin.mutateAsync({
-      productId: Number(activeProductId),
-      quantity,
-    });
-
-    if (response.status) {
-      toast({
-        title: "Item added to cart",
-        description: "Check your cart for more details",
-        variant: "success",
+    if (hasAccessToken) {
+      const response = await updateCartWithLogin.mutateAsync({
+        productId: Number(activeProductId),
+        quantity,
       });
 
-      return response.status;
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+
+        return response.status;
+      }
+    } else {
+      const response = await updateCartByDevice.mutateAsync({
+        productId: Number(activeProductId),
+        quantity,
+        deviceId,
+      });
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+        return response.status;
+      }
     }
   };
 
+  const hasItemByUser = !!cartListByUser.data?.data?.find(
+    (item: any) => item.productId === Number(activeProductId),
+  );
+
+  const hasItemByDevice = !!cartListByDeviceQuery.data?.data?.find(
+    (item: any) => item.productId === Number(activeProductId),
+  );
+
+  const getProductQuantityByUser = cartListByUser.data?.data?.find(
+    (item: any) => item.productId === Number(activeProductId),
+  )?.quantity;
+
+  const getProductQuantityByDevice = cartListByDeviceQuery.data?.data?.find(
+    (item: any) => item.productId === Number(activeProductId),
+  )?.quantity;
+
   const handleCartPage = () => router.push("/cart-list");
   const handleCheckoutPage = async () => {
-    const response = await handleAddToCart(1);
+    if (getProductQuantityByUser > 1 || getProductQuantityByDevice > 1) {
+      router.push("/checkout");
+      return;
+    }
+
+    const response = await handleAddToCart(1, "add");
     if (response) {
       setTimeout(() => {
         router.push("/checkout");
@@ -70,20 +124,22 @@ const BuyGroupPage = () => {
     }
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(document.location.search);
+    let productId = params.get("id");
+    setActiveProductId(productId);
+  }, []);
+
   return (
     <div className="body-content-s1">
       <div className="product-view-s1-left-right type2">
         <div className="container m-auto px-3">
           <ProductImagesCard
             productDetails={productDetails}
-            onAdd={() => handleAddToCart(1)}
+            onAdd={() => handleAddToCart(1, "add")}
             onToCart={handleCartPage}
             onToCheckout={handleCheckoutPage}
-            hasItem={
-              !!cartListByUser.data?.data?.find(
-                (item: any) => item.productId === Number(activeProductId),
-              )
-            }
+            hasItem={hasItemByUser || hasItemByDevice}
             isLoading={!productQueryById.isFetched}
           />
           <ProductDescriptionCard
@@ -96,9 +152,7 @@ const BuyGroupPage = () => {
             productTags={productDetails?.productTags}
             productShortDescription={productDetails?.shortDescription}
             productQuantity={
-              cartListByUser.data?.data?.find(
-                (item: any) => item.productId === Number(activeProductId),
-              )?.quantity
+              getProductQuantityByUser || getProductQuantityByDevice
             }
             onAdd={handleAddToCart}
             isLoading={!productQueryById.isFetched}

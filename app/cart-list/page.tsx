@@ -1,35 +1,74 @@
 "use client";
 import {
+  useCartListByDevice,
   useCartListByUserId,
   useDeleteCartItem,
+  useUpdateCartByDevice,
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import ProductCard from "@/components/modules/cartList/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { getOrCreateDeviceId } from "@/utils/helper";
 import { CartItem } from "@/utils/types/cart.types";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
 
 const CartListPage = () => {
   const router = useRouter();
   const { toast } = useToast();
+  const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
+  const deviceId = getOrCreateDeviceId();
 
-  const cartListByUser = useCartListByUserId({
-    page: 1,
-    limit: 10,
-  });
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 10,
+      deviceId,
+    },
+    !hasAccessToken,
+  );
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 10,
+    },
+    hasAccessToken,
+  );
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
 
   const memoizedCartList = useMemo(() => {
-    return cartListByUser.data?.data || [];
-  }, [cartListByUser.data?.data]);
+    if (cartListByUser.data?.data) {
+      return cartListByUser.data?.data || [];
+    } else if (cartListByDeviceQuery.data?.data) {
+      return cartListByDeviceQuery.data?.data || [];
+    }
+    return [];
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const calculateTotalAmount = () => {
     if (cartListByUser.data?.data?.length) {
       return cartListByUser.data?.data?.reduce(
+        (
+          acc: number,
+          curr: {
+            productDetails: {
+              offerPrice: string;
+            };
+            quantity: number;
+          },
+        ) => {
+          return acc + +curr.productDetails.offerPrice * curr.quantity;
+        },
+        0,
+      );
+    } else if (cartListByDeviceQuery.data?.data?.length) {
+      return cartListByDeviceQuery.data?.data?.reduce(
         (
           acc: number,
           curr: {
@@ -53,17 +92,32 @@ const CartListPage = () => {
   ) => {
     console.log("add to cart:", quantity, productId, actionType);
     // return;
-    const response = await updateCartWithLogin.mutateAsync({
-      productId,
-      quantity,
-    });
-
-    if (response.status) {
-      toast({
-        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-        description: "Check your cart for more details",
-        variant: "success",
+    if (hasAccessToken) {
+      const response = await updateCartWithLogin.mutateAsync({
+        productId,
+        quantity,
       });
+
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+      }
+    } else {
+      const response = await updateCartByDevice.mutateAsync({
+        productId,
+        quantity,
+        deviceId,
+      });
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+      }
     }
   };
 
