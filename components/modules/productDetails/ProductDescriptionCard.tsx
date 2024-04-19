@@ -3,6 +3,8 @@ import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 type ProductDescriptionCardProps = {
   productName: string;
@@ -101,31 +103,41 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           <div className="quantity-with-right-payment-info">
             <div className="left-qty">
               <label>Quantity</label>
-              <div className="flex w-28 items-center justify-center gap-x-8">
-                <button
-                  type="button"
-                  className="upDownBtn minus"
+              <div className="flex w-28 items-center justify-center gap-x-4">
+                <Button
+                  variant="outline"
                   onClick={() => {
                     if (quantity > 1) {
                       setQuantity(quantity - 1);
                       onAdd(quantity - 1);
                     }
                   }}
+                  className="relative hover:shadow-sm"
                   disabled={quantity === 1}
                 >
-                  <img src="images/upDownBtn-minus.svg" alt="" />
-                </button>
+                  <Image
+                    src="/images/upDownBtn-minus.svg"
+                    alt="minus-icon"
+                    fill
+                    className="p-3"
+                  />
+                </Button>
                 <p>{quantity}</p>
-                <button
-                  type="button"
-                  className="upDownBtn plus"
+                <Button
+                  variant="outline"
+                  className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity + 1);
                     onAdd(quantity + 1);
                   }}
                 >
-                  <img src="images/upDownBtn-plus.svg" alt="" />
-                </button>
+                  <Image
+                    src="/images/upDownBtn-plus.svg"
+                    alt="plus-icon"
+                    fill
+                    className="p-3"
+                  />
+                </Button>
               </div>
             </div>
 

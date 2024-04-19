@@ -79,7 +79,6 @@ const CartListPage = () => {
       });
     }
   };
-  console.log(memoizedCartList);
 
   return (
     <div className="cart-page">
