@@ -16,7 +16,7 @@ type ProductDescriptionCardProps = {
   category: string;
   productShortDescription: string;
   productQuantity: number;
-  onAdd: (args0: number) => void;
+  onAdd: (args0: number, args2: "add" | "remove") => void;
   isLoading: boolean;
 };
 
@@ -109,7 +109,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   onClick={() => {
                     if (quantity > 1) {
                       setQuantity(quantity - 1);
-                      onAdd(quantity - 1);
+                      onAdd(quantity - 1, "remove");
                     }
                   }}
                   className="relative hover:shadow-sm"
@@ -128,7 +128,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity + 1);
-                    onAdd(quantity + 1);
+                    onAdd(quantity + 1, "add");
                   }}
                 >
                   <Image
