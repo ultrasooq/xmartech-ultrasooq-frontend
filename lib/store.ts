@@ -2,6 +2,13 @@ import { create } from "zustand";
 
 export type State = {
   orders: {
+    guestUser?: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      cc: string;
+      phoneNumber: string;
+    };
     cartIds: number[];
     firstName: string;
     lastName: string;
@@ -27,6 +34,7 @@ export type Actions = {
 
 export const initialOrderState: State = {
   orders: {
+    guestUser: undefined,
     cartIds: [],
     firstName: "",
     lastName: "",
