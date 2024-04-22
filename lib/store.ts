@@ -25,7 +25,7 @@ export type Actions = {
   setOrders: (data: State["orders"]) => void;
 };
 
-export const useOrderStore = create<State & Actions>()((set) => ({
+export const initialOrderState: State = {
   orders: {
     cartIds: [],
     firstName: "",
@@ -44,5 +44,9 @@ export const useOrderStore = create<State & Actions>()((set) => ({
     shippingCountry: "",
     shippingPostCode: "",
   },
+};
+
+export const useOrderStore = create<State & Actions>()((set) => ({
+  orders: initialOrderState.orders,
   setOrders: (data) => set((state) => ({ ...state, orders: data })),
 }));

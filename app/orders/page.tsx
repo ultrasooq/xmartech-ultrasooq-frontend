@@ -8,9 +8,14 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import PaymentForm from "@/components/modules/orders/PaymentForm";
-import { useOrderStore } from "@/lib/store";
+import { initialOrderState, useOrderStore } from "@/lib/store";
+import { useToast } from "@/components/ui/use-toast";
+import { useCreateOrder } from "@/apis/queries/orders.queries";
+import { useRouter } from "next/navigation";
 
 const OrdersPage = () => {
+  const router = useRouter();
+  const { toast } = useToast();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
   const orders = useOrderStore();
@@ -30,6 +35,7 @@ const OrdersPage = () => {
     },
     hasAccessToken,
   );
+  const createOrder = useCreateOrder();
 
   // const memoizedCartList = useMemo(() => {
   //   return cartListByUser.data?.data || [];
@@ -69,6 +75,25 @@ const OrdersPage = () => {
     }
   };
 
+  const handleCreateOrder = async () => {
+    let data = {};
+    if (orders.orders) {
+      data = orders.orders;
+    }
+    const response = await createOrder.mutateAsync(data);
+
+    if (response?.data) {
+      toast({
+        title: "Order Placed Successfully",
+        description:
+          "Your order has been placed successfully. You can check your order status in My Orders section",
+        variant: "success",
+      });
+
+      orders.setOrders(initialOrderState.orders);
+      router.push("/my-orders");
+    }
+  };
   console.log("Fetched from store", orders.orders);
   return (
     <div className="cart-page">
@@ -79,7 +104,10 @@ const OrdersPage = () => {
           </div>
         </div>
         <div className="cart-page-wrapper">
-          <PaymentForm />
+          <PaymentForm
+            onCreateOrder={handleCreateOrder}
+            isLoading={createOrder.isPending}
+          />
 
           <div className="cart-page-right">
             <div className="card-item priceDetails">

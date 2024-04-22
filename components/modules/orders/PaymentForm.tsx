@@ -1,7 +1,15 @@
 import { Button } from "@/components/ui/button";
 import React from "react";
 
-const PaymentForm = () => {
+type PaymentFormProps = {
+  onCreateOrder: () => void;
+  isLoading: boolean;
+};
+
+const PaymentForm: React.FC<PaymentFormProps> = ({
+  onCreateOrder,
+  isLoading,
+}) => {
   return (
     <div className="cart-page-left">
       <div className="bodyPart">
@@ -85,7 +93,13 @@ const PaymentForm = () => {
             </div>
           </div>
           <div className="order-action-btn">
-            <Button className="theme-primary-btn order-btn">Payment</Button>
+            <Button
+              onClick={onCreateOrder}
+              disabled={isLoading}
+              className="theme-primary-btn order-btn"
+            >
+              Payment
+            </Button>
           </div>
         </div>
       </div>
