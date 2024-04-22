@@ -31,6 +31,7 @@ import { Label } from "@/components/ui/label";
 import { useMe } from "@/apis/queries/user.queries";
 import { OrderDetails } from "@/utils/types/orders.types";
 import Image from "next/image";
+import { useOrderStore } from "@/lib/store";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -45,6 +46,7 @@ const CheckoutPage = () => {
     useState<OrderDetails>();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
+  const orders = useOrderStore();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
@@ -255,7 +257,8 @@ const CheckoutPage = () => {
     }
 
     console.log("Orders:", data);
-    return;
+    orders.setOrders(data);
+    // return;
     router.push("/orders");
   };
 

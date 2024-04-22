@@ -8,10 +8,12 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import PaymentForm from "@/components/modules/orders/PaymentForm";
+import { useOrderStore } from "@/lib/store";
 
 const OrdersPage = () => {
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
+  const orders = useOrderStore();
 
   const cartListByDeviceQuery = useCartListByDevice(
     {
@@ -67,6 +69,7 @@ const OrdersPage = () => {
     }
   };
 
+  console.log("Fetched from store", orders.orders);
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
