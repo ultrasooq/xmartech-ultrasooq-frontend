@@ -28,6 +28,9 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useMe } from "@/apis/queries/user.queries";
+import { OrderDetails } from "@/utils/types/orders.types";
+import Image from "next/image";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -38,11 +41,14 @@ const CheckoutPage = () => {
     number | undefined
   >();
   const [sameAsShipping, setSameAsShipping] = useState(false);
+  const [selectedOrderDetails, setSelectedOrderDetails] =
+    useState<OrderDetails>();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
+  const userDetails = useMe(hasAccessToken);
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
@@ -181,12 +187,85 @@ const CheckoutPage = () => {
     }
   };
 
+  const handleOrderDetails = (
+    item: AddressItem,
+    addresszType: "shipping" | "billing",
+  ) => {
+    console.log("order details");
+    if (addresszType === "shipping") {
+      setSelectedOrderDetails((prevState) => ({
+        ...prevState,
+        firstName: item.firstName || userDetails.data?.data?.firstName,
+        lastName: item.lastName || userDetails.data?.data?.lastName,
+        email: userDetails.data?.data?.email,
+        cc: item.cc,
+        phone: item.phoneNumber,
+        shippingAddress: item.address,
+        shippingCity: item.city,
+        shippingProvince: item.province,
+        shippingCountry: item.country,
+        shippingPostCode: item.postCode,
+      }));
+    } else if (addresszType === "billing") {
+      setSelectedOrderDetails((prevState) => ({
+        ...prevState,
+        firstName: item.firstName || userDetails.data?.data?.firstName,
+        lastName: item.lastName || userDetails.data?.data?.lastName,
+        email: userDetails.data?.data?.email,
+        cc: item.cc,
+        phone: item.phoneNumber,
+        billingAddress: item.address,
+        billingCity: item.city,
+        billingProvince: item.province,
+        billingCountry: item.country,
+        billingPostCode: item.postCode,
+      }));
+    }
+  };
+
+  const onSaveOrder = () => {
+    if (!selectedOrderDetails?.shippingAddress) {
+      toast({
+        title: "Please select a shipping address",
+        variant: "danger",
+      });
+      return;
+    }
+
+    const data = {
+      ...selectedOrderDetails,
+      paymentMethod: "cash",
+      cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
+    };
+
+    if (sameAsShipping) {
+      data.billingAddress = data.shippingAddress;
+      data.billingCity = data.shippingCity;
+      data.billingProvince = data.shippingProvince;
+      data.billingCountry = data.shippingCountry;
+      data.billingPostCode = data.shippingPostCode;
+    }
+
+    if (!data.billingAddress) {
+      toast({
+        title: "Please select a billing address",
+        variant: "danger",
+      });
+      return;
+    }
+
+    console.log("Orders:", data);
+    return;
+    router.push("/orders");
+  };
+
   useEffect(() => {
     if (isClickedOutside) {
       setSelectedAddressId(undefined);
     }
   }, [isClickedOutside]);
 
+  // console.log(hasAccessToken);
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
@@ -267,6 +346,7 @@ const CheckoutPage = () => {
                         id={item.id}
                         firstName={item.firstName}
                         lastName={item.lastName}
+                        cc={item.cc}
                         phoneNumber={item.phoneNumber}
                         address={item.address}
                         city={item.city}
@@ -278,6 +358,9 @@ const CheckoutPage = () => {
                           handleToggleAddModal();
                         }}
                         onDelete={() => handleDeleteAddress(item.id)}
+                        onSelectAddress={() =>
+                          handleOrderDetails(item, "shipping")
+                        }
                       />
                     ))}
                   </RadioGroup>
@@ -290,19 +373,34 @@ const CheckoutPage = () => {
                     <h3>Select Billing address</h3>
                   </div>
                   <div className="rgdiv">
-                    <div className="textwithcheckbox">
-                      <Checkbox
-                        id="same_as_shipping"
-                        className="border border-solid border-gray-300 bg-white data-[state=checked]:!bg-dark-orange"
-                        onCheckedChange={() =>
-                          setSameAsShipping(!sameAsShipping)
-                        }
-                        checked={sameAsShipping}
-                      />
-                      <Label htmlFor="same_as_shipping">
-                        Same As Shipping address
-                      </Label>
-                    </div>
+                    {selectedOrderDetails?.shippingAddress ? (
+                      <div className="textwithcheckbox">
+                        <Checkbox
+                          id="same_as_shipping"
+                          className="border border-solid border-gray-300 bg-white data-[state=checked]:!bg-dark-orange"
+                          onCheckedChange={() => {
+                            setSameAsShipping(!sameAsShipping);
+                            console.log("same as shipping:", sameAsShipping);
+
+                            // since state is not updated immediately, making inverted checking
+                            if (sameAsShipping) {
+                              setSelectedOrderDetails({
+                                ...selectedOrderDetails,
+                                billingAddress: "",
+                                billingCity: "",
+                                billingProvince: "",
+                                billingCountry: "",
+                                billingPostCode: "",
+                              });
+                            }
+                          }}
+                          checked={sameAsShipping}
+                        />
+                        <Label htmlFor="same_as_shipping">
+                          Same As Shipping address
+                        </Label>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 <div className="selected-address-lists">
@@ -331,6 +429,7 @@ const CheckoutPage = () => {
                           id={item.id}
                           firstName={item.firstName}
                           lastName={item.lastName}
+                          cc={item.cc}
                           phoneNumber={item.phoneNumber}
                           address={item.address}
                           city={item.city}
@@ -342,6 +441,9 @@ const CheckoutPage = () => {
                             handleToggleAddModal();
                           }}
                           onDelete={() => handleDeleteAddress(item.id)}
+                          onSelectAddress={() =>
+                            handleOrderDetails(item, "billing")
+                          }
                         />
                       ))}
                     </RadioGroup>
@@ -356,16 +458,33 @@ const CheckoutPage = () => {
               </div>
 
               <div className="card-item cart-items for-add">
-                <div className="top-heading">
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className="add-new-address-btn border-none p-0 !normal-case shadow-none"
-                    onClick={handleToggleAddModal}
-                  >
-                    <img src="/images/addbtn.svg" alt="" /> Add a new address
-                  </Button>
-                </div>
+                {userDetails.data ? (
+                  <div className="top-heading">
+                    <Button
+                      variant="outline"
+                      type="button"
+                      className="add-new-address-btn border-none p-0 !normal-case shadow-none"
+                      onClick={handleToggleAddModal}
+                    >
+                      <Image
+                        src="/images/addbtn.svg"
+                        alt="add-icon"
+                        height={14}
+                        width={14}
+                      />{" "}
+                      Add a new address
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="top-heading">
+                    <Button
+                      onClick={() => router.push("/login?redirect=checkout")}
+                      className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                    >
+                      Login to Continue
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -395,7 +514,7 @@ const CheckoutPage = () => {
             </div>
             <div className="order-action-btn">
               <Button
-                onClick={() => router.push("/orders")}
+                onClick={onSaveOrder}
                 disabled={!memoizedCartList?.length}
                 className="theme-primary-btn order-btn"
               >
@@ -414,7 +533,6 @@ const CheckoutPage = () => {
             onClose={() => {
               setIsAddModalOpen(false);
               setSelectedAddressId(undefined);
-              console.log("je;;p");
             }}
             addressId={selectedAddressId}
           />
