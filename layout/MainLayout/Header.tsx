@@ -225,10 +225,7 @@ const Header = () => {
                   </a>
                 </li>
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
-                  <Link
-                    href="/cart-list"
-                    className="flex flex-wrap items-center"
-                  >
+                  <Link href="/cart" className="flex flex-wrap items-center">
                     <img src="images/cart.svg" />
                     <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
                       {hasAccessToken
