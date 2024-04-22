@@ -2,6 +2,7 @@ export interface AddressItem {
   id: number;
   firstName: string;
   lastName: string;
+  cc: string;
   phoneNumber: string;
   address: string;
   city: string;
