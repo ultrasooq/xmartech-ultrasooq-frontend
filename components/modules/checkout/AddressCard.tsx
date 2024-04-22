@@ -14,6 +14,7 @@ type AddressCardProps = {
   id: number;
   firstName: string;
   lastName: string;
+  cc: string;
   phoneNumber: string;
   address: string;
   city: string;
@@ -22,12 +23,14 @@ type AddressCardProps = {
   postCode: string;
   onEdit: () => void;
   onDelete: () => void;
+  onSelectAddress: () => void;
 };
 
 const AddressCard: React.FC<AddressCardProps> = ({
   id,
   firstName,
   lastName,
+  cc,
   phoneNumber,
   address,
   city,
@@ -36,10 +39,16 @@ const AddressCard: React.FC<AddressCardProps> = ({
   postCode,
   onEdit,
   onDelete,
+  onSelectAddress,
 }) => {
   return (
     <div className="selected-address-item flex gap-x-3">
-      <RadioGroupItem value={id?.toString()} id="r3" className="mt-1" />
+      <RadioGroupItem
+        value={id?.toString()}
+        id="r3"
+        className="mt-1"
+        onClick={onSelectAddress}
+      />
       <Label htmlFor={id?.toString()} className="infocardbox">
         <div className="left-address-with-right-btn">
           <div>
