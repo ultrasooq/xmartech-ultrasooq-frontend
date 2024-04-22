@@ -10,7 +10,10 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import PaymentForm from "@/components/modules/orders/PaymentForm";
 import { initialOrderState, useOrderStore } from "@/lib/store";
 import { useToast } from "@/components/ui/use-toast";
-import { useCreateOrder } from "@/apis/queries/orders.queries";
+import {
+  useCreateOrder,
+  useCreateOrderUnAuth,
+} from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
 
 const OrdersPage = () => {
@@ -36,6 +39,7 @@ const OrdersPage = () => {
     hasAccessToken,
   );
   const createOrder = useCreateOrder();
+  const createOrderUnAuth = useCreateOrderUnAuth();
 
   // const memoizedCartList = useMemo(() => {
   //   return cartListByUser.data?.data || [];
@@ -76,25 +80,49 @@ const OrdersPage = () => {
   };
 
   const handleCreateOrder = async () => {
-    let data = {};
-    if (orders.orders) {
-      data = orders.orders;
-    }
-    const response = await createOrder.mutateAsync(data);
+    if (hasAccessToken) {
+      let data = {};
+      if (orders.orders) {
+        data = orders.orders;
+      }
+      const response = await createOrder.mutateAsync(data);
 
-    if (response?.data) {
-      toast({
-        title: "Order Placed Successfully",
-        description:
-          "Your order has been placed successfully. You can check your order status in My Orders section",
-        variant: "success",
-      });
+      if (response?.data) {
+        toast({
+          title: "Order Placed Successfully",
+          description:
+            "Your order has been placed successfully. You can check your order status in My Orders section",
+          variant: "success",
+        });
 
-      orders.setOrders(initialOrderState.orders);
-      router.push("/my-orders");
+        orders.setOrders(initialOrderState.orders);
+        //YODO: change to my-orders
+        router.push("/trending");
+      }
+    } else {
+      console.log(orders.orders);
+
+      let data = {};
+      if (orders.orders) {
+        data = orders.orders;
+      }
+      const response = await createOrderUnAuth.mutateAsync(data);
+
+      if (response?.data) {
+        toast({
+          title: "Order Placed Successfully",
+          description:
+            "Your order has been placed successfully. Kindly login to continue. You can check your order status in My Orders section",
+          variant: "success",
+        });
+
+        orders.setOrders(initialOrderState.orders);
+        //YODO: change to my-orders
+        router.push("/trending");
+      }
     }
   };
-  console.log("Fetched from store", orders.orders);
+
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">

@@ -14,3 +14,11 @@ export const createOrder = (payload: any) => {
     },
   });
 };
+
+export const createOrderUnAuth = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/order/createOrderUnAuth`,
+    data: payload,
+  });
+};

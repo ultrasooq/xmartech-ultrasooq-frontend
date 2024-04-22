@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +21,10 @@ import Image from "next/image";
 type AddressFormProps = {
   addressId?: number;
   onClose: () => void;
+  isGuest: boolean;
+  addressType?: "shipping" | "billing";
+  setGuestShippingAddress: (address: any) => void;
+  setGuestBillingAddress: (address: any) => void;
 };
 
 const formSchema = z.object({
@@ -86,7 +90,14 @@ const formSchema = z.object({
     }),
 });
 
-const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
+const AddressForm: React.FC<AddressFormProps> = ({
+  addressId,
+  onClose,
+  isGuest,
+  addressType,
+  setGuestShippingAddress,
+  setGuestBillingAddress,
+}) => {
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -120,7 +131,17 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   }, [countriesQuery?.data?.data?.length]);
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    console.log(formData);
+    console.log(formData, isGuest, addressType);
+    if (isGuest) {
+      console.log("Guest", addressType);
+      if (addressType === "shipping") {
+        setGuestShippingAddress(formData);
+      } else if (addressType === "billing") {
+        setGuestBillingAddress(formData);
+      }
+      onClose();
+      return;
+    }
     // return;
 
     if (addressId) {

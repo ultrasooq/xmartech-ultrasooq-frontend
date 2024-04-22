@@ -32,6 +32,9 @@ import { useMe } from "@/apis/queries/user.queries";
 import { OrderDetails } from "@/utils/types/orders.types";
 import Image from "next/image";
 import { useOrderStore } from "@/lib/store";
+import { Input } from "@/components/ui/input";
+import GuestAddressCard from "@/components/modules/checkout/GuestAddressCard";
+import validator from "validator";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -44,10 +47,40 @@ const CheckoutPage = () => {
   const [sameAsShipping, setSameAsShipping] = useState(false);
   const [selectedOrderDetails, setSelectedOrderDetails] =
     useState<OrderDetails>();
+  const [addressType, setAddressType] = useState<"shipping" | "billing">();
+  const [guestShippingAddress, setGuestShippingAddress] = useState<
+    | {
+        firstName: string;
+        lastName: string;
+        cc: string;
+        phoneNumber: string;
+        address: string;
+        city: string;
+        country: string;
+        province: string;
+        postCode: string;
+      }
+    | undefined
+  >();
+  const [guestBillingAddress, setGuestBillingAddress] = useState<
+    | {
+        firstName: string;
+        lastName: string;
+        cc: string;
+        phoneNumber: string;
+        address: string;
+        city: string;
+        country: string;
+        province: string;
+        postCode: string;
+      }
+    | undefined
+  >();
+  const [guestEmail, setGuestEmail] = useState("");
+
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
   const orders = useOrderStore();
-
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
   const userDetails = useMe(hasAccessToken);
@@ -226,40 +259,136 @@ const CheckoutPage = () => {
   };
 
   const onSaveOrder = () => {
-    if (!selectedOrderDetails?.shippingAddress) {
-      toast({
-        title: "Please select a shipping address",
-        variant: "danger",
-      });
-      return;
+    if (hasAccessToken) {
+      if (!selectedOrderDetails?.shippingAddress) {
+        toast({
+          title: "Please select a shipping address",
+          variant: "danger",
+        });
+        return;
+      }
+
+      const data = {
+        ...selectedOrderDetails,
+        paymentMethod: "cash",
+        cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
+      };
+
+      if (sameAsShipping) {
+        data.billingAddress = data.shippingAddress;
+        data.billingCity = data.shippingCity;
+        data.billingProvince = data.shippingProvince;
+        data.billingCountry = data.shippingCountry;
+        data.billingPostCode = data.shippingPostCode;
+      }
+
+      if (!data.billingAddress) {
+        toast({
+          title: "Please select a billing address",
+          variant: "danger",
+        });
+        return;
+      }
+
+      console.log("Orders:", data);
+      orders.setOrders(data);
+      router.push("/orders");
+    } else {
+      if (!guestEmail) {
+        toast({
+          title: "Please enter email address",
+          variant: "danger",
+        });
+        return;
+      }
+
+      if (!validator.isEmail(guestEmail)) {
+        toast({
+          title: "Please enter valid email address",
+          variant: "danger",
+        });
+        return;
+      }
+
+      let guestOrderDetails: any = {
+        guestUser: {
+          firstName: "",
+          lastName: "",
+          email: "",
+          cc: "",
+          phoneNumber: "",
+        },
+      };
+
+      if (!guestShippingAddress) {
+        toast({
+          title: "Please add a shipping address",
+          variant: "danger",
+        });
+        return;
+      }
+
+      if (guestShippingAddress) {
+        guestOrderDetails = {
+          ...guestOrderDetails,
+          firstName: guestShippingAddress.firstName,
+          lastName: guestShippingAddress.lastName,
+          email: "",
+          cc: guestShippingAddress.cc,
+          phone: guestShippingAddress.phoneNumber,
+          shippingAddress: guestShippingAddress.address,
+          shippingCity: guestShippingAddress.city,
+          shippingProvince: guestShippingAddress.province,
+          shippingCountry: guestShippingAddress.country,
+          shippingPostCode: guestShippingAddress.postCode,
+        };
+      }
+
+      if (!guestBillingAddress) {
+        toast({
+          title: "Please add a billing address",
+          variant: "danger",
+        });
+        return;
+      }
+
+      if (guestBillingAddress) {
+        guestOrderDetails = {
+          ...guestOrderDetails,
+          billingAddress: guestBillingAddress.address,
+          billingCity: guestBillingAddress.city,
+          billingProvince: guestBillingAddress.province,
+          billingCountry: guestBillingAddress.country,
+          billingPostCode: guestBillingAddress.postCode,
+        };
+      }
+
+      const data = {
+        ...guestOrderDetails,
+        email: guestEmail,
+        paymentMethod: "cash",
+        cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
+      };
+
+      if (
+        data.firstName !== "" &&
+        data.lastName !== "" &&
+        data.cc != "" &&
+        data.phone !== ""
+      ) {
+        data.guestUser = {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: guestEmail,
+          cc: data.cc,
+          phoneNumber: data.phone,
+        };
+      }
+
+      console.log("Orders:", data);
+      orders.setOrders(data);
+      router.push("/orders");
     }
-
-    const data = {
-      ...selectedOrderDetails,
-      paymentMethod: "cash",
-      cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
-    };
-
-    if (sameAsShipping) {
-      data.billingAddress = data.shippingAddress;
-      data.billingCity = data.shippingCity;
-      data.billingProvince = data.shippingProvince;
-      data.billingCountry = data.shippingCountry;
-      data.billingPostCode = data.shippingPostCode;
-    }
-
-    if (!data.billingAddress) {
-      toast({
-        title: "Please select a billing address",
-        variant: "danger",
-      });
-      return;
-    }
-
-    console.log("Orders:", data);
-    orders.setOrders(data);
-    // return;
-    router.push("/orders");
   };
 
   useEffect(() => {
@@ -268,7 +397,6 @@ const CheckoutPage = () => {
     }
   }, [isClickedOutside]);
 
-  // console.log(hasAccessToken);
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
@@ -315,12 +443,38 @@ const CheckoutPage = () => {
                   ))}
                 </div>
               </div>
+
               <div className="card-item selected-address">
                 <div className="card-inner-headerPart">
                   <div className="lediv">
-                    <h3>Select Shipping address</h3>
+                    <h3>Your Informations</h3>
                   </div>
                 </div>
+
+                <div className="selected-address-lists">
+                  <div className="space-y-2 p-3">
+                    <Label>Email</Label>
+                    <Input
+                      className="theme-form-control-s1"
+                      placeholder="Enter Your Email"
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      value={guestEmail}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="card-item selected-address">
+                <div className="card-inner-headerPart">
+                  <div className="lediv">
+                    <h3>
+                      {userDetails?.data
+                        ? `Select Shipping address`
+                        : "Shipping address"}
+                    </h3>
+                  </div>
+                </div>
+
                 <div className="selected-address-lists">
                   {/* {!memoziedAddressList.length &&
                   !allUserAddressQuery.isLoading ? (
@@ -367,14 +521,58 @@ const CheckoutPage = () => {
                       />
                     ))}
                   </RadioGroup>
+
+                  {guestShippingAddress ? (
+                    <GuestAddressCard
+                      firstName={guestShippingAddress?.firstName}
+                      lastName={guestShippingAddress?.lastName}
+                      cc={guestShippingAddress?.cc}
+                      phoneNumber={guestShippingAddress?.phoneNumber}
+                      address={guestShippingAddress?.address}
+                      city={guestShippingAddress?.city}
+                      country={guestShippingAddress?.country}
+                      province={guestShippingAddress?.province}
+                      postCode={guestShippingAddress?.postCode}
+                      onEdit={() => {}}
+                    />
+                  ) : null}
                 </div>
+
+                {!guestShippingAddress ? (
+                  <div className="card-item cart-items for-add">
+                    <div className="top-heading">
+                      <Button
+                        variant="outline"
+                        type="button"
+                        className="add-new-address-btn border-none p-0 !normal-case shadow-none"
+                        onClick={() => {
+                          setAddressType("shipping");
+                          handleToggleAddModal();
+                        }}
+                      >
+                        <Image
+                          src="/images/addbtn.svg"
+                          alt="add-icon"
+                          height={14}
+                          width={14}
+                        />{" "}
+                        Add a new shipping address
+                      </Button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               <div className="card-item selected-address">
                 <div className="card-inner-headerPart">
                   <div className="lediv">
-                    <h3>Select Billing address</h3>
+                    <h3>
+                      {userDetails?.data
+                        ? `Select Billing address`
+                        : "Billing address"}
+                    </h3>
                   </div>
+
                   <div className="rgdiv">
                     {selectedOrderDetails?.shippingAddress ? (
                       <div className="textwithcheckbox">
@@ -406,6 +604,7 @@ const CheckoutPage = () => {
                     ) : null}
                   </div>
                 </div>
+
                 <div className="selected-address-lists">
                   {/* {!memoziedAddressList.length &&
                   !allUserAddressQuery.isLoading ? (
@@ -457,11 +656,50 @@ const CheckoutPage = () => {
                       </p>
                     </div>
                   )}
+
+                  {guestBillingAddress ? (
+                    <GuestAddressCard
+                      firstName={guestBillingAddress?.firstName}
+                      lastName={guestBillingAddress?.lastName}
+                      cc={guestBillingAddress?.cc}
+                      phoneNumber={guestBillingAddress?.phoneNumber}
+                      address={guestBillingAddress?.address}
+                      city={guestBillingAddress?.city}
+                      country={guestBillingAddress?.country}
+                      province={guestBillingAddress?.province}
+                      postCode={guestBillingAddress?.postCode}
+                      onEdit={() => {}}
+                    />
+                  ) : null}
                 </div>
+
+                {!guestBillingAddress ? (
+                  <div className="card-item cart-items for-add">
+                    <div className="top-heading">
+                      <Button
+                        variant="outline"
+                        type="button"
+                        className="add-new-address-btn border-none p-0 !normal-case shadow-none"
+                        onClick={() => {
+                          setAddressType("billing");
+                          handleToggleAddModal();
+                        }}
+                      >
+                        <Image
+                          src="/images/addbtn.svg"
+                          alt="add-icon"
+                          height={14}
+                          width={14}
+                        />{" "}
+                        Add a new billing address
+                      </Button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
-              <div className="card-item cart-items for-add">
-                {userDetails.data ? (
+              {userDetails.data ? (
+                <div className="card-item cart-items for-add">
                   <div className="top-heading">
                     <Button
                       variant="outline"
@@ -478,17 +716,8 @@ const CheckoutPage = () => {
                       Add a new address
                     </Button>
                   </div>
-                ) : (
-                  <div className="top-heading">
-                    <Button
-                      onClick={() => router.push("/login?redirect=checkout")}
-                      className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
-                    >
-                      Login to Continue
-                    </Button>
-                  </div>
-                )}
-              </div>
+                </div>
+              ) : null}
             </div>
           </div>
           <div className="cart-page-right">
@@ -538,6 +767,10 @@ const CheckoutPage = () => {
               setSelectedAddressId(undefined);
             }}
             addressId={selectedAddressId}
+            isGuest={!hasAccessToken}
+            addressType={addressType}
+            setGuestShippingAddress={setGuestShippingAddress}
+            setGuestBillingAddress={setGuestBillingAddress}
           />
         </DialogContent>
       </Dialog>
