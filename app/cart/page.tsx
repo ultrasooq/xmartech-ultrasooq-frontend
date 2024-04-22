@@ -152,13 +152,13 @@ const CartListPage = () => {
                   </div>
                 </div>
                 <div className="cart-item-lists">
-                  {!memoizedCartList.length && !cartListByUser.isLoading ? (
+                  {/* {!memoizedCartList.length && !cartListByUser.isLoading ? (
                     <div className="px-3 py-6">
                       <p className="my-3 text-center">No items in cart</p>
                     </div>
-                  ) : null}
+                  ) : null} */}
 
-                  <div className="px-3">
+                  {/* <div className="px-3">
                     {cartListByUser.isLoading ? (
                       <div className="my-3 space-y-3">
                         {Array.from({ length: 2 }).map((_, i) => (
@@ -166,7 +166,7 @@ const CartListPage = () => {
                         ))}
                       </div>
                     ) : null}
-                  </div>
+                  </div> */}
                   {memoizedCartList?.map((item: CartItem) => (
                     <ProductCard
                       key={item.id}

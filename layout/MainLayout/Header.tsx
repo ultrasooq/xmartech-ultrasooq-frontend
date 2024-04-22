@@ -181,9 +181,14 @@ const Header = () => {
 
           <div className="flex flex-wrap sm:flex sm:flex-wrap md:flex md:flex-wrap">
             <div className="order-1 flex w-5/12 items-center py-4 sm:order-1 sm:w-5/12 md:order-1 md:w-2/12 lg:w-1/6">
-              <a href="#">
-                <img src="images/logo.png" />
-              </a>
+              <Link href="/home">
+                <Image
+                  src="/images/logo.png"
+                  width={155}
+                  height={22}
+                  alt="logo"
+                />
+              </Link>
             </div>
             <div className="order-3 flex w-10/12 items-center py-4 sm:order-3 sm:w-10/12 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
               <div className="h-11 w-24 md:w-24 lg:w-auto">
@@ -225,10 +230,7 @@ const Header = () => {
                   </a>
                 </li>
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
-                  <Link
-                    href="/cart-list"
-                    className="flex flex-wrap items-center"
-                  >
+                  <Link href="/cart" className="flex flex-wrap items-center">
                     <img src="images/cart.svg" />
                     <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
                       {hasAccessToken

@@ -25,6 +25,13 @@ import { useClickOutside } from "use-events";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { useMe } from "@/apis/queries/user.queries";
+import { OrderDetails } from "@/utils/types/orders.types";
+import Image from "next/image";
+import { useOrderStore } from "@/lib/store";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -34,11 +41,16 @@ const CheckoutPage = () => {
   const [selectedAddressId, setSelectedAddressId] = useState<
     number | undefined
   >();
+  const [sameAsShipping, setSameAsShipping] = useState(false);
+  const [selectedOrderDetails, setSelectedOrderDetails] =
+    useState<OrderDetails>();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
+  const orders = useOrderStore();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
+  const userDetails = useMe(hasAccessToken);
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
@@ -177,12 +189,86 @@ const CheckoutPage = () => {
     }
   };
 
+  const handleOrderDetails = (
+    item: AddressItem,
+    addresszType: "shipping" | "billing",
+  ) => {
+    console.log("order details");
+    if (addresszType === "shipping") {
+      setSelectedOrderDetails((prevState) => ({
+        ...prevState,
+        firstName: item.firstName || userDetails.data?.data?.firstName,
+        lastName: item.lastName || userDetails.data?.data?.lastName,
+        email: userDetails.data?.data?.email,
+        cc: item.cc,
+        phone: item.phoneNumber,
+        shippingAddress: item.address,
+        shippingCity: item.city,
+        shippingProvince: item.province,
+        shippingCountry: item.country,
+        shippingPostCode: item.postCode,
+      }));
+    } else if (addresszType === "billing") {
+      setSelectedOrderDetails((prevState) => ({
+        ...prevState,
+        firstName: item.firstName || userDetails.data?.data?.firstName,
+        lastName: item.lastName || userDetails.data?.data?.lastName,
+        email: userDetails.data?.data?.email,
+        cc: item.cc,
+        phone: item.phoneNumber,
+        billingAddress: item.address,
+        billingCity: item.city,
+        billingProvince: item.province,
+        billingCountry: item.country,
+        billingPostCode: item.postCode,
+      }));
+    }
+  };
+
+  const onSaveOrder = () => {
+    if (!selectedOrderDetails?.shippingAddress) {
+      toast({
+        title: "Please select a shipping address",
+        variant: "danger",
+      });
+      return;
+    }
+
+    const data = {
+      ...selectedOrderDetails,
+      paymentMethod: "cash",
+      cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
+    };
+
+    if (sameAsShipping) {
+      data.billingAddress = data.shippingAddress;
+      data.billingCity = data.shippingCity;
+      data.billingProvince = data.shippingProvince;
+      data.billingCountry = data.shippingCountry;
+      data.billingPostCode = data.shippingPostCode;
+    }
+
+    if (!data.billingAddress) {
+      toast({
+        title: "Please select a billing address",
+        variant: "danger",
+      });
+      return;
+    }
+
+    console.log("Orders:", data);
+    orders.setOrders(data);
+    // return;
+    router.push("/orders");
+  };
+
   useEffect(() => {
     if (isClickedOutside) {
       setSelectedAddressId(undefined);
     }
   }, [isClickedOutside]);
 
+  // console.log(hasAccessToken);
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
@@ -197,13 +283,14 @@ const CheckoutPage = () => {
                 </div>
 
                 <div className="cart-item-lists">
-                  {!memoizedCartList.length && !cartListByUser.isLoading ? (
+                  {/* {!cartListByUser.data?.data?.length &&
+                  !cartListByUser.isLoading ? (
                     <div className="px-3 py-6">
                       <p className="my-3 text-center">No items in cart</p>
                     </div>
-                  ) : null}
+                  ) : null} */}
 
-                  <div className="px-3">
+                  {/* <div className="px-3">
                     {cartListByUser.isLoading ? (
                       <div className="my-3 space-y-3">
                         {Array.from({ length: 2 }).map((_, i) => (
@@ -211,7 +298,7 @@ const CheckoutPage = () => {
                         ))}
                       </div>
                     ) : null}
-                  </div>
+                  </div> */}
 
                   {memoizedCartList?.map((item: CartItem) => (
                     <ProductCard
@@ -235,13 +322,14 @@ const CheckoutPage = () => {
                   </div>
                 </div>
                 <div className="selected-address-lists">
-                  {!memoziedAddressList.length &&
+                  {/* {!memoziedAddressList.length &&
                   !allUserAddressQuery.isLoading ? (
                     <div className="px-3 py-6">
                       <p className="my-3 text-center">No address added</p>
                     </div>
-                  ) : null}
-                  <div className="px-3">
+                  ) : null} */}
+
+                  {/* <div className="px-3">
                     {allUserAddressQuery.isLoading ? (
                       <div className="my-3 space-y-3">
                         {Array.from({ length: 2 }).map((_, i) => (
@@ -249,26 +337,36 @@ const CheckoutPage = () => {
                         ))}
                       </div>
                     ) : null}
-                  </div>
+                  </div> */}
 
-                  {memoziedAddressList?.map((item: AddressItem) => (
-                    <AddressCard
-                      key={item.id}
-                      firstName={item.firstName}
-                      lastName={item.lastName}
-                      phoneNumber={item.phoneNumber}
-                      address={item.address}
-                      city={item.city}
-                      country={item.country}
-                      province={item.province}
-                      postCode={item.postCode}
-                      onEdit={() => {
-                        setSelectedAddressId(item.id);
-                        handleToggleAddModal();
-                      }}
-                      onDelete={() => handleDeleteAddress(item.id)}
-                    />
-                  ))}
+                  <RadioGroup
+                    defaultValue={selectedAddressId?.toString()}
+                    className=""
+                  >
+                    {memoziedAddressList?.map((item: AddressItem) => (
+                      <AddressCard
+                        key={item.id}
+                        id={item.id}
+                        firstName={item.firstName}
+                        lastName={item.lastName}
+                        cc={item.cc}
+                        phoneNumber={item.phoneNumber}
+                        address={item.address}
+                        city={item.city}
+                        country={item.country}
+                        province={item.province}
+                        postCode={item.postCode}
+                        onEdit={() => {
+                          setSelectedAddressId(item.id);
+                          handleToggleAddModal();
+                        }}
+                        onDelete={() => handleDeleteAddress(item.id)}
+                        onSelectAddress={() =>
+                          handleOrderDetails(item, "shipping")
+                        }
+                      />
+                    ))}
+                  </RadioGroup>
                 </div>
               </div>
 
@@ -278,25 +376,45 @@ const CheckoutPage = () => {
                     <h3>Select Billing address</h3>
                   </div>
                   <div className="rgdiv">
-                    <div className="textwithcheckbox">
-                      <input
-                        type="checkbox"
-                        id="sameas"
-                        className="custom-checkbox-s1"
-                      ></input>
-                      <label htmlFor="sameas">Same As Shipping address</label>
-                    </div>
+                    {selectedOrderDetails?.shippingAddress ? (
+                      <div className="textwithcheckbox">
+                        <Checkbox
+                          id="same_as_shipping"
+                          className="border border-solid border-gray-300 bg-white data-[state=checked]:!bg-dark-orange"
+                          onCheckedChange={() => {
+                            setSameAsShipping(!sameAsShipping);
+                            console.log("same as shipping:", sameAsShipping);
+
+                            // since state is not updated immediately, making inverted checking
+                            if (sameAsShipping) {
+                              setSelectedOrderDetails({
+                                ...selectedOrderDetails,
+                                billingAddress: "",
+                                billingCity: "",
+                                billingProvince: "",
+                                billingCountry: "",
+                                billingPostCode: "",
+                              });
+                            }
+                          }}
+                          checked={sameAsShipping}
+                        />
+                        <Label htmlFor="same_as_shipping">
+                          Same As Shipping address
+                        </Label>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 <div className="selected-address-lists">
-                  {!memoziedAddressList.length &&
+                  {/* {!memoziedAddressList.length &&
                   !allUserAddressQuery.isLoading ? (
                     <div className="px-3 py-6">
                       <p className="my-3 text-center">No address added</p>
                     </div>
-                  ) : null}
+                  ) : null} */}
 
-                  <div className="px-3">
+                  {/* <div className="px-3">
                     {allUserAddressQuery.isLoading ? (
                       <div className="my-3 space-y-3">
                         {Array.from({ length: 2 }).map((_, i) => (
@@ -304,40 +422,72 @@ const CheckoutPage = () => {
                         ))}
                       </div>
                     ) : null}
-                  </div>
+                  </div> */}
 
-                  {memoziedAddressList?.map((item: AddressItem) => (
-                    <AddressCard
-                      key={item.id}
-                      firstName={item.firstName}
-                      lastName={item.lastName}
-                      phoneNumber={item.phoneNumber}
-                      address={item.address}
-                      city={item.city}
-                      country={item.country}
-                      province={item.province}
-                      postCode={item.postCode}
-                      onEdit={() => {
-                        setSelectedAddressId(item.id);
-                        handleToggleAddModal();
-                      }}
-                      onDelete={() => handleDeleteAddress(item.id)}
-                    />
-                  ))}
+                  {!sameAsShipping ? (
+                    <RadioGroup defaultValue="comfortable" className="">
+                      {memoziedAddressList?.map((item: AddressItem) => (
+                        <AddressCard
+                          key={item.id}
+                          id={item.id}
+                          firstName={item.firstName}
+                          lastName={item.lastName}
+                          cc={item.cc}
+                          phoneNumber={item.phoneNumber}
+                          address={item.address}
+                          city={item.city}
+                          country={item.country}
+                          province={item.province}
+                          postCode={item.postCode}
+                          onEdit={() => {
+                            setSelectedAddressId(item.id);
+                            handleToggleAddModal();
+                          }}
+                          onDelete={() => handleDeleteAddress(item.id)}
+                          onSelectAddress={() =>
+                            handleOrderDetails(item, "billing")
+                          }
+                        />
+                      ))}
+                    </RadioGroup>
+                  ) : (
+                    <div className="px-3 py-6">
+                      <p className="my-3 text-center">
+                        Same as shipping address
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="card-item cart-items for-add">
-                <div className="top-heading">
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className="add-new-address-btn border-none p-0 !normal-case shadow-none"
-                    onClick={handleToggleAddModal}
-                  >
-                    <img src="/images/addbtn.svg" alt="" /> Add a new address
-                  </Button>
-                </div>
+                {userDetails.data ? (
+                  <div className="top-heading">
+                    <Button
+                      variant="outline"
+                      type="button"
+                      className="add-new-address-btn border-none p-0 !normal-case shadow-none"
+                      onClick={handleToggleAddModal}
+                    >
+                      <Image
+                        src="/images/addbtn.svg"
+                        alt="add-icon"
+                        height={14}
+                        width={14}
+                      />{" "}
+                      Add a new address
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="top-heading">
+                    <Button
+                      onClick={() => router.push("/login?redirect=checkout")}
+                      className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                    >
+                      Login to Continue
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -367,7 +517,7 @@ const CheckoutPage = () => {
             </div>
             <div className="order-action-btn">
               <Button
-                onClick={() => router.push("/orders")}
+                onClick={onSaveOrder}
                 disabled={!memoizedCartList?.length}
                 className="theme-primary-btn order-btn"
               >
@@ -386,7 +536,6 @@ const CheckoutPage = () => {
             onClose={() => {
               setIsAddModalOpen(false);
               setSelectedAddressId(undefined);
-              console.log("je;;p");
             }}
             addressId={selectedAddressId}
           />
