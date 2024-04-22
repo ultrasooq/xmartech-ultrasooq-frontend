@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -42,6 +42,8 @@ const formSchema = z.object({
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [pageType, setPageType] = useState<string>();
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -71,7 +73,14 @@ export default function LoginPage() {
         variant: "success",
       });
       form.reset();
-      router.push("/home");
+
+      // redirect
+      if (pageType) {
+        router.push(`/${pageType}`);
+        return;
+      } else {
+        router.push("/home");
+      }
     } else {
       toast({
         title: "Login Failed",
@@ -80,6 +89,14 @@ export default function LoginPage() {
       });
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirectTo = params.get("redirect");
+    if (redirectTo) {
+      setPageType(redirectTo);
+    }
+  }, []);
 
   return (
     <section className="relative w-full py-7">
