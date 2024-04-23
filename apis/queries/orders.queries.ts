@@ -1,6 +1,34 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createOrder, createOrderUnAuth } from "../requests/orders.requests";
+import {
+  createOrder,
+  createOrderUnAuth,
+  fetchOrders,
+} from "../requests/orders.requests";
 import { APIResponseError } from "@/utils/types/common.types";
+
+export const useOrders = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    orderProductStatus?: string;
+    startDate?: string;
+    endDate?: string;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["orders", payload],
+    queryFn: async () => {
+      const res: { data: { data: any; message: string; status: boolean } } =
+        await fetchOrders(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
 
 export const useCreateOrder = () => {
   const queryClient = useQueryClient();
@@ -15,7 +43,7 @@ export const useCreateOrder = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["order"],
+        queryKey: ["orders"],
       });
       queryClient.invalidateQueries({
         queryKey: ["cart-count-with-login"],
@@ -40,7 +68,7 @@ export const useCreateOrderUnAuth = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["order"],
+        queryKey: ["orders"],
       });
     },
     onError: (err: APIResponseError) => {
