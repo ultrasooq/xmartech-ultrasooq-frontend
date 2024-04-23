@@ -2,8 +2,16 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import validator from "validator";
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -22,33 +30,66 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   hasItem,
   isLoading,
 }) => {
-  const [previewImages, setPreviewImages] = React.useState<any>([]);
+  const [previewImages, setPreviewImages] = useState<any[]>([]);
+  const [api, setApi] = useState<CarouselApi>();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (!productDetails?.productImages?.length) return;
 
     setPreviewImages(
-      productDetails?.productImages?.[0]?.image &&
-        validator.isURL(productDetails.productImages[0].image)
-        ? productDetails?.productImages?.[0]?.image
-        : "/images/product-placeholder.png",
+      productDetails?.productImages?.map((item: any) =>
+        validator.isURL(item?.image)
+          ? item?.image
+          : "/images/product-placeholder.png",
+      ),
     );
   }, [productDetails?.productImages?.length]);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    api.on("select", (emblaApi) => {
+      // Do something on select.
+      const index = emblaApi.selectedScrollSnap();
+      setCurrentImageIndex(index);
+    });
+  }, [api]);
 
   return (
     <div className="product-view-s1-left">
       <div className="grid grid-cols-4 gap-4">
         <div className="order-2 col-span-3 max-h-[500px] space-y-4 bg-gray-100">
-          {productDetails?.productImages?.length ? (
-            <div className="relative min-h-[500px] w-full">
-              <Image
-                src={previewImages}
-                alt="primary-image"
-                fill
-                className="object-contain"
-              />
-            </div>
-          ) : !isLoading ? (
+          {!isLoading && previewImages?.length ? (
+            <Carousel
+              className="w-full"
+              opts={{ align: "start", loop: true }}
+              setApi={setApi}
+            >
+              <CarouselContent className="-ml-1">
+                {previewImages?.map((item, index) => (
+                  <CarouselItem key={index} className="basis pl-1">
+                    <div className="p-1">
+                      <div className="relative min-h-[500px] w-full">
+                        <Image
+                          src={item}
+                          alt="primary-image"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-0" />
+              <CarouselNext className="right-0" />
+            </Carousel>
+          ) : null}
+
+          {!isLoading && !previewImages?.length ? (
             <div className="relative min-h-[500px] w-full">
               <Image
                 src="/images/product-placeholder.png"
@@ -84,15 +125,17 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               ))
             : null}
 
-          {productDetails?.productImages?.map((item: any) => (
+          {productDetails?.productImages?.map((item: any, index: number) => (
             <Button
               variant="ghost"
               className={cn(
-                item?.image === previewImages ? "border-2 border-red-500" : "",
+                previewImages[currentImageIndex] === item?.image
+                  ? "border-2 border-red-500"
+                  : "",
                 "relative h-28 w-28 rounded-none bg-gray-100",
               )}
               key={item?.id}
-              onClick={() => setPreviewImages(item?.image)}
+              onClick={() => api?.scrollTo(index)}
             >
               <Image
                 src={
