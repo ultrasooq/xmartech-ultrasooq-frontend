@@ -1,15 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useOrders } from "@/apis/queries/orders.queries";
 import { FiSearch } from "react-icons/fi";
 // import { BiSolidCircle } from "react-icons/bi";
 // import { PiStarFill } from "react-icons/pi";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 import OrderCard from "@/components/modules/myOrders/OrderCard";
 import { debounce } from "lodash";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 
 const MyOrdersPage = () => {
+  const searchRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderStatus, setOrderStatus] = useState<string>("");
   const [orderTime, setOrderTime] = useState<string>("");
@@ -85,32 +88,6 @@ const MyOrdersPage = () => {
             <div className="card-box">
               <h2>Filter</h2>
               <h3>Order Status</h3>
-              {/* <ul className="checkbox-with-label-filters">
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>On the way</label>
-                </li>
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>Delivered</label>
-                </li>
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>Cancelled</label>
-                </li>
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>Returned</label>
-                </li>
-              </ul> */}
 
               <RadioGroup
                 className="flex flex-col gap-y-3"
@@ -152,44 +129,6 @@ const MyOrdersPage = () => {
               <div className="divider"></div>
 
               <h3>Order time</h3>
-              {/* <ul className="checkbox-with-label-filters">
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>Last 30 days</label>
-                </li>
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>2023</label>
-                </li>
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>2022</label>
-                </li>
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>2021</label>
-                </li>
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>2020</label>
-                </li>
-                <li>
-                  <div className="check-col">
-                    <input type="checkbox" className="custom-checkbox-s1" />
-                  </div>
-                  <label>Older</label>
-                </li>
-              </ul> */}
 
               <RadioGroup
                 className="flex flex-col gap-y-3"
@@ -237,13 +176,28 @@ const MyOrdersPage = () => {
           </div>
 
           <div className="right-div">
-            <div className="order-search-bar">
-              <input
-                type="text"
-                className="custom-form-control-s1"
-                placeholder="Search..."
-                onChange={handleDebounce}
-              />
+            <div className="order-search-bar flex w-full">
+              <div className="relative flex flex-1">
+                <input
+                  type="text"
+                  className="custom-form-control-s1 !w-full"
+                  placeholder="Search..."
+                  onChange={handleDebounce}
+                  ref={searchRef}
+                />
+                <Button
+                  variant="ghost"
+                  className="absolute right-0 h-full hover:bg-transparent"
+                  onClick={() => {
+                    if (searchRef.current) {
+                      searchRef.current.value = "";
+                    }
+                    setSearchTerm("");
+                  }}
+                >
+                  <IoIosCloseCircleOutline size={24} />
+                </Button>
+              </div>
               <button type="button" className="search-btn theme-primary-btn">
                 <FiSearch />
                 Search Orders

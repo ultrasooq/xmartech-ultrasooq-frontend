@@ -48,6 +48,9 @@ export const useCreateOrder = () => {
       queryClient.invalidateQueries({
         queryKey: ["cart-count-with-login"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-user"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -69,6 +72,12 @@ export const useCreateOrderUnAuth = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["orders"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-without-login"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-device"],
       });
     },
     onError: (err: APIResponseError) => {
