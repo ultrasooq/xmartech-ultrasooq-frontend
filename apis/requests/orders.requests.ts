@@ -7,6 +7,9 @@ export const fetchOrders = (payload: {
   page: number;
   limit: number;
   term?: string;
+  orderProductStatus?: string;
+  startDate?: string;
+  endDate?: string;
 }) => {
   return axios({
     method: "GET",

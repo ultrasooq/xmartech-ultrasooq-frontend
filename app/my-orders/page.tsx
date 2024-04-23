@@ -2,25 +2,70 @@
 import React, { useState } from "react";
 import { useOrders } from "@/apis/queries/orders.queries";
 import { FiSearch } from "react-icons/fi";
-import { BiSolidCircle } from "react-icons/bi";
-import { PiStarFill } from "react-icons/pi";
+// import { BiSolidCircle } from "react-icons/bi";
+// import { PiStarFill } from "react-icons/pi";
 import OrderCard from "@/components/modules/myOrders/OrderCard";
 import { debounce } from "lodash";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const MyOrdersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [orderStatus, setOrderStatus] = useState<string>("");
+  const [orderTime, setOrderTime] = useState<string>("");
+
+  const getYearDates = (
+    input: string,
+  ): { startDate: string; endDate: string } => {
+    const currentDate = new Date();
+
+    if (input === "last30") {
+      const startDate = new Date(currentDate);
+      startDate.setDate(currentDate.getDate() - 30);
+      const endDate = currentDate;
+
+      return {
+        startDate: startDate.toISOString().slice(0, 10),
+        endDate: endDate.toISOString().slice(0, 10) + " 23:59:59",
+      };
+    }
+
+    if (input === "older") {
+      const startDate = new Date(currentDate.getFullYear() - 20, 0, 1);
+      const endDate = new Date(currentDate.getFullYear() - 1, 11, 31);
+
+      return {
+        startDate: `${startDate.getFullYear()}-01-01`,
+        endDate: `${endDate.getFullYear()}-12-31`,
+      };
+    }
+
+    const yearNumber = Number(input);
+    if (isNaN(yearNumber) || yearNumber < 1000 || yearNumber > 9999) {
+      return { startDate: "", endDate: "" };
+    }
+
+    const startDate = `${yearNumber}-01-01`;
+    const endDate = `${yearNumber}-12-31`;
+
+    return {
+      startDate,
+      endDate,
+    };
+  };
 
   const ordersQuery = useOrders({
     page: 1,
     limit: 40,
     term: searchTerm !== "" ? searchTerm : undefined,
+    orderProductStatus: orderStatus,
+    startDate: getYearDates(orderTime).startDate,
+    endDate: getYearDates(orderTime).endDate,
   });
 
   const handleDebounce = debounce((event: any) => {
     setSearchTerm(event.target.value);
   }, 1000);
-
-  console.log(ordersQuery.data?.data);
 
   return (
     <div className="my-order-main">
@@ -34,12 +79,13 @@ const MyOrdersPage = () => {
           </li>
           <li>My Orders</li>
         </ul> */}
+
         <div className="my-order-wrapper">
           <div className="left-div">
             <div className="card-box">
               <h2>Filter</h2>
               <h3>Order Status</h3>
-              <ul className="checkbox-with-label-filters">
+              {/* <ul className="checkbox-with-label-filters">
                 <li>
                   <div className="check-col">
                     <input type="checkbox" className="custom-checkbox-s1" />
@@ -64,10 +110,49 @@ const MyOrdersPage = () => {
                   </div>
                   <label>Returned</label>
                 </li>
-              </ul>
+              </ul> */}
+
+              <RadioGroup
+                className="flex flex-col gap-y-3"
+                value={orderStatus}
+                onValueChange={setOrderStatus}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="CONFIRMED" id="CONFIRMED" />
+                  <Label htmlFor="CONFIRMED" className="text-base">
+                    Confirmed
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="SHIPPED" id="SHIPPED" />
+                  <Label htmlFor="SHIPPED" className="text-base">
+                    Shipped
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="OFD" id="OFD" />
+                  <Label htmlFor="OFD" className="text-base">
+                    On the way
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="DELIVERED" id="DELIVERED" />
+                  <Label htmlFor="DELIVERED" className="text-base">
+                    Delivered
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="CANCELLED" id="CANCELLED" />
+                  <Label htmlFor="CANCELLED" className="text-base">
+                    Cancelled
+                  </Label>
+                </div>
+              </RadioGroup>
+
               <div className="divider"></div>
+
               <h3>Order time</h3>
-              <ul className="checkbox-with-label-filters">
+              {/* <ul className="checkbox-with-label-filters">
                 <li>
                   <div className="check-col">
                     <input type="checkbox" className="custom-checkbox-s1" />
@@ -104,7 +189,50 @@ const MyOrdersPage = () => {
                   </div>
                   <label>Older</label>
                 </li>
-              </ul>
+              </ul> */}
+
+              <RadioGroup
+                className="flex flex-col gap-y-3"
+                value={orderTime}
+                onValueChange={setOrderTime}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="last30" id="last30" />
+                  <Label htmlFor="last30" className="text-base">
+                    Last 30 days
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2023" id="2023" />
+                  <Label htmlFor="2023" className="text-base">
+                    2023
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2022" id="2022" />
+                  <Label htmlFor="2022" className="text-base">
+                    2022
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2021" id="2021" />
+                  <Label htmlFor="2021" className="text-base">
+                    2021
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2020" id="2020" />
+                  <Label htmlFor="2020" className="text-base">
+                    2020
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="older" id="older" />
+                  <Label htmlFor="older" className="text-base">
+                    Older
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
           </div>
 
@@ -124,6 +252,14 @@ const MyOrdersPage = () => {
             <div className="my-order-lists">
               <div className="my-order-item">
                 <div className="my-order-card">
+                  {!ordersQuery?.data?.data?.length ? (
+                    <div className="w-full p-3">
+                      <p className="text-center text-lg font-semibold">
+                        No orders found
+                      </p>
+                    </div>
+                  ) : null}
+
                   {ordersQuery?.data?.data?.map(
                     (item: {
                       id: number;
