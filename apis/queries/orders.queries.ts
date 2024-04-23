@@ -17,6 +17,9 @@ export const useCreateOrder = () => {
       queryClient.invalidateQueries({
         queryKey: ["order"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);

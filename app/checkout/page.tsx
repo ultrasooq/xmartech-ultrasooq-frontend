@@ -35,6 +35,7 @@ import { useOrderStore } from "@/lib/store";
 import { Input } from "@/components/ui/input";
 import GuestAddressCard from "@/components/modules/checkout/GuestAddressCard";
 import validator from "validator";
+import GuestAddressForm from "@/components/modules/checkout/GuestAddressForm";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -444,25 +445,27 @@ const CheckoutPage = () => {
                 </div>
               </div>
 
-              <div className="card-item selected-address">
-                <div className="card-inner-headerPart">
-                  <div className="lediv">
-                    <h3>Your Informations</h3>
+              {!hasAccessToken ? (
+                <div className="card-item selected-address">
+                  <div className="card-inner-headerPart">
+                    <div className="lediv">
+                      <h3>Your Informations</h3>
+                    </div>
                   </div>
-                </div>
 
-                <div className="selected-address-lists">
-                  <div className="space-y-2 p-3">
-                    <Label>Email</Label>
-                    <Input
-                      className="theme-form-control-s1"
-                      placeholder="Enter Your Email"
-                      onChange={(e) => setGuestEmail(e.target.value)}
-                      value={guestEmail}
-                    />
+                  <div className="selected-address-lists">
+                    <div className="space-y-2 p-3">
+                      <Label>Email</Label>
+                      <Input
+                        className="theme-form-control-s1"
+                        placeholder="Enter Your Email"
+                        onChange={(e) => setGuestEmail(e.target.value)}
+                        value={guestEmail}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : null}
 
               <div className="card-item selected-address">
                 <div className="card-inner-headerPart">
@@ -533,12 +536,15 @@ const CheckoutPage = () => {
                       country={guestShippingAddress?.country}
                       province={guestShippingAddress?.province}
                       postCode={guestShippingAddress?.postCode}
-                      onEdit={() => {}}
+                      onEdit={() => {
+                        setAddressType("shipping");
+                        handleToggleAddModal();
+                      }}
                     />
                   ) : null}
                 </div>
 
-                {!guestShippingAddress ? (
+                {!hasAccessToken && !guestShippingAddress ? (
                   <div className="card-item cart-items for-add">
                     <div className="top-heading">
                       <Button
@@ -668,12 +674,15 @@ const CheckoutPage = () => {
                       country={guestBillingAddress?.country}
                       province={guestBillingAddress?.province}
                       postCode={guestBillingAddress?.postCode}
-                      onEdit={() => {}}
+                      onEdit={() => {
+                        setAddressType("billing");
+                        handleToggleAddModal();
+                      }}
                     />
                   ) : null}
                 </div>
 
-                {!guestBillingAddress ? (
+                {!hasAccessToken && !guestBillingAddress ? (
                   <div className="card-item cart-items for-add">
                     <div className="top-heading">
                       <Button
@@ -761,17 +770,27 @@ const CheckoutPage = () => {
           className="add-new-address-modal gap-0 p-0"
           ref={wrapperRef}
         >
-          <AddressForm
-            onClose={() => {
-              setIsAddModalOpen(false);
-              setSelectedAddressId(undefined);
-            }}
-            addressId={selectedAddressId}
-            isGuest={!hasAccessToken}
-            addressType={addressType}
-            setGuestShippingAddress={setGuestShippingAddress}
-            setGuestBillingAddress={setGuestBillingAddress}
-          />
+          {hasAccessToken ? (
+            <AddressForm
+              onClose={() => {
+                setIsAddModalOpen(false);
+                setSelectedAddressId(undefined);
+              }}
+              addressId={selectedAddressId}
+            />
+          ) : (
+            <GuestAddressForm
+              onClose={() => {
+                setIsAddModalOpen(false);
+                setSelectedAddressId(undefined);
+              }}
+              addressType={addressType}
+              setGuestShippingAddress={setGuestShippingAddress}
+              setGuestBillingAddress={setGuestBillingAddress}
+              guestShippingAddress={guestShippingAddress}
+              guestBillingAddress={guestBillingAddress}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>

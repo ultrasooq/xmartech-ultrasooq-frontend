@@ -1,26 +1,21 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
-import { useCountries } from "@/apis/queries/masters.queries";
-import { ICountries } from "@/utils/types/common.types";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  useAddAddress,
-  useAddressById,
-  useUpdateAddress,
-} from "@/apis/queries/address.queries";
-import Image from "next/image";
 
-type AddressFormProps = {
-  addressId?: number;
+type GuestAddressFormProps = {
   onClose: () => void;
+  addressType?: "shipping" | "billing";
+  setGuestShippingAddress: (address: any) => void;
+  setGuestBillingAddress: (address: any) => void;
+  guestShippingAddress?: any;
+  guestBillingAddress?: any;
 };
 
 const formSchema = z.object({
@@ -86,7 +81,14 @@ const formSchema = z.object({
     }),
 });
 
-const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
+const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
+  onClose,
+  addressType,
+  setGuestShippingAddress,
+  setGuestBillingAddress,
+  guestShippingAddress,
+  guestBillingAddress,
+}) => {
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -103,92 +105,45 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
     },
   });
 
-  const createAddress = useAddAddress();
-  const updateAddress = useUpdateAddress();
-  const addressByIdQuery = useAddressById(
-    addressId ? String(addressId) : "",
-    !!addressId,
-  );
-  const countriesQuery = useCountries();
-
-  const memoizedCountries = useMemo(() => {
-    return (
-      countriesQuery?.data?.data.map((item: ICountries) => {
-        return { label: item.countryName, value: item.countryName };
-      }) || []
-    );
-  }, [countriesQuery?.data?.data?.length]);
-
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    if (addressId) {
-      const updatedFormData = {
-        ...formData,
-        userAddressId: addressId,
-      };
-      const response = await updateAddress.mutateAsync(updatedFormData);
+    console.log(formData, addressType);
 
-      if (response.status) {
-        toast({
-          title: "Address Edit Successful",
-          description: response.message,
-          variant: "success",
-        });
-        form.reset();
-        onClose();
-      } else {
-        toast({
-          title: "Address Edit Failed",
-          description: response.message,
-          variant: "danger",
-        });
-      }
-    } else {
-      const response = await createAddress.mutateAsync(formData);
-
-      if (response.status) {
-        toast({
-          title: "Address Add Successful",
-          description: response.message,
-          variant: "success",
-        });
-        form.reset();
-        onClose();
-      } else {
-        toast({
-          title: "Address Add Failed",
-          description: response.message,
-          variant: "danger",
-        });
-      }
+    console.log("Guest", addressType);
+    if (addressType === "shipping") {
+      setGuestShippingAddress(formData);
+    } else if (addressType === "billing") {
+      setGuestBillingAddress(formData);
     }
+
+    form.reset();
+    onClose();
   };
 
   useEffect(() => {
-    if (addressId && addressByIdQuery.data?.data) {
-      const addressDetails = addressByIdQuery.data?.data;
-      form.reset({
-        firstName: addressDetails?.firstName,
-        lastName: addressDetails?.lastName,
-        phoneNumber: addressDetails?.phoneNumber,
-        cc: addressDetails?.cc,
-        address: addressDetails?.address,
-        city: addressDetails?.city,
-        province: addressDetails?.province,
-        country: addressDetails?.country,
-        postCode: addressDetails?.postCode,
-      });
+    if (guestShippingAddress) {
+      form.reset(guestShippingAddress);
     }
-  }, [
-    addressByIdQuery.data?.data,
-    countriesQuery?.data?.data?.length,
-    addressId,
-  ]);
+
+    return () => {
+      form.reset();
+    };
+  }, [guestShippingAddress]);
+
+  useEffect(() => {
+    if (guestBillingAddress) {
+      form.reset(guestBillingAddress);
+    }
+
+    return () => {
+      form.reset();
+    };
+  }, [guestBillingAddress]);
 
   return (
     <>
       <div className="modal-header">
         <DialogTitle className="text-center text-xl font-bold">
-          {`${addressId ? "Edit" : "Add"} New Address`}
+          {`${guestShippingAddress || guestBillingAddress ? "Edit" : "Add"} Address`}
         </DialogTitle>
       </div>
       <Form {...form}>
@@ -258,26 +213,12 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
           </div>
 
           <Button
-            disabled={createAddress.isPending || updateAddress.isPending}
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
-            {createAddress.isPending || updateAddress.isPending ? (
-              <>
-                <Image
-                  src="/images/load.png"
-                  alt="loader-icon"
-                  width={20}
-                  height={20}
-                  className="mr-2 animate-spin"
-                />
-                Please wait
-              </>
-            ) : addressId ? (
-              "Edit Address"
-            ) : (
-              "Add Address"
-            )}
+            {guestShippingAddress || guestBillingAddress
+              ? "Edit Address"
+              : "Add Address"}
           </Button>
         </form>
       </Form>
@@ -285,4 +226,4 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   );
 };
 
-export default AddressForm;
+export default GuestAddressForm;
