@@ -1426,7 +1426,169 @@
     @apply w-full h-14;
   }
 
+  /* start: my-order-main */
+  .my-order-main {
+    @apply bg-[#fef6f6] px-0 py-[50px];
+  }
 
+  .my-order-wrapper {
+    @apply flex gap-x-6;
+  }
+
+  .my-order-wrapper .left-div {
+    @apply w-full;
+    max-width: 270px;
+
+  }
+
+  .my-order-wrapper .right-div {
+    @apply w-full;
+    max-width: calc(100% -270px);
+  }
+
+  .my-order-wrapper .left-div .card-box {
+    @apply bg-white border shadow-[1px_1px_12px_#4f4f4f24] pt-2.5 pb-4 px-5 rounded-[3px] border-solid border-[#eeeeee];
+  }
+
+  .my-order-wrapper .left-div h2 {
+    @apply text-xl leading-[30px] font-semibold mb-2;
+  }
+
+  .my-order-wrapper .left-div h3 {
+    @apply text-base leading-[26px] font-semibold mb-2;
+  }
+
+  .my-order-wrapper .left-div .checkbox-with-label-filters {
+    @apply flex flex-col gap-y-4;
+  }
+
+  .my-order-wrapper .left-div .checkbox-with-label-filters li {
+    @apply flex items-center gap-x-2.5;
+  }
+
+  .my-order-wrapper .left-div .checkbox-with-label-filters li .check-col {
+    @apply flex items-center;
+  }
+
+  .my-order-wrapper .left-div .checkbox-with-label-filters li .check-col input {
+    @apply w-[18px] h-[18px];
+  }
+
+  .my-order-wrapper .left-div .checkbox-with-label-filters li label {
+    @apply font-normal text-[15px] text-[color:var(--theme-secondary-color)] m-0;
+  }
+
+  .my-order-wrapper .left-div .divider {
+    @apply h-px bg-[#eeeeee] mx-0 my-4;
+  }
+
+  .order-search-bar {
+    @apply relative flex items-center mb-6;
+  }
+
+  .order-search-bar .custom-form-control-s1 {
+    @apply h-[50px] rounded-none;
+  }
+
+  .order-search-bar .search-btn {
+    @apply h-[45px] flex-[0_0_auto] h-[50px] gap-x-2 px-4 py-0 rounded-none;
+  }
+
+  .my-order-lists {
+    @apply flex flex-col gap-y-6;
+  }
+
+  .my-order-lists .my-order-card {
+    @apply bg-white border shadow-[1px_1px_12px_#4f4f4f24] p-4 rounded-[3px] border-solid border-[#eeeeee];
+  }
+
+  .my-order-lists .my-order-box {
+    @apply flex items-start justify-between gap-x-6;
+  }
+
+  .my-order-lists .my-order-box~.my-order-box {
+    @apply mt-4;
+  }
+
+  .my-order-lists .my-order-box figure {
+    @apply flex items-start gap-x-3 w-3/5;
+  }
+
+  .my-order-lists .my-order-box figure .image-container {
+    @apply w-[120px] h-[120px];
+  }
+
+  .my-order-lists .my-order-box figure .image-container img {
+    @apply w-full h-full object-contain;
+  }
+
+  .my-order-lists .my-order-box figure figcaption h3 {
+    @apply text-[#333333] text-base font-medium mb-2.5;
+  }
+
+  .my-order-lists .my-order-box figure figcaption h3 a {
+    @apply text-inherit;
+  }
+
+  .my-order-lists .my-order-box figure figcaption p {
+    @apply text-sm text-[#666] font-normal;
+  }
+
+  .my-order-lists .my-order-box .center-price-info {
+    @apply flex-[0_0_auto] w-40;
+  }
+
+  .my-order-lists .my-order-box .center-price-info h4 {
+    @apply text-base font-semibold;
+  }
+
+  .my-order-lists .my-order-box .center-price-info h4.success {
+    @apply text-[#669d03];
+  }
+
+  .my-order-lists .my-order-box .right-info {
+    @apply w-[220px];
+  }
+
+  .my-order-lists .my-order-box .right-info h4 {
+    @apply flex gap-x-1.5 text-sm font-semibold;
+  }
+
+  .my-order-lists .my-order-box .right-info h4 svg {
+    @apply flex-[0_0_auto] mt-[3px] mb-0 mx-0;
+  }
+
+  .my-order-lists .my-order-box .right-info p {
+    @apply text-[13px] font-normal text-[#666] mt-2;
+  }
+
+  .my-order-lists .my-order-box .right-info .ratingLink {
+    @apply flex gap-x-1.5 text-[13px] text-[color:var(--theme-primary-color)] mt-2;
+  }
+
+  .my-order-lists .my-order-box .right-info .ratingLink svg {
+    @apply flex-[0_0_auto] mt-0.5 mb-0 mx-0;
+  }
+
+  .page-indicator-s1 {
+    @apply flex flex-wrap gap-x-2 mt-0 mb-4 mx-0;
+  }
+
+  .page-indicator-s1 li,
+  .page-indicator-s1 li a {
+    @apply text-[#333] text-sm no-underline relative flex gap-x-2 items-center transition-[0.3s] p-0;
+    background: transparent;
+  }
+
+  .page-indicator-s1 li a:hover {
+    @apply text-[color:var(--theme-primary-color)];
+  }
+
+  .page-indicator-s1 li a::after {
+    @apply content-[''] clear-both inline-block bg-[url(../../assets/images/down-icon.svg)] w-2.5 h-2.5 bg-no-repeat bg-center rotate-[270deg] bg-contain;
+  }
+
+  /* end: my-order-main */
   /* start: responsive */
   @media (max-width: 1199.98px) {
     .product-list-s1 .product-list-s1-col {
@@ -1726,7 +1888,8 @@
     .add-new-address-modal .card-payment-form {
       max-height: calc(100vh - 58px);
     }
-    .add-new-address-modal .modal-header h2{
+
+    .add-new-address-modal .modal-header h2 {
       font-size: 16px;
     }
   }
