@@ -111,7 +111,7 @@ const BuyGroupPage = () => {
 
   const handleCartPage = () => router.push("/cart");
   const handleCheckoutPage = async () => {
-    if (getProductQuantityByUser > 1 || getProductQuantityByDevice > 1) {
+    if (getProductQuantityByUser === 1 || getProductQuantityByDevice === 1) {
       router.push("/checkout");
       return;
     }
