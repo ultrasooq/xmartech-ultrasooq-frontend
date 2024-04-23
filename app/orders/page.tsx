@@ -96,8 +96,8 @@ const OrdersPage = () => {
         });
 
         orders.setOrders(initialOrderState.orders);
-        //YODO: change to my-orders
-        router.push("/trending");
+
+        router.push("/my-orders");
       }
     } else {
       console.log(orders.orders);
@@ -117,8 +117,8 @@ const OrdersPage = () => {
         });
 
         orders.setOrders(initialOrderState.orders);
-        //YODO: change to my-orders
-        router.push("/trending");
+
+        router.push("/my-orders");
       }
     }
   };
