@@ -159,7 +159,7 @@ const Header = () => {
                   <a href="#">Store Location</a>
                 </li>
                 <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                  <a href="#">Track Your Order</a>
+                  <Link href="/my-orders">Track Your Order</Link>
                 </li>
                 <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                   <select className="border-0 bg-transparent text-white focus:outline-none">

@@ -3,7 +3,11 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import urlcat from "urlcat";
 
-export const fetchOrders = (payload: { page: number; limit: number }) => {
+export const fetchOrders = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+}) => {
   return axios({
     method: "GET",
     url: urlcat(

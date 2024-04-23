@@ -10,13 +10,15 @@ export const useOrders = (
   payload: {
     page: number;
     limit: number;
+    term?: string;
   },
   enabled = true,
 ) =>
   useQuery({
     queryKey: ["orders", payload],
     queryFn: async () => {
-      const res = await fetchOrders(payload);
+      const res: { data: { data: any; message: string; status: boolean } } =
+        await fetchOrders(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
