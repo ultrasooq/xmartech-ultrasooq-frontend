@@ -1428,251 +1428,164 @@
 
   /* start: my-order-main */
   .my-order-main {
-    padding: 50px 0;
-    background-color: #fef6f6;
+    @apply bg-[#fef6f6] px-0 py-[50px];
   }
 
   .my-order-wrapper {
-    display: flex;
-    column-gap: 24px;
+    @apply flex gap-x-6;
   }
 
   .my-order-wrapper .left-div {
-    width: 100%;
+    @apply w-full;
     max-width: 270px;
+
   }
 
   .my-order-wrapper .right-div {
-    width: 100%;
-    max-width: calc(100% - 270px);
+    @apply w-full;
+    max-width: calc(100% -270px);
   }
 
   .my-order-wrapper .left-div .card-box {
-    background-color: #fff;
-    padding: 10px 20px 16px;
-    border: 1px solid #eeeeee;
-    border-radius: 3px;
-    box-shadow: 1px 1px 12px #4f4f4f24;
+    @apply bg-white border shadow-[1px_1px_12px_#4f4f4f24] pt-2.5 pb-4 px-5 rounded-[3px] border-solid border-[#eeeeee];
   }
 
   .my-order-wrapper .left-div h2 {
-    font-size: 20px;
-    line-height: 30px;
-    font-weight: 600;
-    margin-bottom: 8px;
+    @apply text-xl leading-[30px] font-semibold mb-2;
   }
 
   .my-order-wrapper .left-div h3 {
-    font-size: 16px;
-    line-height: 26px;
-    font-weight: 600;
-    margin-bottom: 8px;
+    @apply text-base leading-[26px] font-semibold mb-2;
   }
 
   .my-order-wrapper .left-div .checkbox-with-label-filters {
-    display: flex;
-    flex-direction: column;
-    row-gap: 16px;
+    @apply flex flex-col gap-y-4;
   }
 
   .my-order-wrapper .left-div .checkbox-with-label-filters li {
-    display: flex;
-    align-items: center;
-    column-gap: 10px;
+    @apply flex items-center gap-x-2.5;
   }
 
   .my-order-wrapper .left-div .checkbox-with-label-filters li .check-col {
-    display: flex;
-    align-items: center;
+    @apply flex items-center;
   }
 
   .my-order-wrapper .left-div .checkbox-with-label-filters li .check-col input {
-    width: 18px;
-    height: 18px;
+    @apply w-[18px] h-[18px];
   }
 
   .my-order-wrapper .left-div .checkbox-with-label-filters li label {
-    margin: 0 !important;
-    font-weight: 400;
-    font-size: 15px;
-    color: var(--theme-secondary-color);
+    @apply font-normal text-[15px] text-[color:var(--theme-secondary-color)] m-0;
   }
 
   .my-order-wrapper .left-div .divider {
-    height: 1px;
-    background-color: #eeeeee;
-    margin: 16px 0;
+    @apply h-px bg-[#eeeeee] mx-0 my-4;
   }
 
   .order-search-bar {
-    position: relative;
-    display: flex;
-    margin-bottom: 24px;
-    align-items: center;
+    @apply relative flex items-center mb-6;
   }
 
   .order-search-bar .custom-form-control-s1 {
-    height: 50px;
-    border-radius: 0;
+    @apply h-[50px] rounded-none;
   }
 
   .order-search-bar .search-btn {
-    height: 45px;
-    flex: 0 0 auto;
-    height: 50px;
-    border-radius: 0;
-    padding: 0 16px;
-    column-gap: 8px;
+    @apply h-[45px] flex-[0_0_auto] h-[50px] gap-x-2 px-4 py-0 rounded-none;
   }
 
   .my-order-lists {
-    display: flex;
-    flex-direction: column;
-    row-gap: 24px;
+    @apply flex flex-col gap-y-6;
   }
 
-  .my-order-lists .my-order-item {}
-
   .my-order-lists .my-order-card {
-    background-color: #fff;
-    padding: 16px 16px;
-    border: 1px solid #eeeeee;
-    border-radius: 3px;
-    box-shadow: 1px 1px 12px #4f4f4f24;
+    @apply bg-white border shadow-[1px_1px_12px_#4f4f4f24] p-4 rounded-[3px] border-solid border-[#eeeeee];
   }
 
   .my-order-lists .my-order-box {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    column-gap: 24px;
+    @apply flex items-start justify-between gap-x-6;
   }
 
   .my-order-lists .my-order-box~.my-order-box {
-    margin-top: 16px;
+    @apply mt-4;
   }
 
   .my-order-lists .my-order-box figure {
-    display: flex;
-    align-items: flex-start;
-    column-gap: 12px;
-    width: 60%;
+    @apply flex items-start gap-x-3 w-3/5;
   }
 
   .my-order-lists .my-order-box figure .image-container {
-    width: 120px;
-    height: 120px;
+    @apply w-[120px] h-[120px];
   }
 
   .my-order-lists .my-order-box figure .image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    @apply w-full h-full object-contain;
   }
 
   .my-order-lists .my-order-box figure figcaption h3 {
-    color: #333333;
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 10px;
+    @apply text-[#333333] text-base font-medium mb-2.5;
   }
 
   .my-order-lists .my-order-box figure figcaption h3 a {
-    color: inherit;
+    @apply text-inherit;
   }
 
   .my-order-lists .my-order-box figure figcaption p {
-    font-size: 14px;
-    color: #666;
-    font-weight: 400;
+    @apply text-sm text-[#666] font-normal;
   }
 
   .my-order-lists .my-order-box .center-price-info {
-    flex: 0 0 auto;
-    width: 160px;
+    @apply flex-[0_0_auto] w-40;
   }
 
   .my-order-lists .my-order-box .center-price-info h4 {
-    font-size: 16px;
-    font-weight: 600;
+    @apply text-base font-semibold;
   }
 
   .my-order-lists .my-order-box .center-price-info h4.success {
-    color: #669d03;
+    @apply text-[#669d03];
   }
 
   .my-order-lists .my-order-box .right-info {
-    width: 220px;
+    @apply w-[220px];
   }
 
   .my-order-lists .my-order-box .right-info h4 {
-    display: flex;
-    column-gap: 6px;
-    font-size: 14px;
-    font-weight: 600;
+    @apply flex gap-x-1.5 text-sm font-semibold;
   }
 
   .my-order-lists .my-order-box .right-info h4 svg {
-    flex: 0 0 auto;
-    margin: 3px 0 0;
+    @apply flex-[0_0_auto] mt-[3px] mb-0 mx-0;
   }
 
   .my-order-lists .my-order-box .right-info p {
-    font-size: 13px;
-    font-weight: 400;
-    color: #666;
-    margin-top: 8px;
+    @apply text-[13px] font-normal text-[#666] mt-2;
   }
 
   .my-order-lists .my-order-box .right-info .ratingLink {
-    display: flex;
-    column-gap: 6px;
-    font-size: 13px;
-    margin-top: 8px;
-    color: var(--theme-primary-color);
+    @apply flex gap-x-1.5 text-[13px] text-[color:var(--theme-primary-color)] mt-2;
   }
 
   .my-order-lists .my-order-box .right-info .ratingLink svg {
-    margin: 2px 0 0;
-    flex: 0 0 auto;
+    @apply flex-[0_0_auto] mt-0.5 mb-0 mx-0;
   }
 
   .page-indicator-s1 {
-    display: flex;
-    flex-wrap: wrap;
-    column-gap: 8px;
-    margin: 0 0 16px;
+    @apply flex flex-wrap gap-x-2 mt-0 mb-4 mx-0;
   }
 
   .page-indicator-s1 li,
   .page-indicator-s1 li a {
-    color: #333;
-    font-size: 14px;
-    text-decoration: none;
+    @apply text-[#333] text-sm no-underline relative flex gap-x-2 items-center transition-[0.3s] p-0;
     background: transparent;
-    padding: 0;
-    position: relative;
-    display: flex;
-    column-gap: 8px;
-    align-items: center;
-    transition: 0.3s;
   }
 
   .page-indicator-s1 li a:hover {
-    color: var(--theme-primary-color);
+    @apply text-[color:var(--theme-primary-color)];
   }
 
   .page-indicator-s1 li a::after {
-    content: '';
-    clear: both;
-    display: inline-block;
-    background-image: url(../../assets/images/down-icon.svg);
-    width: 10px;
-    height: 10px;
-    background-repeat: no-repeat;
-    background-position: center;
-    transform: rotate(270deg);
-    background-size: contain;
+    @apply content-[''] clear-both inline-block bg-[url(../../assets/images/down-icon.svg)] w-2.5 h-2.5 bg-no-repeat bg-center rotate-[270deg] bg-contain;
   }
 
   /* end: my-order-main */
