@@ -118,7 +118,7 @@ const OrdersPage = () => {
 
         orders.setOrders(initialOrderState.orders);
 
-        router.push("/my-orders");
+        router.push("/login");
       }
     }
   };
