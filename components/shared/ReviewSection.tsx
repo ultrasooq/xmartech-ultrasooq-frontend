@@ -1,19 +1,24 @@
-import Image from "next/image";
 import React, { useState } from "react";
+import Image from "next/image";
 import UserRatingCard from "./UserRatingCard";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  // DialogTitle,
-  // DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "../ui/button";
+import ReviewForm from "./ReviewForm";
+import { useReviews } from "@/apis/queries/review.queries";
 
-const RatingsSection = () => {
+type ReviewSectionProps = {
+  productId?: string;
+};
+
+const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const handleToggleReviewModal = () =>
     setIsReviewModalOpen(!isReviewModalOpen);
+
+  const reviewsQuery = useReviews(
+    { page: 1, limit: 20, productId: productId ?? "" },
+    !!productId,
+  );
 
   return (
     <div className="w-full">
@@ -69,7 +74,7 @@ const RatingsSection = () => {
               </span>
             </div>
             <div className="mt-1.5 w-auto text-sm font-medium leading-5 text-gray-500">
-              <p>Based on 139 Reviews</p>
+              <p>Based on {reviewsQuery.data?.data?.length} Reviews</p>
             </div>
           </div>
         </div>
@@ -77,7 +82,7 @@ const RatingsSection = () => {
           <button
             type="button"
             onClick={handleToggleReviewModal}
-            className="flex rounded-sm bg-dark-orange px-6 py-4 text-base font-bold leading-5 text-white"
+            className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
           >
             <Image
               src="/images/pen-icon.svg"
@@ -90,74 +95,92 @@ const RatingsSection = () => {
           </button>
         </div>
       </div>
-      <div className="flex w-full items-center justify-end py-6">
+      <div className="flex w-full items-center justify-end py-5">
         <ul className="flex items-center justify-end">
           <li className="ml-2 text-sm font-medium text-color-dark">
             Sort By :
           </li>
           <li className="ml-2">
-            <a
-              href=""
-              className="block rounded-full border border-solid border-gray-300 px-10 py-3.5 text-sm font-medium text-gray-500"
+            <Button
+              variant="ghost"
+              className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
               Newest
-            </a>
+            </Button>
           </li>
           <li className="ml-2">
-            <a
-              href=""
-              className="block rounded-full border border-solid border-gray-300 px-10 py-3.5 text-sm font-medium text-gray-500"
+            <Button
+              variant="ghost"
+              className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
-              Newest
-            </a>
+              Highest
+            </Button>
           </li>
           <li className="ml-2">
-            <a
-              href=""
-              className="block rounded-full border border-solid border-gray-300 px-10 py-3.5 text-sm font-medium text-gray-500"
+            <Button
+              variant="ghost"
+              className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
-              Newest
-            </a>
+              Lowest
+            </Button>
           </li>
         </ul>
       </div>
-      <div className="mt-5 flex w-full border-t-2 border-dashed border-gray-300 py-10">
-        <div className="flex-items flex w-full flex-col justify-between gap-y-5 lg:flex-row">
-          <div className="w-full px-3.5 lg:w-2/6">
-            <UserRatingCard />
+      <div className="flex w-full border-t-2 border-dashed border-gray-300 py-5">
+        {!reviewsQuery?.data?.data?.length ? (
+          <div className="w-full text-center text-sm font-bold text-dark-orange">
+            No reviews found
           </div>
-          <div className="w-full px-3.5 lg:w-2/6">
-            <UserRatingCard />
-          </div>
-          <div className="w-full px-3.5 lg:w-2/6">
-            <UserRatingCard />
-          </div>
+        ) : null}
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {reviewsQuery.data?.data?.length
+            ? reviewsQuery.data?.data.map(
+                (review: {
+                  id: string;
+                  rating: number;
+                  title: string;
+                  description: string;
+                  createdAt: string;
+                  reviewByUserDetail: {
+                    firstName: string;
+                    lastName: string;
+                    profilePicture: string;
+                  };
+                }) => (
+                  <UserRatingCard
+                    key={review?.id}
+                    rating={review?.rating}
+                    name={`${review?.reviewByUserDetail?.firstName} ${review?.reviewByUserDetail?.lastName}`}
+                    title={review.title}
+                    review={review.description}
+                    date={review.createdAt}
+                    profilePicture={review?.reviewByUserDetail?.profilePicture}
+                  />
+                ),
+              )
+            : null}
         </div>
       </div>
-      <div className="flex w-full items-center justify-center text-center text-base font-bold text-dark-orange">
+      {/* <div className="flex w-full items-center justify-center text-center text-sm font-bold text-dark-orange">
         <span className="flex">
           <Image
             src="/images/loader.png"
             className="mr-1.5"
-            height={25}
-            width={25}
+            height={20}
+            width={20}
             alt="loader-icon"
           />
           Load More
         </span>
-      </div>
+      </div> */}
 
       <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
         <DialogContent>
-          <DialogHeader>
-            <DialogDescription className="min-h-[300px]">
-              Form Content
-            </DialogDescription>
-          </DialogHeader>
+          <ReviewForm onClose={handleToggleReviewModal} />
         </DialogContent>
       </Dialog>
     </div>
   );
 };
 
-export default RatingsSection;
+export default ReviewSection;
