@@ -1,21 +1,108 @@
 import Image from "next/image";
-import React from "react";
+import React, { useMemo } from "react";
+import { FaStar } from "react-icons/fa";
+import { FaRegStar } from "react-icons/fa";
 
-const UserRatingCard = () => {
+type UserRatingCardProps = {
+  rating: number;
+  title: string;
+  review: string;
+  date: string;
+  name: string;
+  profilePicture: string;
+};
+
+const UserRatingCard: React.FC<UserRatingCardProps> = ({
+  rating,
+  title,
+  review,
+  date,
+  name,
+  profilePicture,
+}) => {
+  function getRelativeTime(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMilliseconds = now.getTime() - date.getTime();
+
+    // Define time intervals in milliseconds
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    const week = 7 * day;
+    const month = 30 * day;
+    const year = 365 * day;
+
+    // Calculate the difference in terms of years, months, days, weeks, hours, and minutes
+    const yearsAgo = Math.floor(diffInMilliseconds / year);
+    const monthsAgo = Math.floor(diffInMilliseconds / month);
+    const weeksAgo = Math.floor(diffInMilliseconds / week);
+    const daysAgo = Math.floor(diffInMilliseconds / day);
+    const hoursAgo = Math.floor(diffInMilliseconds / hour);
+    const minutesAgo = Math.floor(diffInMilliseconds / minute);
+
+    // Get the relative time format
+    const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+    // Convert to relative time string
+    if (yearsAgo >= 2) {
+      return rtf.format(-yearsAgo, "year");
+    } else if (yearsAgo === 1) {
+      return "1 year ago";
+    } else if (monthsAgo >= 2) {
+      return rtf.format(-monthsAgo, "month");
+    } else if (monthsAgo === 1) {
+      return "1 month ago";
+    } else if (weeksAgo >= 2) {
+      return rtf.format(-weeksAgo, "week");
+    } else if (weeksAgo === 1) {
+      return "1 week ago";
+    } else if (daysAgo >= 2) {
+      return rtf.format(-daysAgo, "day");
+    } else if (daysAgo === 1) {
+      return "1 day ago";
+    } else if (hoursAgo >= 2) {
+      return rtf.format(-hoursAgo, "hour");
+    } else if (hoursAgo === 1) {
+      return "1 hour ago";
+    } else if (minutesAgo >= 2) {
+      return rtf.format(-minutesAgo, "minute");
+    } else if (minutesAgo === 1) {
+      return "1 minute ago";
+    } else {
+      return "just now";
+    }
+  }
+
+  const calculateRatings = useMemo(
+    () => (rating: number) => {
+      const stars = [];
+      for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          stars.push(<FaStar key={i} color="#FFC107" size={20} />);
+        } else {
+          stars.push(<FaRegStar key={i} size={20} />);
+        }
+      }
+      return stars;
+    },
+    [rating],
+  );
+
   return (
     <div className="w-full rounded-2xl border border-solid border-gray-300 px-5 py-5">
       <div className="flex w-full flex-wrap items-start justify-between">
-        <div className="h-12 w-12 overflow-hidden rounded-full">
+        <div className="relative h-12 w-12 rounded-full">
           <Image
-            src="/images/review-1.png"
+            src={profilePicture || "/images/no-user-image.png"}
             alt="review-icon"
-            height={44}
-            width={44}
+            fill
+            className="rounded-full"
           />
         </div>
         <div className="w-[calc(100%_-_3rem)] pl-3.5 text-sm font-normal leading-5 text-gray-500">
           <div className="flex w-full items-start justify-between">
-            <h4 className="text-lg font-semibold text-color-dark">John Doe</h4>
+            <h4 className="text-base font-semibold text-color-dark">{name}</h4>
             <Image
               src="/images/review-dot.svg"
               alt="review-dot-icon"
@@ -24,61 +111,20 @@ const UserRatingCard = () => {
             />
           </div>
           <div className="w-full">
-            <h5 className="mb-1 text-xs font-normal text-gray-500">
-              2 reviews
-            </h5>
-            <div className="flex w-full items-start text-xs leading-5 text-gray-500">
-              <span className="mr-1">
-                <Image
-                  src="/images/star.svg"
-                  alt="star-icon"
-                  width={19}
-                  height={18}
-                />
-              </span>
-              <span className="mr-1">
-                <Image
-                  src="/images/star.svg"
-                  alt="star-icon"
-                  width={19}
-                  height={18}
-                />
-              </span>
-              <span className="mr-1">
-                <Image
-                  src="/images/star.svg"
-                  alt="star-icon"
-                  width={19}
-                  height={18}
-                />
-              </span>
-              <span className="mr-1">
-                <Image
-                  src="/images/star.svg"
-                  alt="star-icon"
-                  width={19}
-                  height={18}
-                />
-              </span>
-              <span className="mr-1">
-                <Image
-                  src="/images/star.svg"
-                  alt="star-icon"
-                  width={19}
-                  height={18}
-                />
-              </span>
-              <span className="ml-1">3 Weeks ago</span>
+            <h5 className="mb-1 text-xs font-normal text-gray-500">1 review</h5>
+            <div className="flex w-full flex-wrap items-start gap-2 text-xs leading-5 text-gray-500">
+              <div className="flex">{calculateRatings(rating)}</div>
+              <span className="ml-1">{getRelativeTime(date)}</span>
             </div>
           </div>
         </div>
-        <div className="w-full pt-3 text-sm font-normal leading-6 text-gray-500">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            <a href="#" className="font-semibold">
+        <div className="w-full pt-3 ">
+          <h3>{title}</h3>
+          <p className="text-sm font-normal leading-6 text-gray-500">
+            {review}
+            {/* <a href="#" className="font-semibold">
               More.
-            </a>
+            </a> */}
           </p>
         </div>
       </div>

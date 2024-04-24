@@ -18,6 +18,7 @@ type ProductDescriptionCardProps = {
   productQuantity: number;
   onAdd: (args0: number, args2: "add" | "remove") => void;
   isLoading: boolean;
+  soldBy: string;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -32,6 +33,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   productQuantity,
   onAdd,
   isLoading,
+  soldBy,
 }) => {
   const [quantity, setQuantity] = useState(1);
 
@@ -49,16 +51,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         <Skeleton className="mb-2 h-28 w-full" />
       ) : (
         <div className="info-col mb-2">
-          <div className="brand_sold_info">
-            <div className="lediv">
+          <div className="brand_sold_info !items-start">
+            <div className="lediv w-1/2">
               <h5>
                 <span>Brand:</span> {brand}
               </h5>
             </div>
-            <div className="rgdiv">
-              <h5>
-                <span>Sold By:</span> YOUNG SHOP
-              </h5>
+
+            <div className="rgdiv flex w-1/2 gap-x-2">
+              <h5 className="!w-20 !capitalize !text-dark-orange">Sold By:</h5>
+              <h5>{soldBy}</h5>
             </div>
           </div>
           <div className="rating">

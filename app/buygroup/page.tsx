@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useFetchProductById } from "@/apis/queries/product.queries";
+import {
+  useFetchProductById,
+  useSameBrandProducts,
+} from "@/apis/queries/product.queries";
 import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
 import RelatedProductsSection from "@/components/modules/productDetails/RelatedProductsSection";
 // import DescriptionSection from "@/components/modules/productDetails/DescriptionSection";
@@ -22,6 +25,8 @@ import "react-quill/dist/quill.snow.css";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
+import ReviewSection from "@/components/shared/ReviewSection";
+import QuestionsAnswersSection from "@/components/modules/productDetails/QuestionsAnswersSection";
 
 const BuyGroupPage = () => {
   const { toast } = useToast();
@@ -52,8 +57,15 @@ const BuyGroupPage = () => {
   );
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
-
   const productDetails = productQueryById.data?.data;
+  const sameBrandProductsQuery = useSameBrandProducts(
+    {
+      page: 1,
+      limit: 10,
+      brandIds: productDetails?.brandId,
+    },
+    !!productDetails?.brandId,
+  );
 
   const handleAddToCart = async (
     quantity: number,
@@ -156,6 +168,13 @@ const BuyGroupPage = () => {
             }
             onAdd={handleAddToCart}
             isLoading={!productQueryById.isFetched}
+            soldBy={
+              productDetails?.userBy?.tradeRole === "COMPANY"
+                ? productDetails?.userBy?.userProfile?.[0]?.companyName
+                : productDetails?.userBy?.tradeRole === "FREELANCER"
+                  ? `${productDetails?.userBy?.firstName} ${productDetails?.userBy?.lastName}`
+                  : null
+            }
           />
         </div>
       </div>
@@ -235,13 +254,15 @@ const BuyGroupPage = () => {
                   </div>
                 </TabsContent>
                 <TabsContent value="reviews" className="mt-0">
-                  <div className="w-full bg-white">
-                    <p>Reviews</p>
+                  <div className="w-full border border-solid border-gray-300 bg-white p-5">
+                    <ReviewSection
+                      productId={activeProductId ? activeProductId : ""}
+                    />
                   </div>
                 </TabsContent>
                 <TabsContent value="qanda" className="mt-0">
-                  <div className="w-full bg-white">
-                    <p>Questions and Answers</p>
+                  <div className="w-full border border-solid border-gray-300 bg-white p-5">
+                    <QuestionsAnswersSection />
                   </div>
                 </TabsContent>
                 <TabsContent value="offers" className="mt-0">
@@ -253,13 +274,17 @@ const BuyGroupPage = () => {
             </div>
           </div>
           <div className="product-view-s1-details-right-suggestion">
-            <div className="suggestion-lists-s1">
-              <div className="suggestion-list-s1-col">
+            <div className="suggestion-lists-s1 mt-3">
+              {/* TODO: hide ad section for now */}
+              {/* <div className="suggestion-list-s1-col">
                 <div className="suggestion-banner">
                   <img src="/images/suggestion-pic1.png" alt="" />
                 </div>
-              </div>
-              <SameBrandSection />
+              </div> */}
+              <SameBrandSection
+                sameBrandProducts={sameBrandProductsQuery?.data?.data}
+                isLoading={!sameBrandProductsQuery?.isFetched}
+              />
             </div>
           </div>
         </div>

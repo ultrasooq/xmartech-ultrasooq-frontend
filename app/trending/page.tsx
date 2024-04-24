@@ -33,6 +33,7 @@ import {
 import ReactSlider from "react-slider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { stripHTML } from "@/utils/helper";
 
 const TrendingPage = () => {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
@@ -99,10 +100,6 @@ const TrendingPage = () => {
       tempArr = tempArr.filter((ele: number) => ele !== item.value);
     }
     setSelectedBrandIds(tempArr);
-  };
-
-  const stripHTML = (text: string) => {
-    return text.replace(/<[^>]*>/g, "");
   };
 
   const memoizedProductList = useMemo(() => {
