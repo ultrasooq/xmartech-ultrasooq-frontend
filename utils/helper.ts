@@ -78,3 +78,7 @@ export const getOrCreateDeviceId = () => {
   }
   return deviceId;
 };
+
+export const stripHTML = (text: string) => {
+  return text.replace(/<[^>]*>/g, "");
+};
