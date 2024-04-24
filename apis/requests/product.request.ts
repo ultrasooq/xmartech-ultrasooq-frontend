@@ -94,3 +94,17 @@ export const fetchAllProducts = (payload: {
     ),
   });
 };
+
+export const fetchSameBrandProducts = (payload: {
+  page: number;
+  limit: number;
+  brandIds: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/sameBrandAllProduct`,
+      payload,
+    ),
+  });
+};

@@ -6,6 +6,7 @@ import {
   fetchAllProducts,
   fetchProductById,
   fetchProducts,
+  fetchSameBrandProducts,
   updateProduct,
 } from "../requests/product.request";
 import {
@@ -122,6 +123,26 @@ export const useAllProducts = (
     queryKey: ["all-products", payload],
     queryFn: async () => {
       const res = await fetchAllProducts(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useSameBrandProducts = (
+  payload: {
+    page: number;
+    limit: number;
+    brandIds: string;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["same-brand-products", payload],
+    queryFn: async () => {
+      const res = await fetchSameBrandProducts(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
