@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import validator from "validator";
 import { TrendingProduct } from "@/utils/types/common.types";
+import Link from "next/link";
 
 type ProducTableProps = {
   list: TrendingProduct[];
@@ -36,22 +37,24 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
               {list?.map((item: TrendingProduct) => (
                 <TableRow key={item.id}>
                   <TableCell th-name="Product">
-                    <figure className="product-image-with-text">
-                      <div className="image-container rounded-lg">
-                        <Image
-                          src={
-                            item?.productImage &&
-                            validator.isURL(item.productImage)
-                              ? item.productImage
-                              : "/images/product-placeholder.png"
-                          }
-                          alt="product-image"
-                          height={80}
-                          width={80}
-                        />
-                      </div>
-                      <figcaption>{item?.productName}</figcaption>
-                    </figure>
+                    <Link href={`/buygroup?id=${item.id}`}>
+                      <figure className="product-image-with-text">
+                        <div className="image-container rounded-lg">
+                          <Image
+                            src={
+                              item?.productImage &&
+                              validator.isURL(item.productImage)
+                                ? item.productImage
+                                : "/images/product-placeholder.png"
+                            }
+                            alt="product-image"
+                            height={80}
+                            width={80}
+                          />
+                        </div>
+                        <figcaption>{item?.productName}</figcaption>
+                      </figure>
+                    </Link>
                   </TableCell>
                   <TableCell th-name="Category">{item?.categoryName}</TableCell>
                   {/* <TableCell th-name="SKU No">{item?.skuNo}</TableCell> */}

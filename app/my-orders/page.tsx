@@ -10,6 +10,7 @@ import { debounce } from "lodash";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MyOrdersPage = () => {
   const searchRef = useRef<HTMLInputElement>(null);
@@ -69,6 +70,13 @@ const MyOrdersPage = () => {
   const handleDebounce = debounce((event: any) => {
     setSearchTerm(event.target.value);
   }, 1000);
+
+  const handleClearSearch = () => {
+    if (searchRef.current) {
+      searchRef.current.value = "";
+    }
+    setSearchTerm("");
+  };
 
   return (
     <div className="my-order-main">
@@ -188,12 +196,7 @@ const MyOrdersPage = () => {
                 <Button
                   variant="ghost"
                   className="absolute right-0 h-full hover:bg-transparent"
-                  onClick={() => {
-                    if (searchRef.current) {
-                      searchRef.current.value = "";
-                    }
-                    setSearchTerm("");
-                  }}
+                  onClick={handleClearSearch}
                 >
                   <IoIosCloseCircleOutline size={24} />
                 </Button>
@@ -206,7 +209,14 @@ const MyOrdersPage = () => {
             <div className="my-order-lists">
               <div className="my-order-item">
                 <div className="my-order-card">
-                  {!ordersQuery?.data?.data?.length ? (
+                  {ordersQuery.isLoading
+                    ? Array.from({ length: 3 }, (_, i) => i).map((item) => (
+                        <Skeleton key={item} className="mb-2 h-28 w-full" />
+                      ))
+                    : null}
+
+                  {!ordersQuery.isLoading &&
+                  !ordersQuery?.data?.data?.length ? (
                     <div className="w-full p-3">
                       <p className="text-center text-lg font-semibold">
                         No orders found
