@@ -7,6 +7,7 @@ export const fetchReviews = (payload: {
   page: number;
   limit: number;
   productId: string;
+  sortType?: "highest" | "lowest" | "newest";
 }) => {
   return axios({
     method: "GET",

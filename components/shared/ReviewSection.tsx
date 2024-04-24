@@ -12,11 +12,15 @@ type ReviewSectionProps = {
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [sortType, setSortType] = useState<"highest" | "lowest" | "newest">(
+    "newest",
+  );
+
   const handleToggleReviewModal = () =>
     setIsReviewModalOpen(!isReviewModalOpen);
 
   const reviewsQuery = useReviews(
-    { page: 1, limit: 20, productId: productId ?? "" },
+    { page: 1, limit: 20, productId: productId ?? "", sortType },
     !!productId,
   );
 
@@ -102,7 +106,8 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
           </li>
           <li className="ml-2">
             <Button
-              variant="ghost"
+              variant={sortType === "newest" ? "secondary" : "ghost"}
+              onClick={() => setSortType("newest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
               Newest
@@ -110,7 +115,8 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
           </li>
           <li className="ml-2">
             <Button
-              variant="ghost"
+              variant={sortType === "highest" ? "secondary" : "ghost"}
+              onClick={() => setSortType("highest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
               Highest
@@ -118,7 +124,8 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
           </li>
           <li className="ml-2">
             <Button
-              variant="ghost"
+              variant={sortType === "lowest" ? "secondary" : "ghost"}
+              onClick={() => setSortType("lowest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
               Lowest
