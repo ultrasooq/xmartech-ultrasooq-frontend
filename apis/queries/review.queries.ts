@@ -7,6 +7,7 @@ export const useReviews = (
     page: number;
     limit: number;
     productId: string;
+    sortType?: "highest" | "lowest" | "newest";
   },
   enabled = true,
 ) =>
