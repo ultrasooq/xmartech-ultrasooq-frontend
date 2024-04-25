@@ -4,11 +4,32 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
+import { useQuestions } from "@/apis/queries/question.queries";
 
-const QuestionsAnswersSection = () => {
+type QuestionsAnswersSectionProps = {
+  hasAccessToken?: boolean;
+  productId?: string;
+};
+
+const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
+  hasAccessToken,
+  productId,
+}) => {
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const [sortType, setSortType] = useState<"newest" | "oldest">("newest");
+
   const handleToggleQuestionModal = () =>
     setIsQuestionModalOpen(!isQuestionModalOpen);
+
+  const questionQuery = useQuestions(
+    {
+      page: 1,
+      limit: 20,
+      productId: productId ?? "",
+      sortType,
+    },
+    !!productId,
+  );
 
   return (
     <div className="w-full">
@@ -19,30 +40,31 @@ const QuestionsAnswersSection = () => {
           </h2>
         </div>
         <div className="w-auto">
-          <button
-            type="button"
-            onClick={handleToggleQuestionModal}
-            className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
-          >
-            <Image
-              src="/images/pen-icon.svg"
-              height={20}
-              width={20}
-              className="mr-2"
-              alt="pen-icon"
-            />
-            <span>Post a Question</span>
-          </button>
+          {hasAccessToken ? (
+            <button
+              type="button"
+              onClick={handleToggleQuestionModal}
+              className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
+            >
+              <Image
+                src="/images/pen-icon.svg"
+                height={20}
+                width={20}
+                className="mr-2"
+                alt="pen-icon"
+              />
+              <span>Post a Question</span>
+            </button>
+          ) : null}
         </div>
       </div>
       <div className="flex w-full items-center justify-end py-5">
         <ul className="flex items-center justify-end">
-          <li className="ml-2 text-sm font-medium text-color-dark">
-            Sort By :
-          </li>
+          <li className="ml-2 text-sm font-medium text-color-dark">Sort By:</li>
           <li className="ml-2">
             <Button
-              variant="ghost"
+              variant={sortType === "newest" ? "secondary" : "ghost"}
+              onClick={() => setSortType("newest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
               Newest
@@ -51,7 +73,8 @@ const QuestionsAnswersSection = () => {
 
           <li className="ml-2">
             <Button
-              variant="ghost"
+              variant={sortType === "oldest" ? "secondary" : "ghost"}
+              onClick={() => setSortType("oldest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
               Oldest
@@ -61,21 +84,36 @@ const QuestionsAnswersSection = () => {
       </div>
       <div className="flex w-full border-t-2 border-dashed border-gray-300 py-5">
         <div className="w-full space-y-3">
-          <QuestionCard
-            question="Is there any warranty available for this product?"
-            answer="No"
-            userName="David"
-          />
-          <QuestionCard
-            question="I got a remote in the box. Was it there purposely or by mistake? Could anyone please confirm?"
-            answer="It is monitor, not CPU."
-            userName="John Doe"
-          />
-          <QuestionCard
-            question="Can I get a refund?"
-            answer="Yes"
-            userName="Smith"
-          />
+          {!questionQuery?.data?.data?.length ? (
+            <div className="w-full text-center text-sm font-bold">
+              No questions found
+            </div>
+          ) : null}
+
+          {questionQuery.data?.data?.map(
+            (
+              question: {
+                id: number;
+                question: string;
+                answer?: string;
+                answerByuserIdDetail?: {
+                  firstName: string;
+                  lastName: string;
+                };
+              },
+              index: number,
+            ) => (
+              <QuestionCard
+                key={question.id}
+                id={question.id}
+                question={question.question}
+                answer={question.answer}
+                userName={`${question.answerByuserIdDetail?.firstName || ""} ${question.answerByuserIdDetail?.lastName || ""}`}
+                isLastItem={index === questionQuery.data?.data?.length - 1}
+                hasAccessToken={hasAccessToken}
+              />
+            ),
+          )}
         </div>
       </div>
       {/* <div className="flex w-full items-center justify-center text-center text-sm font-bold text-dark-orange">
@@ -96,7 +134,7 @@ const QuestionsAnswersSection = () => {
         onOpenChange={handleToggleQuestionModal}
       >
         <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 md:!max-w-[90%] lg:!max-w-5xl">
-          <QuestionForm />
+          <QuestionForm onClose={handleToggleQuestionModal} />
         </DialogContent>
       </Dialog>
     </div>
