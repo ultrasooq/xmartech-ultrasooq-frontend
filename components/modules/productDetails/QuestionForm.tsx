@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { useAddReview } from "@/apis/queries/review.queries";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
-import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { Button } from "@/components/ui/button";
+import { useAddQuestion } from "@/apis/queries/question.queries";
+import { useToast } from "@/components/ui/use-toast";
+
+type QuestionFormProps = {
+  onClose: () => void;
+};
 
 const formSchema = z.object({
   question: z
@@ -17,24 +21,54 @@ const formSchema = z.object({
     .min(2, {
       message: "Question is required",
     })
-    .max(50, {
-      message: "Question must be less than 50 characters",
+    .max(200, {
+      message: "Question must be less than 200 characters",
     }),
 });
 
-const QuestionForm = () => {
+const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       question: "",
     },
   });
+  const [activeProductId, setActiveProductId] = useState<string | null>();
 
-  const addReview = useAddReview();
+  const addQuestion = useAddQuestion();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
+
+    const response = await addQuestion.mutateAsync({
+      productId: Number(activeProductId),
+      question: values.question,
+    });
+
+    if (response.status) {
+      toast({
+        title: "Question Add Successful",
+        description: response.message,
+        variant: "success",
+      });
+
+      form.reset();
+      onClose();
+    } else {
+      toast({
+        title: "Question Add Failed",
+        description: response.message,
+        variant: "danger",
+      });
+    }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(document.location.search);
+    let productId = params.get("id");
+    setActiveProductId(productId);
+  }, []);
 
   return (
     <div>
@@ -72,11 +106,11 @@ const QuestionForm = () => {
             />
 
             <Button
-              disabled={addReview.isPending}
+              disabled={addQuestion.isPending}
               type="submit"
               className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
             >
-              {addReview.isPending ? (
+              {addQuestion.isPending ? (
                 <>
                   <Image
                     src="/images/load.png"
