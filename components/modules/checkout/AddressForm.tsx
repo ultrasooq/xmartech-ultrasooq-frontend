@@ -240,8 +240,10 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
             <ControlledTextInput
               label="Post Code"
+              type="number"
               name="postCode"
               placeholder="Post Code"
+              onWheel={(e) => e.currentTarget.blur()}
             />
 
             <ControlledTextInput
