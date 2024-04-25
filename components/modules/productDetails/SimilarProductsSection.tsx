@@ -31,9 +31,7 @@ const SimilarProductsSection = () => {
                 key={index}
                 className="max-w-[260px] pl-1 md:basis-1/2 lg:basis-1/3"
               >
-                <div className="p-1">
-                  <ProductCard />
-                </div>
+                <div className="p-1">{/* <ProductCard /> */}</div>
               </CarouselItem>
             ))}
           </CarouselContent>
