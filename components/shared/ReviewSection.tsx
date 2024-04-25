@@ -99,9 +99,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       </div>
       <div className="flex w-full items-center justify-end py-5">
         <ul className="flex items-center justify-end">
-          <li className="ml-2 text-sm font-medium text-color-dark">
-            Sort By :
-          </li>
+          <li className="ml-2 text-sm font-medium text-color-dark">Sort By:</li>
           <li className="ml-2">
             <Button
               variant={sortType === "newest" ? "secondary" : "ghost"}

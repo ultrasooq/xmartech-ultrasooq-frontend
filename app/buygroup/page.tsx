@@ -241,9 +241,7 @@ const BuyGroupPage = () => {
                       theme="snow"
                       value={productDetails?.description}
                       readOnly
-                      modules={{
-                        toolbar: false,
-                      }}
+                      modules={{ toolbar: false }}
                       className="readonly-quill"
                     />
                   </div>
@@ -279,7 +277,10 @@ const BuyGroupPage = () => {
                 </TabsContent>
                 <TabsContent value="qanda" className="mt-0">
                   <div className="w-full border border-solid border-gray-300 bg-white p-5">
-                    <QuestionsAnswersSection />
+                    <QuestionsAnswersSection
+                      hasAccessToken={hasAccessToken}
+                      productId={activeProductId ? activeProductId : ""}
+                    />
                   </div>
                 </TabsContent>
                 <TabsContent value="offers" className="mt-0">
@@ -312,7 +313,6 @@ const BuyGroupPage = () => {
           relatedProducts={relatedProductsQuery?.data?.data}
           isLoading={!relatedProductsQuery?.isFetched}
         />
-        {/* <SimilarProductsSection /> */}
       </div>
     </div>
   );
