@@ -80,7 +80,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           <div className="row">
             <div className="col-12 col-md-12">
               <div className="col-12 col-md-12">
-                <div className="form-group">
+                <div className="form-group min-h-[160px]">
                   {productShortDescription ? (
                     <ReactQuill
                       theme="snow"

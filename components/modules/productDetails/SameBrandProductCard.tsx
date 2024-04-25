@@ -33,7 +33,9 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
     <div className="product-list-s1-col">
       <div className="product-list-s1-box">
         <div className="image-container relative mb-4">
-          <span className="discount">{offerPercentage}%</span>
+          <span className="discount">
+            {!isNaN(offerPercentage) ? offerPercentage : 0}%
+          </span>
           <Image
             src={productImages?.[0]?.image || "/images/product-placeholder.png"}
             alt="preview"
@@ -84,7 +86,9 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
         </div>
         <div className="text-container">
           <h4>{productName}</h4>
-          <p>{shortDescription}</p>
+          <p title={shortDescription} className="truncate">
+            {shortDescription}
+          </p>
           <div className="rating_stars">
             <Image
               src="/images/rating_stars.svg"

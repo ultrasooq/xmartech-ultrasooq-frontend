@@ -174,8 +174,8 @@ const TrendingPage = () => {
           <div className="container m-auto px-3">
             <div className={productFilter ? "left-filter show" : "left-filter"}>
               <Accordion
-                type="single"
-                defaultValue="brand"
+                type="multiple"
+                defaultValue={["brand"]}
                 className="filter-col"
               >
                 <AccordionItem value="brand">
