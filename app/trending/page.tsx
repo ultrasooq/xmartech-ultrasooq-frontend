@@ -47,7 +47,7 @@ const TrendingPage = () => {
 
   const allProductsQuery = useAllProducts({
     page: 1,
-    limit: 20,
+    limit: 40,
     sort: sortBy,
     priceMin:
       priceRange[0] === 0
@@ -113,6 +113,7 @@ const TrendingPage = () => {
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
         brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
         shortDescription: item?.shortDescription
           ? stripHTML(item?.shortDescription)
           : "-",
@@ -174,8 +175,8 @@ const TrendingPage = () => {
           <div className="container m-auto px-3">
             <div className={productFilter ? "left-filter show" : "left-filter"}>
               <Accordion
-                type="single"
-                defaultValue="brand"
+                type="multiple"
+                defaultValue={["brand"]}
                 className="filter-col"
               >
                 <AccordionItem value="brand">

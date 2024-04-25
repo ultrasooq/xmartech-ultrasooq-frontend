@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { FaStar } from "react-icons/fa";
+import { FaRegStar } from "react-icons/fa";
 
 type ProductDescriptionCardProps = {
   productName: string;
@@ -16,6 +18,7 @@ type ProductDescriptionCardProps = {
   category: string;
   productShortDescription: string;
   productQuantity: number;
+  productReview: { rating: number }[];
   onAdd: (args0: number, args2: "add" | "remove") => void;
   isLoading: boolean;
   soldBy: string;
@@ -31,11 +34,39 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   category,
   productShortDescription,
   productQuantity,
+  productReview,
   onAdd,
   isLoading,
   soldBy,
 }) => {
   const [quantity, setQuantity] = useState(1);
+
+  const calculateAvgRating = useMemo(() => {
+    const totalRating = productReview?.reduce(
+      (acc: number, item: { rating: number }) => {
+        return acc + item.rating;
+      },
+      0,
+    );
+
+    const result = totalRating / productReview?.length;
+    return !isNaN(result) ? Math.floor(result) : 0;
+  }, [productReview?.length]);
+
+  const calculateRatings = useMemo(
+    () => (rating: number) => {
+      const stars = [];
+      for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          stars.push(<FaStar key={i} color="#FFC107" size={20} />);
+        } else {
+          stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
+        }
+      }
+      return stars;
+    },
+    [productReview?.length],
+  );
 
   useEffect(() => {
     setQuantity(productQuantity || 1);
@@ -64,8 +95,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             </div>
           </div>
           <div className="rating">
-            <img src="images/star.png" alt="" />
-            <span>(5 Reviews)</span>
+            {calculateRatings(calculateAvgRating)}
+            <span className="mt-1">({productReview?.length} Reviews)</span>
           </div>
           <h3>
             ${offerPrice} <span>${productPrice}</span>
@@ -80,7 +111,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           <div className="row">
             <div className="col-12 col-md-12">
               <div className="col-12 col-md-12">
-                <div className="form-group">
+                <div className="form-group min-h-[160px]">
                   {productShortDescription ? (
                     <ReactQuill
                       theme="snow"

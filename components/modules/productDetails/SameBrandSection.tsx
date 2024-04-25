@@ -55,6 +55,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
                           }
                           offerPrice={item?.offerPrice}
                           productPrice={item?.productPrice}
+                          productReview={item?.productReview}
                           onView={() => handleProductDetailsPage(item?.id)}
                         />
                       </div>

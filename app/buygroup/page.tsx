@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   useFetchProductById,
+  useRelatedProducts,
   useSameBrandProducts,
 } from "@/apis/queries/product.queries";
-import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
+// import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
 import RelatedProductsSection from "@/components/modules/productDetails/RelatedProductsSection";
-// import DescriptionSection from "@/components/modules/productDetails/DescriptionSection";
 import SameBrandSection from "@/components/modules/productDetails/SameBrandSection";
 import ProductDescriptionCard from "@/components/modules/productDetails/ProductDescriptionCard";
 import ProductImagesCard from "@/components/modules/productDetails/ProductImagesCard";
@@ -58,6 +58,10 @@ const BuyGroupPage = () => {
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
   const productDetails = productQueryById.data?.data;
+  const calculateTagIds = useMemo(
+    () => productDetails?.productTags.map((item: any) => item.tagId).join(","),
+    [productDetails?.productTags?.length],
+  );
   const sameBrandProductsQuery = useSameBrandProducts(
     {
       page: 1,
@@ -65,6 +69,14 @@ const BuyGroupPage = () => {
       brandIds: productDetails?.brandId,
     },
     !!productDetails?.brandId,
+  );
+  const relatedProductsQuery = useRelatedProducts(
+    {
+      page: 1,
+      limit: 10,
+      tagIds: calculateTagIds,
+    },
+    !!calculateTagIds,
   );
 
   const handleAddToCart = async (
@@ -166,6 +178,7 @@ const BuyGroupPage = () => {
             productQuantity={
               getProductQuantityByUser || getProductQuantityByDevice
             }
+            productReview={productQueryById?.data?.data?.productReview}
             onAdd={handleAddToCart}
             isLoading={!productQueryById.isFetched}
             soldBy={
@@ -258,6 +271,9 @@ const BuyGroupPage = () => {
                     <ReviewSection
                       productId={activeProductId ? activeProductId : ""}
                       hasAccessToken={hasAccessToken}
+                      productReview={
+                        productQueryById?.data?.data?.productReview
+                      }
                     />
                   </div>
                 </TabsContent>
@@ -292,8 +308,11 @@ const BuyGroupPage = () => {
       </div>
 
       <div className="product-view-s1-details-more-suggestion-sliders">
-        <RelatedProductsSection />
-        <SimilarProductsSection />
+        <RelatedProductsSection
+          relatedProducts={relatedProductsQuery?.data?.data}
+          isLoading={!relatedProductsQuery?.isFetched}
+        />
+        {/* <SimilarProductsSection /> */}
       </div>
     </div>
   );

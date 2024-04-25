@@ -55,6 +55,9 @@ export interface TrendingProduct {
   brandName: string;
   skuNo: string;
   shortDescription: string;
+  productReview: {
+    rating: number;
+  }[];
 }
 
 export type ProductImageProps = {

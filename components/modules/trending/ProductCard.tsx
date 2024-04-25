@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useMemo } from "react";
 import validator from "validator";
+import { FaStar } from "react-icons/fa";
+import { FaRegStar } from "react-icons/fa";
 
 type ProducCardProps = {
   item: TrendingProduct;
@@ -14,27 +16,62 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
     [item.offerPrice, item.productPrice],
   );
 
+  const calculateAvgRating = useMemo(() => {
+    const totalRating = item.productReview?.reduce(
+      (acc: number, item: { rating: number }) => {
+        return acc + item.rating;
+      },
+      0,
+    );
+
+    const result = totalRating / item.productReview?.length;
+    return !isNaN(result) ? Math.floor(result) : 0;
+  }, [item.productReview?.length]);
+
+  const calculateRatings = useMemo(
+    () => (rating: number) => {
+      const stars = [];
+      for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          stars.push(<FaStar key={i} color="#FFC107" size={20} />);
+        } else {
+          stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
+        }
+      }
+      return stars;
+    },
+    [item.productReview?.length],
+  );
+
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box  cursor-pointer hover:bg-slate-100">
         <Link href={`/buygroup?id=${item.id}`}>
-          <div className="image-container ">
-            <span className="discount">{offerPercentage}%</span>
-            <img
+          <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+            <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
+          </div>
+          <div className="relative mx-auto mb-4 h-36 w-36">
+            <Image
               src={
                 item?.productImage && validator.isURL(item.productImage)
                   ? item.productImage
                   : "/images/product-placeholder.png"
               }
               alt="product-image"
+              fill
             />
           </div>
-          <div className="text-container">
-            <h4>{item.productName}</h4>
-            <p>{item.shortDescription}</p>
-            <div className="rating_stars">
-              <img src="/images/rating_stars.svg" alt="" />
-              <span>02</span>
+
+          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
+            <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
+              {item.productName}
+            </h4>
+            <p title={item.shortDescription} className="truncate">
+              {item.shortDescription}
+            </p>
+            <div className="my-1 flex">
+              {calculateRatings(calculateAvgRating)}
+              <span className="ml-2">{item.productReview?.length}</span>
             </div>
             <h5>${item.offerPrice}</h5>
           </div>
