@@ -108,3 +108,17 @@ export const fetchSameBrandProducts = (payload: {
     ),
   });
 };
+
+export const fetchRelatedProducts = (payload: {
+  page: number;
+  limit: number;
+  tagIds: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/relatedAllProduct`,
+      payload,
+    ),
+  });
+};
