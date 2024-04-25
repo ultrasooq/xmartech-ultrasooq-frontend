@@ -257,6 +257,7 @@ const BuyGroupPage = () => {
                   <div className="w-full border border-solid border-gray-300 bg-white p-5">
                     <ReviewSection
                       productId={activeProductId ? activeProductId : ""}
+                      hasAccessToken={hasAccessToken}
                     />
                   </div>
                 </TabsContent>

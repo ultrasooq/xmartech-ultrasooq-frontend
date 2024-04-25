@@ -8,9 +8,13 @@ import { useReviews } from "@/apis/queries/review.queries";
 
 type ReviewSectionProps = {
   productId?: string;
+  hasAccessToken?: boolean;
 };
 
-const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
+const ReviewSection: React.FC<ReviewSectionProps> = ({
+  productId,
+  hasAccessToken,
+}) => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [sortType, setSortType] = useState<"highest" | "lowest" | "newest">(
     "newest",
@@ -83,20 +87,22 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ productId }) => {
           </div>
         </div>
         <div className="w-auto">
-          <button
-            type="button"
-            onClick={handleToggleReviewModal}
-            className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
-          >
-            <Image
-              src="/images/pen-icon.svg"
-              height={20}
-              width={20}
-              className="mr-2"
-              alt="pen-icon"
-            />
-            <span>Write A Review</span>
-          </button>
+          {hasAccessToken ? (
+            <button
+              type="button"
+              onClick={handleToggleReviewModal}
+              className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
+            >
+              <Image
+                src="/images/pen-icon.svg"
+                height={20}
+                width={20}
+                className="mr-2"
+                alt="pen-icon"
+              />
+              <span>Write A Review</span>
+            </button>
+          ) : null}
         </div>
       </div>
       <div className="flex w-full items-center justify-end py-5">
