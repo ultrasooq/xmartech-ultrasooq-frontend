@@ -11,6 +11,7 @@ import { useAddReview } from "@/apis/queries/review.queries";
 import ControlledTextareaInput from "./Forms/ControlledTextareaInput";
 import Ratings from "./Ratings";
 import { useToast } from "../ui/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ReviewFormProps = {
   onClose: () => void;
@@ -34,6 +35,7 @@ const formSchema = z.object({
 
 const ReviewForm: React.FC<ReviewFormProps> = ({ onClose }) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,7 +57,16 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose }) => {
     console.log(updatedFormData);
     // return;
 
-    const response = await addReview.mutateAsync(updatedFormData);
+    const response = await addReview.mutateAsync(updatedFormData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["product-by-id", activeProductId],
+        });
+        queryClient.refetchQueries({
+          queryKey: ["all-products", { page: 1, limit: 40 }],
+        });
+      },
+    });
 
     if (response.status) {
       toast({
