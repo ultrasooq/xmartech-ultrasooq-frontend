@@ -108,7 +108,6 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     console.log(formData, addressType);
 
-    console.log("Guest", addressType);
     if (addressType === "shipping") {
       setGuestShippingAddress(formData);
     } else if (addressType === "billing") {
@@ -120,30 +119,22 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
   };
 
   useEffect(() => {
-    if (guestShippingAddress) {
+    if (addressType === "shipping" && guestShippingAddress) {
       form.reset(guestShippingAddress);
     }
-
-    return () => {
-      form.reset();
-    };
-  }, [guestShippingAddress]);
+  }, [guestShippingAddress, addressType]);
 
   useEffect(() => {
-    if (guestBillingAddress) {
+    if (addressType === "billing" && guestBillingAddress) {
       form.reset(guestBillingAddress);
     }
-
-    return () => {
-      form.reset();
-    };
-  }, [guestBillingAddress]);
+  }, [guestBillingAddress, addressType]);
 
   return (
     <>
       <div className="modal-header">
         <DialogTitle className="text-center text-xl font-bold">
-          {`${guestShippingAddress || guestBillingAddress ? "Edit" : "Add"} Address`}
+          {`${(addressType === "shipping" && guestShippingAddress) || (addressType === "billing" && guestBillingAddress) ? "Edit" : "Add"} Address`}
         </DialogTitle>
       </div>
       <Form {...form}>
@@ -195,8 +186,10 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
             <ControlledTextInput
               label="Post Code"
+              type="number"
               name="postCode"
               placeholder="Post Code"
+              onWheel={(e) => e.currentTarget.blur()}
             />
 
             <ControlledTextInput
@@ -216,7 +209,8 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
-            {guestShippingAddress || guestBillingAddress
+            {(addressType === "shipping" && guestShippingAddress) ||
+            (addressType === "billing" && guestBillingAddress)
               ? "Edit Address"
               : "Add Address"}
           </Button>
