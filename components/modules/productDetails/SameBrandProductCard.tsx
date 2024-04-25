@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 import React, { useMemo } from "react";
+import { FaStar } from "react-icons/fa";
+import { FaRegStar } from "react-icons/fa";
+import validator from "validator";
 
 type SameBrandProductCardProps = {
   id: number;
@@ -10,6 +13,7 @@ type SameBrandProductCardProps = {
   shortDescription: string;
   productPrice: string;
   offerPrice: string;
+  productReview: { rating: number }[];
   onAdd?: () => void;
   onView: () => void;
 };
@@ -21,12 +25,40 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   shortDescription,
   productPrice,
   offerPrice,
+  productReview,
   onAdd,
   onView,
 }) => {
   const offerPercentage = useMemo(
     () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
     [offerPrice, productPrice],
+  );
+
+  const calculateAvgRating = useMemo(() => {
+    const totalRating = productReview?.reduce(
+      (acc: number, item: { rating: number }) => {
+        return acc + item.rating;
+      },
+      0,
+    );
+
+    const result = totalRating / productReview?.length;
+    return !isNaN(result) ? Math.floor(result) : 0;
+  }, [productReview?.length]);
+
+  const calculateRatings = useMemo(
+    () => (rating: number) => {
+      const stars = [];
+      for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          stars.push(<FaStar key={i} color="#FFC107" size={20} />);
+        } else {
+          stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
+        }
+      }
+      return stars;
+    },
+    [productReview?.length],
   );
 
   return (
@@ -37,7 +69,12 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
             {!isNaN(offerPercentage) ? offerPercentage : 0}%
           </span>
           <Image
-            src={productImages?.[0]?.image || "/images/product-placeholder.png"}
+            src={
+              productImages?.length &&
+              validator.isURL(productImages?.[0]?.image)
+                ? productImages[0].image
+                : "/images/product-placeholder.png"
+            }
             alt="preview"
             fill
           />
@@ -90,13 +127,8 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
             {shortDescription}
           </p>
           <div className="rating_stars">
-            <Image
-              src="/images/rating_stars.svg"
-              alt="star-icon"
-              width={85}
-              height={15}
-            />
-            <span>02</span>
+            {calculateRatings(calculateAvgRating)}
+            <span>{productReview?.length}</span>
           </div>
           <h5>${offerPrice}</h5>
         </div>

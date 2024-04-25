@@ -1,5 +1,8 @@
 import Image from "next/image";
 import React, { useMemo } from "react";
+import { FaStar } from "react-icons/fa";
+import { FaRegStar } from "react-icons/fa";
+import validator from "validator";
 
 type ProductCardProps = {
   id: number;
@@ -8,6 +11,7 @@ type ProductCardProps = {
   shortDescription: string;
   offerPrice: number;
   productPrice: number;
+  productReview: { rating: number }[];
   onView: () => void;
 };
 
@@ -18,11 +22,39 @@ const ProductCard: React.FC<ProductCardProps> = ({
   shortDescription,
   offerPrice,
   productPrice,
+  productReview,
   onView,
 }) => {
   const offerPercentage = useMemo(
     () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
     [offerPrice, productPrice],
+  );
+
+  const calculateAvgRating = useMemo(() => {
+    const totalRating = productReview?.reduce(
+      (acc: number, item: { rating: number }) => {
+        return acc + item.rating;
+      },
+      0,
+    );
+
+    const result = totalRating / productReview?.length;
+    return !isNaN(result) ? Math.floor(result) : 0;
+  }, [productReview?.length]);
+
+  const calculateRatings = useMemo(
+    () => (rating: number) => {
+      const stars = [];
+      for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          stars.push(<FaStar key={i} color="#FFC107" size={20} />);
+        } else {
+          stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
+        }
+      }
+      return stars;
+    },
+    [productReview?.length],
   );
 
   return (
@@ -32,7 +64,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
       <div className="relative mx-auto mb-4 h-36 w-36">
         <Image
-          src={productImages?.[0]?.image || "/images/product-placeholder.png"}
+          src={
+            productImages?.length && validator.isURL(productImages?.[0]?.image)
+              ? productImages[0].image
+              : "/images/product-placeholder.png"
+          }
           alt="preview"
           fill
         />
@@ -49,13 +85,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <p className="truncate" title={shortDescription}>
           {shortDescription}
         </p>
-        <Image
-          src="/images/rating_stars.svg"
-          alt="star-icon"
-          width={85}
-          height={15}
-          className="mt-3"
-        />
+        <div className="flex">
+          {calculateRatings(calculateAvgRating)}
+          <span className="ml-2">{productReview?.length}</span>
+        </div>
         <span className="w-auto text-base font-normal text-light-gray">
           ${productPrice}
         </span>

@@ -178,6 +178,7 @@ const BuyGroupPage = () => {
             productQuantity={
               getProductQuantityByUser || getProductQuantityByDevice
             }
+            productReview={productQueryById?.data?.data?.productReview}
             onAdd={handleAddToCart}
             isLoading={!productQueryById.isFetched}
             soldBy={
@@ -270,6 +271,9 @@ const BuyGroupPage = () => {
                     <ReviewSection
                       productId={activeProductId ? activeProductId : ""}
                       hasAccessToken={hasAccessToken}
+                      productReview={
+                        productQueryById?.data?.data?.productReview
+                      }
                     />
                   </div>
                 </TabsContent>

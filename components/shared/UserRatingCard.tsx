@@ -81,7 +81,7 @@ const UserRatingCard: React.FC<UserRatingCardProps> = ({
         if (i <= rating) {
           stars.push(<FaStar key={i} color="#FFC107" size={20} />);
         } else {
-          stars.push(<FaRegStar key={i} size={20} />);
+          stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
         }
       }
       return stars;

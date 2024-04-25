@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useMemo } from "react";
 import validator from "validator";
+import { FaStar } from "react-icons/fa";
+import { FaRegStar } from "react-icons/fa";
 
 type ProducCardProps = {
   item: TrendingProduct;
@@ -12,6 +14,33 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
   const offerPercentage = useMemo(
     () => Math.floor(100 - (item.offerPrice / item.productPrice) * 100),
     [item.offerPrice, item.productPrice],
+  );
+
+  const calculateAvgRating = useMemo(() => {
+    const totalRating = item.productReview?.reduce(
+      (acc: number, item: { rating: number }) => {
+        return acc + item.rating;
+      },
+      0,
+    );
+
+    const result = totalRating / item.productReview?.length;
+    return !isNaN(result) ? Math.floor(result) : 0;
+  }, [item.productReview?.length]);
+
+  const calculateRatings = useMemo(
+    () => (rating: number) => {
+      const stars = [];
+      for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          stars.push(<FaStar key={i} color="#FFC107" size={20} />);
+        } else {
+          stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
+        }
+      }
+      return stars;
+    },
+    [item.productReview?.length],
   );
 
   return (
@@ -40,15 +69,9 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
             <p title={item.shortDescription} className="truncate">
               {item.shortDescription}
             </p>
-            <div className="rating_stars">
-              <Image
-                src="/images/rating_stars.svg"
-                alt="star-icon"
-                width={85}
-                height={15}
-                className="mt-3"
-              />
-              <span>02</span>
+            <div className="my-1 flex">
+              {calculateRatings(calculateAvgRating)}
+              <span className="ml-2">{item.productReview?.length}</span>
             </div>
             <h5>${item.offerPrice}</h5>
           </div>

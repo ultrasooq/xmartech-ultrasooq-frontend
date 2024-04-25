@@ -53,6 +53,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
                       }
                       offerPrice={item?.offerPrice}
                       productPrice={item?.productPrice}
+                      productReview={item?.productReview}
                       onView={() => {}}
                     />
                   </div>

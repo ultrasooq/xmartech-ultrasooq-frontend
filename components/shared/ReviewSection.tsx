@@ -1,19 +1,23 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import UserRatingCard from "./UserRatingCard";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import ReviewForm from "./ReviewForm";
 import { useReviews } from "@/apis/queries/review.queries";
+import { FaStar } from "react-icons/fa";
+import { FaRegStar } from "react-icons/fa";
 
 type ReviewSectionProps = {
   productId?: string;
   hasAccessToken?: boolean;
+  productReview: { rating: number }[];
 };
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({
   productId,
   hasAccessToken,
+  productReview,
 }) => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [sortType, setSortType] = useState<"highest" | "lowest" | "newest">(
@@ -28,6 +32,33 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     !!productId,
   );
 
+  const calculateAvgRating = useMemo(() => {
+    const totalRating = productReview?.reduce(
+      (acc: number, item: { rating: number }) => {
+        return acc + item.rating;
+      },
+      0,
+    );
+
+    const result = totalRating / productReview?.length;
+    return !isNaN(result) ? Math.floor(result) : 0;
+  }, [productReview?.length]);
+
+  const calculateRatings = useMemo(
+    () => (rating: number) => {
+      const stars = [];
+      for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          stars.push(<FaStar key={i} color="#FFC107" size={20} />);
+        } else {
+          stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
+        }
+      }
+      return stars;
+    },
+    [productReview?.length],
+  );
+
   return (
     <div className="w-full">
       <div className="flex w-full flex-wrap items-center justify-between">
@@ -38,48 +69,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           <div className="flex w-auto flex-col">
             <div className="flex w-auto items-center justify-start">
               <h4 className="mb-0 mr-2.5 text-2xl font-medium leading-7 text-color-dark">
-                5.0
+                {calculateAvgRating ? `${calculateAvgRating}.0` : "0"}
               </h4>
-              <span>
-                <Image
-                  src="/images/star.svg"
-                  width={19}
-                  height={18}
-                  alt="star-icon"
-                />
-              </span>
-              <span>
-                <Image
-                  src="/images/star.svg"
-                  width={19}
-                  height={18}
-                  alt="star-icon"
-                />
-              </span>
-              <span>
-                <Image
-                  src="/images/star.svg"
-                  width={19}
-                  height={18}
-                  alt="star-icon"
-                />
-              </span>
-              <span>
-                <Image
-                  src="/images/star.svg"
-                  width={19}
-                  height={18}
-                  alt="star-icon"
-                />
-              </span>
-              <span>
-                <Image
-                  src="/images/star.svg"
-                  width={19}
-                  height={18}
-                  alt="star-icon"
-                />
-              </span>
+              {calculateRatings(calculateAvgRating)}
             </div>
             <div className="mt-1.5 w-auto text-sm font-medium leading-5 text-gray-500">
               <p>Based on {reviewsQuery.data?.data?.length} Reviews</p>

@@ -59,7 +59,7 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
                   <TableCell th-name="Category">{item?.categoryName}</TableCell>
                   {/* <TableCell th-name="SKU No">{item?.skuNo}</TableCell> */}
                   <TableCell th-name="Brand">{item?.brandName}</TableCell>
-                  <TableCell th-name="Price">${item?.productPrice}</TableCell>
+                  <TableCell th-name="Price">${item?.offerPrice}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
