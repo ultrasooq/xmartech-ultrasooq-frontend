@@ -55,6 +55,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
           alt="image-icon"
           className="rounded-2xl object-cover"
           fill
+          sizes="(100vw, 100vh)"
         />
       </div>
       {/* <div className="relative mt-4 h-40 w-40 rounded-full">
