@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+// import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   useUpdateAddress,
 } from "@/apis/queries/address.queries";
 import Image from "next/image";
+import { IoCloseSharp } from "react-icons/io5";
 
 type AddressFormProps = {
   addressId?: number;
@@ -186,10 +187,16 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
 
   return (
     <>
-      <div className="modal-header">
+      <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
           {`${addressId ? "Edit" : "Add"} New Address`}
         </DialogTitle>
+        <Button
+          onClick={onClose}
+          className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+        >
+          <IoCloseSharp size={20} />
+        </Button>
       </div>
       <Form {...form}>
         <form

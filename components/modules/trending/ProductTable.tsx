@@ -71,8 +71,9 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
               <Image
                 src="/images/pagination-first.svg"
                 alt="next-icon"
-                height={10}
-                width={7}
+                height={0}
+                width={0}
+                className="h-auto w-[7px]"
               />
               First
             </Button>
@@ -82,8 +83,9 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
               <Image
                 src="/images/pagination-prev.svg"
                 alt="prev-icon"
-                height={12}
-                width={8}
+                height={0}
+                width={0}
+                className="h-auto w-[7px]"
               />
             </Button>
           </li>
@@ -109,8 +111,9 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
               <Image
                 src="/images/pagination-next.svg"
                 alt="next-icon"
-                height={12}
-                width={8}
+                width={0}
+                height={0}
+                className="h-auto w-[7px]"
               />
             </Button>
           </li>
@@ -120,8 +123,9 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
               <Image
                 src="/images/pagination-last.svg"
                 alt="next-icon"
-                height={10}
-                width={7}
+                height={0}
+                width={0}
+                className="h-auto w-[7px]"
               />
             </Button>
           </li>
