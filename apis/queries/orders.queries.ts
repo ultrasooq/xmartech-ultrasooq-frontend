@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   createOrder,
   createOrderUnAuth,
@@ -27,6 +32,34 @@ export const useOrders = (
     // onError: (err: APIResponseError) => {
     //   console.log(err);
     // },
+    enabled,
+  });
+
+export const useInfiniteOrders = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    orderProductStatus?: string;
+    startDate?: string;
+    endDate?: string;
+  },
+  enabled = true,
+) =>
+  useInfiniteQuery({
+    queryKey: ["infinite-orders", payload],
+    queryFn: async ({ pageParam }) => {
+      const queries = payload;
+      queries.page = pageParam ?? 1;
+      const res: { data: { data: any; message: string; status: boolean } } =
+        await fetchOrders({ ...payload, page: queries.page });
+      return res.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: any) => {
+      if (lastPage.data.length < payload.limit) return undefined;
+      return lastPage?.page + 1 || 1;
+    },
     enabled,
   });
 
