@@ -870,7 +870,7 @@
   }
 
   .product-view-s1-left-right.type2 .product-view-s1 .product-view-s1-thumb-lists {
-    @apply flex-col w-[91px] flex-[0_0_auto] max-h-[414px] overflow-x-hidden overflow-y-auto gap-y-4 m-0 p-0 gap-y-4 m-0;
+    @apply flex-col w-[91px] flex-[0_0_auto] max-h-[414px] overflow-x-hidden overflow-y-auto p-0 gap-y-4 m-0;
   }
 
   .product-view-s1-left-right.type2 .product-view-s1 .product-view-s1-big-image {
@@ -1044,7 +1044,6 @@
 
   /* end: product-view-s1-left-details-with-right-suggestion */
   /* start: auth-page-main */
-  .auth-page-main {}
 
   .react-tel-input .country-list .search {
     @apply px-2 py-[5px] !important;
@@ -1326,7 +1325,7 @@
   }
 
   .card-item.priceDetails .priceDetails-body ul li {
-    @apply flex items-center gap-x-2.5 justify-between gap-x-2.5;
+    @apply flex items-center justify-between gap-x-2.5;
   }
 
   .card-item.priceDetails .priceDetails-body ul li p {
@@ -1491,7 +1490,7 @@
   }
 
   .order-search-bar .search-btn {
-    @apply h-[45px] flex-[0_0_auto] h-[50px] gap-x-2 px-4 py-0 rounded-none;
+    @apply flex-[0_0_auto] h-[50px] gap-x-2 px-4 py-0 rounded-none;
   }
 
   .my-order-lists {
