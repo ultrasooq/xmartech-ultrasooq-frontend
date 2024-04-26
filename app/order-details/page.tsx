@@ -215,11 +215,25 @@ const OrderDetailsPage = () => {
         </div>
       </div>
       <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
-        <DialogContent className="add-new-address-modal gap-0 p-0">
-          <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
+        <DialogContent className="customModal-s1">
+          <DialogHeader className="modal-header">
+            <DialogTitle className="modal-title">Update Delivery Status</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4"></div>
+
+          <div className="modal-body">
+            <div className="form-content">
+              <select className="custom-form-control-s1 select1">
+                <option>Order Received</option>
+                <option>Order Confirmed</option>
+                <option>Shipped</option>
+                <option>Out for delivery</option>
+                <option>Delivered</option>
+              </select>
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="theme-primary-btn submit-btn">Save</button>
+          </div>
         </DialogContent>
       </Dialog>
     </>
