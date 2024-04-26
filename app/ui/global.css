@@ -1815,6 +1815,30 @@
     background-color: #228E43;
   }
 
+  .order-delivery-progess-s1 ul li.current .orderStatusText {
+    color: #228E43;
+  }
+
+  .order-delivery-progess-s1 ul li.current .dot::before {
+    background-color: #888;
+    left: 0;
+  }
+  .order-delivery-progess-s1 ul li.current .dot small::before{
+    content: '';
+    clear: both;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100vw;
+    background-color: #228E43;
+    height: 2px;
+    z-index: -1;
+  }
+  .order-delivery-progess-s1 ul li.current .dot {
+    background-color: #228E43;
+  }
+
   /* start: responsive */
   @media (max-width: 1199.98px) {
     .product-list-s1 .product-list-s1-col {
