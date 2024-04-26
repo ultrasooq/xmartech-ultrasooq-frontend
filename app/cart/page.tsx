@@ -15,12 +15,12 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import { CartItem } from "@/utils/types/cart.types";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 const CartListPage = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
   const deviceId = getOrCreateDeviceId() || "";
 
   const cartListByDeviceQuery = useCartListByDevice(
@@ -29,14 +29,14 @@ const CartListPage = () => {
       limit: 10,
       deviceId,
     },
-    !hasAccessToken,
+    !haveAccessToken,
   );
   const cartListByUser = useCartListByUserId(
     {
       page: 1,
       limit: 10,
     },
-    hasAccessToken,
+    haveAccessToken,
   );
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
@@ -92,7 +92,7 @@ const CartListPage = () => {
   ) => {
     console.log("add to cart:", quantity, productId, actionType);
     // return;
-    if (hasAccessToken) {
+    if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
         productId,
         quantity,
@@ -134,6 +134,15 @@ const CartListPage = () => {
     }
   };
 
+  useEffect(() => {
+    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+    if (accessToken) {
+      setHaveAccessToken(true);
+    } else {
+      setHaveAccessToken(false);
+    }
+  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
@@ -152,13 +161,23 @@ const CartListPage = () => {
                   </div>
                 </div>
                 <div className="cart-item-lists">
-                  {/* {!memoizedCartList.length && !cartListByUser.isLoading ? (
+                  {haveAccessToken &&
+                  !cartListByUser.data?.data?.length &&
+                  !cartListByUser.isLoading ? (
                     <div className="px-3 py-6">
                       <p className="my-3 text-center">No items in cart</p>
                     </div>
-                  ) : null} */}
+                  ) : null}
 
-                  {/* <div className="px-3">
+                  {!haveAccessToken &&
+                  !cartListByDeviceQuery.data?.data?.length &&
+                  !cartListByDeviceQuery.isLoading ? (
+                    <div className="px-3 py-6">
+                      <p className="my-3 text-center">No items in cart</p>
+                    </div>
+                  ) : null}
+
+                  <div className="px-3">
                     {cartListByUser.isLoading ? (
                       <div className="my-3 space-y-3">
                         {Array.from({ length: 2 }).map((_, i) => (
@@ -166,7 +185,16 @@ const CartListPage = () => {
                         ))}
                       </div>
                     ) : null}
-                  </div> */}
+
+                    {!haveAccessToken && cartListByDeviceQuery.isLoading ? (
+                      <div className="my-3 space-y-3">
+                        {Array.from({ length: 2 }).map((_, i) => (
+                          <Skeleton key={i} className="h-28 w-full" />
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+
                   {memoizedCartList?.map((item: CartItem) => (
                     <ProductCard
                       key={item.id}

@@ -78,6 +78,11 @@ const MyOrdersPage = () => {
     setSearchTerm("");
   };
 
+  const handleClearFilter = () => {
+    setOrderStatus("");
+    setOrderTime("");
+  };
+
   return (
     <div className="my-order-main">
       <div className="container m-auto px-3">
@@ -180,6 +185,14 @@ const MyOrdersPage = () => {
                   </Label>
                 </div>
               </RadioGroup>
+
+              <div className="divider"></div>
+
+              <div className="mt-4 text-center">
+                <Button variant="outline" onClick={handleClearFilter}>
+                  Clear Filter
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -211,7 +224,14 @@ const MyOrdersPage = () => {
                 <div className="my-order-card">
                   {ordersQuery.isLoading
                     ? Array.from({ length: 3 }, (_, i) => i).map((item) => (
-                        <Skeleton key={item} className="mb-2 h-28 w-full" />
+                        <div key={item} className="mb-3 flex gap-x-3">
+                          <Skeleton className="h-28 w-32" />
+                          <div className="h-28 flex-1 space-y-2">
+                            <Skeleton key={item} className="h-8" />
+                            <Skeleton key={item} className="h-8" />
+                            <Skeleton key={item} className="h-8" />
+                          </div>
+                        </div>
                       ))
                     : null}
 

@@ -35,6 +35,7 @@ export default function CompanyProfileDetailsPage() {
           alt="background"
           fill
           priority
+          sizes="(100vw, 100vh)"
         />
       </div>
       <div className="container relative z-10 m-auto px-3">
