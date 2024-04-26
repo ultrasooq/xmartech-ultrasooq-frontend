@@ -45,3 +45,18 @@ export const createOrderUnAuth = (payload: any) => {
     data: payload,
   });
 };
+
+export const fetchOrderById = (payload: { orderProductId: string }) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/order/getOneOrderProductDetailByUserId`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
