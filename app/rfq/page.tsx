@@ -3,7 +3,7 @@ import React from "react";
 const RfqPage = () => {
   return (
     <section className="rfq_section">
-      <div className="container">
+      <div className="rfq-container px-3">
         <div className="row">
           <div className="col-lg-12 rfq_main_box">
             <div className="rfq_left">
