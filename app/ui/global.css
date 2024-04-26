@@ -1744,6 +1744,21 @@
   /* start: ========================== rfq ====================== */
   .rfq_section {
     @apply w-full px-0 py-[50px];
+    position: relative;
+    z-index: 1;
+  }
+  .rfq_section .sec-bg{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+  .rfq_section .sec-bg img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .rfq-container {
     @apply w-full max-w-[1440px] mx-auto my-0;
