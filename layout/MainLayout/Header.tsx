@@ -222,12 +222,15 @@ const Header = () => {
             <div className="order-2 flex w-7/12 justify-end py-4 sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 lg:w-1/6">
               <ul className="flex items-center justify-end gap-x-4">
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
-                  <a className="flex flex-wrap items-center">
+                  <Link
+                    href="/wishlist"
+                    className="flex flex-wrap items-center"
+                  >
                     <img src="images/wishlist.svg" />
                     <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
                       0
                     </div>
-                  </a>
+                  </Link>
                 </li>
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
                   <Link href="/cart" className="flex flex-wrap items-center">
