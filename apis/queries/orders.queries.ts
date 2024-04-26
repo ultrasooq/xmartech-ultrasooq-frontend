@@ -7,6 +7,7 @@ import {
 import {
   createOrder,
   createOrderUnAuth,
+  fetchOrderById,
   fetchOrders,
 } from "../requests/orders.requests";
 import { APIResponseError } from "@/utils/types/common.types";
@@ -118,3 +119,20 @@ export const useCreateOrderUnAuth = () => {
     },
   });
 };
+
+export const useOrderById = (
+  payload: {
+    orderProductId: string;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["order-by-id", payload],
+    queryFn: async () => {
+      const res: {
+        data: { data: any; message: string; status: boolean; otherData: any };
+      } = await fetchOrderById(payload);
+      return res.data;
+    },
+    enabled,
+  });

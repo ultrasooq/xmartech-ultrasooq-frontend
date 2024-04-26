@@ -10,11 +10,84 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useOrderById } from "@/apis/queries/orders.queries";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import OtherItemCard from "@/components/modules/myOrderDetails/OtherItemCard";
 
-const MyOrderDetailsPage = () => {
+const MyOrderDetailsPage = ({}) => {
+  const searchParams = useParams();
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const handleToggleStatusModal = () =>
     setIsStatusModalOpen(!isStatusModalOpen);
+
+  const orderByIdQuery = useOrderById(
+    {
+      orderProductId: searchParams?.id ? (searchParams.id as string) : "",
+    },
+    !!searchParams?.id,
+  );
+
+  const orderDetails = orderByIdQuery.data?.data;
+  const shippingDetails =
+    orderByIdQuery.data?.data?.orderProduct_order?.order_orderAddress.find(
+      (item: { addressType: "SHIPPING" | "BILLING" }) =>
+        item?.addressType === "SHIPPING",
+    );
+  const billingDetails =
+    orderByIdQuery.data?.data?.orderProduct_order?.order_orderAddress.find(
+      (item: { addressType: "SHIPPING" | "BILLING" }) =>
+        item?.addressType === "BILLING",
+    );
+  const otherOrderDetails =
+    orderByIdQuery.data?.otherData?.[0]?.order_orderProducts;
+  console.log(otherOrderDetails);
+
+  function formatDate(inputDate: string): string {
+    const months: string[] = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    const dateObj = new Date(inputDate);
+    const dayOfWeek = dateObj.toLocaleString("en", { weekday: "short" });
+    const dayOfMonth = dateObj.getDate();
+    const month = months[dateObj.getMonth()];
+
+    // Function to add suffix to day of the month
+    function getDaySuffix(day: number): string {
+      if (day >= 11 && day <= 13) {
+        return `${day}th`;
+      }
+      switch (day % 10) {
+        case 1:
+          return `${day}st`;
+        case 2:
+          return `${day}nd`;
+        case 3:
+          return `${day}rd`;
+        default:
+          return `${day}th`;
+      }
+    }
+
+    const dayWithSuffix = getDaySuffix(dayOfMonth);
+
+    return `${dayOfWeek}, ${dayWithSuffix} ${month}`;
+  }
+
+  console.log(orderDetails, otherOrderDetails);
 
   return (
     <>
@@ -28,15 +101,40 @@ const MyOrderDetailsPage = () => {
                     <div className="delivery-address">
                       <div className="delivery-address-col deliveryAddress">
                         <h2>Delivery Address</h2>
-                        <h3>Somnath Bhowmick</h3>
+                        <h3>
+                          {shippingDetails?.firstName}{" "}
+                          {shippingDetails?.lastName}
+                        </h3>
                         <address>
-                          Nodakhali budge budge block 2, Howri Bhowmick Para,{" "}
-                          <br /> pin - 743318
+                          {shippingDetails?.address}, <br /> pin -{" "}
+                          {shippingDetails?.postCode}
                         </address>
                         <p>
-                          Phone Number <a href="tel: 1234567890">1234567890</a>
+                          Phone Number{" "}
+                          <span className="!text-red-500">
+                            {shippingDetails?.phone}
+                          </span>
                         </p>
-                        <h5>This order is also tracked by 1234567890</h5>
+                        <h5>
+                          This order is also tracked by{" "}
+                          {orderDetails?.orderProduct_order?.orderNo}
+                        </h5>
+                      </div>
+                      <div className="delivery-address-col deliveryAddress">
+                        <h2>Billing Address</h2>
+                        <h3>
+                          {billingDetails?.firstName} {billingDetails?.lastName}
+                        </h3>
+                        <address>
+                          {billingDetails?.address}, <br /> pin -{" "}
+                          {billingDetails?.postCode}
+                        </address>
+                        <p>
+                          Phone Number{" "}
+                          <span className="!text-red-500">
+                            {billingDetails?.phone}
+                          </span>
+                        </p>
                       </div>
                       {/* <div className='delivery-address-col yourRewards'>
                         <h2>Your Rewards</h2>
@@ -45,42 +143,62 @@ const MyOrderDetailsPage = () => {
                         <h2>More actions</h2>
                         <figure className="downloadInvoice">
                           <figcaption>
-                            <a
-                              href="javascript"
-                              className="downloadInvoice-btn theme-primary-btn"
-                            >
+                            <Button className="downloadInvoice-btn theme-primary-btn">
                               <LiaFileInvoiceSolid /> Download Invoice
-                            </a>
+                            </Button>
                           </figcaption>
                         </figure>
                       </div>
                     </div>
                   </div>
                 </div>
-
                 <div className="my-order-item">
                   <div className="my-order-card">
                     <div className="delivery-address">
                       <div className="delivery-address-col mx-w-100">
                         <h2 className="mb-1">GST Number</h2>
-                        <address>xyhfwytrwsfsf-T-web expo</address>
+                        <p>-</p>
                       </div>
                     </div>
                   </div>
                 </div>
-
                 <div className="my-order-item">
                   <div className="my-order-card">
                     <div className="my-order-box">
                       <figure>
                         <div className="image-container">
-                          <img src="/images/iphone.png" alt=""></img>
+                          <Image
+                            src={
+                              orderDetails?.orderProduct_product
+                                ?.productImages?.[0]?.image ||
+                              "/images/product-placeholder.png"
+                            }
+                            alt="preview-product"
+                            width={120}
+                            height={120}
+                            placeholder="blur"
+                            blurDataURL="/images/product-placeholder.png"
+                          />
                         </div>
                         <figcaption>
-                          <h3>Iphone 5 (Black)</h3>
-                          <p>Color: B.A.E Black</p>
-                          <p className="mt-1">Seller: Mythsx-Retail</p>
-                          <h4 className="mt-1">₹65,000</h4>
+                          <h3>
+                            {orderDetails?.orderProduct_product?.productName}
+                          </h3>
+                          {/* <p>Color: B.A.E Black</p> */}
+                          <p className="mt-1">
+                            Seller:{" "}
+                            {
+                              orderDetails?.orderProduct_product?.userBy
+                                ?.firstName
+                            }{" "}
+                            {
+                              orderDetails?.orderProduct_product?.userBy
+                                ?.lastName
+                            }
+                          </p>
+                          <h4 className="mt-1">
+                            ${orderDetails?.orderProduct_product?.offerPrice}
+                          </h4>
                         </figcaption>
                       </figure>
                       <div className="center-div">
@@ -93,39 +211,43 @@ const MyOrderDetailsPage = () => {
                               <div className="dot">
                                 <small></small>
                               </div>
-                              <div className="orderDateText">Fri, 29th Mar</div>
+                              <div className="orderDateText">
+                                {formatDate(orderDetails?.orderProductDate)}
+                              </div>
                             </li>
-                            <li className="complted">
+                            <li className="current">
                               <div className="orderStatusText">
                                 Order Confirmed
                               </div>
                               <div className="dot">
                                 <small></small>
                               </div>
-                              <div className="orderDateText">Fri, 29th Mar</div>
+                              <div className="orderDateText">
+                                {formatDate(orderDetails?.orderProductDate)}
+                              </div>
                             </li>
-                            <li className="complted">
+                            <li>
                               <div className="orderStatusText">Shipped</div>
                               <div className="dot">
                                 <small></small>
                               </div>
-                              <div className="orderDateText">Fri, 29th Mar</div>
+                              <div className="orderDateText">-</div>
                             </li>
-                            <li className="current">
+                            <li>
                               <div className="orderStatusText">
                                 Out for delivery
                               </div>
                               <div className="dot">
                                 <small></small>
                               </div>
-                              <div className="orderDateText">Fri, 29th Mar</div>
+                              <div className="orderDateText">-</div>
                             </li>
                             <li>
                               <div className="orderStatusText">Delivered</div>
                               <div className="dot">
                                 <small></small>
                               </div>
-                              <div className="orderDateText">Fri, 29th Mar</div>
+                              <div className="orderDateText">-</div>
                             </li>
                           </ul>
                         </div>
@@ -140,17 +262,18 @@ const MyOrderDetailsPage = () => {
                           Need Help?
                         </a>
                         <div className="more-actions">
-                          <button
+                          {/* TODO: need design */}
+                          {/* <button
                             type="button"
                             className="theme-primary-btn update-status-btn"
                             onClick={handleToggleStatusModal}
                           >
                             Update Status
-                          </button>
+                          </button> */}
                         </div>
                       </div>
                     </div>
-                    <div className="my-order-box">
+                    {/* <div className="my-order-box">
                       <figure>
                         <div className="image-container">
                           <img src="/images/iphone.png" alt=""></img>
@@ -181,35 +304,19 @@ const MyOrderDetailsPage = () => {
                           Need Help?
                         </a>
                       </div>
-                    </div>
-                    <p className="mt-2">Return policy ended on Mar 28</p>
+                    </div> */}
+                    {/* <p className="mt-2">Return policy ended on Mar 28</p> */}
                   </div>
                 </div>
-
-                <div className="my-order-item">
-                  <div className="my-order-card">
-                    <div className="cardTitle">Other Items in this order</div>
-                    <div className="my-order-box">
-                      <figure>
-                        <div className="image-container">
-                          <img src="/images/iphone.png" alt=""></img>
-                        </div>
-                        <figcaption>
-                          <h3>Iphone 5 (Black)</h3>
-                          <p>Color: B.A.E Black</p>
-                          <p className="mt-1">Seller: Mythsx-Retail</p>
-                          <h4 className="mt-1">₹65,000</h4>
-                        </figcaption>
-                      </figure>
-                      <div className="right-info">
-                        <h4>
-                          <BiSolidCircle color="green" /> Delivered on Mar 21
-                        </h4>
-                        <p>Return policy ended on Mar 28</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {otherOrderDetails?.map((item: any) => (
+                  <OtherItemCard
+                    key={item?.id}
+                    id={item?.id}
+                    productName={item?.orderProduct_product?.productName}
+                    offerPrice={item?.orderProduct_product?.offerPrice}
+                    productImages={item?.orderProduct_product?.productImages}
+                  />
+                ))}
               </div>
             </div>
           </div>
