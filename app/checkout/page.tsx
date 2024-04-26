@@ -445,7 +445,7 @@ const CheckoutPage = () => {
                 </div>
               </div>
 
-              {!hasAccessToken ? (
+              {!userDetails.data ? (
                 <div className="card-item selected-address">
                   <div className="card-inner-headerPart">
                     <div className="lediv">
@@ -544,7 +544,7 @@ const CheckoutPage = () => {
                   ) : null}
                 </div>
 
-                {!hasAccessToken && !guestShippingAddress ? (
+                {!userDetails.data && !guestShippingAddress ? (
                   <div className="card-item cart-items for-add">
                     <div className="top-heading">
                       <Button
@@ -682,7 +682,7 @@ const CheckoutPage = () => {
                   ) : null}
                 </div>
 
-                {!hasAccessToken && !guestBillingAddress ? (
+                {!userDetails.data && !guestBillingAddress ? (
                   <div className="card-item cart-items for-add">
                     <div className="top-heading">
                       <Button
@@ -770,7 +770,7 @@ const CheckoutPage = () => {
           className="add-new-address-modal gap-0 p-0"
           ref={wrapperRef}
         >
-          {hasAccessToken ? (
+          {userDetails.data ? (
             <AddressForm
               onClose={() => {
                 setIsAddModalOpen(false);
