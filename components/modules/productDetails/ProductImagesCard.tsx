@@ -39,8 +39,8 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
     setPreviewImages(
       productDetails?.productImages?.map((item: any) =>
-        validator.isURL(item?.image)
-          ? item?.image
+        item?.image && validator.isURL(item.image)
+          ? item.image
           : "/images/product-placeholder.png",
       ),
     );
