@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -65,10 +66,10 @@ const OrderCard: React.FC<OrderCardProps> = ({
               ? "Your order has been placed"
               : "Your Item has been delivered"}
           </p>
-          <a href="#" className="ratingLink">
+          <Button variant="ghost" className="ratingLink">
             <PiStarFill />
             Rate & Review Product
-          </a>
+          </Button>
         </div>
       </div>
     </Link>
