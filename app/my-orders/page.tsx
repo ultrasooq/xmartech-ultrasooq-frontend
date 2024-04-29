@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { useOrders } from "@/apis/queries/orders.queries";
+import { useOrders, useOrdersBySellerId } from "@/apis/queries/orders.queries";
 import { FiSearch } from "react-icons/fi";
 // import { BiSolidCircle } from "react-icons/bi";
 // import { PiStarFill } from "react-icons/pi";
@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useMe } from "@/apis/queries/user.queries";
+import { v4 as uuidv4 } from "uuid";
 
 const MyOrdersPage = () => {
   const searchRef = useRef<HTMLInputElement>(null);
@@ -58,14 +60,30 @@ const MyOrdersPage = () => {
     };
   };
 
-  const ordersQuery = useOrders({
-    page: 1,
-    limit: 40,
-    term: searchTerm !== "" ? searchTerm : undefined,
-    orderProductStatus: orderStatus,
-    startDate: getYearDates(orderTime).startDate,
-    endDate: getYearDates(orderTime).endDate,
-  });
+  const me = useMe();
+
+  const ordersBySellerIdQuery = useOrdersBySellerId(
+    {
+      page: 1,
+      limit: 40,
+      term: searchTerm !== "" ? searchTerm : undefined,
+      orderProductStatus: orderStatus,
+    },
+    me?.data?.data?.tradeRole === "COMPANY" ||
+      me?.data?.data?.tradeRole === "FREELANCER",
+  );
+
+  const ordersQuery = useOrders(
+    {
+      page: 1,
+      limit: 40,
+      term: searchTerm !== "" ? searchTerm : undefined,
+      orderProductStatus: orderStatus,
+      startDate: getYearDates(orderTime).startDate,
+      endDate: getYearDates(orderTime).endDate,
+    },
+    me?.data?.data?.tradeRole === "BUYER",
+  );
 
   const handleDebounce = debounce((event: any) => {
     setSearchTerm(event.target.value);
@@ -224,18 +242,32 @@ const MyOrdersPage = () => {
                 <div className="my-order-card">
                   {ordersQuery.isLoading
                     ? Array.from({ length: 3 }, (_, i) => i).map((item) => (
-                        <div key={item} className="mb-3 flex gap-x-3">
+                        <div key={uuidv4()} className="mb-3 flex gap-x-3">
                           <Skeleton className="h-28 w-32" />
                           <div className="h-28 flex-1 space-y-2">
-                            <Skeleton key={item} className="h-8" />
-                            <Skeleton key={item} className="h-8" />
-                            <Skeleton key={item} className="h-8" />
+                            <Skeleton className="h-8" />
+                            <Skeleton className="h-8" />
+                            <Skeleton className="h-8" />
                           </div>
                         </div>
                       ))
                     : null}
 
-                  {!ordersQuery.isLoading &&
+                  {ordersBySellerIdQuery.isLoading
+                    ? Array.from({ length: 3 }, (_, i) => i).map((item) => (
+                        <div key={uuidv4()} className="mb-3 flex gap-x-3">
+                          <Skeleton className="h-28 w-32" />
+                          <div className="h-28 flex-1 space-y-2">
+                            <Skeleton className="h-8" />
+                            <Skeleton className="h-8" />
+                            <Skeleton className="h-8" />
+                          </div>
+                        </div>
+                      ))
+                    : null}
+
+                  {me?.data?.data?.tradeRole === "BUYER" &&
+                  !ordersQuery.isLoading &&
                   !ordersQuery?.data?.data?.length ? (
                     <div className="w-full p-3">
                       <p className="text-center text-lg font-semibold">
@@ -244,7 +276,41 @@ const MyOrdersPage = () => {
                     </div>
                   ) : null}
 
+                  {(me?.data?.data?.tradeRole === "COMPANY" ||
+                    me?.data?.data?.tradeRole === "FREELANCER") &&
+                  !ordersBySellerIdQuery.isLoading &&
+                  !ordersBySellerIdQuery?.data?.data?.length ? (
+                    <div className="w-full p-3">
+                      <p className="text-center text-lg font-semibold">
+                        No orders found
+                      </p>
+                    </div>
+                  ) : null}
+
                   {ordersQuery?.data?.data?.map(
+                    (item: {
+                      id: number;
+                      purchasePrice: string;
+                      orderProduct_product: {
+                        productName: string;
+                        productImages: { id: number; image: string }[];
+                      };
+                      orderProductStatus: string;
+                      orderProductDate: string;
+                    }) => (
+                      <OrderCard
+                        key={item.id}
+                        id={item.id}
+                        purchasePrice={item.purchasePrice}
+                        productName={item.orderProduct_product.productName}
+                        produtctImage={item.orderProduct_product.productImages}
+                        orderStatus={item.orderProductStatus}
+                        orderDate={item.orderProductDate}
+                      />
+                    ),
+                  )}
+
+                  {ordersBySellerIdQuery?.data?.data?.map(
                     (item: {
                       id: number;
                       purchasePrice: string;

@@ -60,3 +60,39 @@ export const fetchOrderById = (payload: { orderProductId: string }) => {
     },
   });
 };
+
+export const fetchOrdersBySellerId = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  orderProductStatus?: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/order/getAllOrderProductBySellerId`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const updateProductStatus = (payload: {
+  orderProductId: number;
+  status: string;
+}) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/order/orderProductStatusById`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
