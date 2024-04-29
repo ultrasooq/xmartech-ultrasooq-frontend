@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiSolidCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
@@ -15,13 +15,19 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import OtherItemCard from "@/components/modules/myOrderDetails/OtherItemCard";
+import UpdateProductStatusForm from "@/components/modules/myOrderDetails/UpdateProductStatusForm";
+import { useMe } from "@/apis/queries/user.queries";
+import { Progress } from "@/components/ui/progress";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [progress, setProgress] = useState(13);
+
   const handleToggleStatusModal = () =>
     setIsStatusModalOpen(!isStatusModalOpen);
 
+  const me = useMe();
   const orderByIdQuery = useOrderById(
     {
       orderProductId: searchParams?.id ? (searchParams.id as string) : "",
@@ -42,7 +48,6 @@ const MyOrderDetailsPage = ({}) => {
     );
   const otherOrderDetails =
     orderByIdQuery.data?.otherData?.[0]?.order_orderProducts;
-  console.log(otherOrderDetails);
 
   function formatDate(inputDate: string): string {
     const months: string[] = [
@@ -87,7 +92,39 @@ const MyOrderDetailsPage = ({}) => {
     return `${dayOfWeek}, ${dayWithSuffix} ${month}`;
   }
 
-  console.log(orderDetails, otherOrderDetails);
+  console.log(orderDetails?.orderProductStatus);
+
+  useEffect(() => {
+    const STATUS_LIST = [
+      "CONFIRMED",
+      "SHIPPED",
+      "OFD",
+      "DELIVERED",
+      "CANCELLED",
+    ];
+
+    if (orderDetails?.orderProductStatus) {
+      switch (orderDetails?.orderProductStatus) {
+        case "CONFIRMED":
+          setProgress(25);
+          break;
+        case "SHIPPED":
+          setProgress(50);
+          break;
+        case "OFD":
+          setProgress(75);
+          break;
+        case "DELIVERED":
+          setProgress(100);
+          break;
+        case "CANCELLED":
+          setProgress(0);
+          break;
+        default:
+          break;
+      }
+    }
+  }, [orderDetails?.orderProductStatus]);
 
   return (
     <>
@@ -152,7 +189,7 @@ const MyOrderDetailsPage = ({}) => {
                     </div>
                   </div>
                 </div>
-                <div className="my-order-item">
+                {/* <div className="my-order-item">
                   <div className="my-order-card">
                     <div className="delivery-address">
                       <div className="delivery-address-col mx-w-100">
@@ -161,7 +198,7 @@ const MyOrderDetailsPage = ({}) => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="my-order-item">
                   <div className="my-order-card">
                     <div className="my-order-box">
@@ -203,7 +240,7 @@ const MyOrderDetailsPage = ({}) => {
                       </figure>
                       <div className="center-div">
                         <div className="order-delivery-progess-s1">
-                          <ul>
+                          {/* <ul>
                             <li className="complted">
                               <div className="orderStatusText">
                                 Order Received
@@ -249,7 +286,12 @@ const MyOrderDetailsPage = ({}) => {
                               </div>
                               <div className="orderDateText">-</div>
                             </li>
-                          </ul>
+                          </ul> */}
+
+                          <div className="my-4">
+                            <div className="orderStatusText mb-2">Status</div>
+                            <Progress value={progress} className="w-[80%]" />
+                          </div>
                         </div>
                       </div>
                       <div className="right-info">
@@ -261,16 +303,17 @@ const MyOrderDetailsPage = ({}) => {
                           <MdHelpCenter />
                           Need Help?
                         </a>
-                        <div className="more-actions">
-                          {/* TODO: need design */}
-                          {/* <button
-                            type="button"
-                            className="theme-primary-btn update-status-btn"
-                            onClick={handleToggleStatusModal}
-                          >
-                            Update Status
-                          </button> */}
-                        </div>
+                        {me?.data?.data?.tradeRole !== "BUYER" ? (
+                          <div className="more-actions">
+                            <button
+                              type="button"
+                              className="theme-primary-btn update-status-btn"
+                              onClick={handleToggleStatusModal}
+                            >
+                              Update Status
+                            </button>
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                     {/* <div className="my-order-box">
@@ -330,22 +373,11 @@ const MyOrderDetailsPage = ({}) => {
             </DialogTitle>
           </DialogHeader>
 
-          <div className="modal-body">
-            <div className="form-content">
-              <select className="custom-form-control-s1 select1">
-                <option>Order Received</option>
-                <option>Order Confirmed</option>
-                <option>Shipped</option>
-                <option>Out for delivery</option>
-                <option>Delivered</option>
-              </select>
-            </div>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="theme-primary-btn submit-btn">
-              Save
-            </button>
-          </div>
+          <UpdateProductStatusForm
+            orderProductId={searchParams?.id as string}
+            onClose={handleToggleStatusModal}
+            orderProductStatus={orderDetails?.orderProductStatus}
+          />
         </DialogContent>
       </Dialog>
     </>
