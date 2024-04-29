@@ -11,10 +11,35 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { debounce } from "lodash";
 import { IBrands, ISelectOptions } from "@/utils/types/common.types";
 import { useBrands } from "@/apis/queries/masters.queries";
+import { useRfqProducts } from "@/apis/queries/rfq.queries";
+import RfqProductCard from "@/components/modules/rfq/RfqProductCard";
+import Pagination from "@/components/shared/Pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import GridIcon from "@/components/icons/GridIcon";
+import ListIcon from "@/components/icons/ListIcon";
+import { cn } from "@/lib/utils";
+import RfqProductTable from "@/components/modules/rfq/RfqProductTable";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import AddToRfqForm from "@/components/modules/rfq/AddToRfqForm";
 
 const RfqPage = () => {
+  const [viewType, setViewType] = useState<"grid" | "list">("grid");
+  const [searchRfqTerm, setSearchRfqTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
+
+  const handleToggleAddModal = () =>
+    setIsAddToCartModalOpen(!isAddToCartModalOpen);
+
+  const rfqProductsQuery = useRfqProducts({
+    page: 1,
+    limit: 40,
+    // TODO: api pending
+    // term: searchRfqTerm,
+    // brandIds:
+    //   selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+  });
 
   const brandsQuery = useBrands({
     term: searchTerm,
@@ -46,6 +71,25 @@ const RfqPage = () => {
     }
     setSelectedBrandIds(tempArr);
   };
+
+  const handleRfqDebounce = debounce((event: any) => {
+    setSearchRfqTerm(event.target.value);
+  }, 1000);
+
+  const memoizedRfqProductList = useMemo(() => {
+    return (
+      rfqProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productType: item?.type || "-",
+        productName: item?.rfqProductName || "-",
+        productNote: item?.productNote || "-",
+        productStatus: item?.status,
+        productImages: item?.rfqProductImage || [],
+      })) || []
+    );
+  }, [rfqProductsQuery?.data?.data?.length]);
+
+  console.log(rfqProductsQuery.data?.data);
 
   return (
     <section className="rfq_section">
@@ -173,13 +217,17 @@ const RfqPage = () => {
                     type="search"
                     className="form-control"
                     placeholder="Search Product"
+                    onChange={handleRfqDebounce}
                   />
                   <button type="button">
                     <img src="images/search-icon-rfq.png" alt="search-icon" />
                   </button>
                 </div>
                 <div className="rfq_add_new_product">
-                  <button type="button">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddToCartModalOpen(true)}
+                  >
                     <img src="images/plus-icon-white.png" alt="plus-icon" /> add
                     new product in RFQ
                   </button>
@@ -207,369 +255,72 @@ const RfqPage = () => {
                           <ul>
                             <li>View</li>
                             <li>
-                              <a href="#">
-                                <img src="images/view-t.svg" alt="view-t" />
-                              </a>
+                              <button
+                                type="button"
+                                className={cn(
+                                  "view-type-btn",
+                                  viewType === "grid" ? "active" : "",
+                                )}
+                                onClick={() => setViewType("grid")}
+                              >
+                                <GridIcon />
+                              </button>
                             </li>
                             <li>
-                              <a href="#">
-                                <img src="images/view-l.svg" alt="view-l" />
-                              </a>
+                              <button
+                                type="button"
+                                className={cn(
+                                  "view-type-btn",
+                                  viewType === "list" ? "active" : "",
+                                )}
+                                onClick={() => setViewType("list")}
+                              >
+                                <ListIcon />
+                              </button>
                             </li>
                           </ul>
                         </div>
                       </div>
                     </div>
-                    <div className="product_sec_list">
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-6.png" alt="pro-6" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
+
+                    {rfqProductsQuery.isLoading && viewType === "grid" ? (
+                      <div className="mt-5 grid grid-cols-4 gap-5">
+                        {Array.from({ length: 8 }).map((_, index) => (
+                          <Skeleton key={index} className="h-80 w-full" />
+                        ))}
                       </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-5.png" alt="pro-5" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
+                    ) : null}
+
+                    {!memoizedRfqProductList.length &&
+                    !rfqProductsQuery.isLoading ? (
+                      <p className="text-center text-sm font-medium">
+                        No data found
+                      </p>
+                    ) : null}
+
+                    {viewType === "grid" ? (
+                      <div className="product_sec_list">
+                        {memoizedRfqProductList.map((item: any) => (
+                          <RfqProductCard
+                            key={item.id}
+                            id={item.id}
+                            productType={item?.productType || "-"}
+                            productName={item?.productName || "-"}
+                            productNote={item?.productNote || "-"}
+                            productStatus={item?.productStatus}
+                            productImages={item?.productImages}
+                          />
+                        ))}
                       </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-1.png" alt="pro-1" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
+                    ) : null}
+
+                    {viewType === "list" && memoizedRfqProductList.length ? (
+                      <div className="product_sec_list">
+                        <RfqProductTable list={memoizedRfqProductList} />
                       </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-2.png" alt="pro-2" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-6.png" alt="pro-6" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-5.png" alt="pro-5" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-1.png" alt="pro-1" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-2.png" alt="pro-2" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-6.png" alt="pro-6" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-5.png" alt="pro-5" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-1.png" alt="pro-1" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="product_list_part">
-                        <div className="product_list_image">
-                          <img src="images/pro-2.png" alt="pro-2" />
-                        </div>
-                        <div className="product_list_content">
-                          <p>
-                            <a href="#">Lorem Ipsum is simply dummy text..</a>
-                          </p>
-                          <div className="quantity_wrap">
-                            <label>Quantity</label>
-                            <div className="quantity">
-                              <button className="adjust_field minus">-</button>
-                              <input type="text" value="1" />
-                              <button className="adjust_field plus">+</button>
-                            </div>
-                          </div>
-                          <div className="cart_button">
-                            <button
-                              type="button"
-                              className="add_to_cart_button"
-                            >
-                              Add To RFQ Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="pagination">
-                      <a href="#" className="first_pagination">
-                        <img
-                          src="images/pagination-left-white-arrow.svg"
-                          alt="pagination-left-white-arrow"
-                        />{" "}
-                        Frist
-                      </a>
-                      <a href="#">
-                        <img
-                          src="images/pagination-left-arrow.svg"
-                          alt="pagination-left-arrow"
-                        />
-                      </a>
-                      <a href="#">1</a>
-                      <a className="active" href="#">
-                        2
-                      </a>
-                      <a href="#">3</a>
-                      <a href="#">4</a>
-                      <a href="#">5</a>
-                      <a href="#">6</a>
-                      <a href="#">
-                        <img
-                          src="images/pagination-right-arrow.svg"
-                          alt="pagination-right-arrow"
-                        />
-                      </a>
-                      <a href="#" className="last_pagination">
-                        Last{" "}
-                        <img
-                          src="images/pagination-right-white-arrow.svg"
-                          alt="pagination-right-white-arrow"
-                        />
-                      </a>
-                    </div>
+                    ) : null}
+
+                    {memoizedRfqProductList.length > 10 ? <Pagination /> : null}
                   </div>
                 </div>
               </div>
@@ -665,6 +416,15 @@ const RfqPage = () => {
           </div>
         </div>
       </div>
+      <Dialog open={isAddToCartModalOpen} onOpenChange={handleToggleAddModal}>
+        <DialogContent className="add-new-address-modal gap-0 p-0 md:!max-w-2xl">
+          <AddToRfqForm
+            onClose={() => {
+              setIsAddToCartModalOpen(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
