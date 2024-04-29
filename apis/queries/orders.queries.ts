@@ -9,6 +9,8 @@ import {
   createOrderUnAuth,
   fetchOrderById,
   fetchOrders,
+  fetchOrdersBySellerId,
+  updateProductStatus,
 } from "../requests/orders.requests";
 import { APIResponseError } from "@/utils/types/common.types";
 
@@ -136,3 +138,47 @@ export const useOrderById = (
     },
     enabled,
   });
+
+export const useOrdersBySellerId = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    orderProductStatus?: string;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["orders-by-seller-id", payload],
+    queryFn: async () => {
+      const res: { data: { data: any; message: string; status: boolean } } =
+        await fetchOrdersBySellerId(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useUpdateProductStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { orderProductId: number; status: string }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateProductStatus(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["orders"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
