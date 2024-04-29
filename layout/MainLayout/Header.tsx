@@ -339,6 +339,10 @@ const Header = () => {
                     if (item.name.toLowerCase().includes("store")) {
                       router.push("/trending");
                     }
+
+                    if (item.name.toLowerCase().includes("rfqs")) {
+                      router.push("/rfq");
+                    }
                   }}
                   variant="link"
                   className="flex cursor-pointer px-10 py-3 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
