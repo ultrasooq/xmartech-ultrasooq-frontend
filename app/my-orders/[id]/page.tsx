@@ -18,6 +18,8 @@ import OtherItemCard from "@/components/modules/myOrderDetails/OtherItemCard";
 import UpdateProductStatusForm from "@/components/modules/myOrderDetails/UpdateProductStatusForm";
 import { useMe } from "@/apis/queries/user.queries";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import Footer from "@/components/shared/Footer";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
@@ -133,114 +135,113 @@ const MyOrderDetailsPage = ({}) => {
           <div className="my-order-wrapper">
             <div className="right-div mx-w-100">
               <div className="my-order-lists for-delivery-address">
-                <div className="my-order-item">
-                  <div className="my-order-card">
-                    <div className="delivery-address">
-                      <div className="delivery-address-col deliveryAddress">
-                        <h2>Delivery Address</h2>
-                        <h3>
-                          {shippingDetails?.firstName}{" "}
-                          {shippingDetails?.lastName}
-                        </h3>
-                        <address>
-                          {shippingDetails?.address}, <br /> pin -{" "}
-                          {shippingDetails?.postCode}
-                        </address>
-                        <p>
-                          Phone Number{" "}
-                          <span className="!text-red-500">
-                            {shippingDetails?.phone}
-                          </span>
-                        </p>
-                        <h5>
-                          This order is also tracked by{" "}
-                          {orderDetails?.orderProduct_order?.orderNo}
-                        </h5>
-                      </div>
-                      <div className="delivery-address-col deliveryAddress">
-                        <h2>Billing Address</h2>
-                        <h3>
-                          {billingDetails?.firstName} {billingDetails?.lastName}
-                        </h3>
-                        <address>
-                          {billingDetails?.address}, <br /> pin -{" "}
-                          {billingDetails?.postCode}
-                        </address>
-                        <p>
-                          Phone Number{" "}
-                          <span className="!text-red-500">
-                            {billingDetails?.phone}
-                          </span>
-                        </p>
-                      </div>
-                      {/* <div className='delivery-address-col yourRewards'>
+                {orderByIdQuery.isLoading ? (
+                  <Skeleton className="h-52" />
+                ) : (
+                  <div className="my-order-item">
+                    <div className="my-order-card">
+                      <div className="delivery-address">
+                        <div className="delivery-address-col deliveryAddress">
+                          <h2>Delivery Address</h2>
+                          <h3>
+                            {shippingDetails?.firstName}{" "}
+                            {shippingDetails?.lastName}
+                          </h3>
+                          <address>
+                            {shippingDetails?.address}, <br /> pin -{" "}
+                            {shippingDetails?.postCode}
+                          </address>
+                          <p>
+                            Phone Number{" "}
+                            <span className="!text-red-500">
+                              {shippingDetails?.phone}
+                            </span>
+                          </p>
+                          <h5>
+                            This order is also tracked by{" "}
+                            {orderDetails?.orderProduct_order?.orderNo}
+                          </h5>
+                        </div>
+                        <div className="delivery-address-col deliveryAddress">
+                          <h2>Billing Address</h2>
+                          <h3>
+                            {billingDetails?.firstName}{" "}
+                            {billingDetails?.lastName}
+                          </h3>
+                          <address>
+                            {billingDetails?.address}, <br /> pin -{" "}
+                            {billingDetails?.postCode}
+                          </address>
+                          <p>
+                            Phone Number{" "}
+                            <span className="!text-red-500">
+                              {billingDetails?.phone}
+                            </span>
+                          </p>
+                        </div>
+                        {/* <div className='delivery-address-col yourRewards'>
                         <h2>Your Rewards</h2>
                       </div> */}
-                      <div className="delivery-address-col moreActions">
-                        <h2>More actions</h2>
-                        <figure className="downloadInvoice">
+                        <div className="delivery-address-col moreActions">
+                          <h2>More actions</h2>
+                          <figure className="downloadInvoice">
+                            <figcaption>
+                              <Button className="downloadInvoice-btn theme-primary-btn">
+                                <LiaFileInvoiceSolid /> Download Invoice
+                              </Button>
+                            </figcaption>
+                          </figure>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {orderByIdQuery.isLoading ? (
+                  <Skeleton className="h-40" />
+                ) : (
+                  <div className="my-order-item">
+                    <div className="my-order-card">
+                      <div className="my-order-box">
+                        <figure>
+                          <div className="image-container">
+                            <Image
+                              src={
+                                orderDetails?.orderProduct_product
+                                  ?.productImages?.[0]?.image ||
+                                "/images/product-placeholder.png"
+                              }
+                              alt="preview-product"
+                              width={120}
+                              height={120}
+                              placeholder="blur"
+                              blurDataURL="/images/product-placeholder.png"
+                            />
+                          </div>
                           <figcaption>
-                            <Button className="downloadInvoice-btn theme-primary-btn">
-                              <LiaFileInvoiceSolid /> Download Invoice
-                            </Button>
+                            <h3>
+                              {orderDetails?.orderProduct_product?.productName}
+                            </h3>
+                            {/* <p>Color: B.A.E Black</p> */}
+                            <p className="mt-1">
+                              Seller:{" "}
+                              {
+                                orderDetails?.orderProduct_product?.userBy
+                                  ?.firstName
+                              }{" "}
+                              {
+                                orderDetails?.orderProduct_product?.userBy
+                                  ?.lastName
+                              }
+                            </p>
+                            <h4 className="mt-1">
+                              ${orderDetails?.orderProduct_product?.offerPrice}
+                            </h4>
                           </figcaption>
                         </figure>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* <div className="my-order-item">
-                  <div className="my-order-card">
-                    <div className="delivery-address">
-                      <div className="delivery-address-col mx-w-100">
-                        <h2 className="mb-1">GST Number</h2>
-                        <p>-</p>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
-                <div className="my-order-item">
-                  <div className="my-order-card">
-                    <div className="my-order-box">
-                      <figure>
-                        <div className="image-container">
-                          <Image
-                            src={
-                              orderDetails?.orderProduct_product
-                                ?.productImages?.[0]?.image ||
-                              "/images/product-placeholder.png"
-                            }
-                            alt="preview-product"
-                            width={120}
-                            height={120}
-                            placeholder="blur"
-                            blurDataURL="/images/product-placeholder.png"
-                          />
-                        </div>
-                        <figcaption>
-                          <h3>
-                            {orderDetails?.orderProduct_product?.productName}
-                          </h3>
-                          {/* <p>Color: B.A.E Black</p> */}
-                          <p className="mt-1">
-                            Seller:{" "}
-                            {
-                              orderDetails?.orderProduct_product?.userBy
-                                ?.firstName
-                            }{" "}
-                            {
-                              orderDetails?.orderProduct_product?.userBy
-                                ?.lastName
-                            }
-                          </p>
-                          <h4 className="mt-1">
-                            ${orderDetails?.orderProduct_product?.offerPrice}
-                          </h4>
-                        </figcaption>
-                      </figure>
-                      <div className="center-div">
-                        <div className="order-delivery-progess-s1">
-                          {/* <ul>
+                        <div className="center-div">
+                          <div className="order-delivery-progess-s1">
+                            {/* <ul>
                             <li className="complted">
                               <div className="orderStatusText">
                                 Order Received
@@ -288,35 +289,35 @@ const MyOrderDetailsPage = ({}) => {
                             </li>
                           </ul> */}
 
-                          <div className="my-4">
-                            <div className="orderStatusText mb-2">Status</div>
-                            <Progress value={progress} className="w-[80%]" />
+                            <div className="my-4">
+                              <div className="orderStatusText mb-2">Status</div>
+                              <Progress value={progress} className="w-[80%]" />
+                            </div>
                           </div>
                         </div>
+                        <div className="right-info">
+                          <a href="#" className="ratingLink mt-0">
+                            <PiStarFill />
+                            Rate & Review Product
+                          </a>
+                          <a href="#" className="ratingLink">
+                            <MdHelpCenter />
+                            Need Help?
+                          </a>
+                          {me?.data?.data?.tradeRole !== "BUYER" ? (
+                            <div className="more-actions">
+                              <button
+                                type="button"
+                                className="theme-primary-btn update-status-btn"
+                                onClick={handleToggleStatusModal}
+                              >
+                                Update Status
+                              </button>
+                            </div>
+                          ) : null}
+                        </div>
                       </div>
-                      <div className="right-info">
-                        <a href="#" className="ratingLink mt-0">
-                          <PiStarFill />
-                          Rate & Review Product
-                        </a>
-                        <a href="#" className="ratingLink">
-                          <MdHelpCenter />
-                          Need Help?
-                        </a>
-                        {me?.data?.data?.tradeRole !== "BUYER" ? (
-                          <div className="more-actions">
-                            <button
-                              type="button"
-                              className="theme-primary-btn update-status-btn"
-                              onClick={handleToggleStatusModal}
-                            >
-                              Update Status
-                            </button>
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                    {/* <div className="my-order-box">
+                      {/* <div className="my-order-box">
                       <figure>
                         <div className="image-container">
                           <img src="/images/iphone.png" alt=""></img>
@@ -348,9 +349,15 @@ const MyOrderDetailsPage = ({}) => {
                         </a>
                       </div>
                     </div> */}
-                    {/* <p className="mt-2">Return policy ended on Mar 28</p> */}
+                      {/* <p className="mt-2">Return policy ended on Mar 28</p> */}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {orderByIdQuery.isLoading ? (
+                  <Skeleton className="h-40" />
+                ) : null}
+
                 {otherOrderDetails?.map((item: any) => (
                   <OtherItemCard
                     key={item?.id}
@@ -358,6 +365,7 @@ const MyOrderDetailsPage = ({}) => {
                     productName={item?.orderProduct_product?.productName}
                     offerPrice={item?.orderProduct_product?.offerPrice}
                     productImages={item?.orderProduct_product?.productImages}
+                    sellerName={`${item?.orderProduct_product?.userBy?.firstName} ${item?.orderProduct_product?.userBy?.lastName}`}
                   />
                 ))}
               </div>
@@ -365,6 +373,7 @@ const MyOrderDetailsPage = ({}) => {
           </div>
         </div>
       </div>
+      <Footer />
       <Dialog open={isStatusModalOpen} onOpenChange={handleToggleStatusModal}>
         <DialogContent className="customModal-s1">
           <DialogHeader className="modal-header">

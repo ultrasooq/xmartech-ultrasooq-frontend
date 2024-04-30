@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 // import Link from "next/link";
 import React, { useMemo } from "react";
 import { FaStar } from "react-icons/fa";
@@ -15,7 +16,6 @@ type SameBrandProductCardProps = {
   offerPrice: string;
   productReview: { rating: number }[];
   onAdd?: () => void;
-  onView: () => void;
 };
 
 const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
@@ -27,7 +27,6 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   offerPrice,
   productReview,
   onAdd,
-  onView,
 }) => {
   const offerPercentage = useMemo(
     () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
@@ -88,22 +87,14 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
               height={16}
             />
           </Button>
-          <Button onClick={onView} className="circle-btn">
+          <Link href={`/trending/${id}`} className="circle-btn !shadow">
             <Image
               src="/images/eye-icon.svg"
               alt="eye-icon"
               width={16}
               height={16}
             />
-          </Button>
-          {/* <Link href={`/buygroup?id=${id}`} className="circle-btn">
-            <Image
-              src="/images/eye-icon.svg"
-              alt="eye-icon"
-              width={16}
-              height={16}
-            />
-          </Link> */}
+          </Link>
           <Button type="button" className="circle-btn">
             <Image
               src="/images/heart-icon.svg"

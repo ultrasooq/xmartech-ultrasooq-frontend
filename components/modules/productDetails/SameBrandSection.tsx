@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/carousel";
 import { stripHTML } from "@/utils/helper";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "next/navigation";
 
 type SameBrandSectionProps = {
   sameBrandProducts: any;
@@ -20,10 +19,6 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
   sameBrandProducts,
   isLoading,
 }) => {
-  const router = useRouter();
-  const handleProductDetailsPage = (productId: number) =>
-    router.push(`/buygroup?id=${productId}`);
-
   return (
     <div className="suggestion-list-s1-col">
       <div className="suggestion-same-branch-lists-s1">
@@ -56,7 +51,6 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
                           offerPrice={item?.offerPrice}
                           productPrice={item?.productPrice}
                           productReview={item?.productReview}
-                          onView={() => handleProductDetailsPage(item?.id)}
                         />
                       </div>
                     </CarouselItem>
