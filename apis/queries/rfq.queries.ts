@@ -4,8 +4,10 @@ import {
   addRfqProduct,
   deleteRfqCartItem,
   fetchRfqCartByUserId,
+  fetchRfqProductById,
   fetchRfqProducts,
   updateRfqCartWithLogin,
+  updateRfqProduct,
 } from "../requests/rfq.requests";
 
 export const useRfqProducts = (
@@ -29,6 +31,19 @@ export const useRfqProducts = (
     enabled,
   });
 
+export const useRfqProductById = (id: string, enabled = true) =>
+  useQuery({
+    queryKey: ["rfq-product-by-id", id],
+    queryFn: async () => {
+      const res = await fetchRfqProductById({ rfqProductId: id });
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
 export const useAddRfqProduct = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -42,6 +57,33 @@ export const useAddRfqProduct = () => {
   >({
     mutationFn: async (payload) => {
       const res = await addRfqProduct(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["rfq-products"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useUpdateRfqProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {
+      rFqProductId: number;
+      productNote: string;
+      rfqProductName: string;
+      rfqProductImagesList: { imageName: string; image: string }[];
+    }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateRfqProduct(payload);
       return res.data;
     },
     onSuccess: () => {

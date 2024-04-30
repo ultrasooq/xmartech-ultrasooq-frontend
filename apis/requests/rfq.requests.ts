@@ -35,6 +35,39 @@ export const addRfqProduct = (payload: {
   });
 };
 
+export const updateRfqProduct = (payload: {
+  rFqProductId: number;
+  productNote: string;
+  rfqProductName: string;
+  rfqProductImagesList: { imageName: string; image: string }[];
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/editRfqProduct`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const fetchRfqProductById = (payload: { rfqProductId: string }) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getOneRfqProduct`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const fetchRfqCartByUserId = (payload: {
   page: number;
   limit: number;
