@@ -1,4 +1,6 @@
-import React from "react";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import validator from "validator";
 
 type RfqProductCardProps = {
@@ -10,6 +12,8 @@ type RfqProductCardProps = {
   productImages: {
     imageName: string;
   }[];
+  productQuantity: number;
+  onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
 };
 
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
@@ -19,27 +23,68 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   productNote,
   productStatus,
   productImages,
+  productQuantity,
+  onAdd,
 }) => {
+  const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    setQuantity(productQuantity || 1);
+  }, [productQuantity]);
+
+  console.log(quantity);
   return (
     <div className="product_list_part">
-      <div className="product_list_image">
-        <img
+      <div className="product_list_image relative">
+        <Image
           alt="pro-5"
           src={
             productImages && validator.isURL(productImages?.[0].imageName)
               ? productImages[0].imageName
               : "/images/product-placeholder.png"
           }
+          fill
         />
       </div>
       <div className="product_list_content">
         <p>{productName}</p>
-        <div className="quantity_wrap">
+        <div className="quantity_wrap mb-2">
           <label>Quantity</label>
-          <div className="quantity">
-            <button className="adjust_field minus">-</button>
-            <input type="text" value="1" />
-            <button className="adjust_field plus">+</button>
+          <div className="qty-up-down-s1-with-rgMenuAction">
+            <div className="flex items-center gap-x-4">
+              <Button
+                variant="outline"
+                className="relative hover:shadow-sm"
+                onClick={() => {
+                  setQuantity(quantity - 1);
+                  onAdd(quantity - 1, id, "remove");
+                }}
+                disabled={quantity === 0}
+              >
+                <Image
+                  src="/images/upDownBtn-minus.svg"
+                  alt="minus-icon"
+                  fill
+                  className="p-3"
+                />
+              </Button>
+              <p className="!text-black">{quantity}</p>
+              <Button
+                variant="outline"
+                className="relative hover:shadow-sm"
+                onClick={() => {
+                  setQuantity(quantity + 1);
+                  onAdd(quantity + 1, id, "add");
+                }}
+              >
+                <Image
+                  src="/images/upDownBtn-plus.svg"
+                  alt="plus-icon"
+                  fill
+                  className="p-3"
+                />
+              </Button>
+            </div>
           </div>
         </div>
         <div className="cart_button">
