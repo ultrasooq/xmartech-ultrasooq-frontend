@@ -1,17 +1,10 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { debounce } from "lodash";
-import { IBrands, ISelectOptions } from "@/utils/types/common.types";
-import { useBrands } from "@/apis/queries/masters.queries";
-import { useRfqProducts } from "@/apis/queries/rfq.queries";
+import {
+  useRfqProducts,
+  useUpdateRfqCartWithLogin,
+} from "@/apis/queries/rfq.queries";
 import RfqProductCard from "@/components/modules/rfq/RfqProductCard";
 import Pagination from "@/components/shared/Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,56 +14,32 @@ import { cn } from "@/lib/utils";
 import RfqProductTable from "@/components/modules/rfq/RfqProductTable";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AddToRfqForm from "@/components/modules/rfq/AddToRfqForm";
+import { useMe } from "@/apis/queries/user.queries";
+import RfqCartMenu from "@/components/modules/rfq/RfqCartMenu";
+import { useToast } from "@/components/ui/use-toast";
+// import CategoryFilterList from "@/components/modules/rfq/CategoryFilterList";
+// import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 
 const RfqPage = () => {
+  const { toast } = useToast();
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
 
   const handleToggleAddModal = () =>
     setIsAddToCartModalOpen(!isAddToCartModalOpen);
 
+  const me = useMe();
   const rfqProductsQuery = useRfqProducts({
     page: 1,
     limit: 40,
-    // TODO: api pending
-    // term: searchRfqTerm,
+    term: searchRfqTerm,
+    adminId: me?.data?.data?.id || undefined,
     // brandIds:
     //   selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
   });
-
-  const brandsQuery = useBrands({
-    term: searchTerm,
-  });
-
-  const handleDebounce = debounce((event: any) => {
-    setSearchTerm(event.target.value);
-  }, 1000);
-
-  const memoizedBrands = useMemo(() => {
-    return (
-      brandsQuery?.data?.data.map((item: IBrands) => {
-        return { label: item.brandName, value: item.id };
-      }) || []
-    );
-  }, [brandsQuery?.data?.data?.length]);
-
-  const handleBrandChange = (
-    checked: boolean | string,
-    item: ISelectOptions,
-  ) => {
-    let tempArr = selectedBrandIds || [];
-    if (checked && !tempArr.find((ele: number) => ele === item.value)) {
-      tempArr = [...tempArr, item.value];
-    }
-
-    if (!checked && tempArr.find((ele: number) => ele === item.value)) {
-      tempArr = tempArr.filter((ele: number) => ele !== item.value);
-    }
-    setSelectedBrandIds(tempArr);
-  };
+  const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
 
   const handleRfqDebounce = debounce((event: any) => {
     setSearchRfqTerm(event.target.value);
@@ -89,7 +58,29 @@ const RfqPage = () => {
     );
   }, [rfqProductsQuery?.data?.data?.length]);
 
-  console.log(rfqProductsQuery.data?.data);
+  // console.log(rfqProductsQuery.data?.data);
+
+  const handleAddToCart = async (
+    quantity: number,
+    rfqProductId: number,
+    actionType: "add" | "remove",
+  ) => {
+    console.log("add to cart:", quantity, rfqProductId, actionType);
+    // return;
+
+    const response = await updateRfqCartWithLogin.mutateAsync({
+      rfqProductId,
+      quantity,
+    });
+
+    if (response.status) {
+      toast({
+        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
 
   return (
     <section className="rfq_section">
@@ -98,117 +89,10 @@ const RfqPage = () => {
       </div>
       <div className="rfq-container px-3">
         <div className="row">
-          <div className="col-lg-12 rfq_main_box">
+          <div className="rfq_main_box !justify-center">
             <div className="rfq_left">
-              <div className="product_filter_box">
-                <div className="product_filter_box_head">
-                  <h4>Categories</h4>
-                  <img src="images/symbol.svg" alt="symbol-icon" />
-                </div>
-                <div className="check_filter">
-                  <div className="categori_list">
-                    <a href="">Clothing & Apparel</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Garden & Kitchen</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Consumer Electrics</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Health & Beauty</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Computers & Technologies</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Jewelry & Watches</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Phones & Accessories</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Sport & Outdoor</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Babies and Moms</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Books & Office</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Cars & Motocycles</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Fruits</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Meat</a>
-                  </div>
-                  <div className="categori_list">
-                    <a href="">Book</a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="trending-search-sec">
-                <div className="container m-auto">
-                  <div className="left-filter">
-                    <Accordion
-                      type="multiple"
-                      defaultValue={["brand"]}
-                      className="filter-col"
-                    >
-                      <AccordionItem value="brand">
-                        <AccordionTrigger className="px-3 text-base hover:!no-underline">
-                          By Brand
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="filter-sub-header">
-                            <Input
-                              type="text"
-                              placeholder="Search Brand"
-                              className="custom-form-control-s1 searchInput rounded-none"
-                              onChange={handleDebounce}
-                            />
-                          </div>
-                          <div className="filter-body-part">
-                            <div className="filter-checklists">
-                              {!memoizedBrands.length ? (
-                                <p className="text-center text-sm font-medium">
-                                  No data found
-                                </p>
-                              ) : null}
-                              {memoizedBrands.map((item: ISelectOptions) => (
-                                <div key={item.value} className="div-li">
-                                  <Checkbox
-                                    id={item.label}
-                                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked) =>
-                                      handleBrandChange(checked, item)
-                                    }
-                                    checked={selectedBrandIds.includes(
-                                      item.value,
-                                    )}
-                                  />
-                                  <div className="grid gap-1.5 leading-none">
-                                    <label
-                                      htmlFor={item.label}
-                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                      {item.label}
-                                    </label>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </div>
-                </div>
-              </div>
+              {/* <CategoryFilterList /> */}
+              {/* <BrandFilterList /> */}
             </div>
             <div className="rfq_middle">
               <div className="rfq_middle_top">
@@ -309,6 +193,8 @@ const RfqPage = () => {
                             productNote={item?.productNote || "-"}
                             productStatus={item?.productStatus}
                             productImages={item?.productImages}
+                            productQuantity={item?.quantity || 0}
+                            onAdd={handleAddToCart}
                           />
                         ))}
                       </div>
@@ -325,94 +211,7 @@ const RfqPage = () => {
                 </div>
               </div>
             </div>
-            <div className="rfq_right">
-              <div className="rfq_right_top">
-                <h4>RFQ Cart</h4>
-                <p>Lorem ipsum dolor sit amet, </p>
-                <button type="button">Request For Quote</button>
-              </div>
-              <div className="rfq_right_bottom">
-                <h4>Your RFQ Cart (3 items)</h4>
-                <div className="rfq_cart_wrap">
-                  <div className="rfq_cart_wrap_image">
-                    <img src="images/pro-6.png" alt="pro-6" />
-                  </div>
-                  <div className="rfq_cart_wrap_content">
-                    <div className="rfq_cart_wrap_content_top">
-                      <a href="#">Lorem Ipsum is simply dummy text..</a>
-                      <div className="pen_gray_icon">
-                        <img
-                          src="images/pen-gray-icon.png"
-                          alt="pen-gray-icon"
-                        />
-                      </div>
-                    </div>
-                    <div className="rfq_cart_wrap_content_top_bottom">
-                      <div className="quantity">
-                        <button className="adjust_field minus">-</button>
-                        <input type="text" value="1" />
-                        <button className="adjust_field plus">+</button>
-                      </div>
-                      <div className="remove_text">
-                        <span>Remove</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="rfq_cart_wrap">
-                  <div className="rfq_cart_wrap_image">
-                    <img src="images/pro-5.png" alt="pro-5" />
-                  </div>
-                  <div className="rfq_cart_wrap_content">
-                    <div className="rfq_cart_wrap_content_top">
-                      <a href="#">Lorem Ipsum is simply dummy text..</a>
-                      <div className="pen_gray_icon">
-                        <img
-                          src="images/pen-gray-icon.png"
-                          alt="pen-gray-icon"
-                        />
-                      </div>
-                    </div>
-                    <div className="rfq_cart_wrap_content_top_bottom">
-                      <div className="quantity">
-                        <button className="adjust_field minus">-</button>
-                        <input type="text" value="1" />
-                        <button className="adjust_field plus">+</button>
-                      </div>
-                      <div className="remove_text">
-                        <span>Remove</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="rfq_cart_wrap">
-                  <div className="rfq_cart_wrap_image">
-                    <img src="images/pro-2.png" alt="pro-2" />
-                  </div>
-                  <div className="rfq_cart_wrap_content">
-                    <div className="rfq_cart_wrap_content_top">
-                      <a href="#">Lorem Ipsum is simply dummy text..</a>
-                      <div className="pen_gray_icon">
-                        <img
-                          src="images/pen-gray-icon.png"
-                          alt="pen-gray-icon"
-                        />
-                      </div>
-                    </div>
-                    <div className="rfq_cart_wrap_content_top_bottom">
-                      <div className="quantity">
-                        <button className="adjust_field minus">-</button>
-                        <input type="text" value="1" />
-                        <button className="adjust_field plus">+</button>
-                      </div>
-                      <div className="remove_text">
-                        <span>Remove</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <RfqCartMenu onAdd={handleAddToCart} />
           </div>
         </div>
       </div>
