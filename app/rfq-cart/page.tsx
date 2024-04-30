@@ -54,13 +54,79 @@ const RfqCartPage = () => {
                     </div>
                     <figcaption>
                       <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.. </h5>
-                      
+                      <label>Quantity</label>
+                      <div className="qty-with-remove">
+                        <div className="quantity">
+                          <button className="adjust_field minus">-</button>
+                          <input type="text" defaultValue={1} />
+                          <button className="adjust_field plus">+</button>
+                        </div>
+                        <div className="remove_text">
+                          <span>Remove</span>
+                        </div>
+                      </div>
                     </figcaption>
                   </figure>
+                  <div className="price-info">
+                    <h5>Price</h5>
+                    <p>$332.38</p>
+                  </div>
+                </div>
+                <div className="rfq-cart-item-li">
+                  <figure>
+                    <div className="image-container">
+                      <img src="images/pro-6.png" alt="pro-6" />
+                    </div>
+                    <figcaption>
+                      <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.. </h5>
+                      <label>Quantity</label>
+                      <div className="qty-with-remove">
+                        <div className="quantity">
+                          <button className="adjust_field minus">-</button>
+                          <input type="text" defaultValue={1} />
+                          <button className="adjust_field plus">+</button>
+                        </div>
+                        <button type="button" className="remove_text">
+                          Remove
+                        </button>
+                      </div>
+                    </figcaption>
+                  </figure>
+                  <div className="price-info">
+                    <h5>Price</h5>
+                    <p>$332.38</p>
+                  </div>
+                </div>
+                <div className="rfq-cart-item-li">
+                  <figure>
+                    <div className="image-container">
+                      <img src="images/pro-6.png" alt="pro-6" />
+                    </div>
+                    <figcaption>
+                      <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.. </h5>
+                      <label>Quantity</label>
+                      <div className="qty-with-remove">
+                        <div className="quantity">
+                          <button className="adjust_field minus">-</button>
+                          <input type="text" defaultValue={1} />
+                          <button className="adjust_field plus">+</button>
+                        </div>
+                        <button type="button" className="remove_text">
+                          Remove
+                        </button>
+                      </div>
+                    </figcaption>
+                  </figure>
+                  <div className="price-info">
+                    <h5>Price</h5>
+                    <p>$332.38</p>
+                  </div>
                 </div>
               </div>
             </div>
-
+            <div className="submit-action">
+              <button type="button" className="theme-primary-btn submit-btn">Request For RFQ</button>
+            </div>
           </div>
         </div>
       </div>
