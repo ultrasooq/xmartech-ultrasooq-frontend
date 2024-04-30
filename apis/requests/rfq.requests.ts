@@ -8,6 +8,7 @@ export const fetchRfqProducts = (payload: {
   limit: number;
   term?: string;
   adminId?: string;
+  sortType?: "newest" | "oldest";
 }) => {
   return axios({
     method: "GET",

@@ -16,6 +16,7 @@ export const useRfqProducts = (
     limit: number;
     term?: string;
     adminId?: string;
+    sortType?: "newest" | "oldest";
   },
   enabled = true,
 ) =>
