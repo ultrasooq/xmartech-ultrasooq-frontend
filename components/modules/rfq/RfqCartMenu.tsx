@@ -63,6 +63,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
 
         {memoizedRfqCartList.map((item: any) => (
           <RfqCartMenuCard
+            key={item?.id}
             id={item?.id}
             productName={item?.rfqProductDetails?.rfqProductName}
             productQuantity={item.quantity}
