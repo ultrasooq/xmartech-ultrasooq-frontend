@@ -36,26 +36,22 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
               {list?.map((item: any) => (
                 <TableRow key={item.id}>
                   <TableCell th-name="Product">
-                    <Link href={`/buygroup?id=${item.id}`}>
-                      <figure className="product-image-with-text">
-                        <div className="image-container rounded-lg">
-                          <Image
-                            src={
-                              item?.rfqProductImage &&
-                              validator.isURL(
-                                item.rfqProductImage?.[0].imageName,
-                              )
-                                ? item.rfqProductImage[0].imageName
-                                : "/images/product-placeholder.png"
-                            }
-                            alt="product-image"
-                            height={80}
-                            width={80}
-                          />
-                        </div>
-                        <figcaption>{item?.rfqProductName}</figcaption>
-                      </figure>
-                    </Link>
+                    <figure className="product-image-with-text">
+                      <div className="image-container rounded-lg">
+                        <Image
+                          src={
+                            item?.rfqProductImage &&
+                            validator.isURL(item.rfqProductImage?.[0].imageName)
+                              ? item.rfqProductImage[0].imageName
+                              : "/images/product-placeholder.png"
+                          }
+                          alt="product-image"
+                          height={80}
+                          width={80}
+                        />
+                      </div>
+                      <figcaption>{item?.rfqProductName}</figcaption>
+                    </figure>
                   </TableCell>
                   <TableCell th-name="Category">
                     {item?.categoryName || "-"}
