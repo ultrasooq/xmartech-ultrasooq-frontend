@@ -233,7 +233,7 @@ const RfqPage = () => {
               setIsAddToCartModalOpen(false);
               setSelectedProductId(undefined);
             }}
-            // selectedProductId={selectedProductId}
+            selectedProductId={selectedProductId}
           />
         </DialogContent>
       </Dialog>
