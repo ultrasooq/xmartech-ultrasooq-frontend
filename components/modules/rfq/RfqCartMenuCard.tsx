@@ -44,9 +44,9 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
       <div className="rfq_cart_wrap_content">
         <div className="rfq_cart_wrap_content_top">
           <p>{productName}</p>
-          <div className="pen_gray_icon">
+          {/* <div className="pen_gray_icon">
             <img src="images/pen-gray-icon.png" alt="pen-gray-icon" />
-          </div>
+          </div> */}
         </div>
         <div className="rfq_cart_wrap_content_top_bottom flex-wrap gap-3">
           <div className="qty-up-down-s1-with-rgMenuAction">
