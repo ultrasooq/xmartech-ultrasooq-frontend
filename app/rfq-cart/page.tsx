@@ -132,6 +132,7 @@ const RfqCartPage = () => {
                 <div className="rfq-cart-item-ul">
                   {memoizedRfqCartList.map((item: any) => (
                     <RfqProductCard
+                      key={item?.id}
                       id={item?.id}
                       rfqProductId={item?.rfqProductId}
                       productName={item?.rfqProductDetails?.rfqProductName}
