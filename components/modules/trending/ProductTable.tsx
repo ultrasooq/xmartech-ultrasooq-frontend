@@ -37,7 +37,7 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
               {list?.map((item: TrendingProduct) => (
                 <TableRow key={item.id}>
                   <TableCell th-name="Product">
-                    <Link href={`/buygroup?id=${item.id}`}>
+                    <Link href={`/trending/${item.id}`}>
                       <figure className="product-image-with-text">
                         <div className="image-container rounded-lg">
                           <Image

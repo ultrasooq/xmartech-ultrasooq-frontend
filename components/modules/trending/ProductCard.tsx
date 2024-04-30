@@ -46,7 +46,7 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box  cursor-pointer hover:bg-slate-100">
-        <Link href={`/buygroup?id=${item.id}`}>
+        <Link href={`/trending/${item.id}`}>
           <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
             <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
           </div>
