@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { debounce } from "lodash";
 import {
   useRfqProducts,
@@ -17,15 +17,21 @@ import AddToRfqForm from "@/components/modules/rfq/AddToRfqForm";
 import { useMe } from "@/apis/queries/user.queries";
 import RfqCartMenu from "@/components/modules/rfq/RfqCartMenu";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import { useClickOutside } from "use-events";
 // import CategoryFilterList from "@/components/modules/rfq/CategoryFilterList";
 // import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 
 const RfqPage = () => {
   const { toast } = useToast();
+  const router = useRouter();
+  const wrapperRef = useRef(null);
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
-  const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<number>();
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
+
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
   const handleToggleAddModal = () =>
     setIsAddToCartModalOpen(!isAddToCartModalOpen);
@@ -44,21 +50,6 @@ const RfqPage = () => {
   const handleRfqDebounce = debounce((event: any) => {
     setSearchRfqTerm(event.target.value);
   }, 1000);
-
-  const memoizedRfqProductList = useMemo(() => {
-    return (
-      rfqProductsQuery?.data?.data?.map((item: any) => ({
-        id: item.id,
-        productType: item?.type || "-",
-        productName: item?.rfqProductName || "-",
-        productNote: item?.productNote || "-",
-        productStatus: item?.status,
-        productImages: item?.rfqProductImage || [],
-      })) || []
-    );
-  }, [rfqProductsQuery?.data?.data?.length]);
-
-  // console.log(rfqProductsQuery.data?.data);
 
   const handleAddToCart = async (
     quantity: number,
@@ -81,6 +72,14 @@ const RfqPage = () => {
       });
     }
   };
+
+  const handleCartPage = () => router.push("/rfq-cart");
+
+  useEffect(() => {
+    if (isClickedOutside) {
+      setSelectedProductId(undefined);
+    }
+  }, [isClickedOutside]);
 
   return (
     <section className="rfq_section">
@@ -175,7 +174,7 @@ const RfqPage = () => {
                       </div>
                     ) : null}
 
-                    {!memoizedRfqProductList.length &&
+                    {!rfqProductsQuery?.data?.data?.length &&
                     !rfqProductsQuery.isLoading ? (
                       <p className="text-center text-sm font-medium">
                         No data found
@@ -184,29 +183,38 @@ const RfqPage = () => {
 
                     {viewType === "grid" ? (
                       <div className="product_sec_list">
-                        {memoizedRfqProductList.map((item: any) => (
+                        {rfqProductsQuery?.data?.data?.map((item: any) => (
                           <RfqProductCard
                             key={item.id}
                             id={item.id}
-                            productType={item?.productType || "-"}
-                            productName={item?.productName || "-"}
+                            productType={item?.type || "-"}
+                            productName={item?.rfqProductName || "-"}
                             productNote={item?.productNote || "-"}
-                            productStatus={item?.productStatus}
-                            productImages={item?.productImages}
+                            productStatus={item?.status}
+                            productImages={item?.rfqProductImage}
                             productQuantity={item?.quantity || 0}
                             onAdd={handleAddToCart}
+                            onToCart={handleCartPage}
+                            onEdit={() => {
+                              handleToggleAddModal();
+                              setSelectedProductId(item?.id);
+                            }}
+                            isCreatedByMe={item?.userId === me.data?.data?.id}
                           />
                         ))}
                       </div>
                     ) : null}
 
-                    {viewType === "list" && memoizedRfqProductList.length ? (
+                    {viewType === "list" &&
+                    rfqProductsQuery?.data?.data?.length ? (
                       <div className="product_sec_list">
-                        <RfqProductTable list={memoizedRfqProductList} />
+                        <RfqProductTable list={rfqProductsQuery?.data?.data} />
                       </div>
                     ) : null}
 
-                    {memoizedRfqProductList.length > 10 ? <Pagination /> : null}
+                    {rfqProductsQuery?.data?.data?.length > 10 ? (
+                      <Pagination />
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -216,11 +224,16 @@ const RfqPage = () => {
         </div>
       </div>
       <Dialog open={isAddToCartModalOpen} onOpenChange={handleToggleAddModal}>
-        <DialogContent className="add-new-address-modal gap-0 p-0 md:!max-w-2xl">
+        <DialogContent
+          className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+          ref={wrapperRef}
+        >
           <AddToRfqForm
             onClose={() => {
               setIsAddToCartModalOpen(false);
+              setSelectedProductId(undefined);
             }}
+            selectedProductId={selectedProductId}
           />
         </DialogContent>
       </Dialog>

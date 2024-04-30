@@ -14,6 +14,9 @@ type RfqProductCardProps = {
   }[];
   productQuantity: number;
   onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
+  onToCart: () => void;
+  onEdit: (args0: number) => void;
+  isCreatedByMe: boolean;
 };
 
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
@@ -25,6 +28,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   productImages,
   productQuantity,
   onAdd,
+  onToCart,
+  onEdit,
+  isCreatedByMe,
 }) => {
   const [quantity, setQuantity] = useState(1);
 
@@ -32,7 +38,6 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
     setQuantity(productQuantity || 1);
   }, [productQuantity]);
 
-  console.log(quantity);
   return (
     <div className="product_list_part">
       <div className="product_list_image relative">
@@ -84,13 +89,38 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   className="p-3"
                 />
               </Button>
+              {productType === "R" && isCreatedByMe ? (
+                <Button variant="ghost" onClick={() => onEdit(id)}>
+                  <div className="relative h-6 w-6">
+                    <Image
+                      src="/images/edit-rfq.png"
+                      alt="edit-rfq-icon"
+                      fill
+                    />
+                  </div>
+                </Button>
+              ) : null}
             </div>
           </div>
         </div>
         <div className="cart_button">
-          <button type="button" className="add_to_cart_button">
-            Add To RFQ Cart
-          </button>
+          {false ? (
+            <button
+              type="button"
+              className="add_to_cart_button"
+              onClick={onToCart}
+            >
+              Go To RFQ Cart
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="add_to_cart_button"
+              onClick={() => onAdd(1, id, "add")}
+            >
+              Add To RFQ Cart
+            </button>
+          )}
         </div>
       </div>
     </div>

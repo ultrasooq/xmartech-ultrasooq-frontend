@@ -20,7 +20,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
     limit: 20,
   });
 
-  console.log(rfqCartListByUser.data?.data);
+  // console.log(rfqCartListByUser.data?.data);
   const deleteRfqCartItem = useDeleteRfqCartItem();
 
   const memoizedRfqCartList = useMemo(() => {
@@ -51,7 +51,15 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
         <button type="button">Request For Quote</button>
       </div>
       <div className="rfq_right_bottom">
-        <h4>Your RFQ Cart ({memoizedRfqCartList.length} items)</h4>
+        <h4 className="text-center">
+          Your RFQ Cart ({memoizedRfqCartList.length} items)
+        </h4>
+
+        {!memoizedRfqCartList.length && (
+          <div className="my-10 text-center">
+            <h4>No items in cart</h4>
+          </div>
+        )}
 
         {memoizedRfqCartList.map((item: any) => (
           <RfqCartMenuCard
