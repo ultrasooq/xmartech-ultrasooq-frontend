@@ -332,9 +332,6 @@ const Header = () => {
                   onClick={() => {
                     setMenuId(item.id);
                     setCategoryId(undefined);
-                    // if (item.name.toLowerCase().includes("buy group")) {
-                    //   router.push("/buygroup");
-                    // }
 
                     if (item.name.toLowerCase().includes("store")) {
                       router.push("/trending");

@@ -358,6 +358,7 @@ const MyOrderDetailsPage = ({}) => {
                     productName={item?.orderProduct_product?.productName}
                     offerPrice={item?.orderProduct_product?.offerPrice}
                     productImages={item?.orderProduct_product?.productImages}
+                    sellerName={`${item?.orderProduct_product?.userBy?.firstName} ${item?.orderProduct_product?.userBy?.lastName}`}
                   />
                 ))}
               </div>
