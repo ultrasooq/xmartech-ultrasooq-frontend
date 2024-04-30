@@ -65,6 +65,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
           <RfqCartMenuCard
             key={item?.id}
             id={item?.id}
+            rfqProductId={item?.rfqProductId}
             productName={item?.rfqProductDetails?.rfqProductName}
             productQuantity={item.quantity}
             productImages={item?.rfqProductDetails?.rfqProductImage}

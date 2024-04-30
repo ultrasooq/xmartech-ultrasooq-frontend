@@ -19,17 +19,28 @@ import RfqCartMenu from "@/components/modules/rfq/RfqCartMenu";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useClickOutside } from "use-events";
+import { useCartStore } from "@/lib/rfqStore";
 // import CategoryFilterList from "@/components/modules/rfq/CategoryFilterList";
 // import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const RfqPage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const wrapperRef = useRef(null);
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
   const [selectedProductId, setSelectedProductId] = useState<number>();
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
+  const cart = useCartStore();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
@@ -42,6 +53,7 @@ const RfqPage = () => {
     limit: 40,
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
+    sortType: sortBy,
     // brandIds:
     //   selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
   });
@@ -56,9 +68,6 @@ const RfqPage = () => {
     rfqProductId: number,
     actionType: "add" | "remove",
   ) => {
-    console.log("add to cart:", quantity, rfqProductId, actionType);
-    // return;
-
     const response = await updateRfqCartWithLogin.mutateAsync({
       rfqProductId,
       quantity,
@@ -74,6 +83,26 @@ const RfqPage = () => {
   };
 
   const handleCartPage = () => router.push("/rfq-cart");
+
+  const memoizedRfqProducts = React.useMemo(() => {
+    if (rfqProductsQuery.data?.data) {
+      return (
+        rfqProductsQuery.data?.data.map((item: any) => {
+          return {
+            ...item,
+            isAddedToCart: cart.cart.some(
+              (cartItem) => cartItem.rfqProductId === item.id,
+            ),
+            quantity:
+              cart.cart.find((cartItem) => cartItem.rfqProductId === item.id)
+                ?.quantity || 0,
+          };
+        }) || []
+      );
+    } else {
+      return [];
+    }
+  }, [rfqProductsQuery.data?.data, me?.data?.data, cart.cart]);
 
   useEffect(() => {
     if (isClickedOutside) {
@@ -125,14 +154,24 @@ const RfqPage = () => {
                       </div>
                       <div className="products_sec_top_right">
                         <div className="trending_filter">
-                          <select>
-                            <option>Sort by latest</option>
-                            <option>Price Hight to Low</option>
-                            <option>Price Low to High</option>
-                            <option>Customer Rating</option>
-                            <option>What&apos;s New</option>
-                            <option>Popularity</option>
-                          </select>
+                          <Select
+                            onValueChange={(e: any) => setSortBy(e)}
+                            defaultValue={sortBy}
+                          >
+                            <SelectTrigger className="custom-form-control-s1 bg-white">
+                              <SelectValue placeholder="Sort by" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectItem value="newest">
+                                  Sort by latest
+                                </SelectItem>
+                                <SelectItem value="oldest">
+                                  Sort by oldest
+                                </SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div className="trending_view">
                           <ul>
@@ -176,14 +215,14 @@ const RfqPage = () => {
 
                     {!rfqProductsQuery?.data?.data?.length &&
                     !rfqProductsQuery.isLoading ? (
-                      <p className="text-center text-sm font-medium">
+                      <p className="my-10 text-center text-sm font-medium">
                         No data found
                       </p>
                     ) : null}
 
                     {viewType === "grid" ? (
                       <div className="product_sec_list">
-                        {rfqProductsQuery?.data?.data?.map((item: any) => (
+                        {memoizedRfqProducts.map((item: any) => (
                           <RfqProductCard
                             key={item.id}
                             id={item.id}
@@ -200,6 +239,7 @@ const RfqPage = () => {
                               setSelectedProductId(item?.id);
                             }}
                             isCreatedByMe={item?.userId === me.data?.data?.id}
+                            isAddedToCart={item?.isAddedToCart}
                           />
                         ))}
                       </div>

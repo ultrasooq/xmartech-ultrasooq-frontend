@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/lib/rfqStore";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 
 type RfqCartMenuCardProps = {
   id: number;
+  rfqProductId: number;
   productName: string;
   productQuantity: number;
   productImages: {
@@ -16,12 +18,14 @@ type RfqCartMenuCardProps = {
 
 const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
   id,
+  rfqProductId,
   productName,
   productQuantity,
   productImages,
   onAdd,
   onRemove,
 }) => {
+  const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -56,7 +60,8 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                 className="relative hover:shadow-sm"
                 onClick={() => {
                   setQuantity(quantity - 1);
-                  onAdd(quantity - 1, id, "remove");
+                  onAdd(quantity - 1, rfqProductId, "remove");
+                  cart.updateCart({ quantity: quantity - 1, rfqProductId });
                 }}
                 disabled={quantity === 0}
               >
@@ -73,7 +78,8 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                 className="relative hover:shadow-sm"
                 onClick={() => {
                   setQuantity(quantity + 1);
-                  onAdd(quantity + 1, id, "add");
+                  onAdd(quantity + 1, rfqProductId, "add");
+                  cart.updateCart({ quantity: quantity + 1, rfqProductId });
                 }}
               >
                 <Image
@@ -88,7 +94,10 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
           <Button
             variant="link"
             className="relative hover:shadow-sm"
-            onClick={() => onRemove(id)}
+            onClick={() => {
+              onRemove(id);
+              cart.deleteCartItem(rfqProductId);
+            }}
           >
             Remove
           </Button>
