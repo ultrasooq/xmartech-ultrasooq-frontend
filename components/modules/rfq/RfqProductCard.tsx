@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/lib/rfqStore";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
@@ -17,6 +18,7 @@ type RfqProductCardProps = {
   onToCart: () => void;
   onEdit: (args0: number) => void;
   isCreatedByMe: boolean;
+  isAddedToCart: boolean;
 };
 
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
@@ -31,7 +33,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   onToCart,
   onEdit,
   isCreatedByMe,
+  isAddedToCart,
 }) => {
+  const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -63,8 +67,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 onClick={() => {
                   setQuantity(quantity - 1);
                   onAdd(quantity - 1, id, "remove");
+                  cart.updateCart({ quantity: quantity - 1, rfqProductId: id });
                 }}
-                disabled={quantity === 0}
+                disabled={quantity === 1}
               >
                 <Image
                   src="/images/upDownBtn-minus.svg"
@@ -80,6 +85,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 onClick={() => {
                   setQuantity(quantity + 1);
                   onAdd(quantity + 1, id, "add");
+                  cart.updateCart({ quantity: quantity + 1, rfqProductId: id });
                 }}
               >
                 <Image
@@ -104,7 +110,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
           </div>
         </div>
         <div className="cart_button">
-          {false ? (
+          {isAddedToCart ? (
             <button
               type="button"
               className="add_to_cart_button"
@@ -116,7 +122,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
             <button
               type="button"
               className="add_to_cart_button"
-              onClick={() => onAdd(1, id, "add")}
+              onClick={() => {
+                onAdd(1, id, "add");
+                cart.updateCart({ quantity: 1, rfqProductId: id });
+              }}
             >
               Add To RFQ Cart
             </button>
