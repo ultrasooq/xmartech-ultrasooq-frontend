@@ -1,71 +1,159 @@
-import React from "react";
+"use client";
+import {
+  useDeleteRfqCartItem,
+  useRfqCartListByUserId,
+  useUpdateRfqCartWithLogin,
+} from "@/apis/queries/rfq.queries";
+import RfqProductCard from "@/components/modules/rfqCart/RfqProductCard";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import React, { useMemo } from "react";
 import { MdOutlineChevronLeft } from "react-icons/md";
 
 const RfqCartPage = () => {
-  return <>
-    <section className="rfq_section">
-      <div className="sec-bg">
-        <img src="/images/rfq-sec-bg.png" alt="" />
-      </div>
-      <div className="container mx-auto px-3">
-        <div className="rfq-cart-wrapper">
-          <div className="headerPart">
-            <button type="button" className="back-btn"><MdOutlineChevronLeft /></button>
-            <h3>RFQ Cart Items</h3>
-          </div>
-          <div className="bodyPart">
-            <div className="add-delivery-card">
-              <h3>Add Delivery Address & date</h3>
-              <div className="input-row">
-                <div className="input-col">
-                  <div className="space-y-2 mb-4 w-full">
-                    <label className="text-sm font-medium leading-none 
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const rfqCartListByUser = useRfqCartListByUserId({
+    page: 1,
+    limit: 20,
+  });
+  const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
+  const deleteRfqCartItem = useDeleteRfqCartItem();
+
+  const memoizedRfqCartList = useMemo(() => {
+    if (rfqCartListByUser.data?.data) {
+      return rfqCartListByUser.data?.data || [];
+    }
+    return [];
+  }, [rfqCartListByUser.data?.data]);
+
+  const handleAddToCart = async (
+    quantity: number,
+    rfqProductId: number,
+    actionType: "add" | "remove",
+  ) => {
+    console.log("add to cart:", quantity, rfqProductId, actionType);
+    // return;
+
+    const response = await updateRfqCartWithLogin.mutateAsync({
+      rfqProductId,
+      quantity,
+    });
+
+    if (response.status) {
+      toast({
+        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
+
+  const handleRemoveItemFromRfqCart = async (rfqCartId: number) => {
+    console.log("cart id:", rfqCartId);
+    // return;
+    const response = await deleteRfqCartItem.mutateAsync({ rfqCartId });
+    if (response.status) {
+      toast({
+        title: "Item removed from cart",
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
+
+  // console.log(memoizedRfqCartList);
+
+  return (
+    <>
+      <section className="rfq_section">
+        <div className="sec-bg">
+          <img src="/images/rfq-sec-bg.png" alt="" />
+        </div>
+        <div className="container mx-auto px-3">
+          <div className="rfq-cart-wrapper">
+            <div className="headerPart">
+              <button
+                type="button"
+                className="back-btn"
+                onClick={() => router.back()}
+              >
+                <MdOutlineChevronLeft />
+              </button>
+              <h3>RFQ Cart Items</h3>
+            </div>
+            <div className="bodyPart">
+              <div className="add-delivery-card">
+                <h3>Add Delivery Address & date</h3>
+                <div className="input-row">
+                  <div className="input-col">
+                    <div className="mb-4 w-full space-y-2">
+                      <label
+                        className="text-sm font-medium leading-none 
                     peer-disabled:cursor-not-allowed 
-                    peer-disabled:opacity-70">Address</label>
-                    <div className="relative">
-                      <select className="
-                      theme-form-control-s1 select1">
-                        <option>Address</option>
-                      </select>
+                    peer-disabled:opacity-70"
+                      >
+                        Address
+                      </label>
+                      <div className="relative">
+                        <select
+                          className="
+                      theme-form-control-s1 select1"
+                        >
+                          <option>Address</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="input-col">
-                  <div className="space-y-2 mb-4 w-full">
-                    <label className="text-sm font-medium leading-none 
+                  <div className="input-col">
+                    <div className="mb-4 w-full space-y-2">
+                      <label
+                        className="text-sm font-medium leading-none 
                     peer-disabled:cursor-not-allowed 
-                    peer-disabled:opacity-70">Date</label>
-                    <div className="relative">
-                      <input className="
-                      theme-form-control-s1" placeholder="Select date" />
+                    peer-disabled:opacity-70"
+                      >
+                        Date
+                      </label>
+                      <div className="relative">
+                        <input
+                          className="
+                      theme-form-control-s1"
+                          placeholder="Select date"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="rfq-cart-item-lists">
-              <h4>RFQ Cart Items</h4>
-              <div className="rfq-cart-item-ul">
-                <div className="rfq-cart-item-li">
-                  <figure>
-                    <div className="image-container">
-                      <img src="images/pro-6.png" alt="pro-6" />
-                    </div>
-                    <figcaption>
-                      <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.. </h5>
-                      
-                    </figcaption>
-                  </figure>
+              <div className="rfq-cart-item-lists">
+                <h4>RFQ Cart Items</h4>
+                <div className="rfq-cart-item-ul">
+                  {memoizedRfqCartList.map((item: any) => (
+                    <RfqProductCard
+                      id={item?.id}
+                      rfqProductId={item?.rfqProductId}
+                      productName={item?.rfqProductDetails?.rfqProductName}
+                      productQuantity={item.quantity}
+                      productImages={item?.rfqProductDetails?.rfqProductImage}
+                      onAdd={handleAddToCart}
+                      onRemove={handleRemoveItemFromRfqCart}
+                    />
+                  ))}
                 </div>
               </div>
+              <div className="submit-action">
+                <button type="button" className="theme-primary-btn submit-btn">
+                  Request For RFQ
+                </button>
+              </div>
             </div>
-
           </div>
         </div>
-      </div>
-    </section>
-  </>;
+      </section>
+    </>
+  );
 };
 
 export default RfqCartPage;

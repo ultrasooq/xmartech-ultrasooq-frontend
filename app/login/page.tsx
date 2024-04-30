@@ -64,6 +64,7 @@ export default function LoginPage() {
       // store in cookie
       setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
 
+      // TODO: delete cart for trade role freelancer and company if logged in using device id
       // update cart
       await updateCart.mutateAsync({ deviceId });
       toast({

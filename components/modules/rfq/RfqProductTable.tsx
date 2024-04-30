@@ -41,9 +41,11 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
                         <div className="image-container rounded-lg">
                           <Image
                             src={
-                              item?.productImages &&
-                              validator.isURL(item.productImages?.[0].imageName)
-                                ? item.productImages[0].imageName
+                              item?.rfqProductImage &&
+                              validator.isURL(
+                                item.rfqProductImage?.[0].imageName,
+                              )
+                                ? item.rfqProductImage[0].imageName
                                 : "/images/product-placeholder.png"
                             }
                             alt="product-image"
@@ -51,7 +53,7 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
                             width={80}
                           />
                         </div>
-                        <figcaption>{item?.productName}</figcaption>
+                        <figcaption>{item?.rfqProductName}</figcaption>
                       </figure>
                     </Link>
                   </TableCell>

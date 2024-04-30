@@ -151,7 +151,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({ onClose }) => {
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          Add to RFQ Cart
+          Add New RFQ Product
         </DialogTitle>
         <Button
           onClick={onClose}
