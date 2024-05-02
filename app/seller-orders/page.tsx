@@ -1,0 +1,274 @@
+"use client";
+import React, { useRef, useState } from "react";
+import { useOrdersBySellerId } from "@/apis/queries/orders.queries";
+import { FiSearch } from "react-icons/fi";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+import OrderCard from "@/components/modules/sellerOrders/OrderCard";
+import { debounce } from "lodash";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { v4 as uuidv4 } from "uuid";
+
+const SellerOrdersPage = () => {
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [orderStatus, setOrderStatus] = useState<string>("");
+  const [orderTime, setOrderTime] = useState<string>("");
+
+  const getYearDates = (
+    input: string,
+  ): { startDate: string; endDate: string } => {
+    const currentDate = new Date();
+
+    if (input === "last30") {
+      const startDate = new Date(currentDate);
+      startDate.setDate(currentDate.getDate() - 30);
+      const endDate = currentDate;
+
+      return {
+        startDate: startDate.toISOString().slice(0, 10),
+        endDate: endDate.toISOString().slice(0, 10) + " 23:59:59",
+      };
+    }
+
+    if (input === "older") {
+      const startDate = new Date(currentDate.getFullYear() - 20, 0, 1);
+      const endDate = new Date(currentDate.getFullYear() - 1, 11, 31);
+
+      return {
+        startDate: `${startDate.getFullYear()}-01-01`,
+        endDate: `${endDate.getFullYear()}-12-31`,
+      };
+    }
+
+    const yearNumber = Number(input);
+    if (isNaN(yearNumber) || yearNumber < 1000 || yearNumber > 9999) {
+      return { startDate: "", endDate: "" };
+    }
+
+    const startDate = `${yearNumber}-01-01`;
+    const endDate = `${yearNumber}-12-31`;
+
+    return {
+      startDate,
+      endDate,
+    };
+  };
+
+  const ordersBySellerIdQuery = useOrdersBySellerId({
+    page: 1,
+    limit: 40,
+    term: searchTerm !== "" ? searchTerm : undefined,
+    orderProductStatus: orderStatus,
+  });
+
+  const handleDebounce = debounce((event: any) => {
+    setSearchTerm(event.target.value);
+  }, 1000);
+
+  const handleClearSearch = () => {
+    if (searchRef.current) {
+      searchRef.current.value = "";
+    }
+    setSearchTerm("");
+  };
+
+  const handleClearFilter = () => {
+    setOrderStatus("");
+    setOrderTime("");
+  };
+
+  return (
+    <div className="my-order-main">
+      <div className="container m-auto px-3">
+        {/* <ul className="page-indicator-s1">
+          <li>
+            <a href="#">Home</a>
+          </li>
+          <li>
+            <a href="#">My Account</a>
+          </li>
+          <li>My Orders</li>
+        </ul> */}
+
+        <div className="my-order-wrapper">
+          <div className="left-div">
+            <div className="card-box">
+              <h2>Filter</h2>
+              <h3>Order Status</h3>
+
+              <RadioGroup
+                className="flex flex-col gap-y-3"
+                value={orderStatus}
+                onValueChange={setOrderStatus}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="CONFIRMED" id="CONFIRMED" />
+                  <Label htmlFor="CONFIRMED" className="text-base">
+                    Confirmed
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="SHIPPED" id="SHIPPED" />
+                  <Label htmlFor="SHIPPED" className="text-base">
+                    Shipped
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="OFD" id="OFD" />
+                  <Label htmlFor="OFD" className="text-base">
+                    On the way
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="DELIVERED" id="DELIVERED" />
+                  <Label htmlFor="DELIVERED" className="text-base">
+                    Delivered
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="CANCELLED" id="CANCELLED" />
+                  <Label htmlFor="CANCELLED" className="text-base">
+                    Cancelled
+                  </Label>
+                </div>
+              </RadioGroup>
+
+              <div className="divider"></div>
+
+              <h3>Order time</h3>
+
+              <RadioGroup
+                className="flex flex-col gap-y-3"
+                value={orderTime}
+                onValueChange={setOrderTime}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="last30" id="last30" />
+                  <Label htmlFor="last30" className="text-base">
+                    Last 30 days
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2023" id="2023" />
+                  <Label htmlFor="2023" className="text-base">
+                    2023
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2022" id="2022" />
+                  <Label htmlFor="2022" className="text-base">
+                    2022
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2021" id="2021" />
+                  <Label htmlFor="2021" className="text-base">
+                    2021
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2020" id="2020" />
+                  <Label htmlFor="2020" className="text-base">
+                    2020
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="older" id="older" />
+                  <Label htmlFor="older" className="text-base">
+                    Older
+                  </Label>
+                </div>
+              </RadioGroup>
+
+              <div className="divider"></div>
+
+              <div className="mt-4 text-center">
+                <Button variant="outline" onClick={handleClearFilter}>
+                  Clear Filter
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="right-div">
+            <div className="order-search-bar flex w-full">
+              <div className="relative flex flex-1">
+                <input
+                  type="text"
+                  className="custom-form-control-s1 !w-full"
+                  placeholder="Search..."
+                  onChange={handleDebounce}
+                  ref={searchRef}
+                />
+                {searchTerm !== "" ? (
+                  <Button
+                    variant="ghost"
+                    className="absolute right-0 h-full hover:bg-transparent"
+                    onClick={handleClearSearch}
+                  >
+                    <IoIosCloseCircleOutline size={24} />
+                  </Button>
+                ) : null}
+              </div>
+              <button type="button" className="search-btn theme-primary-btn">
+                <FiSearch />
+                Search Orders
+              </button>
+            </div>
+            <div className="my-order-lists">
+              {ordersBySellerIdQuery.isLoading
+                ? Array.from({ length: 3 }, (_, i) => i).map((item) => (
+                    <div key={uuidv4()} className="mb-3 flex gap-x-3">
+                      <Skeleton className="h-28 w-32" />
+                      <div className="h-28 flex-1 space-y-2">
+                        <Skeleton className="h-8" />
+                        <Skeleton className="h-8" />
+                        <Skeleton className="h-8" />
+                      </div>
+                    </div>
+                  ))
+                : null}
+
+              {!ordersBySellerIdQuery.isLoading &&
+              !ordersBySellerIdQuery?.data?.data?.length ? (
+                <div className="w-full p-3">
+                  <p className="text-center text-lg font-semibold">
+                    No orders found
+                  </p>
+                </div>
+              ) : null}
+
+              {ordersBySellerIdQuery?.data?.data?.map(
+                (item: {
+                  id: number;
+                  purchasePrice: string;
+                  orderProduct_product: {
+                    productName: string;
+                    productImages: { id: number; image: string }[];
+                  };
+                  orderProductStatus: string;
+                  orderProductDate: string;
+                }) => (
+                  <OrderCard
+                    key={item.id}
+                    id={item.id}
+                    purchasePrice={item.purchasePrice}
+                    productName={item.orderProduct_product?.productName}
+                    produtctImage={item.orderProduct_product?.productImages}
+                    orderStatus={item.orderProductStatus}
+                    orderDate={item.orderProductDate}
+                  />
+                ),
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SellerOrdersPage;
