@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { APIResponseError } from "@/utils/types/common.types";
-import { addReview, fetchReviews } from "../requests/review.requests";
+import {
+  addReview,
+  fetchAllReviewBySellerId,
+  fetchReviews,
+} from "../requests/review.requests";
 
 export const useReviews = (
   payload: {
@@ -44,3 +48,23 @@ export const useAddReview = () => {
     },
   });
 };
+
+export const useReviewsForSeller = (
+  payload: {
+    page: number;
+    limit: number;
+    sortType?: "highest" | "lowest" | "newest";
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["reviews-for-seller", payload],
+    queryFn: async () => {
+      const res = await fetchAllReviewBySellerId(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });

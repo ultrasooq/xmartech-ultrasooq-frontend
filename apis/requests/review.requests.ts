@@ -35,3 +35,22 @@ export const addReview = (payload: {
     },
   });
 };
+
+export const fetchAllReviewBySellerId = (payload: {
+  page: number;
+  limit: number;
+  sortType?: "highest" | "lowest" | "newest";
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProductReviewBySellerId`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import Image from "next/image";
 import ProfileCard from "@/components/modules/freelancerProfileDetails/ProfileCard";
 import InformationSection from "@/components/modules/freelancerProfileDetails/InformationSection";
-import ReviewSection from "@/components/shared/ReviewSection";
+import ReviewSection from "@/components/modules/freelancerProfileDetails/ReviewSection";
 import MoreInformationSection from "@/components/modules/freelancerProfileDetails/MoreInformationSection";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -115,7 +115,7 @@ export default function FreelancerProfileDetailsPage() {
               </TabsContent>
               <TabsContent value="ratings" className="mt-0">
                 <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                  <ReviewSection productReview={[]} />
+                  <ReviewSection />
                 </div>
               </TabsContent>
               <TabsContent value="products" className="mt-0">

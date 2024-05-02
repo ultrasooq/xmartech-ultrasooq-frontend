@@ -4,7 +4,7 @@ import BranchSection from "@/components/modules/companyProfileDetails/BranchSect
 import InformationSection from "@/components/modules/companyProfileDetails/InformationSection";
 import MoreInformationSection from "@/components/modules/companyProfileDetails/MoreInformationSection";
 import ProfileCard from "@/components/modules/companyProfileDetails/ProfileCard";
-import ReviewSection from "@/components/shared/ReviewSection";
+import ReviewSection from "@/components/modules/freelancerProfileDetails/ReviewSection";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
@@ -145,7 +145,8 @@ export default function CompanyProfileDetailsPage() {
               </TabsContent>
               <TabsContent value="ratings" className="mt-0">
                 <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                  <ReviewSection productReview={[]} />
+                  {/* importing from freelancer details module */}
+                  <ReviewSection />
                 </div>
               </TabsContent>
               <TabsContent value="products" className="mt-0">

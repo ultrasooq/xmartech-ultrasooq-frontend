@@ -127,7 +127,7 @@ const MyOrderDetailsPage = ({}) => {
             <div className="right-div mx-w-100">
               <div className="my-order-lists for-delivery-address">
                 {orderByIdQuery.isLoading ? (
-                  <Skeleton className="h-52" />
+                  <Skeleton className="h-44" />
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
@@ -185,7 +185,7 @@ const MyOrderDetailsPage = ({}) => {
                 )}
 
                 {orderByIdQuery.isLoading ? (
-                  <Skeleton className="h-40" />
+                  <Skeleton className="h-44" />
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
@@ -297,10 +297,13 @@ const MyOrderDetailsPage = ({}) => {
                           </div>
                         </div>
                         <div className="right-info">
-                          <a href="#" className="ratingLink mt-0">
-                            <PiStarFill />
-                            Rate & Review Product
-                          </a>
+                          {orderByIdQuery?.data?.data?.orderProductStatus ===
+                          "DELIVERED" ? (
+                            <a href="#" className="ratingLink mt-0">
+                              <PiStarFill />
+                              Rate & Review Product
+                            </a>
+                          ) : null}
                           <a href="#" className="ratingLink">
                             <MdHelpCenter />
                             Need Help?
@@ -356,7 +359,7 @@ const MyOrderDetailsPage = ({}) => {
                 )}
 
                 {orderByIdQuery.isLoading ? (
-                  <Skeleton className="h-40" />
+                  <Skeleton className="h-52" />
                 ) : null}
 
                 {otherOrderDetails?.map((item: any) => (

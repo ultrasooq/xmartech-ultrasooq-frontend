@@ -12,6 +12,7 @@ import ControlledTextareaInput from "./Forms/ControlledTextareaInput";
 import Ratings from "./Ratings";
 import { useToast } from "../ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
 type ReviewFormProps = {
   onClose: () => void;
@@ -34,6 +35,7 @@ const formSchema = z.object({
 });
 
 const ReviewForm: React.FC<ReviewFormProps> = ({ onClose }) => {
+  const searchParams = useParams();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
@@ -44,14 +46,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose }) => {
       rating: 0,
     },
   });
-  const [activeProductId, setActiveProductId] = useState<string | null>();
-
   const addReview = useAddReview();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const updatedFormData = {
       ...formData,
-      productId: Number(activeProductId),
+      productId: Number(searchParams?.id),
     };
 
     console.log(updatedFormData);
@@ -60,7 +60,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose }) => {
     const response = await addReview.mutateAsync(updatedFormData, {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["product-by-id", activeProductId],
+          queryKey: ["product-by-id", searchParams?.id],
         });
         queryClient.refetchQueries({
           queryKey: ["all-products", { page: 1, limit: 40 }],
@@ -84,12 +84,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose }) => {
       });
     }
   };
-
-  useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let productId = params.get("id");
-    setActiveProductId(productId);
-  }, []);
 
   return (
     <div>

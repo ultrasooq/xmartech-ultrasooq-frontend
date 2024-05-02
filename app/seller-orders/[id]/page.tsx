@@ -127,7 +127,7 @@ const MyOrderDetailsPage = ({}) => {
             <div className="right-div mx-w-100">
               <div className="my-order-lists for-delivery-address">
                 {orderByIdQuery.isLoading ? (
-                  <Skeleton className="h-52" />
+                  <Skeleton className="h-44" />
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
@@ -185,7 +185,7 @@ const MyOrderDetailsPage = ({}) => {
                 )}
 
                 {orderByIdQuery.isLoading ? (
-                  <Skeleton className="h-40" />
+                  <Skeleton className="h-44" />
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
@@ -352,7 +352,7 @@ const MyOrderDetailsPage = ({}) => {
                 )}
 
                 {orderByIdQuery.isLoading ? (
-                  <Skeleton className="h-40" />
+                  <Skeleton className="h-52" />
                 ) : null}
 
                 {otherOrderDetails?.map((item: any) => (
