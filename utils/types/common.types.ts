@@ -58,6 +58,7 @@ export interface TrendingProduct {
   productReview: {
     rating: number;
   }[];
+  status: string;
 }
 
 export type ProductImageProps = {

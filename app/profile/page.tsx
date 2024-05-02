@@ -608,7 +608,7 @@ export default function ProfilePage() {
                               )}
                               <div className="wrap relative flex break-all">
                                 <p
-                                  className="min-w-auto flex max-w-[80%] items-center overflow-hidden pl-1 pr-1 text-left"
+                                  className="min-w-auto flex max-w-[240px] items-center overflow-hidden truncate pl-1 pr-1 text-left"
                                   title={watchSocialMedia[index]?.link}
                                 >
                                   {watchSocialMedia[index]?.link}
@@ -715,6 +715,7 @@ export default function ProfilePage() {
                                         alt="profile"
                                         fill
                                         priority
+                                        className="object-contain"
                                       />
                                     ) : (
                                       <AddImageContent description="Drop your Identify proof here, or " />
@@ -797,6 +798,7 @@ export default function ProfilePage() {
                                         alt="profile"
                                         fill
                                         priority
+                                        className="object-contain"
                                       />
                                     ) : (
                                       <AddImageContent description="Drop your Identify proof here, or " />

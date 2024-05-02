@@ -1494,7 +1494,7 @@
   }
 
   .my-order-lists {
-    @apply flex flex-col gap-y-6;
+    @apply flex flex-col gap-y-5;
   }
 
   .my-order-lists .my-order-card {

@@ -1,20 +1,17 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { useOrders } from "@/apis/queries/orders.queries";
+import { useOrdersBySellerId } from "@/apis/queries/orders.queries";
 import { FiSearch } from "react-icons/fi";
-// import { BiSolidCircle } from "react-icons/bi";
-// import { PiStarFill } from "react-icons/pi";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-import OrderCard from "@/components/modules/myOrders/OrderCard";
+import OrderCard from "@/components/modules/sellerOrders/OrderCard";
 import { debounce } from "lodash";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMe } from "@/apis/queries/user.queries";
 import { v4 as uuidv4 } from "uuid";
 
-const MyOrdersPage = () => {
+const SellerOrdersPage = () => {
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderStatus, setOrderStatus] = useState<string>("");
@@ -60,7 +57,7 @@ const MyOrdersPage = () => {
     };
   };
 
-  const ordersQuery = useOrders({
+  const ordersBySellerIdQuery = useOrdersBySellerId({
     page: 1,
     limit: 40,
     term: searchTerm !== "" ? searchTerm : undefined,
@@ -236,7 +233,7 @@ const MyOrdersPage = () => {
               </button>
             </div>
             <div className="my-order-lists">
-              {ordersQuery.isLoading
+              {ordersBySellerIdQuery.isLoading
                 ? Array.from({ length: 3 }, (_, i) => i).map((item) => (
                     <div key={uuidv4()} className="mb-3 flex gap-x-3">
                       <Skeleton className="h-28 w-32" />
@@ -249,7 +246,8 @@ const MyOrdersPage = () => {
                   ))
                 : null}
 
-              {!ordersQuery.isLoading && !ordersQuery?.data?.data?.length ? (
+              {!ordersBySellerIdQuery.isLoading &&
+              !ordersBySellerIdQuery?.data?.data?.length ? (
                 <div className="w-full p-3">
                   <p className="text-center text-lg font-semibold">
                     No orders found
@@ -257,7 +255,7 @@ const MyOrdersPage = () => {
                 </div>
               ) : null}
 
-              {ordersQuery?.data?.data?.map(
+              {ordersBySellerIdQuery?.data?.data?.map(
                 (item: {
                   id: number;
                   purchasePrice: string;
@@ -287,4 +285,4 @@ const MyOrdersPage = () => {
   );
 };
 
-export default MyOrdersPage;
+export default SellerOrdersPage;

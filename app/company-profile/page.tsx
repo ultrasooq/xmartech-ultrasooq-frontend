@@ -421,6 +421,7 @@ export default function CompanyProfilePage() {
                                   alt="profile"
                                   fill
                                   priority
+                                  className="object-contain"
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
@@ -639,6 +640,7 @@ export default function CompanyProfilePage() {
                                   alt="profile"
                                   fill
                                   priority
+                                  className="object-contain"
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
@@ -715,6 +717,7 @@ export default function CompanyProfilePage() {
                                   alt="profile"
                                   fill
                                   priority
+                                  className="object-contain"
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">

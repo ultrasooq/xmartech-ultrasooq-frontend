@@ -137,7 +137,7 @@ const ProductListPage = () => {
 
           <CardContent className="main-content">
             <Card className="main-content-card">
-              <div className="table-responsive theme-table-s1">
+              <div className="table-responsive theme-table-s1 min-h-[400px]">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -228,20 +228,20 @@ const ProductListPage = () => {
 
                 {productsQuery?.isLoading ? (
                   <div className="my-2 space-y-2">
-                    {Array.from({ length: 5 }).map((_, i) => (
+                    {Array.from({ length: 2 }).map((_, i) => (
                       <Skeleton key={i} className="h-24 w-full" />
                     ))}
                   </div>
                 ) : null}
 
-                {!memoizedProducts.length && !memoizedProducts.isLoading ? (
+                {!memoizedProducts.length && !productsQuery.isLoading ? (
                   <p className="py-10 text-center text-sm font-medium">
                     No Product Found
                   </p>
                 ) : null}
-              </div>
 
-              {memoizedProducts.length > 10 ? <Pagination /> : null}
+                {memoizedProducts.length > 10 ? <Pagination /> : null}
+              </div>
             </Card>
           </CardContent>
         </Card>

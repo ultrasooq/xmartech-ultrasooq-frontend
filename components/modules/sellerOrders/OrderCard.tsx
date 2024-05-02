@@ -25,7 +25,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   orderDate,
 }) => {
   return (
-    <Link href={`/my-orders/${id}`}>
+    <Link href={`/seller-orders/${id}`}>
       <div className="my-order-card">
         <div className="my-order-box">
           <figure>
@@ -67,10 +67,6 @@ const OrderCard: React.FC<OrderCardProps> = ({
                 ? "Your order has been placed"
                 : "Your Item has been delivered"}
             </p>
-            <Button variant="ghost" className="ratingLink">
-              <PiStarFill />
-              Rate & Review Product
-            </Button>
           </div>
         </div>
       </div>

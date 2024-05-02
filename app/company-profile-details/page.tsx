@@ -7,14 +7,26 @@ import ProfileCard from "@/components/modules/companyProfileDetails/ProfileCard"
 import ReviewSection from "@/components/shared/ReviewSection";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ServicesSection from "@/components/shared/ServicesSection";
+// import ServicesSection from "@/components/shared/ServicesSection";
 import { PlusIcon } from "@radix-ui/react-icons";
+import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
+import { stripHTML } from "@/utils/helper";
+import { useProducts } from "@/apis/queries/product.queries";
 
 export default function CompanyProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
+  const productsQuery = useProducts(
+    {
+      userId: String(userDetails?.data?.data?.id),
+      page: 1,
+      limit: 10,
+      status: "ALL",
+    },
+    !!userDetails?.data?.data?.id,
+  );
 
   const handleCompanyProfilePage = () => router.push("/profile");
   const handleAddCompanyBranchPage = () =>
@@ -25,6 +37,28 @@ export default function CompanyProfileDetailsPage() {
     );
   const handleEditCompanyBranchPage = (branchId: number) =>
     router.push(`/company-profile/edit-branch?branchId=${branchId}`);
+
+  const memoizedProducts = useMemo(() => {
+    return (
+      productsQuery.data?.data?.map((item: any) => {
+        return {
+          id: item?.id,
+          productName: item?.productName || "-",
+          productPrice: item?.productPrice || 0,
+          offerPrice: item?.offerPrice || 0,
+          productImage: item?.productImages?.[0]?.image,
+          categoryName: item?.category?.name || "-",
+          skuNo: item?.skuNo,
+          brandName: item?.brand?.brandName || "-",
+          productReview: item?.productReview || [],
+          shortDescription: item?.shortDescription
+            ? stripHTML(item?.shortDescription)
+            : "-",
+          status: item?.status || "-",
+        };
+      }) || []
+    );
+  }, [productsQuery.data?.data]);
 
   return (
     <section className="relative w-full py-7">
@@ -52,7 +86,7 @@ export default function CompanyProfileDetailsPage() {
 
           <div className="mt-12 w-full">
             <Tabs defaultValue="profile-info">
-              <TabsList className="flex h-auto w-full flex-wrap gap-x-6 rounded-none bg-transparent px-0 pt-7 sm:grid sm:min-h-[80px] sm:w-[560px] sm:grid-cols-3">
+              <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
                 <TabsTrigger
                   value="profile-info"
                   className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
@@ -116,7 +150,8 @@ export default function CompanyProfileDetailsPage() {
               </TabsContent>
               <TabsContent value="products" className="mt-0">
                 <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                  <ServicesSection />
+                  {/* importing from freelancer details module */}
+                  <ProductsSection list={memoizedProducts} />
                 </div>
               </TabsContent>
             </Tabs>

@@ -14,7 +14,7 @@ import { useOrderById } from "@/apis/queries/orders.queries";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import OtherItemCard from "@/components/modules/myOrderDetails/OtherItemCard";
+import OtherItemCard from "@/components/modules/sellerOrderDetails/OtherItemCard";
 import UpdateProductStatusForm from "@/components/modules/myOrderDetails/UpdateProductStatusForm";
 import { useMe } from "@/apis/queries/user.queries";
 import { Progress } from "@/components/ui/progress";
@@ -297,10 +297,6 @@ const MyOrderDetailsPage = ({}) => {
                           </div>
                         </div>
                         <div className="right-info">
-                          <a href="#" className="ratingLink mt-0">
-                            <PiStarFill />
-                            Rate & Review Product
-                          </a>
                           <a href="#" className="ratingLink">
                             <MdHelpCenter />
                             Need Help?

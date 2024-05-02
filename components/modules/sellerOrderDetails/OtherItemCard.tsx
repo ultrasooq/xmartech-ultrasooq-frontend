@@ -21,7 +21,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   orderNo,
 }) => {
   return (
-    <Link href={`/my-orders/${id}`}>
+    <Link href={`/seller-orders/${id}`}>
       <div className="my-order-item">
         <div className="my-order-card">
           <div className="cardTitle !mb-2">Other Items in this order</div>
