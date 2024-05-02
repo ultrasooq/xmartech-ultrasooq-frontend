@@ -245,3 +245,41 @@ export const SIZE_LIST: { label: string; value: string }[] = [
     value: "small",
   },
 ];
+
+export const DELIVERY_STATUS: { [key: string]: string } = {
+  CONFIRMED: "Your order has been placed",
+  SHIPPED: "Your order has been shipped",
+  OFD: "Your order is out for delivery",
+  DELIVERED: "Your order has been delivered",
+  CANCELLED: "Your order has been cancelled",
+};
+
+export const STATUS_LIST: { label: string; value: string }[] = [
+  {
+    label: "Confirmed",
+    value: "CONFIRMED",
+  },
+  {
+    label: "Shipped",
+    value: "SHIPPED",
+  },
+  {
+    label: "On the way",
+    value: "OFD",
+  },
+  {
+    label: "Delivered",
+    value: "DELIVERED",
+  },
+  {
+    label: "Cancelled",
+    value: "CANCELLED",
+  },
+];
+
+export const formattedDate = (formatDate: string) =>
+  new Date(formatDate).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });

@@ -1518,7 +1518,7 @@
   }
 
   .my-order-lists .my-order-box figure {
-    @apply flex items-start gap-x-3 w-3/5;
+    @apply flex items-start gap-x-3 flex-1;
   }
 
   .my-order-lists .my-order-box figure .image-container {
