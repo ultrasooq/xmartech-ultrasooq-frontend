@@ -2,6 +2,7 @@ import Image from "next/image";
 import React, { useMemo } from "react";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
+import { Button } from "../ui/button";
 
 type UserRatingCardProps = {
   rating: number;
@@ -10,6 +11,8 @@ type UserRatingCardProps = {
   date: string;
   name: string;
   profilePicture: string;
+  isBuyer: boolean;
+  onEdit: () => void;
 };
 
 const UserRatingCard: React.FC<UserRatingCardProps> = ({
@@ -19,6 +22,8 @@ const UserRatingCard: React.FC<UserRatingCardProps> = ({
   date,
   name,
   profilePicture,
+  isBuyer,
+  onEdit,
 }) => {
   function getRelativeTime(dateString: string): string {
     const date = new Date(dateString);
@@ -103,12 +108,16 @@ const UserRatingCard: React.FC<UserRatingCardProps> = ({
         <div className="w-[calc(100%_-_3rem)] pl-3.5 text-sm font-normal leading-5 text-gray-500">
           <div className="flex w-full items-start justify-between">
             <h4 className="text-base font-semibold text-color-dark">{name}</h4>
-            <Image
-              src="/images/review-dot.svg"
-              alt="review-dot-icon"
-              height={21}
-              width={21}
-            />
+            {isBuyer ? (
+              <Button variant="ghost" className="p-2" onClick={onEdit}>
+                <Image
+                  src="/images/edit-rfq.png"
+                  alt="review-dot-icon"
+                  height={21}
+                  width={21}
+                />
+              </Button>
+            ) : null}
           </div>
           <div className="w-full">
             <h5 className="mb-1 text-xs font-normal text-gray-500">1 review</h5>

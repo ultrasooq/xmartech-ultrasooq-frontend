@@ -1,7 +1,8 @@
+import { formattedDate } from "@/utils/constants";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { BiSolidCircle } from "react-icons/bi";
+import { BiSolidCircle, BiCircle } from "react-icons/bi";
 
 type OtherItemCardProps = {
   id: number;
@@ -10,6 +11,9 @@ type OtherItemCardProps = {
   productImages?: { id: number; image: string }[];
   sellerName?: string;
   orderNo: string;
+  orderProductDate: string;
+  orderProductStatus: string;
+  updatedAt: string;
 };
 
 const OtherItemCard: React.FC<OtherItemCardProps> = ({
@@ -19,6 +23,9 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   productImages,
   sellerName,
   orderNo,
+  orderProductDate,
+  orderProductStatus,
+  updatedAt,
 }) => {
   return (
     <Link href={`/seller-orders/${id}`}>
@@ -51,10 +58,43 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
               </figcaption>
             </figure>
             <div className="right-info">
-              <h4>
-                <BiSolidCircle color="green" /> Delivered on Mar 21
+              <h4 className="mb-2">
+                {orderProductStatus === "CONFIRMED" ? (
+                  <>
+                    <BiCircle color="green" />
+                    Placed on{" "}
+                    {orderProductDate ? formattedDate(orderProductDate) : ""}
+                  </>
+                ) : null}
+
+                {orderProductStatus === "SHIPPED" ? (
+                  <>
+                    <BiCircle color="green" />
+                    Shipped on {updatedAt ? formattedDate(updatedAt) : ""}
+                  </>
+                ) : null}
+
+                {orderProductStatus === "OFD" ? (
+                  <>
+                    <BiCircle color="green" /> Out for delivery{" "}
+                    {updatedAt ? formattedDate(updatedAt) : ""}
+                  </>
+                ) : null}
+
+                {orderProductStatus === "DELIVERED" ? (
+                  <>
+                    <BiSolidCircle color="green" /> Delivered on{" "}
+                    {updatedAt ? formattedDate(updatedAt) : ""}
+                  </>
+                ) : null}
+
+                {orderProductStatus === "CANCELLED" ? (
+                  <>
+                    <BiSolidCircle color="red" /> Cancelled on{" "}
+                    {updatedAt ? formattedDate(updatedAt) : ""}
+                  </>
+                ) : null}
               </h4>
-              <p>Return policy ended on Mar 28</p>
             </div>
           </div>
         </div>

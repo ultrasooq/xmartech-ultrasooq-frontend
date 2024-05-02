@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +35,6 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId }) => {
       answer: "",
     },
   });
-  const [activeProductId, setActiveProductId] = useState<string | null>();
 
   const updateAnswer = useUpdateAnswer();
 
@@ -62,12 +61,6 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId }) => {
       });
     }
   };
-
-  useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let productId = params.get("id");
-    setActiveProductId(productId);
-  }, []);
 
   return (
     <div>

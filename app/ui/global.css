@@ -1518,7 +1518,7 @@
   }
 
   .my-order-lists .my-order-box figure {
-    @apply flex items-start gap-x-3 w-3/5;
+    @apply flex items-start gap-x-3 flex-1;
   }
 
   .my-order-lists .my-order-box figure .image-container {
@@ -1696,7 +1696,8 @@
     @apply flex-auto text-center overflow-hidden p-2.5;
   }
 
-  .order-delivery-progess-s1 ul li .orderStatusText {
+  .order-delivery-progess-s1 ul li .orderStatusText, 
+  .order-delivery-progess-s1 ul li .orderStatusCancelledText {
     @apply text-xs font-semibold;
   }
 
@@ -1722,6 +1723,18 @@
 
   .mt-0 {
     margin-top: 0 !important;
+  }
+
+  .order-delivery-progess-s1 ul li.complted .orderStatusCancelledText {
+    @apply text-red-500;
+  }
+
+  .order-delivery-progess-s1 ul li.current .orderStatusCancelledText {
+    @apply text-red-500;
+  }
+
+  .order-delivery-progess-s1 ul li.complted .dot-cancelled {
+    @apply bg-red-500;
   }
 
   .order-delivery-progess-s1 ul li.complted .orderStatusText {

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+// import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -7,6 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useUpdateProductStatus } from "@/apis/queries/orders.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { STATUS_LIST } from "@/utils/constants";
 
 type UpdateProductStatusFormProps = {
   orderProductId: string;
@@ -21,29 +22,6 @@ const formSchema = z.object({
     .min(2, { message: "Status is required" })
     .max(50, { message: "Status must be less than 50 characters" }),
 });
-
-const STATUS_LIST = [
-  {
-    label: "Confirmed",
-    value: "CONFIRMED",
-  },
-  {
-    label: "Shipped",
-    value: "SHIPPED",
-  },
-  {
-    label: "On the way",
-    value: "OFD",
-  },
-  {
-    label: "Delivered",
-    value: "DELIVERED",
-  },
-  {
-    label: "Cancelled",
-    value: "CANCELLED",
-  },
-];
 
 const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   orderProductId,

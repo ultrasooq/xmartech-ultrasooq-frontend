@@ -267,6 +267,7 @@ const MyOrdersPage = () => {
                   };
                   orderProductStatus: string;
                   orderProductDate: string;
+                  updatedAt: string;
                 }) => (
                   <OrderCard
                     key={item.id}
@@ -275,7 +276,8 @@ const MyOrdersPage = () => {
                     productName={item.orderProduct_product?.productName}
                     produtctImage={item.orderProduct_product?.productImages}
                     orderStatus={item.orderProductStatus}
-                    orderDate={item.orderProductDate}
+                    orderProductDate={item.orderProductDate}
+                    updatedAt={item.updatedAt}
                   />
                 ),
               )}

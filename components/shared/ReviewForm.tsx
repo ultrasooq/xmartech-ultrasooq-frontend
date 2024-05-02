@@ -7,14 +7,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import ControlledTextInput from "./Forms/ControlledTextInput";
-import { useAddReview } from "@/apis/queries/review.queries";
+import {
+  useAddReview,
+  useReviewById,
+  useUpdateReview,
+} from "@/apis/queries/review.queries";
 import ControlledTextareaInput from "./Forms/ControlledTextareaInput";
 import Ratings from "./Ratings";
 import { useToast } from "../ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 
 type ReviewFormProps = {
   onClose: () => void;
+  reviewId?: number;
 };
 
 const formSchema = z.object({
@@ -33,7 +39,8 @@ const formSchema = z.object({
   rating: z.number(),
 });
 
-const ReviewForm: React.FC<ReviewFormProps> = ({ onClose }) => {
+const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
+  const searchParams = useParams();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
@@ -44,52 +51,99 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose }) => {
       rating: 0,
     },
   });
-  const [activeProductId, setActiveProductId] = useState<string | null>();
-
+  const reviewByIdQuery = useReviewById(
+    { productReviewId: reviewId ? reviewId : 0 },
+    !!reviewId,
+  );
   const addReview = useAddReview();
+  const updateReview = useUpdateReview();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const updatedFormData = {
       ...formData,
-      productId: Number(activeProductId),
+      productId: Number(searchParams?.id),
     };
 
     console.log(updatedFormData);
     // return;
 
-    const response = await addReview.mutateAsync(updatedFormData, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["product-by-id", activeProductId],
+    if (reviewId) {
+      const response = await updateReview.mutateAsync(
+        {
+          productReviewId: reviewId,
+          ...updatedFormData,
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({
+              queryKey: ["product-by-id", searchParams?.id],
+            });
+            queryClient.refetchQueries({
+              queryKey: ["all-products", { page: 1, limit: 40 }],
+            });
+            queryClient.refetchQueries({
+              queryKey: ["review-by-id", { productReviewId: reviewId }],
+            });
+            queryClient.refetchQueries({
+              queryKey: ["reviews"],
+            });
+          },
+        },
+      );
+      if (response.status) {
+        toast({
+          title: "Review Update Successful",
+          description: response.message,
+          variant: "success",
         });
-        queryClient.refetchQueries({
-          queryKey: ["all-products", { page: 1, limit: 40 }],
+        form.reset();
+        onClose();
+      } else {
+        toast({
+          title: "Review Update Failed",
+          description: response.message,
+          variant: "danger",
         });
-      },
-    });
-
-    if (response.status) {
-      toast({
-        title: "Review Add Successful",
-        description: response.message,
-        variant: "success",
-      });
-      form.reset();
-      onClose();
+      }
     } else {
-      toast({
-        title: "Review Add Failed",
-        description: response.message,
-        variant: "danger",
+      const response = await addReview.mutateAsync(updatedFormData, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ["product-by-id", searchParams?.id],
+          });
+          queryClient.refetchQueries({
+            queryKey: ["all-products", { page: 1, limit: 40 }],
+          });
+        },
       });
+
+      if (response.status) {
+        toast({
+          title: "Review Add Successful",
+          description: response.message,
+          variant: "success",
+        });
+        form.reset();
+        onClose();
+      } else {
+        toast({
+          title: "Review Add Failed",
+          description: response.message,
+          variant: "danger",
+        });
+      }
     }
   };
 
   useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let productId = params.get("id");
-    setActiveProductId(productId);
-  }, []);
+    if (reviewByIdQuery?.data?.data) {
+      form.reset({
+        description: reviewByIdQuery?.data?.data?.description,
+        title: reviewByIdQuery?.data?.data?.title,
+        rating: reviewByIdQuery?.data?.data?.rating,
+      });
+    }
+  }, [reviewId, reviewByIdQuery?.data?.data]);
 
   return (
     <div>

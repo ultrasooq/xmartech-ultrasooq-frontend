@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +9,7 @@ import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextare
 import { Button } from "@/components/ui/button";
 import { useAddQuestion } from "@/apis/queries/question.queries";
 import { useToast } from "@/components/ui/use-toast";
+import { useParams } from "next/navigation";
 
 type QuestionFormProps = {
   onClose: () => void;
@@ -27,6 +28,7 @@ const formSchema = z.object({
 });
 
 const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
+  const searchParams = useParams();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -34,15 +36,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
       question: "",
     },
   });
-  const [activeProductId, setActiveProductId] = useState<string | null>();
 
   const addQuestion = useAddQuestion();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-
     const response = await addQuestion.mutateAsync({
-      productId: Number(activeProductId),
+      productId: Number(searchParams?.id),
       question: values.question,
     });
 
@@ -63,12 +62,6 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
       });
     }
   };
-
-  useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let productId = params.get("id");
-    setActiveProductId(productId);
-  }, []);
 
   return (
     <div>

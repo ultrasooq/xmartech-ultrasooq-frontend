@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { DELIVERY_STATUS, formattedDate } from "@/utils/constants";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -12,7 +13,8 @@ type OrderCardProps = {
   produtctImage?: { id: number; image: string }[];
   productColor?: string;
   orderStatus: string;
-  orderDate: string;
+  orderProductDate: string;
+  updatedAt: string;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -22,7 +24,8 @@ const OrderCard: React.FC<OrderCardProps> = ({
   produtctImage,
   productColor,
   orderStatus,
-  orderDate,
+  orderProductDate,
+  updatedAt,
 }) => {
   return (
     <Link href={`/my-orders/${id}`}>
@@ -51,26 +54,46 @@ const OrderCard: React.FC<OrderCardProps> = ({
           </div>
           <div className="right-info">
             <h4>
-              <BiCircle color="green" />
-              Placed on{" "}
-              {orderDate
-                ? new Date(orderDate).toLocaleDateString("en-US", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })
-                : ""}
-              {/* <BiSolidCircle color="green" /> Delivered on Mar 29 */}
+              {orderStatus === "CONFIRMED" ? (
+                <>
+                  <BiCircle color="green" />
+                  Placed on{" "}
+                  {orderProductDate ? formattedDate(orderProductDate) : ""}
+                </>
+              ) : null}
+              {orderStatus === "SHIPPED" ? (
+                <>
+                  <BiCircle color="green" /> Shipped on{" "}
+                  {updatedAt ? formattedDate(updatedAt) : ""}
+                </>
+              ) : null}
+              {orderStatus === "OFD" ? (
+                <>
+                  <BiCircle color="green" /> Out for delivery{" "}
+                  {updatedAt ? formattedDate(updatedAt) : ""}
+                </>
+              ) : null}
+              {orderStatus === "DELIVERED" ? (
+                <>
+                  <BiSolidCircle color="green" /> Delivered on{" "}
+                  {updatedAt ? formattedDate(updatedAt) : ""}
+                </>
+              ) : null}
+              {orderStatus === "CANCELLED" ? (
+                <>
+                  <BiSolidCircle color="red" /> Cancelled on{" "}
+                  {updatedAt ? formattedDate(updatedAt) : ""}
+                </>
+              ) : null}
             </h4>
-            <p>
-              {orderStatus === "CONFIRMED"
-                ? "Your order has been placed"
-                : "Your Item has been delivered"}
-            </p>
-            <Button variant="ghost" className="ratingLink">
-              <PiStarFill />
-              Rate & Review Product
-            </Button>
+            <p>{DELIVERY_STATUS[orderStatus]}</p>
+
+            {orderStatus === "DELIVERED" ? (
+              <Button variant="ghost" className="ratingLink">
+                <PiStarFill />
+                Rate & Review Product
+              </Button>
+            ) : null}
           </div>
         </div>
       </div>
