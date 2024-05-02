@@ -20,6 +20,7 @@ import { useMe } from "@/apis/queries/user.queries";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/shared/Footer";
+import Link from "next/link";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
@@ -94,17 +95,7 @@ const MyOrderDetailsPage = ({}) => {
     return `${dayOfWeek}, ${dayWithSuffix} ${month}`;
   }
 
-  console.log(orderDetails?.orderProductStatus);
-
   useEffect(() => {
-    const STATUS_LIST = [
-      "CONFIRMED",
-      "SHIPPED",
-      "OFD",
-      "DELIVERED",
-      "CANCELLED",
-    ];
-
     if (orderDetails?.orderProductStatus) {
       switch (orderDetails?.orderProductStatus) {
         case "CONFIRMED":
@@ -205,42 +196,50 @@ const MyOrderDetailsPage = ({}) => {
                         </span>
                       </h5>
                       <div className="my-order-box">
-                        <figure>
-                          <div className="image-container rounded border border-gray-300">
-                            <Image
-                              src={
-                                orderDetails?.orderProduct_product
-                                  ?.productImages?.[0]?.image ||
-                                "/images/product-placeholder.png"
-                              }
-                              alt="preview-product"
-                              width={120}
-                              height={120}
-                              placeholder="blur"
-                              blurDataURL="/images/product-placeholder.png"
-                            />
-                          </div>
-                          <figcaption>
-                            <h3>
-                              {orderDetails?.orderProduct_product?.productName}
-                            </h3>
-                            {/* <p>Color: B.A.E Black</p> */}
-                            <p className="mt-1">
-                              Seller:{" "}
-                              {
-                                orderDetails?.orderProduct_product?.userBy
-                                  ?.firstName
-                              }{" "}
-                              {
-                                orderDetails?.orderProduct_product?.userBy
-                                  ?.lastName
-                              }
-                            </p>
-                            <h4 className="mt-1">
-                              ${orderDetails?.orderProduct_product?.offerPrice}
-                            </h4>
-                          </figcaption>
-                        </figure>
+                        <Link
+                          href={`/trending/${orderDetails?.orderProduct_product?.id}`}
+                        >
+                          <figure>
+                            <div className="image-container rounded border border-gray-300">
+                              <Image
+                                src={
+                                  orderDetails?.orderProduct_product
+                                    ?.productImages?.[0]?.image ||
+                                  "/images/product-placeholder.png"
+                                }
+                                alt="preview-product"
+                                width={120}
+                                height={120}
+                                placeholder="blur"
+                                blurDataURL="/images/product-placeholder.png"
+                              />
+                            </div>
+                            <figcaption>
+                              <h3>
+                                {
+                                  orderDetails?.orderProduct_product
+                                    ?.productName
+                                }
+                              </h3>
+                              {/* <p>Color: B.A.E Black</p> */}
+                              <p className="mt-1">
+                                Seller:{" "}
+                                {
+                                  orderDetails?.orderProduct_product?.userBy
+                                    ?.firstName
+                                }{" "}
+                                {
+                                  orderDetails?.orderProduct_product?.userBy
+                                    ?.lastName
+                                }
+                              </p>
+                              <h4 className="mt-1">
+                                $
+                                {orderDetails?.orderProduct_product?.offerPrice}
+                              </h4>
+                            </figcaption>
+                          </figure>
+                        </Link>
                         <div className="center-div">
                           <div className="order-delivery-progess-s1">
                             {/* <ul>

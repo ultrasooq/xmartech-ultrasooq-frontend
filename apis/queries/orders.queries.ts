@@ -145,6 +145,8 @@ export const useOrdersBySellerId = (
     limit: number;
     term?: string;
     orderProductStatus?: string;
+    startDate?: string;
+    endDate?: string;
   },
   enabled = true,
 ) =>

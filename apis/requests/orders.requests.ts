@@ -66,6 +66,8 @@ export const fetchOrdersBySellerId = (payload: {
   limit: number;
   term?: string;
   orderProductStatus?: string;
+  startDate?: string;
+  endDate?: string;
 }) => {
   return axios({
     method: "GET",

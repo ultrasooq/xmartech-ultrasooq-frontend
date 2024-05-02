@@ -62,6 +62,8 @@ const SellerOrdersPage = () => {
     limit: 40,
     term: searchTerm !== "" ? searchTerm : undefined,
     orderProductStatus: orderStatus,
+    startDate: getYearDates(orderTime).startDate,
+    endDate: getYearDates(orderTime).endDate,
   });
 
   const handleDebounce = debounce((event: any) => {
@@ -104,6 +106,12 @@ const SellerOrdersPage = () => {
                 value={orderStatus}
                 onValueChange={setOrderStatus}
               >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="" id="ALL" />
+                  <Label htmlFor="ALL" className="text-base">
+                    All
+                  </Label>
+                </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="CONFIRMED" id="CONFIRMED" />
                   <Label htmlFor="CONFIRMED" className="text-base">
@@ -149,6 +157,12 @@ const SellerOrdersPage = () => {
                   <RadioGroupItem value="last30" id="last30" />
                   <Label htmlFor="last30" className="text-base">
                     Last 30 days
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="2024" id="2024" />
+                  <Label htmlFor="2024" className="text-base">
+                    2024
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
