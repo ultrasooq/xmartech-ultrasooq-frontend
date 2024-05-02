@@ -9,6 +9,7 @@ type OtherItemCardProps = {
   offerPrice: string;
   productImages?: { id: number; image: string }[];
   sellerName?: string;
+  orderNo: string;
 };
 
 const OtherItemCard: React.FC<OtherItemCardProps> = ({
@@ -17,15 +18,19 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   offerPrice,
   productImages,
   sellerName,
+  orderNo,
 }) => {
   return (
     <Link href={`/my-orders/${id}`}>
       <div className="my-order-item">
         <div className="my-order-card">
-          <div className="cardTitle">Other Items in this order</div>
+          <div className="cardTitle !mb-2">Other Items in this order</div>
+          <h5 className="mb-2">
+            Order ID: <span className="font-semibold">{orderNo}</span>
+          </h5>
           <div className="my-order-box">
             <figure>
-              <div className="image-container">
+              <div className="image-container rounded border border-gray-300">
                 <Image
                   src={
                     productImages?.[0]?.image ||
@@ -41,7 +46,6 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
               <figcaption>
                 <h3>{productName}</h3>
                 {/* <p>Color: B.A.E Black</p> */}
-                {/* TODO: need seller data */}
                 <p className="mt-1">Seller: {sellerName}</p>
                 <h4 className="mt-1">${offerPrice}</h4>
               </figcaption>

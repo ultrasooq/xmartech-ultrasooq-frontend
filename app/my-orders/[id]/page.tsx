@@ -157,10 +157,6 @@ const MyOrderDetailsPage = ({}) => {
                               {shippingDetails?.phone}
                             </span>
                           </p>
-                          <h5>
-                            This order is also tracked by{" "}
-                            {orderDetails?.orderProduct_order?.orderNo}
-                          </h5>
                         </div>
                         <div className="delivery-address-col deliveryAddress">
                           <h2>Billing Address</h2>
@@ -202,9 +198,15 @@ const MyOrderDetailsPage = ({}) => {
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
+                      <h5 className="mb-2">
+                        Order ID:{" "}
+                        <span className="font-semibold">
+                          {orderDetails?.orderProduct_order?.orderNo}
+                        </span>
+                      </h5>
                       <div className="my-order-box">
                         <figure>
-                          <div className="image-container">
+                          <div className="image-container rounded border border-gray-300">
                             <Image
                               src={
                                 orderDetails?.orderProduct_product
@@ -366,6 +368,7 @@ const MyOrderDetailsPage = ({}) => {
                     offerPrice={item?.orderProduct_product?.offerPrice}
                     productImages={item?.orderProduct_product?.productImages}
                     sellerName={`${item?.orderProduct_product?.userBy?.firstName} ${item?.orderProduct_product?.userBy?.lastName}`}
+                    orderNo={orderDetails?.orderProduct_order?.orderNo}
                   />
                 ))}
               </div>

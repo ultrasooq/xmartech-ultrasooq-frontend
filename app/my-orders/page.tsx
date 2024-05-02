@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { useOrders, useOrdersBySellerId } from "@/apis/queries/orders.queries";
+import { useOrders } from "@/apis/queries/orders.queries";
 import { FiSearch } from "react-icons/fi";
 // import { BiSolidCircle } from "react-icons/bi";
 // import { PiStarFill } from "react-icons/pi";
@@ -60,30 +60,14 @@ const MyOrdersPage = () => {
     };
   };
 
-  const me = useMe();
-
-  const ordersBySellerIdQuery = useOrdersBySellerId(
-    {
-      page: 1,
-      limit: 40,
-      term: searchTerm !== "" ? searchTerm : undefined,
-      orderProductStatus: orderStatus,
-    },
-    me?.data?.data?.tradeRole === "COMPANY" ||
-      me?.data?.data?.tradeRole === "FREELANCER",
-  );
-
-  const ordersQuery = useOrders(
-    {
-      page: 1,
-      limit: 40,
-      term: searchTerm !== "" ? searchTerm : undefined,
-      orderProductStatus: orderStatus,
-      startDate: getYearDates(orderTime).startDate,
-      endDate: getYearDates(orderTime).endDate,
-    },
-    me?.data?.data?.tradeRole === "BUYER",
-  );
+  const ordersQuery = useOrders({
+    page: 1,
+    limit: 40,
+    term: searchTerm !== "" ? searchTerm : undefined,
+    orderProductStatus: orderStatus,
+    startDate: getYearDates(orderTime).startDate,
+    endDate: getYearDates(orderTime).endDate,
+  });
 
   const handleDebounce = debounce((event: any) => {
     setSearchTerm(event.target.value);
@@ -224,13 +208,15 @@ const MyOrdersPage = () => {
                   onChange={handleDebounce}
                   ref={searchRef}
                 />
-                <Button
-                  variant="ghost"
-                  className="absolute right-0 h-full hover:bg-transparent"
-                  onClick={handleClearSearch}
-                >
-                  <IoIosCloseCircleOutline size={24} />
-                </Button>
+                {searchTerm !== "" ? (
+                  <Button
+                    variant="ghost"
+                    className="absolute right-0 h-full hover:bg-transparent"
+                    onClick={handleClearSearch}
+                  >
+                    <IoIosCloseCircleOutline size={24} />
+                  </Button>
+                ) : null}
               </div>
               <button type="button" className="search-btn theme-primary-btn">
                 <FiSearch />
@@ -238,180 +224,49 @@ const MyOrdersPage = () => {
               </button>
             </div>
             <div className="my-order-lists">
-              <div className="my-order-item">
-                <div className="my-order-card">
-                  {ordersQuery.isLoading
-                    ? Array.from({ length: 3 }, (_, i) => i).map((item) => (
-                        <div key={uuidv4()} className="mb-3 flex gap-x-3">
-                          <Skeleton className="h-28 w-32" />
-                          <div className="h-28 flex-1 space-y-2">
-                            <Skeleton className="h-8" />
-                            <Skeleton className="h-8" />
-                            <Skeleton className="h-8" />
-                          </div>
-                        </div>
-                      ))
-                    : null}
-
-                  {ordersBySellerIdQuery.isLoading
-                    ? Array.from({ length: 3 }, (_, i) => i).map((item) => (
-                        <div key={uuidv4()} className="mb-3 flex gap-x-3">
-                          <Skeleton className="h-28 w-32" />
-                          <div className="h-28 flex-1 space-y-2">
-                            <Skeleton className="h-8" />
-                            <Skeleton className="h-8" />
-                            <Skeleton className="h-8" />
-                          </div>
-                        </div>
-                      ))
-                    : null}
-
-                  {me?.data?.data?.tradeRole === "BUYER" &&
-                  !ordersQuery.isLoading &&
-                  !ordersQuery?.data?.data?.length ? (
-                    <div className="w-full p-3">
-                      <p className="text-center text-lg font-semibold">
-                        No orders found
-                      </p>
-                    </div>
-                  ) : null}
-
-                  {(me?.data?.data?.tradeRole === "COMPANY" ||
-                    me?.data?.data?.tradeRole === "FREELANCER") &&
-                  !ordersBySellerIdQuery.isLoading &&
-                  !ordersBySellerIdQuery?.data?.data?.length ? (
-                    <div className="w-full p-3">
-                      <p className="text-center text-lg font-semibold">
-                        No orders found
-                      </p>
-                    </div>
-                  ) : null}
-
-                  {ordersQuery?.data?.data?.map(
-                    (item: {
-                      id: number;
-                      purchasePrice: string;
-                      orderProduct_product: {
-                        productName: string;
-                        productImages: { id: number; image: string }[];
-                      };
-                      orderProductStatus: string;
-                      orderProductDate: string;
-                    }) => (
-                      <OrderCard
-                        key={item.id}
-                        id={item.id}
-                        purchasePrice={item.purchasePrice}
-                        productName={item.orderProduct_product.productName}
-                        produtctImage={item.orderProduct_product.productImages}
-                        orderStatus={item.orderProductStatus}
-                        orderDate={item.orderProductDate}
-                      />
-                    ),
-                  )}
-
-                  {ordersBySellerIdQuery?.data?.data?.map(
-                    (item: {
-                      id: number;
-                      purchasePrice: string;
-                      orderProduct_product: {
-                        productName: string;
-                        productImages: { id: number; image: string }[];
-                      };
-                      orderProductStatus: string;
-                      orderProductDate: string;
-                    }) => (
-                      <OrderCard
-                        key={item.id}
-                        id={item.id}
-                        purchasePrice={item.purchasePrice}
-                        productName={item.orderProduct_product.productName}
-                        produtctImage={item.orderProduct_product.productImages}
-                        orderStatus={item.orderProductStatus}
-                        orderDate={item.orderProductDate}
-                      />
-                    ),
-                  )}
-
-                  {/* <div className="my-order-box">
-                    <figure>
-                      <div className="image-container">
-                        <img src="/images/iphone.png" alt=""></img>
+              {ordersQuery.isLoading
+                ? Array.from({ length: 3 }, (_, i) => i).map((item) => (
+                    <div key={uuidv4()} className="mb-3 flex gap-x-3">
+                      <Skeleton className="h-28 w-32" />
+                      <div className="h-28 flex-1 space-y-2">
+                        <Skeleton className="h-8" />
+                        <Skeleton className="h-8" />
+                        <Skeleton className="h-8" />
                       </div>
-                      <figcaption>
-                        <h3>1 year free disney</h3>
-                      </figcaption>
-                    </figure>
-                    <div className="center-price-info">
-                      <h4 className="success">Free</h4>
                     </div>
-                    <div className="right-info">
-                      <h4>
-                        <BiSolidCircle color="green" /> Delivered on Mar 29
-                      </h4>
-                      <p>Your Item has been delivered</p>
-                    </div>
-                  </div> */}
-                </div>
-              </div>
+                  ))
+                : null}
 
-              {/* <div className="my-order-item">
-                <div className="my-order-card">
-                  <div className="my-order-box">
-                    <figure>
-                      <div className="image-container">
-                        <img src="/images/iphone.png" alt=""></img>
-                      </div>
-                      <figcaption>
-                        <h3>Iphone 5 (Black)</h3>
-                        <p>Color: B.A.E Black</p>
-                      </figcaption>
-                    </figure>
-                    <div className="center-price-info">
-                      <h4>₹65,000</h4>
-                    </div>
-                    <div className="right-info">
-                      <h4>
-                        <BiSolidCircle color="green" /> Delivered on Mar 29
-                      </h4>
-                      <p>Your Item has been delivered</p>
-                      <a href="#" className="ratingLink">
-                        <PiStarFill />
-                        Rate & Review Product
-                      </a>
-                    </div>
-                  </div>
+              {!ordersQuery.isLoading && !ordersQuery?.data?.data?.length ? (
+                <div className="w-full p-3">
+                  <p className="text-center text-lg font-semibold">
+                    No orders found
+                  </p>
                 </div>
-              </div>
+              ) : null}
 
-              <div className="my-order-item">
-                <div className="my-order-card">
-                  <div className="my-order-box">
-                    <figure>
-                      <div className="image-container">
-                        <img src="/images/iphone.png" alt=""></img>
-                      </div>
-                      <figcaption>
-                        <h3>Iphone 5 (Black)</h3>
-                        <p>Color: B.A.E Black</p>
-                      </figcaption>
-                    </figure>
-                    <div className="center-price-info">
-                      <h4>₹65,000</h4>
-                    </div>
-                    <div className="right-info">
-                      <h4>
-                        <BiSolidCircle color="green" /> Delivered on Mar 29
-                      </h4>
-                      <p>Your Item has been delivered</p>
-                      <a href="#" className="ratingLink">
-                        <PiStarFill />
-                        Rate & Review Product
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
+              {ordersQuery?.data?.data?.map(
+                (item: {
+                  id: number;
+                  purchasePrice: string;
+                  orderProduct_product: {
+                    productName: string;
+                    productImages: { id: number; image: string }[];
+                  };
+                  orderProductStatus: string;
+                  orderProductDate: string;
+                }) => (
+                  <OrderCard
+                    key={item.id}
+                    id={item.id}
+                    purchasePrice={item.purchasePrice}
+                    productName={item.orderProduct_product?.productName}
+                    produtctImage={item.orderProduct_product?.productImages}
+                    orderStatus={item.orderProductStatus}
+                    orderDate={item.orderProductDate}
+                  />
+                ),
+              )}
             </div>
           </div>
         </div>
