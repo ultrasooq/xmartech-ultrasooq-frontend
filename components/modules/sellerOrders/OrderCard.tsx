@@ -1,10 +1,8 @@
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { DELIVERY_STATUS, formattedDate } from "@/utils/constants";
+import { SELLER_DELIVERY_STATUS, formattedDate } from "@/utils/constants";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
-import { PiStarFill } from "react-icons/pi";
 
 type OrderCardProps = {
   id: number;
@@ -86,7 +84,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
                 </>
               ) : null}
             </h4>
-            <p>{DELIVERY_STATUS[orderStatus]}</p>
+            <p>{SELLER_DELIVERY_STATUS[orderStatus]}</p>
           </div>
         </div>
       </div>

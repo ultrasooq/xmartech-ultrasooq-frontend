@@ -254,6 +254,14 @@ export const DELIVERY_STATUS: { [key: string]: string } = {
   CANCELLED: "Your order has been cancelled",
 };
 
+export const SELLER_DELIVERY_STATUS: { [key: string]: string } = {
+  CONFIRMED: "The order has been placed",
+  SHIPPED: "The order has been shipped",
+  OFD: "The order is out for delivery",
+  DELIVERED: "The order has been delivered",
+  CANCELLED: "The order has been cancelled",
+};
+
 export const STATUS_LIST: { label: string; value: string }[] = [
   {
     label: "Confirmed",
