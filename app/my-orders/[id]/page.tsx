@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { BiSolidCircle } from "react-icons/bi";
+import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
 import { MdHelpCenter } from "react-icons/md";
@@ -21,6 +21,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/shared/Footer";
 import Link from "next/link";
+import { formattedDate } from "@/utils/constants";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
@@ -118,6 +119,8 @@ const MyOrderDetailsPage = ({}) => {
       }
     }
   }, [orderDetails?.orderProductStatus]);
+
+  console.log(orderDetails);
 
   return (
     <>
@@ -242,63 +245,114 @@ const MyOrderDetailsPage = ({}) => {
                         </Link>
                         <div className="center-div">
                           <div className="order-delivery-progess-s1">
-                            {/* <ul>
-                            <li className="complted">
-                              <div className="orderStatusText">
-                                Order Received
-                              </div>
-                              <div className="dot">
-                                <small></small>
-                              </div>
-                              <div className="orderDateText">
-                                {formatDate(orderDetails?.orderProductDate)}
-                              </div>
-                            </li>
-                            <li className="current">
-                              <div className="orderStatusText">
-                                Order Confirmed
-                              </div>
-                              <div className="dot">
-                                <small></small>
-                              </div>
-                              <div className="orderDateText">
-                                {formatDate(orderDetails?.orderProductDate)}
-                              </div>
-                            </li>
-                            <li>
-                              <div className="orderStatusText">Shipped</div>
-                              <div className="dot">
-                                <small></small>
-                              </div>
-                              <div className="orderDateText">-</div>
-                            </li>
-                            <li>
-                              <div className="orderStatusText">
-                                Out for delivery
-                              </div>
-                              <div className="dot">
-                                <small></small>
-                              </div>
-                              <div className="orderDateText">-</div>
-                            </li>
-                            <li>
-                              <div className="orderStatusText">Delivered</div>
-                              <div className="dot">
-                                <small></small>
-                              </div>
-                              <div className="orderDateText">-</div>
-                            </li>
-                          </ul> */}
+                            <ul>
+                              <li className="complted">
+                                <div className="orderStatusText">
+                                  Order Received
+                                </div>
+                                <div className="dot">
+                                  <small></small>
+                                </div>
+                                <div className="orderDateText">
+                                  {formatDate(orderDetails?.orderProductDate)}
+                                </div>
+                              </li>
+                              <li className="current">
+                                <div className="orderStatusText">
+                                  Order Confirmed
+                                </div>
+                                <div className="dot">
+                                  <small></small>
+                                </div>
+                                <div className="orderDateText">
+                                  {formatDate(orderDetails?.orderProductDate)}
+                                </div>
+                              </li>
+                              <li>
+                                <div className="orderStatusText">Shipped</div>
+                                <div className="dot">
+                                  <small></small>
+                                </div>
+                                <div className="orderDateText">-</div>
+                              </li>
+                              <li>
+                                <div className="orderStatusText">
+                                  Out for delivery
+                                </div>
+                                <div className="dot">
+                                  <small></small>
+                                </div>
+                                <div className="orderDateText">-</div>
+                              </li>
+                              <li>
+                                <div className="orderStatusText">Delivered</div>
+                                <div className="dot">
+                                  <small></small>
+                                </div>
+                                <div className="orderDateText">-</div>
+                              </li>
+                            </ul>
 
-                            <div className="my-4">
+                            {/* <div className="my-4">
                               <div className="orderStatusText mb-2">Status</div>
                               <Progress value={progress} className="w-[80%]" />
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                         <div className="right-info">
-                          {orderByIdQuery?.data?.data?.orderProductStatus ===
-                          "DELIVERED" ? (
+                          <h4 className="mb-2">
+                            {orderDetails?.orderProductStatus ===
+                            "CONFIRMED" ? (
+                              <>
+                                <BiCircle color="green" />
+                                Placed on{" "}
+                                {orderDetails?.orderProductDate
+                                  ? formattedDate(orderDetails.orderProductDate)
+                                  : ""}
+                              </>
+                            ) : null}
+
+                            {orderDetails?.orderProductStatus === "SHIPPED" ? (
+                              <>
+                                <BiCircle color="green" />
+                                Shipped on{" "}
+                                {orderDetails?.updatedAt
+                                  ? formattedDate(orderDetails.updatedAt)
+                                  : ""}
+                              </>
+                            ) : null}
+
+                            {orderDetails?.orderProductStatus === "OFD" ? (
+                              <>
+                                <BiCircle color="green" /> Out for delivery{" "}
+                                {orderDetails?.updatedAt
+                                  ? formattedDate(orderDetails.updatedAt)
+                                  : ""}
+                              </>
+                            ) : null}
+
+                            {orderDetails?.orderProductStatus ===
+                            "DELIVERED" ? (
+                              <>
+                                <BiSolidCircle color="green" /> Delivered on{" "}
+                                {orderDetails?.updatedAt
+                                  ? formattedDate(orderDetails.updatedAt)
+                                  : ""}
+                              </>
+                            ) : null}
+
+                            {orderDetails?.orderProductStatus ===
+                            "CANCELLED" ? (
+                              <>
+                                <BiSolidCircle color="red" /> Cancelled on{" "}
+                                {orderDetails?.updatedAt
+                                  ? formattedDate(orderDetails.updatedAt)
+                                  : ""}
+                              </>
+                            ) : null}
+                          </h4>
+
+                          {orderDetails?.orderProductStatus === "DELIVERED" ? (
                             <a href="#" className="ratingLink mt-0">
                               <PiStarFill />
                               Rate & Review Product
@@ -322,37 +376,37 @@ const MyOrderDetailsPage = ({}) => {
                         </div>
                       </div>
                       {/* <div className="my-order-box">
-                      <figure>
-                        <div className="image-container">
-                          <img src="/images/iphone.png" alt=""></img>
+                        <figure>
+                          <div className="image-container">
+                            <img src="/images/iphone.png" alt=""></img>
+                          </div>
+                          <figcaption>
+                            <h3>Iphone 5 (Black)</h3>
+                            <p>Color: B.A.E Black</p>
+                            <p className="mt-1">Seller: Mythsx-Retail</p>
+                            <h4 className="mt-1">₹65,000</h4>
+                          </figcaption>
+                        </figure>
+                        <div className="center-div">
+                          <h4>
+                            Coupon Code - <strong>FLTBPIPGL7UBTF</strong>, claim
+                            before Jun 30,2024
+                          </h4>
+                          <a href="#" className="ratingLink">
+                            How To claim?
+                          </a>
                         </div>
-                        <figcaption>
-                          <h3>Iphone 5 (Black)</h3>
-                          <p>Color: B.A.E Black</p>
-                          <p className="mt-1">Seller: Mythsx-Retail</p>
-                          <h4 className="mt-1">₹65,000</h4>
-                        </figcaption>
-                      </figure>
-                      <div className="center-div">
-                        <h4>
-                          Coupon Code - <strong>FLTBPIPGL7UBTF</strong>, claim
-                          before Jun 30,2024
-                        </h4>
-                        <a href="#" className="ratingLink">
-                          How To claim?
-                        </a>
-                      </div>
-                      <div className="right-info">
-                        <a href="#" className="ratingLink">
-                          <PiStarFill />
-                          Rate & Review Product
-                        </a>
-                        <a href="#" className="ratingLink">
-                          <MdHelpCenter />
-                          Need Help?
-                        </a>
-                      </div>
-                    </div> */}
+                        <div className="right-info">
+                          <a href="#" className="ratingLink">
+                            <PiStarFill />
+                            Rate & Review Product
+                          </a>
+                          <a href="#" className="ratingLink">
+                            <MdHelpCenter />
+                            Need Help?
+                          </a>
+                        </div>
+                      </div> */}
                       {/* <p className="mt-2">Return policy ended on Mar 28</p> */}
                     </div>
                   </div>
@@ -371,6 +425,9 @@ const MyOrderDetailsPage = ({}) => {
                     productImages={item?.orderProduct_product?.productImages}
                     sellerName={`${item?.orderProduct_product?.userBy?.firstName} ${item?.orderProduct_product?.userBy?.lastName}`}
                     orderNo={orderDetails?.orderProduct_order?.orderNo}
+                    orderProductDate={item?.orderProductDate}
+                    orderProductStatus={item?.orderProductStatus}
+                    updatedAt={item?.updatedAt}
                   />
                 ))}
               </div>
