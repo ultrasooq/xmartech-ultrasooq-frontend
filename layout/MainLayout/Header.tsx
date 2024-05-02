@@ -286,6 +286,10 @@ const Header = () => {
                               <DropdownMenuItem>Order List</DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
+                            <Link href="/address">
+                              <DropdownMenuItem>My Addresses</DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuSeparator />
                           </>
                         ) : null}
                         <DropdownMenuItem onClick={handleChangeEmailPage}>

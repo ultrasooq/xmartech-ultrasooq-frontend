@@ -36,6 +36,39 @@ export const addReview = (payload: {
   });
 };
 
+export const updateReview = (payload: {
+  productReviewId: number;
+  title: string;
+  description: string;
+  rating: number;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/editProductReview`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const fetchReviewById = (payload: { productReviewId: number }) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getOneProductReview`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const fetchAllReviewBySellerId = (payload: {
   page: number;
   limit: number;

@@ -3,7 +3,9 @@ import { APIResponseError } from "@/utils/types/common.types";
 import {
   addReview,
   fetchAllReviewBySellerId,
+  fetchReviewById,
   fetchReviews,
+  updateReview,
 } from "../requests/review.requests";
 
 export const useReviews = (
@@ -48,6 +50,49 @@ export const useAddReview = () => {
     },
   });
 };
+
+export const useUpdateReview = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {
+      productReviewId: number;
+      title: string;
+      description: string;
+      rating: number;
+    }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateReview(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["reviews"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useReviewById = (
+  payload: { productReviewId: number },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["review-by-id", payload],
+    queryFn: async () => {
+      const res = await fetchReviewById(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
 
 export const useReviewsForSeller = (
   payload: {

@@ -7,6 +7,7 @@ import ReviewForm from "./ReviewForm";
 import { useReviews } from "@/apis/queries/review.queries";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
+import { useMe } from "@/apis/queries/user.queries";
 
 type ReviewSectionProps = {
   productId?: string;
@@ -23,7 +24,8 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   const [sortType, setSortType] = useState<"highest" | "lowest" | "newest">(
     "newest",
   );
-
+  const [reviewId, setReviewId] = useState<number>();
+  const me = useMe();
   const handleToggleReviewModal = () =>
     setIsReviewModalOpen(!isReviewModalOpen);
 
@@ -59,6 +61,12 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     [productReview?.length],
   );
 
+  const reviewExists = useMemo(() => {
+    return reviewsQuery?.data?.data?.some(
+      (item: { userId: string }) => item.userId === me?.data?.data?.id,
+    );
+  }, [productReview?.length]);
+
   return (
     <div className="w-full">
       <div className="flex w-full flex-wrap items-center justify-between">
@@ -79,7 +87,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           </div>
         </div>
         <div className="w-auto">
-          {hasAccessToken ? (
+          {hasAccessToken &&
+          me.data?.data?.tradeRole === "BUYER" &&
+          !reviewExists ? (
             <button
               type="button"
               onClick={handleToggleReviewModal}
@@ -139,7 +149,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           {reviewsQuery.data?.data?.length
             ? reviewsQuery.data?.data.map(
                 (review: {
-                  id: string;
+                  id: number;
                   rating: number;
                   title: string;
                   description: string;
@@ -149,6 +159,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                     lastName: string;
                     profilePicture: string;
                   };
+                  userId: number;
                 }) => (
                   <UserRatingCard
                     key={review?.id}
@@ -158,6 +169,14 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                     review={review.description}
                     date={review.createdAt}
                     profilePicture={review?.reviewByUserDetail?.profilePicture}
+                    isBuyer={
+                      me.data?.data?.tradeRole === "BUYER" &&
+                      me.data?.data?.id === review?.userId
+                    }
+                    onEdit={() => {
+                      setReviewId(review?.id);
+                      handleToggleReviewModal();
+                    }}
                   />
                 ),
               )
@@ -179,7 +198,13 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 
       <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
         <DialogContent>
-          <ReviewForm onClose={handleToggleReviewModal} />
+          <ReviewForm
+            onClose={() => {
+              setReviewId(undefined);
+              handleToggleReviewModal();
+            }}
+            reviewId={reviewId}
+          />
         </DialogContent>
       </Dialog>
     </div>
