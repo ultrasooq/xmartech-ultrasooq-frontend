@@ -337,12 +337,12 @@ const CreateProductPage = () => {
                 className="w-full px-6"
               >
                 <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
                     <BasicInformationSection tagsList={memoizedTags} />
                   </div>
-                  <div className="col-span-1 w-full">
+                  {/* <div className="col-span-1 w-full">
                     <SuggestedProductsListCard />
-                  </div>
+                  </div> */}
                 </div>
 
                 <ProductDetailsSection />
