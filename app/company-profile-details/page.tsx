@@ -54,6 +54,7 @@ export default function CompanyProfileDetailsPage() {
           shortDescription: item?.shortDescription
             ? stripHTML(item?.shortDescription)
             : "-",
+          status: item?.status || "-",
         };
       }) || []
     );

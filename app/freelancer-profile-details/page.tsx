@@ -50,6 +50,7 @@ export default function FreelancerProfileDetailsPage() {
           shortDescription: item?.shortDescription
             ? stripHTML(item?.shortDescription)
             : "-",
+          status: item?.status || "-",
         };
       }) || []
     );

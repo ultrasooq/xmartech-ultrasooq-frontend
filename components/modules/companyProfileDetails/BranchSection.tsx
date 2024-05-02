@@ -220,7 +220,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                               : "/images/no-image.jpg"
                           }
                           alt="branch-image"
-                          className="object-cover"
+                          className="object-contain"
                           fill
                         />
                       </div>
@@ -243,7 +243,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                               : "/images/no-image.jpg"
                           }
                           alt="branch-image"
-                          className="object-cover"
+                          className="object-contain"
                           fill
                         />
                       </div>
