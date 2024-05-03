@@ -408,17 +408,16 @@ const MyOrderDetailsPage = ({}) => {
                             <MdHelpCenter />
                             Need Help?
                           </a>
-                          {me?.data?.data?.tradeRole !== "BUYER" ? (
-                            <div className="more-actions">
-                              <button
-                                type="button"
-                                className="theme-primary-btn update-status-btn"
-                                onClick={handleToggleStatusModal}
-                              >
-                                Update Status
-                              </button>
-                            </div>
-                          ) : null}
+
+                          <div className="more-actions">
+                            <button
+                              type="button"
+                              className="theme-primary-btn update-status-btn"
+                              onClick={handleToggleStatusModal}
+                            >
+                              Update Status
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

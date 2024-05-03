@@ -1,25 +1,55 @@
 "use client";
+import { useAllUserAddress } from "@/apis/queries/address.queries";
 import {
   useDeleteRfqCartItem,
   useRfqCartListByUserId,
   useUpdateRfqCartWithLogin,
 } from "@/apis/queries/rfq.queries";
 import RfqProductCard from "@/components/modules/rfqCart/RfqProductCard";
+import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import { Form } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { AddressItem } from "@/utils/types/address.types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
+import { useForm } from "react-hook-form";
 import { MdOutlineChevronLeft } from "react-icons/md";
+import { z } from "zod";
+
+const formSchema = z.object({});
 
 const RfqCartPage = () => {
   const { toast } = useToast();
   const router = useRouter();
 
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {},
+  });
+
+  const allUserAddressQuery = useAllUserAddress({
+    page: 1,
+    limit: 10,
+  });
   const rfqCartListByUser = useRfqCartListByUserId({
     page: 1,
     limit: 20,
   });
   const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
   const deleteRfqCartItem = useDeleteRfqCartItem();
+
+  const memoziedAddressList = useMemo(() => {
+    return (
+      allUserAddressQuery.data?.data.map((item: AddressItem) => ({
+        label: `${item.address} ${item.city} ${item.postCode} ${item.postCode} ${item.country}`,
+        value: item.id.toString(),
+      })) || []
+    );
+  }, [allUserAddressQuery.data?.data]);
 
   const memoizedRfqCartList = useMemo(() => {
     if (rfqCartListByUser.data?.data) {
@@ -33,9 +63,6 @@ const RfqCartPage = () => {
     rfqProductId: number,
     actionType: "add" | "remove",
   ) => {
-    console.log("add to cart:", quantity, rfqProductId, actionType);
-    // return;
-
     const response = await updateRfqCartWithLogin.mutateAsync({
       rfqProductId,
       quantity,
@@ -51,8 +78,6 @@ const RfqCartPage = () => {
   };
 
   const handleRemoveItemFromRfqCart = async (rfqCartId: number) => {
-    console.log("cart id:", rfqCartId);
-    // return;
     const response = await deleteRfqCartItem.mutateAsync({ rfqCartId });
     if (response.status) {
       toast({
@@ -63,13 +88,11 @@ const RfqCartPage = () => {
     }
   };
 
-  // console.log(memoizedRfqCartList);
-
   return (
     <>
       <section className="rfq_section">
-        <div className="sec-bg">
-          <img src="/images/rfq-sec-bg.png" alt="" />
+        <div className="sec-bg relative">
+          <Image src="/images/rfq-sec-bg.png" alt="background-banner" fill />
         </div>
         <div className="container mx-auto px-3">
           <div className="rfq-cart-wrapper">
@@ -86,45 +109,20 @@ const RfqCartPage = () => {
             <div className="bodyPart">
               <div className="add-delivery-card">
                 <h3>Add Delivery Address & date</h3>
-                <div className="input-row">
-                  <div className="input-col">
-                    <div className="mb-4 w-full space-y-2">
-                      <label
-                        className="text-sm font-medium leading-none 
-                    peer-disabled:cursor-not-allowed 
-                    peer-disabled:opacity-70"
-                      >
-                        Address
-                      </label>
-                      <div className="relative">
-                        <select
-                          className="
-                      theme-form-control-s1 select1"
-                        >
-                          <option>Address</option>
-                        </select>
-                      </div>
+                <Form {...form}>
+                  <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
+                    <ControlledSelectInput
+                      label="Address"
+                      name="address"
+                      options={memoziedAddressList}
+                    />
+
+                    <div>
+                      <Label>Date</Label>
+                      <ControlledDatePicker name="createdDate" />
                     </div>
-                  </div>
-                  <div className="input-col">
-                    <div className="mb-4 w-full space-y-2">
-                      <label
-                        className="text-sm font-medium leading-none 
-                    peer-disabled:cursor-not-allowed 
-                    peer-disabled:opacity-70"
-                      >
-                        Date
-                      </label>
-                      <div className="relative">
-                        <input
-                          className="
-                      theme-form-control-s1"
-                          placeholder="Select date"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  </form>
+                </Form>
               </div>
 
               <div className="rfq-cart-item-lists">
@@ -145,7 +143,7 @@ const RfqCartPage = () => {
                 </div>
               </div>
               <div className="submit-action">
-                <button type="button" className="theme-primary-btn submit-btn">
+                <button className="theme-primary-btn submit-btn">
                   Request For RFQ
                 </button>
               </div>
