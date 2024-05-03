@@ -26,6 +26,7 @@ import { debounce } from "lodash";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Pagination from "@/components/shared/Pagination";
+import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
 
 const ProductListPage = () => {
   const router = useRouter();
@@ -147,7 +148,7 @@ const ProductListPage = () => {
                       <TableHead>Brand</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Action</TableHead>
+                      <TableHead className="text-center">Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -159,7 +160,7 @@ const ProductListPage = () => {
                               <Image
                                 src={
                                   item?.productImage &&
-                                  validator.isURL(item.productImage)
+                                    validator.isURL(item.productImage)
                                     ? item.productImage
                                     : "/images/product-placeholder.png"
                                 }
@@ -191,34 +192,40 @@ const ProductListPage = () => {
                           </Badge>
                         </TableCell>
                         <TableCell th-name="Action">
-                          <div className="td-action-btns">
-                            <Button
+                          <div className="td-dots-dropdown">
+                            <button
+                              className="td-dots-dropdown-btn"
                               type="button"
-                              onClick={() => handleEditProductPage(item?.id)}
-                              className="td-circle-btn edit"
                             >
-                              <Image
-                                src="/images/td-edit-icon.svg"
-                                alt="edit-icon"
-                                height={18}
-                                width={18}
-                              />
-                            </Button>
-                            <Button
-                              type="button"
-                              onClick={() => {
+                              <HiOutlineDotsCircleHorizontal />
+                            </button>
+                            <div className="td-dots-dropdown-menu">
+                              <button type="button" className="td-dots-dropdown-item" onClick={() => handleEditProductPage(item?.id)}>
+                                <span className="icon-container">
+                                  <img
+                                    src="/images/td-edit-icon.svg"
+                                    height={"auto"}
+                                    width={"auto"}
+                                    alt=""
+                                  />
+                                </span>
+                                Edit
+                              </button>
+                              <button type="button" className="td-dots-dropdown-item" onClick={() => {
                                 handleToggleDeleteModal();
                                 setSelectedProductId(item?.id);
-                              }}
-                              className="td-circle-btn trash"
-                            >
-                              <Image
-                                src="/images/td-trash-icon.svg"
-                                alt="trash-icon"
-                                height={18}
-                                width={18}
-                              />
-                            </Button>
+                              }}>
+                                <span className="icon-container">
+                                  <img
+                                    src="/images/td-trash-icon.svg"
+                                    height={"auto"}
+                                    width={"auto"}
+                                    alt=""
+                                  />
+                                </span>
+                                Delete
+                              </button>
+                            </div>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -248,13 +255,11 @@ const ProductListPage = () => {
       </div>
 
       <Dialog open={isDeleteModalOpen} onOpenChange={handleToggleDeleteModal}>
-        <DialogContent className="gap-0 p-0">
           <DeleteContent
             onClose={() => handleConfirmation(false)}
             onConfirm={() => handleConfirmation(true)}
             isLoading={deleteProduct.isPending}
           />
-        </DialogContent>
       </Dialog>
     </section>
   );

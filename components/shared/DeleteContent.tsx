@@ -4,6 +4,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogContent,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -20,45 +21,49 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
   isLoading,
 }) => {
   return (
-    <>
-      <DialogHeader className="border-b border-light-gray py-4">
-        <DialogTitle className="text-center text-xl font-bold">
+    <DialogContent  className="custom-ui-alert-popup danger-alert-popup">
+      <DialogHeader className="alert-popup-headerpart">
+        <h1>
           Delete
-        </DialogTitle>
+        </h1>
       </DialogHeader>
-      <DialogDescription className="p-4 text-base font-normal leading-7 text-color-dark">
-        Are you sure you want to delete?
+      <DialogDescription className="alert-popup-bodypart">
+        <h4>Are you sure you want to delete?</h4>
       </DialogDescription>
-      <DialogFooter className="p-4">
-        <Button
-          onClick={onClose}
-          disabled={isLoading}
-          className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
-        >
-          No
-        </Button>
-        <Button
-          onClick={onConfirm}
-          disabled={isLoading}
-          className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
-        >
-          {isLoading ? (
-            <>
-              <Image
-                src="/images/load.png"
-                alt="loader-icon"
-                width={20}
-                height={20}
-                className="mr-2 animate-spin"
-              />
-              Please wait
-            </>
-          ) : (
-            "Yes"
-          )}
-        </Button>
+      <DialogFooter className="alert-actions">
+        <div className="alert-actions-col">
+          <Button
+            onClick={onClose}
+            disabled={isLoading}
+            className="alert--cancel-btn"
+          >
+            No
+          </Button>
+        </div>
+        <div className="alert-actions-col">
+          <Button
+            onClick={onConfirm}
+            disabled={isLoading}
+            className="alert--submit-btn"
+          >
+            {isLoading ? (
+              <>
+                <Image
+                  src="/images/load.png"
+                  alt="loader-icon"
+                  width={20}
+                  height={20}
+                  className="mr-2 animate-spin"
+                />
+                Please wait
+              </>
+            ) : (
+              "Yes"
+            )}
+          </Button>
+        </div>
       </DialogFooter>
-    </>
+    </DialogContent>
   );
 };
 
