@@ -329,12 +329,12 @@ const CreateProductPage = () => {
             priority
           />
         </div>
-        <div className="relative z-10 m-auto w-full max-w-[1540px] px-4">
+        <div className="relative z-10 container m-auto px-3">
           <div className="flex flex-wrap">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="w-full px-6"
+                className="w-full"
               >
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
