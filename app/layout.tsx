@@ -5,6 +5,7 @@ import Sidebar from "@/layout/MainLayout/Sidebar";
 import Header from "@/layout/MainLayout/Header";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { Toaster } from "@/components/ui/toaster";
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   title: "Puremoon",
@@ -23,6 +24,7 @@ export default function RootLayout({
           <main className="overflow-x-hidden">
             <Sidebar />
             <Header />
+            <NextTopLoader color="#DB2302" showSpinner={false} />
             {children}
             <Toaster />
           </main>
