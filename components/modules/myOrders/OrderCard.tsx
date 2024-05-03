@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { DELIVERY_STATUS, formattedDate } from "@/utils/constants";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import ReviewForm from "@/components/shared/ReviewForm";
 
 type OrderCardProps = {
   id: number;
@@ -29,13 +31,19 @@ const OrderCard: React.FC<OrderCardProps> = ({
   orderProductDate,
   updatedAt,
 }) => {
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewId, setReviewId] = useState<number>();
+
+  const handleToggleReviewModal = () =>
+    setIsReviewModalOpen(!isReviewModalOpen);
+
   return (
-    <Link href={`/my-orders/${id}`}>
-      <div className="my-order-card">
-        <h5 className="mb-2">
-          Order ID: <span className="font-semibold">{orderId}</span>
-        </h5>
-        <div className="my-order-box">
+    <div className="my-order-card">
+      <h5 className="mb-2">
+        Order ID: <span className="font-semibold">{orderId}</span>
+      </h5>
+      <div className="my-order-box">
+        <Link href={`/my-orders/${id}`}>
           <figure>
             <div className="image-container rounded border border-gray-300">
               <Image
@@ -54,55 +62,73 @@ const OrderCard: React.FC<OrderCardProps> = ({
               <p>{productColor ? `Color: ${productColor}` : ""}</p>
             </figcaption>
           </figure>
-          <div className="center-price-info">
-            <h4>${purchasePrice}</h4>
-          </div>
-          <div className="right-info">
-            <h4>
-              {orderStatus === "CONFIRMED" ? (
-                <>
-                  <BiCircle color="green" />
-                  Placed on{" "}
-                  {orderProductDate ? formattedDate(orderProductDate) : ""}
-                </>
-              ) : null}
-              {orderStatus === "SHIPPED" ? (
-                <>
-                  <BiCircle color="green" /> Shipped on{" "}
-                  {updatedAt ? formattedDate(updatedAt) : ""}
-                </>
-              ) : null}
-              {orderStatus === "OFD" ? (
-                <>
-                  <BiCircle color="green" /> Out for delivery{" "}
-                  {updatedAt ? formattedDate(updatedAt) : ""}
-                </>
-              ) : null}
-              {orderStatus === "DELIVERED" ? (
-                <>
-                  <BiSolidCircle color="green" /> Delivered on{" "}
-                  {updatedAt ? formattedDate(updatedAt) : ""}
-                </>
-              ) : null}
-              {orderStatus === "CANCELLED" ? (
-                <>
-                  <BiSolidCircle color="red" /> Cancelled on{" "}
-                  {updatedAt ? formattedDate(updatedAt) : ""}
-                </>
-              ) : null}
-            </h4>
-            <p>{DELIVERY_STATUS[orderStatus]}</p>
-
-            {orderStatus === "DELIVERED" ? (
-              <Button variant="ghost" className="ratingLink">
-                <PiStarFill />
-                Rate & Review Product
-              </Button>
+        </Link>
+        <div className="center-price-info">
+          <h4>${purchasePrice}</h4>
+        </div>
+        <div className="right-info">
+          <h4>
+            {orderStatus === "CONFIRMED" ? (
+              <>
+                <BiCircle color="green" />
+                Placed on{" "}
+                {orderProductDate ? formattedDate(orderProductDate) : ""}
+              </>
             ) : null}
-          </div>
+            {orderStatus === "SHIPPED" ? (
+              <>
+                <BiCircle color="green" /> Shipped on{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
+              </>
+            ) : null}
+            {orderStatus === "OFD" ? (
+              <>
+                <BiCircle color="green" /> Out for delivery{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
+              </>
+            ) : null}
+            {orderStatus === "DELIVERED" ? (
+              <>
+                <BiSolidCircle color="green" /> Delivered on{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
+              </>
+            ) : null}
+            {orderStatus === "CANCELLED" ? (
+              <>
+                <BiSolidCircle color="red" /> Cancelled on{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
+              </>
+            ) : null}
+          </h4>
+          <p>{DELIVERY_STATUS[orderStatus]}</p>
+
+          {orderStatus === "DELIVERED" ? (
+            <Button
+              variant="ghost"
+              className="ratingLink"
+              onClick={(e) => {
+                e.preventDefault();
+                handleToggleReviewModal();
+              }}
+            >
+              <PiStarFill />
+              Rate & Review Product
+            </Button>
+          ) : null}
         </div>
       </div>
-    </Link>
+      <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
+        <DialogContent>
+          <ReviewForm
+            onClose={() => {
+              setReviewId(undefined);
+              handleToggleReviewModal();
+            }}
+            reviewId={reviewId}
+          />
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 

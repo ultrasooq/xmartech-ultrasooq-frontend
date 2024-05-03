@@ -28,12 +28,12 @@ const OrderCard: React.FC<OrderCardProps> = ({
   updatedAt,
 }) => {
   return (
-    <Link href={`/seller-orders/${id}`}>
-      <div className="my-order-card">
-        <h5 className="mb-2">
-          Order ID: <span className="font-semibold">{orderId}</span>
-        </h5>
-        <div className="my-order-box">
+    <div className="my-order-card">
+      <h5 className="mb-2">
+        Order ID: <span className="font-semibold">{orderId}</span>
+      </h5>
+      <div className="my-order-box">
+        <Link href={`/seller-orders/${id}`}>
           <figure>
             <div className="image-container rounded border border-gray-300">
               <Image
@@ -52,48 +52,48 @@ const OrderCard: React.FC<OrderCardProps> = ({
               <p>{productColor ? `Color: ${productColor}` : ""}</p>
             </figcaption>
           </figure>
-          <div className="center-price-info">
-            <h4>${purchasePrice}</h4>
-          </div>
-          <div className="right-info">
-            <h4>
-              {orderStatus === "CONFIRMED" ? (
-                <>
-                  <BiCircle color="green" />
-                  Placed on{" "}
-                  {orderProductDate ? formattedDate(orderProductDate) : ""}
-                </>
-              ) : null}
-              {orderStatus === "SHIPPED" ? (
-                <>
-                  <BiCircle color="green" /> Shipped on{" "}
-                  {updatedAt ? formattedDate(updatedAt) : ""}
-                </>
-              ) : null}
-              {orderStatus === "OFD" ? (
-                <>
-                  <BiCircle color="green" /> Out for delivery{" "}
-                  {updatedAt ? formattedDate(updatedAt) : ""}
-                </>
-              ) : null}
-              {orderStatus === "DELIVERED" ? (
-                <>
-                  <BiSolidCircle color="green" /> Delivered on{" "}
-                  {updatedAt ? formattedDate(updatedAt) : ""}
-                </>
-              ) : null}
-              {orderStatus === "CANCELLED" ? (
-                <>
-                  <BiSolidCircle color="red" /> Cancelled on{" "}
-                  {updatedAt ? formattedDate(updatedAt) : ""}
-                </>
-              ) : null}
-            </h4>
-            <p>{SELLER_DELIVERY_STATUS[orderStatus]}</p>
-          </div>
+        </Link>
+        <div className="center-price-info">
+          <h4>${purchasePrice}</h4>
+        </div>
+        <div className="right-info">
+          <h4>
+            {orderStatus === "CONFIRMED" ? (
+              <>
+                <BiCircle color="green" />
+                Placed on{" "}
+                {orderProductDate ? formattedDate(orderProductDate) : ""}
+              </>
+            ) : null}
+            {orderStatus === "SHIPPED" ? (
+              <>
+                <BiCircle color="green" /> Shipped on{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
+              </>
+            ) : null}
+            {orderStatus === "OFD" ? (
+              <>
+                <BiCircle color="green" /> Out for delivery{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
+              </>
+            ) : null}
+            {orderStatus === "DELIVERED" ? (
+              <>
+                <BiSolidCircle color="green" /> Delivered on{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
+              </>
+            ) : null}
+            {orderStatus === "CANCELLED" ? (
+              <>
+                <BiSolidCircle color="red" /> Cancelled on{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
+              </>
+            ) : null}
+          </h4>
+          <p>{SELLER_DELIVERY_STATUS[orderStatus]}</p>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

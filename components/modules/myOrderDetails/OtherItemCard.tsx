@@ -28,14 +28,14 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   updatedAt,
 }) => {
   return (
-    <Link href={`/my-orders/${id}`}>
-      <div className="my-order-item">
-        <div className="my-order-card">
-          <div className="cardTitle !mb-2">Other Items in this order</div>
-          <h5 className="mb-2">
-            Order ID: <span className="font-semibold">{orderNo}</span>
-          </h5>
-          <div className="my-order-box">
+    <div className="my-order-item">
+      <div className="my-order-card">
+        <div className="cardTitle !mb-2">Other Items in this order</div>
+        <h5 className="mb-2">
+          Order ID: <span className="font-semibold">{orderNo}</span>
+        </h5>
+        <div className="my-order-box">
+          <Link href={`/my-orders/${id}`}>
             <figure>
               <div className="image-container rounded border border-gray-300">
                 <Image
@@ -57,49 +57,49 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
                 <h4 className="mt-1">${offerPrice}</h4>
               </figcaption>
             </figure>
-            <div className="right-info">
-              <h4 className="mb-2">
-                {orderProductStatus === "CONFIRMED" ? (
-                  <>
-                    <BiCircle color="green" />
-                    Placed on{" "}
-                    {orderProductDate ? formattedDate(orderProductDate) : ""}
-                  </>
-                ) : null}
+          </Link>
+          <div className="right-info">
+            <h4 className="mb-2">
+              {orderProductStatus === "CONFIRMED" ? (
+                <>
+                  <BiCircle color="green" />
+                  Placed on{" "}
+                  {orderProductDate ? formattedDate(orderProductDate) : ""}
+                </>
+              ) : null}
 
-                {orderProductStatus === "SHIPPED" ? (
-                  <>
-                    <BiCircle color="green" />
-                    Shipped on {updatedAt ? formattedDate(updatedAt) : ""}
-                  </>
-                ) : null}
+              {orderProductStatus === "SHIPPED" ? (
+                <>
+                  <BiCircle color="green" />
+                  Shipped on {updatedAt ? formattedDate(updatedAt) : ""}
+                </>
+              ) : null}
 
-                {orderProductStatus === "OFD" ? (
-                  <>
-                    <BiCircle color="green" /> Out for delivery{" "}
-                    {updatedAt ? formattedDate(updatedAt) : ""}
-                  </>
-                ) : null}
+              {orderProductStatus === "OFD" ? (
+                <>
+                  <BiCircle color="green" /> Out for delivery{" "}
+                  {updatedAt ? formattedDate(updatedAt) : ""}
+                </>
+              ) : null}
 
-                {orderProductStatus === "DELIVERED" ? (
-                  <>
-                    <BiSolidCircle color="green" /> Delivered on{" "}
-                    {updatedAt ? formattedDate(updatedAt) : ""}
-                  </>
-                ) : null}
+              {orderProductStatus === "DELIVERED" ? (
+                <>
+                  <BiSolidCircle color="green" /> Delivered on{" "}
+                  {updatedAt ? formattedDate(updatedAt) : ""}
+                </>
+              ) : null}
 
-                {orderProductStatus === "CANCELLED" ? (
-                  <>
-                    <BiSolidCircle color="red" /> Cancelled on{" "}
-                    {updatedAt ? formattedDate(updatedAt) : ""}
-                  </>
-                ) : null}
-              </h4>
-            </div>
+              {orderProductStatus === "CANCELLED" ? (
+                <>
+                  <BiSolidCircle color="red" /> Cancelled on{" "}
+                  {updatedAt ? formattedDate(updatedAt) : ""}
+                </>
+              ) : null}
+            </h4>
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 
