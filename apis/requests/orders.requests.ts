@@ -98,3 +98,19 @@ export const updateProductStatus = (payload: {
     },
   });
 };
+
+export const updateCancelReason = (payload: {
+  orderProductId: number;
+  cancelReason: string;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/order/orderProductCancelReason`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

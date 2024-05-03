@@ -1,22 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
 import { MdHelpCenter } from "react-icons/md";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useOrderById } from "@/apis/queries/orders.queries";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import OtherItemCard from "@/components/modules/myOrderDetails/OtherItemCard";
-import UpdateProductStatusForm from "@/components/modules/myOrderDetails/UpdateProductStatusForm";
-import { useMe } from "@/apis/queries/user.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/shared/Footer";
 import Link from "next/link";
@@ -25,12 +17,7 @@ import { cn } from "@/lib/utils";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
-  const handleToggleStatusModal = () =>
-    setIsStatusModalOpen(!isStatusModalOpen);
-
-  const me = useMe();
   const orderByIdQuery = useOrderById(
     {
       orderProductId: searchParams?.id ? (searchParams.id as string) : "",
@@ -415,17 +402,6 @@ const MyOrderDetailsPage = ({}) => {
                             <MdHelpCenter />
                             Need Help?
                           </a>
-                          {me?.data?.data?.tradeRole !== "BUYER" ? (
-                            <div className="more-actions">
-                              <button
-                                type="button"
-                                className="theme-primary-btn update-status-btn"
-                                onClick={handleToggleStatusModal}
-                              >
-                                Update Status
-                              </button>
-                            </div>
-                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -456,21 +432,6 @@ const MyOrderDetailsPage = ({}) => {
         </div>
       </div>
       <Footer />
-      <Dialog open={isStatusModalOpen} onOpenChange={handleToggleStatusModal}>
-        <DialogContent className="customModal-s1">
-          <DialogHeader className="modal-header">
-            <DialogTitle className="modal-title">
-              Update Delivery Status
-            </DialogTitle>
-          </DialogHeader>
-
-          <UpdateProductStatusForm
-            orderProductId={searchParams?.id as string}
-            onClose={handleToggleStatusModal}
-            orderProductStatus={orderDetails?.orderProductStatus}
-          />
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
