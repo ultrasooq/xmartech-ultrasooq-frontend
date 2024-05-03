@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
@@ -14,9 +14,16 @@ import Footer from "@/components/shared/Footer";
 import Link from "next/link";
 import { formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import ReviewForm from "@/components/shared/ReviewForm";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewId, setReviewId] = useState<number>();
+
+  const handleToggleReviewModal = () =>
+    setIsReviewModalOpen(!isReviewModalOpen);
 
   const orderByIdQuery = useOrderById(
     {
@@ -409,15 +416,19 @@ const MyOrderDetailsPage = ({}) => {
                           </h4>
 
                           {orderDetails?.orderProductStatus === "DELIVERED" ? (
-                            <a href="#" className="ratingLink mt-0">
+                            <Button
+                              variant="ghost"
+                              className="ratingLink mt-0"
+                              onClick={handleToggleReviewModal}
+                            >
                               <PiStarFill />
                               Rate & Review Product
-                            </a>
+                            </Button>
                           ) : null}
-                          <a href="#" className="ratingLink">
+                          <Button variant="ghost" className="ratingLink mt-0">
                             <MdHelpCenter />
                             Need Help?
-                          </a>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -446,6 +457,18 @@ const MyOrderDetailsPage = ({}) => {
             </div>
           </div>
         </div>
+
+        <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
+          <DialogContent>
+            <ReviewForm
+              onClose={() => {
+                setReviewId(undefined);
+                handleToggleReviewModal();
+              }}
+              reviewId={reviewId}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
       <Footer />
     </>

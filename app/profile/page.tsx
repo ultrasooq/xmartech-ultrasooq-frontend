@@ -380,7 +380,7 @@ export default function ProfilePage() {
                                     }
                                     alt="profile"
                                     fill
-                                    className="rounded-full"
+                                    className="rounded-full object-contain"
                                     priority
                                   />
                                   <div className="absolute bottom-3 right-4 rounded-full bg-white p-1 shadow-md">
