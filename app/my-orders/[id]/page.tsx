@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
@@ -14,17 +14,25 @@ import Footer from "@/components/shared/Footer";
 import Link from "next/link";
 import { formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import ReviewForm from "@/components/shared/ReviewForm";
+import { useMe } from "@/apis/queries/user.queries";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
+  // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  // const [reviewId, setReviewId] = useState<number>();
 
+  // const handleToggleReviewModal = () =>
+  //   setIsReviewModalOpen(!isReviewModalOpen);
+
+  // const me = useMe();
   const orderByIdQuery = useOrderById(
     {
       orderProductId: searchParams?.id ? (searchParams.id as string) : "",
     },
     !!searchParams?.id,
   );
-
   const orderDetails = orderByIdQuery.data?.data;
   const shippingDetails =
     orderByIdQuery.data?.data?.orderProduct_order?.order_orderAddress.find(
@@ -82,6 +90,13 @@ const MyOrderDetailsPage = ({}) => {
     return `${dayOfWeek}, ${dayWithSuffix} ${month}`;
   }
 
+  // const reviewExists = useMemo(() => {
+  //   return me?.data?.data?.user_productReview?.some(
+  //     (item: { productId: number }) =>
+  //       item.productId === Number(searchParams?.id),
+  //   );
+  // }, [me?.data?.data?.user_productReview?.length, Number(searchParams?.id)]);
+
   return (
     <>
       <div className="my-order-main">
@@ -89,6 +104,22 @@ const MyOrderDetailsPage = ({}) => {
           <div className="my-order-wrapper">
             <div className="right-div mx-w-100">
               <div className="my-order-lists for-delivery-address">
+                <ul className="page-indicator-s1 !mb-0">
+                  <li>
+                    <Link href="/home">Home</Link>
+                  </li>
+                  <li>
+                    <Link href="/my-orders">My Orders</Link>
+                  </li>
+                  <li>
+                    <h5>
+                      <span className="font-semibold">
+                        {orderDetails?.orderProduct_order?.orderNo}
+                      </span>
+                    </h5>
+                  </li>
+                </ul>
+
                 {orderByIdQuery.isLoading ? (
                   <Skeleton className="h-44" />
                 ) : (
@@ -152,12 +183,12 @@ const MyOrderDetailsPage = ({}) => {
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
-                      <h5 className="mb-2">
+                      {/* <h5 className="mb-2">
                         Order ID:{" "}
                         <span className="font-semibold">
                           {orderDetails?.orderProduct_order?.orderNo}
                         </span>
-                      </h5>
+                      </h5> */}
                       <div className="my-order-box">
                         <Link
                           href={`/trending/${orderDetails?.orderProduct_product?.id}`}
@@ -393,15 +424,18 @@ const MyOrderDetailsPage = ({}) => {
                           </h4>
 
                           {orderDetails?.orderProductStatus === "DELIVERED" ? (
-                            <a href="#" className="ratingLink mt-0">
+                            <Link
+                              href={`/trending/${orderDetails?.productId}?type=reviews`}
+                              className="ratingLink"
+                            >
                               <PiStarFill />
                               Rate & Review Product
-                            </a>
+                            </Link>
                           ) : null}
-                          <a href="#" className="ratingLink">
+                          <Button variant="ghost" className="ratingLink mt-0">
                             <MdHelpCenter />
                             Need Help?
-                          </a>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -430,6 +464,18 @@ const MyOrderDetailsPage = ({}) => {
             </div>
           </div>
         </div>
+
+        {/* <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
+          <DialogContent>
+            <ReviewForm
+              onClose={() => {
+                setReviewId(undefined);
+                handleToggleReviewModal();
+              }}
+              reviewId={reviewId}
+            />
+          </DialogContent>
+        </Dialog> */}
       </div>
       <Footer />
     </>

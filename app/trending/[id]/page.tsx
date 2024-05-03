@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   useFetchProductById,
   useRelatedProducts,
@@ -18,7 +18,7 @@ import {
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
@@ -30,10 +30,12 @@ import QuestionsAnswersSection from "@/components/modules/productDetails/Questio
 
 const ProductDetailsPage = () => {
   const searchParams = useParams();
+  const searchQuery = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
+  const [activeTab, setActiveTab] = useState("description");
 
   const productQueryById = useFetchProductById(
     searchParams?.id ? (searchParams?.id as string) : "",
@@ -148,6 +150,11 @@ const ProductDetailsPage = () => {
     }
   };
 
+  useEffect(() => {
+    const type = searchQuery?.get("type");
+    if (type) setActiveTab(type);
+  }, [searchQuery?.get("type")]);
+
   return (
     <div className="body-content-s1">
       <div className="product-view-s1-left-right type2">
@@ -189,7 +196,7 @@ const ProductDetailsPage = () => {
         <div className="container m-auto px-3">
           <div className="product-view-s1-left-details">
             <div className="w-full">
-              <Tabs defaultValue="description">
+              <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
                 <TabsList className="flex h-auto w-full flex-wrap rounded-none bg-transparent px-0 sm:grid sm:min-h-[80px] sm:grid-cols-6">
                   <TabsTrigger
                     value="description"

@@ -286,8 +286,8 @@ const Header = () => {
                               <DropdownMenuItem>Order List</DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
-                            <Link href="/address">
-                              <DropdownMenuItem>My Addresses</DropdownMenuItem>
+                            <Link href="/my-settings">
+                              <DropdownMenuItem>My Settings</DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
                           </>
