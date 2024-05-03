@@ -2616,155 +2616,81 @@
 
   /* start: ========================== my-settings-page ====================== */
   .my-settings-page {
-    background-color: #fff8f7;
-    min-height: calc(100vh - 300px);
-    padding: 24px 24px;
+    @apply bg-[#fff8f7] min-h-[calc(100vh_-_300px)] p-6;
   }
-
   .my-settings-page-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    column-gap: 16px;
+    @apply flex justify-between items-start gap-x-4;
   }
-
   .my-settings-panel {
-    width: 100%;
-    max-width: 300px;
-    display: flex;
-    position: sticky;
-    top: 0;
-    flex-direction: column;
-    row-gap: 12px;
+    @apply w-full max-w-[300px] flex sticky flex-col gap-y-3 top-0;
   }
-
   .my-settings-content {
-    width: 100%;
-    max-width: calc(100% - 300px);
-    padding: 16px 16px;
-    background-color: #fff;
-    box-shadow: 1px 1px 5px #b4b4b4;
-    border-radius: 3px;
+    @apply w-full max-w-[calc(100%_-_300px)] bg-white shadow-[1px_1px_5px_#b4b4b4] p-4 rounded-[3px];
   }
-
   .my-settings-content h2 {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 16px;
+    @apply text-[22px] font-semibold mb-4;
   }
-
   .my-settings-content .my-address-sec {
-    display: flex;
-    flex-direction: column;
-    row-gap: 16px;
+    @apply flex flex-col gap-y-4;
   }
-
   .my-settings-panel .card-item {
-    background-color: #fff;
-    box-shadow: 1px 1px 5px #b4b4b4;
-    padding: 10px;
-    border-radius: 3px;
+    @apply bg-white shadow-[1px_1px_5px_#b4b4b4] p-2.5 rounded-[3px];
   }
-
   .my-settings-panel .userInfo {
-    display: flex;
-    align-items: center;
-    column-gap: 10px;
+    @apply flex items-center gap-x-2.5;
   }
-
   .my-settings-panel .userInfo .image-container {
-    width: 50px;
-    height: 50px;
+    @apply w-[50px] h-[50px];
   }
-
   .my-settings-panel .userInfo .image-container img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
+    @apply w-full h-full object-cover rounded-[50%];
   }
-
   .my-settings-panel .userInfo figcaption h5 {
-    font-size: 14px;
+    @apply text-sm;
   }
-
   .my-settings-panel .userInfo figcaption h4 {
-    font-size: 16px;
-    font-weight: 600;
-    margin-top: 2px;
+    @apply text-base font-semibold mt-0.5;
   }
-
   .my-settings-panel .menu-lists {
-    display: flex;
-    flex-direction: column;
-    row-gap: 10px;
-    padding: 5px 0 10px;
+    @apply flex flex-col gap-y-2.5 pt-[5px] pb-2.5 px-0;
   }
-
   .my-settings-panel .menu-lists li .menu-links {
-    display: flex;
-    align-items: center;
-    column-gap: 10px;
-    padding: 8px 10px;
-    transition: 0.3s;
-    border-radius: 5px;
+    @apply flex items-center gap-x-2.5 transition-[0.3s] px-2.5 py-2 rounded-[5px];
   }
-
   .my-settings-panel .menu-lists li .menu-links.active,
   .my-settings-panel .menu-lists li .menu-links:hover {
-    background-color: var(--theme-primary-color);
-    color: #fff;
+    @apply bg-[color:var(--theme-primary-color)] text-white;
   }
-
   .my-settings-panel .menu-lists li .menu-links.active svg path,
   .my-settings-panel .menu-lists li .menu-links:hover svg path {
-    fill: #fff;
+    @apply fill-white;
   }
-
   .my-settings-panel .menu-lists li .menu-links .arow {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    flex: 0 0 auto;
+    @apply flex items-center flex-[0_0_auto] ml-auto;
   }
-
   .my-settings-panel .menu-lists li .menu-links .arow svg {
-    width: 14px;
-    height: auto;
+    @apply w-3.5 h-auto;
   }
-
   .my-settings-panel .menu-lists li .menu-links span {
-    display: flex;
-    align-items: center;
+    @apply flex items-center;
   }
-
   .my-settings-panel .menu-lists li .menu-links .icon-container {
-    flex: 0 0 auto;
-    width: 26px;
+    @apply flex-[0_0_auto] w-[26px];
   }
-
   .my-settings-panel .menu-lists li .menu-links .icon-container svg {
-    height: auto;
-    width: 22px;
+    @apply h-auto w-[22px];
   }
-
   .my-settings-panel .menu-lists li .sub-menu-ul {
-    display: flex;
-    flex-direction: column;
-    padding: 8px 0 0 45px;
-    row-gap: 8px;
+    @apply flex flex-col gap-y-2 pl-[45px] pr-0 pt-2 pb-0;
   }
-
   .my-settings-panel .menu-lists li .sub-menu-ul .sub-menu-links {
-    padding: 10px 0;
-    font-size: 14px;
+    @apply text-sm px-0 py-2.5;
   }
-
   .my-settings-panel .menu-lists li .sub-menu-ul .sub-menu-links:hover,
   .my-settings-panel .menu-lists li .sub-menu-ul .sub-menu-links.active {
-    color: var(--theme-primary-color);
+    @apply text-[color:var(--theme-primary-color)];
   }
-
+  
   /* end: ========================== my-settings-page ====================== */
 
   /* start: responsive */
