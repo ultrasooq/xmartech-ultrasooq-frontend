@@ -31,7 +31,7 @@ import { Label } from "@/components/ui/label";
 import { useMe } from "@/apis/queries/user.queries";
 import { OrderDetails } from "@/utils/types/orders.types";
 import Image from "next/image";
-import { useOrderStore } from "@/lib/store";
+import { useOrderStore } from "@/lib/orderStore";
 import { Input } from "@/components/ui/input";
 import GuestAddressCard from "@/components/modules/checkout/GuestAddressCard";
 import validator from "validator";

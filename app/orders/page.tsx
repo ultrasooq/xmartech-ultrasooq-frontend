@@ -8,7 +8,7 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import PaymentForm from "@/components/modules/orders/PaymentForm";
-import { initialOrderState, useOrderStore } from "@/lib/store";
+import { initialOrderState, useOrderStore } from "@/lib/orderStore";
 import { useToast } from "@/components/ui/use-toast";
 import {
   useCreateOrder,

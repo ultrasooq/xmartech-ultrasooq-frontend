@@ -1,4 +1,5 @@
 "use client";
+import { useAllUserAddress } from "@/apis/queries/address.queries";
 import {
   useDeleteRfqCartItem,
   useRfqCartListByUserId,
@@ -6,8 +7,11 @@ import {
 } from "@/apis/queries/rfq.queries";
 import RfqProductCard from "@/components/modules/rfqCart/RfqProductCard";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import { Form } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { AddressItem } from "@/utils/types/address.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -27,12 +31,25 @@ const RfqCartPage = () => {
     defaultValues: {},
   });
 
+  const allUserAddressQuery = useAllUserAddress({
+    page: 1,
+    limit: 10,
+  });
   const rfqCartListByUser = useRfqCartListByUserId({
     page: 1,
     limit: 20,
   });
   const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
   const deleteRfqCartItem = useDeleteRfqCartItem();
+
+  const memoziedAddressList = useMemo(() => {
+    return (
+      allUserAddressQuery.data?.data.map((item: AddressItem) => ({
+        label: `${item.address} ${item.city} ${item.postCode} ${item.postCode} ${item.country}`,
+        value: item.id.toString(),
+      })) || []
+    );
+  }, [allUserAddressQuery.data?.data]);
 
   const memoizedRfqCartList = useMemo(() => {
     if (rfqCartListByUser.data?.data) {
@@ -93,29 +110,16 @@ const RfqCartPage = () => {
               <div className="add-delivery-card">
                 <h3>Add Delivery Address & date</h3>
                 <Form {...form}>
-                  <form className="input-row">
-                    <div className="input-col">
-                      <div className="mb-4 w-full space-y-2">
-                        <label
-                          className="text-sm font-medium leading-none 
-                    peer-disabled:cursor-not-allowed 
-                    peer-disabled:opacity-70"
-                        >
-                          Address
-                        </label>
-                        <div className="relative">
-                          <select
-                            className="
-                      theme-form-control-s1 select1"
-                          >
-                            <option>Address</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
+                  <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
+                    <ControlledSelectInput
+                      label="Address"
+                      name="address"
+                      options={memoziedAddressList}
+                    />
 
-                    <div className="input-col">
-                      <ControlledDatePicker label="Date" name="createdDate" />
+                    <div>
+                      <Label>Date</Label>
+                      <ControlledDatePicker name="createdDate" />
                     </div>
                   </form>
                 </Form>

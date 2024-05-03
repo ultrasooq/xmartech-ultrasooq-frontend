@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
 interface ControlledDatePickerProps {
-  label: string;
+  label?: string;
   name: string;
 }
 
@@ -49,7 +49,7 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
                   {field.value ? (
                     format(field.value, "PPP")
                   ) : (
-                    <span>Enter {label}</span>
+                    <span>Enter {label || "Date"}</span>
                   )}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
