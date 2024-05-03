@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
+// import { useMe } from "@/apis/queries/user.queries";
 
 const MyOrdersPage = () => {
   const searchRef = useRef<HTMLInputElement>(null);
@@ -60,6 +61,7 @@ const MyOrdersPage = () => {
     };
   };
 
+  // const me = useMe();
   const ordersQuery = useOrders({
     page: 1,
     limit: 40,
@@ -259,6 +261,7 @@ const MyOrdersPage = () => {
               {ordersQuery?.data?.data?.map(
                 (item: {
                   id: number;
+                  productId: number;
                   purchasePrice: string;
                   orderProduct_product: {
                     productName: string;
@@ -274,6 +277,7 @@ const MyOrdersPage = () => {
                   <OrderCard
                     key={item.id}
                     id={item.id}
+                    productId={item.productId}
                     purchasePrice={item.purchasePrice}
                     productName={item.orderProduct_product?.productName}
                     produtctImage={item.orderProduct_product?.productImages}
@@ -281,6 +285,7 @@ const MyOrdersPage = () => {
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}
                     updatedAt={item.updatedAt}
+                    // productReview={me?.data?.data?.user_productReview}
                   />
                 ),
               )}

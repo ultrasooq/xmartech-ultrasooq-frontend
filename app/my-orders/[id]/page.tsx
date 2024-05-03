@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
@@ -16,22 +16,23 @@ import { formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ReviewForm from "@/components/shared/ReviewForm";
+import { useMe } from "@/apis/queries/user.queries";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [reviewId, setReviewId] = useState<number>();
+  // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  // const [reviewId, setReviewId] = useState<number>();
 
-  const handleToggleReviewModal = () =>
-    setIsReviewModalOpen(!isReviewModalOpen);
+  // const handleToggleReviewModal = () =>
+  //   setIsReviewModalOpen(!isReviewModalOpen);
 
+  // const me = useMe();
   const orderByIdQuery = useOrderById(
     {
       orderProductId: searchParams?.id ? (searchParams.id as string) : "",
     },
     !!searchParams?.id,
   );
-
   const orderDetails = orderByIdQuery.data?.data;
   const shippingDetails =
     orderByIdQuery.data?.data?.orderProduct_order?.order_orderAddress.find(
@@ -88,6 +89,13 @@ const MyOrderDetailsPage = ({}) => {
 
     return `${dayOfWeek}, ${dayWithSuffix} ${month}`;
   }
+
+  // const reviewExists = useMemo(() => {
+  //   return me?.data?.data?.user_productReview?.some(
+  //     (item: { productId: number }) =>
+  //       item.productId === Number(searchParams?.id),
+  //   );
+  // }, [me?.data?.data?.user_productReview?.length, Number(searchParams?.id)]);
 
   return (
     <>
@@ -416,14 +424,13 @@ const MyOrderDetailsPage = ({}) => {
                           </h4>
 
                           {orderDetails?.orderProductStatus === "DELIVERED" ? (
-                            <Button
-                              variant="ghost"
-                              className="ratingLink mt-0"
-                              onClick={handleToggleReviewModal}
+                            <Link
+                              href={`/trending/${orderDetails?.productId}?type=reviews`}
+                              className="ratingLink"
                             >
                               <PiStarFill />
                               Rate & Review Product
-                            </Button>
+                            </Link>
                           ) : null}
                           <Button variant="ghost" className="ratingLink mt-0">
                             <MdHelpCenter />
@@ -458,7 +465,7 @@ const MyOrderDetailsPage = ({}) => {
           </div>
         </div>
 
-        <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
+        {/* <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
           <DialogContent>
             <ReviewForm
               onClose={() => {
@@ -468,7 +475,7 @@ const MyOrderDetailsPage = ({}) => {
               reviewId={reviewId}
             />
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
       </div>
       <Footer />
     </>

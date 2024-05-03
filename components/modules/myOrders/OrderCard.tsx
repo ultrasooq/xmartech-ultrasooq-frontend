@@ -2,14 +2,15 @@ import { Button } from "@/components/ui/button";
 import { DELIVERY_STATUS, formattedDate } from "@/utils/constants";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import ReviewForm from "@/components/shared/ReviewForm";
+// import { Dialog, DialogContent } from "@/components/ui/dialog";
+// import ReviewForm from "@/components/shared/ReviewForm";
 
 type OrderCardProps = {
   id: number;
+  productId: number;
   purchasePrice: string;
   productName: string;
   produtctImage?: { id: number; image: string }[];
@@ -18,10 +19,12 @@ type OrderCardProps = {
   orderStatus: string;
   orderProductDate: string;
   updatedAt: string;
+  // productReview: { productId: number }[];
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
   id,
+  productId,
   purchasePrice,
   productName,
   produtctImage,
@@ -30,12 +33,19 @@ const OrderCard: React.FC<OrderCardProps> = ({
   orderStatus,
   orderProductDate,
   updatedAt,
+  // productReview,
 }) => {
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [reviewId, setReviewId] = useState<number>();
+  // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  // const [reviewId, setReviewId] = useState<number>();
 
-  const handleToggleReviewModal = () =>
-    setIsReviewModalOpen(!isReviewModalOpen);
+  // const handleToggleReviewModal = () =>
+  // setIsReviewModalOpen(!isReviewModalOpen);
+
+  // const reviewExists = useMemo(() => {
+  //   return productReview?.some(
+  //     (item: { productId: number }) => item.productId === id,
+  //   );
+  // }, [productReview?.length, id]);
 
   return (
     <div className="my-order-card">
@@ -103,21 +113,17 @@ const OrderCard: React.FC<OrderCardProps> = ({
           <p>{DELIVERY_STATUS[orderStatus]}</p>
 
           {orderStatus === "DELIVERED" ? (
-            <Button
-              variant="ghost"
+            <Link
+              href={`/trending/${productId}?type=reviews`}
               className="ratingLink"
-              onClick={(e) => {
-                e.preventDefault();
-                handleToggleReviewModal();
-              }}
             >
               <PiStarFill />
               Rate & Review Product
-            </Button>
+            </Link>
           ) : null}
         </div>
       </div>
-      <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
+      {/* <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
         <DialogContent>
           <ReviewForm
             onClose={() => {
@@ -127,7 +133,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
             reviewId={reviewId}
           />
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };
