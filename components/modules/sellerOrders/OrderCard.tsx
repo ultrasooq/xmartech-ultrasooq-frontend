@@ -10,6 +10,7 @@ type OrderCardProps = {
   productName: string;
   produtctImage?: { id: number; image: string }[];
   productColor?: string;
+  orderId: string;
   orderStatus: string;
   orderProductDate: string;
   updatedAt: string;
@@ -21,6 +22,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   productName,
   produtctImage,
   productColor,
+  orderId,
   orderStatus,
   orderProductDate,
   updatedAt,
@@ -28,6 +30,9 @@ const OrderCard: React.FC<OrderCardProps> = ({
   return (
     <Link href={`/seller-orders/${id}`}>
       <div className="my-order-card">
+        <h5 className="mb-2">
+          Order ID: <span className="font-semibold">{orderId}</span>
+        </h5>
         <div className="my-order-box">
           <figure>
             <div className="image-container rounded border border-gray-300">

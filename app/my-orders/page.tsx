@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMe } from "@/apis/queries/user.queries";
 import { v4 as uuidv4 } from "uuid";
+import Link from "next/link";
 
 const MyOrdersPage = () => {
   const searchRef = useRef<HTMLInputElement>(null);
@@ -88,15 +88,14 @@ const MyOrdersPage = () => {
   return (
     <div className="my-order-main">
       <div className="container m-auto px-3">
-        {/* <ul className="page-indicator-s1">
+        <ul className="page-indicator-s1">
           <li>
-            <a href="#">Home</a>
+            <Link href="/home">Home</Link>
           </li>
           <li>
-            <a href="#">My Account</a>
+            <Link href="/my-orders">My Orders</Link>
           </li>
-          <li>My Orders</li>
-        </ul> */}
+        </ul>
 
         <div className="my-order-wrapper">
           <div className="left-div">
@@ -265,6 +264,9 @@ const MyOrdersPage = () => {
                     productName: string;
                     productImages: { id: number; image: string }[];
                   };
+                  orderProduct_order: {
+                    orderNo: string;
+                  };
                   orderProductStatus: string;
                   orderProductDate: string;
                   updatedAt: string;
@@ -275,6 +277,7 @@ const MyOrdersPage = () => {
                     purchasePrice={item.purchasePrice}
                     productName={item.orderProduct_product?.productName}
                     produtctImage={item.orderProduct_product?.productImages}
+                    orderId={item.orderProduct_order?.orderNo}
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}
                     updatedAt={item.updatedAt}

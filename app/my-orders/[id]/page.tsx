@@ -89,6 +89,22 @@ const MyOrderDetailsPage = ({}) => {
           <div className="my-order-wrapper">
             <div className="right-div mx-w-100">
               <div className="my-order-lists for-delivery-address">
+                <ul className="page-indicator-s1 !mb-0">
+                  <li>
+                    <Link href="/home">Home</Link>
+                  </li>
+                  <li>
+                    <Link href="/my-orders">My Orders</Link>
+                  </li>
+                  <li>
+                    <h5>
+                      <span className="font-semibold">
+                        {orderDetails?.orderProduct_order?.orderNo}
+                      </span>
+                    </h5>
+                  </li>
+                </ul>
+
                 {orderByIdQuery.isLoading ? (
                   <Skeleton className="h-44" />
                 ) : (
@@ -152,12 +168,12 @@ const MyOrderDetailsPage = ({}) => {
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
-                      <h5 className="mb-2">
+                      {/* <h5 className="mb-2">
                         Order ID:{" "}
                         <span className="font-semibold">
                           {orderDetails?.orderProduct_order?.orderNo}
                         </span>
-                      </h5>
+                      </h5> */}
                       <div className="my-order-box">
                         <Link
                           href={`/trending/${orderDetails?.orderProduct_product?.id}`}
