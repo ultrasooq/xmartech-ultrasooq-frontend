@@ -2,6 +2,9 @@ import React, { useMemo } from "react";
 import Image from "next/image";
 import { DAYS_NAME_LIST } from "@/utils/constants";
 import { getAmPm, parsedDays } from "@/utils/helper";
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
 
 type MoreInformationSectionProps = {
   userDetails: any;
@@ -49,7 +52,13 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
             <label className="mb-3 text-lg font-semibold leading-5 text-color-dark">
               About Me
             </label>
-            <p>{userDetails?.userProfile?.[0]?.aboutUs || "NA"}</p>
+            <ReactQuill
+              theme="snow"
+              value={userDetails?.userProfile?.[0]?.aboutUs || "NA"}
+              readOnly
+              modules={{ toolbar: false }}
+              className="readonly-quill w-full"
+            />
           </div>
         </div>
         <div className="mt-6 w-full border-b-2 border-dashed border-gray-200 pb-3.5">
