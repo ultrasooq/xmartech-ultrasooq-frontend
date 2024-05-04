@@ -26,7 +26,7 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
-import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
+import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 
 const formSchema = z
@@ -302,23 +302,16 @@ export default function FreelancerProfilePage() {
                     </label>
                   </div>
                 </div>
-                <div className="mb-3.5 w-full">
-                  <div className="flex flex-wrap">
-                    <ControlledTextareaInput
-                      label="About Us"
-                      name="aboutUs"
-                      placeholder="Write Here...."
-                      rows={6}
-                    />
+                <div className="mb-3.5 w-full space-y-5">
+                  <ControlledRichTextEditor label="About Us" name="aboutUs" />
 
-                    <AccordionMultiSelectV2
-                      label="Business Type"
-                      name="businessTypeList"
-                      options={memoizedTags || []}
-                      placeholder="Business Type"
-                      error={form.formState.errors.businessTypeList?.message}
-                    />
-                  </div>
+                  <AccordionMultiSelectV2
+                    label="Business Type"
+                    name="businessTypeList"
+                    options={memoizedTags || []}
+                    placeholder="Business Type"
+                    error={form.formState.errors.businessTypeList?.message}
+                  />
                 </div>
                 <div className="mb-3.5 w-full">
                   <div className="flex flex-wrap">

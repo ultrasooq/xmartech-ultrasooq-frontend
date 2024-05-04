@@ -10,7 +10,7 @@ import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
-import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
+import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 
 const formSchema = z.object({
   aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
@@ -86,7 +86,7 @@ export default function EditProfilePage() {
                   My Profile
                 </h2>
               </div>
-              <div className="flex w-full flex-wrap">
+              <div className="mb-5 flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                     <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
@@ -95,12 +95,7 @@ export default function EditProfilePage() {
                   </div>
                 </div>
 
-                <ControlledTextareaInput
-                  label="About Us"
-                  name="aboutUs"
-                  placeholder="Write Here...."
-                  rows={6}
-                />
+                <ControlledRichTextEditor label="About Us" name="aboutUs" />
               </div>
 
               <Button

@@ -1,5 +1,8 @@
-import Image from "next/image";
 import React from "react";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
 
 type MoreInformationSectionProps = {
   userDetails: any;
@@ -66,16 +69,20 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
             </div>
           </div>
           <div className="w-full">
-            <div className="flex w-full flex-wrap py-4">
+            <div className="flex w-full flex-wrap items-start py-4">
               <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0">
                 <span className="text-sm font-normal capitalize leading-4 text-gray-500">
                   About Us:
                 </span>
               </div>
               <div className="mr-1 flex w-10/12  items-center justify-start pl-7 sm:mr-0">
-                <p className="text-base font-medium leading-6 text-color-dark">
-                  {userDetails?.userProfile?.[0]?.aboutUs || "NA"}
-                </p>
+                <ReactQuill
+                  theme="snow"
+                  value={userDetails?.userProfile?.[0]?.aboutUs || "NA"}
+                  readOnly
+                  modules={{ toolbar: false }}
+                  className="readonly-quill w-full"
+                />
               </div>
             </div>
           </div>

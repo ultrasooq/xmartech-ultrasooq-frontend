@@ -31,7 +31,7 @@ import { getAmPm, getLastTwoHundredYears } from "@/utils/helper";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
+import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import { ICountries, OptionProps } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
@@ -550,7 +550,7 @@ export default function CompanyProfilePage() {
                 </div>
               </div>
 
-              <div className="mb-3.5 w-full">
+              <div className="mb-5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
                   <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
                     More Information
@@ -575,12 +575,7 @@ export default function CompanyProfilePage() {
                   />
                 </div>
 
-                <ControlledTextareaInput
-                  label="About Us"
-                  name="aboutUs"
-                  placeholder="Write Here...."
-                  rows={6}
-                />
+                <ControlledRichTextEditor label="About Us" name="aboutUs" />
               </div>
             </div>
 

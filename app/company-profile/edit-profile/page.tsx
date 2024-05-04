@@ -26,7 +26,7 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 import { useCountries } from "@/apis/queries/masters.queries";
 import { ICountries, OptionProps } from "@/utils/types/common.types";
 import { NO_OF_EMPLOYEES_LIST } from "@/utils/constants";
-import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
+import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -388,7 +388,7 @@ export default function EditProfilePage() {
                 </div>
               </div>
 
-              <div className="mb-3.5 w-full">
+              <div className="mb-5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
                   <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
                     More Information
@@ -413,12 +413,7 @@ export default function EditProfilePage() {
                   />
                 </div>
 
-                <ControlledTextareaInput
-                  label="About Us"
-                  name="aboutUs"
-                  placeholder="Write Here...."
-                  rows={6}
-                />
+                <ControlledRichTextEditor label="About Us" name="aboutUs" />
               </div>
             </div>
 
