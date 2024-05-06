@@ -103,18 +103,13 @@ const Header = () => {
   const handleProfile = () => {
     switch (userDetails?.data?.data?.tradeRole) {
       case "BUYER":
-        // TODO: fix path later
-        router.push("/profile");
-        break;
+        return "/profile";
       case "FREELANCER":
-        router.push("/freelancer-profile-details");
-        break;
+        return "/freelancer-profile-details";
       case "COMPANY":
-        router.push("/company-profile-details");
-        break;
+        return "/company-profile-details";
       default:
-        router.push("/home");
-        break;
+        return "/home";
     }
   };
 
@@ -124,11 +119,6 @@ const Header = () => {
     queryClient.clear();
     router.push("/login");
   };
-  const handleProducListtPage = () => router.push("/product-list");
-  const handleChangeEmailPage = () => router.push("/change-email");
-  const handleChangePasswordPage = () => router.push("/change-password");
-  const handleLogin = () => router.push("/login");
-  const handleRegister = () => router.push("/register");
 
   const wrapperRef = useRef(null);
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
@@ -269,36 +259,30 @@ const Header = () => {
                         )}
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={handleProfile}
-                          className="cursor-pointer"
-                        >
-                          Profile Information
-                        </DropdownMenuItem>
+                        <Link href={handleProfile()}>
+                          <DropdownMenuItem
+                            // onClick={handleProfile}
+                            className="cursor-pointer"
+                          >
+                            Profile Information
+                          </DropdownMenuItem>
+                        </Link>
                         <DropdownMenuSeparator />
                         {userDetails?.data?.data?.tradeRole !== "BUYER" ? (
                           <>
-                            <DropdownMenuItem onClick={handleProducListtPage}>
-                              Products
-                            </DropdownMenuItem>
+                            <Link href="/product-list">
+                              <DropdownMenuItem>Products</DropdownMenuItem>
+                            </Link>
                             <DropdownMenuSeparator />
                             <Link href="/seller-orders">
                               <DropdownMenuItem>Order List</DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
-                            <Link href="/my-settings">
-                              <DropdownMenuItem>My Settings</DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuSeparator />
                           </>
                         ) : null}
-                        <DropdownMenuItem onClick={handleChangeEmailPage}>
-                          Change Email
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleChangePasswordPage}>
-                          Change Password
-                        </DropdownMenuItem>
+                        <Link href="/my-settings/address">
+                          <DropdownMenuItem>My Settings</DropdownMenuItem>
+                        </Link>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={handleLogout}
@@ -317,12 +301,18 @@ const Header = () => {
                         alt="login-avatar-icon"
                       />
                       <div className="flex flex-col">
-                        <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
-                          <span onClick={handleLogin}>Login</span>
-                        </a>
-                        <a className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white">
-                          <span onClick={handleRegister}>Register</span>
-                        </a>
+                        <Link
+                          href="/login"
+                          className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
+                        >
+                          Login
+                        </Link>
+                        <Link
+                          href="/register"
+                          className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
+                        >
+                          Register
+                        </Link>
                       </div>
                     </>
                   )}
