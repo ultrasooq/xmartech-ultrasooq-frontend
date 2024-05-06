@@ -12,6 +12,7 @@ import {
 } from "@/apis/queries/address.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { v4 as uuidv4 } from "uuid";
 
 type AddressPageProps = {};
 
@@ -83,7 +84,7 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
 
         {allUserAddressQuery.isLoading
           ? Array.from({ length: 2 }, (_, i) => i).map((item) => (
-              <div className="space-y-3 px-4">
+              <div key={uuidv4()} className="space-y-3 px-4">
                 <Skeleton className="h-6 w-full" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-8 w-full" />
