@@ -11,6 +11,9 @@ export function middleware(request: NextRequest) {
     "/reset-password",
     "/password-reset-verify",
     "/otp-verify",
+  ];
+
+  const globalPaths = [
     "/trending",
     "/trending/:id",
     "/cart",
@@ -25,10 +28,7 @@ export function middleware(request: NextRequest) {
 
   const dynamicPathRegex = /^\/trending\/\d+$/;
 
-  if (
-    publicPaths.includes(request.nextUrl.pathname) ||
-    dynamicPathRegex.test(request.nextUrl.pathname)
-  ) {
+  if (publicPaths.includes(request.nextUrl.pathname)) {
     return authToken
       ? NextResponse.redirect(new URL("/home", request.url))
       : NextResponse.next();
@@ -39,7 +39,10 @@ export function middleware(request: NextRequest) {
       ? NextResponse.redirect(new URL("/home", request.url))
       : NextResponse.next();
   } else {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return globalPaths.includes(request.nextUrl.pathname) ||
+      dynamicPathRegex.test(request.nextUrl.pathname)
+      ? NextResponse.next()
+      : NextResponse.redirect(new URL("/login", request.url));
   }
 }
 
