@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
+import Image from "next/image";
 
 const RfqPage = () => {
   const { toast } = useToast();
@@ -138,12 +139,16 @@ const RfqPage = () => {
                 </div>
                 <div className="rfq_add_new_product">
                   <Link
-                    href="/crete-product"
-                    // onClick={() => setIsAddToCartModalOpen(true)}
-                    className=""
+                    href="/create-product?productType=R"
+                    className="flex gap-x-2 bg-dark-orange px-3 py-2 text-white"
                   >
-                    <img src="images/plus-icon-white.png" alt="plus-icon" /> add
-                    new product in RFQ
+                    <Image
+                      src="/images/plus-icon-white.png"
+                      width={15}
+                      height={24}
+                      alt="plus-icon"
+                    />{" "}
+                    Add new product in RFQ
                   </Link>
                 </div>
               </div>
@@ -228,7 +233,7 @@ const RfqPage = () => {
                           <RfqProductCard
                             key={item.id}
                             id={item.id}
-                            productType={item?.type || "-"}
+                            productType={item?.productType || "-"}
                             productName={item?.productName || "-"}
                             productNote={item?.productNote || "-"}
                             productStatus={item?.status}
