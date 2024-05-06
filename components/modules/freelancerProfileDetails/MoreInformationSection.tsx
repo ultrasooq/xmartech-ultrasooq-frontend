@@ -29,22 +29,24 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
         <h2 className="left-8 text-2xl font-semibold text-color-dark">
           Freelancer Information
         </h2>
-        <div className="w-auto">
-          <button
-            type="button"
-            onClick={onEditProfile}
-            className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
-          >
-            <Image
-              src="/images/edit-icon.svg"
-              height={18}
-              width={18}
-              className="mr-1"
-              alt="edit-icon"
-            />
-            edit
-          </button>
-        </div>
+        {userDetails?.userBranch?.length ? (
+          <div className="w-auto">
+            <button
+              type="button"
+              onClick={onEditProfile}
+              className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+            >
+              <Image
+                src="/images/edit-icon.svg"
+                height={18}
+                width={18}
+                className="mr-1"
+                alt="edit-icon"
+              />
+              edit
+            </button>
+          </div>
+        ) : null}
       </div>
       <div className="w-full">
         <div className="w-full">
@@ -66,22 +68,24 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
             <label className="mb-3.5 block text-lg font-semibold leading-5 text-color-dark">
               Address
             </label>
-            <div className="w-auto">
-              <button
-                type="button"
-                onClick={onEditBranch}
-                className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
-              >
-                <Image
-                  src="/images/edit-icon.svg"
-                  height={18}
-                  width={18}
-                  className="mr-1"
-                  alt="edit-icon"
-                />
-                edit
-              </button>
-            </div>
+            {userDetails?.userBranch?.length ? (
+              <div className="w-auto">
+                <button
+                  type="button"
+                  onClick={onEditBranch}
+                  className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                >
+                  <Image
+                    src="/images/edit-icon.svg"
+                    height={18}
+                    width={18}
+                    className="mr-1"
+                    alt="edit-icon"
+                  />
+                  edit
+                </button>
+              </div>
+            ) : null}
           </div>
           <div className="flex w-full flex-wrap">
             <div className="w-full md:w-7/12">

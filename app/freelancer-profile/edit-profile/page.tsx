@@ -86,7 +86,7 @@ export default function EditProfilePage() {
                   My Profile
                 </h2>
               </div>
-              <div className="mb-5 flex w-full flex-wrap">
+              <div className="mb-5">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                     <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">

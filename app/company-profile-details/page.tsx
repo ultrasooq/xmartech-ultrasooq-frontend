@@ -29,8 +29,13 @@ export default function CompanyProfileDetailsPage() {
   );
 
   const handleCompanyProfilePage = () => router.push("/profile");
-  const handleAddCompanyBranchPage = () =>
-    router.push("/company-profile/add-branch");
+  const handleAddCompanyBranchPage = () => {
+    if (!userDetails.data?.data?.userBranch?.length) {
+      router.push("/company-profile");
+    } else {
+      router.push("/company-profile/add-branch");
+    }
+  };
   const handleEditCompanyPage = () =>
     router.push(
       `/company-profile/edit-profile?userId=${userDetails.data?.data.id}`,
@@ -112,11 +117,19 @@ export default function CompanyProfileDetailsPage() {
                     userDetails={userDetails.data?.data}
                     onEdit={handleCompanyProfilePage}
                   />
-                  <MoreInformationSection
-                    userDetails={userDetails.data?.data}
-                    onEdit={handleEditCompanyPage}
-                  />
+                  {userDetails.data?.data?.userBranch?.length ? (
+                    <MoreInformationSection
+                      userDetails={userDetails.data?.data}
+                      onEdit={handleEditCompanyPage}
+                    />
+                  ) : null}
+
                   {/* Branch Section */}
+                  {!userDetails.data?.data?.userBranch?.length ? (
+                    <p className="pt-5 text-center text-lg font-medium text-color-dark">
+                      No Branch Exists
+                    </p>
+                  ) : null}
                   <div className="mb-4 w-full pt-4">
                     <div className="mb-5 flex w-full items-center justify-end">
                       <button

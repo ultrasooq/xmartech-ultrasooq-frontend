@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
 import { useProducts } from "@/apis/queries/product.queries";
 import { stripHTML } from "@/utils/helper";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 export default function FreelancerProfileDetailsPage() {
   const router = useRouter();
@@ -33,6 +34,8 @@ export default function FreelancerProfileDetailsPage() {
     router.push(
       `/freelancer-profile/edit-branch?branchId=${userDetails.data?.data?.userBranch?.[0]?.id}`,
     );
+  const handleAddFreelancerBranchPage = () =>
+    router.push("/freelancer-profile");
 
   const memoizedProducts = useMemo(() => {
     return (
@@ -106,11 +109,32 @@ export default function FreelancerProfileDetailsPage() {
                     userDetails={userDetails.data?.data}
                     onEdit={handleFreelancerProfilePage}
                   />
-                  <MoreInformationSection
-                    userDetails={userDetails.data?.data}
-                    onEditProfile={handleEditFreelancerProfilePage}
-                    onEditBranch={handleEditFreelancerBranchPage}
-                  />
+
+                  {!userDetails.data?.data?.userBranch?.length ? (
+                    <>
+                      <p className="pt-5 text-center text-lg font-medium text-color-dark">
+                        No Branch Exists
+                      </p>
+                      <div className="mb-5 flex w-full items-center justify-end pt-4">
+                        <button
+                          type="button"
+                          onClick={handleAddFreelancerBranchPage}
+                          className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                        >
+                          <PlusIcon className="mr-1 h-5 w-5" />
+                          Add
+                        </button>
+                      </div>
+                    </>
+                  ) : null}
+
+                  {userDetails?.data?.data?.userBranch?.length ? (
+                    <MoreInformationSection
+                      userDetails={userDetails.data?.data}
+                      onEditProfile={handleEditFreelancerProfilePage}
+                      onEditBranch={handleEditFreelancerBranchPage}
+                    />
+                  ) : null}
                 </div>
               </TabsContent>
               <TabsContent value="ratings" className="mt-0">
