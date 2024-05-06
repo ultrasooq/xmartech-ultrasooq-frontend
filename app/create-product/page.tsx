@@ -100,7 +100,7 @@ const formSchema = z
 const CreateProductPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const searchQuery = useSearchParams();
+  // const searchQuery = useSearchParams();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -123,14 +123,8 @@ const CreateProductPage = () => {
     },
   });
 
-  const activeProductId =
-    searchQuery && searchQuery.get("productId")
-      ? searchQuery.get("productId")
-      : undefined;
-  const activeProductType =
-    searchQuery && searchQuery.get("productType")
-      ? searchQuery.get("productType")
-      : undefined;
+  const [activeProductId, setActiveProductId] = useState<string>();
+  const [activeProductType, setActiveProductType] = useState<string>();
 
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
@@ -341,6 +335,17 @@ const CreateProductPage = () => {
       });
     }
   }, [productQueryById?.data?.data]);
+
+  // useEffect(() => {
+  //   const activeProductId = searchQuery?.get("productId");
+  //   const activeProductType = searchQuery?.get("productType");
+  //   if (activeProductId) {
+  //     setActiveProductId(activeProductId);
+  //   }
+  //   if (activeProductType) {
+  //     setActiveProductType(activeProductType);
+  //   }
+  // }, [searchQuery?.get("productId"), searchQuery?.get("productType")]);
 
   return (
     <>
