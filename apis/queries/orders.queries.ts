@@ -8,6 +8,7 @@ import {
   createOrder,
   createOrderUnAuth,
   fetchOrderById,
+  fetchOrderBySellerId,
   fetchOrders,
   fetchOrdersBySellerId,
   updateCancelReason,
@@ -135,6 +136,23 @@ export const useOrderById = (
       const res: {
         data: { data: any; message: string; status: boolean; otherData: any };
       } = await fetchOrderById(payload);
+      return res.data;
+    },
+    enabled,
+  });
+
+export const useOrderBySellerId = (
+  payload: {
+    orderProductId: string;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["order-by-seller-id", payload],
+    queryFn: async () => {
+      const res: {
+        data: { data: any; message: string; status: boolean; otherData: any };
+      } = await fetchOrderBySellerId(payload);
       return res.data;
     },
     enabled,
