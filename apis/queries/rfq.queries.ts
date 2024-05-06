@@ -122,7 +122,7 @@ export const useUpdateRfqCartWithLogin = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { rfqProductId: number; quantity: number }
+    { productId: number; quantity: number }
   >({
     mutationFn: async (payload) => {
       const res = await updateRfqCartWithLogin(payload);

@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useOrderById } from "@/apis/queries/orders.queries";
+import { useOrderBySellerId } from "@/apis/queries/orders.queries";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ const MyOrderDetailsPage = ({}) => {
     setIsStatusModalOpen(!isStatusModalOpen);
 
   const me = useMe();
-  const orderByIdQuery = useOrderById(
+  const orderByIdQuery = useOrderBySellerId(
     {
       orderProductId: searchParams?.id ? (searchParams.id as string) : "",
     },
@@ -106,12 +106,12 @@ const MyOrderDetailsPage = ({}) => {
                     <Link href="/home">Home</Link>
                   </li>
                   <li>
-                    <Link href="/my-orders">My Orders</Link>
+                    <Link href="/seller-orders">My Orders</Link>
                   </li>
                   <li>
                     <h5>
                       <span className="font-semibold">
-                        {orderDetails?.orderProduct_order?.orderNo}
+                        {orderDetails?.sellerOrderNo}
                       </span>
                     </h5>
                   </li>

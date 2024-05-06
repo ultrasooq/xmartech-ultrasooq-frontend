@@ -1,4 +1,5 @@
 export interface ICreateProductRequest {
+  productType: "R" | "P";
   productName: string;
   categoryId: number;
   brandId: number;
@@ -15,6 +16,7 @@ export interface ICreateProductRequest {
   offerPrice: number;
   description: string;
   specification: string;
+  status: "ACTIVE" | "INACTIVE";
 }
 
 export interface ICreateProduct {

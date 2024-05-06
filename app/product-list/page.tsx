@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Pagination from "@/components/shared/Pagination";
 import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
+import Link from "next/link";
 
 const ProductListPage = () => {
   const router = useRouter();
@@ -52,7 +53,6 @@ const ProductListPage = () => {
     setSearchTerm(event.target.value);
   }, 1000);
 
-  const handleAddProductPage = () => router.push("/create-product");
   const handleEditProductPage = (id: number) =>
     router.push(`/create-product?productId=${id}`);
   const handleToggleDeleteModal = () => {
@@ -124,14 +124,13 @@ const ProductListPage = () => {
                 />
               </li>
               <li>
-                <Button
-                  type="submit"
-                  onClick={handleAddProductPage}
-                  className="theme-primary-btn add-btn"
+                <Link
+                  href="/create-product"
+                  className="theme-primary-btn add-btn p-2"
                 >
                   <AddIcon />
                   <span className="d-none-mobile">Add Product</span>
-                </Button>
+                </Link>
               </li>
             </ul>
           </CardHeader>
@@ -160,7 +159,7 @@ const ProductListPage = () => {
                               <Image
                                 src={
                                   item?.productImage &&
-                                    validator.isURL(item.productImage)
+                                  validator.isURL(item.productImage)
                                     ? item.productImage
                                     : "/images/product-placeholder.png"
                                 }
@@ -200,7 +199,11 @@ const ProductListPage = () => {
                               <HiOutlineDotsCircleHorizontal />
                             </button>
                             <div className="td-dots-dropdown-menu">
-                              <button type="button" className="td-dots-dropdown-item" onClick={() => handleEditProductPage(item?.id)}>
+                              <button
+                                type="button"
+                                className="td-dots-dropdown-item"
+                                // onClick={() => handleEditProductPage(item?.id)}
+                              >
                                 <span className="icon-container">
                                   <img
                                     src="/images/td-edit-icon.svg"
@@ -211,10 +214,14 @@ const ProductListPage = () => {
                                 </span>
                                 Edit
                               </button>
-                              <button type="button" className="td-dots-dropdown-item" onClick={() => {
-                                handleToggleDeleteModal();
-                                setSelectedProductId(item?.id);
-                              }}>
+                              <button
+                                type="button"
+                                className="td-dots-dropdown-item"
+                                onClick={() => {
+                                  handleToggleDeleteModal();
+                                  setSelectedProductId(item?.id);
+                                }}
+                              >
                                 <span className="icon-container">
                                   <img
                                     src="/images/td-trash-icon.svg"
@@ -255,11 +262,11 @@ const ProductListPage = () => {
       </div>
 
       <Dialog open={isDeleteModalOpen} onOpenChange={handleToggleDeleteModal}>
-          <DeleteContent
-            onClose={() => handleConfirmation(false)}
-            onConfirm={() => handleConfirmation(true)}
-            isLoading={deleteProduct.isPending}
-          />
+        <DeleteContent
+          onClose={() => handleConfirmation(false)}
+          onConfirm={() => handleConfirmation(true)}
+          isLoading={deleteProduct.isPending}
+        />
       </Dialog>
     </section>
   );

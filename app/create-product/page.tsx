@@ -10,7 +10,7 @@ import BasicInformationSection from "@/components/modules/createProduct/BasicInf
 import ProductDetailsSection from "@/components/modules/createProduct/ProductDetailsSection";
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
-import SuggestedProductsListCard from "@/components/modules/createProduct/SuggestedProductsListCard";
+// import SuggestedProductsListCard from "@/components/modules/createProduct/SuggestedProductsListCard";
 import {
   useCreateProduct,
   useFetchProductById,
@@ -19,7 +19,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 
@@ -30,16 +30,15 @@ const formSchema = z
       .trim()
       .min(2, { message: "Product Name is required" })
       .max(50, { message: "Product Name must be less than 50 characters" }),
-    categoryId: z
-      .string()
-      .trim()
-      .min(1, { message: "Product Category is required" })
-      .transform((value) => Number(value)),
-    subCategoryId: z
-      .string()
-      .trim()
-      .transform((value) => Number(value))
-      .optional(),
+    categoryId: z.number().optional(),
+    // .min(1, { message: "Product Category is required" })
+    // .transform((value) => Number(value)),
+    // subCategoryId: z
+    //   .string()
+    //   .trim()
+    //   .transform((value) => Number(value))
+    //   .optional(),
+    categoryLocation: z.string().trim().optional(),
     brandId: z
       .string()
       .trim()
@@ -101,13 +100,15 @@ const formSchema = z
 const CreateProductPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const searchQuery = useSearchParams();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       productName: "",
-      categoryId: "",
-      subCategoryId: "",
+      categoryId: 0,
+      // subCategoryId: "",
+      categoryLocation: "",
       brandId: "",
       skuNo: "",
       productTagList: undefined,
@@ -121,7 +122,15 @@ const CreateProductPage = () => {
       productImages: [],
     },
   });
-  const [activeProductId, setActiveProductId] = useState<string | null>();
+
+  const activeProductId =
+    searchQuery && searchQuery.get("productId")
+      ? searchQuery.get("productId")
+      : undefined;
+  const activeProductType =
+    searchQuery && searchQuery.get("productType")
+      ? searchQuery.get("productType")
+      : undefined;
 
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
@@ -156,8 +165,18 @@ const CreateProductPage = () => {
     }
   };
 
+  // console.log(form.formState.errors);
   const onSubmit = async (formData: any) => {
-    const updatedFormData = { ...formData };
+    const updatedFormData = {
+      ...formData,
+      productType:
+        activeProductId && activeProductType === "P"
+          ? "R"
+          : activeProductType
+            ? "R"
+            : "P",
+      status: "ACTIVE",
+    };
     if (watchProductImages.length) {
       const fileTypeArrays = watchProductImages.filter(
         (item: any) => typeof item.path === "object",
@@ -206,15 +225,15 @@ const CreateProductPage = () => {
     }
 
     delete updatedFormData.productImages;
-    if (updatedFormData.subCategoryId !== "") {
-      updatedFormData.categoryId = updatedFormData.subCategoryId;
-      delete updatedFormData.subCategoryId;
-    }
+    // if (updatedFormData.subCategoryId !== "") {
+    //   updatedFormData.categoryId = updatedFormData.subCategoryId;
+    //   delete updatedFormData.subCategoryId;
+    // }
 
     if (activeProductId) {
       // edit
       updatedFormData.productId = Number(activeProductId);
-      // console.log(updatedFormData);
+      console.log(updatedFormData);
       // return;
       const response = await updateProduct.mutateAsync(updatedFormData);
       if (response.status && response.data) {
@@ -229,7 +248,11 @@ const CreateProductPage = () => {
           queryKey: ["product-by-id", activeProductId],
         });
 
-        router.push("/product-list");
+        if (activeProductType === "R") {
+          router.push("/rfq");
+        } else {
+          router.push("/product-list");
+        }
       } else {
         toast({
           title: "Product Update Failed",
@@ -239,9 +262,10 @@ const CreateProductPage = () => {
       }
     } else {
       // add
-      // console.log(updatedFormData);
-      // return;
+      console.log(updatedFormData);
+      return;
       const response = await createProduct.mutateAsync(updatedFormData);
+
       if (response.status && response.data) {
         toast({
           title: "Product Create Successful",
@@ -249,7 +273,11 @@ const CreateProductPage = () => {
           variant: "success",
         });
         form.reset();
-        router.push("/product-list");
+        if (activeProductType === "R") {
+          router.push("/rfq");
+        } else {
+          router.push("/product-list");
+        }
       } else {
         toast({
           title: "Product Create Failed",
@@ -259,12 +287,6 @@ const CreateProductPage = () => {
       }
     }
   };
-
-  useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let productId = params.get("productId");
-    setActiveProductId(productId);
-  }, []);
 
   useEffect(() => {
     if (productQueryById?.data?.data) {
@@ -299,7 +321,10 @@ const CreateProductPage = () => {
 
       form.reset({
         productName: product?.productName,
-        categoryId: product?.categoryId ? String(product?.categoryId) : "",
+        categoryId: product?.categoryId ? product?.categoryId : 0,
+        categoryLocation: product?.categoryLocation
+          ? product?.categoryLocation
+          : "",
         brandId: product?.brandId ? String(product?.brandId) : "",
         skuNo: product?.skuNo,
         productTagList: productTagList || undefined,
@@ -310,7 +335,7 @@ const CreateProductPage = () => {
         placeOfOriginId: product?.placeOfOriginId
           ? String(product?.placeOfOriginId)
           : "",
-        shortDescription: product?.shortDescription,
+        shortDescription: product?.shortDescription || "",
         description: product?.description,
         specification: product?.specification,
       });
@@ -329,20 +354,14 @@ const CreateProductPage = () => {
             priority
           />
         </div>
-        <div className="relative z-10 container m-auto px-3">
+        <div className="container relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="w-full"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
                     <BasicInformationSection tagsList={memoizedTags} />
                   </div>
-                  {/* <div className="col-span-1 w-full">
-                    <SuggestedProductsListCard />
-                  </div> */}
                 </div>
 
                 <ProductDetailsSection />

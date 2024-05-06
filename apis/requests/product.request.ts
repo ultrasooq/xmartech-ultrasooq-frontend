@@ -4,11 +4,12 @@ import axios from "axios";
 import urlcat from "urlcat";
 import { isEmpty } from "lodash";
 import {
+  ICreateProductRequest,
   IDeleteProductRequest,
   IUpdateProductRequest,
 } from "@/utils/types/product.types";
 
-export const createProduct = (payload: any) => {
+export const createProduct = (payload: ICreateProductRequest) => {
   return axios({
     method: "POST",
     url: `${process.env.NEXT_PUBLIC_API_URL}/product/create`,

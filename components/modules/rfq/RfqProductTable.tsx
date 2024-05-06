@@ -41,8 +41,8 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
                         <Image
                           src={
                             item?.rfqProductImage &&
-                            validator.isURL(item.rfqProductImage?.[0].imageName)
-                              ? item.rfqProductImage[0].imageName
+                            validator.isURL(item.rfqProductImage?.[0].image)
+                              ? item.rfqProductImage[0].image
                               : "/images/product-placeholder.png"
                           }
                           alt="product-image"

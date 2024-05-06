@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "lodash";
 import {
   useRfqProducts,
@@ -30,6 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
+import Image from "next/image";
 
 const RfqPage = () => {
   const { toast } = useToast();
@@ -50,7 +52,7 @@ const RfqPage = () => {
   const me = useMe();
   const rfqProductsQuery = useRfqProducts({
     page: 1,
-    limit: 40,
+    limit: 60,
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
@@ -65,11 +67,11 @@ const RfqPage = () => {
 
   const handleAddToCart = async (
     quantity: number,
-    rfqProductId: number,
+    productId: number,
     actionType: "add" | "remove",
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
-      rfqProductId,
+      productId,
       quantity,
     });
 
@@ -84,7 +86,7 @@ const RfqPage = () => {
 
   const handleCartPage = () => router.push("/rfq-cart");
 
-  const memoizedRfqProducts = React.useMemo(() => {
+  const memoizedRfqProducts = useMemo(() => {
     if (rfqProductsQuery.data?.data) {
       return (
         rfqProductsQuery.data?.data.map((item: any) => {
@@ -136,13 +138,18 @@ const RfqPage = () => {
                   </button>
                 </div>
                 <div className="rfq_add_new_product">
-                  <button
-                    type="button"
-                    onClick={() => setIsAddToCartModalOpen(true)}
+                  <Link
+                    href="/create-product?productType=R"
+                    className="flex gap-x-2 bg-dark-orange px-3 py-2 text-white"
                   >
-                    <img src="images/plus-icon-white.png" alt="plus-icon" /> add
-                    new product in RFQ
-                  </button>
+                    <Image
+                      src="/images/plus-icon-white.png"
+                      width={15}
+                      height={24}
+                      alt="plus-icon"
+                    />{" "}
+                    Add new product in RFQ
+                  </Link>
                 </div>
               </div>
               <div className="product_section product_gray_n_box">
@@ -226,11 +233,11 @@ const RfqPage = () => {
                           <RfqProductCard
                             key={item.id}
                             id={item.id}
-                            productType={item?.type || "-"}
-                            productName={item?.rfqProductName || "-"}
+                            productType={item?.productType || "-"}
+                            productName={item?.productName || "-"}
                             productNote={item?.productNote || "-"}
                             productStatus={item?.status}
-                            productImages={item?.rfqProductImage}
+                            productImages={item?.productImages}
                             productQuantity={item?.quantity || 0}
                             onAdd={handleAddToCart}
                             onToCart={handleCartPage}

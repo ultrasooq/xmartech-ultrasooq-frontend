@@ -61,6 +61,21 @@ export const fetchOrderById = (payload: { orderProductId: string }) => {
   });
 };
 
+export const fetchOrderBySellerId = (payload: { orderProductId: string }) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/order/getOneOrderProductDetailBySellerId`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const fetchOrdersBySellerId = (payload: {
   page: number;
   limit: number;

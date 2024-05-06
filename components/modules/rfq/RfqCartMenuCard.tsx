@@ -10,7 +10,7 @@ type RfqCartMenuCardProps = {
   productName: string;
   productQuantity: number;
   productImages: {
-    imageName: string;
+    image: string;
   }[];
   onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
   onRemove: (args0: number) => void;
@@ -37,8 +37,9 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
       <div className="rfq_cart_wrap_image relative">
         <Image
           src={
-            productImages && validator.isURL(productImages?.[0].imageName)
-              ? productImages[0].imageName
+            productImages?.[0]?.image &&
+            validator.isURL(productImages?.[0]?.image)
+              ? productImages[0].image
               : "/images/product-placeholder.png"
           }
           alt="pro-6"

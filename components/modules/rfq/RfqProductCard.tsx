@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/rfqStore";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 
@@ -11,7 +12,7 @@ type RfqProductCardProps = {
   productNote: string;
   productStatus: string;
   productImages: {
-    imageName: string;
+    image: string;
   }[];
   productQuantity: number;
   onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
@@ -35,6 +36,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   isCreatedByMe,
   isAddedToCart,
 }) => {
+  const router = useRouter();
   const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
 
@@ -44,12 +46,13 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
 
   return (
     <div className="product_list_part">
-      <div className="product_list_image relative">
+      <div className="product_list_image relative border border-gray-300">
         <Image
           alt="pro-5"
           src={
-            productImages && validator.isURL(productImages?.[0].imageName)
-              ? productImages[0].imageName
+            productImages?.[0]?.image &&
+            validator.isURL(productImages?.[0]?.image)
+              ? productImages[0].image
               : "/images/product-placeholder.png"
           }
           fill
@@ -95,17 +98,25 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   className="p-3"
                 />
               </Button>
-              {productType === "R" && isCreatedByMe ? (
-                <Button variant="ghost" onClick={() => onEdit(id)}>
-                  <div className="relative h-6 w-6">
-                    <Image
-                      src="/images/edit-rfq.png"
-                      alt="edit-rfq-icon"
-                      fill
-                    />
-                  </div>
-                </Button>
-              ) : null}
+
+              {/* <Button
+                variant="ghost"
+                onClick={() =>
+                  router.push(
+                    `/create-product?productType=${productType}&productId=${id}`,
+                  )
+                }
+              >
+                <div className="relative h-6 w-6">
+                  <Image src="/images/edit-rfq.png" alt="edit-rfq-icon" fill />
+                </div>
+              </Button> */}
+
+              <Button variant="ghost" onClick={() => onEdit(id)}>
+                <div className="relative h-6 w-6">
+                  <Image src="/images/edit-rfq.png" alt="edit-rfq-icon" fill />
+                </div>
+              </Button>
             </div>
           </div>
         </div>

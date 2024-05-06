@@ -73,7 +73,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
     const response = await updateProductStatusQuery.mutateAsync(updatedData, {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["order-by-id", { orderProductId }],
+          queryKey: ["order-by-seller-id", { orderProductId }],
         });
       },
     });
@@ -104,7 +104,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
         {
           onSuccess: () => {
             queryClient.invalidateQueries({
-              queryKey: ["order-by-id", { orderProductId }],
+              queryKey: ["order-by-seller-id", { orderProductId }],
             });
           },
         },
