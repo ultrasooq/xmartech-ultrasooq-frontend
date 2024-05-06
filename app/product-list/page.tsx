@@ -202,7 +202,7 @@ const ProductListPage = () => {
                               <button
                                 type="button"
                                 className="td-dots-dropdown-item"
-                                onClick={() => handleEditProductPage(item?.id)}
+                                // onClick={() => handleEditProductPage(item?.id)}
                               >
                                 <span className="icon-container">
                                   <img
