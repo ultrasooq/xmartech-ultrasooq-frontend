@@ -52,7 +52,7 @@ const RfqPage = () => {
   const me = useMe();
   const rfqProductsQuery = useRfqProducts({
     page: 1,
-    limit: 40,
+    limit: 60,
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,

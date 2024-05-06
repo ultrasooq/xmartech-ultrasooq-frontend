@@ -30,6 +30,9 @@ export const useCreateProduct = () => {
       queryClient.invalidateQueries({
         queryKey: ["products"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["rfq-products"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
