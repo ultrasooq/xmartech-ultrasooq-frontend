@@ -31,8 +31,6 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
   }, [rfqCartListByUser.data?.data]);
 
   const handleRemoveItemFromRfqCart = async (rfqCartId: number) => {
-    console.log("cart id:", rfqCartId);
-    // return;
     const response = await deleteRfqCartItem.mutateAsync({ rfqCartId });
     if (response.status) {
       toast({
@@ -65,10 +63,10 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
           <RfqCartMenuCard
             key={item?.id}
             id={item?.id}
-            rfqProductId={item?.rfqProductId}
-            productName={item?.rfqProductDetails?.rfqProductName}
+            rfqProductId={item?.productId}
+            productName={item?.rfqCart_productDetails?.productName}
             productQuantity={item.quantity}
-            productImages={item?.rfqProductDetails?.rfqProductImage}
+            productImages={item?.rfqCart_productDetails?.productImages}
             onAdd={onAdd}
             onRemove={handleRemoveItemFromRfqCart}
           />

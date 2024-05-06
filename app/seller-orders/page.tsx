@@ -91,7 +91,7 @@ const SellerOrdersPage = () => {
             <Link href="/home">Home</Link>
           </li>
           <li>
-            <Link href="/my-orders">My Orders</Link>
+            <Link href="/seller-orders">My Orders</Link>
           </li>
         </ul>
 
@@ -263,9 +263,7 @@ const SellerOrdersPage = () => {
                     productName: string;
                     productImages: { id: number; image: string }[];
                   };
-                  orderProduct_order: {
-                    orderNo: string;
-                  };
+                  sellerOrderNo: string;
                   orderProductStatus: string;
                   orderProductDate: string;
                   updatedAt: string;
@@ -276,7 +274,7 @@ const SellerOrdersPage = () => {
                     purchasePrice={item.purchasePrice}
                     productName={item.orderProduct_product?.productName}
                     produtctImage={item.orderProduct_product?.productImages}
-                    orderId={item.orderProduct_order?.orderNo}
+                    sellerOrderId={item.sellerOrderNo}
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}
                     updatedAt={item.updatedAt}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "lodash";
 import {
   useRfqProducts,
@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 const RfqPage = () => {
   const { toast } = useToast();
@@ -65,11 +66,11 @@ const RfqPage = () => {
 
   const handleAddToCart = async (
     quantity: number,
-    rfqProductId: number,
+    productId: number,
     actionType: "add" | "remove",
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
-      rfqProductId,
+      productId,
       quantity,
     });
 
@@ -84,7 +85,7 @@ const RfqPage = () => {
 
   const handleCartPage = () => router.push("/rfq-cart");
 
-  const memoizedRfqProducts = React.useMemo(() => {
+  const memoizedRfqProducts = useMemo(() => {
     if (rfqProductsQuery.data?.data) {
       return (
         rfqProductsQuery.data?.data.map((item: any) => {
@@ -136,13 +137,14 @@ const RfqPage = () => {
                   </button>
                 </div>
                 <div className="rfq_add_new_product">
-                  <button
-                    type="button"
-                    onClick={() => setIsAddToCartModalOpen(true)}
+                  <Link
+                    href="/crete-product"
+                    // onClick={() => setIsAddToCartModalOpen(true)}
+                    className=""
                   >
                     <img src="images/plus-icon-white.png" alt="plus-icon" /> add
                     new product in RFQ
-                  </button>
+                  </Link>
                 </div>
               </div>
               <div className="product_section product_gray_n_box">
@@ -227,10 +229,10 @@ const RfqPage = () => {
                             key={item.id}
                             id={item.id}
                             productType={item?.type || "-"}
-                            productName={item?.rfqProductName || "-"}
+                            productName={item?.productName || "-"}
                             productNote={item?.productNote || "-"}
                             productStatus={item?.status}
-                            productImages={item?.rfqProductImage}
+                            productImages={item?.productImages}
                             productQuantity={item?.quantity || 0}
                             onAdd={handleAddToCart}
                             onToCart={handleCartPage}

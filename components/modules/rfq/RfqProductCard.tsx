@@ -11,7 +11,7 @@ type RfqProductCardProps = {
   productNote: string;
   productStatus: string;
   productImages: {
-    imageName: string;
+    image: string;
   }[];
   productQuantity: number;
   onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
@@ -48,8 +48,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         <Image
           alt="pro-5"
           src={
-            productImages && validator.isURL(productImages?.[0].imageName)
-              ? productImages[0].imageName
+            productImages?.[0]?.image &&
+            validator.isURL(productImages?.[0]?.image)
+              ? productImages[0].image
               : "/images/product-placeholder.png"
           }
           fill

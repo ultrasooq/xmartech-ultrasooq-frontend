@@ -60,11 +60,11 @@ const RfqCartPage = () => {
 
   const handleAddToCart = async (
     quantity: number,
-    rfqProductId: number,
+    productId: number,
     actionType: "add" | "remove",
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
-      rfqProductId,
+      productId,
       quantity,
     });
 
@@ -132,10 +132,12 @@ const RfqCartPage = () => {
                     <RfqProductCard
                       key={item?.id}
                       id={item?.id}
-                      rfqProductId={item?.rfqProductId}
-                      productName={item?.rfqProductDetails?.rfqProductName}
+                      rfqProductId={item?.productId}
+                      productName={item?.rfqCart_productDetails?.productName}
                       productQuantity={item.quantity}
-                      productImages={item?.rfqProductDetails?.rfqProductImage}
+                      productImages={
+                        item?.rfqCart_productDetails?.productImages
+                      }
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromRfqCart}
                     />
