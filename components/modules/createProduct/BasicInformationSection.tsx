@@ -1,12 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { Label } from "@/components/ui/label";
-import {
-  Controller,
-  ControllerRenderProps,
-  FieldValues,
-  useFormContext,
-} from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -34,6 +29,7 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import AddImageContent from "../profile/AddImageContent";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
+import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 
 type ProductImageProps = {
   path: string;
@@ -51,19 +47,15 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const { toast } = useToast();
   const [nestedCategoryList, setNestedCategoryList] = useState<any[]>([]);
   const photosRef = useRef<HTMLInputElement>(null);
-
-  const watchCategoryId = formContext.watch("categoryId");
-  const watchSubCategoryId = formContext.watch("subCategoryId");
+  const [currentId, setCurrentId] = useState<string>("");
 
   const upload = useUploadFile();
   const categoryQuery = useCategory();
   const brandsQuery = useBrands({});
   const countriesQuery = useCountries();
-  const subCategoryById = useSubCategoryById(
-    watchSubCategoryId,
-    !!watchSubCategoryId,
-  );
+  const subCategoryById = useSubCategoryById(currentId, !!currentId);
   const watchProductImages = formContext.watch("productImages");
+  const watchCategoryLocation = formContext.watch("categoryLocation");
 
   const memoizedCategories = useMemo(() => {
     return (
@@ -108,47 +100,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     ]);
   };
 
-  // const handleUploadedFile = async (files: FileList | null) => {
-  //   if (files) {
-  //     const formData = new FormData();
-  //     formData.append("content", files[0]);
-  //     const response = await upload.mutateAsync(formData);
-  //     if (response.status && response.data) {
-  //       return response.data;
-  //     }
-  //   }
-  // };
-
-  // const handleFileChanges = async (
-  //   event: React.ChangeEvent<HTMLInputElement>,
-  //   field: ControllerRenderProps<FieldValues, "productImages">,
-  //   item: ProductImageProps,
-  // ) => {
-  //   if (event.target.files?.[0]) {
-  //     if (event.target.files[0].size > 1048576) {
-  //       toast({
-  //         title: "Image size should be less than 1MB",
-  //         variant: "danger",
-  //       });
-  //       return;
-  //     }
-  //     const response = await handleUploadedFile(event.target.files);
-
-  //     if (response) {
-  //       if (
-  //         field.value.length &&
-  //         field.value.some((val: ProductImageProps) => val.id === item.id)
-  //       ) {
-  //         field.onChange(
-  //           field.value.map((val: ProductImageProps) =>
-  //             val.id === item.id ? { ...val, path: response } : val,
-  //           ),
-  //         );
-  //       }
-  //     }
-  //   }
-  // };
-
   useEffect(() => {
     if (
       subCategoryById?.data?.data &&
@@ -173,13 +124,39 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     }
   }, [subCategoryById?.data?.data]);
 
-  useEffect(() => {
-    setNestedCategoryList([]);
-    if (watchCategoryId) {
-      formContext.setValue("subCategoryId", watchCategoryId);
-    }
-  }, [watchCategoryId]);
+  const [listIds, setListIds] = useState<string[]>([]);
+  const [catList, setCatList] = useState<any[]>([]);
 
+  useEffect(() => {
+    if (subCategoryById.data?.data?.children?.length) {
+      setCatList([...catList, subCategoryById.data?.data]);
+    }
+  }, [currentId, subCategoryById.data?.data?.children?.length]);
+
+  useEffect(() => {
+    formContext.setValue("categoryId", Number(currentId));
+    formContext.setValue("categoryLocation", listIds.join(","));
+  }, [listIds.length]);
+
+  useEffect(() => {
+    if (watchCategoryLocation) {
+      const tempArr = watchCategoryLocation.split(",");
+
+      const promises = tempArr
+        .slice(0, tempArr.length - 1)
+        .map(async (categoryId: string) => {
+          const res = await fetchSubCategoriesById({ categoryId });
+          return res.data?.data;
+        });
+
+      Promise.all(promises).then((values) => {
+        setListIds(tempArr);
+        setCatList(values);
+      });
+    }
+  }, [watchCategoryLocation]);
+
+  console.log(catList, listIds);
   return (
     <div className="flex w-full flex-wrap">
       <div className="mb-4 w-full">
@@ -201,6 +178,14 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   <select
                     {...field}
                     className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                    onChange={(e) => {
+                      if (e.target.value === "") {
+                        return;
+                      }
+                      setCurrentId(e.target.value);
+                      setListIds([...listIds, e.target.value]);
+                    }}
+                    value={listIds[0] || ""}
                   >
                     <option value="">Select Category</option>
                     {memoizedCategories.map((item: ISelectOptions) => (
@@ -216,27 +201,38 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
               </p>
             </div>
 
-            {nestedCategoryList.length > 0 &&
-              nestedCategoryList.map((item: any) => (
+            {catList.length > 0 &&
+              catList.map((item) => (
                 <div
-                  className="mb-2 flex w-full flex-col  justify-end gap-y-2"
                   key={item.id}
+                  className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
                 >
-                  <select
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                    onChange={(e) => {
-                      console.log(nestedCategoryList);
-                      if (!item?.children.length) return;
-                      formContext.setValue("subCategoryId", e.target.value);
-                    }}
-                  >
-                    <option value="">Select Category</option>
-                    {item?.children?.map((item: any) => (
-                      <option value={item.id?.toString()} key={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="flex w-full flex-col justify-between gap-y-2">
+                    <Label>Sub Category</Label>
+                    <select
+                      className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                      onChange={(e) => {
+                        if (e.target.value === "") {
+                          return;
+                        }
+
+                        setCurrentId(e.target.value);
+                        setListIds([...listIds, e.target.value]);
+                      }}
+                      value={item?.children
+                        ?.find((item: any) =>
+                          listIds.includes(item.id?.toString()) ? item : "",
+                        )
+                        ?.id?.toString()}
+                    >
+                      <option value="">Select Sub Category</option>
+                      {item?.children?.map((item: any) => (
+                        <option value={item.id?.toString()} key={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               ))}
           </div>

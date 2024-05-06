@@ -30,16 +30,15 @@ const formSchema = z
       .trim()
       .min(2, { message: "Product Name is required" })
       .max(50, { message: "Product Name must be less than 50 characters" }),
-    categoryId: z
-      .string()
-      .trim()
-      .min(1, { message: "Product Category is required" })
-      .transform((value) => Number(value)),
-    subCategoryId: z
-      .string()
-      .trim()
-      .transform((value) => Number(value))
-      .optional(),
+    categoryId: z.number().optional(),
+    // .min(1, { message: "Product Category is required" })
+    // .transform((value) => Number(value)),
+    // subCategoryId: z
+    //   .string()
+    //   .trim()
+    //   .transform((value) => Number(value))
+    //   .optional(),
+    categoryLocation: z.string().trim().optional(),
     brandId: z
       .string()
       .trim()
@@ -107,8 +106,9 @@ const CreateProductPage = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       productName: "",
-      categoryId: "",
-      subCategoryId: "",
+      categoryId: 0,
+      // subCategoryId: "",
+      categoryLocation: "",
       brandId: "",
       skuNo: "",
       productTagList: undefined,
@@ -225,10 +225,10 @@ const CreateProductPage = () => {
     }
 
     delete updatedFormData.productImages;
-    if (updatedFormData.subCategoryId !== "") {
-      updatedFormData.categoryId = updatedFormData.subCategoryId;
-      delete updatedFormData.subCategoryId;
-    }
+    // if (updatedFormData.subCategoryId !== "") {
+    //   updatedFormData.categoryId = updatedFormData.subCategoryId;
+    //   delete updatedFormData.subCategoryId;
+    // }
 
     if (activeProductId) {
       // edit
@@ -263,7 +263,7 @@ const CreateProductPage = () => {
     } else {
       // add
       console.log(updatedFormData);
-      // return;
+      return;
       const response = await createProduct.mutateAsync(updatedFormData);
 
       if (response.status && response.data) {
@@ -321,7 +321,10 @@ const CreateProductPage = () => {
 
       form.reset({
         productName: product?.productName,
-        categoryId: product?.categoryId ? String(product?.categoryId) : "",
+        categoryId: product?.categoryId ? product?.categoryId : 0,
+        categoryLocation: product?.categoryLocation
+          ? product?.categoryLocation
+          : "",
         brandId: product?.brandId ? String(product?.brandId) : "",
         skuNo: product?.skuNo,
         productTagList: productTagList || undefined,
@@ -359,9 +362,6 @@ const CreateProductPage = () => {
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
                     <BasicInformationSection tagsList={memoizedTags} />
                   </div>
-                  {/* <div className="col-span-1 w-full">
-                    <SuggestedProductsListCard />
-                  </div> */}
                 </div>
 
                 <ProductDetailsSection />
