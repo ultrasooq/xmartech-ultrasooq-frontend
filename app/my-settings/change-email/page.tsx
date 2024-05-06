@@ -66,7 +66,7 @@ export default function ChangeEmailPage() {
   };
 
   return (
-    <section className="relative w-full py-7">
+    <section className="relative w-full">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
           src="/images/before-login-bg.png"
@@ -78,12 +78,8 @@ export default function ChangeEmailPage() {
       </div>
       <div className="container relative z-10 m-auto">
         <div className="flex">
-          <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
-            <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Change Email
-              </h2>
-            </div>
+          <div className="w-full rounded-lg border border-solid border-gray-300 bg-white p-4 shadow-sm">
+            <h2 className="mb-4 text-[22px] font-semibold">Change Email</h2>
             <div className="w-full">
               <Form {...form}>
                 <form
@@ -107,7 +103,7 @@ export default function ChangeEmailPage() {
                       </FormItem>
                     )}
                   />
-                  <div className="mb-4 w-full">
+                  <div className="w-full">
                     <Button
                       disabled={changeEmail.isPending}
                       type="submit"

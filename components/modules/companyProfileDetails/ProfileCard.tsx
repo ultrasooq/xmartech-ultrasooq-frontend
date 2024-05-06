@@ -71,22 +71,24 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
           <h2 className="left-8 text-3xl font-semibold text-color-dark">
             {userDetails?.firstName || "NA"} {userDetails?.lastName}
           </h2>
-          <div className="w-auto">
-            <button
-              type="button"
-              onClick={onEdit}
-              className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
-            >
-              <Image
-                src="/images/edit-icon.svg"
-                height={18}
-                width={18}
-                className="mr-1"
-                alt="edit-icon"
-              />
-              edit
-            </button>
-          </div>
+          {userDetails?.userBranch?.length ? (
+            <div className="w-auto">
+              <button
+                type="button"
+                onClick={onEdit}
+                className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+              >
+                <Image
+                  src="/images/edit-icon.svg"
+                  height={18}
+                  width={18}
+                  className="mr-1"
+                  alt="edit-icon"
+                />
+                edit
+              </button>
+            </div>
+          ) : null}
         </div>
         <div className="mt-3 h-auto w-full"></div>
         <div className="text-normal mt-4 w-full text-sm font-normal leading-4 text-gray-500">

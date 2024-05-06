@@ -12,6 +12,12 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ list }) => {
         Products
       </h2>
 
+      {!list.length ? (
+        <p className="p-4 text-center text-base font-medium text-color-dark">
+          No Products Found
+        </p>
+      ) : null}
+
       <div className="grid grid-cols-5 gap-3">
         {list.map((item: any) => (
           <ProductCard key={item.id} item={item} />

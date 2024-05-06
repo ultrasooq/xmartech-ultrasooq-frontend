@@ -8,15 +8,27 @@ export function middleware(request: NextRequest) {
     "/login",
     "/register",
     "/forget-password",
+    "/reset-password",
     "/password-reset-verify",
     "/otp-verify",
+    "/trending",
+    "/trending/:id",
+    "/cart",
+    "/checkout",
+    "/orders",
+    "/rfq",
   ];
 
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
-  if (publicPaths.includes(request.nextUrl.pathname)) {
+  const dynamicPathRegex = /^\/trending\/\d+$/;
+
+  if (
+    publicPaths.includes(request.nextUrl.pathname) ||
+    dynamicPathRegex.test(request.nextUrl.pathname)
+  ) {
     return authToken
       ? NextResponse.redirect(new URL("/home", request.url))
       : NextResponse.next();
@@ -26,8 +38,9 @@ export function middleware(request: NextRequest) {
     return publicPaths.includes(request.nextUrl.pathname)
       ? NextResponse.redirect(new URL("/home", request.url))
       : NextResponse.next();
+  } else {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
-  return NextResponse.next();
 }
 
 export const config = {
