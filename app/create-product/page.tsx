@@ -341,10 +341,7 @@ const CreateProductPage = () => {
     if (activeProductType) {
       setActiveProductType(activeProductType);
     }
-  }, [
-    new URLSearchParams(document.location.search).get("productId"),
-    new URLSearchParams(document.location.search).get("productType"),
-  ]);
+  }, []);
 
   return (
     <>
