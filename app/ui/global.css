@@ -369,6 +369,7 @@
 
   .theme-pagination-s1 button:not(.theme-primary-btn) {
     @apply w-[30px] h-[30px] border bg-white text-black text-[13px] not-italic font-medium leading-[13px] p-0 rounded-none border-solid border-[#E0E0E0];
+    @apply flex justify-center items-center;
   }
 
   .theme-pagination-s1 button.theme-primary-btn {
@@ -2306,145 +2307,76 @@
   }
 
   .rfq-cart-item-ul {
-    display: flex;
-    flex-direction: column;
+    @apply flex flex-col;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    column-gap: 24px;
-    padding: 24px 16px;
-    border-bottom: 1px solid #EDEDED;
+    @apply flex items-center justify-between gap-x-6 px-4 py-6 border-b-[#EDEDED] border-b border-solid;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li figure {
-    display: flex;
-    align-items: center;
-    column-gap: 24px;
+    @apply flex items-center gap-x-6;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li figure .image-container {
-    width:
-      110.06px;
-    height:
-      109.32px;
-    border: 0.64px solid #DBDBDB;
-    background-color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    border-radius:
-      8.93px;
+    @apply w-[110.06px] h-[109.32px] bg-white flex justify-center items-center text-center rounded-[8.93px] border-[0.64px] border-solid border-[#DBDBDB];
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li figure .image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: scale-down;
-    border-radius: inherit;
+    @apply w-full h-full object-scale-down rounded-[inherit];
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li figure figcaption h5 {
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 23px;
-    color: #1D77D1;
-    overflow-wrap: break-word;
+    @apply text-[15px] font-normal leading-[23px] text-[#1D77D1] break-words whitespace-normal overflow-hidden text-ellipsis mb-3;
     word-wrap: break-word;
     word-break: break-word;
-    white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
-    margin-bottom: 12px;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li figure figcaption label {
-    display: block;
-    color: #333333;
-    margin-bottom: 8px;
-    font-size: 11.73px;
-    font-weight: 400;
-    line-height: 13.76px;
+    @apply block text-[#333333] text-[11.73px] font-normal leading-[13.76px] mb-2;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li .qty-with-remove {
-    display: flex;
-    align-items: center;
-    column-gap: 16px
+    @apply flex items-center gap-x-4;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li .qty-with-remove .remove_text {
-    text-decoration: underline;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 16.48px;
-    color: #464151;
-    padding: 0 16px;
+    @apply underline text-xs font-normal leading-[16.48px] text-[#464151] px-4 py-0;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li .quantity {
-    display: flex;
-    width: 112.44px;
-    height: 42px;
-    border: 1px solid #DBDBDB;
+    @apply flex w-[112.44px] h-[42px] border border-solid border-[#DBDBDB];
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li .quantity .adjust_field {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    justify-content: center;
-    width: 16px;
+    @apply flex items-center h-full justify-center w-4;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li .quantity input {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    justify-content: center;
-    width: 24px;
-    flex: 0 0 auto;
-    color: #7F818D;
-    font-weight: 600;
-    font-size: 18px;
+    @apply flex items-center h-full justify-center w-6 flex-[0_0_auto] text-[#7F818D] font-semibold text-lg;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li .price-info {
-    margin-left: auto;
-    flex: 0 0 auto;
+    @apply flex-[0_0_auto] ml-auto;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li .price-info h5 {
-    font-size: 11.73px;
-    font-weight: 400;
-    line-height: 13.76px;
-    color: #333333;
-    margin-bottom: 10px;
+    @apply text-[11.73px] font-normal leading-[13.76px] text-[#333333] mb-2.5;
   }
 
   .rfq-cart-item-ul .rfq-cart-item-li .price-info p {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 18.77px;
-    color: #8A8A8A;
+    @apply text-base font-medium leading-[18.77px] text-[#8A8A8A];
   }
 
   .rfq-cart-wrapper .submit-action {
-    display: flex;
-    justify-content: center;
-    padding: 24px 0 8px;
+    @apply flex justify-center pt-6 pb-2 px-0;
   }
 
   .rfq-cart-wrapper .submit-action .submit-btn {
-    min-width: 241px;
-    height: 55px;
-    padding: 0 16px;
+    @apply min-w-[241px] h-[55px] px-4 py-0;
   }
 
   /* end: ========================== rfq ====================== */
@@ -2456,10 +2388,10 @@
   }
 
   .custom-ui-alert-popup {
+    @apply gap-[unset];
     @apply w-[calc(100%_-_8px)] max-w-[420px] min-w-[342px] border mx-auto my-0 px-0 py-4 border-l-[5px] border-solid !important;
     font-family: inherit;
     background: #fff;
-    gap: unset !important;
   }
 
   .custom-ui-alert-popup.size-420px {
@@ -2488,7 +2420,6 @@
 
   .custom-ui-alert-popup .alert-popup-headerpart .alert-popup-close {
     @apply absolute text-[13px] font-[bold] text-inherit cursor-pointer bg-transparent right-[11px] top-2;
-    font-family: "Euclid Circular A";
   }
 
   .custom-ui-alert-popup .alert-popup-bodypart {
@@ -2565,7 +2496,7 @@
   }
 
   .custom-ui-alert-popup .text-muted-foreground {
-    color: inherit;
+    @apply text-inherit;
   }
 
   .custom-ui-alert-popup.default-alert-popup .alert-actions .alert--submit-btn {
@@ -2618,80 +2549,150 @@
   .my-settings-page {
     @apply bg-[#fff8f7] min-h-[calc(100vh_-_300px)] p-6;
   }
+
   .my-settings-page-wrapper {
     @apply flex justify-between items-start gap-x-4;
   }
+
   .my-settings-panel {
     @apply w-full max-w-[300px] flex sticky flex-col gap-y-3 top-0;
   }
+
   .my-settings-content {
     @apply w-full max-w-[calc(100%_-_300px)] bg-white shadow-[1px_1px_5px_#b4b4b4] p-4 rounded-[3px];
   }
+
   .my-settings-content h2 {
     @apply text-[22px] font-semibold mb-4;
   }
+
   .my-settings-content .my-address-sec {
     @apply flex flex-col gap-y-4;
   }
+
   .my-settings-panel .card-item {
     @apply bg-white shadow-[1px_1px_5px_#b4b4b4] p-2.5 rounded-[3px];
   }
+
   .my-settings-panel .userInfo {
     @apply flex items-center gap-x-2.5;
   }
+
   .my-settings-panel .userInfo .image-container {
     @apply w-[50px] h-[50px];
   }
+
   .my-settings-panel .userInfo .image-container img {
     @apply w-full h-full object-cover rounded-[50%];
   }
+
   .my-settings-panel .userInfo figcaption h5 {
     @apply text-sm;
   }
+
   .my-settings-panel .userInfo figcaption h4 {
     @apply text-base font-semibold mt-0.5;
   }
+
   .my-settings-panel .menu-lists {
     @apply flex flex-col gap-y-2.5 pt-[5px] pb-2.5 px-0;
   }
+
   .my-settings-panel .menu-lists li .menu-links {
     @apply flex items-center gap-x-2.5 transition-[0.3s] px-2.5 py-2 rounded-[5px];
   }
+
   .my-settings-panel .menu-lists li .menu-links.active,
   .my-settings-panel .menu-lists li .menu-links:hover {
     @apply bg-[color:var(--theme-primary-color)] text-white;
   }
+
   .my-settings-panel .menu-lists li .menu-links.active svg path,
   .my-settings-panel .menu-lists li .menu-links:hover svg path {
     @apply fill-white;
   }
+
   .my-settings-panel .menu-lists li .menu-links .arow {
     @apply flex items-center flex-[0_0_auto] ml-auto;
   }
+
   .my-settings-panel .menu-lists li .menu-links .arow svg {
     @apply w-3.5 h-auto;
   }
+
   .my-settings-panel .menu-lists li .menu-links span {
     @apply flex items-center;
   }
+
   .my-settings-panel .menu-lists li .menu-links .icon-container {
     @apply flex-[0_0_auto] w-[26px];
   }
+
   .my-settings-panel .menu-lists li .menu-links .icon-container svg {
     @apply h-auto w-[22px];
   }
+
   .my-settings-panel .menu-lists li .sub-menu-ul {
     @apply flex flex-col gap-y-2 pl-[45px] pr-0 pt-2 pb-0;
   }
+
   .my-settings-panel .menu-lists li .sub-menu-ul .sub-menu-links {
     @apply text-sm px-0 py-2.5;
   }
+
   .my-settings-panel .menu-lists li .sub-menu-ul .sub-menu-links:hover,
   .my-settings-panel .menu-lists li .sub-menu-ul .sub-menu-links.active {
     @apply text-[color:var(--theme-primary-color)];
   }
-  
+
   /* end: ========================== my-settings-page ====================== */
+
+  /* start: ========================== rfq-product-list-page ====================== */
+  .rfq-product-list-page {
+    @apply relative z-[1] px-0 py-[60px];
+  }
+
+  .rfq-product-list-page .sec-bg {
+    @apply absolute z-[-1] inset-0;
+  }
+
+  .rfq-product-list-page .sec-bg img {
+    @apply w-full h-full object-cover object-center;
+  }
+
+  .rfq-product-list-page .headerpart {
+    @apply mb-5;
+  }
+
+  .rfq-product-list-page .headerpart h2 {
+    @apply text-[35px] font-semibold leading-[43px] text-[#333];
+  }
+
+  .rfq-product-list-card {
+    @apply bg-[color:var(--white-color)] border p-4 rounded-[10px] border-solid border-[#E4E3E3];
+  }
+
+  table .td-product-group-images {
+    @apply flex flex-wrap w-[170px] mt-[-3px] mr-[-3px] mb-[-3px] ml-[-3px];
+  }
+
+  table .td-product-group-images .img-item {
+    @apply w-6/12 p-[3px];
+  }
+
+  table .td-product-group-images .img-item .img-container {
+    @apply border relative w-full pt-[100%] border-solid border-[#DBDBDB];
+  }
+
+  table .td-product-group-images .img-item .img-container img {
+    @apply absolute w-full h-full object-scale-down object-center left-0 top-0;
+  }
+
+  table .td-product-group-images .img-item .img-container span {
+    @apply absolute w-full h-full flex justify-center items-center text-center z-[2] text-xl font-medium leading-[23.46px] text-[#333333] bg-[#e6e6e680] left-0 top-0;
+  }
+
+  /* end: ========================== rfq-product-list-page ====================== */
 
   /* start: responsive */
   @media (max-width: 1199.98px) {
