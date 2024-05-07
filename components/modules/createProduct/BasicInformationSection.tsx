@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
-import { useUploadFile } from "@/apis/queries/upload.queries";
+// import { useUploadFile } from "@/apis/queries/upload.queries";
 import { v4 as uuidv4 } from "uuid";
 import { useBrands, useCountries } from "@/apis/queries/masters.queries";
 import {
@@ -21,7 +21,7 @@ import {
   ISelectOptions,
 } from "@/utils/types/common.types";
 import {
-  useCategories,
+  // useCategories,
   useCategory,
   useSubCategoryById,
 } from "@/apis/queries/category.queries";
@@ -38,24 +38,28 @@ type ProductImageProps = {
 
 type BasicInformationProps = {
   tagsList: any;
+  isEditable?: boolean;
 };
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
+  isEditable,
 }) => {
   const formContext = useFormContext();
   const { toast } = useToast();
-  const [nestedCategoryList, setNestedCategoryList] = useState<any[]>([]);
   const photosRef = useRef<HTMLInputElement>(null);
+  const [listIds, setListIds] = useState<string[]>([]);
+  const [catList, setCatList] = useState<any[]>([]);
   const [currentId, setCurrentId] = useState<string>("");
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  const upload = useUploadFile();
+  // const upload = useUploadFile();
   const categoryQuery = useCategory();
   const brandsQuery = useBrands({});
   const countriesQuery = useCountries();
   const subCategoryById = useSubCategoryById(currentId, !!currentId);
+
   const watchProductImages = formContext.watch("productImages");
-  const watchCategoryLocation = formContext.watch("categoryLocation");
 
   const memoizedCategories = useMemo(() => {
     return (
@@ -101,62 +105,49 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   };
 
   useEffect(() => {
-    if (
-      subCategoryById?.data?.data &&
-      subCategoryById?.data?.data?.children.length
-    ) {
-      if (
-        nestedCategoryList
-          .map((item: any) => item?.type)
-          .includes(subCategoryById?.data?.data?.type)
-      ) {
-        const index = nestedCategoryList.findIndex(
-          (item: any) => item?.type === subCategoryById?.data?.data?.type,
-        );
-
-        nestedCategoryList.splice(index, 1, subCategoryById?.data?.data);
-        console.log(nestedCategoryList);
-
-        setNestedCategoryList([...nestedCategoryList]);
-      } else {
-        setNestedCategoryList((prev) => [...prev, subCategoryById?.data?.data]);
+    if (catList[currentIndex]) {
+      let tempList = catList;
+      if (subCategoryById.data?.data?.children?.length) {
+        tempList[currentIndex] = subCategoryById.data?.data;
+        tempList = tempList.slice(0, currentIndex + 1);
       }
+      setCatList([...tempList]);
+      return;
     }
-  }, [subCategoryById?.data?.data]);
 
-  const [listIds, setListIds] = useState<string[]>([]);
-  const [catList, setCatList] = useState<any[]>([]);
-
-  useEffect(() => {
     if (subCategoryById.data?.data?.children?.length) {
       setCatList([...catList, subCategoryById.data?.data]);
     }
-  }, [currentId, subCategoryById.data?.data?.children?.length]);
+  }, [currentId, subCategoryById.data?.data?.children?.length, currentIndex]);
 
   useEffect(() => {
-    formContext.setValue("categoryId", Number(currentId));
-    formContext.setValue("categoryLocation", listIds.join(","));
-  }, [listIds.length]);
-
-  useEffect(() => {
-    if (watchCategoryLocation) {
-      const tempArr = watchCategoryLocation.split(",");
-
+    if (formContext.getValues("categoryLocation")) {
+      const tempArr = formContext.getValues("categoryLocation")?.split(",");
       const promises = tempArr
         .slice(0, tempArr.length - 1)
         .map(async (categoryId: string) => {
           const res = await fetchSubCategoriesById({ categoryId });
           return res.data?.data;
         });
-
       Promise.all(promises).then((values) => {
         setListIds(tempArr);
         setCatList(values);
       });
     }
-  }, [watchCategoryLocation]);
+  }, [isEditable]);
 
-  console.log(catList, listIds);
+  useEffect(
+    () => formContext.setValue("categoryId", Number(currentId)),
+    [currentId],
+  );
+
+  useEffect(
+    () => formContext.setValue("categoryLocation", listIds.join(",")),
+    [listIds?.length],
+  );
+
+  // console.log(catList, listIds);
+
   return (
     <div className="flex w-full flex-wrap">
       <div className="mb-4 w-full">
@@ -183,9 +174,19 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         return;
                       }
                       setCurrentId(e.target.value);
+                      setCurrentIndex(0);
+
+                      if (listIds[0]) {
+                        let tempIds = listIds;
+                        tempIds[0] = e.target.value;
+                        tempIds = tempIds.slice(0, 1);
+
+                        setListIds([...tempIds]);
+                        return;
+                      }
                       setListIds([...listIds, e.target.value]);
                     }}
-                    value={listIds[0] || ""}
+                    value={catList[0]?.id || ""}
                   >
                     <option value="">Select Category</option>
                     {memoizedCategories.map((item: ISelectOptions) => (
@@ -202,9 +203,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             </div>
 
             {catList.length > 0 &&
-              catList.map((item) => (
+              catList.map((item, index) => (
                 <div
-                  key={item.id}
+                  key={item?.id}
                   className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
                 >
                   <div className="flex w-full flex-col justify-between gap-y-2">
@@ -217,6 +218,15 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         }
 
                         setCurrentId(e.target.value);
+                        setCurrentIndex(index + 1);
+
+                        if (listIds[index + 1]) {
+                          let tempIds = listIds;
+                          tempIds[index + 1] = e.target.value;
+                          tempIds = tempIds.slice(0, index + 2);
+                          setListIds([...tempIds]);
+                          return;
+                        }
                         setListIds([...listIds, e.target.value]);
                       }}
                       value={item?.children

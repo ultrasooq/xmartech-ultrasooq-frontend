@@ -101,90 +101,91 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = { ...formData };
-    if (watchProductImages.length) {
-      const fileTypeArrays = watchProductImages.filter(
-        (item: any) => typeof item.path === "object",
-      );
+    // if (watchProductImages.length) {
+    //   const fileTypeArrays = watchProductImages.filter(
+    //     (item: any) => typeof item.path === "object",
+    //   );
 
-      const imageUrlArray: any = fileTypeArrays?.length
-        ? await handleUploadedFile(fileTypeArrays)
-        : [];
+    //   const imageUrlArray: any = fileTypeArrays?.length
+    //     ? await handleUploadedFile(fileTypeArrays)
+    //     : [];
 
-      const stringTypeArrays = watchProductImages
-        .filter((item: any) => typeof item.path !== "object")
-        .map((item: any) => ({ image: item?.path, imageName: item?.path }));
+    //   const stringTypeArrays = watchProductImages
+    //     .filter((item: any) => typeof item.path !== "object")
+    //     .map((item: any) => ({ image: item?.path, imageName: item?.path }));
 
-      const formattedimageUrlArrays = imageUrlArray?.map((item: any) => ({
-        image: item,
-        imageName: item,
-      }));
+    //   const formattedimageUrlArrays = imageUrlArray?.map((item: any) => ({
+    //     image: item,
+    //     imageName: item,
+    //   }));
 
-      updatedFormData.productImages = [
-        ...stringTypeArrays,
-        ...formattedimageUrlArrays,
-      ];
+    //   updatedFormData.productImages = [
+    //     ...stringTypeArrays,
+    //     ...formattedimageUrlArrays,
+    //   ];
 
-      if (updatedFormData.productImages.length) {
-        updatedFormData.rfqProductImagesList =
-          updatedFormData.productImages.map((item: any) => ({
-            image: item?.image,
-            imageName: item?.imageName,
-          }));
-      }
-    }
+    //   if (updatedFormData.productImages.length) {
+    //     updatedFormData.rfqProductImagesList =
+    //       updatedFormData.productImages.map((item: any) => ({
+    //         image: item?.image,
+    //         imageName: item?.imageName,
+    //       }));
+    //   }
+    // }
 
     // console.log(updatedFormData);
     // return;
-    delete updatedFormData.productImages;
-    if (selectedProductId) {
-      console.log({
-        rFqProductId: selectedProductId,
-        ...updatedFormData,
-      });
-      // return;
-      const response = await updateRfqProduct.mutateAsync({
-        rFqProductId: selectedProductId,
-        ...updatedFormData,
-      });
-      if (response.status) {
-        toast({
-          title: "RFQ Product Update Successful",
-          description: response.message,
-          variant: "success",
-        });
-        form.reset();
-        queryClient.invalidateQueries({
-          queryKey: ["rfq-product-by-id", selectedProductId.toString()],
-        });
-        onClose();
-      } else {
-        toast({
-          title: "RFQ Product Update Failed",
-          description: response.message,
-          variant: "danger",
-        });
-      }
-    } else {
-      // add
-      // console.log(updatedFormData);
-      // return;
-      //   const response = await addRfqProduct.mutateAsync(updatedFormData);
-      //   if (response.status) {
-      //     toast({
-      //       title: "RFQ Product Add Successful",
-      //       description: response.message,
-      //       variant: "success",
-      //     });
-      //     form.reset();
-      //     onClose();
-      //   } else {
-      //     toast({
-      //       title: "RFQ Product Add Failed",
-      //       description: response.message,
-      //       variant: "danger",
-      //     });
-      //   }
-    }
+    // delete updatedFormData.productImages;
+    // if (selectedProductId) {
+    //   console.log({
+    //     rFqProductId: selectedProductId,
+    //     ...updatedFormData,
+    //   });
+    //   // return;
+    //   const response = await updateRfqProduct.mutateAsync({
+    //     rFqProductId: selectedProductId,
+    //     ...updatedFormData,
+    //   });
+    //   if (response.status) {
+    //     toast({
+    //       title: "RFQ Product Update Successful",
+    //       description: response.message,
+    //       variant: "success",
+    //     });
+    //     form.reset();
+    //     queryClient.invalidateQueries({
+    //       queryKey: ["rfq-product-by-id", selectedProductId.toString()],
+    //     });
+    //     onClose();
+    //   } else {
+    //     toast({
+    //       title: "RFQ Product Update Failed",
+    //       description: response.message,
+    //       variant: "danger",
+    //     });
+    //   }
+    // }
+    // else {
+    // add
+    // console.log(updatedFormData);
+    // return;
+    //   const response = await addRfqProduct.mutateAsync(updatedFormData);
+    //   if (response.status) {
+    //     toast({
+    //       title: "RFQ Product Add Successful",
+    //       description: response.message,
+    //       variant: "success",
+    //     });
+    //     form.reset();
+    //     onClose();
+    //   } else {
+    //     toast({
+    //       title: "RFQ Product Add Failed",
+    //       description: response.message,
+    //       variant: "danger",
+    //     });
+    //   }
+    // }
   };
 
   useEffect(() => {
