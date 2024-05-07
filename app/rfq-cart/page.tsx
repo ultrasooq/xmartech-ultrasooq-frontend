@@ -8,6 +8,7 @@ import {
 import RfqProductCard from "@/components/modules/rfqCart/RfqProductCard";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
@@ -20,7 +21,16 @@ import { useForm } from "react-hook-form";
 import { MdOutlineChevronLeft } from "react-icons/md";
 import { z } from "zod";
 
-const formSchema = z.object({});
+const formSchema = z.object({
+  addressId: z
+    .string()
+    .trim()
+    .min(1, { message: "Address is required" })
+    .transform((value) => Number(value)),
+  deliveryDate: z
+    .date({ required_error: "Delivery Date is required" })
+    .transform((val) => val.toISOString()),
+});
 
 const RfqCartPage = () => {
   const { toast } = useToast();
@@ -28,7 +38,10 @@ const RfqCartPage = () => {
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      addressId: undefined as unknown as number,
+      deliveryDate: undefined as unknown as string,
+    },
   });
 
   const allUserAddressQuery = useAllUserAddress({
@@ -88,6 +101,14 @@ const RfqCartPage = () => {
     }
   };
 
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    console.log({
+      ...formData,
+      rfqCartIds: memoizedRfqCartList.map((item: any) => item.id),
+    });
+    // form.reset();
+  };
+
   return (
     <>
       <section className="rfq_section">
@@ -113,13 +134,13 @@ const RfqCartPage = () => {
                   <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
                     <ControlledSelectInput
                       label="Address"
-                      name="address"
+                      name="addressId"
                       options={memoziedAddressList}
                     />
 
                     <div>
                       <Label>Date</Label>
-                      <ControlledDatePicker name="createdDate" />
+                      <ControlledDatePicker name="deliveryDate" />
                     </div>
                   </form>
                 </Form>
@@ -138,16 +159,27 @@ const RfqCartPage = () => {
                       productImages={
                         item?.rfqCart_productDetails?.productImages
                       }
+                      offerPrice={item?.rfqCart_productDetails?.offerPrice}
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromRfqCart}
                     />
                   ))}
+
+                  {!memoizedRfqCartList.length ? (
+                    <div className="my-10 text-center">
+                      <h4>No items in cart</h4>
+                    </div>
+                  ) : null}
                 </div>
               </div>
               <div className="submit-action">
-                <button className="theme-primary-btn submit-btn">
+                <Button
+                  disabled={!memoizedRfqCartList.length}
+                  className="theme-primary-btn submit-btn"
+                  onClick={form.handleSubmit(onSubmit)}
+                >
                   Request For RFQ
-                </button>
+                </Button>
               </div>
             </div>
           </div>
