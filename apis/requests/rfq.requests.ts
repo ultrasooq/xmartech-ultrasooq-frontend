@@ -2,6 +2,7 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 import urlcat from "urlcat";
+import { AddRfqQuotesRequest } from "@/utils/types/rfq.types";
 
 export const fetchRfqProducts = (payload: {
   page: number;
@@ -107,6 +108,19 @@ export const deleteRfqCartItem = (payload: { rfqCartId: number }) => {
       `${process.env.NEXT_PUBLIC_API_URL}/cart/rfqCartDelete`,
       payload,
     ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const addRfqQuotes = (payload: AddRfqQuotesRequest) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addRfqQuotes`,
+    data: payload,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

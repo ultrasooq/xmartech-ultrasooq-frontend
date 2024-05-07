@@ -1,10 +1,12 @@
 "use client";
 import { useAllUserAddress } from "@/apis/queries/address.queries";
 import {
+  useAddRfqQuotes,
   useDeleteRfqCartItem,
   useRfqCartListByUserId,
   useUpdateRfqCartWithLogin,
 } from "@/apis/queries/rfq.queries";
+import { useMe } from "@/apis/queries/user.queries";
 import RfqProductCard from "@/components/modules/rfqCart/RfqProductCard";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
@@ -35,7 +37,6 @@ const formSchema = z.object({
 const RfqCartPage = () => {
   const { toast } = useToast();
   const router = useRouter();
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,6 +45,7 @@ const RfqCartPage = () => {
     },
   });
 
+  const me = useMe();
   const allUserAddressQuery = useAllUserAddress({
     page: 1,
     limit: 10,
@@ -54,6 +56,7 @@ const RfqCartPage = () => {
   });
   const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
   const deleteRfqCartItem = useDeleteRfqCartItem();
+  const addQuotes = useAddRfqQuotes();
 
   const memoziedAddressList = useMemo(() => {
     return (
@@ -101,12 +104,31 @@ const RfqCartPage = () => {
     }
   };
 
-  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    console.log({
+  const onSubmit = async (formData: any) => {
+    // console.log({
+    //   ...formData,
+    //   rfqCartIds: memoizedRfqCartList.map((item: any) => item.id),
+    // });
+
+    return;
+    const response = await addQuotes.mutateAsync({
       ...formData,
       rfqCartIds: memoizedRfqCartList.map((item: any) => item.id),
     });
-    // form.reset();
+    if (response.status) {
+      toast({
+        title: "Quotes added successfully",
+        description: "Check your quotes for more details",
+        variant: "success",
+      });
+      form.reset();
+    } else {
+      toast({
+        title: "Something went wrong",
+        description: response.message,
+        variant: "danger",
+      });
+    }
   };
 
   return (

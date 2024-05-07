@@ -2,6 +2,7 @@ import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addRfqProduct,
+  addRfqQuotes,
   deleteRfqCartItem,
   fetchRfqCartByUserId,
   fetchRfqProductById,
@@ -9,6 +10,7 @@ import {
   updateRfqCartWithLogin,
   updateRfqProduct,
 } from "../requests/rfq.requests";
+import { AddRfqQuotesRequest } from "@/utils/types/rfq.types";
 
 export const useRfqProducts = (
   payload: {
@@ -166,6 +168,28 @@ export const useDeleteRfqCartItem = () => {
       // queryClient.invalidateQueries({
       //   queryKey: ["cart-count-without-login"],
       // });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useAddRfqQuotes = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    AddRfqQuotesRequest
+  >({
+    mutationFn: async (payload) => {
+      const res = await addRfqQuotes(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["rfq-quotes"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
