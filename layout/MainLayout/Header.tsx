@@ -278,6 +278,12 @@ const Header = () => {
                               <DropdownMenuItem>Order List</DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
+                            <Link href="/rfq-product-list">
+                              <DropdownMenuItem>
+                                RFQ Quote List
+                              </DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuSeparator />
                           </>
                         ) : null}
                         <Link href="/my-settings/address">

@@ -26,7 +26,7 @@ const RfqProductList = () => {
       rfqQuotesByBuyerIdQuery.data?.data?.map((item: any) => {
         return {
           id: item?.id,
-          productImage: item?.productImages?.[0]?.image,
+          productImage: item?.rfqQuotesProducts,
           rfqDate: item?.rfqQuotes_rfqQuoteAddress?.rfqDate || "-",
         };
       }) || []
