@@ -13,6 +13,7 @@ import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
 import Image from "next/image";
 import Pagination from "@/components/shared/Pagination";
 import { useAllRfqQuotesByBuyerId } from "@/apis/queries/rfq.queries";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const RfqProductList = () => {
   const rfqQuotesByBuyerIdQuery = useAllRfqQuotesByBuyerId({
@@ -26,16 +27,45 @@ const RfqProductList = () => {
         return {
           id: item?.id,
           productImage: item?.productImages?.[0]?.image,
-          productName: item?.productName || "-",
-          categoryName: item?.category?.name || "-",
-          skuNo: item?.skuNo || "-",
-          brandName: item?.brand?.brandName || "-",
-          productPrice: item?.productPrice || "-",
-          status: item?.status || "-",
+          rfqDate: item?.rfqQuotes_rfqQuoteAddress?.rfqDate || "-",
         };
       }) || []
     );
   }, [rfqQuotesByBuyerIdQuery.data?.data]);
+
+  const formatDate = useMemo(
+    () => (originalDateString: string) => {
+      const originalDate = new Date(originalDateString);
+
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      const year = originalDate.getFullYear();
+      const monthIndex = originalDate.getMonth();
+      const day = originalDate.getDate();
+      const hours = originalDate.getHours();
+      const minutes = originalDate.getMinutes();
+      const seconds = originalDate.getSeconds();
+      const amOrPm = hours >= 12 ? "pm" : "am";
+      const formattedHours = hours % 12 || 12;
+      const formattedDateString = `${months[monthIndex]} ${day}, ${year}  ${formattedHours}:${minutes}:${seconds} ${amOrPm}`;
+
+      return formattedDateString;
+    },
+    [memoizedRfqQuotesProducts],
+  );
 
   return (
     <>
@@ -88,7 +118,7 @@ const RfqProductList = () => {
                         </div>
                       </TableCell>
                       <TableCell>RFQ000{item?.id}</TableCell>
-                      <TableCell>-</TableCell>
+                      <TableCell>{formatDate(item?.rfqDate)}</TableCell>
                       <TableCell>0</TableCell>
                       <TableCell th-name="Action">
                         <div className="td-dots-dropdown">
@@ -134,6 +164,22 @@ const RfqProductList = () => {
                   ))}
                 </TableBody>
               </Table>
+
+              {rfqQuotesByBuyerIdQuery?.isLoading ? (
+                <div className="my-2 space-y-2">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <Skeleton key={i} className="h-28 w-full" />
+                  ))}
+                </div>
+              ) : null}
+
+              {!memoizedRfqQuotesProducts.length &&
+              !rfqQuotesByBuyerIdQuery.isLoading ? (
+                <p className="py-10 text-center text-sm font-medium">
+                  No Product Found
+                </p>
+              ) : null}
+
               {memoizedRfqQuotesProducts.length > 10 ? <Pagination /> : null}
             </div>
           </div>

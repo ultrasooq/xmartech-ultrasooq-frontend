@@ -201,6 +201,7 @@ export const useAllRfqQuotesUsersByBuyerId = (
   payload: {
     page: number;
     limit: number;
+    quoteId: number;
   },
   enabled = true,
 ) =>
