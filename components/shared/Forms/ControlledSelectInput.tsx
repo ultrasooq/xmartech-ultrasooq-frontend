@@ -62,6 +62,12 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
                   </div>
                 </SelectItem>
               ))}
+
+              {!options.length ? (
+                <div className="flex flex-row justify-center py-3">
+                  <span>No data available</span>
+                </div>
+              ) : null}
             </SelectContent>
           </Select>
 

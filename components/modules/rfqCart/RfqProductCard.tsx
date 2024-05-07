@@ -11,6 +11,7 @@ type RfqProductCardProps = {
   productImages: {
     image: string;
   }[];
+  offerPrice: string;
   onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
   onRemove: (args0: number) => void;
 };
@@ -21,6 +22,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   productName,
   productQuantity,
   productImages,
+  offerPrice,
   onAdd,
   onRemove,
 }) => {
@@ -97,7 +99,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       </figure>
       <div className="price-info">
         <h5>Price</h5>
-        <p>$332.38</p>
+        <p>${offerPrice}</p>
       </div>
     </div>
   );
