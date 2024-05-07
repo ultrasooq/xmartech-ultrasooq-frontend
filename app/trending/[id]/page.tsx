@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  useFetchProductById,
+  useProductById,
   useRelatedProducts,
   useSameBrandProducts,
 } from "@/apis/queries/product.queries";
@@ -37,7 +37,7 @@ const ProductDetailsPage = () => {
   const deviceId = getOrCreateDeviceId() || "";
   const [activeTab, setActiveTab] = useState("description");
 
-  const productQueryById = useFetchProductById(
+  const productQueryById = useProductById(
     searchParams?.id ? (searchParams?.id as string) : "",
     !!searchParams?.id,
   );

@@ -62,7 +62,7 @@ export const useProducts = (
     enabled,
   });
 
-export const useFetchProductById = (id: string, enabled = true) =>
+export const useProductById = (id: string, enabled = true) =>
   useQuery({
     queryKey: ["product-by-id", id],
     queryFn: async () => {
