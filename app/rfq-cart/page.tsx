@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { AddressItem } from "@/utils/types/address.types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
@@ -24,24 +25,21 @@ import { MdOutlineChevronLeft } from "react-icons/md";
 import { z } from "zod";
 
 const formSchema = z.object({
-  addressId: z
-    .string()
-    .trim()
-    .min(1, { message: "Address is required" })
-    .transform((value) => Number(value)),
-  deliveryDate: z
+  address: z.string().trim().min(1, { message: "Address is required" }),
+  rfqDate: z
     .date({ required_error: "Delivery Date is required" })
     .transform((val) => val.toISOString()),
 });
 
 const RfqCartPage = () => {
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      addressId: undefined as unknown as number,
-      deliveryDate: undefined as unknown as string,
+      address: "",
+      rfqDate: undefined as unknown as string,
     },
   });
 
@@ -61,8 +59,8 @@ const RfqCartPage = () => {
   const memoziedAddressList = useMemo(() => {
     return (
       allUserAddressQuery.data?.data.map((item: AddressItem) => ({
-        label: `${item.address} ${item.city} ${item.postCode} ${item.postCode} ${item.country}`,
-        value: item.id.toString(),
+        label: `${item.address} ${item.city} ${item.province} ${item.postCode} ${item.country}`,
+        value: `${item.address};${item.city};${item.province};${item.postCode};${item.country}`,
       })) || []
     );
   }, [allUserAddressQuery.data?.data]);
@@ -105,23 +103,38 @@ const RfqCartPage = () => {
   };
 
   const onSubmit = async (formData: any) => {
-    // console.log({
-    //   ...formData,
-    //   rfqCartIds: memoizedRfqCartList.map((item: any) => item.id),
-    // });
-
-    return;
-    const response = await addQuotes.mutateAsync({
-      ...formData,
+    const address = formData.address;
+    const addressParts = address.split(";");
+    const addressObj = {
+      address: addressParts[0],
+      city: addressParts[1],
+      province: addressParts[2],
+      postCode: addressParts[3],
+      country: addressParts[4],
+    };
+    const updatedFormData = {
+      ...addressObj,
+      firstName: me.data?.data?.firstName,
+      lastName: me.data?.data?.lastName,
+      phoneNumber: me.data?.data?.phoneNumber,
+      cc: me.data?.data?.cc,
       rfqCartIds: memoizedRfqCartList.map((item: any) => item.id),
-    });
+      rfqDate: formData.rfqDate,
+    };
+    console.log(updatedFormData);
+    // return;
+    const response = await addQuotes.mutateAsync(updatedFormData);
     if (response.status) {
       toast({
         title: "Quotes added successfully",
         description: "Check your quotes for more details",
         variant: "success",
       });
+      queryClient.invalidateQueries({
+        queryKey: ["rfq-cart-by-user", { page: 1, limit: 20 }],
+      });
       form.reset();
+      router.push("/rfq-product-list");
     } else {
       toast({
         title: "Something went wrong",
@@ -156,13 +169,13 @@ const RfqCartPage = () => {
                   <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
                     <ControlledSelectInput
                       label="Address"
-                      name="addressId"
+                      name="address"
                       options={memoziedAddressList}
                     />
 
                     <div>
                       <Label>Date</Label>
-                      <ControlledDatePicker name="deliveryDate" />
+                      <ControlledDatePicker name="rfqDate" />
                     </div>
                   </form>
                 </Form>
@@ -196,11 +209,24 @@ const RfqCartPage = () => {
               </div>
               <div className="submit-action">
                 <Button
-                  disabled={!memoizedRfqCartList.length}
+                  disabled={!memoizedRfqCartList.length || addQuotes.isPending}
                   className="theme-primary-btn submit-btn"
                   onClick={form.handleSubmit(onSubmit)}
                 >
-                  Request For RFQ
+                  {addQuotes.isPending ? (
+                    <>
+                      <Image
+                        src="/images/load.png"
+                        alt="loader-icon"
+                        width={20}
+                        height={20}
+                        className="mr-2 animate-spin"
+                      />
+                      Please wait
+                    </>
+                  ) : (
+                    "Request For RFQ"
+                  )}
                 </Button>
               </div>
             </div>
