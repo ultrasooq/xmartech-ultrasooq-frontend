@@ -313,25 +313,19 @@ const TrendingPage = () => {
                     <li>
                       <button
                         type="button"
-                        className={cn(
-                          "view-type-btn",
-                          viewType === "grid" ? "active" : "",
-                        )}
+                        className="view-type-btn"
                         onClick={() => setViewType("grid")}
                       >
-                        <GridIcon />
+                        <GridIcon active={viewType === "grid"} />
                       </button>
                     </li>
                     <li>
                       <button
                         type="button"
-                        className={cn(
-                          "view-type-btn",
-                          viewType === "list" ? "active" : "",
-                        )}
+                        className="view-type-btn"
                         onClick={() => setViewType("list")}
                       >
-                        <ListIcon />
+                        <ListIcon active={viewType === "list"} />
                       </button>
                     </li>
                     <li>

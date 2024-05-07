@@ -20,6 +20,7 @@ type RfqProductCardProps = {
   onEdit: (args0: number) => void;
   isCreatedByMe: boolean;
   isAddedToCart: boolean;
+  haveAccessToken: boolean;
 };
 
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
@@ -35,6 +36,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   onEdit,
   isCreatedByMe,
   isAddedToCart,
+  haveAccessToken,
 }) => {
   const router = useRouter();
   const cart = useCartStore();
@@ -60,46 +62,53 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       </div>
       <div className="product_list_content">
         <p>{productName}</p>
-        <div className="quantity_wrap mb-2">
-          <label>Quantity</label>
-          <div className="qty-up-down-s1-with-rgMenuAction">
-            <div className="flex items-center gap-x-4">
-              <Button
-                variant="outline"
-                className="relative hover:shadow-sm"
-                onClick={() => {
-                  setQuantity(quantity - 1);
-                  onAdd(quantity - 1, id, "remove");
-                  cart.updateCart({ quantity: quantity - 1, rfqProductId: id });
-                }}
-                disabled={quantity === 1}
-              >
-                <Image
-                  src="/images/upDownBtn-minus.svg"
-                  alt="minus-icon"
-                  fill
-                  className="p-3"
-                />
-              </Button>
-              <p className="!text-black">{quantity}</p>
-              <Button
-                variant="outline"
-                className="relative hover:shadow-sm"
-                onClick={() => {
-                  setQuantity(quantity + 1);
-                  onAdd(quantity + 1, id, "add");
-                  cart.updateCart({ quantity: quantity + 1, rfqProductId: id });
-                }}
-              >
-                <Image
-                  src="/images/upDownBtn-plus.svg"
-                  alt="plus-icon"
-                  fill
-                  className="p-3"
-                />
-              </Button>
+        {haveAccessToken ? (
+          <div className="quantity_wrap mb-2">
+            <label>Quantity</label>
+            <div className="qty-up-down-s1-with-rgMenuAction">
+              <div className="flex items-center gap-x-4">
+                <Button
+                  variant="outline"
+                  className="relative hover:shadow-sm"
+                  onClick={() => {
+                    setQuantity(quantity - 1);
+                    onAdd(quantity - 1, id, "remove");
+                    cart.updateCart({
+                      quantity: quantity - 1,
+                      rfqProductId: id,
+                    });
+                  }}
+                  disabled={quantity === 1}
+                >
+                  <Image
+                    src="/images/upDownBtn-minus.svg"
+                    alt="minus-icon"
+                    fill
+                    className="p-3"
+                  />
+                </Button>
+                <p className="!text-black">{quantity}</p>
+                <Button
+                  variant="outline"
+                  className="relative hover:shadow-sm"
+                  onClick={() => {
+                    setQuantity(quantity + 1);
+                    onAdd(quantity + 1, id, "add");
+                    cart.updateCart({
+                      quantity: quantity + 1,
+                      rfqProductId: id,
+                    });
+                  }}
+                >
+                  <Image
+                    src="/images/upDownBtn-plus.svg"
+                    alt="plus-icon"
+                    fill
+                    className="p-3"
+                  />
+                </Button>
 
-              {/* <Button
+                {/* <Button
                 variant="ghost"
                 onClick={() =>
                   router.push(
@@ -112,36 +121,44 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 </div>
               </Button> */}
 
-              <Button variant="ghost" onClick={() => onEdit(id)}>
-                <div className="relative h-6 w-6">
-                  <Image src="/images/edit-rfq.png" alt="edit-rfq-icon" fill />
-                </div>
-              </Button>
+                <Button variant="ghost" onClick={() => onEdit(id)}>
+                  <div className="relative h-6 w-6">
+                    <Image
+                      src="/images/edit-rfq.png"
+                      alt="edit-rfq-icon"
+                      fill
+                    />
+                  </div>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="cart_button">
-          {isAddedToCart ? (
-            <button
-              type="button"
-              className="add_to_cart_button"
-              onClick={onToCart}
-            >
-              Go To RFQ Cart
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="add_to_cart_button"
-              onClick={() => {
-                onAdd(1, id, "add");
-                cart.updateCart({ quantity: 1, rfqProductId: id });
-              }}
-            >
-              Add To RFQ Cart
-            </button>
-          )}
-        </div>
+        ) : null}
+
+        {haveAccessToken ? (
+          <div className="cart_button">
+            {isAddedToCart ? (
+              <button
+                type="button"
+                className="add_to_cart_button"
+                onClick={onToCart}
+              >
+                Go To RFQ Cart
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="add_to_cart_button"
+                onClick={() => {
+                  onAdd(1, id, "add");
+                  cart.updateCart({ quantity: 1, rfqProductId: id });
+                }}
+              >
+                Add To RFQ Cart
+              </button>
+            )}
+          </div>
+        ) : null}
       </div>
     </div>
   );

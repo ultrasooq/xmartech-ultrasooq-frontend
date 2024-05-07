@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import Image from "next/image";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 
 const RfqPage = () => {
   const { toast } = useToast();
@@ -42,6 +44,7 @@ const RfqPage = () => {
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
   const [selectedProductId, setSelectedProductId] = useState<number>();
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
   const cart = useCartStore();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
@@ -112,6 +115,15 @@ const RfqPage = () => {
     }
   }, [isClickedOutside]);
 
+  useEffect(() => {
+    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+    if (accessToken) {
+      setHaveAccessToken(true);
+    } else {
+      setHaveAccessToken(false);
+    }
+  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+
   return (
     <section className="rfq_section">
       <div className="sec-bg">
@@ -137,20 +149,22 @@ const RfqPage = () => {
                     <img src="images/search-icon-rfq.png" alt="search-icon" />
                   </button>
                 </div>
-                <div className="rfq_add_new_product">
-                  <Link
-                    href="/create-product?productType=R"
-                    className="flex gap-x-2 bg-dark-orange px-3 py-2 text-white"
-                  >
-                    <Image
-                      src="/images/plus-icon-white.png"
-                      width={15}
-                      height={24}
-                      alt="plus-icon"
-                    />{" "}
-                    Add new product in RFQ
-                  </Link>
-                </div>
+                {haveAccessToken ? (
+                  <div className="rfq_add_new_product">
+                    <Link
+                      href="/create-product?productType=R"
+                      className="flex gap-x-2 bg-dark-orange px-3 py-2 text-white"
+                    >
+                      <Image
+                        src="/images/plus-icon-white.png"
+                        width={15}
+                        height={24}
+                        alt="plus-icon"
+                      />{" "}
+                      Add new product in RFQ
+                    </Link>
+                  </div>
+                ) : null}
               </div>
               <div className="product_section product_gray_n_box">
                 <div className="row">
@@ -182,29 +196,20 @@ const RfqPage = () => {
                         </div>
                         <div className="trending_view">
                           <ul>
-                            <li>View</li>
                             <li>
                               <button
                                 type="button"
-                                className={cn(
-                                  "view-type-btn",
-                                  viewType === "grid" ? "active" : "",
-                                )}
                                 onClick={() => setViewType("grid")}
                               >
-                                <GridIcon />
+                                <GridIcon active={viewType === "grid"} />
                               </button>
                             </li>
                             <li>
                               <button
                                 type="button"
-                                className={cn(
-                                  "view-type-btn",
-                                  viewType === "list" ? "active" : "",
-                                )}
                                 onClick={() => setViewType("list")}
                               >
-                                <ListIcon />
+                                <ListIcon active={viewType === "list"} />
                               </button>
                             </li>
                           </ul>
@@ -247,6 +252,7 @@ const RfqPage = () => {
                             }}
                             isCreatedByMe={item?.userId === me.data?.data?.id}
                             isAddedToCart={item?.isAddedToCart}
+                            haveAccessToken={haveAccessToken}
                           />
                         ))}
                       </div>
