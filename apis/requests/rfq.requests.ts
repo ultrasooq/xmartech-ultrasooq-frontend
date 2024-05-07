@@ -116,6 +116,60 @@ export const deleteRfqCartItem = (payload: { rfqCartId: number }) => {
   });
 };
 
+export const fetchAllRfqQuotesByBuyerId = (payload: {
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllRfqQuotesByBuyerID`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const fetchAllRfqQuotesUsersByBuyerId = (payload: {
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllRfqQuotesUsersByBuyerID`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const fetchAllRfqQuotesUsersBySellerId = (payload: {
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllRfqQuotesUsersBySellerID`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const addRfqQuotes = (payload: AddRfqQuotesRequest) => {
   return axios({
     method: "POST",

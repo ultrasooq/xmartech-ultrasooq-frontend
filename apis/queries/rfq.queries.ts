@@ -4,6 +4,9 @@ import {
   addRfqProduct,
   addRfqQuotes,
   deleteRfqCartItem,
+  fetchAllRfqQuotesByBuyerId,
+  fetchAllRfqQuotesUsersByBuyerId,
+  fetchAllRfqQuotesUsersBySellerId,
   fetchRfqCartByUserId,
   fetchRfqProductById,
   fetchRfqProducts,
@@ -174,6 +177,63 @@ export const useDeleteRfqCartItem = () => {
     },
   });
 };
+
+export const useAllRfqQuotesByBuyerId = (
+  payload: {
+    page: number;
+    limit: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["rfq-quotes", payload],
+    queryFn: async () => {
+      const res = await fetchAllRfqQuotesByBuyerId(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useAllRfqQuotesUsersByBuyerId = (
+  payload: {
+    page: number;
+    limit: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["rfq-quotes", payload],
+    queryFn: async () => {
+      const res = await fetchAllRfqQuotesUsersByBuyerId(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useAllRfqQuotesUsersBySellerId = (
+  payload: {
+    page: number;
+    limit: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["rfq-quotes", payload],
+    queryFn: async () => {
+      const res = await fetchAllRfqQuotesUsersBySellerId(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
 
 export const useAddRfqQuotes = () => {
   const queryClient = useQueryClient();
