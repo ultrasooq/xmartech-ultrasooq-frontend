@@ -10,7 +10,6 @@ import BasicInformationSection from "@/components/modules/createProduct/BasicInf
 import ProductDetailsSection from "@/components/modules/createProduct/ProductDetailsSection";
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
-// import SuggestedProductsListCard from "@/components/modules/createProduct/SuggestedProductsListCard";
 import {
   useCreateProduct,
   useProductById,
@@ -100,7 +99,7 @@ const formSchema = z
 const CreateProductPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  // const searchQuery = useSearchParams();
+  const searchQuery = useSearchParams();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -159,7 +158,6 @@ const CreateProductPage = () => {
     }
   };
 
-  // console.log(form.formState.errors);
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
       ...formData,
@@ -219,16 +217,12 @@ const CreateProductPage = () => {
     }
 
     delete updatedFormData.productImages;
-    // if (updatedFormData.subCategoryId !== "") {
-    //   updatedFormData.categoryId = updatedFormData.subCategoryId;
-    //   delete updatedFormData.subCategoryId;
-    // }
 
     if (activeProductId) {
       // edit
       updatedFormData.productId = Number(activeProductId);
       console.log(updatedFormData);
-      // return;
+      return;
       const response = await updateProduct.mutateAsync(updatedFormData);
       if (response.status && response.data) {
         toast({
@@ -257,7 +251,7 @@ const CreateProductPage = () => {
     } else {
       // add
       console.log(updatedFormData);
-      // return;
+      return;
       const response = await createProduct.mutateAsync(updatedFormData);
 
       if (response.status && response.data) {
@@ -336,16 +330,16 @@ const CreateProductPage = () => {
     }
   }, [productQueryById?.data?.data]);
 
-  // useEffect(() => {
-  //   const activeProductId = searchQuery?.get("productId");
-  //   const activeProductType = searchQuery?.get("productType");
-  //   if (activeProductId) {
-  //     setActiveProductId(activeProductId);
-  //   }
-  //   if (activeProductType) {
-  //     setActiveProductType(activeProductType);
-  //   }
-  // }, [searchQuery?.get("productId"), searchQuery?.get("productType")]);
+  useEffect(() => {
+    const activeProductId = searchQuery?.get("productId");
+    const activeProductType = searchQuery?.get("productType");
+    if (activeProductId) {
+      setActiveProductId(activeProductId);
+    }
+    if (activeProductType) {
+      setActiveProductType(activeProductType);
+    }
+  }, [searchQuery?.get("productId"), searchQuery?.get("productType")]);
 
   return (
     <>
