@@ -9,10 +9,9 @@ import { useToast } from "@/components/ui/use-toast";
 import Image from "next/image";
 import { IoCloseSharp } from "react-icons/io5";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
-import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import {
-  useAddRfqProduct,
-  useRfqProductById,
+  // useAddRfqProduct,
+  // useRfqProductById,
   useUpdateRfqProduct,
 } from "@/apis/queries/rfq.queries";
 import { Input } from "@/components/ui/input";
@@ -20,6 +19,7 @@ import AddImageContent from "../profile/AddImageContent";
 import { v4 as uuidv4 } from "uuid";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { useQueryClient } from "@tanstack/react-query";
+import { useProductById } from "@/apis/queries/product.queries";
 
 type AddToRfqFormProps = {
   onClose: () => void;
@@ -27,16 +27,7 @@ type AddToRfqFormProps = {
 };
 
 const formSchema = z.object({
-  rfqProductName: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Product Name is required",
-    })
-    .max(50, {
-      message: "Product Name must be less than 50 characters",
-    }),
-  productNote: z
+  note: z
     .string()
     .trim()
     .min(2, {
@@ -57,8 +48,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      rfqProductName: "",
-      productNote: "",
+      note: "",
       rfqProductImagesList: undefined,
       productImages: [] as { path: File; id: string }[],
     },
@@ -68,9 +58,13 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const watchProductImages = form.watch("productImages");
 
   const uploadMultiple = useUploadMultipleFile();
-  const addRfqProduct = useAddRfqProduct();
+  // const addRfqProduct = useAddRfqProduct();
   const updateRfqProduct = useUpdateRfqProduct();
-  const rfqProductById = useRfqProductById(
+  // const rfqProductById = useRfqProductById(
+  //   selectedProductId ? selectedProductId.toString() : "",
+  //   !!selectedProductId,
+  // );
+  const productQueryById = useProductById(
     selectedProductId ? selectedProductId.toString() : "",
     !!selectedProductId,
   );
@@ -174,28 +168,28 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       // add
       // console.log(updatedFormData);
       // return;
-      const response = await addRfqProduct.mutateAsync(updatedFormData);
-      if (response.status) {
-        toast({
-          title: "RFQ Product Add Successful",
-          description: response.message,
-          variant: "success",
-        });
-        form.reset();
-        onClose();
-      } else {
-        toast({
-          title: "RFQ Product Add Failed",
-          description: response.message,
-          variant: "danger",
-        });
-      }
+      //   const response = await addRfqProduct.mutateAsync(updatedFormData);
+      //   if (response.status) {
+      //     toast({
+      //       title: "RFQ Product Add Successful",
+      //       description: response.message,
+      //       variant: "success",
+      //     });
+      //     form.reset();
+      //     onClose();
+      //   } else {
+      //     toast({
+      //       title: "RFQ Product Add Failed",
+      //       description: response.message,
+      //       variant: "danger",
+      //     });
+      //   }
     }
   };
 
   useEffect(() => {
-    if (rfqProductById?.data?.data) {
-      const rfqProduct = rfqProductById?.data?.data;
+    if (productQueryById?.data?.data) {
+      const rfqProduct = productQueryById?.data?.data;
 
       const productImages = rfqProduct?.rfqProductImage?.length
         ? rfqProduct?.rfqProductImage?.map((item: any) => {
@@ -216,13 +210,12 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         : undefined;
 
       form.reset({
-        rfqProductName: rfqProductById?.data?.data?.rfqProductName,
-        productNote: rfqProductById?.data?.data?.productNote,
+        note: productQueryById?.data?.data?.note,
         productImages: productImages || [],
         rfqProductImagesList: productImagesList || undefined,
       });
     }
-  }, [selectedProductId, rfqProductById?.data]);
+  }, [selectedProductId, productQueryById?.data]);
 
   // console.log(form.formState.errors);
   return (
@@ -387,25 +380,19 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             </div>
           </div>
 
-          <ControlledTextInput
-            label="Name"
-            name="rfqProductName"
-            placeholder="Enter product name"
-          />
-
           <ControlledTextareaInput
             label="Write a Note"
-            name="productNote"
+            name="note"
             placeholder="Write here..."
             rows={6}
           />
 
           <Button
-            disabled={addRfqProduct.isPending || uploadMultiple.isPending}
+            disabled={uploadMultiple.isPending}
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
-            {addRfqProduct.isPending || uploadMultiple.isPending ? (
+            {uploadMultiple.isPending ? (
               <>
                 <Image
                   src="/images/load.png"
