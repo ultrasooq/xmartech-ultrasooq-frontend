@@ -221,8 +221,8 @@ const CreateProductPage = () => {
     if (activeProductId) {
       // edit
       updatedFormData.productId = Number(activeProductId);
-      console.log(updatedFormData);
-      return;
+      console.log("edit:", updatedFormData);
+      // return;
       const response = await updateProduct.mutateAsync(updatedFormData);
       if (response.status && response.data) {
         toast({
@@ -250,8 +250,8 @@ const CreateProductPage = () => {
       }
     } else {
       // add
-      console.log(updatedFormData);
-      return;
+      console.log("add:", updatedFormData);
+      // return;
       const response = await createProduct.mutateAsync(updatedFormData);
 
       if (response.status && response.data) {
@@ -359,7 +359,10 @@ const CreateProductPage = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    <BasicInformationSection tagsList={memoizedTags} />
+                    <BasicInformationSection
+                      tagsList={memoizedTags}
+                      isEditable={!!form.getValues("categoryLocation")}
+                    />
                   </div>
                 </div>
 

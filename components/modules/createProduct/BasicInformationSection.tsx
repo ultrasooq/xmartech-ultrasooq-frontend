@@ -38,10 +38,12 @@ type ProductImageProps = {
 
 type BasicInformationProps = {
   tagsList: any;
+  isEditable?: boolean;
 };
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
+  isEditable,
 }) => {
   const formContext = useFormContext();
   const { toast } = useToast();
@@ -127,24 +129,24 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
           const res = await fetchSubCategoriesById({ categoryId });
           return res.data?.data;
         });
-
       Promise.all(promises).then((values) => {
         setListIds(tempArr);
         setCatList(values);
       });
     }
-  }, [formContext.getValues("categoryLocation")]);
+  }, [isEditable]);
 
   useEffect(
     () => formContext.setValue("categoryId", Number(currentId)),
     [currentId],
   );
 
-  // useEffect(() => {
-  //   formContext.setValue("categoryLocation", listIds.join(","));
-  // }, [listIds?.length]);
+  useEffect(
+    () => formContext.setValue("categoryLocation", listIds.join(",")),
+    [listIds?.length],
+  );
 
-  console.log(catList, listIds);
+  // console.log(catList, listIds);
 
   return (
     <div className="flex w-full flex-wrap">
