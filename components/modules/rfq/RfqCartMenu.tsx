@@ -5,22 +5,19 @@ import {
 import React, { useMemo } from "react";
 import RfqCartMenuCard from "./RfqCartMenuCard";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type RfqCartMenuProps = {
   onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
 };
 
 const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
-  const router = useRouter();
   const { toast } = useToast();
   const rfqCartListByUser = useRfqCartListByUserId({
     page: 1,
     limit: 20,
   });
 
-  // console.log(rfqCartListByUser.data?.data);
   const deleteRfqCartItem = useDeleteRfqCartItem();
 
   const memoizedRfqCartList = useMemo(() => {
@@ -73,12 +70,12 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
         ))}
 
         <div className="mt-4 w-full text-center">
-          <Button
-            onClick={() => router.push("/rfq-cart")}
-            disabled={!memoizedRfqCartList.length}
+          <Link
+            href="/rfq-cart"
+            className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
           >
             Go To RFQ Cart
-          </Button>
+          </Link>
         </div>
       </div>
     </div>
