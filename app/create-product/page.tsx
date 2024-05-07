@@ -13,7 +13,7 @@ import Footer from "@/components/shared/Footer";
 // import SuggestedProductsListCard from "@/components/modules/createProduct/SuggestedProductsListCard";
 import {
   useCreateProduct,
-  useFetchProductById,
+  useProductById,
   useUpdateProduct,
 } from "@/apis/queries/product.queries";
 import { useToast } from "@/components/ui/use-toast";
@@ -130,7 +130,7 @@ const CreateProductPage = () => {
   const tagsQuery = useTags();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
-  const productQueryById = useFetchProductById(
+  const productQueryById = useProductById(
     activeProductId ? activeProductId : "",
     !!activeProductId,
   );
