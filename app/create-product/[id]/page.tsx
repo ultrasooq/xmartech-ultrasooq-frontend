@@ -96,10 +96,10 @@ const formSchema = z
     }
   });
 
-const CreateProductPage = () => {
+const EditProductPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  // const searchQuery = useSearchParams();
+  const searchQuery = useSearchParams();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -331,20 +331,15 @@ const CreateProductPage = () => {
   }, [productQueryById?.data?.data]);
 
   useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let activeProductId = params.get("productId");
-    let activeProductType = params.get("productType");
-
+    const activeProductId = searchQuery?.get("productId");
+    const activeProductType = searchQuery?.get("productType");
     if (activeProductId) {
       setActiveProductId(activeProductId);
     }
     if (activeProductType) {
       setActiveProductType(activeProductType);
     }
-  }, [
-    new URLSearchParams(document.location.search).get("productId"),
-    new URLSearchParams(document.location.search).get("productType"),
-  ]);
+  }, [searchQuery?.get("productId"), searchQuery?.get("productType")]);
 
   return (
     <>
@@ -421,4 +416,4 @@ const CreateProductPage = () => {
   );
 };
 
-export default CreateProductPage;
+export default EditProductPage;
