@@ -13,6 +13,8 @@ type ProductCardProps = {
   productImages: { id: number; image: string }[];
   onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
   onRemove: (args0: number) => void;
+  onWishlist: (args0: number, args1: number) => void;
+  haveAccessToken: boolean;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -24,6 +26,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   productImages,
   onAdd,
   onRemove,
+  onWishlist,
+  haveAccessToken,
 }) => {
   const [quantity, setQuantity] = useState(1);
 
@@ -86,11 +90,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     Remove
                   </Button>
                 </li>
-                <li>
-                  <Button disabled variant="ghost" className="px-2 underline">
-                    Move to wishlist
-                  </Button>
-                </li>
+                {haveAccessToken ? (
+                  <li>
+                    <Button
+                      variant="ghost"
+                      className="px-2 underline"
+                      onClick={() => onWishlist(productId, cartId)}
+                    >
+                      Move to wishlist
+                    </Button>
+                  </li>
+                ) : null}
               </ul>
             </div>
           </div>

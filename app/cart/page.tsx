@@ -6,6 +6,7 @@ import {
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
+import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 import ProductCard from "@/components/modules/cartList/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -41,6 +42,7 @@ const CartListPage = () => {
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
+  const addToWishlist = useAddToWishList();
 
   const memoizedCartList = useMemo(() => {
     if (cartListByUser.data?.data) {
@@ -131,6 +133,30 @@ const CartListPage = () => {
         description: "Check your cart for more details",
         variant: "success",
       });
+    } else {
+      toast({
+        title: "Item not removed from cart",
+        description: "Check your cart for more details",
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleAddToWishlist = async (productId: number, cartId: number) => {
+    const response = await addToWishlist.mutateAsync({ productId });
+    if (response.status) {
+      toast({
+        title: "Item added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      handleRemoveItemFromCart(cartId);
+    } else {
+      toast({
+        title: "Item not added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
     }
   };
 
@@ -206,6 +232,8 @@ const CartListPage = () => {
                       productImages={item.productDetails.productImages}
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromCart}
+                      onWishlist={handleAddToWishlist}
+                      haveAccessToken={haveAccessToken}
                     />
                   ))}
                 </div>

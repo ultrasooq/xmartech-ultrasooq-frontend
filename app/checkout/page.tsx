@@ -37,11 +37,13 @@ import GuestAddressCard from "@/components/modules/checkout/GuestAddressCard";
 import validator from "validator";
 import GuestAddressForm from "@/components/modules/checkout/GuestAddressForm";
 import AddIcon from "@/public/images/addbtn.svg";
+import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 
 const CheckoutPage = () => {
   const router = useRouter();
   const wrapperRef = useRef(null);
   const { toast } = useToast();
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<
     number | undefined
@@ -80,36 +82,36 @@ const CheckoutPage = () => {
   >();
   const [guestEmail, setGuestEmail] = useState("");
 
-  const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
   const orders = useOrderStore();
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const userDetails = useMe(hasAccessToken);
+  const userDetails = useMe(haveAccessToken);
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
       limit: 10,
       deviceId,
     },
-    !hasAccessToken,
+    !haveAccessToken,
   );
   const cartListByUser = useCartListByUserId(
     {
       page: 1,
       limit: 10,
     },
-    hasAccessToken,
+    haveAccessToken,
   );
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
+  const addToWishlist = useAddToWishList();
   const allUserAddressQuery = useAllUserAddress(
     {
       page: 1,
       limit: 10,
     },
-    hasAccessToken,
+    haveAccessToken,
   );
   const delteAddress = useDeleteAddress();
 
@@ -169,7 +171,7 @@ const CheckoutPage = () => {
   ) => {
     console.log("add to cart:", quantity, actionType);
     // return;
-    if (hasAccessToken) {
+    if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
         productId,
         quantity,
@@ -221,6 +223,30 @@ const CheckoutPage = () => {
         description: "Check your address for more details",
         variant: "success",
       });
+    } else {
+      toast({
+        title: "Item not removed from cart",
+        description: "Check your cart for more details",
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleAddToWishlist = async (productId: number, cartId: number) => {
+    const response = await addToWishlist.mutateAsync({ productId });
+    if (response.status) {
+      toast({
+        title: "Item added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      handleRemoveItemFromCart(cartId);
+    } else {
+      toast({
+        title: "Item not added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
     }
   };
 
@@ -261,7 +287,7 @@ const CheckoutPage = () => {
   };
 
   const onSaveOrder = () => {
-    if (hasAccessToken) {
+    if (haveAccessToken) {
       if (!selectedOrderDetails?.shippingAddress) {
         toast({
           title: "Please select a shipping address",
@@ -399,6 +425,15 @@ const CheckoutPage = () => {
     }
   }, [isClickedOutside]);
 
+  useEffect(() => {
+    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+    if (accessToken) {
+      setHaveAccessToken(true);
+    } else {
+      setHaveAccessToken(false);
+    }
+  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
@@ -441,6 +476,8 @@ const CheckoutPage = () => {
                       productImages={item.productDetails.productImages}
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromCart}
+                      onWishlist={handleAddToWishlist}
+                      haveAccessToken={haveAccessToken}
                     />
                   ))}
                 </div>
