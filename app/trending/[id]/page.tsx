@@ -27,6 +27,7 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import ReviewSection from "@/components/shared/ReviewSection";
 import QuestionsAnswersSection from "@/components/modules/productDetails/QuestionsAnswersSection";
+import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 
 const ProductDetailsPage = () => {
   const searchParams = useParams();
@@ -59,6 +60,8 @@ const ProductDetailsPage = () => {
   );
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
+  const addToWishlist = useAddToWishList();
+
   const productDetails = productQueryById.data?.data;
   const calculateTagIds = useMemo(
     () => productDetails?.productTags.map((item: any) => item.tagId).join(","),
@@ -149,6 +152,25 @@ const ProductDetailsPage = () => {
       }, 2000);
     }
   };
+  const handleAddToWishlist = async () => {
+    const response = await addToWishlist.mutateAsync({
+      productId: Number(searchParams?.id),
+    });
+    if (response.status) {
+      toast({
+        title: "Item added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      // handleRemoveItemFromCart(cartId);
+    } else {
+      toast({
+        title: response.message || "Item not added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
 
   useEffect(() => {
     const type = searchQuery?.get("type");
@@ -166,6 +188,7 @@ const ProductDetailsPage = () => {
             onToCheckout={handleCheckoutPage}
             hasItem={hasItemByUser || hasItemByDevice}
             isLoading={!productQueryById.isFetched}
+            onWishlist={handleAddToWishlist}
           />
           <ProductDescriptionCard
             productName={productDetails?.productName}

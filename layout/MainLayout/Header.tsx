@@ -30,6 +30,7 @@ import HamburgerWhiteIcon from "@/public/images/humberger-white-icon.svg";
 import HamburgerIcon from "@/public/images/humberger-icon.svg";
 import HamburgerDownIcon from "@/public/images/humberger-down-icon.svg";
 import LogoIcon from "@/public/images/logo.png";
+import { useWishlistCount } from "@/apis/queries/wishlist.queries";
 
 const Header = () => {
   const router = useRouter();
@@ -43,6 +44,7 @@ const Header = () => {
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
 
+  const wishlistCount = useWishlistCount(hasAccessToken);
   const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
   const cartCountWithoutLogin = useCartCountWithoutLogin(
     { deviceId },
@@ -227,7 +229,7 @@ const Header = () => {
                       alt="wishlist"
                     />
                     <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
-                      0
+                      {wishlistCount.data?.data ? wishlistCount.data?.data : 0}
                     </div>
                   </Link>
                 </li>

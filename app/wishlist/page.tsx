@@ -7,13 +7,37 @@ import { useRouter } from "next/navigation";
 import { MdOutlineChevronLeft } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import WishlistCard from "@/components/modules/wishlist/WishlistCard";
-import { useWishlist } from "@/apis/queries/wishlist.queries";
+import {
+  useDeleteFromWishList,
+  useWishlist,
+} from "@/apis/queries/wishlist.queries";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
 
 const WishlistPage = () => {
   const router = useRouter();
-
+  const { toast } = useToast();
   const wishlistQuery = useWishlist({ page: 1, limit: 10 });
+  const deleteFromWishlist = useDeleteFromWishList();
+
+  const handleDeleteFromWishlist = async (wishListId: number) => {
+    const response = await deleteFromWishlist.mutateAsync({
+      wishListId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: "Item not removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
 
   return (
     <>
@@ -34,6 +58,12 @@ const WishlistPage = () => {
               <h3 className="text-3xl font-semibold">My Wishlist</h3>
             </div>
             <div className="min-h-[400px] rounded-2xl border border-solid border-[#E4E3E3] bg-white p-4 shadow-[0px_4px_23px_0px_#EEF1F5]">
+              {wishlistQuery.data?.data?.length ? (
+                <p className="px-5 text-xl font-medium">
+                  My Wishlist {wishlistQuery.data?.data?.length} items
+                </p>
+              ) : null}
+
               {!wishlistQuery.isLoading && !wishlistQuery.data?.data?.length ? (
                 <p className="mt-10 text-center text-xl font-medium">
                   No items in wishlist
@@ -51,7 +81,12 @@ const WishlistPage = () => {
               {wishlistQuery.data?.data?.length ? (
                 <div className="grid gap-5 p-5 md:grid-cols-5">
                   {wishlistQuery.data?.data.map((item: any) => (
-                    <WishlistCard key={item?.id} item={item} />
+                    <WishlistCard
+                      key={item?.id}
+                      id={item?.id}
+                      wishlistData={item?.wishlist_productDetail}
+                      onDeleteFromWishlist={handleDeleteFromWishlist}
+                    />
                   ))}
                 </div>
               ) : null}
