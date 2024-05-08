@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
+import DropdownIcon from "@/public/images/custom-hover-dropdown-btn.svg";
 
 type GuestAddressCardProps = {
   firstName?: string;
@@ -66,7 +67,7 @@ const GuestAddressCard: React.FC<GuestAddressCardProps> = ({
             <DropdownMenuTrigger>
               <Image
                 alt="image-icon"
-                src="/images/custom-hover-dropdown-btn.svg"
+                src={DropdownIcon}
                 height={25}
                 width={25}
                 className="rounded-full"

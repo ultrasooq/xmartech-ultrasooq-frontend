@@ -18,6 +18,7 @@ import {
 } from "@/apis/queries/address.queries";
 import Image from "next/image";
 import { IoCloseSharp } from "react-icons/io5";
+import LoaderIcon from "@/public/images/load.png";
 
 type AddressFormProps = {
   addressId?: number;
@@ -274,7 +275,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             {createAddress.isPending || updateAddress.isPending ? (
               <>
                 <Image
-                  src="/images/load.png"
+                  src={LoaderIcon}
                   alt="loader-icon"
                   width={20}
                   height={20}

@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import MinusIcon from "@/public/images/upDownBtn-minus.svg";
+import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 
 type ProductCardProps = {
   cartId: number;
@@ -56,7 +58,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   disabled={quantity === 0}
                 >
                   <Image
-                    src="/images/upDownBtn-minus.svg"
+                    src={MinusIcon}
                     alt="minus-icon"
                     fill
                     className="p-3"
@@ -71,12 +73,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     onAdd(quantity + 1, productId, "add");
                   }}
                 >
-                  <Image
-                    src="/images/upDownBtn-plus.svg"
-                    alt="plus-icon"
-                    fill
-                    className="p-3"
-                  />
+                  <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
                 </Button>
               </div>
               <ul className="rgMenuAction-lists">

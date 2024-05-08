@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
+import SecurePaymentIcon from "@/public/images/securePaymenticon.svg";
+import SupportIcon from "@/public/images/support-24hr.svg";
+import MinusIcon from "@/public/images/upDownBtn-minus.svg";
+import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 
 type ProductDescriptionCardProps = {
   productName: string;
@@ -149,10 +153,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   disabled={quantity === 1}
                 >
                   <Image
-                    src="/images/upDownBtn-minus.svg"
+                    src={MinusIcon}
                     alt="minus-icon"
                     fill
-                    className="p-3"
+                    className="p-[10px]"
                   />
                 </Button>
                 <p>{quantity}</p>
@@ -164,12 +168,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     onAdd(quantity + 1, "add");
                   }}
                 >
-                  <Image
-                    src="/images/upDownBtn-plus.svg"
-                    alt="plus-icon"
-                    fill
-                    className="p-3"
-                  />
+                  <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
                 </Button>
               </div>
             </div>
@@ -177,11 +176,21 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             <div className="right-payment-info">
               <ul>
                 <li>
-                  <img src="/images/securePaymenticon.svg" alt="" />
+                  <Image
+                    src={SecurePaymentIcon}
+                    alt="secure-payment-icon"
+                    width={28}
+                    height={22}
+                  />
                   <span>Secure Payment</span>
                 </li>
                 <li>
-                  <img src="/images/support-24hr.svg" alt="" />
+                  <Image
+                    src={SupportIcon}
+                    alt="support-24hr-icon"
+                    width={28}
+                    height={28}
+                  />
                   <span>Secure Payment</span>
                 </li>
               </ul>
