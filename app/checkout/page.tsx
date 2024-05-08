@@ -36,6 +36,7 @@ import { Input } from "@/components/ui/input";
 import GuestAddressCard from "@/components/modules/checkout/GuestAddressCard";
 import validator from "validator";
 import GuestAddressForm from "@/components/modules/checkout/GuestAddressForm";
+import AddIcon from "@/public/images/addbtn.svg";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -557,7 +558,7 @@ const CheckoutPage = () => {
                         }}
                       >
                         <Image
-                          src="/images/addbtn.svg"
+                          src={AddIcon}
                           alt="add-icon"
                           height={14}
                           width={14}
@@ -695,7 +696,7 @@ const CheckoutPage = () => {
                         }}
                       >
                         <Image
-                          src="/images/addbtn.svg"
+                          src={AddIcon}
                           alt="add-icon"
                           height={14}
                           width={14}
@@ -717,7 +718,7 @@ const CheckoutPage = () => {
                       onClick={handleToggleAddModal}
                     >
                       <Image
-                        src="/images/addbtn.svg"
+                        src={AddIcon}
                         alt="add-icon"
                         height={14}
                         width={14}

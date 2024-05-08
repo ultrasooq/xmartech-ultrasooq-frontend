@@ -30,13 +30,6 @@ const formSchema = z
       .min(2, { message: "Product Name is required" })
       .max(50, { message: "Product Name must be less than 50 characters" }),
     categoryId: z.number().optional(),
-    // .min(1, { message: "Product Category is required" })
-    // .transform((value) => Number(value)),
-    // subCategoryId: z
-    //   .string()
-    //   .trim()
-    //   .transform((value) => Number(value))
-    //   .optional(),
     categoryLocation: z.string().trim().optional(),
     brandId: z
       .string()
@@ -106,7 +99,6 @@ const CreateProductPage = () => {
     defaultValues: {
       productName: "",
       categoryId: 0,
-      // subCategoryId: "",
       categoryLocation: "",
       brandId: "",
       skuNo: "",

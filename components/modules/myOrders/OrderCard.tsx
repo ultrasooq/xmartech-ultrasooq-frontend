@@ -58,7 +58,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
             <div className="image-container rounded border border-gray-300">
               <Image
                 src={
-                  produtctImage?.[0].image || "/images/product-placeholder.png"
+                  produtctImage?.[0]?.image || "/images/product-placeholder.png"
                 }
                 alt="preview-product"
                 width={120}

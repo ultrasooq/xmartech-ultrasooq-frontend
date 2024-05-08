@@ -9,6 +9,7 @@ import {
 import Image from "next/image";
 import { RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import DropdownIcon from "@/public/images/custom-hover-dropdown-btn.svg";
 
 type AddressCardProps = {
   id: number;
@@ -82,7 +83,7 @@ const AddressCard: React.FC<AddressCardProps> = ({
               <DropdownMenuTrigger>
                 <Image
                   alt="image-icon"
-                  src="/images/custom-hover-dropdown-btn.svg"
+                  src={DropdownIcon}
                   height={25}
                   width={25}
                   className="rounded-full"

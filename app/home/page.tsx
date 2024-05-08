@@ -1,4 +1,23 @@
+import DealsCard from "@/components/modules/home/DealsCard";
+import ProductCard from "@/components/modules/home/ProductCard";
+import TrendingCard from "@/components/modules/home/TrendingCard";
+import TrendingOptionCard from "@/components/modules/home/TrendingOptionCard";
 import Footer from "@/components/shared/Footer";
+import {
+  bestSellerList,
+  camerasVideosList,
+  computerTechnologyList,
+  dealsList,
+  homeElectronicsList,
+  trendingList,
+  trendingTopicList,
+} from "@/utils/dummyDatas";
+import Image from "next/image";
+import { v4 as uuidv4 } from "uuid";
+import HeadphoneImage from "@/public/images/big-headphone.png";
+import AdBannerOne from "@/public/images/hs-1.png";
+import AdBannerTwo from "@/public/images/hs-2.png";
+import AdBannerThree from "@/public/images/hs-3.png";
 
 export default function HomePage() {
   return (
@@ -8,9 +27,11 @@ export default function HomePage() {
           <div className="flex flex-wrap">
             <div className="mb-4 w-full sm:mb-0 sm:w-1/2 sm:pr-3.5">
               <div className="relative h-auto w-full sm:h-96">
-                <img
-                  src="images/hs-1.png"
+                <Image
+                  src={AdBannerOne}
                   className="h-full w-full object-cover object-right-top"
+                  alt="hs-1"
+                  fill
                 />
                 <div className="absolute left-0 top-0 flex h-full w-full items-center justify-start bg-gradient-to-r from-slate-100 to-transparent p-8">
                   <div className="text-sm font-normal text-light-gray md:w-10/12 lg:w-9/12">
@@ -37,9 +58,11 @@ export default function HomePage() {
             </div>
             <div className="w-full sm:w-1/2 sm:pl-3.5">
               <div className="relative mb-4 h-auto w-full sm:mb-8 sm:h-44">
-                <img
-                  src="images/hs-2.png"
+                <Image
+                  src={AdBannerTwo}
                   className="h-full w-full object-cover"
+                  alt="hs-2"
+                  fill
                 />
                 <div className="absolute left-0 top-0 flex h-full w-full items-center justify-start bg-gradient-to-r from-slate-100 to-transparent px-8 py-4">
                   <div className="w-4/5 text-sm font-normal text-light-gray lg:w-3/5">
@@ -54,9 +77,11 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="relative h-auto w-full sm:h-44">
-                <img
-                  src="images/hs-3.png"
+                <Image
+                  src={AdBannerThree}
                   className="h-full w-full object-cover"
+                  alt="hs-3"
+                  fill
                 />
                 <div className="absolute left-0 top-0 flex h-full w-full items-center justify-start bg-gradient-to-r from-slate-100 to-transparent px-8 py-2">
                   <div className="w-4/5 text-sm font-normal text-light-gray lg:w-3/5">
@@ -93,270 +118,16 @@ export default function HomePage() {
               <div className="bg-neutral-100 p-4 lg:p-8">
                 <div className="block w-full">
                   <ul className="flex flex-wrap items-end justify-between border-b border-solid border-gray-300">
-                    <li className="mb-2 w-2/6 text-center sm:w-1/5 md:w-auto">
-                      <a
-                        href="#"
-                        className="flex flex-col items-center border-b border-solid border-transparent p-1 text-xs font-normal capitalize text-light-gray lg:p-3 lg:text-sm"
-                      >
-                        <img
-                          src="images/tt-1.svg"
-                          className="md:max-w-7 mb-3 lg:max-w-none"
-                        />
-                        <span>Hot Trending</span>
-                      </a>
-                    </li>
-                    <li className="mb-2 w-2/6 text-center sm:w-1/5 md:w-auto">
-                      <a
-                        href="#"
-                        className="flex flex-col items-center border-b border-solid border-transparent p-1 text-xs font-normal capitalize text-light-gray lg:p-3 lg:text-sm"
-                      >
-                        <img src="images/tt-2.svg" className="mb-3" />
-                        <span>Cell Phones</span>
-                      </a>
-                    </li>
-                    <li className="mb-2 w-2/6 text-center sm:w-1/5 md:w-auto">
-                      <a
-                        href="#"
-                        className="flex flex-col items-center border-b border-solid border-transparent p-1 text-xs font-normal capitalize text-light-gray lg:p-3 lg:text-sm"
-                      >
-                        <img src="images/tt-3.svg" className="mb-3" />
-                        <span>Computers</span>
-                      </a>
-                    </li>
-                    <li className="mb-2 w-2/6 text-center sm:w-1/5 md:w-auto">
-                      <a
-                        href="#"
-                        className="flex flex-col items-center border-b border-solid border-transparent p-1 text-xs font-normal capitalize text-light-gray lg:p-3 lg:text-sm"
-                      >
-                        <img src="images/tt-4.svg" className="mb-3" />
-                        <span>Furnitures</span>
-                      </a>
-                    </li>
-                    <li className="mb-2 w-2/6 text-center sm:w-1/5 md:w-auto">
-                      <a
-                        href="#"
-                        className="flex flex-col items-center border-b border-solid border-transparent p-1 text-xs font-normal capitalize text-light-gray lg:p-3 lg:text-sm"
-                      >
-                        <img src="images/tt-5.svg" className="mb-3" />
-                        <span>T-Shirts</span>
-                      </a>
-                    </li>
-                    <li className="mb-2 w-2/6 text-center sm:w-1/5 md:w-auto">
-                      <a
-                        href="#"
-                        className="flex flex-col items-center border-b border-solid border-transparent p-1 text-xs font-normal capitalize text-light-gray lg:p-3 lg:text-sm"
-                      >
-                        <img src="images/tt-6.svg" className="mb-3" />
-                        <span>Baby & Mom</span>
-                      </a>
-                    </li>
-                    <li className="mb-2 w-2/6 text-center sm:w-1/5 md:w-auto">
-                      <a
-                        href="#"
-                        className="flex flex-col items-center border-b border-solid border-transparent p-1 text-xs font-normal capitalize text-light-gray lg:p-3 lg:text-sm"
-                      >
-                        <img src="images/tt-7.svg" className="mb-3" />
-                        <span>Sports</span>
-                      </a>
-                    </li>
-                    <li className="mb-2 w-2/6 text-center sm:w-1/5 md:w-auto">
-                      <a
-                        href="#"
-                        className="flex flex-col items-center border-b border-solid border-transparent p-1 text-xs font-normal capitalize text-light-gray lg:p-3 lg:text-sm"
-                      >
-                        <img src="images/tt-8.svg" className="mb-3" />
-                        <span>Book & Office</span>
-                      </a>
-                    </li>
-                    <li className="mb-2 w-2/6 text-center sm:w-1/5 md:w-auto">
-                      <a
-                        href="#"
-                        className="flex flex-col items-center border-b border-solid border-transparent p-1 text-xs font-normal capitalize text-light-gray lg:p-3 lg:text-sm"
-                      >
-                        <img src="images/tt-9.png" className="mb-3" />
-                        <span>Cars</span>
-                      </a>
-                    </li>
+                    {trendingTopicList.map((item: any) => (
+                      <TrendingOptionCard key={uuidv4()} item={item} />
+                    ))}
                   </ul>
                 </div>
                 <div className="block w-full py-5">
                   <div className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-1.png" />
-                        </div>
-                        <span>#TELEVISION</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-2.png" className="m-auto" />
-                        </div>
-                        <span>#CAMERA</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-3.png" className="m-auto" />
-                        </div>
-                        <span>#WATCH</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-4.png" className="m-auto" />
-                        </div>
-                        <span>#CHAIR</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-5.png" className="m-auto" />
-                        </div>
-                        <span>#SNEAKER</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-6.png" className="m-auto" />
-                        </div>
-                        <span>#XBOX</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-7.png" className="m-auto" />
-                        </div>
-                        <span>#GOPRO</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-8.png" className="m-auto" />
-                        </div>
-                        <span>#LIPSTICK</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-9.png" className="m-auto" />
-                        </div>
-                        <span>#PHONE</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-10.png" className="m-auto" />
-                        </div>
-                        <span>#LAPTOP</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-11.png" className="m-auto" />
-                        </div>
-                        <span>#SPEAKER</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-12.png" className="m-auto" />
-                        </div>
-                        <span>#BOOK</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-13.png" className="m-auto" />
-                        </div>
-                        <span>#BLENDER</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-14.png" className="m-auto" />
-                        </div>
-                        <span>#BAG</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-15.png" className="m-auto" />
-                        </div>
-                        <span>#SMARTPHONE</span>
-                      </a>
-                    </div>
-                    <div className="my-3.5 flex w-auto items-end justify-center text-center">
-                      <a
-                        href="#"
-                        className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
-                      >
-                        <div className="mb-3">
-                          <img src="images/tp-16.png" className="m-auto" />
-                        </div>
-                        <span>#CAMPING</span>
-                      </a>
-                    </div>
+                    {trendingList.map((item) => (
+                      <TrendingCard key={uuidv4()} item={item} />
+                    ))}
                   </div>
                 </div>
               </div>
@@ -387,137 +158,9 @@ export default function HomePage() {
               </div>
             </div>
             <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-1.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <div className="mt-3 h-3 w-full bg-gray-300">
-                    <div className="h-full w-4/5 bg-color-yellow"></div>
-                  </div>
-                  <span className="w-full text-sm font-normal capitalize text-light-gray">
-                    Sold: 10
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-6%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-2.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <div className="mt-3 h-3 w-full bg-gray-300">
-                    <div className="h-full w-4/5 bg-color-yellow"></div>
-                  </div>
-                  <span className="w-full text-sm font-normal capitalize text-light-gray">
-                    Sold: 10
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-3.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <div className="mt-3 h-3 w-full bg-gray-300">
-                    <div className="h-full w-4/5 bg-color-yellow"></div>
-                  </div>
-                  <span className="w-full text-sm font-normal capitalize text-light-gray">
-                    Sold: 10
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-14%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-4.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <div className="mt-3 h-3 w-full bg-gray-300">
-                    <div className="h-full w-4/5 bg-color-yellow"></div>
-                  </div>
-                  <span className="w-full text-sm font-normal capitalize text-light-gray">
-                    Sold: 10
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-5.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <div className="mt-3 h-3 w-full bg-gray-300">
-                    <div className="h-full w-4/5 bg-color-yellow"></div>
-                  </div>
-                  <span className="w-full text-sm font-normal capitalize text-light-gray">
-                    Sold: 10
-                  </span>
-                </div>
-              </div>
+              {dealsList.map((item: any) => (
+                <DealsCard key={uuidv4()} item={item} />
+              ))}
             </div>
           </div>
         </div>
@@ -560,122 +203,9 @@ export default function HomePage() {
               </div>
             </div>
             <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-6%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-3.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-6.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-5.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-1.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-2.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="mr-1 w-auto text-base font-normal text-dark-orange">
-                    $332.38
-                  </span>
-                  <span className="w-auto text-base font-normal text-light-gray line-through">
-                    $332.38
-                  </span>
-                </div>
-              </div>
+              {bestSellerList.map((item: any) => (
+                <ProductCard key={uuidv4()} item={item} />
+              ))}
             </div>
           </div>
         </div>
@@ -712,9 +242,10 @@ export default function HomePage() {
               </div>
               <div className="w-12/12 flex pl-3.5 sm:w-8/12 md:w-3/12">
                 <div className="static bottom-0 right-0 top-0 m-auto h-full max-h-full w-auto max-w-full md:absolute">
-                  <img
-                    src="images/big-headphone.png"
-                    className="h-full w-full object-cover"
+                  <Image
+                    src={HeadphoneImage}
+                    className="h-[320px] w-[276px] object-cover"
+                    alt="Big Headphone"
                   />
                 </div>
               </div>
@@ -778,128 +309,9 @@ export default function HomePage() {
               </div>
             </div>
             <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-6%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-7.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-6%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-8.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-4.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-6%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-1.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-6.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="mr-1 w-auto text-base font-normal text-dark-orange">
-                    $332.38
-                  </span>
-                  <span className="w-auto text-base font-normal text-light-gray line-through">
-                    $332.38
-                  </span>
-                </div>
-              </div>
+              {computerTechnologyList.map((item: any) => (
+                <ProductCard key={uuidv4()} item={item} />
+              ))}
             </div>
           </div>
         </div>
@@ -954,122 +366,9 @@ export default function HomePage() {
               </div>
             </div>
             <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-9.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-9.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-10.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-6%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-1.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-11.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="mr-1 w-auto text-base font-normal text-dark-orange">
-                    $332.38
-                  </span>
-                  <span className="w-auto text-base font-normal text-light-gray line-through">
-                    $332.38
-                  </span>
-                </div>
-              </div>
+              {homeElectronicsList.map((item: any) => (
+                <ProductCard key={uuidv4()} item={item} />
+              ))}
             </div>
           </div>
         </div>
@@ -1124,128 +423,9 @@ export default function HomePage() {
               </div>
             </div>
             <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-6%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-12.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-6%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-13.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-12.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-                  <span>-6%</span>
-                </div>
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-13.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="w-auto text-base font-normal text-light-gray">
-                    $332.38
-                  </span>
-                </div>
-              </div>
-              <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-                <div className="flex h-40 w-full items-center justify-center lg:h-52">
-                  <img src="images/pro-14.png" />
-                </div>
-                <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                  <h6 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                    young shop
-                  </h6>
-                  <div className="mt-2.5 w-full">
-                    <h4 className="font-lg font-normal uppercase text-olive-green">
-                      $55.99
-                    </h4>
-                  </div>
-                  <p>
-                    <a href="#">Lorem Ipsum is simply dummy text..</a>
-                  </p>
-                  <img src="images/star.png" className="mt-3" />
-                  <span className="mr-1 w-auto text-base font-normal text-dark-orange">
-                    $332.38
-                  </span>
-                  <span className="w-auto text-base font-normal text-light-gray line-through">
-                    $332.38
-                  </span>
-                </div>
-              </div>
+              {camerasVideosList.map((item: any) => (
+                <ProductCard key={uuidv4()} item={item} />
+              ))}
             </div>
           </div>
         </div>

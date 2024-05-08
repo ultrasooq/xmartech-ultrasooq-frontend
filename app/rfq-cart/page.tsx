@@ -23,6 +23,7 @@ import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { MdOutlineChevronLeft } from "react-icons/md";
 import { z } from "zod";
+import BannerImage from "@/public/images/rfq-sec-bg.png";
 
 const formSchema = z.object({
   address: z.string().trim().min(1, { message: "Address is required" }),
@@ -148,7 +149,7 @@ const RfqCartPage = () => {
     <>
       <section className="rfq_section">
         <div className="sec-bg relative">
-          <Image src="/images/rfq-sec-bg.png" alt="background-banner" fill />
+          <Image src={BannerImage} alt="background-banner" fill />
         </div>
         <div className="container mx-auto px-3">
           <div className="rfq-cart-wrapper">

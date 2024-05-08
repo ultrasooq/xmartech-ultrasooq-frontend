@@ -12,7 +12,6 @@ import ProductCard from "@/components/modules/trending/ProductCard";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
 import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
-import { cn } from "@/lib/utils";
 import ProductTable from "@/components/modules/trending/ProductTable";
 import { debounce } from "lodash";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,6 +33,10 @@ import ReactSlider from "react-slider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { stripHTML } from "@/utils/helper";
+import Image from "next/image";
+import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";
+import ChevronRightIcon from "@/public/images/nextarow.svg";
+import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
 
 const TrendingPage = () => {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
@@ -131,21 +134,32 @@ const TrendingPage = () => {
       <div className="body-content-s1">
         <div className="custom-inner-banner-s1">
           <div className="container m-auto px-3">
-            <div className="custom-inner-banner-s1-captionBox">
-              <img
-                src="/images/trending-product-inner-banner.png"
-                alt=""
+            <div className="custom-inner-banner-s1-captionBox relative">
+              <Image
+                src={TrendingBannerImage}
+                alt="trending-banner"
                 className="bg-image"
-              ></img>
+                fill
+              />
               <div className="text-container">
                 <ul className="page-indicator">
                   <li>
                     <a href="#">Home</a>
-                    <img src="/images/nextarow.svg" alt="" />
+                    <Image
+                      src={ChevronRightIcon}
+                      alt="next-icon"
+                      width={8}
+                      height={12}
+                    />
                   </li>
                   <li>
                     <a href="#">Shop</a>
-                    <img src="/images/nextarow.svg" alt="" />
+                    <Image
+                      src={ChevronRightIcon}
+                      alt="next-icon"
+                      width={8}
+                      height={12}
+                    />
                   </li>
                   <li>Phones & Accessories</li>
                 </ul>
@@ -161,11 +175,8 @@ const TrendingPage = () => {
                   </button>
                 </div>
               </div>
-              <div className="image-container">
-                <img
-                  src="/images/trending-product-inner-banner-pic.png"
-                  alt=""
-                ></img>
+              <div className="relative h-[360px] w-[548px]">
+                <Image src={InnerBannerImage} alt="inner-banner" fill />
               </div>
             </div>
           </div>

@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import BackgroundImage from "@/public/images/before-login-bg.png";
+import LoaderIcon from "@/public/images/load.png";
 
 const formSchema = z.object({
   email: z
@@ -62,7 +64,7 @@ export default function ForgetPasswordPage() {
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
-          src="/images/before-login-bg.png"
+          src={BackgroundImage}
           className="h-full w-full object-cover object-center"
           alt="background"
           fill
@@ -99,7 +101,7 @@ export default function ForgetPasswordPage() {
                       {forgotPassword.isPending ? (
                         <>
                           <Image
-                            src="/images/load.png"
+                            src={LoaderIcon}
                             alt="loader-icon"
                             width={20}
                             height={20}

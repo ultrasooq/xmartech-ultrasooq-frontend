@@ -69,14 +69,16 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
           />
         ))}
 
-        <div className="mt-4 w-full text-center">
-          <Link
-            href="/rfq-cart"
-            className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
-          >
-            Go To RFQ Cart
-          </Link>
-        </div>
+        {memoizedRfqCartList.length ? (
+          <div className="mt-4 w-full text-center">
+            <Link
+              href="/rfq-cart"
+              className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
+            >
+              Go To RFQ Cart
+            </Link>
+          </div>
+        ) : null}
       </div>
     </div>
   );

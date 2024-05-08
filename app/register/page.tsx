@@ -30,6 +30,10 @@ import PolicyContent from "@/components/shared/PolicyContent";
 import TermsContent from "@/components/shared/TermsContent";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
+import BackgroundImage from "@/public/images/before-login-bg.png";
+import FacebookIcon from "@/public/images/facebook-icon.png";
+import GoogleIcon from "@/public/images/google-icon.png";
+import LoaderIcon from "@/public/images/load.png";
 
 const formSchema = z
   .object({
@@ -160,7 +164,7 @@ export default function RegisterPage() {
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
-          src="/images/before-login-bg.png"
+          src={BackgroundImage}
           className="h-full w-full object-cover object-center"
           alt="background"
           fill
@@ -184,7 +188,7 @@ export default function RegisterPage() {
                     className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                   >
                     <Image
-                      src="/images/facebook-icon.png"
+                      src={FacebookIcon}
                       className="mr-1.5"
                       alt="facebook-icon"
                       height={26}
@@ -199,7 +203,7 @@ export default function RegisterPage() {
                     className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                   >
                     <Image
-                      src="/images/google-icon.png"
+                      src={GoogleIcon}
                       className="mr-1.5"
                       alt="google-icon"
                       height={26}
@@ -352,7 +356,7 @@ export default function RegisterPage() {
                       {register.isPending ? (
                         <>
                           <Image
-                            src="/images/load.png"
+                            src={LoaderIcon}
                             alt="loader-icon"
                             width={20}
                             height={20}

@@ -6,6 +6,10 @@ import React, { useMemo } from "react";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import validator from "validator";
+import ShoppingIcon from "@/public/images/shopping-icon.svg";
+import EyeIcon from "@/public/images/eye-icon.svg";
+import HeartIcon from "@/public/images/heart-icon.svg";
+import CompareIcon from "@/public/images/compare-icon.svg";
 
 type SameBrandProductCardProps = {
   id: number;
@@ -81,31 +85,21 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
         <div className="multiple-action-container">
           <Button type="button" className="circle-btn">
             <Image
-              src="/images/shopping-icon.svg"
+              src={ShoppingIcon}
               alt="shopping-icon"
               width={16}
               height={16}
             />
           </Button>
           <Link href={`/trending/${id}`} className="circle-btn !shadow">
-            <Image
-              src="/images/eye-icon.svg"
-              alt="eye-icon"
-              width={16}
-              height={16}
-            />
+            <Image src={EyeIcon} alt="eye-icon" width={16} height={16} />
           </Link>
           <Button type="button" className="circle-btn">
-            <Image
-              src="/images/heart-icon.svg"
-              alt="heart-icon"
-              width={16}
-              height={16}
-            />
+            <Image src={HeartIcon} alt="heart-icon" width={16} height={16} />
           </Button>
           <Button type="button" className="circle-btn">
             <Image
-              src="/images/compare-icon.svg"
+              src={CompareIcon}
               alt="compare-icon"
               width={16}
               height={16}

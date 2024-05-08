@@ -1,6 +1,10 @@
 import React from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import FirstIcon from "@/public/images/pagination-first.svg";
+import PreviousIcon from "@/public/images/pagination-prev.svg";
+import NextIcon from "@/public/images/pagination-next.svg";
+import LastIcon from "@/public/images/pagination-last.svg";
 
 const Pagination = () => {
   return (
@@ -8,7 +12,7 @@ const Pagination = () => {
       <li>
         <Button type="button" className="theme-primary-btn first">
           <Image
-            src="/images/pagination-first.svg"
+            src={FirstIcon}
             alt="next-icon"
             height={0}
             width={0}
@@ -20,7 +24,7 @@ const Pagination = () => {
       <li>
         <Button type="button" className="nextPrev">
           <Image
-            src="/images/pagination-prev.svg"
+            src={PreviousIcon}
             alt="prev-icon"
             height={0}
             width={0}
@@ -37,7 +41,7 @@ const Pagination = () => {
       <li>
         <Button type="button" className="nextPrev">
           <Image
-            src="/images/pagination-next.svg"
+            src={NextIcon}
             alt="next-icon"
             height={0}
             width={0}
@@ -49,7 +53,7 @@ const Pagination = () => {
         <Button type="button" className="theme-primary-btn last">
           Last
           <Image
-            src="/images/pagination-last.svg"
+            src={LastIcon}
             alt="next-icon"
             height={0}
             width={0}

@@ -34,6 +34,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import BannerImage from "@/public/images/rfq-sec-bg.png";
+import PlusWhiteIcon from "@/public/images/plus-icon-white.png";
+import SearchIcon from "@/public/images/search-icon-rfq.png";
 
 const RfqPage = () => {
   const { toast } = useToast();
@@ -126,8 +129,8 @@ const RfqPage = () => {
 
   return (
     <section className="rfq_section">
-      <div className="sec-bg">
-        <img src="/images/rfq-sec-bg.png" alt="" />
+      <div className="sec-bg relative">
+        <Image src={BannerImage} alt="background-banner" fill />
       </div>
       <div className="rfq-container px-3">
         <div className="row">
@@ -146,7 +149,12 @@ const RfqPage = () => {
                     onChange={handleRfqDebounce}
                   />
                   <button type="button">
-                    <img src="images/search-icon-rfq.png" alt="search-icon" />
+                    <Image
+                      src={SearchIcon}
+                      height={14}
+                      width={14}
+                      alt="search-icon"
+                    />
                   </button>
                 </div>
                 {haveAccessToken ? (
@@ -156,7 +164,7 @@ const RfqPage = () => {
                       className="flex gap-x-2 bg-dark-orange px-3 py-2 text-white"
                     >
                       <Image
-                        src="/images/plus-icon-white.png"
+                        src={PlusWhiteIcon}
                         width={15}
                         height={24}
                         alt="plus-icon"
