@@ -13,6 +13,7 @@ import Image from "next/image";
 import validator from "validator";
 import { TrendingProduct } from "@/utils/types/common.types";
 import Link from "next/link";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type ProducTableProps = {
   list: TrendingProduct[];
@@ -45,7 +46,7 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
                               item?.productImage &&
                               validator.isURL(item.productImage)
                                 ? item.productImage
-                                : "/images/product-placeholder.png"
+                                : PlaceholderImage
                             }
                             alt="product-image"
                             height={80}

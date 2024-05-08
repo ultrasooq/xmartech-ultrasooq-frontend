@@ -21,6 +21,7 @@ import Footer from "@/components/shared/Footer";
 import Link from "next/link";
 import { formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
@@ -196,7 +197,7 @@ const MyOrderDetailsPage = ({}) => {
                                 src={
                                   orderDetails?.orderProduct_product
                                     ?.productImages?.[0]?.image ||
-                                  "/images/product-placeholder.png"
+                                  PlaceholderImage
                                 }
                                 alt="preview-product"
                                 width={120}

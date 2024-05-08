@@ -7,12 +7,13 @@ import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
-type ProducCardProps = {
+type ProductCardProps = {
   item: TrendingProduct;
 };
 
-const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
   const offerPercentage = useMemo(
     () => Math.floor(100 - (item.offerPrice / item.productPrice) * 100),
     [item.offerPrice, item.productPrice],
@@ -64,7 +65,7 @@ const ProductCard: React.FC<ProducCardProps> = ({ item }) => {
             src={
               item?.productImage && validator.isURL(item.productImage)
                 ? item.productImage
-                : "/images/product-placeholder.png"
+                : PlaceholderImage
             }
             alt="product-image"
             fill

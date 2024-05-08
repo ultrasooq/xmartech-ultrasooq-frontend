@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ReviewForm from "@/components/shared/ReviewForm";
 import { useMe } from "@/apis/queries/user.queries";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
@@ -199,7 +200,7 @@ const MyOrderDetailsPage = ({}) => {
                                 src={
                                   orderDetails?.orderProduct_product
                                     ?.productImages?.[0]?.image ||
-                                  "/images/product-placeholder.png"
+                                  PlaceholderImage
                                 }
                                 alt="preview-product"
                                 width={120}

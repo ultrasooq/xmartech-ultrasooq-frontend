@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import validator from "validator";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type ProductCardProps = {
   id: number;
@@ -70,7 +71,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               productImages?.length &&
               validator.isURL(productImages?.[0]?.image)
                 ? productImages[0].image
-                : "/images/product-placeholder.png"
+                : PlaceholderImage
             }
             alt="preview"
             fill

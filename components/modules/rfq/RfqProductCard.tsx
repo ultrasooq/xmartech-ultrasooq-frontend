@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type RfqProductCardProps = {
   id: number;
@@ -55,7 +56,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
             productImages?.[0]?.image &&
             validator.isURL(productImages?.[0]?.image)
               ? productImages[0].image
-              : "/images/product-placeholder.png"
+              : PlaceholderImage
           }
           fill
         />

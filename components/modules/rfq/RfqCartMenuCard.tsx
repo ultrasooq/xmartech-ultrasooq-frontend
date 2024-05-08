@@ -3,6 +3,7 @@ import { useCartStore } from "@/lib/rfqStore";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type RfqCartMenuCardProps = {
   id: number;
@@ -40,7 +41,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
             productImages?.[0]?.image &&
             validator.isURL(productImages?.[0]?.image)
               ? productImages[0].image
-              : "/images/product-placeholder.png"
+              : PlaceholderImage
           }
           alt="pro-6"
           fill
