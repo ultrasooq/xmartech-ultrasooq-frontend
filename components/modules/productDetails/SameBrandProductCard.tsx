@@ -95,9 +95,10 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
           <Link href={`/trending/${id}`} className="circle-btn !shadow">
             <Image src={EyeIcon} alt="eye-icon" width={16} height={16} />
           </Link>
-          <Button type="button" className="circle-btn">
+          {/* TODO: query, only added in this card. keep it or remove it */}
+          {/* <Button type="button" className="circle-btn">
             <Image src={HeartIcon} alt="heart-icon" width={16} height={16} />
-          </Button>
+          </Button> */}
           <Button type="button" className="circle-btn">
             <Image
               src={CompareIcon}

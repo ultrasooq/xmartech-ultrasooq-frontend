@@ -13,6 +13,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import WishlistIcon from "@/public/images/wishlist.svg";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -21,6 +22,7 @@ type ProductImagesCardProps = {
   onToCheckout: () => void;
   hasItem: boolean;
   isLoading: boolean;
+  onWishlist: () => void;
 };
 
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
@@ -30,6 +32,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   onToCheckout,
   hasItem,
   isLoading,
+  onWishlist,
 }) => {
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
@@ -62,7 +65,16 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   return (
     <div className="product-view-s1-left">
       <div className="grid grid-cols-4 gap-4">
-        <div className="order-2 col-span-3 max-h-[500px] space-y-4 bg-gray-100">
+        <div className="relative order-2 col-span-3 max-h-[500px] space-y-4 bg-gray-100">
+          {!isLoading ? (
+            <button
+              type="button"
+              className="absolute right-2.5 top-2.5 z-10 rounded-full bg-white p-2"
+              onClick={onWishlist}
+            >
+              <Image src={WishlistIcon} height={25} width={25} alt="wishlist" />
+            </button>
+          ) : null}
           {!isLoading && previewImages?.length ? (
             <Carousel
               className="w-full"

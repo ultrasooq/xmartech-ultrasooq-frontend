@@ -243,7 +243,7 @@ const CheckoutPage = () => {
       handleRemoveItemFromCart(cartId);
     } else {
       toast({
-        title: "Item not added to wishlist",
+        title: response.message || "Item not added to wishlist",
         description: "Check your wishlist for more details",
         variant: "danger",
       });
