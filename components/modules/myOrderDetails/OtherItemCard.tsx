@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type OtherItemCardProps = {
   id: number;
@@ -39,10 +40,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
             <figure>
               <div className="image-container rounded border border-gray-300">
                 <Image
-                  src={
-                    productImages?.[0]?.image ||
-                    "/images/product-placeholder.png"
-                  }
+                  src={productImages?.[0]?.image || PlaceholderImage}
                   alt="preview-product"
                   width={120}
                   height={120}

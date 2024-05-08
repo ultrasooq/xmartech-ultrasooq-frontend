@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import Pagination from "@/components/shared/Pagination";
 import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
 import Link from "next/link";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 const ProductListPage = () => {
   const router = useRouter();
@@ -161,7 +162,7 @@ const ProductListPage = () => {
                                   item?.productImage &&
                                   validator.isURL(item.productImage)
                                     ? item.productImage
-                                    : "/images/product-placeholder.png"
+                                    : PlaceholderImage
                                 }
                                 alt="product-image"
                                 height={80}

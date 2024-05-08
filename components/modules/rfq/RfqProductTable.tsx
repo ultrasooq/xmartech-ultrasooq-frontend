@@ -12,6 +12,7 @@ import Image from "next/image";
 import validator from "validator";
 import { TrendingProduct } from "@/utils/types/common.types";
 import Link from "next/link";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type ProducTableProps = {
   list: TrendingProduct[];
@@ -43,7 +44,7 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
                             item.productImages?.[0]?.image &&
                             validator.isURL(item.productImages[0].image)
                               ? item.productImages[0].image
-                              : "/images/product-placeholder.png"
+                              : PlaceholderImage
                           }
                           alt="product-image"
                           height={80}

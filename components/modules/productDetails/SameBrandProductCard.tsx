@@ -10,6 +10,7 @@ import ShoppingIcon from "@/public/images/shopping-icon.svg";
 import EyeIcon from "@/public/images/eye-icon.svg";
 import HeartIcon from "@/public/images/heart-icon.svg";
 import CompareIcon from "@/public/images/compare-icon.svg";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type SameBrandProductCardProps = {
   id: number;
@@ -76,7 +77,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
               productImages?.length &&
               validator.isURL(productImages?.[0]?.image)
                 ? productImages[0].image
-                : "/images/product-placeholder.png"
+                : PlaceholderImage
             }
             alt="preview"
             fill

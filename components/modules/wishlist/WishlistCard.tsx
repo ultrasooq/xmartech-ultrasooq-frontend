@@ -7,11 +7,11 @@ import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 
-type ProductCardProps = {
+type WishlistCardProps = {
   item: TrendingProduct;
 };
 
-const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
+const WishlistCard: React.FC<WishlistCardProps> = ({ item }) => {
   const offerPercentage = useMemo(
     () => Math.floor(100 - (item.offerPrice / item.productPrice) * 100),
     [item.offerPrice, item.productPrice],
@@ -88,4 +88,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
   );
 };
 
-export default ProductCard;
+export default WishlistCard;

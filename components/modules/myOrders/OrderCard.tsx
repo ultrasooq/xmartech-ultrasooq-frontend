@@ -7,6 +7,7 @@ import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 // import { Dialog, DialogContent } from "@/components/ui/dialog";
 // import ReviewForm from "@/components/shared/ReviewForm";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type OrderCardProps = {
   id: number;
@@ -57,9 +58,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
           <figure>
             <div className="image-container rounded border border-gray-300">
               <Image
-                src={
-                  produtctImage?.[0]?.image || "/images/product-placeholder.png"
-                }
+                src={produtctImage?.[0]?.image || PlaceholderImage}
                 alt="preview-product"
                 width={120}
                 height={120}

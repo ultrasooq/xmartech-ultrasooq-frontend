@@ -12,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -41,7 +42,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
       productDetails?.productImages?.map((item: any) =>
         item?.image && validator.isURL(item.image)
           ? item.image
-          : "/images/product-placeholder.png",
+          : PlaceholderImage,
       ),
     );
   }, [productDetails?.productImages?.length]);
@@ -92,7 +93,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {!isLoading && !previewImages?.length ? (
             <div className="relative min-h-[500px] w-full">
               <Image
-                src="/images/product-placeholder.png"
+                src={PlaceholderImage}
                 alt="primary-image"
                 fill
                 className="object-contain"
@@ -141,7 +142,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 src={
                   item?.image && validator.isURL(item.image)
                     ? item.image
-                    : "/images/product-placeholder.png"
+                    : PlaceholderImage
                 }
                 alt="primary-image"
                 fill
