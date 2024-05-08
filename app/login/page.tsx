@@ -16,6 +16,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { useUpdateUserCartByDeviceId } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
+import BackgroundImage from "@/public/images/before-login-bg.png";
+import FacebookIcon from "@/public/images/facebook-icon.png";
+import GoogleIcon from "@/public/images/google-icon.png";
+import LoaderIcon from "@/public/images/load.png";
 
 const formSchema = z.object({
   email: z
@@ -87,7 +91,7 @@ export default function LoginPage() {
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
-          src="/images/before-login-bg.png"
+          src={BackgroundImage}
           className="h-full w-full object-cover object-center"
           alt="background"
           fill
@@ -155,7 +159,7 @@ export default function LoginPage() {
                       {login.isPending ? (
                         <>
                           <Image
-                            src="/images/load.png"
+                            src={LoaderIcon}
                             alt="loader-icon"
                             width={20}
                             height={20}
@@ -195,7 +199,7 @@ export default function LoginPage() {
                     className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                   >
                     <Image
-                      src="/images/facebook-icon.png"
+                      src={FacebookIcon}
                       className="mr-1.5"
                       alt="facebook-icon"
                       height={26}
@@ -210,7 +214,7 @@ export default function LoginPage() {
                     className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
                   >
                     <Image
-                      src="/images/google-icon.png"
+                      src={GoogleIcon}
                       className="mr-1.5"
                       alt="google-icon"
                       height={26}

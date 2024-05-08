@@ -23,6 +23,13 @@ import {
   useCartCountWithoutLogin,
 } from "@/apis/queries/cart.queries";
 import { isArray } from "lodash";
+import UnAuthUserIcon from "@/public/images/login.svg";
+import WishlistIcon from "@/public/images/wishlist.svg";
+import CartIcon from "@/public/images/cart.svg";
+import HamburgerWhiteIcon from "@/public/images/humberger-white-icon.svg";
+import HamburgerIcon from "@/public/images/humberger-icon.svg";
+import HamburgerDownIcon from "@/public/images/humberger-down-icon.svg";
+import LogoIcon from "@/public/images/logo.png";
 
 const Header = () => {
   const router = useRouter();
@@ -174,12 +181,7 @@ const Header = () => {
           <div className="flex flex-wrap sm:flex sm:flex-wrap md:flex md:flex-wrap">
             <div className="order-1 flex w-5/12 items-center py-4 sm:order-1 sm:w-5/12 md:order-1 md:w-2/12 lg:w-1/6">
               <Link href="/home">
-                <Image
-                  src="/images/logo.png"
-                  width={155}
-                  height={22}
-                  alt="logo"
-                />
+                <Image src={LogoIcon} width={155} height={22} alt="logo" />
               </Link>
             </div>
             <div className="order-3 flex w-10/12 items-center py-4 sm:order-3 sm:w-10/12 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
@@ -218,7 +220,12 @@ const Header = () => {
                     href="/wishlist"
                     className="flex flex-wrap items-center"
                   >
-                    <img src="images/wishlist.svg" />
+                    <Image
+                      src={WishlistIcon}
+                      height={28}
+                      width={33}
+                      alt="wishlist"
+                    />
                     <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
                       0
                     </div>
@@ -226,7 +233,12 @@ const Header = () => {
                 </li>
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
                   <Link href="/cart" className="flex flex-wrap items-center">
-                    <img src="images/cart.svg" />
+                    <Image
+                      src={CartIcon}
+                      height={29}
+                      width={26}
+                      alt="wishlist"
+                    />
                     <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
                       {hasAccessToken
                         ? !isArray(cartCountWithLogin.data?.data)
@@ -244,8 +256,8 @@ const Header = () => {
                       <DropdownMenuTrigger>
                         {userDetails?.data?.data?.profilePicture ? (
                           <Image
-                            alt="image-icon"
                             src={userDetails?.data?.data?.profilePicture}
+                            alt="image-icon"
                             height={44}
                             width={44}
                             className="rounded-full"
@@ -301,7 +313,7 @@ const Header = () => {
                   ) : (
                     <>
                       <Image
-                        src="/images/login.svg"
+                        src={UnAuthUserIcon}
                         height={28}
                         width={28}
                         alt="login-avatar-icon"
@@ -326,12 +338,17 @@ const Header = () => {
               </ul>
             </div>
             <div className="order-4 flex w-2/12 items-center justify-end py-4 md:hidden">
-              <img src="images/humberger-white-icon.svg" />
+              <Image
+                src={HamburgerWhiteIcon}
+                alt="hamburger-icon"
+                height={28}
+                width={28}
+              />
             </div>
           </div>
 
           <div className="hidden h-full w-full px-3 md:flex md:px-0">
-            <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 md:flex-row md:justify-start">
+            <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-start">
               {memoizedMenu.map((item: any) => (
                 <Button
                   key={item.id}
@@ -350,9 +367,16 @@ const Header = () => {
                   variant="link"
                   className="flex cursor-pointer px-10 py-3 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
                 >
-                  <p className="flex gap-x-3">
-                    <img src={item.icon} /> {item?.name}
-                  </p>
+                  <div className="flex gap-x-3">
+                    <Image
+                      src={item.icon}
+                      alt={item?.name}
+                      height={0}
+                      width={0}
+                      className="h-7 w-7"
+                    />{" "}
+                    <p>{item?.name}</p>
+                  </div>
                 </Button>
               ))}
             </div>
@@ -367,7 +391,7 @@ const Header = () => {
               <div className="flex items-center py-3">
                 <div>
                   <Image
-                    src="/images/humberger-icon.svg"
+                    src={HamburgerIcon}
                     alt="hamburger-icon"
                     width={16}
                     height={14}
@@ -378,7 +402,7 @@ const Header = () => {
                 </p>
                 <div>
                   <Image
-                    src="/images/humberger-down-icon.svg"
+                    src={HamburgerDownIcon}
                     alt="hamburger-down-icon"
                     width={13}
                     height={8}
