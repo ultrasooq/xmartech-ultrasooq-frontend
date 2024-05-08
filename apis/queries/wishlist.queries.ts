@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchWishList } from "../requests/wishlist.requests";
+import {
+  addToWishList,
+  deleteFromWishList,
+  fetchWishList,
+  fetchWishlistCount,
+} from "../requests/wishlist.requests";
+import { APIResponseError } from "@/utils/types/common.types";
 
 export const useWishlist = (
   payload: {
@@ -17,5 +23,65 @@ export const useWishlist = (
     // onError: (err: APIResponseError) => {
     //   console.log(err);
     // },
+    enabled,
+  });
+
+export const useAddToWishList = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { productId: number }
+  >({
+    mutationFn: async (payload) => {
+      const res = await addToWishList(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["wishlist"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["wishlist-count"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useDeleteFromWishList = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { wishListId: number }
+  >({
+    mutationFn: async (payload) => {
+      const res = await deleteFromWishList(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["wishlist"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["wishlist-count"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useWishlistCount = (enabled = true) =>
+  useQuery({
+    queryKey: ["wishlist-count"],
+    queryFn: async () => {
+      const res = await fetchWishlistCount();
+      return res.data;
+    },
     enabled,
   });
