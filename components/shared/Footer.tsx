@@ -10,6 +10,8 @@ import {
 import TermsContent from "./TermsContent";
 import PolicyContent from "./PolicyContent";
 import { Button } from "../ui/button";
+import Image from "next/image";
+import AllCardsImage from "@/public/images/all-card.png";
 
 const Footer = () => {
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
@@ -146,7 +148,13 @@ const Footer = () => {
               <p className="w-full text-center sm:w-auto">
                 We Using Safe Payment For:
               </p>
-              <img src="images/all-card.png" className="mt-3 sm:ml-3 sm:mt-0" />
+              <Image
+                src={AllCardsImage}
+                className="mt-3 sm:ml-3 sm:mt-0"
+                alt="all-card-banner"
+                width={383}
+                height={33}
+              />
             </div>
           </div>
         </div>
