@@ -98,7 +98,9 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
               {wishlistData.productName}
             </h4>
             <p title={wishlistData.shortDescription} className="truncate">
-              {stripHTML(wishlistData.shortDescription)}
+              {wishlistData?.shortDescription
+                ? stripHTML(wishlistData.shortDescription)
+                : ""}
             </p>
             <div className="my-1 flex">
               {calculateRatings(calculateAvgRating)}
