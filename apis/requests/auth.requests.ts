@@ -115,3 +115,11 @@ export const emailChangeVerify = (payload: IChangeEmailVerifyRequest) => {
     },
   });
 };
+
+export const socialLogin = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/socialLogin`,
+    data: payload,
+  });
+};

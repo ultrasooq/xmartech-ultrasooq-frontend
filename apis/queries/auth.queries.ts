@@ -9,6 +9,7 @@ import {
   register,
   resendOtp,
   resetPassword,
+  socialLogin,
   verifyOtp,
 } from "../requests/auth.requests";
 import { APIResponseError } from "@/utils/types/common.types";
@@ -169,3 +170,15 @@ export const useChangeEmailVerify = () => {
     },
   });
 };
+
+export const useSocialLogin = () =>
+  useMutation<{}, APIResponseError, {}>({
+    mutationFn: async (payload) => {
+      const res = await socialLogin(payload);
+      return res.data;
+    },
+    onSuccess: () => {},
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
