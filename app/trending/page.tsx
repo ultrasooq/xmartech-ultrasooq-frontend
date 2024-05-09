@@ -37,6 +37,7 @@ import Image from "next/image";
 import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";
 import ChevronRightIcon from "@/public/images/nextarow.svg";
 import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
+import Footer from "@/components/shared/Footer";
 
 const TrendingPage = () => {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
@@ -381,6 +382,7 @@ const TrendingPage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

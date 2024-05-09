@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { MdOutlineChevronLeft } from "react-icons/md";
 import { z } from "zod";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
+import Footer from "@/components/shared/Footer";
 
 const formSchema = z.object({
   address: z.string().trim().min(1, { message: "Address is required" }),
@@ -234,6 +235,7 @@ const RfqCartPage = () => {
           </div>
         </div>
       </section>
+      <Footer />
     </>
   );
 };
