@@ -27,19 +27,29 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import ReviewSection from "@/components/shared/ReviewSection";
 import QuestionsAnswersSection from "@/components/modules/productDetails/QuestionsAnswersSection";
-import { useAddToWishList } from "@/apis/queries/wishlist.queries";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
+import { useMe } from "@/apis/queries/user.queries";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ProductDetailsPage = () => {
+  const queryClient = useQueryClient();
   const searchParams = useParams();
   const searchQuery = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
-  const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
   const [activeTab, setActiveTab] = useState("description");
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
 
+  const me = useMe();
   const productQueryById = useProductById(
-    searchParams?.id ? (searchParams?.id as string) : "",
+    {
+      productId: searchParams?.id ? (searchParams?.id as string) : "",
+      userId: me.data?.data?.id,
+    },
     !!searchParams?.id,
   );
 
@@ -49,18 +59,19 @@ const ProductDetailsPage = () => {
       limit: 10,
       deviceId,
     },
-    !hasAccessToken,
+    !haveAccessToken,
   );
   const cartListByUser = useCartListByUserId(
     {
       page: 1,
       limit: 10,
     },
-    hasAccessToken,
+    haveAccessToken,
   );
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
   const addToWishlist = useAddToWishList();
+  const deleteFromWishlist = useDeleteFromWishList();
 
   const productDetails = productQueryById.data?.data;
   const calculateTagIds = useMemo(
@@ -88,9 +99,7 @@ const ProductDetailsPage = () => {
     quantity: number,
     actionType: "add" | "remove",
   ) => {
-    console.log("add to cart:", quantity);
-    // return;
-    if (hasAccessToken) {
+    if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
         productId: Number(searchParams?.id),
         quantity,
@@ -152,7 +161,38 @@ const ProductDetailsPage = () => {
       }, 2000);
     }
   };
+
+  const handleDeleteFromWishlist = async () => {
+    const response = await deleteFromWishlist.mutateAsync({
+      productId: Number(searchParams?.id),
+    });
+    if (response.status) {
+      toast({
+        title: "Item removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "product-by-id",
+          { productId: searchParams?.id, userId: me.data?.data?.id },
+        ],
+      });
+    } else {
+      toast({
+        title: "Item not removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
+
   const handleAddToWishlist = async () => {
+    if (!!productQueryById?.data?.inWishlist) {
+      handleDeleteFromWishlist();
+      return;
+    }
+
     const response = await addToWishlist.mutateAsync({
       productId: Number(searchParams?.id),
     });
@@ -161,6 +201,12 @@ const ProductDetailsPage = () => {
         title: "Item added to wishlist",
         description: "Check your wishlist for more details",
         variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "product-by-id",
+          { productId: searchParams?.id, userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({
@@ -176,6 +222,15 @@ const ProductDetailsPage = () => {
     if (type) setActiveTab(type);
   }, [searchQuery?.get("type")]);
 
+  useEffect(() => {
+    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+    if (accessToken) {
+      setHaveAccessToken(true);
+    } else {
+      setHaveAccessToken(false);
+    }
+  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+
   return (
     <div className="body-content-s1">
       <div className="product-view-s1-left-right type2">
@@ -188,6 +243,8 @@ const ProductDetailsPage = () => {
             hasItem={hasItemByUser || hasItemByDevice}
             isLoading={!productQueryById.isFetched}
             onWishlist={handleAddToWishlist}
+            haveAccessToken={haveAccessToken}
+            inWishlist={!!productQueryById?.data?.inWishlist}
           />
           <ProductDescriptionCard
             productName={productDetails?.productName}
@@ -291,7 +348,7 @@ const ProductDetailsPage = () => {
                   <div className="w-full border border-solid border-gray-300 bg-white p-5">
                     <ReviewSection
                       productId={searchParams?.id as string}
-                      hasAccessToken={hasAccessToken}
+                      hasAccessToken={haveAccessToken}
                       productReview={
                         productQueryById?.data?.data?.productReview
                       }
@@ -301,7 +358,7 @@ const ProductDetailsPage = () => {
                 <TabsContent value="qanda" className="mt-0">
                   <div className="w-full border border-solid border-gray-300 bg-white p-5">
                     <QuestionsAnswersSection
-                      hasAccessToken={hasAccessToken}
+                      hasAccessToken={haveAccessToken}
                       productId={searchParams?.id as string}
                     />
                   </div>

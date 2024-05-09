@@ -65,7 +65,9 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   //   !!selectedProductId,
   // );
   const productQueryById = useProductById(
-    selectedProductId ? selectedProductId.toString() : "",
+    {
+      productId: selectedProductId ? selectedProductId.toString() : "",
+    },
     !!selectedProductId,
   );
 

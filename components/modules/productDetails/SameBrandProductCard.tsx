@@ -80,6 +80,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
                 : PlaceholderImage
             }
             alt="preview"
+            className="object-contain"
             fill
           />
         </div>

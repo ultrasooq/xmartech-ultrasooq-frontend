@@ -35,16 +35,19 @@ export const fetchProducts = (payload: {
   });
 };
 
-export const fetchProductById = (payload: { productId: string }) => {
-  const query = new URLSearchParams();
+export const fetchProductById = (payload: {
+  productId: string;
+  userId?: number;
+}) => {
+  // const query = new URLSearchParams();
 
-  if (!isEmpty(payload.productId)) {
-    query.append("productId", String(payload.productId));
-  }
+  // if (!isEmpty(payload.productId)) {
+  //   query.append("productId", String(payload.productId));
+  // }
 
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/findOne?${query}`,
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/findOne`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

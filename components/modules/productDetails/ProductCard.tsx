@@ -74,6 +74,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 : PlaceholderImage
             }
             alt="preview"
+            className="object-contain"
             fill
           />
         </div>

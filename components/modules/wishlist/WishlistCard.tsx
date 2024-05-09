@@ -10,12 +10,14 @@ import TrashIcon from "@/public/images/td-trash-icon.svg";
 import { Button } from "@/components/ui/button";
 
 type WishlistCardProps = {
+  productId: number;
   wishlistData: any;
   onDeleteFromWishlist: (wishListId: number) => void;
   id: number;
 };
 
 const WishlistCard: React.FC<WishlistCardProps> = ({
+  productId,
   wishlistData,
   onDeleteFromWishlist,
   id,
@@ -60,7 +62,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
       <div className="product-list-s1-box cursor-pointer hover:bg-slate-100">
         <Button
           className="absolute right-2.5 top-2.5 z-10 rounded-full bg-white p-2"
-          onClick={() => onDeleteFromWishlist(id)}
+          onClick={() => onDeleteFromWishlist(productId)}
         >
           <Image
             src={TrashIcon}

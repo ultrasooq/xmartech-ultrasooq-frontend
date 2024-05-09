@@ -62,7 +62,7 @@ export const useDeleteFromWishList = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { wishListId: number }
+    { productId: number }
   >({
     mutationFn: async (payload) => {
       const res = await deleteFromWishList(payload);
@@ -74,6 +74,12 @@ export const useDeleteFromWishList = () => {
       });
       queryClient.invalidateQueries({
         queryKey: ["wishlist-count"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-user"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
       });
     },
     onError: (err: APIResponseError) => {
