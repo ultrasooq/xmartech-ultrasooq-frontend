@@ -31,6 +31,7 @@ import HamburgerIcon from "@/public/images/humberger-icon.svg";
 import HamburgerDownIcon from "@/public/images/humberger-down-icon.svg";
 import LogoIcon from "@/public/images/logo.png";
 import { useWishlistCount } from "@/apis/queries/wishlist.queries";
+import { signOut } from "next-auth/react";
 
 const Header = () => {
   const router = useRouter();
@@ -126,6 +127,7 @@ const Header = () => {
     setIsLoggedIn(false);
     deleteCookie(PUREMOON_TOKEN_KEY);
     queryClient.clear();
+    signOut();
     router.push("/login");
   };
 

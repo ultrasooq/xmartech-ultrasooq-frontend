@@ -37,6 +37,7 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
 import PlusWhiteIcon from "@/public/images/plus-icon-white.png";
 import SearchIcon from "@/public/images/search-icon-rfq.png";
+import Footer from "@/components/shared/Footer";
 
 const RfqPage = () => {
   const { toast } = useToast();
@@ -128,177 +129,182 @@ const RfqPage = () => {
   }, [getCookie(PUREMOON_TOKEN_KEY)]);
 
   return (
-    <section className="rfq_section">
-      <div className="sec-bg relative">
-        <Image src={BannerImage} alt="background-banner" fill />
-      </div>
-      <div className="rfq-container px-3">
-        <div className="row">
-          <div className="rfq_main_box !justify-center">
-            <div className="rfq_left">
-              {/* <CategoryFilterList /> */}
-              {/* <BrandFilterList /> */}
-            </div>
-            <div className="rfq_middle">
-              <div className="rfq_middle_top">
-                <div className="rfq_search">
-                  <input
-                    type="search"
-                    className="form-control"
-                    placeholder="Search Product"
-                    onChange={handleRfqDebounce}
-                  />
-                  <button type="button">
-                    <Image
-                      src={SearchIcon}
-                      height={14}
-                      width={14}
-                      alt="search-icon"
+    <>
+      <section className="rfq_section">
+        <div className="sec-bg relative">
+          <Image src={BannerImage} alt="background-banner" fill />
+        </div>
+        <div className="rfq-container px-3">
+          <div className="row">
+            <div className="rfq_main_box !justify-center">
+              <div className="rfq_left">
+                {/* <CategoryFilterList /> */}
+                {/* <BrandFilterList /> */}
+              </div>
+              <div className="rfq_middle">
+                <div className="rfq_middle_top">
+                  <div className="rfq_search">
+                    <input
+                      type="search"
+                      className="form-control"
+                      placeholder="Search Product"
+                      onChange={handleRfqDebounce}
                     />
-                  </button>
-                </div>
-                {haveAccessToken ? (
-                  <div className="rfq_add_new_product">
-                    <Link
-                      href="/create-product?productType=R"
-                      className="flex gap-x-2 bg-dark-orange px-3 py-2 text-white"
-                    >
+                    <button type="button">
                       <Image
-                        src={PlusWhiteIcon}
-                        width={15}
-                        height={24}
-                        alt="plus-icon"
-                      />{" "}
-                      Add new product in RFQ
-                    </Link>
+                        src={SearchIcon}
+                        height={14}
+                        width={14}
+                        alt="search-icon"
+                      />
+                    </button>
                   </div>
-                ) : null}
-              </div>
-              <div className="product_section product_gray_n_box">
-                <div className="row">
-                  <div className="col-lg-12 products_sec_wrap">
-                    <div className="products_sec_top">
-                      <div className="products_sec_top_left">
-                        <h4> trending & high rate product</h4>
-                      </div>
-                      <div className="products_sec_top_right">
-                        <div className="trending_filter">
-                          <Select
-                            onValueChange={(e: any) => setSortBy(e)}
-                            defaultValue={sortBy}
-                          >
-                            <SelectTrigger className="custom-form-control-s1 bg-white">
-                              <SelectValue placeholder="Sort by" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectItem value="newest">
-                                  Sort by latest
-                                </SelectItem>
-                                <SelectItem value="oldest">
-                                  Sort by oldest
-                                </SelectItem>
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="trending_view">
-                          <ul>
-                            <li>
-                              <button
-                                type="button"
-                                onClick={() => setViewType("grid")}
-                              >
-                                <GridIcon active={viewType === "grid"} />
-                              </button>
-                            </li>
-                            <li>
-                              <button
-                                type="button"
-                                onClick={() => setViewType("list")}
-                              >
-                                <ListIcon active={viewType === "list"} />
-                              </button>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
+                  {haveAccessToken ? (
+                    <div className="rfq_add_new_product">
+                      <Link
+                        href="/create-product?productType=R"
+                        className="flex gap-x-2 bg-dark-orange px-3 py-2 text-white"
+                      >
+                        <Image
+                          src={PlusWhiteIcon}
+                          width={15}
+                          height={24}
+                          alt="plus-icon"
+                        />{" "}
+                        Add new product in RFQ
+                      </Link>
                     </div>
-
-                    {rfqProductsQuery.isLoading && viewType === "grid" ? (
-                      <div className="mt-5 grid grid-cols-4 gap-5">
-                        {Array.from({ length: 8 }).map((_, index) => (
-                          <Skeleton key={index} className="h-80 w-full" />
-                        ))}
+                  ) : null}
+                </div>
+                <div className="product_section product_gray_n_box">
+                  <div className="row">
+                    <div className="col-lg-12 products_sec_wrap">
+                      <div className="products_sec_top">
+                        <div className="products_sec_top_left">
+                          <h4> trending & high rate product</h4>
+                        </div>
+                        <div className="products_sec_top_right">
+                          <div className="trending_filter">
+                            <Select
+                              onValueChange={(e: any) => setSortBy(e)}
+                              defaultValue={sortBy}
+                            >
+                              <SelectTrigger className="custom-form-control-s1 bg-white">
+                                <SelectValue placeholder="Sort by" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectItem value="newest">
+                                    Sort by latest
+                                  </SelectItem>
+                                  <SelectItem value="oldest">
+                                    Sort by oldest
+                                  </SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="trending_view">
+                            <ul>
+                              <li>
+                                <button
+                                  type="button"
+                                  onClick={() => setViewType("grid")}
+                                >
+                                  <GridIcon active={viewType === "grid"} />
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  type="button"
+                                  onClick={() => setViewType("list")}
+                                >
+                                  <ListIcon active={viewType === "list"} />
+                                </button>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
-                    ) : null}
 
-                    {!rfqProductsQuery?.data?.data?.length &&
-                    !rfqProductsQuery.isLoading ? (
-                      <p className="my-10 text-center text-sm font-medium">
-                        No data found
-                      </p>
-                    ) : null}
+                      {rfqProductsQuery.isLoading && viewType === "grid" ? (
+                        <div className="mt-5 grid grid-cols-4 gap-5">
+                          {Array.from({ length: 8 }).map((_, index) => (
+                            <Skeleton key={index} className="h-80 w-full" />
+                          ))}
+                        </div>
+                      ) : null}
 
-                    {viewType === "grid" ? (
-                      <div className="product_sec_list">
-                        {memoizedRfqProducts.map((item: any) => (
-                          <RfqProductCard
-                            key={item.id}
-                            id={item.id}
-                            productType={item?.productType || "-"}
-                            productName={item?.productName || "-"}
-                            productNote={item?.productNote || "-"}
-                            productStatus={item?.status}
-                            productImages={item?.productImages}
-                            productQuantity={item?.quantity || 0}
-                            onAdd={handleAddToCart}
-                            onToCart={handleCartPage}
-                            onEdit={() => {
-                              handleToggleAddModal();
-                              setSelectedProductId(item?.id);
-                            }}
-                            isCreatedByMe={item?.userId === me.data?.data?.id}
-                            isAddedToCart={item?.isAddedToCart}
-                            haveAccessToken={haveAccessToken}
+                      {!rfqProductsQuery?.data?.data?.length &&
+                      !rfqProductsQuery.isLoading ? (
+                        <p className="my-10 text-center text-sm font-medium">
+                          No data found
+                        </p>
+                      ) : null}
+
+                      {viewType === "grid" ? (
+                        <div className="product_sec_list">
+                          {memoizedRfqProducts.map((item: any) => (
+                            <RfqProductCard
+                              key={item.id}
+                              id={item.id}
+                              productType={item?.productType || "-"}
+                              productName={item?.productName || "-"}
+                              productNote={item?.productNote || "-"}
+                              productStatus={item?.status}
+                              productImages={item?.productImages}
+                              productQuantity={item?.quantity || 0}
+                              onAdd={handleAddToCart}
+                              onToCart={handleCartPage}
+                              onEdit={() => {
+                                handleToggleAddModal();
+                                setSelectedProductId(item?.id);
+                              }}
+                              isCreatedByMe={item?.userId === me.data?.data?.id}
+                              isAddedToCart={item?.isAddedToCart}
+                              haveAccessToken={haveAccessToken}
+                            />
+                          ))}
+                        </div>
+                      ) : null}
+
+                      {viewType === "list" &&
+                      rfqProductsQuery?.data?.data?.length ? (
+                        <div className="product_sec_list">
+                          <RfqProductTable
+                            list={rfqProductsQuery?.data?.data}
                           />
-                        ))}
-                      </div>
-                    ) : null}
+                        </div>
+                      ) : null}
 
-                    {viewType === "list" &&
-                    rfqProductsQuery?.data?.data?.length ? (
-                      <div className="product_sec_list">
-                        <RfqProductTable list={rfqProductsQuery?.data?.data} />
-                      </div>
-                    ) : null}
-
-                    {rfqProductsQuery?.data?.data?.length > 10 ? (
-                      <Pagination />
-                    ) : null}
+                      {rfqProductsQuery?.data?.data?.length > 10 ? (
+                        <Pagination />
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>
+              <RfqCartMenu onAdd={handleAddToCart} />
             </div>
-            <RfqCartMenu onAdd={handleAddToCart} />
           </div>
         </div>
-      </div>
-      <Dialog open={isAddToCartModalOpen} onOpenChange={handleToggleAddModal}>
-        <DialogContent
-          className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
-          ref={wrapperRef}
-        >
-          <AddToRfqForm
-            onClose={() => {
-              setIsAddToCartModalOpen(false);
-              setSelectedProductId(undefined);
-            }}
-            selectedProductId={selectedProductId}
-          />
-        </DialogContent>
-      </Dialog>
-    </section>
+        <Dialog open={isAddToCartModalOpen} onOpenChange={handleToggleAddModal}>
+          <DialogContent
+            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+            ref={wrapperRef}
+          >
+            <AddToRfqForm
+              onClose={() => {
+                setIsAddToCartModalOpen(false);
+                setSelectedProductId(undefined);
+              }}
+              selectedProductId={selectedProductId}
+            />
+          </DialogContent>
+        </Dialog>
+      </section>
+      <Footer />
+    </>
   );
 };
 

@@ -14,6 +14,7 @@ import Image from "next/image";
 import Pagination from "@/components/shared/Pagination";
 import { useAllRfqQuotesByBuyerId } from "@/apis/queries/rfq.queries";
 import { Skeleton } from "@/components/ui/skeleton";
+import Footer from "@/components/shared/Footer";
 
 const RfqProductList = () => {
   const rfqQuotesByBuyerIdQuery = useAllRfqQuotesByBuyerId({
@@ -185,6 +186,7 @@ const RfqProductList = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

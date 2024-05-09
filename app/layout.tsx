@@ -6,6 +6,7 @@ import Header from "@/layout/MainLayout/Header";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { Toaster } from "@/components/ui/toaster";
 import NextTopLoader from "nextjs-toploader";
+import SessionWrapper from "@/components/SessionWrapper";
 
 export const metadata: Metadata = {
   title: "Puremoon",
@@ -18,18 +19,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className}`}>
-        <ReactQueryProvider>
-          <main className="overflow-x-hidden">
-            <Sidebar />
-            <Header />
-            <NextTopLoader color="#DB2302" showSpinner={false} />
-            {children}
-            <Toaster />
-          </main>
-        </ReactQueryProvider>
-      </body>
-    </html>
+    <SessionWrapper>
+      <html lang="en">
+        <body className={`${inter.className}`}>
+          <ReactQueryProvider>
+            <main className="overflow-x-hidden">
+              <Sidebar />
+              <Header />
+              <NextTopLoader color="#DB2302" showSpinner={false} />
+              {children}
+              <Toaster />
+            </main>
+          </ReactQueryProvider>
+        </body>
+      </html>
+    </SessionWrapper>
   );
 }
