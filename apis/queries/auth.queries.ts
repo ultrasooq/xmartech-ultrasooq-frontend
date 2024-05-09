@@ -172,7 +172,22 @@ export const useChangeEmailVerify = () => {
 };
 
 export const useSocialLogin = () =>
-  useMutation<{}, APIResponseError, {}>({
+  useMutation<
+    {
+      accessToken: string;
+      data: any;
+      message: string;
+      status: boolean;
+    },
+    APIResponseError,
+    {
+      firstName: string;
+      lastName: string;
+      email: string;
+      tradeRole: "BUYER";
+      loginType: string;
+    }
+  >({
     mutationFn: async (payload) => {
       const res = await socialLogin(payload);
       return res.data;
