@@ -162,7 +162,6 @@ const ProductDetailsPage = () => {
         description: "Check your wishlist for more details",
         variant: "success",
       });
-      // handleRemoveItemFromCart(cartId);
     } else {
       toast({
         title: response.message || "Item not added to wishlist",

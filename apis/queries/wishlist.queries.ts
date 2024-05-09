@@ -44,6 +44,12 @@ export const useAddToWishList = () => {
       queryClient.invalidateQueries({
         queryKey: ["wishlist-count"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-user"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);

@@ -92,8 +92,6 @@ const CartListPage = () => {
     productId: number,
     actionType: "add" | "remove",
   ) => {
-    console.log("add to cart:", quantity, productId, actionType);
-    // return;
     if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
         productId,
@@ -124,8 +122,6 @@ const CartListPage = () => {
   };
 
   const handleRemoveItemFromCart = async (cartId: number) => {
-    console.log("cart id:", cartId);
-    // return;
     const response = await deleteCartItem.mutateAsync({ cartId });
     if (response.status) {
       toast({
@@ -142,7 +138,7 @@ const CartListPage = () => {
     }
   };
 
-  const handleAddToWishlist = async (productId: number, cartId: number) => {
+  const handleAddToWishlist = async (productId: number) => {
     const response = await addToWishlist.mutateAsync({ productId });
     if (response.status) {
       toast({
@@ -150,7 +146,6 @@ const CartListPage = () => {
         description: "Check your wishlist for more details",
         variant: "success",
       });
-      handleRemoveItemFromCart(cartId);
     } else {
       toast({
         title: response.message || "Item not added to wishlist",

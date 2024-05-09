@@ -232,7 +232,7 @@ const CheckoutPage = () => {
     }
   };
 
-  const handleAddToWishlist = async (productId: number, cartId: number) => {
+  const handleAddToWishlist = async (productId: number) => {
     const response = await addToWishlist.mutateAsync({ productId });
     if (response.status) {
       toast({
@@ -240,7 +240,6 @@ const CheckoutPage = () => {
         description: "Check your wishlist for more details",
         variant: "success",
       });
-      handleRemoveItemFromCart(cartId);
     } else {
       toast({
         title: response.message || "Item not added to wishlist",

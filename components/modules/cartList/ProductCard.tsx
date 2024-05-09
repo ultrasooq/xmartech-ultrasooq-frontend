@@ -13,7 +13,7 @@ type ProductCardProps = {
   productImages: { id: number; image: string }[];
   onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
   onRemove: (args0: number) => void;
-  onWishlist: (args0: number, args1: number) => void;
+  onWishlist: (args0: number) => void;
   haveAccessToken: boolean;
 };
 
@@ -95,7 +95,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     <Button
                       variant="ghost"
                       className="px-2 underline"
-                      onClick={() => onWishlist(productId, cartId)}
+                      onClick={() => onWishlist(productId)}
                     >
                       Move to wishlist
                     </Button>
