@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import {
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRegister } from "@/apis/queries/auth.queries";
+import { useRegister, useSocialLogin } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,7 +25,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { EMAIL_REGEX_LOWERCASE, TRADE_ROLE_LIST } from "@/utils/constants";
+import {
+  EMAIL_REGEX_LOWERCASE,
+  TRADE_ROLE_LIST,
+  PUREMOON_TOKEN_KEY,
+} from "@/utils/constants";
+import { setCookie } from "cookies-next";
 import PolicyContent from "@/components/shared/PolicyContent";
 import TermsContent from "@/components/shared/TermsContent";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
@@ -34,6 +39,9 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
 import LoaderIcon from "@/public/images/load.png";
+import { useSession, signIn } from "next-auth/react";
+import { getOrCreateDeviceId } from "@/utils/helper";
+import { useUpdateUserCartByDeviceId } from "@/apis/queries/cart.queries";
 
 const formSchema = z
   .object({
@@ -114,6 +122,7 @@ const formSchema = z
 export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { data: session } = useSession();
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const form = useForm({
@@ -130,16 +139,17 @@ export default function RegisterPage() {
       acceptTerms: false,
     },
   });
+  const deviceId = getOrCreateDeviceId() || "";
 
   const handleToggleTermsModal = () => setIsTermsModalOpen(!isTermsModalOpen);
   const handleTogglePrivacyModal = () =>
     setIsPrivacyModalOpen(!isPrivacyModalOpen);
 
+  const socialLogin = useSocialLogin();
   const register = useRegister();
+  const updateCart = useUpdateUserCartByDeviceId();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    // console.log(formData);
-    // return;
     const response = await register.mutateAsync(formData);
 
     if (response?.status && response?.otp) {
@@ -159,6 +169,53 @@ export default function RegisterPage() {
       });
     }
   };
+
+  const handleSocialLogin = async (userData: {
+    name?: string | null | undefined;
+    email?: string | null | undefined;
+    image?: string | null | undefined;
+  }) => {
+    if (!userData?.email) return;
+
+    const response = await socialLogin.mutateAsync({
+      firstName: userData.name?.split(" ")[0] || "User",
+      lastName: userData.name?.split(" ")[1] || "",
+      email: userData.email,
+      tradeRole: "BUYER",
+      loginType: localStorage.getItem("loginType") || "GOOGLE",
+    });
+    if (response?.status && response?.data) {
+      toast({
+        title: "Login Successful",
+        description: "You have successfully logged in.",
+        variant: "success",
+      });
+      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+
+      // TODO: delete cart for trade role freelancer and company if logged in using device id
+      // update cart
+      await updateCart.mutateAsync({ deviceId });
+      form.reset();
+      localStorage.removeItem("loginType");
+      router.push("/home");
+    } else {
+      toast({
+        title: "Login Failed",
+        description: response?.message,
+        variant: "danger",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (session && session?.user) {
+      if (session?.user?.email && session?.user?.name && session?.user?.image) {
+        handleSocialLogin(session.user);
+      }
+    }
+  }, [session]);
+
+  console.log(session);
 
   return (
     <section className="relative w-full py-7">
@@ -183,24 +240,32 @@ export default function RegisterPage() {
             <div className="w-full">
               <ul className="flex w-full flex-wrap items-center justify-between">
                 <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
-                  <a
-                    href="#"
-                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
+                  <Button
+                    variant="outline"
+                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                    onClick={() => {
+                      localStorage.setItem("loginType", "FACEBOOK");
+                      signIn("facebook");
+                    }}
                   >
                     <Image
                       src={FacebookIcon}
                       className="mr-1.5"
-                      alt="facebook-icon"
+                      alt="google-icon"
                       height={26}
                       width={26}
                     />
                     <span>Sign In with Facebook</span>
-                  </a>
+                  </Button>
                 </li>
                 <li className="w-full p-0 sm:w-6/12 sm:pl-3">
-                  <a
-                    href="#"
-                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
+                  <Button
+                    variant="outline"
+                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                    onClick={() => {
+                      localStorage.setItem("loginType", "GOOGLE");
+                      signIn("google");
+                    }}
                   >
                     <Image
                       src={GoogleIcon}
@@ -210,7 +275,7 @@ export default function RegisterPage() {
                       width={26}
                     />
                     <span>Sign In with Google</span>
-                  </a>
+                  </Button>
                 </li>
               </ul>
             </div>

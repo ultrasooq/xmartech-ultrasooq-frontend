@@ -1,10 +1,10 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import _ from "lodash";
-import { useLogin } from "@/apis/queries/auth.queries";
+import { useLogin, useSocialLogin } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,6 +20,7 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
 import LoaderIcon from "@/public/images/load.png";
+import { useSession, signIn } from "next-auth/react";
 
 const formSchema = z.object({
   email: z
@@ -46,6 +47,7 @@ const formSchema = z.object({
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { data: session } = useSession();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -56,12 +58,11 @@ export default function LoginPage() {
   });
   const deviceId = getOrCreateDeviceId() || "";
 
+  const socialLogin = useSocialLogin();
   const login = useLogin();
   const updateCart = useUpdateUserCartByDeviceId();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // console.log(formData);
-    // return;
     const response = await login.mutateAsync(values);
 
     if (response?.status && response?.accessToken) {
@@ -86,6 +87,53 @@ export default function LoginPage() {
       });
     }
   };
+
+  const handleSocialLogin = async (userData: {
+    name?: string | null | undefined;
+    email?: string | null | undefined;
+    image?: string | null | undefined;
+  }) => {
+    if (!userData?.email) return;
+
+    const response = await socialLogin.mutateAsync({
+      firstName: userData.name?.split(" ")[0] || "User",
+      lastName: userData.name?.split(" ")[1] || "",
+      email: userData.email,
+      tradeRole: "BUYER",
+      loginType: localStorage.getItem("loginType") || "GOOGLE",
+    });
+    if (response?.status && response?.data) {
+      toast({
+        title: "Login Successful",
+        description: "You have successfully logged in.",
+        variant: "success",
+      });
+      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+
+      // TODO: delete cart for trade role freelancer and company if logged in using device id
+      // update cart
+      await updateCart.mutateAsync({ deviceId });
+      form.reset();
+      localStorage.removeItem("loginType");
+      router.push("/home");
+    } else {
+      toast({
+        title: "Login Failed",
+        description: response?.message,
+        variant: "danger",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (session && session?.user) {
+      if (session?.user?.email && session?.user?.name && session?.user?.image) {
+        handleSocialLogin(session.user);
+      }
+    }
+  }, [session]);
+
+  console.log(session);
 
   return (
     <section className="relative w-full py-7">
@@ -194,24 +242,32 @@ export default function LoginPage() {
             <div className="w-full">
               <ul className="flex w-full flex-wrap items-center justify-between">
                 <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
-                  <a
-                    href="#"
-                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
+                  <Button
+                    variant="outline"
+                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                    onClick={() => {
+                      localStorage.setItem("loginType", "FACEBOOK");
+                      signIn("facebook");
+                    }}
                   >
                     <Image
                       src={FacebookIcon}
                       className="mr-1.5"
-                      alt="facebook-icon"
+                      alt="google-icon"
                       height={26}
                       width={26}
                     />
                     <span>Sign In with Facebook</span>
-                  </a>
+                  </Button>
                 </li>
                 <li className="w-full p-0 sm:w-6/12 sm:pl-3">
-                  <a
-                    href="#"
-                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-2.5 text-sm font-normal leading-4 text-light-gray"
+                  <Button
+                    variant="outline"
+                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                    onClick={() => {
+                      localStorage.setItem("loginType", "GOOGLE");
+                      signIn("google");
+                    }}
                   >
                     <Image
                       src={GoogleIcon}
@@ -221,7 +277,7 @@ export default function LoginPage() {
                       width={26}
                     />
                     <span>Sign In with Google</span>
-                  </a>
+                  </Button>
                 </li>
               </ul>
             </div>
