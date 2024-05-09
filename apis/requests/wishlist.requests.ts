@@ -31,7 +31,7 @@ export const addToWishList = (payload: { productId: number }) => {
   });
 };
 
-export const deleteFromWishList = (payload: { wishListId: number }) => {
+export const deleteFromWishList = (payload: { productId: number }) => {
   return axios({
     method: "DELETE",
     url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/wishlist/delete`, payload),

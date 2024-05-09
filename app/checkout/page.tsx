@@ -169,8 +169,6 @@ const CheckoutPage = () => {
     productId: number,
     actionType: "add" | "remove",
   ) => {
-    console.log("add to cart:", quantity, actionType);
-    // return;
     if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
         productId,
@@ -214,8 +212,6 @@ const CheckoutPage = () => {
   };
 
   const handleDeleteAddress = async (userAddressId: number) => {
-    console.log("address id:", userAddressId);
-    // return;
     const response = await delteAddress.mutateAsync({ userAddressId });
     if (response.status) {
       toast({
@@ -253,7 +249,6 @@ const CheckoutPage = () => {
     item: AddressItem,
     addresszType: "shipping" | "billing",
   ) => {
-    console.log("order details");
     if (addresszType === "shipping") {
       setSelectedOrderDetails((prevState) => ({
         ...prevState,

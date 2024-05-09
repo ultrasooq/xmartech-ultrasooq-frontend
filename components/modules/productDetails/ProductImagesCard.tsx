@@ -13,7 +13,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
-import WishlistIcon from "@/public/images/wishlist.svg";
+// import WishlistIcon from "@/public/images/wishlist.svg";
+import { FaHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -23,6 +25,8 @@ type ProductImagesCardProps = {
   hasItem: boolean;
   isLoading: boolean;
   onWishlist: () => void;
+  haveAccessToken: boolean;
+  inWishlist?: boolean;
 };
 
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
@@ -33,6 +37,8 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   hasItem,
   isLoading,
   onWishlist,
+  haveAccessToken,
+  inWishlist,
 }) => {
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
@@ -66,13 +72,13 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
     <div className="product-view-s1-left">
       <div className="grid grid-cols-4 gap-4">
         <div className="relative order-2 col-span-3 max-h-[500px] space-y-4 bg-gray-100">
-          {!isLoading ? (
+          {!isLoading && haveAccessToken ? (
             <button
               type="button"
               className="absolute right-2.5 top-2.5 z-10 rounded-full bg-white p-2"
               onClick={onWishlist}
             >
-              <Image src={WishlistIcon} height={25} width={25} alt="wishlist" />
+              {inWishlist ? <FaHeart color="red" /> : <FaRegHeart />}
             </button>
           ) : null}
           {!isLoading && previewImages?.length ? (

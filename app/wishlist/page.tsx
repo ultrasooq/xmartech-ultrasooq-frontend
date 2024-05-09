@@ -20,9 +20,9 @@ const WishlistPage = () => {
   const wishlistQuery = useWishlist({ page: 1, limit: 10 });
   const deleteFromWishlist = useDeleteFromWishList();
 
-  const handleDeleteFromWishlist = async (wishListId: number) => {
+  const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
-      wishListId,
+      productId,
     });
     if (response.status) {
       toast({
@@ -84,6 +84,7 @@ const WishlistPage = () => {
                     <WishlistCard
                       key={item?.id}
                       id={item?.id}
+                      productId={item?.productId}
                       wishlistData={item?.wishlist_productDetail}
                       onDeleteFromWishlist={handleDeleteFromWishlist}
                     />

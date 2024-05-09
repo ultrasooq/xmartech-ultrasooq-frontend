@@ -122,7 +122,9 @@ const CreateProductPage = () => {
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const productQueryById = useProductById(
-    activeProductId ? activeProductId : "",
+    {
+      productId: activeProductId ? activeProductId : "",
+    },
     !!activeProductId,
   );
   const watchProductImages = form.watch("productImages");

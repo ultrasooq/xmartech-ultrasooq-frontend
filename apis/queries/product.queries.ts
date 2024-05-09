@@ -62,11 +62,14 @@ export const useProducts = (
     enabled,
   });
 
-export const useProductById = (id: string, enabled = true) =>
+export const useProductById = (
+  payload: { productId: string; userId?: number },
+  enabled = true,
+) =>
   useQuery({
-    queryKey: ["product-by-id", id],
+    queryKey: ["product-by-id", payload],
     queryFn: async () => {
-      const res = await fetchProductById({ productId: id });
+      const res = await fetchProductById(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
