@@ -199,8 +199,6 @@ const CheckoutPage = () => {
   };
 
   const handleRemoveItemFromCart = async (cartId: number) => {
-    console.log("cart id:", cartId);
-    // return;
     const response = await deleteCartItem.mutateAsync({ cartId });
     if (response.status) {
       toast({
@@ -312,7 +310,6 @@ const CheckoutPage = () => {
         return;
       }
 
-      console.log("Orders:", data);
       orders.setOrders(data);
       router.push("/orders");
     } else {
@@ -407,7 +404,6 @@ const CheckoutPage = () => {
         };
       }
 
-      console.log("Orders:", data);
       orders.setOrders(data);
       router.push("/orders");
     }
@@ -619,7 +615,6 @@ const CheckoutPage = () => {
                           className="border border-solid border-gray-300 bg-white data-[state=checked]:!bg-dark-orange"
                           onCheckedChange={() => {
                             setSameAsShipping(!sameAsShipping);
-                            console.log("same as shipping:", sameAsShipping);
 
                             // since state is not updated immediately, making inverted checking
                             if (sameAsShipping) {

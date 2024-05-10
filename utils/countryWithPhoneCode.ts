@@ -1,4 +1,4 @@
-const CountryWithPhoneCode = [
+export const COUNTRY_WITH_PHONE_CODE = [
   {
     country: "United States",
     flag: "ðŸ‡ºðŸ‡¸",
@@ -1476,5 +1476,3 @@ const CountryWithPhoneCode = [
     callingCode: "+263",
   },
 ];
-
-export default CountryWithPhoneCode;
