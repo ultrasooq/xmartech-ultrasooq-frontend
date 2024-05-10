@@ -257,7 +257,7 @@ const Header = () => {
                     </div>
                   </Link>
                 </li>
-                <li className="relative flex pb-3 pl-0 pr-1 pt-0">
+                <li className="relative flex">
                   {isLoggedIn ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger>
