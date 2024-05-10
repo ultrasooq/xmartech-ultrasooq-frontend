@@ -20,6 +20,7 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
 import LoaderIcon from "@/public/images/load.png";
+import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn } from "next-auth/react";
 
 const formSchema = z.object({
@@ -249,15 +250,35 @@ export default function LoginPage() {
                       localStorage.setItem("loginType", "FACEBOOK");
                       signIn("facebook");
                     }}
+                    disabled={
+                      localStorage.getItem("loginType") === "FACEBOOK" ||
+                      socialLogin.isPending
+                    }
                   >
-                    <Image
-                      src={FacebookIcon}
-                      className="mr-1.5"
-                      alt="google-icon"
-                      height={26}
-                      width={26}
-                    />
-                    <span>Sign In with Facebook</span>
+                    {localStorage.getItem("loginType") === "FACEBOOK" ||
+                    socialLogin.isPending ? (
+                      <>
+                        <Image
+                          src={LoaderPrimaryIcon}
+                          alt="loader-icon"
+                          width={20}
+                          height={20}
+                          className="mr-2 animate-spin"
+                        />
+                        <span>Please wait</span>
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          src={FacebookIcon}
+                          className="mr-1.5"
+                          alt="google-icon"
+                          height={26}
+                          width={26}
+                        />
+                        <span>Sign In with Facebook</span>
+                      </>
+                    )}
                   </Button>
                 </li>
                 <li className="w-full p-0 sm:w-6/12 sm:pl-3">
@@ -268,15 +289,35 @@ export default function LoginPage() {
                       localStorage.setItem("loginType", "GOOGLE");
                       signIn("google");
                     }}
+                    disabled={
+                      localStorage.getItem("loginType") === "GOOGLE" ||
+                      socialLogin.isPending
+                    }
                   >
-                    <Image
-                      src={GoogleIcon}
-                      className="mr-1.5"
-                      alt="google-icon"
-                      height={26}
-                      width={26}
-                    />
-                    <span>Sign In with Google</span>
+                    {localStorage.getItem("loginType") === "GOOGLE" ||
+                    socialLogin.isPending ? (
+                      <>
+                        <Image
+                          src={LoaderPrimaryIcon}
+                          alt="loader-icon"
+                          width={20}
+                          height={20}
+                          className="mr-2 animate-spin"
+                        />
+                        <span>Please wait</span>
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          src={GoogleIcon}
+                          className="mr-1.5"
+                          alt="google-icon"
+                          height={26}
+                          width={26}
+                        />
+                        <span>Sign In with Google</span>
+                      </>
+                    )}
                   </Button>
                 </li>
               </ul>

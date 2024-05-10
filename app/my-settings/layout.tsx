@@ -87,32 +87,36 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                         Manage Address
                       </Link>
                     </div>
-                    <div className="sub-menu-li">
-                      <Link
-                        href="/my-settings/change-password"
-                        className={cn(
-                          "sub-menu-links",
-                          isActivePath("/my-settings/change-password")
-                            ? "active"
-                            : "",
-                        )}
-                      >
-                        Change Password
-                      </Link>
-                    </div>
-                    <div className="sub-menu-li">
-                      <Link
-                        href="/my-settings/change-email"
-                        className={cn(
-                          "sub-menu-links",
-                          isActivePath("/my-settings/change-email")
-                            ? "active"
-                            : "",
-                        )}
-                      >
-                        Change Email
-                      </Link>
-                    </div>
+                    {me.data?.data?.loginType === "MANUAL" ? (
+                      <>
+                        <div className="sub-menu-li">
+                          <Link
+                            href="/my-settings/change-password"
+                            className={cn(
+                              "sub-menu-links",
+                              isActivePath("/my-settings/change-password")
+                                ? "active"
+                                : "",
+                            )}
+                          >
+                            Change Password
+                          </Link>
+                        </div>
+                        <div className="sub-menu-li">
+                          <Link
+                            href="/my-settings/change-email"
+                            className={cn(
+                              "sub-menu-links",
+                              isActivePath("/my-settings/change-email")
+                                ? "active"
+                                : "",
+                            )}
+                          >
+                            Change Email
+                          </Link>
+                        </div>
+                      </>
+                    ) : null}
                   </div>
                 </li>
               </ul>
