@@ -282,9 +282,10 @@ const CreateProductPage = () => {
         });
         form.reset();
 
-        queryClient.invalidateQueries({
-          queryKey: ["product-by-id", activeProductId],
-        });
+        // queryClient.invalidateQueries({
+        //   queryKey: ["product-by-id", activeProductId],
+        // });
+        productQueryById.refetch();
 
         if (activeProductType === "R") {
           router.push("/rfq");
