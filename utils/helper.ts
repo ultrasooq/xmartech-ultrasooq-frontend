@@ -79,6 +79,11 @@ export const getOrCreateDeviceId = () => {
   return deviceId;
 };
 
+export const getLoginType = () => {
+  if (!isBrowser()) return;
+  return localStorage.getItem("loginType");
+};
+
 export const stripHTML = (text: string) => {
   return text.replace(/<[^>]*>/g, "");
 };
