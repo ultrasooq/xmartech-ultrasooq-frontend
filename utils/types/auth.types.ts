@@ -5,9 +5,12 @@ export interface ILoginRequest {
 
 export interface ILogin {
   accessToken: string;
-  data: [];
+  data: {
+    status: "ACTIVE" | "INACTIVE" | "DELETE";
+  };
   message: string;
   status: boolean;
+  otp: number;
 }
 
 export interface IRegisterRequest {
