@@ -30,6 +30,7 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 import AddImageContent from "../profile/AddImageContent";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
+import CloseWhiteIcon from "@/public/images/close-white.svg";
 
 type ProductImageProps = {
   path: string;
@@ -306,7 +307,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                     }}
                                   >
                                     <Image
-                                      src="/images/close-white.svg"
+                                      src={CloseWhiteIcon}
                                       alt="close-icon"
                                       height={22}
                                       width={22}
@@ -332,7 +333,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                                 <Input
                                   type="file"
-                                  accept="image/*"
+                                  accept="image/*, video/*"
                                   multiple={false}
                                   className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
                                   onChange={(event) =>
@@ -371,7 +372,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                     <Input
                       type="file"
-                      accept="image/*"
+                      accept="image/*, video/*"
                       multiple
                       className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
                       onChange={(event) =>
@@ -385,7 +386,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             ) {
                               toast({
                                 title:
-                                  "One of your image size should be less than 1MB",
+                                  "One of your file size should be less than 1MB",
                                 variant: "danger",
                               });
                               return;

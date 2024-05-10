@@ -22,6 +22,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 
+const videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"];
+const imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp"];
+
 const formSchema = z
   .object({
     productName: z
@@ -176,24 +179,57 @@ const CreateProductPage = () => {
         // edit
         const stringTypeArrays = watchProductImages
           .filter((item: any) => typeof item.path !== "object")
-          .map((item: any) => ({ image: item?.path, imageName: item?.path }));
+          .map((item: any) => {
+            const extension = item.path.split(".").pop()?.toLowerCase();
 
-        const formattedimageUrlArrays = imageUrlArray?.map((item: any) => ({
-          image: item,
-          imageName: item,
-        }));
+            if (extension) {
+              if (videoExtensions.includes(extension)) {
+                const videoName: string = item?.path.split("/").pop()!;
+                return {
+                  video: item?.path,
+                  videoName,
+                };
+              } else if (imageExtensions.includes(extension)) {
+                const imageName: string = item?.path.split("/").pop()!;
+                return {
+                  image: item?.path,
+                  imageName,
+                };
+              }
+            }
+          });
+
+        const formattedimageUrlArrays = imageUrlArray?.map((item: any) => {
+          const extension = item.split(".").pop()?.toLowerCase();
+
+          if (extension) {
+            if (videoExtensions.includes(extension)) {
+              const videoName: string = item.split("/").pop()!;
+              return {
+                video: item,
+                videoName,
+              };
+            } else if (imageExtensions.includes(extension)) {
+              const imageName: string = item.split("/").pop()!;
+              return {
+                image: item,
+                imageName,
+              };
+            }
+          }
+
+          return {
+            image: item,
+            imageName: item,
+          };
+        });
         updatedFormData.productImages = [
           ...stringTypeArrays,
           ...formattedimageUrlArrays,
         ];
 
         if (updatedFormData.productImages.length) {
-          updatedFormData.productImagesList = updatedFormData.productImages.map(
-            (item: any) => ({
-              image: item?.image,
-              imageName: item?.imageName,
-            }),
-          );
+          updatedFormData.productImagesList = updatedFormData.productImages;
         }
       } else {
         // add
@@ -201,10 +237,30 @@ const CreateProductPage = () => {
 
         if (updatedFormData.productImages.length) {
           updatedFormData.productImagesList = updatedFormData.productImages.map(
-            (item: string) => ({
-              image: item,
-              imageName: item,
-            }),
+            (item: string) => {
+              const extension = item.split(".").pop()?.toLowerCase();
+
+              if (extension) {
+                if (videoExtensions.includes(extension)) {
+                  const videoName: string = item.split("/").pop()!;
+                  return {
+                    video: item,
+                    videoName,
+                  };
+                } else if (imageExtensions.includes(extension)) {
+                  const imageName: string = item.split("/").pop()!;
+                  return {
+                    image: item,
+                    imageName,
+                  };
+                }
+              }
+
+              return {
+                image: item,
+                imageName: item,
+              };
+            },
           );
         }
       }
@@ -285,19 +341,33 @@ const CreateProductPage = () => {
 
       const productImages = product?.productImages?.length
         ? product?.productImages?.map((item: any) => {
-            return {
-              path: item?.image,
-              id: uuidv4(),
-            };
+            if (item?.image) {
+              return {
+                path: item?.image,
+                id: uuidv4(),
+              };
+            } else if (item?.video) {
+              return {
+                path: item?.video,
+                id: uuidv4(),
+              };
+            }
           })
         : [];
 
       const productImagesList = product?.productImages
         ? product?.productImages?.map((item: any) => {
-            return {
-              image: item?.imageName,
-              imageName: item?.image,
-            };
+            if (item?.video) {
+              return {
+                video: item?.video,
+                videoName: item?.videoName,
+              };
+            } else if (item?.image) {
+              return {
+                image: item?.image,
+                imageName: item?.imageName,
+              };
+            }
           })
         : undefined;
 
@@ -337,6 +407,7 @@ const CreateProductPage = () => {
     }
   }, []);
 
+  // console.log(form.getValues());
   return (
     <>
       <section className="relative w-full py-7">
