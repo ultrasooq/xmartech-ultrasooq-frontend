@@ -80,13 +80,26 @@ export default function LoginPage() {
       });
       form.reset();
       router.push("/home");
-    } else {
+      return;
+    }
+
+    if (response?.status && response?.data?.status === "INACTIVE") {
       toast({
-        title: "Login Failed",
+        title: "Login In progress",
         description: response.message,
         variant: "danger",
       });
+      sessionStorage.setItem("email", values.email.toLowerCase());
+      form.reset();
+      router.push("/otp-verify");
+      return;
     }
+
+    toast({
+      title: "Login Failed",
+      description: response.message,
+      variant: "danger",
+    });
   };
 
   const handleSocialLogin = async (userData: {
