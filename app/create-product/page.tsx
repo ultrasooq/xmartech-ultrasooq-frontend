@@ -407,7 +407,6 @@ const CreateProductPage = () => {
     }
   }, []);
 
-  // console.log(form.getValues());
   return (
     <>
       <section className="relative w-full py-7">
@@ -452,7 +451,9 @@ const CreateProductPage = () => {
                         type="submit"
                         className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                       >
-                        {createProduct.isPending || updateProduct.isPending ? (
+                        {createProduct.isPending ||
+                        updateProduct.isPending ||
+                        uploadMultiple.isPending ? (
                           <>
                             <Image
                               src="/images/load.png"

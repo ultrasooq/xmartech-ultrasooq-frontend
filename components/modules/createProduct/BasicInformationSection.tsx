@@ -31,6 +31,7 @@ import AddImageContent from "../profile/AddImageContent";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
+import ReactPlayer from "react-player/lazy";
 
 type ProductImageProps = {
   path: string;
@@ -41,6 +42,9 @@ type BasicInformationProps = {
   tagsList: any;
   isEditable?: boolean;
 };
+
+const videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"];
+const imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp"];
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
@@ -147,7 +151,33 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     [listIds?.length],
   );
 
-  // console.log(catList, listIds);
+  const isVideo = (path: string) => {
+    if (typeof path === "string") {
+      const extension = path.split(".").pop()?.toLowerCase();
+      if (extension) {
+        if (videoExtensions.includes(extension)) {
+          return true;
+        }
+      }
+      return false;
+    } else if (typeof path === "object") {
+      return true;
+    }
+  };
+
+  const isImage = (path: any) => {
+    if (typeof path === "string") {
+      const extension = path.split(".").pop()?.toLowerCase();
+      if (extension) {
+        if (imageExtensions.includes(extension)) {
+          return true;
+        }
+      }
+      return false;
+    } else if (typeof path === "object" && path?.type?.includes("image")) {
+      return true;
+    }
+  };
 
   return (
     <div className="flex w-full flex-wrap">
@@ -314,26 +344,104 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                     />
                                   </button>
                                 ) : null}
-                                {item.path ? (
-                                  <Image
-                                    src={
-                                      typeof item.path === "object"
-                                        ? URL.createObjectURL(item.path)
-                                        : typeof item.path === "string"
-                                          ? item.path
-                                          : "/images/no-image.jpg"
-                                    }
-                                    alt="profile"
-                                    fill
-                                    priority
-                                  />
+
+                                {item.path && isImage(item.path) ? (
+                                  <div className="relative h-44">
+                                    <Image
+                                      src={
+                                        typeof item.path === "object"
+                                          ? URL.createObjectURL(item.path)
+                                          : typeof item.path === "string"
+                                            ? item.path
+                                            : "/images/no-image.jpg"
+                                      }
+                                      alt="profile"
+                                      fill
+                                      priority
+                                    />
+                                    <Input
+                                      type="file"
+                                      accept="image/*"
+                                      multiple={false}
+                                      className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                      onChange={(event) => {
+                                        if (event.target.files) {
+                                          if (
+                                            event.target.files[0].size > 1048576
+                                          ) {
+                                            toast({
+                                              title:
+                                                "One of your file size should be less than 1MB",
+                                              variant: "danger",
+                                            });
+                                            return;
+                                          }
+                                          handleEditPreviewImage(
+                                            item?.id,
+                                            event.target.files,
+                                          );
+                                        }
+                                      }}
+                                      id="productImages"
+                                    />
+                                  </div>
+                                ) : item.path && isVideo(item.path) ? (
+                                  <div className="relative h-44">
+                                    <div className="player-wrapper px-2">
+                                      <ReactPlayer
+                                        url={
+                                          typeof item.path === "object"
+                                            ? URL.createObjectURL(item.path)
+                                            : typeof item.path === "string"
+                                              ? item.path
+                                              : "/images/no-image.jpg"
+                                        }
+                                        width="100%"
+                                        height="100%"
+                                        // playing
+                                        controls
+                                      />
+                                    </div>
+
+                                    <div className="absolute h-20 w-full p-5">
+                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
+                                        Upload Video
+                                      </p>
+                                    </div>
+                                    <Input
+                                      type="file"
+                                      accept="video/*"
+                                      multiple={false}
+                                      className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+                                      onChange={(event) => {
+                                        if (event.target.files) {
+                                          if (
+                                            event.target.files[0].size > 1048576
+                                          ) {
+                                            toast({
+                                              title:
+                                                "One of your file size should be less than 1MB",
+                                              variant: "danger",
+                                            });
+                                            return;
+                                          }
+
+                                          handleEditPreviewImage(
+                                            item?.id,
+                                            event.target.files,
+                                          );
+                                        }
+                                      }}
+                                      id="productImages"
+                                    />
+                                  </div>
                                 ) : (
-                                  <AddImageContent description="Drop your Image , or " />
+                                  <AddImageContent description="Drop your File , or " />
                                 )}
 
-                                <Input
+                                {/* <Input
                                   type="file"
-                                  accept="image/*, video/*"
+                                  accept="image/*"
                                   multiple={false}
                                   className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
                                   onChange={(event) =>
@@ -349,6 +457,25 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   }
                                   id="productImages"
                                 />
+
+                                <Input
+                                  type="file"
+                                  accept="video/*"
+                                  multiple={false}
+                                  className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                  onChange={(event) =>
+                                    // handleFileChanges(event, field, item)
+                                    {
+                                      if (event.target.files) {
+                                        handleEditPreviewImage(
+                                          item?.id,
+                                          event.target.files,
+                                        );
+                                      }
+                                    }
+                                  }
+                                  id="productImages"
+                                /> */}
                               </div>
                             </div>
                           </FormControl>
@@ -375,38 +502,33 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       accept="image/*, video/*"
                       multiple
                       className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
-                      onChange={(event) =>
-                        // handleFileChanges(event, field, item)
-                        {
-                          if (event.target.files) {
-                            const filesArray = Array.from(event.target.files);
-                            console.log(filesArray);
-                            if (
-                              filesArray.some((file) => file.size > 1048576)
-                            ) {
-                              toast({
-                                title:
-                                  "One of your file size should be less than 1MB",
-                                variant: "danger",
-                              });
-                              return;
-                            }
+                      onChange={(event) => {
+                        if (event.target.files) {
+                          const filesArray = Array.from(event.target.files);
 
-                            const newImages = filesArray.map((file) => ({
-                              path: file,
-                              id: uuidv4(),
-                            }));
-                            const updatedProductImages = [
-                              ...(watchProductImages || []),
-                              ...newImages,
-                            ];
-                            formContext.setValue(
-                              "productImages",
-                              updatedProductImages,
-                            );
+                          if (filesArray.some((file) => file.size > 1048576)) {
+                            toast({
+                              title:
+                                "One of your file size should be less than 1MB",
+                              variant: "danger",
+                            });
+                            return;
                           }
+
+                          const newImages = filesArray.map((file) => ({
+                            path: file,
+                            id: uuidv4(),
+                          }));
+                          const updatedProductImages = [
+                            ...(watchProductImages || []),
+                            ...newImages,
+                          ];
+                          formContext.setValue(
+                            "productImages",
+                            updatedProductImages,
+                          );
                         }
-                      }
+                      }}
                       id="productImages"
                       ref={photosRef}
                     />
