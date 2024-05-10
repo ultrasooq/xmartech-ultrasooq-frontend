@@ -10,7 +10,6 @@ import Pagination from "@/components/shared/Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
-import { cn } from "@/lib/utils";
 import RfqProductTable from "@/components/modules/rfq/RfqProductTable";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AddToRfqForm from "@/components/modules/rfq/AddToRfqForm";
@@ -35,9 +34,9 @@ import Image from "next/image";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
-import PlusWhiteIcon from "@/public/images/plus-icon-white.png";
 import SearchIcon from "@/public/images/search-icon-rfq.png";
 import Footer from "@/components/shared/Footer";
+import { FaPlus } from "react-icons/fa";
 
 const RfqPage = () => {
   const { toast } = useToast();
@@ -163,14 +162,9 @@ const RfqPage = () => {
                     <div className="rfq_add_new_product">
                       <Link
                         href="/create-product?productType=R"
-                        className="flex gap-x-2 bg-dark-orange px-3 py-2 text-white"
+                        className="flex items-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
                       >
-                        <Image
-                          src={PlusWhiteIcon}
-                          width={15}
-                          height={24}
-                          alt="plus-icon"
-                        />{" "}
+                        <FaPlus />
                         Add new product in RFQ
                       </Link>
                     </div>
