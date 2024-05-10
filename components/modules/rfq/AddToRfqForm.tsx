@@ -15,9 +15,11 @@ import { v4 as uuidv4 } from "uuid";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  useCreateProduct,
   useProductById,
   useUpdateProduct,
 } from "@/apis/queries/product.queries";
+import { useAddProductDuplicateRfq } from "@/apis/queries/rfq.queries";
 
 type AddToRfqFormProps = {
   onClose: () => void;
@@ -56,7 +58,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const watchProductImages = form.watch("productImages");
 
   const uploadMultiple = useUploadMultipleFile();
-  // const addRfqProduct = useAddRfqProduct();
+  const createProduct = useCreateProduct();
+  const addDuplicateProduct = useAddProductDuplicateRfq();
   const updateProduct = useUpdateProduct();
   const productQueryById = useProductById(
     {
@@ -94,6 +97,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       }
     }
   };
+
+  const generateRandomSkuNoWithTimeStamp = () => new Date().getTime();
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = { ...formData };
@@ -137,12 +142,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       selectedProductId &&
       productQueryById?.data?.data?.productType === "R"
     ) {
-      // console.log({
-      //   productId: selectedProductId,
-      //   productType: "R",
-      //   ...updatedFormData,
-      // });
-      // return;
+      // R type product
       const response = await updateProduct.mutateAsync({
         productId: selectedProductId,
         productType: "R",
@@ -156,9 +156,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         });
         form.reset();
 
-        queryClient.invalidateQueries({
-          queryKey: ["product-by-id", selectedProductId],
-        });
+        productQueryById.refetch();
         queryClient.invalidateQueries({
           queryKey: ["rfq-products"],
         });
@@ -170,28 +168,83 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           variant: "danger",
         });
       }
+    } else if (
+      selectedProductId &&
+      productQueryById?.data?.data?.productType === "P"
+    ) {
+      // P type product
+      const product = productQueryById?.data?.data;
+      const productTagList = product?.productTags
+        ? product?.productTags?.map((item: any) => {
+            return {
+              tagId: item?.productTagsTag?.id,
+            };
+          })
+        : [];
+
+      const randomSkuNo = generateRandomSkuNoWithTimeStamp().toString();
+      const data = {
+        productType: "R",
+        productName: product?.productName,
+        categoryId: product?.categoryId ? product?.categoryId : 0,
+        categoryLocation: product?.categoryLocation
+          ? product?.categoryLocation
+          : "",
+        brandId: product?.brandId ? product?.brandId : 0,
+        skuNo: randomSkuNo,
+        productTagList: productTagList || undefined,
+        productPrice: product?.productPrice ? Number(product.productPrice) : 0,
+        offerPrice: product?.offerPrice ? Number(product.offerPrice) : 0,
+        placeOfOriginId: product?.placeOfOriginId
+          ? product?.placeOfOriginId
+          : 0,
+        shortDescription: product?.shortDescription || "",
+        description: product?.description,
+        specification: product?.specification,
+        status: "ACTIVE",
+        ...updatedFormData,
+      };
+
+      console.log(data);
+      // return;
+      const response = await createProduct.mutateAsync(data);
+      if (response.status) {
+        toast({
+          title: "RFQ Product Add Successful",
+          description: response.message,
+          variant: "success",
+        });
+        const dependentResponse = await addDuplicateProduct.mutateAsync({
+          productId: selectedProductId,
+        });
+        if (dependentResponse.status) {
+          toast({
+            title: "Product Duplicate Successful",
+            description: dependentResponse.message,
+            variant: "success",
+          });
+        } else {
+          toast({
+            title: "Product Duplicate Failed",
+            description: dependentResponse.message,
+            variant: "danger",
+          });
+        }
+        form.reset();
+
+        productQueryById.refetch();
+        queryClient.invalidateQueries({
+          queryKey: ["rfq-products"],
+        });
+        onClose();
+      } else {
+        toast({
+          title: "RFQ Product Add Failed",
+          description: response.message,
+          variant: "danger",
+        });
+      }
     }
-    // else {
-    // add
-    // console.log(updatedFormData);
-    // return;
-    //   const response = await addRfqProduct.mutateAsync(updatedFormData);
-    //   if (response.status) {
-    //     toast({
-    //       title: "RFQ Product Add Successful",
-    //       description: response.message,
-    //       variant: "success",
-    //     });
-    //     form.reset();
-    //     onClose();
-    //   } else {
-    //     toast({
-    //       title: "RFQ Product Add Failed",
-    //       description: response.message,
-    //       variant: "danger",
-    //     });
-    //   }
-    // }
   };
 
   useEffect(() => {
@@ -397,11 +450,17 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           />
 
           <Button
-            disabled={uploadMultiple.isPending}
+            disabled={
+              uploadMultiple.isPending ||
+              updateProduct.isPending ||
+              createProduct.isPending
+            }
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
-            {uploadMultiple.isPending ? (
+            {uploadMultiple.isPending ||
+            updateProduct.isPending ||
+            createProduct.isPending ? (
               <>
                 <Image
                   src="/images/load.png"
