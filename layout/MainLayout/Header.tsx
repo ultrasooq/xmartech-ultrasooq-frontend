@@ -123,15 +123,17 @@ const Header = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsLoggedIn(false);
     deleteCookie(PUREMOON_TOKEN_KEY);
     queryClient.clear();
-    if (userDetails.data?.data?.loginType !== "MANUAL") {
-      signOut();
-    } else {
-      router.push("/login");
-    }
+
+    const data = await signOut({
+      redirect: false,
+      callbackUrl: "/home",
+    });
+
+    router.push(data?.url || "/home");
   };
 
   const wrapperRef = useRef(null);

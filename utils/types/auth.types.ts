@@ -11,6 +11,7 @@ export interface ILogin {
 }
 
 export interface IRegisterRequest {
+  loginType: "MANUAL" | "GOOGLE" | "FACEBOOK";
   email: string;
   firstName: string;
   lastName: string;
@@ -24,6 +25,7 @@ export interface IRegister {
   otp: number;
   message: string;
   status: boolean;
+  accessToken: string;
 }
 
 export interface IVerifyOtpRequest {

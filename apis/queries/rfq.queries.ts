@@ -1,6 +1,7 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  addProductDuplicateRfq,
   addRfqProduct,
   addRfqQuotes,
   deleteRfqCartItem,
@@ -252,6 +253,24 @@ export const useAddRfqQuotes = () => {
         queryKey: ["rfq-quotes"],
       });
     },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useAddProductDuplicateRfq = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { productId: number }
+  >({
+    mutationFn: async (payload) => {
+      const res = await addProductDuplicateRfq(payload);
+      return res.data;
+    },
+    onSuccess: () => {},
     onError: (err: APIResponseError) => {
       console.log(err);
     },

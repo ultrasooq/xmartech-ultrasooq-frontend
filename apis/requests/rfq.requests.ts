@@ -182,3 +182,16 @@ export const addRfqQuotes = (payload: AddRfqQuotesRequest) => {
     },
   });
 };
+
+export const addProductDuplicateRfq = (payload: { productId: number }) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addProductDuplicateRfq`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
