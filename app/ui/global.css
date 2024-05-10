@@ -3172,3 +3172,15 @@ input::-ms-clear {
 .readonly-quill .ql-container.ql-snow {
   border: none !important;
 } */
+
+.player-wrapper {
+  position: relative;   
+  /* height: 50%; */
+  padding-top: 5%;
+}
+
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
