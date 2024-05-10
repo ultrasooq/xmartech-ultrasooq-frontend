@@ -41,7 +41,7 @@ import GoogleIcon from "@/public/images/google-icon.png";
 import LoaderIcon from "@/public/images/load.png";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn } from "next-auth/react";
-import { getOrCreateDeviceId } from "@/utils/helper";
+import { getLoginType, getOrCreateDeviceId } from "@/utils/helper";
 import { useUpdateUserCartByDeviceId } from "@/apis/queries/cart.queries";
 
 const formSchema = z
@@ -248,13 +248,9 @@ export default function RegisterPage() {
                       localStorage.setItem("loginType", "FACEBOOK");
                       signIn("facebook");
                     }}
-                    disabled={
-                      localStorage.getItem("loginType") === "FACEBOOK" ||
-                      socialLogin.isPending
-                    }
+                    disabled={socialLogin.isPending}
                   >
-                    {localStorage.getItem("loginType") === "FACEBOOK" ||
-                    socialLogin.isPending ? (
+                    {socialLogin.isPending && getLoginType() === "FACEBOOK" ? (
                       <>
                         <Image
                           src={LoaderPrimaryIcon}
@@ -287,13 +283,9 @@ export default function RegisterPage() {
                       localStorage.setItem("loginType", "GOOGLE");
                       signIn("google");
                     }}
-                    disabled={
-                      localStorage.getItem("loginType") === "GOOGLE" ||
-                      socialLogin.isPending
-                    }
+                    disabled={socialLogin.isPending}
                   >
-                    {localStorage.getItem("loginType") === "GOOGLE" ||
-                    socialLogin.isPending ? (
+                    {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
                       <>
                         <Image
                           src={LoaderPrimaryIcon}

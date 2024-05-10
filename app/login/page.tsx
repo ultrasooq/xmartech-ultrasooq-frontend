@@ -15,7 +15,7 @@ import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { useUpdateUserCartByDeviceId } from "@/apis/queries/cart.queries";
-import { getOrCreateDeviceId } from "@/utils/helper";
+import { getLoginType, getOrCreateDeviceId } from "@/utils/helper";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
@@ -101,7 +101,7 @@ export default function LoginPage() {
       lastName: userData.name?.split(" ")[1] || "",
       email: userData.email,
       tradeRole: "BUYER",
-      loginType: localStorage.getItem("loginType") || "GOOGLE",
+      loginType: getLoginType() || "GOOGLE",
     });
     if (response?.status && response?.data) {
       toast({
@@ -250,17 +250,13 @@ export default function LoginPage() {
                       localStorage.setItem("loginType", "FACEBOOK");
                       signIn("facebook");
                     }}
-                    disabled={
-                      localStorage.getItem("loginType") === "FACEBOOK" ||
-                      socialLogin.isPending
-                    }
+                    disabled={socialLogin.isPending}
                   >
-                    {localStorage.getItem("loginType") === "FACEBOOK" ||
-                    socialLogin.isPending ? (
+                    {socialLogin.isPending && getLoginType() === "FACEBOOK" ? (
                       <>
                         <Image
                           src={LoaderPrimaryIcon}
-                          alt="loader-icon"
+                          alt="fb-icon"
                           width={20}
                           height={20}
                           className="mr-2 animate-spin"
@@ -272,7 +268,7 @@ export default function LoginPage() {
                         <Image
                           src={FacebookIcon}
                           className="mr-1.5"
-                          alt="google-icon"
+                          alt="fb-icon"
                           height={26}
                           width={26}
                         />
@@ -289,17 +285,13 @@ export default function LoginPage() {
                       localStorage.setItem("loginType", "GOOGLE");
                       signIn("google");
                     }}
-                    disabled={
-                      localStorage.getItem("loginType") === "GOOGLE" ||
-                      socialLogin.isPending
-                    }
+                    disabled={socialLogin.isPending}
                   >
-                    {localStorage.getItem("loginType") === "GOOGLE" ||
-                    socialLogin.isPending ? (
+                    {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
                       <>
                         <Image
                           src={LoaderPrimaryIcon}
-                          alt="loader-icon"
+                          alt="google-icon"
                           width={20}
                           height={20}
                           className="mr-2 animate-spin"
