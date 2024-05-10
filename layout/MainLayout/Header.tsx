@@ -354,10 +354,11 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="hidden h-full w-full px-3 md:flex md:px-0">
+          <div className="hidden h-[44px] w-full px-3 md:flex md:px-0">
             <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-start">
               {memoizedMenu.map((item: any) => (
                 <Button
+                  type="button"
                   key={item.id}
                   onClick={() => {
                     setMenuId(item.id);
@@ -419,6 +420,7 @@ const Header = () => {
               <div className="flex items-center gap-x-5">
                 {memoizedCategory.map((item: any) => (
                   <Button
+                    type="button"
                     key={item.id}
                     onClick={() => setCategoryId(item.id)}
                     variant="link"
