@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRegister, useSocialLogin } from "@/apis/queries/auth.queries";
+import { useRegister } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -39,10 +39,9 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
 import LoaderIcon from "@/public/images/load.png";
-import LoaderPrimaryIcon from "@/public/images/load-primary.png";
+// import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn } from "next-auth/react";
-import { getLoginType, getOrCreateDeviceId } from "@/utils/helper";
-import { useUpdateUserCartByDeviceId } from "@/apis/queries/cart.queries";
+import { getLoginType } from "@/utils/helper";
 
 const formSchema = z
   .object({
@@ -140,18 +139,19 @@ export default function RegisterPage() {
       acceptTerms: false,
     },
   });
-  const deviceId = getOrCreateDeviceId() || "";
 
   const handleToggleTermsModal = () => setIsTermsModalOpen(!isTermsModalOpen);
   const handleTogglePrivacyModal = () =>
     setIsPrivacyModalOpen(!isPrivacyModalOpen);
 
-  const socialLogin = useSocialLogin();
   const register = useRegister();
-  const updateCart = useUpdateUserCartByDeviceId();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    const response = await register.mutateAsync(formData);
+    const loginType = session ? getLoginType() : "MANUAL";
+    const response = await register.mutateAsync({
+      ...formData,
+      loginType: loginType as "MANUAL" | "GOOGLE" | "FACEBOOK",
+    });
 
     if (response?.status && response?.otp) {
       toast({
@@ -162,6 +162,15 @@ export default function RegisterPage() {
       sessionStorage.setItem("email", formData.email.toLowerCase());
       form.reset();
       router.push("/otp-verify");
+    } else if (response?.status && response?.accessToken) {
+      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+      toast({
+        title: "Registration Successful",
+        description: response.message,
+        variant: "success",
+      });
+      form.reset();
+      router.push("/profile");
     } else {
       toast({
         title: "Registration Failed",
@@ -171,52 +180,17 @@ export default function RegisterPage() {
     }
   };
 
-  const handleSocialLogin = async (userData: {
-    name?: string | null | undefined;
-    email?: string | null | undefined;
-    image?: string | null | undefined;
-  }) => {
-    if (!userData?.email) return;
-
-    const response = await socialLogin.mutateAsync({
-      firstName: userData.name?.split(" ")[0] || "User",
-      lastName: userData.name?.split(" ")[1] || "",
-      email: userData.email,
-      tradeRole: "BUYER",
-      loginType: localStorage.getItem("loginType") || "GOOGLE",
-    });
-    if (response?.status && response?.data) {
-      toast({
-        title: "Login Successful",
-        description: "You have successfully logged in.",
-        variant: "success",
-      });
-      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
-
-      // TODO: delete cart for trade role freelancer and company if logged in using device id
-      // update cart
-      await updateCart.mutateAsync({ deviceId });
-      form.reset();
-      localStorage.removeItem("loginType");
-      router.push("/home");
-    } else {
-      toast({
-        title: "Login Failed",
-        description: response?.message,
-        variant: "danger",
-      });
-    }
-  };
-
   useEffect(() => {
     if (session && session?.user) {
-      if (session?.user?.email && session?.user?.name && session?.user?.image) {
-        handleSocialLogin(session.user);
-      }
+      form.reset({
+        firstName: session?.user?.name?.split(" ")[0] || "",
+        lastName: session?.user?.name?.split(" ")[1] || "" || "",
+        email: session?.user?.email || "",
+      });
     }
   }, [session]);
 
-  console.log(session);
+  // console.log(session);
 
   return (
     <section className="relative w-full py-7">
@@ -248,31 +222,15 @@ export default function RegisterPage() {
                       localStorage.setItem("loginType", "FACEBOOK");
                       signIn("facebook");
                     }}
-                    disabled={socialLogin.isPending}
                   >
-                    {socialLogin.isPending && getLoginType() === "FACEBOOK" ? (
-                      <>
-                        <Image
-                          src={LoaderPrimaryIcon}
-                          alt="loader-icon"
-                          width={20}
-                          height={20}
-                          className="mr-2 animate-spin"
-                        />
-                        <span>Please wait</span>
-                      </>
-                    ) : (
-                      <>
-                        <Image
-                          src={FacebookIcon}
-                          className="mr-1.5"
-                          alt="google-icon"
-                          height={26}
-                          width={26}
-                        />
-                        <span>Sign In with Facebook</span>
-                      </>
-                    )}
+                    <Image
+                      src={FacebookIcon}
+                      className="mr-1.5"
+                      alt="google-icon"
+                      height={26}
+                      width={26}
+                    />
+                    <span>Sign In with Facebook</span>
                   </Button>
                 </li>
                 <li className="w-full p-0 sm:w-6/12 sm:pl-3">
@@ -283,31 +241,15 @@ export default function RegisterPage() {
                       localStorage.setItem("loginType", "GOOGLE");
                       signIn("google");
                     }}
-                    disabled={socialLogin.isPending}
                   >
-                    {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
-                      <>
-                        <Image
-                          src={LoaderPrimaryIcon}
-                          alt="loader-icon"
-                          width={20}
-                          height={20}
-                          className="mr-2 animate-spin"
-                        />
-                        <span>Please wait</span>
-                      </>
-                    ) : (
-                      <>
-                        <Image
-                          src={GoogleIcon}
-                          className="mr-1.5"
-                          alt="google-icon"
-                          height={26}
-                          width={26}
-                        />
-                        <span>Sign In with Google</span>
-                      </>
-                    )}
+                    <Image
+                      src={GoogleIcon}
+                      className="mr-1.5"
+                      alt="google-icon"
+                      height={26}
+                      width={26}
+                    />
+                    <span>Sign In with Google</span>
                   </Button>
                 </li>
               </ul>
@@ -382,6 +324,12 @@ export default function RegisterPage() {
                     label="Email Address"
                     name="email"
                     placeholder="Enter Your Email Address"
+                    disabled={
+                      getLoginType() === "FACEBOOK" ||
+                      getLoginType() === "GOOGLE"
+                        ? !!session?.user?.email
+                        : false
+                    }
                   />
 
                   <ControlledTextInput

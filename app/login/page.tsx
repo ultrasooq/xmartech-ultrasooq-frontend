@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -21,7 +21,7 @@ import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
 import LoaderIcon from "@/public/images/load.png";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
-import { useSession, signIn } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const formSchema = z.object({
   email: z
@@ -123,6 +123,12 @@ export default function LoginPage() {
         description: response?.message,
         variant: "danger",
       });
+      const data = await signOut({
+        redirect: false,
+        callbackUrl: "/login",
+      });
+
+      router.push(data.url);
     }
   };
 
@@ -134,7 +140,7 @@ export default function LoginPage() {
     }
   }, [session]);
 
-  console.log(session);
+  // console.log(session);
 
   return (
     <section className="relative w-full py-7">
