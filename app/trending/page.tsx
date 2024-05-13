@@ -39,8 +39,17 @@ import ChevronRightIcon from "@/public/images/nextarow.svg";
 import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
 import Footer from "@/components/shared/Footer";
 import Pagination from "@/components/shared/Pagination";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMe } from "@/apis/queries/user.queries";
 
 const TrendingPage = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
@@ -52,6 +61,9 @@ const TrendingPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(8);
 
+  const me = useMe();
+  const addToWishlist = useAddToWishList();
+  const deleteFromWishlist = useDeleteFromWishList();
   const allProductsQuery = useAllProducts({
     page,
     limit,
@@ -63,6 +75,7 @@ const TrendingPage = () => {
     priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
     brandIds:
       selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    userId: me.data?.data?.id,
   });
   const brandsQuery = useBrands({
     term: searchTerm,
@@ -121,12 +134,17 @@ const TrendingPage = () => {
         skuNo: item?.skuNo,
         brandName: item?.brand?.brandName || "-",
         productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
         shortDescription: item?.shortDescription
           ? stripHTML(item?.shortDescription)
           : "-",
       })) || []
     );
   }, [
+    allProductsQuery?.data?.data,
     allProductsQuery?.data?.data?.length,
     sortBy,
     priceRange[0],
@@ -136,6 +154,68 @@ const TrendingPage = () => {
     searchTerm,
     selectedBrandIds,
   ]);
+
+  const handleDeleteFromWishlist = async (productId: number) => {
+    const response = await deleteFromWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["all-products"],
+      });
+    } else {
+      toast({
+        title: "Item not removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleAddToWishlist = async (
+    productId: number,
+    wishlistArr?: any[],
+  ) => {
+    const wishlistObject = wishlistArr?.find(
+      (item) => item.userId === me.data?.data?.id,
+    );
+    // return;
+    if (wishlistObject) {
+      handleDeleteFromWishlist(wishlistObject?.productId);
+      return;
+    }
+
+    const response = await addToWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["all-products"],
+      });
+    } else {
+      toast({
+        title: response.message || "Item not added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
 
   return (
     <>
@@ -375,7 +455,15 @@ const TrendingPage = () => {
               {viewType === "grid" ? (
                 <div className="product-list-s1">
                   {memoizedProductList.map((item: TrendingProduct) => (
-                    <ProductCard key={item.id} item={item} />
+                    <ProductCard
+                      key={item.id}
+                      item={item}
+                      onWishlist={() =>
+                        handleAddToWishlist(item.id, item?.productWishlist)
+                      }
+                      inWishlist={item?.inWishlist}
+                      haveAccessToken={!!me.data?.data}
+                    />
                   ))}
                 </div>
               ) : null}
