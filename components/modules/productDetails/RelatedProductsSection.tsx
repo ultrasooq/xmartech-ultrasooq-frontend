@@ -16,6 +16,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRelatedProducts } from "@/apis/queries/product.queries";
+import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
 
 type RelatedProductsSectionProps = {
   calculateTagIds: string;
@@ -27,6 +28,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const me = useMe();
+  const updateCartWithLogin = useUpdateCartWithLogin();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
   const relatedProductsQuery = useRelatedProducts(
@@ -54,6 +56,25 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     relatedProductsQuery?.isFetched,
     calculateTagIds,
   ]);
+
+  const handleAddToCart = async (
+    quantity: number,
+    productId: number,
+    actionType: "add" | "remove",
+  ) => {
+    const response = await updateCartWithLogin.mutateAsync({
+      productId,
+      quantity,
+    });
+
+    if (response.status) {
+      toast({
+        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -154,6 +175,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
                       offerPrice={item?.offerPrice}
                       productPrice={item?.productPrice}
                       productReview={item?.productReview}
+                      onAdd={() => handleAddToCart(-1, item?.id, "add")}
                       onWishlist={() =>
                         handleAddToWishlist(item.id, item?.productWishlist)
                       }

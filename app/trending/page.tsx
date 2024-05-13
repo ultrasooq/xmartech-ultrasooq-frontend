@@ -46,6 +46,7 @@ import {
 } from "@/apis/queries/wishlist.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
+import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
 
 const TrendingPage = () => {
   const queryClient = useQueryClient();
@@ -62,6 +63,7 @@ const TrendingPage = () => {
   const [limit, setLimit] = useState(8);
 
   const me = useMe();
+  const updateCartWithLogin = useUpdateCartWithLogin();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
   const allProductsQuery = useAllProducts({
@@ -154,6 +156,25 @@ const TrendingPage = () => {
     searchTerm,
     selectedBrandIds,
   ]);
+
+  const handleAddToCart = async (
+    quantity: number,
+    productId: number,
+    actionType: "add" | "remove",
+  ) => {
+    const response = await updateCartWithLogin.mutateAsync({
+      productId,
+      quantity,
+    });
+
+    if (response.status) {
+      toast({
+        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -458,6 +479,7 @@ const TrendingPage = () => {
                     <ProductCard
                       key={item.id}
                       item={item}
+                      onAdd={() => handleAddToCart(-1, item.id, "add")}
                       onWishlist={() =>
                         handleAddToWishlist(item.id, item?.productWishlist)
                       }

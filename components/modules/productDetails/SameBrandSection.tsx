@@ -17,6 +17,7 @@ import {
   useAddToWishList,
   useDeleteFromWishList,
 } from "@/apis/queries/wishlist.queries";
+import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
 
 type SameBrandSectionProps = {
   productDetails: any;
@@ -28,6 +29,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const me = useMe();
+  const updateCartWithLogin = useUpdateCartWithLogin();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
   const sameBrandProductsQuery = useSameBrandProducts(
@@ -55,6 +57,25 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
     sameBrandProductsQuery?.isFetched,
     productDetails?.brandId,
   ]);
+
+  const handleAddToCart = async (
+    quantity: number,
+    productId: number,
+    actionType: "add" | "remove",
+  ) => {
+    const response = await updateCartWithLogin.mutateAsync({
+      productId,
+      quantity,
+    });
+
+    if (response.status) {
+      toast({
+        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -153,6 +174,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
                           offerPrice={item?.offerPrice}
                           productPrice={item?.productPrice}
                           productReview={item?.productReview}
+                          onAdd={() => handleAddToCart(-1, item.id, "add")}
                           onWishlist={() =>
                             handleAddToWishlist(item.id, item?.productWishlist)
                           }
