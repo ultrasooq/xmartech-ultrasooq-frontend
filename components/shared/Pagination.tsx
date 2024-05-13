@@ -38,8 +38,6 @@ const Pagination: React.FC<PaginationProps> = ({
     // setItemOffset(newOffset);
   };
 
-  console.log(pageCount);
-
   return (
     <>
       {/* <ul className="theme-pagination-s1">
