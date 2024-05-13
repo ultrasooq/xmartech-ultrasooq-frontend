@@ -220,11 +220,11 @@ const MyOrderDetailsPage = ({}) => {
                               <p className="mt-1">
                                 Seller:{" "}
                                 {
-                                  orderDetails?.orderProduct_product?.userBy
+                                  orderDetails?.orderProduct_product?.adminBy
                                     ?.firstName
                                 }{" "}
                                 {
-                                  orderDetails?.orderProduct_product?.userBy
+                                  orderDetails?.orderProduct_product?.adminBy
                                     ?.lastName
                                 }
                               </p>
@@ -454,7 +454,7 @@ const MyOrderDetailsPage = ({}) => {
                     productName={item?.orderProduct_product?.productName}
                     offerPrice={item?.orderProduct_product?.offerPrice}
                     productImages={item?.orderProduct_product?.productImages}
-                    sellerName={`${item?.orderProduct_product?.userBy?.firstName} ${item?.orderProduct_product?.userBy?.lastName}`}
+                    sellerName={`${item?.orderProduct_product?.adminBy?.firstName} ${item?.orderProduct_product?.adminBy?.lastName}`}
                     orderNo={orderDetails?.orderProduct_order?.orderNo}
                     orderProductDate={item?.orderProductDate}
                     orderProductStatus={item?.orderProductStatus}

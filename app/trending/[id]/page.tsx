@@ -264,10 +264,10 @@ const ProductDetailsPage = () => {
               onAdd={handleAddToCart}
               isLoading={!productQueryById.isFetched}
               soldBy={
-                productDetails?.userBy?.tradeRole === "COMPANY"
-                  ? productDetails?.userBy?.userProfile?.[0]?.companyName
-                  : productDetails?.userBy?.tradeRole === "FREELANCER"
-                    ? `${productDetails?.userBy?.firstName} ${productDetails?.userBy?.lastName}`
+                productDetails?.adminBy?.tradeRole === "COMPANY"
+                  ? productDetails?.adminBy?.userProfile?.[0]?.companyName
+                  : productDetails?.adminBy?.tradeRole === "FREELANCER"
+                    ? `${productDetails?.adminBy?.firstName} ${productDetails?.adminBy?.lastName}`
                     : null
               }
             />
