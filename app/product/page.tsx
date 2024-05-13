@@ -10,16 +10,10 @@ import BasicInformationSection from "@/components/modules/createProduct/BasicInf
 import ProductDetailsSection from "@/components/modules/createProduct/ProductDetailsSection";
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
-import {
-  useCreateProduct,
-  useProductById,
-  useUpdateProduct,
-} from "@/apis/queries/product.queries";
+import { useCreateProduct } from "@/apis/queries/product.queries";
 import { useToast } from "@/components/ui/use-toast";
-import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 
 const videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"];
@@ -94,8 +88,6 @@ const formSchema = z
 
 const CreateProductPage = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
-  // const searchQuery = useSearchParams();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -117,19 +109,11 @@ const CreateProductPage = () => {
     },
   });
 
-  const [activeProductId, setActiveProductId] = useState<string>();
   const [activeProductType, setActiveProductType] = useState<string>();
 
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
   const createProduct = useCreateProduct();
-  const updateProduct = useUpdateProduct();
-  const productQueryById = useProductById(
-    {
-      productId: activeProductId ? activeProductId : "",
-    },
-    !!activeProductId,
-  );
   const watchProductImages = form.watch("productImages");
 
   const memoizedTags = useMemo(() => {
@@ -158,12 +142,7 @@ const CreateProductPage = () => {
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
       ...formData,
-      productType:
-        activeProductId && activeProductType === "P"
-          ? "R"
-          : activeProductType
-            ? "R"
-            : "P",
+      productType: activeProductType ? "R" : "P",
       status: "ACTIVE",
     };
     if (watchProductImages.length) {
@@ -175,234 +154,69 @@ const CreateProductPage = () => {
         ? await handleUploadedFile(fileTypeArrays)
         : [];
 
-      if (activeProductId) {
-        // edit
-        const stringTypeArrays = watchProductImages
-          .filter((item: any) => typeof item.path !== "object")
-          .map((item: any) => {
-            const extension = item.path.split(".").pop()?.toLowerCase();
+      updatedFormData.productImages = [...imageUrlArray];
+
+      if (updatedFormData.productImages.length) {
+        updatedFormData.productImagesList = updatedFormData.productImages.map(
+          (item: string) => {
+            const extension = item.split(".").pop()?.toLowerCase();
 
             if (extension) {
               if (videoExtensions.includes(extension)) {
-                const videoName: string = item?.path.split("/").pop()!;
+                const videoName: string = item.split("/").pop()!;
                 return {
-                  video: item?.path,
+                  video: item,
                   videoName,
                 };
               } else if (imageExtensions.includes(extension)) {
-                const imageName: string = item?.path.split("/").pop()!;
+                const imageName: string = item.split("/").pop()!;
                 return {
-                  image: item?.path,
+                  image: item,
                   imageName,
                 };
               }
             }
-          });
 
-        const formattedimageUrlArrays = imageUrlArray?.map((item: any) => {
-          const extension = item.split(".").pop()?.toLowerCase();
-
-          if (extension) {
-            if (videoExtensions.includes(extension)) {
-              const videoName: string = item.split("/").pop()!;
-              return {
-                video: item,
-                videoName,
-              };
-            } else if (imageExtensions.includes(extension)) {
-              const imageName: string = item.split("/").pop()!;
-              return {
-                image: item,
-                imageName,
-              };
-            }
-          }
-
-          return {
-            image: item,
-            imageName: item,
-          };
-        });
-        updatedFormData.productImages = [
-          ...stringTypeArrays,
-          ...formattedimageUrlArrays,
-        ];
-
-        if (updatedFormData.productImages.length) {
-          updatedFormData.productImagesList = updatedFormData.productImages;
-        }
-      } else {
-        // add
-        updatedFormData.productImages = [...imageUrlArray];
-
-        if (updatedFormData.productImages.length) {
-          updatedFormData.productImagesList = updatedFormData.productImages.map(
-            (item: string) => {
-              const extension = item.split(".").pop()?.toLowerCase();
-
-              if (extension) {
-                if (videoExtensions.includes(extension)) {
-                  const videoName: string = item.split("/").pop()!;
-                  return {
-                    video: item,
-                    videoName,
-                  };
-                } else if (imageExtensions.includes(extension)) {
-                  const imageName: string = item.split("/").pop()!;
-                  return {
-                    image: item,
-                    imageName,
-                  };
-                }
-              }
-
-              return {
-                image: item,
-                imageName: item,
-              };
-            },
-          );
-        }
+            return {
+              image: item,
+              imageName: item,
+            };
+          },
+        );
       }
     }
 
     delete updatedFormData.productImages;
 
-    if (activeProductId) {
-      // edit
-      updatedFormData.productId = Number(activeProductId);
-      console.log("edit:", updatedFormData);
-      // return;
-      const response = await updateProduct.mutateAsync(updatedFormData);
-      if (response.status && response.data) {
-        toast({
-          title: "Product Update Successful",
-          description: response.message,
-          variant: "success",
-        });
-        form.reset();
+    console.log("add:", updatedFormData);
+    // return;
+    const response = await createProduct.mutateAsync(updatedFormData);
 
-        // queryClient.invalidateQueries({
-        //   queryKey: ["product-by-id", activeProductId],
-        // });
-        productQueryById.refetch();
-
-        if (activeProductType === "R") {
-          router.push("/rfq");
-        } else {
-          router.push("/product-list");
-        }
+    if (response.status && response.data) {
+      toast({
+        title: "Product Create Successful",
+        description: response.message,
+        variant: "success",
+      });
+      form.reset();
+      if (activeProductType === "R") {
+        router.push("/rfq");
       } else {
-        toast({
-          title: "Product Update Failed",
-          description: response.message,
-          variant: "danger",
-        });
+        router.push("/products");
       }
     } else {
-      // add
-      console.log("add:", updatedFormData);
-      // return;
-      const response = await createProduct.mutateAsync(updatedFormData);
-
-      if (response.status && response.data) {
-        toast({
-          title: "Product Create Successful",
-          description: response.message,
-          variant: "success",
-        });
-        form.reset();
-        if (activeProductType === "R") {
-          router.push("/rfq");
-        } else {
-          router.push("/product-list");
-        }
-      } else {
-        toast({
-          title: "Product Create Failed",
-          description: response.message,
-          variant: "danger",
-        });
-      }
+      toast({
+        title: "Product Create Failed",
+        description: response.message,
+        variant: "danger",
+      });
     }
   };
 
   useEffect(() => {
-    if (productQueryById?.data?.data) {
-      const product = productQueryById?.data?.data;
-
-      const productTagList = product?.productTags
-        ? product?.productTags?.map((item: any) => {
-            return {
-              label: item?.productTagsTag?.tagName,
-              value: item?.productTagsTag?.id,
-            };
-          })
-        : [];
-
-      const productImages = product?.productImages?.length
-        ? product?.productImages?.map((item: any) => {
-            if (item?.image) {
-              return {
-                path: item?.image,
-                id: uuidv4(),
-              };
-            } else if (item?.video) {
-              return {
-                path: item?.video,
-                id: uuidv4(),
-              };
-            }
-          })
-        : [];
-
-      const productImagesList = product?.productImages
-        ? product?.productImages?.map((item: any) => {
-            if (item?.video) {
-              return {
-                video: item?.video,
-                videoName: item?.videoName,
-              };
-            } else if (item?.image) {
-              return {
-                image: item?.image,
-                imageName: item?.imageName,
-              };
-            }
-          })
-        : undefined;
-
-      form.reset({
-        productName: product?.productName,
-        categoryId: product?.categoryId ? product?.categoryId : 0,
-        categoryLocation: product?.categoryLocation
-          ? product?.categoryLocation
-          : "",
-        brandId: product?.brandId ? String(product?.brandId) : "",
-        skuNo: product?.skuNo,
-        productTagList: productTagList || undefined,
-        productImages: productImages || [],
-        productImagesList: productImagesList || undefined,
-        productPrice: product?.productPrice,
-        offerPrice: product?.offerPrice,
-        placeOfOriginId: product?.placeOfOriginId
-          ? String(product?.placeOfOriginId)
-          : "",
-        shortDescription: product?.shortDescription || "",
-        description: product?.description,
-        specification: product?.specification,
-      });
-    }
-  }, [productQueryById?.data?.data]);
-
-  useEffect(() => {
     const params = new URLSearchParams(document.location.search);
-    let activeProductId = params.get("productId");
     let activeProductType = params.get("productType");
 
-    if (activeProductId) {
-      setActiveProductId(activeProductId);
-    }
     if (activeProductType) {
       setActiveProductType(activeProductType);
     }
@@ -426,10 +240,7 @@ const CreateProductPage = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    <BasicInformationSection
-                      tagsList={memoizedTags}
-                      isEditable={!!form.getValues("categoryLocation")}
-                    />
+                    <BasicInformationSection tagsList={memoizedTags} />
                   </div>
                 </div>
 
@@ -445,16 +256,12 @@ const CreateProductPage = () => {
 
                       <Button
                         disabled={
-                          createProduct.isPending ||
-                          updateProduct.isPending ||
-                          uploadMultiple.isPending
+                          createProduct.isPending || uploadMultiple.isPending
                         }
                         type="submit"
                         className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                       >
-                        {createProduct.isPending ||
-                        updateProduct.isPending ||
-                        uploadMultiple.isPending ? (
+                        {createProduct.isPending || uploadMultiple.isPending ? (
                           <>
                             <Image
                               src="/images/load.png"
@@ -465,8 +272,6 @@ const CreateProductPage = () => {
                             />
                             Please wait
                           </>
-                        ) : activeProductId ? (
-                          "Update"
                         ) : (
                           "Continue"
                         )}
