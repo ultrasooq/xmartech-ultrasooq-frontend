@@ -187,7 +187,12 @@ const CreateProductPage = () => {
     }
 
     delete updatedFormData.productImages;
-
+    updatedFormData.productPriceList = [
+      {
+        price: updatedFormData.productPrice,
+        offerPrice: updatedFormData.offerPrice,
+      },
+    ];
     console.log("add:", updatedFormData);
     // return;
     const response = await createProduct.mutateAsync(updatedFormData);

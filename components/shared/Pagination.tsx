@@ -39,22 +39,37 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <>
-      {/* <ul className="theme-pagination-s1">
-        <li>
-          <Button type="button" className="theme-primary-btn first">
-            <Image
-              src={FirstIcon}
-              alt="next-icon"
-              height={0}
-              width={0}
-              className="h-auto w-[7px]"
-            />
-            First
-          </Button>
-        </li>
-        <li>
-          <Button type="button" className="nextPrev">
+    <ul className="theme-pagination-s1">
+      <li>
+        <Button
+          type="button"
+          className="theme-primary-btn first"
+          onClick={() => setPage(1)}
+        >
+          <Image
+            src={FirstIcon}
+            alt="next-icon"
+            height={0}
+            width={0}
+            className="h-auto w-[7px]"
+          />
+          First
+        </Button>
+      </li>
+      <ReactPaginate
+        breakLabel="..."
+        breakClassName="react-paginate"
+        breakLinkClassName="react-paginate"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={3}
+        pageCount={pageCount}
+        forcePage={page - 1}
+        renderOnZeroPageCount={null}
+        containerClassName="flex gap-3"
+        pageClassName="paginate-button"
+        activeClassName="active-paginate-button"
+        previousLabel={
+          <Button type="button" variant="outline" className="nextPrev">
             <Image
               src={PreviousIcon}
               alt="prev-icon"
@@ -63,108 +78,36 @@ const Pagination: React.FC<PaginationProps> = ({
               className="h-auto w-[7px]"
             />
           </Button>
-        </li>
-        <li>
-          <Button type="button" className="current">
-            1
-          </Button>
-        </li>
-
-        <li>
-          <Button type="button" className="nextPrev">
+        }
+        nextLabel={
+          <Button type="button" variant="outline" className="nextPrev">
             <Image
               src={NextIcon}
-              alt="next-icon"
+              alt="prev-icon"
               height={0}
               width={0}
               className="h-auto w-[7px]"
             />
           </Button>
-        </li>
-        <li>
-          <Button type="button" className="theme-primary-btn last">
-            Last
-            <Image
-              src={LastIcon}
-              alt="next-icon"
-              height={0}
-              width={0}
-              className="h-auto w-[7px]"
-            />
-          </Button>
-        </li>
-      </ul> */}
-
-      <ul className="theme-pagination-s1">
-        <li>
-          <Button
-            type="button"
-            className="theme-primary-btn first"
-            onClick={() => setPage(1)}
-          >
-            <Image
-              src={FirstIcon}
-              alt="next-icon"
-              height={0}
-              width={0}
-              className="h-auto w-[7px]"
-            />
-            First
-          </Button>
-        </li>
-        <ReactPaginate
-          breakLabel="..."
-          breakClassName="react-paginate"
-          breakLinkClassName="react-paginate"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={pageCount}
-          forcePage={page - 1}
-          renderOnZeroPageCount={null}
-          containerClassName="flex gap-3"
-          pageClassName="paginate-button"
-          activeClassName="active-paginate-button"
-          previousLabel={
-            <Button type="button" variant="outline" className="nextPrev">
-              <Image
-                src={PreviousIcon}
-                alt="prev-icon"
-                height={0}
-                width={0}
-                className="h-auto w-[7px]"
-              />
-            </Button>
-          }
-          nextLabel={
-            <Button type="button" variant="outline" className="nextPrev">
-              <Image
-                src={NextIcon}
-                alt="prev-icon"
-                height={0}
-                width={0}
-                className="h-auto w-[7px]"
-              />
-            </Button>
-          }
-        />
-        <li>
-          <Button
-            type="button"
-            className="theme-primary-btn last"
-            onClick={() => setPage(pageCount)}
-          >
-            Last
-            <Image
-              src={LastIcon}
-              alt="next-icon"
-              height={0}
-              width={0}
-              className="h-auto w-[7px]"
-            />
-          </Button>
-        </li>
-      </ul>
-    </>
+        }
+      />
+      <li>
+        <Button
+          type="button"
+          className="theme-primary-btn last"
+          onClick={() => setPage(pageCount)}
+        >
+          Last
+          <Image
+            src={LastIcon}
+            alt="next-icon"
+            height={0}
+            width={0}
+            className="h-auto w-[7px]"
+          />
+        </Button>
+      </li>
+    </ul>
   );
 };
 

@@ -29,7 +29,6 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import AddImageContent from "../profile/AddImageContent";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
-import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import ReactPlayer from "react-player/lazy";
 
@@ -40,7 +39,6 @@ type ProductImageProps = {
 
 type BasicInformationProps = {
   tagsList: any;
-  isEditable?: boolean;
 };
 
 const videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"];
@@ -48,7 +46,6 @@ const imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp"];
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
-  isEditable,
 }) => {
   const formContext = useFormContext();
   const { toast } = useToast();
@@ -124,22 +121,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       setCatList([...catList, subCategoryById.data?.data]);
     }
   }, [currentId, subCategoryById.data?.data?.children?.length, currentIndex]);
-
-  useEffect(() => {
-    if (formContext.getValues("categoryLocation")) {
-      const tempArr = formContext.getValues("categoryLocation")?.split(",");
-      const promises = tempArr
-        .slice(0, tempArr.length - 1)
-        .map(async (categoryId: string) => {
-          const res = await fetchSubCategoriesById({ categoryId });
-          return res.data?.data;
-        });
-      Promise.all(promises).then((values) => {
-        setListIds(tempArr);
-        setCatList(values);
-      });
-    }
-  }, [isEditable]);
 
   useEffect(
     () => formContext.setValue("categoryId", Number(currentId)),
