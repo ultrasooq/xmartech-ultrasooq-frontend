@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Table,
@@ -10,16 +10,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
-import Image from "next/image";
 import Pagination from "@/components/shared/Pagination";
 import { useAllRfqQuotesByBuyerId } from "@/apis/queries/rfq.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/shared/Footer";
 
 const RfqProductList = () => {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
   const rfqQuotesByBuyerIdQuery = useAllRfqQuotesByBuyerId({
-    page: 1,
-    limit: 10,
+    page,
+    limit,
   });
 
   const memoizedRfqQuotesProducts = useMemo(() => {
@@ -181,7 +182,14 @@ const RfqProductList = () => {
                 </p>
               ) : null}
 
-              {memoizedRfqQuotesProducts.length > 10 ? <Pagination /> : null}
+              {rfqQuotesByBuyerIdQuery.data?.totalCount > 5 ? (
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  totalCount={rfqQuotesByBuyerIdQuery.data?.totalCount}
+                  limit={limit}
+                />
+              ) : null}
             </div>
           </div>
         </div>

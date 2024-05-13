@@ -38,6 +38,7 @@ import TrendingBannerImage from "@/public/images/trending-product-inner-banner.p
 import ChevronRightIcon from "@/public/images/nextarow.svg";
 import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
 import Footer from "@/components/shared/Footer";
+import Pagination from "@/components/shared/Pagination";
 
 const TrendingPage = () => {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
@@ -48,10 +49,12 @@ const TrendingPage = () => {
   const [maxPriceInput, setMaxPriceInput] = useState("");
   const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(8);
 
   const allProductsQuery = useAllProducts({
-    page: 1,
-    limit: 40,
+    page,
+    limit,
     sort: sortBy,
     priceMin:
       priceRange[0] === 0
@@ -128,6 +131,10 @@ const TrendingPage = () => {
     sortBy,
     priceRange[0],
     priceRange[1],
+    page,
+    limit,
+    searchTerm,
+    selectedBrandIds,
   ]);
 
   return (
@@ -377,6 +384,15 @@ const TrendingPage = () => {
                 <div className="product-list-s1 p-4">
                   <ProductTable list={memoizedProductList} />
                 </div>
+              ) : null}
+
+              {allProductsQuery.data?.totalCount > 8 ? (
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  totalCount={allProductsQuery.data?.totalCount}
+                  limit={limit}
+                />
               ) : null}
             </div>
           </div>

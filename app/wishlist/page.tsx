@@ -95,12 +95,14 @@ const WishlistPage = () => {
                 </div>
               ) : null}
             </div>
-            <Pagination
-              page={page}
-              setPage={setPage}
-              totalCount={wishlistQuery.data?.totalCount}
-              limit={limit}
-            />
+            {wishlistQuery.data?.totalCount > 10 ? (
+              <Pagination
+                page={page}
+                setPage={setPage}
+                totalCount={wishlistQuery.data?.totalCount}
+                limit={limit}
+              />
+            ) : null}
           </div>
         </div>
       </section>
