@@ -108,20 +108,6 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-
-                {/* <Button
-                variant="ghost"
-                onClick={() =>
-                  router.push(
-                    `/create-product?productType=${productType}&productId=${id}`,
-                  )
-                }
-              >
-                <div className="relative h-6 w-6">
-                  <Image src="/images/edit-rfq.png" alt="edit-rfq-icon" fill />
-                </div>
-              </Button> */}
-
                 <Button variant="ghost" onClick={() => onEdit(id)}>
                   <div className="relative h-6 w-6">
                     <Image

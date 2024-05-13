@@ -291,7 +291,7 @@ const Header = () => {
                         <DropdownMenuSeparator />
                         {userDetails?.data?.data?.tradeRole !== "BUYER" ? (
                           <>
-                            <Link href="/product-list">
+                            <Link href="/products">
                               <DropdownMenuItem>Products</DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
