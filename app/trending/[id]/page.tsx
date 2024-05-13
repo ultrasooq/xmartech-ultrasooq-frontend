@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   useProductById,
-  useRelatedProducts,
   useSameBrandProducts,
 } from "@/apis/queries/product.queries";
 // import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
@@ -86,14 +85,6 @@ const ProductDetailsPage = () => {
       brandIds: productDetails?.brandId,
     },
     !!productDetails?.brandId,
-  );
-  const relatedProductsQuery = useRelatedProducts(
-    {
-      page: 1,
-      limit: 10,
-      tagIds: calculateTagIds,
-    },
-    !!calculateTagIds,
   );
 
   const handleAddToCart = async (
@@ -391,10 +382,7 @@ const ProductDetailsPage = () => {
         </div>
 
         <div className="product-view-s1-details-more-suggestion-sliders">
-          <RelatedProductsSection
-            relatedProducts={relatedProductsQuery?.data?.data}
-            isLoading={!relatedProductsQuery?.isFetched}
-          />
+          <RelatedProductsSection calculateTagIds={calculateTagIds} />
         </div>
       </div>
       <Footer />

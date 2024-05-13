@@ -5,6 +5,9 @@ import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { Button } from "@/components/ui/button";
+import { FaHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
 
 type ProductCardProps = {
   id: number;
@@ -14,7 +17,9 @@ type ProductCardProps = {
   offerPrice: number;
   productPrice: number;
   productReview: { rating: number }[];
-  onView: () => void;
+  onWishlist: () => void;
+  inWishlist?: boolean;
+  haveAccessToken: boolean;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -25,7 +30,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   offerPrice,
   productPrice,
   productReview,
-  onView,
+  onWishlist,
+  inWishlist,
+  haveAccessToken,
 }) => {
   const offerPercentage = useMemo(
     () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
@@ -60,46 +67,97 @@ const ProductCard: React.FC<ProductCardProps> = ({
   );
 
   return (
-    <Link href={`/trending/${id}`}>
-      <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-        <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-          <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
-        </div>
-        <div className="relative mx-auto mb-4 h-36 w-36">
-          <Image
-            src={
-              productImages?.[0]?.image &&
-              validator.isURL(productImages[0].image)
-                ? productImages[0].image
-                : PlaceholderImage
-            }
-            alt="preview"
-            className="object-contain"
-            fill
-          />
-        </div>
-        <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-          <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-            {productName}
-          </h4>
-          <div className="mt-2.5 w-full">
-            <h4 className="font-lg font-normal uppercase text-olive-green">
-              ${offerPrice}
-            </h4>
-          </div>
-          <p className="truncate" title={shortDescription}>
-            {shortDescription}
-          </p>
-          <div className="flex">
-            {calculateRatings(calculateAvgRating)}
-            <span className="ml-2">{productReview?.length}</span>
-          </div>
-          <span className="w-auto text-base font-normal text-light-gray">
-            ${productPrice}
-          </span>
-        </div>
+    // <Link href={`/trending/${id}`}>
+    <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
+      <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+        <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
       </div>
-    </Link>
+      <div className="relative mx-auto mb-4 h-36 w-36">
+        <Image
+          src={
+            productImages?.[0]?.image && validator.isURL(productImages[0].image)
+              ? productImages[0].image
+              : PlaceholderImage
+          }
+          alt="preview"
+          className="object-contain"
+          fill
+        />
+      </div>
+
+      {haveAccessToken ? (
+        <div className="mb-3 grid grid-cols-4 gap-x-3">
+          <Button
+            variant="ghost"
+            className="relative h-8 w-8 rounded-full shadow-md"
+            onClick={() => {
+              console.log("add to cart");
+            }}
+          >
+            <Image
+              src="/images/shopping-icon.svg"
+              alt="shopping-icon"
+              className="object-contain p-2"
+              fill
+            />
+          </Button>
+          <Link
+            href={`/trending/${id}`}
+            className="relative h-8 w-8 rounded-full !shadow-md"
+          >
+            <Image
+              src="/images/eye-icon.svg"
+              alt="eye-icon"
+              className="object-contain p-2"
+              fill
+            />
+          </Link>
+          <Button
+            variant="ghost"
+            className="relative h-8 w-8 rounded-full p-0 shadow-md"
+            onClick={onWishlist}
+          >
+            {inWishlist ? <FaHeart color="red" /> : <FaRegHeart />}
+          </Button>
+          <Button
+            variant="ghost"
+            className="relative h-8 w-8 rounded-full shadow-md"
+            onClick={() => {
+              console.log("shared");
+            }}
+          >
+            <Image
+              src="/images/compare-icon.svg"
+              alt="shopping-icon"
+              className="object-contain p-2"
+              fill
+            />
+          </Button>
+        </div>
+      ) : null}
+
+      <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
+        <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
+          {productName}
+        </h4>
+        <div className="mt-2.5 w-full">
+          <h4 className="font-lg font-normal uppercase text-olive-green">
+            ${offerPrice}
+          </h4>
+        </div>
+        <p className="truncate" title={shortDescription}>
+          {shortDescription}
+        </p>
+        <div className="flex">
+          {calculateRatings(calculateAvgRating)}
+          <span className="ml-2">{productReview?.length}</span>
+        </div>
+        <span className="w-auto text-base font-normal text-light-gray">
+          ${productPrice}
+        </span>
+      </div>
+    </div>
+    // </Link>
   );
 };
 
