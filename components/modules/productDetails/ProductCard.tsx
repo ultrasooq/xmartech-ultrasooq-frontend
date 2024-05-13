@@ -68,8 +68,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="relative mx-auto mb-4 h-36 w-36">
           <Image
             src={
-              productImages?.length &&
-              validator.isURL(productImages?.[0]?.image)
+              productImages?.[0]?.image &&
+              validator.isURL(productImages[0].image)
                 ? productImages[0].image
                 : PlaceholderImage
             }

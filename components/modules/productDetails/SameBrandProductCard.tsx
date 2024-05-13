@@ -74,8 +74,8 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
           </span>
           <Image
             src={
-              productImages?.length &&
-              validator.isURL(productImages?.[0]?.image)
+              productImages?.[0]?.image &&
+              validator.isURL(productImages[0].image)
                 ? productImages[0].image
                 : PlaceholderImage
             }
