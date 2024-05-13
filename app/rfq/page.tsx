@@ -48,6 +48,8 @@ const RfqPage = () => {
   const [selectedProductId, setSelectedProductId] = useState<number>();
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(8);
   const cart = useCartStore();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
@@ -57,8 +59,8 @@ const RfqPage = () => {
 
   const me = useMe();
   const rfqProductsQuery = useRfqProducts({
-    page: 1,
-    limit: 60,
+    page,
+    limit,
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
@@ -271,8 +273,13 @@ const RfqPage = () => {
                         </div>
                       ) : null}
 
-                      {rfqProductsQuery?.data?.data?.length > 10 ? (
-                        <Pagination />
+                      {rfqProductsQuery.data?.totalCount > 8 ? (
+                        <Pagination
+                          page={page}
+                          setPage={setPage}
+                          totalCount={rfqProductsQuery.data?.totalCount}
+                          limit={limit}
+                        />
                       ) : null}
                     </div>
                   </div>

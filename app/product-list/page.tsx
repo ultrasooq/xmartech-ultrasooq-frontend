@@ -36,13 +36,15 @@ const ProductListPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number>();
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
   const userDetails = useMe();
 
   const productsQuery = useProducts(
     {
       userId: String(userDetails?.data?.data?.id),
-      page: 1,
-      limit: 10,
+      page,
+      limit,
       term: searchTerm !== "" ? searchTerm : undefined,
       status: "ALL",
     },
@@ -255,7 +257,14 @@ const ProductListPage = () => {
                   </p>
                 ) : null}
 
-                {memoizedProducts.length > 10 ? <Pagination /> : null}
+                {productsQuery.data?.totalCount > 5 ? (
+                  <Pagination
+                    page={page}
+                    setPage={setPage}
+                    totalCount={productsQuery.data?.totalCount}
+                    limit={limit}
+                  />
+                ) : null}
               </div>
             </Card>
           </CardContent>

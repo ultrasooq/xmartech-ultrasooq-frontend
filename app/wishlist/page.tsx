@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Footer from "@/components/shared/Footer";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
 import Image from "next/image";
@@ -13,11 +13,14 @@ import {
 } from "@/apis/queries/wishlist.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import Pagination from "@/components/shared/Pagination";
 
 const WishlistPage = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const wishlistQuery = useWishlist({ page: 1, limit: 10 });
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const wishlistQuery = useWishlist({ page, limit });
   const deleteFromWishlist = useDeleteFromWishList();
 
   const handleDeleteFromWishlist = async (productId: number) => {
@@ -92,6 +95,14 @@ const WishlistPage = () => {
                 </div>
               ) : null}
             </div>
+            {wishlistQuery.data?.totalCount > 10 ? (
+              <Pagination
+                page={page}
+                setPage={setPage}
+                totalCount={wishlistQuery.data?.totalCount}
+                limit={limit}
+              />
+            ) : null}
           </div>
         </div>
       </section>
