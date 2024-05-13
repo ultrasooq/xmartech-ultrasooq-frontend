@@ -3184,3 +3184,11 @@ input::-ms-clear {
   top: 0;
   left: 0;
 }
+
+.paginate-button a {
+  @apply h-[30px] w-[30px] flex items-center justify-center rounded-[4px] bg-[#F8F5F5] text-[#A8A8A8] text-[13.261px] font-normal leading-[normal] tracking-[-0.029px] border-solid border-[#F8F5F5]
+}
+
+.active-paginate-button a {
+  @apply h-[30px] w-[30px] bg-[var(--theme-primary-color)] text-[#fff] border-[var(--theme-primary-color)]
+}
