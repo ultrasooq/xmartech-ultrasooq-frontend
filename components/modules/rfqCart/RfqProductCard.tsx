@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useCartStore } from "@/lib/rfqStore";
 
 type RfqProductCardProps = {
   id: number;
@@ -28,6 +29,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   onRemove,
 }) => {
   const [quantity, setQuantity] = useState(1);
+  const cart = useCartStore();
 
   useEffect(() => {
     setQuantity(productQuantity);
@@ -91,7 +93,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
             <Button
               variant="link"
               className="relative hover:shadow-sm"
-              onClick={() => onRemove(id)}
+              onClick={() => {
+                onRemove(id);
+                cart.deleteCartItem(rfqProductId);
+              }}
             >
               Remove
             </Button>

@@ -34,7 +34,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
   }, [productQuantity]);
 
   return (
-    <div className="rfq_cart_wrap">
+    <div className="rfq_cart_wrap !pb-0">
       <div className="rfq_cart_wrap_image relative">
         <Image
           src={
