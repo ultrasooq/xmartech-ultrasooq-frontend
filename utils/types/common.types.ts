@@ -59,6 +59,8 @@ export interface TrendingProduct {
     rating: number;
   }[];
   status: string;
+  productWishlist?: any[];
+  inWishlist?: boolean;
 }
 
 export type ProductImageProps = {

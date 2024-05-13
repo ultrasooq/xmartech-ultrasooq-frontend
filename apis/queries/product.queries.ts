@@ -123,6 +123,7 @@ export const useAllProducts = (
     brandIds?: string;
     priceMin?: number;
     priceMax?: number;
+    userId?: number;
   },
   enabled = true,
 ) =>

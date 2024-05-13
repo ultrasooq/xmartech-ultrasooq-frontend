@@ -89,6 +89,7 @@ export const fetchAllProducts = (payload: {
   brandIds?: string;
   priceMin?: number;
   priceMax?: number;
+  userId?: number;
 }) => {
   return axios({
     method: "GET",
