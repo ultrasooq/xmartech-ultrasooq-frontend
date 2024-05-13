@@ -38,6 +38,23 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     !!calculateTagIds,
   );
 
+  const memoizedRelatedProductList = useMemo(() => {
+    return (
+      relatedProductsQuery?.data?.data?.map((item: any) => ({
+        ...item,
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+      })) || []
+    );
+  }, [
+    relatedProductsQuery?.data?.data,
+    me.data?.data?.id,
+    relatedProductsQuery?.isFetched,
+    calculateTagIds,
+  ]);
+
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
       productId,
@@ -99,22 +116,6 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
       });
     }
   };
-
-  const memoizedRelatedProductList = useMemo(() => {
-    return (
-      relatedProductsQuery?.data?.data?.map((item: any) => ({
-        ...item,
-        productWishlist: item?.product_wishlist || [],
-        inWishlist: item?.product_wishlist?.find(
-          (ele: any) => ele?.userId === me.data?.data?.id,
-        ),
-      })) || []
-    );
-  }, [
-    relatedProductsQuery?.data?.data,
-    me.data?.data?.id,
-    relatedProductsQuery?.isFetched,
-  ]);
 
   return (
     <section className="w-full py-8">

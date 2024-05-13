@@ -6,6 +6,9 @@ import { FaRegStar } from "react-icons/fa";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { Button } from "@/components/ui/button";
+import ShoppingIcon from "@/public/images/shopping-icon.svg";
+import EyeIcon from "@/public/images/eye-icon.svg";
+import CompareIcon from "@/public/images/compare-icon.svg";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 
@@ -17,6 +20,7 @@ type ProductCardProps = {
   offerPrice: number;
   productPrice: number;
   productReview: { rating: number }[];
+  onAdd?: () => void;
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
@@ -30,6 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   offerPrice,
   productPrice,
   productReview,
+  onAdd,
   onWishlist,
   inWishlist,
   haveAccessToken,
@@ -90,12 +95,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <Button
             variant="ghost"
             className="relative h-8 w-8 rounded-full shadow-md"
-            onClick={() => {
-              console.log("add to cart");
-            }}
+            onClick={onAdd}
           >
             <Image
-              src="/images/shopping-icon.svg"
+              src={ShoppingIcon}
               alt="shopping-icon"
               className="object-contain p-2"
               fill
@@ -106,7 +109,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             className="relative h-8 w-8 rounded-full !shadow-md"
           >
             <Image
-              src="/images/eye-icon.svg"
+              src={EyeIcon}
               alt="eye-icon"
               className="object-contain p-2"
               fill
@@ -127,7 +130,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             }}
           >
             <Image
-              src="/images/compare-icon.svg"
+              src={CompareIcon}
               alt="shopping-icon"
               className="object-contain p-2"
               fill

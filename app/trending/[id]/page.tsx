@@ -1,9 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  useProductById,
-  useSameBrandProducts,
-} from "@/apis/queries/product.queries";
+import { useProductById } from "@/apis/queries/product.queries";
 // import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
 import RelatedProductsSection from "@/components/modules/productDetails/RelatedProductsSection";
 import SameBrandSection from "@/components/modules/productDetails/SameBrandSection";
@@ -77,14 +74,6 @@ const ProductDetailsPage = () => {
   const calculateTagIds = useMemo(
     () => productDetails?.productTags.map((item: any) => item.tagId).join(","),
     [productDetails?.productTags?.length],
-  );
-  const sameBrandProductsQuery = useSameBrandProducts(
-    {
-      page: 1,
-      limit: 10,
-      brandIds: productDetails?.brandId,
-    },
-    !!productDetails?.brandId,
   );
 
   const handleAddToCart = async (
@@ -372,10 +361,7 @@ const ProductDetailsPage = () => {
               <img src="/images/suggestion-pic1.png" alt="" />
             </div>
           </div> */}
-                <SameBrandSection
-                  sameBrandProducts={sameBrandProductsQuery?.data?.data}
-                  isLoading={!sameBrandProductsQuery?.isFetched}
-                />
+                <SameBrandSection productDetails={productDetails} />
               </div>
             </div>
           </div>
