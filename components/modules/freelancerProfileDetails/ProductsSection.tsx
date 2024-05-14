@@ -1,26 +1,167 @@
-import React from "react";
+import React, { useMemo } from "react";
 import ProductCard from "./ProductCard";
+import { useMe } from "@/apis/queries/user.queries";
+import { useProducts } from "@/apis/queries/product.queries";
+import { stripHTML } from "@/utils/helper";
+import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
 
-type ProductsSectionProps = {
-  list: [];
-};
+type ProductsSectionProps = {};
 
-const ProductsSection: React.FC<ProductsSectionProps> = ({ list }) => {
+const ProductsSection: React.FC<ProductsSectionProps> = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const me = useMe();
+  const productsQuery = useProducts(
+    {
+      userId: String(me?.data?.data?.id),
+      page: 1,
+      limit: 10,
+      status: "ALL",
+    },
+    !!me?.data?.data?.id,
+  );
+  const updateCartWithLogin = useUpdateCartWithLogin();
+  const addToWishlist = useAddToWishList();
+  const deleteFromWishlist = useDeleteFromWishList();
+
+  const memoizedProducts = useMemo(() => {
+    return (
+      productsQuery.data?.data?.map((item: any) => {
+        return {
+          id: item?.id,
+          productName: item?.productName || "-",
+          productPrice: item?.productPrice || 0,
+          offerPrice: item?.offerPrice || 0,
+          productImage: item?.productImages?.[0]?.image,
+          categoryName: item?.category?.name || "-",
+          skuNo: item?.skuNo,
+          brandName: item?.brand?.brandName || "-",
+          productReview: item?.productReview || [],
+          shortDescription: item?.shortDescription
+            ? stripHTML(item?.shortDescription)
+            : "-",
+          status: item?.status || "-",
+          productWishlist: item?.product_wishlist || [],
+          inWishlist: item?.product_wishlist?.find(
+            (ele: any) => ele?.userId === me.data?.data?.id,
+          ),
+        };
+      }) || []
+    );
+  }, [productsQuery.data?.data]);
+
+  const handleDeleteFromWishlist = async (productId: number) => {
+    const response = await deleteFromWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["related-products"],
+      });
+    } else {
+      toast({
+        title: "Item not removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleAddToCart = async (
+    quantity: number,
+    productId: number,
+    actionType: "add" | "remove",
+  ) => {
+    const response = await updateCartWithLogin.mutateAsync({
+      productId,
+      quantity,
+    });
+
+    if (response.status) {
+      toast({
+        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    }
+  };
+
+  const handleAddToWishlist = async (
+    productId: number,
+    wishlistArr?: any[],
+  ) => {
+    const wishlistObject = wishlistArr?.find(
+      (item) => item.userId === me.data?.data?.id,
+    );
+    // return;
+    if (wishlistObject) {
+      handleDeleteFromWishlist(wishlistObject?.productId);
+      return;
+    }
+
+    const response = await addToWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["related-products"],
+      });
+    } else {
+      toast({
+        title: response.message || "Item not added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
+
   return (
     <div>
       <h2 className="left-8 mb-7 text-2xl font-semibold text-color-dark">
         Products
       </h2>
 
-      {!list.length ? (
+      {!memoizedProducts.length ? (
         <p className="p-4 text-center text-base font-medium text-color-dark">
           No Products Found
         </p>
       ) : null}
 
       <div className="grid grid-cols-5 gap-3">
-        {list.map((item: any) => (
-          <ProductCard key={item.id} item={item} />
+        {memoizedProducts.map((item: any) => (
+          <ProductCard
+            key={item.id}
+            item={item}
+            onAdd={() => handleAddToCart(-1, item?.id, "add")}
+            onWishlist={() =>
+              handleAddToWishlist(item.id, item?.productWishlist)
+            }
+            inWishlist={item?.inWishlist}
+            haveAccessToken={!!me.data?.data}
+          />
         ))}
       </div>
     </div>
