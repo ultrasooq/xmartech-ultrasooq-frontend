@@ -94,15 +94,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-        {haveAccessToken ? (
-          <Button
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full p-0 shadow-md"
-            onClick={onAdd}
-          >
-            <ShoppingIcon />
-          </Button>
-        ) : null}
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full p-0 shadow-md"
+          onClick={onAdd}
+        >
+          <ShoppingIcon />
+        </Button>
+
         <Link
           href={`/trending/${id}`}
           className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
