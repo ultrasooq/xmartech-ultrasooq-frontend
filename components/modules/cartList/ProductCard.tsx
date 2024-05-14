@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 import PlusIcon from "@/public/images/upDownBtn-plus.svg";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type ProductCardProps = {
   cartId: number;
@@ -40,8 +41,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <figure>
         <div className="image-container">
           <Image
-            src={productImages?.[0]?.image}
-            alt=""
+            src={productImages?.[0]?.image || PlaceholderImage}
+            alt="product-image"
             height={108}
             width={108}
           />

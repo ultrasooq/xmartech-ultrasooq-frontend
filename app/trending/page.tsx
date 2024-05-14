@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   IBrands,
   ISelectOptions,
@@ -46,11 +46,18 @@ import {
 } from "@/apis/queries/wishlist.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
-import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import {
+  useUpdateCartByDevice,
+  useUpdateCartWithLogin,
+} from "@/apis/queries/cart.queries";
+import { getOrCreateDeviceId } from "@/utils/helper";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 
 const TrendingPage = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const deviceId = getOrCreateDeviceId() || "";
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
@@ -61,9 +68,11 @@ const TrendingPage = () => {
   const [productFilter, setProductFilter] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(8);
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
 
   const me = useMe();
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartByDevice = useUpdateCartByDevice();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
   const allProductsQuery = useAllProducts({
@@ -162,17 +171,33 @@ const TrendingPage = () => {
     productId: number,
     actionType: "add" | "remove",
   ) => {
-    const response = await updateCartWithLogin.mutateAsync({
-      productId,
-      quantity,
-    });
-
-    if (response.status) {
-      toast({
-        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-        description: "Check your cart for more details",
-        variant: "success",
+    if (haveAccessToken) {
+      const response = await updateCartWithLogin.mutateAsync({
+        productId,
+        quantity,
       });
+
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+      }
+    } else {
+      const response = await updateCartByDevice.mutateAsync({
+        productId,
+        quantity,
+        deviceId,
+      });
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+        return response.status;
+      }
     }
   };
 
@@ -237,6 +262,15 @@ const TrendingPage = () => {
       });
     }
   };
+
+  useEffect(() => {
+    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+    if (accessToken) {
+      setHaveAccessToken(true);
+    } else {
+      setHaveAccessToken(false);
+    }
+  }, [getCookie(PUREMOON_TOKEN_KEY)]);
 
   return (
     <>
@@ -484,7 +518,7 @@ const TrendingPage = () => {
                         handleAddToWishlist(item.id, item?.productWishlist)
                       }
                       inWishlist={item?.inWishlist}
-                      haveAccessToken={!!me.data?.data}
+                      haveAccessToken={haveAccessToken}
                     />
                   ))}
                 </div>

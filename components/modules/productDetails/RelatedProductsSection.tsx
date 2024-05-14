@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ProductCard from "./ProductCard";
 import {
   Carousel,
@@ -16,7 +16,13 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRelatedProducts } from "@/apis/queries/product.queries";
-import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import {
+  useUpdateCartByDevice,
+  useUpdateCartWithLogin,
+} from "@/apis/queries/cart.queries";
+import { getOrCreateDeviceId } from "@/utils/helper";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 
 type RelatedProductsSectionProps = {
   calculateTagIds: string;
@@ -27,8 +33,12 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
 }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const deviceId = getOrCreateDeviceId() || "";
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
+
   const me = useMe();
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartByDevice = useUpdateCartByDevice();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
   const relatedProductsQuery = useRelatedProducts(
@@ -63,17 +73,33 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     productId: number,
     actionType: "add" | "remove",
   ) => {
-    const response = await updateCartWithLogin.mutateAsync({
-      productId,
-      quantity,
-    });
-
-    if (response.status) {
-      toast({
-        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-        description: "Check your cart for more details",
-        variant: "success",
+    if (haveAccessToken) {
+      const response = await updateCartWithLogin.mutateAsync({
+        productId,
+        quantity,
       });
+
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+      }
+    } else {
+      const response = await updateCartByDevice.mutateAsync({
+        productId,
+        quantity,
+        deviceId,
+      });
+      if (response.status) {
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+        return response.status;
+      }
     }
   };
 
@@ -139,6 +165,15 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     }
   };
 
+  useEffect(() => {
+    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+    if (accessToken) {
+      setHaveAccessToken(true);
+    } else {
+      setHaveAccessToken(false);
+    }
+  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+
   return (
     <section className="w-full py-8">
       <div className="container m-auto">
@@ -181,7 +216,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
                         handleAddToWishlist(item.id, item?.productWishlist)
                       }
                       inWishlist={item?.inWishlist}
-                      haveAccessToken={!!me.data?.data}
+                      haveAccessToken={haveAccessToken}
                     />
                   </div>
                 </CarouselItem>
