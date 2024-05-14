@@ -137,8 +137,8 @@ const CreateProductPage = () => {
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
       ...formData,
-      productType: activeProductType ? "R" : "P",
-      status: "ACTIVE",
+      productType: activeProductType === "R" ? "R" : "P",
+      status: activeProductType === "R" ? "ACTIVE" : "INACTIVE",
     };
     if (watchProductImages.length) {
       const fileTypeArrays = watchProductImages.filter(

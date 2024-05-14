@@ -152,7 +152,6 @@ const EditProductPage = () => {
     const updatedFormData = {
       ...formData,
       productType: "P",
-      status: "ACTIVE",
     };
     if (watchProductImages.length) {
       const fileTypeArrays = watchProductImages.filter(
