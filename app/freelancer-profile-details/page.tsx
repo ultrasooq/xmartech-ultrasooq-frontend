@@ -1,6 +1,6 @@
 "use client";
 import { useMe } from "@/apis/queries/user.queries";
-import React, { useMemo } from "react";
+import React from "react";
 import Image from "next/image";
 import ProfileCard from "@/components/modules/freelancerProfileDetails/ProfileCard";
 import InformationSection from "@/components/modules/freelancerProfileDetails/InformationSection";
@@ -10,23 +10,12 @@ import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import ServicesSection from "@/components/shared/ServicesSection";
 import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
-import { useProducts } from "@/apis/queries/product.queries";
-import { stripHTML } from "@/utils/helper";
 import { PlusIcon } from "@radix-ui/react-icons";
 import Footer from "@/components/shared/Footer";
 
 export default function FreelancerProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
-  const productsQuery = useProducts(
-    {
-      userId: String(userDetails?.data?.data?.id),
-      page: 1,
-      limit: 10,
-      status: "ALL",
-    },
-    !!userDetails?.data?.data?.id,
-  );
 
   const handleFreelancerProfilePage = () => router.push("/profile");
   const handleEditFreelancerProfilePage = () =>
@@ -37,28 +26,6 @@ export default function FreelancerProfileDetailsPage() {
     );
   const handleAddFreelancerBranchPage = () =>
     router.push("/freelancer-profile");
-
-  const memoizedProducts = useMemo(() => {
-    return (
-      productsQuery.data?.data?.map((item: any) => {
-        return {
-          id: item?.id,
-          productName: item?.productName || "-",
-          productPrice: item?.productPrice || 0,
-          offerPrice: item?.offerPrice || 0,
-          productImage: item?.productImages?.[0]?.image,
-          categoryName: item?.category?.name || "-",
-          skuNo: item?.skuNo,
-          brandName: item?.brand?.brandName || "-",
-          productReview: item?.productReview || [],
-          shortDescription: item?.shortDescription
-            ? stripHTML(item?.shortDescription)
-            : "-",
-          status: item?.status || "-",
-        };
-      }) || []
-    );
-  }, [productsQuery.data?.data]);
 
   return (
     <>
@@ -146,7 +113,7 @@ export default function FreelancerProfileDetailsPage() {
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    <ProductsSection list={memoizedProducts} />
+                    <ProductsSection />
                   </div>
                 </TabsContent>
               </Tabs>
