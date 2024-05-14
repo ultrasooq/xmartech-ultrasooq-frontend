@@ -6,12 +6,15 @@ import React, { useMemo } from "react";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import validator from "validator";
-import ShoppingIcon from "@/public/images/shopping-icon.svg";
-import EyeIcon from "@/public/images/eye-icon.svg";
-import CompareIcon from "@/public/images/compare-icon.svg";
+// import ShoppingIcon from "@/public/images/shopping-icon.svg";
+// import EyeIcon from "@/public/images/eye-icon.svg";
+// import CompareIcon from "@/public/images/compare-icon.svg";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
+import ShoppingIcon from "@/components/icons/ShoppingIcon";
+import ShareIcon from "@/components/icons/ShareIcon";
 
 type SameBrandProductCardProps = {
   id: number;
@@ -92,54 +95,45 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
           />
         </div>
 
-        {haveAccessToken ? (
-          <div className="mb-3 grid grid-cols-4 gap-x-3">
+        <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
+          {haveAccessToken ? (
             <Button
               variant="ghost"
-              className="relative h-8 w-8 rounded-full shadow-md"
+              className="relative h-8 w-8 rounded-full p-0 shadow-md"
               onClick={onAdd}
             >
-              <Image
-                src={ShoppingIcon}
-                alt="shopping-icon"
-                className="object-contain p-2"
-                fill
-              />
+              <ShoppingIcon />
             </Button>
-            <Link
-              href={`/trending/${id}`}
-              className="relative h-8 w-8 rounded-full !shadow-md"
-            >
-              <Image
-                src={EyeIcon}
-                alt="eye-icon"
-                className="object-contain p-2"
-                fill
-              />
-            </Link>
+          ) : null}
+          <Link
+            href={`/trending/${id}`}
+            className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+          >
+            <FiEye size={18} />
+          </Link>
+          {haveAccessToken ? (
             <Button
               variant="ghost"
               className="relative h-8 w-8 rounded-full p-0 shadow-md"
               onClick={onWishlist}
             >
-              {inWishlist ? <FaHeart color="red" /> : <FaRegHeart />}
+              {inWishlist ? (
+                <FaHeart color="red" size={16} />
+              ) : (
+                <FaRegHeart size={16} />
+              )}
             </Button>
-            <Button
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full shadow-md"
-              onClick={() => {
-                console.log("shared");
-              }}
-            >
-              <Image
-                src={CompareIcon}
-                alt="shopping-icon"
-                className="object-contain p-2"
-                fill
-              />
-            </Button>
-          </div>
-        ) : null}
+          ) : null}
+          <Button
+            variant="ghost"
+            className="relative h-8 w-8 rounded-full p-0 shadow-md"
+            onClick={() => {
+              console.log("shared");
+            }}
+          >
+            <ShareIcon />
+          </Button>
+        </div>
 
         <div className="text-container">
           <h4>{productName}</h4>
