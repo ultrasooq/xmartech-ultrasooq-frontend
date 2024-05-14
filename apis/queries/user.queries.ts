@@ -10,7 +10,11 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
-  return useMutation<IBuyer, APIResponseError, IBuyerRequest>({
+  return useMutation<
+    IBuyer,
+    APIResponseError,
+    IBuyerRequest | { tradeRole: string }
+  >({
     mutationFn: async (payload) => {
       const res = await updateUserProfile(payload);
       return res.data;

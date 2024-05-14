@@ -113,7 +113,7 @@ const Header = () => {
   const handleProfile = () => {
     switch (userDetails?.data?.data?.tradeRole) {
       case "BUYER":
-        return "/profile";
+        return "/buyer-profile-details";
       case "FREELANCER":
         return "/freelancer-profile-details";
       case "COMPANY":
@@ -281,10 +281,7 @@ const Header = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         <Link href={handleProfile()}>
-                          <DropdownMenuItem
-                            // onClick={handleProfile}
-                            className="cursor-pointer"
-                          >
+                          <DropdownMenuItem className="cursor-pointer">
                             Profile Information
                           </DropdownMenuItem>
                         </Link>
