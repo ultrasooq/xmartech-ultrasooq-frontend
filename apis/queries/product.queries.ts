@@ -144,6 +144,7 @@ export const useSameBrandProducts = (
     page: number;
     limit: number;
     brandIds: string;
+    userId?: number;
   },
   enabled = true,
 ) =>
@@ -164,6 +165,7 @@ export const useRelatedProducts = (
     page: number;
     limit: number;
     tagIds: string;
+    userId?: number;
   },
   enabled = true,
 ) =>

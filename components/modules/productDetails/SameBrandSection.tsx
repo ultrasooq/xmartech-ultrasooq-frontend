@@ -37,6 +37,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
       page: 1,
       limit: 10,
       brandIds: productDetails?.brandId,
+      userId: me.data?.data?.id,
     },
     !!productDetails?.brandId,
   );

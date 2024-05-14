@@ -36,6 +36,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
       page: 1,
       limit: 10,
       tagIds: calculateTagIds,
+      userId: me.data?.data?.id,
     },
     !!calculateTagIds,
   );
