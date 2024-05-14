@@ -32,6 +32,7 @@ import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTe
 import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import ReactPlayer from "react-player/lazy";
+import BrandSelect from "@/components/shared/BrandSelect";
 
 type ProductImageProps = {
   path: string;
@@ -285,11 +286,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
           />
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-            <ControlledSelectInput
-              label="Brand"
-              name="brandId"
-              options={memoizedBrands}
-            />
+            <BrandSelect />
             <ControlledTextInput
               label="SKU No"
               name="skuNo"

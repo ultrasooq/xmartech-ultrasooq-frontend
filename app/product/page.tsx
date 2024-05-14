@@ -28,12 +28,7 @@ const formSchema = z
       .max(50, { message: "Product Name must be less than 50 characters" }),
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
-    brandId: z
-      .string()
-      .trim()
-      .min(1, { message: "Brand is required" })
-      .max(50, { message: "Brand must be less than 50 characters" })
-      .transform((value) => Number(value)),
+    brandId: z.number().min(1, { message: "Brand is required" }),
     skuNo: z
       .string()
       .trim()
@@ -95,7 +90,7 @@ const CreateProductPage = () => {
       productName: "",
       categoryId: 0,
       categoryLocation: "",
-      brandId: "",
+      brandId: 0,
       skuNo: "",
       productTagList: undefined,
       productImagesList: undefined,
@@ -189,7 +184,7 @@ const CreateProductPage = () => {
     delete updatedFormData.productImages;
     updatedFormData.productPriceList = [
       {
-        price: updatedFormData.productPrice,
+        productPrice: updatedFormData.productPrice,
         offerPrice: updatedFormData.offerPrice,
       },
     ];

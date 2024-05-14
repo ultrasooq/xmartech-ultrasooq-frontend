@@ -34,12 +34,7 @@ const formSchema = z
       .max(50, { message: "Product Name must be less than 50 characters" }),
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
-    brandId: z
-      .string()
-      .trim()
-      .min(1, { message: "Brand is required" })
-      .max(50, { message: "Brand must be less than 50 characters" })
-      .transform((value) => Number(value)),
+    brandId: z.number().min(1, { message: "Brand is required" }),
     skuNo: z
       .string()
       .trim()
@@ -104,7 +99,7 @@ const EditProductPage = () => {
       productName: "",
       categoryId: 0,
       categoryLocation: "",
-      brandId: "",
+      brandId: 0,
       skuNo: "",
       productTagList: undefined,
       productImagesList: undefined,
@@ -229,7 +224,7 @@ const EditProductPage = () => {
     updatedFormData.productId = Number(searchParams?.id);
     updatedFormData.productPriceList = [
       {
-        price: updatedFormData.productPrice,
+        productPrice: updatedFormData.productPrice,
         offerPrice: updatedFormData.offerPrice,
       },
     ];
@@ -310,7 +305,7 @@ const EditProductPage = () => {
         categoryLocation: product?.categoryLocation
           ? product?.categoryLocation
           : "",
-        brandId: product?.brandId ? String(product?.brandId) : "",
+        brandId: product?.brandId ? product?.brandId : 0,
         skuNo: product?.skuNo,
         productTagList: productTagList || undefined,
         productImages: productImages || [],
@@ -327,7 +322,6 @@ const EditProductPage = () => {
     }
   }, [productQueryById?.data?.data]);
 
-  console.log(searchParams?.id);
   return (
     <>
       <section className="relative w-full py-7">
