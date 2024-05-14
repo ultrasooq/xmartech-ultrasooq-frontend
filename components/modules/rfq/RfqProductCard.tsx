@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { FaCircleCheck } from "react-icons/fa6";
 
 type RfqProductCardProps = {
   id: number;
@@ -108,20 +109,6 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-
-                {/* <Button
-                variant="ghost"
-                onClick={() =>
-                  router.push(
-                    `/create-product?productType=${productType}&productId=${id}`,
-                  )
-                }
-              >
-                <div className="relative h-6 w-6">
-                  <Image src="/images/edit-rfq.png" alt="edit-rfq-icon" fill />
-                </div>
-              </Button> */}
-
                 <Button variant="ghost" onClick={() => onEdit(id)}>
                   <div className="relative h-6 w-6">
                     <Image
@@ -141,10 +128,11 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
             {isAddedToCart ? (
               <button
                 type="button"
-                className="add_to_cart_button"
-                onClick={onToCart}
+                className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
+                disabled
               >
-                Go To RFQ Cart
+                <FaCircleCheck color="#00C48C" />
+                Added to RFQ Cart
               </button>
             ) : (
               <button

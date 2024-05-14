@@ -89,6 +89,7 @@ export const fetchAllProducts = (payload: {
   brandIds?: string;
   priceMin?: number;
   priceMax?: number;
+  userId?: number;
 }) => {
   return axios({
     method: "GET",
@@ -103,6 +104,7 @@ export const fetchSameBrandProducts = (payload: {
   page: number;
   limit: number;
   brandIds: string;
+  userId?: number;
 }) => {
   return axios({
     method: "GET",
@@ -117,6 +119,7 @@ export const fetchRelatedProducts = (payload: {
   page: number;
   limit: number;
   tagIds: string;
+  userId?: number;
 }) => {
   return axios({
     method: "GET",

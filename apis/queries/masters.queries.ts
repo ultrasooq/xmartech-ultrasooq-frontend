@@ -1,5 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchBrands, fetchCountries } from "../requests/masters.requests";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import {
+  createBrand,
+  fetchBrands,
+  fetchCountries,
+} from "../requests/masters.requests";
+import { APIResponseError } from "@/utils/types/common.types";
 
 export const useCountries = (enabled = true) =>
   useQuery({
@@ -26,3 +31,25 @@ export const useBrands = (payload: { term?: string }, enabled = true) =>
     // },
     enabled,
   });
+
+export const useCreateBrand = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { brandName: string }
+  >({
+    mutationFn: async (payload) => {
+      const res = await createBrand(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["brands"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};

@@ -8,9 +8,10 @@ import { FaRegStar } from "react-icons/fa";
 import validator from "validator";
 import ShoppingIcon from "@/public/images/shopping-icon.svg";
 import EyeIcon from "@/public/images/eye-icon.svg";
-import HeartIcon from "@/public/images/heart-icon.svg";
 import CompareIcon from "@/public/images/compare-icon.svg";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { FaHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
 
 type SameBrandProductCardProps = {
   id: number;
@@ -21,6 +22,9 @@ type SameBrandProductCardProps = {
   offerPrice: string;
   productReview: { rating: number }[];
   onAdd?: () => void;
+  onWishlist: () => void;
+  inWishlist?: boolean;
+  haveAccessToken: boolean;
 };
 
 const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
@@ -32,6 +36,9 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   offerPrice,
   productReview,
   onAdd,
+  onWishlist,
+  inWishlist,
+  haveAccessToken,
 }) => {
   const offerPercentage = useMemo(
     () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
@@ -84,31 +91,56 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
             fill
           />
         </div>
-        <div className="multiple-action-container">
-          <Button type="button" className="circle-btn">
-            <Image
-              src={ShoppingIcon}
-              alt="shopping-icon"
-              width={16}
-              height={16}
-            />
-          </Button>
-          <Link href={`/trending/${id}`} className="circle-btn !shadow">
-            <Image src={EyeIcon} alt="eye-icon" width={16} height={16} />
-          </Link>
-          {/* TODO: query, only added in this card. keep it or remove it */}
-          {/* <Button type="button" className="circle-btn">
-            <Image src={HeartIcon} alt="heart-icon" width={16} height={16} />
-          </Button> */}
-          <Button type="button" className="circle-btn">
-            <Image
-              src={CompareIcon}
-              alt="compare-icon"
-              width={16}
-              height={16}
-            />
-          </Button>
-        </div>
+
+        {haveAccessToken ? (
+          <div className="mb-3 grid grid-cols-4 gap-x-3">
+            <Button
+              variant="ghost"
+              className="relative h-8 w-8 rounded-full shadow-md"
+              onClick={onAdd}
+            >
+              <Image
+                src={ShoppingIcon}
+                alt="shopping-icon"
+                className="object-contain p-2"
+                fill
+              />
+            </Button>
+            <Link
+              href={`/trending/${id}`}
+              className="relative h-8 w-8 rounded-full !shadow-md"
+            >
+              <Image
+                src={EyeIcon}
+                alt="eye-icon"
+                className="object-contain p-2"
+                fill
+              />
+            </Link>
+            <Button
+              variant="ghost"
+              className="relative h-8 w-8 rounded-full p-0 shadow-md"
+              onClick={onWishlist}
+            >
+              {inWishlist ? <FaHeart color="red" /> : <FaRegHeart />}
+            </Button>
+            <Button
+              variant="ghost"
+              className="relative h-8 w-8 rounded-full shadow-md"
+              onClick={() => {
+                console.log("shared");
+              }}
+            >
+              <Image
+                src={CompareIcon}
+                alt="shopping-icon"
+                className="object-contain p-2"
+                fill
+              />
+            </Button>
+          </div>
+        ) : null}
+
         <div className="text-container">
           <h4>{productName}</h4>
           <p title={shortDescription} className="truncate">

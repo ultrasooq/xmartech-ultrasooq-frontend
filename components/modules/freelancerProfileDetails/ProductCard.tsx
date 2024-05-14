@@ -8,6 +8,9 @@ import { FaRegStar } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import ShoppingIcon from "@/public/images/shopping-icon.svg";
+import EyeIcon from "@/public/images/eye-icon.svg";
+import CompareIcon from "@/public/images/compare-icon.svg";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -85,7 +88,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
             disabled={item.status === "INACTIVE"}
           >
             <Image
-              src="/images/shopping-icon.svg"
+              src={ShoppingIcon}
               alt="shopping-icon"
               className="object-contain p-2"
               fill
@@ -96,7 +99,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
             className="relative h-8 w-8 rounded-full !shadow-md"
           >
             <Image
-              src="/images/eye-icon.svg"
+              src={EyeIcon}
               alt="eye-icon"
               className="object-contain p-2"
               fill
@@ -108,7 +111,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
             disabled={item.status === "INACTIVE"}
           >
             <Image
-              src="/images/heart-icon.svg"
+              src={CompareIcon}
               alt="shopping-icon"
               className="object-contain p-2"
               fill

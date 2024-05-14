@@ -40,12 +40,18 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
 
   return (
     <div className="rfq_right">
-      <div className="rfq_right_top">
-        <h4>RFQ Cart</h4>
-        <p>Lorem ipsum dolor sit amet, </p>
-        <button type="button">Request For Quote</button>
-      </div>
       <div className="rfq_right_bottom">
+        {memoizedRfqCartList.length ? (
+          <div className="mb-4 w-full text-center">
+            <Link
+              href="/rfq-cart"
+              className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
+            >
+              Go To RFQ Cart
+            </Link>
+          </div>
+        ) : null}
+
         <h4 className="text-center">
           Your RFQ Cart ({memoizedRfqCartList.length} items)
         </h4>
@@ -68,17 +74,6 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
             onRemove={handleRemoveItemFromRfqCart}
           />
         ))}
-
-        {memoizedRfqCartList.length ? (
-          <div className="mt-4 w-full text-center">
-            <Link
-              href="/rfq-cart"
-              className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
-            >
-              Go To RFQ Cart
-            </Link>
-          </div>
-        ) : null}
       </div>
     </div>
   );

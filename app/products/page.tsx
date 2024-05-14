@@ -56,8 +56,7 @@ const ProductListPage = () => {
     setSearchTerm(event.target.value);
   }, 1000);
 
-  const handleEditProductPage = (id: number) =>
-    router.push(`/create-product?productId=${id}`);
+  const handleEditProductPage = (id: number) => router.push(`/product/${id}`);
   const handleToggleDeleteModal = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
     setSelectedProductId(undefined);
@@ -127,10 +126,7 @@ const ProductListPage = () => {
                 />
               </li>
               <li>
-                <Link
-                  href="/create-product"
-                  className="theme-primary-btn add-btn p-2"
-                >
+                <Link href="/product" className="theme-primary-btn add-btn p-2">
                   <AddIcon />
                   <span className="d-none-mobile">Add Product</span>
                 </Link>

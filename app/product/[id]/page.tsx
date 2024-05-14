@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTags } from "@/apis/queries/tags.queries";
-import BasicInformationSection from "@/components/modules/createProduct/BasicInformationSection";
+import BasicInformationSection from "@/components/modules/editProduct/BasicInformationSection";
 import ProductDetailsSection from "@/components/modules/createProduct/ProductDetailsSection";
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
@@ -18,7 +18,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 
@@ -34,12 +34,7 @@ const formSchema = z
       .max(50, { message: "Product Name must be less than 50 characters" }),
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
-    brandId: z
-      .string()
-      .trim()
-      .min(1, { message: "Brand is required" })
-      .max(50, { message: "Brand must be less than 50 characters" })
-      .transform((value) => Number(value)),
+    brandId: z.number().min(1, { message: "Brand is required" }),
     skuNo: z
       .string()
       .trim()
@@ -92,10 +87,11 @@ const formSchema = z
     }
   });
 
-const CreateProductPage = () => {
+const EditProductPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  // const searchQuery = useSearchParams();
+  const searchParams = useParams();
+  const searchQuery = useSearchParams();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -103,7 +99,7 @@ const CreateProductPage = () => {
       productName: "",
       categoryId: 0,
       categoryLocation: "",
-      brandId: "",
+      brandId: 0,
       skuNo: "",
       productTagList: undefined,
       productImagesList: undefined,
@@ -117,18 +113,15 @@ const CreateProductPage = () => {
     },
   });
 
-  const [activeProductId, setActiveProductId] = useState<string>();
-  const [activeProductType, setActiveProductType] = useState<string>();
-
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const productQueryById = useProductById(
     {
-      productId: activeProductId ? activeProductId : "",
+      productId: searchParams?.id ? (searchParams?.id as string) : "",
     },
-    !!activeProductId,
+    !!searchParams?.id,
   );
   const watchProductImages = form.watch("productImages");
 
@@ -158,12 +151,7 @@ const CreateProductPage = () => {
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
       ...formData,
-      productType:
-        activeProductId && activeProductType === "P"
-          ? "R"
-          : activeProductType
-            ? "R"
-            : "P",
+      productType: "P",
       status: "ACTIVE",
     };
     if (watchProductImages.length) {
@@ -175,155 +163,94 @@ const CreateProductPage = () => {
         ? await handleUploadedFile(fileTypeArrays)
         : [];
 
-      if (activeProductId) {
-        // edit
-        const stringTypeArrays = watchProductImages
-          .filter((item: any) => typeof item.path !== "object")
-          .map((item: any) => {
-            const extension = item.path.split(".").pop()?.toLowerCase();
-
-            if (extension) {
-              if (videoExtensions.includes(extension)) {
-                const videoName: string = item?.path.split("/").pop()!;
-                return {
-                  video: item?.path,
-                  videoName,
-                };
-              } else if (imageExtensions.includes(extension)) {
-                const imageName: string = item?.path.split("/").pop()!;
-                return {
-                  image: item?.path,
-                  imageName,
-                };
-              }
-            }
-          });
-
-        const formattedimageUrlArrays = imageUrlArray?.map((item: any) => {
-          const extension = item.split(".").pop()?.toLowerCase();
+      const stringTypeArrays = watchProductImages
+        .filter((item: any) => typeof item.path !== "object")
+        .map((item: any) => {
+          const extension = item.path.split(".").pop()?.toLowerCase();
 
           if (extension) {
             if (videoExtensions.includes(extension)) {
-              const videoName: string = item.split("/").pop()!;
+              const videoName: string = item?.path.split("/").pop()!;
               return {
-                video: item,
+                video: item?.path,
                 videoName,
               };
             } else if (imageExtensions.includes(extension)) {
-              const imageName: string = item.split("/").pop()!;
+              const imageName: string = item?.path.split("/").pop()!;
               return {
-                image: item,
+                image: item?.path,
                 imageName,
               };
             }
           }
-
-          return {
-            image: item,
-            imageName: item,
-          };
         });
-        updatedFormData.productImages = [
-          ...stringTypeArrays,
-          ...formattedimageUrlArrays,
-        ];
 
-        if (updatedFormData.productImages.length) {
-          updatedFormData.productImagesList = updatedFormData.productImages;
+      const formattedimageUrlArrays = imageUrlArray?.map((item: any) => {
+        const extension = item.split(".").pop()?.toLowerCase();
+
+        if (extension) {
+          if (videoExtensions.includes(extension)) {
+            const videoName: string = item.split("/").pop()!;
+            return {
+              video: item,
+              videoName,
+            };
+          } else if (imageExtensions.includes(extension)) {
+            const imageName: string = item.split("/").pop()!;
+            return {
+              image: item,
+              imageName,
+            };
+          }
         }
-      } else {
-        // add
-        updatedFormData.productImages = [...imageUrlArray];
 
-        if (updatedFormData.productImages.length) {
-          updatedFormData.productImagesList = updatedFormData.productImages.map(
-            (item: string) => {
-              const extension = item.split(".").pop()?.toLowerCase();
+        return {
+          image: item,
+          imageName: item,
+        };
+      });
+      updatedFormData.productImages = [
+        ...stringTypeArrays,
+        ...formattedimageUrlArrays,
+      ];
 
-              if (extension) {
-                if (videoExtensions.includes(extension)) {
-                  const videoName: string = item.split("/").pop()!;
-                  return {
-                    video: item,
-                    videoName,
-                  };
-                } else if (imageExtensions.includes(extension)) {
-                  const imageName: string = item.split("/").pop()!;
-                  return {
-                    image: item,
-                    imageName,
-                  };
-                }
-              }
-
-              return {
-                image: item,
-                imageName: item,
-              };
-            },
-          );
-        }
+      if (updatedFormData.productImages.length) {
+        updatedFormData.productImagesList = updatedFormData.productImages;
       }
     }
 
     delete updatedFormData.productImages;
 
-    if (activeProductId) {
-      // edit
-      updatedFormData.productId = Number(activeProductId);
-      console.log("edit:", updatedFormData);
-      // return;
-      const response = await updateProduct.mutateAsync(updatedFormData);
-      if (response.status && response.data) {
-        toast({
-          title: "Product Update Successful",
-          description: response.message,
-          variant: "success",
-        });
-        form.reset();
+    updatedFormData.productId = Number(searchParams?.id);
+    updatedFormData.productPriceList = [
+      {
+        productPrice: updatedFormData.productPrice,
+        offerPrice: updatedFormData.offerPrice,
+      },
+    ];
+    console.log("edit:", updatedFormData);
+    // return;
+    const response = await updateProduct.mutateAsync(updatedFormData);
+    if (response.status && response.data) {
+      toast({
+        title: "Product Update Successful",
+        description: response.message,
+        variant: "success",
+      });
+      form.reset();
 
-        // queryClient.invalidateQueries({
-        //   queryKey: ["product-by-id", activeProductId],
-        // });
-        productQueryById.refetch();
+      // queryClient.invalidateQueries({
+      //   queryKey: ["product-by-id", activeProductId],
+      // });
+      productQueryById.refetch();
 
-        if (activeProductType === "R") {
-          router.push("/rfq");
-        } else {
-          router.push("/product-list");
-        }
-      } else {
-        toast({
-          title: "Product Update Failed",
-          description: response.message,
-          variant: "danger",
-        });
-      }
+      router.push("/products");
     } else {
-      // add
-      console.log("add:", updatedFormData);
-      // return;
-      const response = await createProduct.mutateAsync(updatedFormData);
-
-      if (response.status && response.data) {
-        toast({
-          title: "Product Create Successful",
-          description: response.message,
-          variant: "success",
-        });
-        form.reset();
-        if (activeProductType === "R") {
-          router.push("/rfq");
-        } else {
-          router.push("/product-list");
-        }
-      } else {
-        toast({
-          title: "Product Create Failed",
-          description: response.message,
-          variant: "danger",
-        });
-      }
+      toast({
+        title: "Product Update Failed",
+        description: response.message,
+        variant: "danger",
+      });
     }
   };
 
@@ -378,7 +305,7 @@ const CreateProductPage = () => {
         categoryLocation: product?.categoryLocation
           ? product?.categoryLocation
           : "",
-        brandId: product?.brandId ? String(product?.brandId) : "",
+        brandId: product?.brandId ? product?.brandId : 0,
         skuNo: product?.skuNo,
         productTagList: productTagList || undefined,
         productImages: productImages || [],
@@ -394,19 +321,6 @@ const CreateProductPage = () => {
       });
     }
   }, [productQueryById?.data?.data]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let activeProductId = params.get("productId");
-    let activeProductType = params.get("productType");
-
-    if (activeProductId) {
-      setActiveProductId(activeProductId);
-    }
-    if (activeProductType) {
-      setActiveProductType(activeProductType);
-    }
-  }, []);
 
   return (
     <>
@@ -445,16 +359,12 @@ const CreateProductPage = () => {
 
                       <Button
                         disabled={
-                          createProduct.isPending ||
-                          updateProduct.isPending ||
-                          uploadMultiple.isPending
+                          updateProduct.isPending || uploadMultiple.isPending
                         }
                         type="submit"
                         className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                       >
-                        {createProduct.isPending ||
-                        updateProduct.isPending ||
-                        uploadMultiple.isPending ? (
+                        {updateProduct.isPending || uploadMultiple.isPending ? (
                           <>
                             <Image
                               src="/images/load.png"
@@ -465,10 +375,8 @@ const CreateProductPage = () => {
                             />
                             Please wait
                           </>
-                        ) : activeProductId ? (
-                          "Update"
                         ) : (
-                          "Continue"
+                          "Update"
                         )}
                       </Button>
                     </div>
@@ -485,4 +393,4 @@ const CreateProductPage = () => {
   );
 };
 
-export default CreateProductPage;
+export default EditProductPage;

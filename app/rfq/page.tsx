@@ -163,7 +163,7 @@ const RfqPage = () => {
                   {haveAccessToken ? (
                     <div className="rfq_add_new_product">
                       <Link
-                        href="/create-product?productType=R"
+                        href="/product?productType=R"
                         className="flex items-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
                       >
                         <FaPlus />

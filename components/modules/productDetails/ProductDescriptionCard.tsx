@@ -138,7 +138,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       <div className="info-col top-btm-border">
         <div className="form-group mb-0">
           <div className="quantity-with-right-payment-info">
-            <div className="left-qty">
+            {/* TODO: ask whether to keep or not */}
+            {/* <div className="left-qty">
               <label>Quantity</label>
               <div className="flex w-28 items-center justify-center gap-x-4">
                 <Button
@@ -171,7 +172,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
                 </Button>
               </div>
-            </div>
+            </div> */}
 
             <div className="right-payment-info">
               <ul>
