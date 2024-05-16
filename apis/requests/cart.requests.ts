@@ -40,7 +40,7 @@ export const updateCartWithLogin = (payload: any) => {
 };
 
 export const updateCartByDevice = (payload: {
-  productId: number;
+  productPriceId: number;
   quantity: number;
   deviceId: string;
 }) => {

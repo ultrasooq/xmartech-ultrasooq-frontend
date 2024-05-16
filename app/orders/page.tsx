@@ -51,13 +51,13 @@ const OrdersPage = () => {
         (
           acc: number,
           curr: {
-            productDetails: {
+            productPriceDetails: {
               offerPrice: string;
             };
             quantity: number;
           },
         ) => {
-          return acc + +curr.productDetails.offerPrice * curr.quantity;
+          return acc + +curr.productPriceDetails.offerPrice * curr.quantity;
         },
         0,
       );
@@ -66,13 +66,13 @@ const OrdersPage = () => {
         (
           acc: number,
           curr: {
-            productDetails: {
+            productPriceDetails: {
               offerPrice: string;
             };
             quantity: number;
           },
         ) => {
-          return acc + +curr.productDetails.offerPrice * curr.quantity;
+          return acc + +curr.productPriceDetails.offerPrice * curr.quantity;
         },
         0,
       );
@@ -83,6 +83,15 @@ const OrdersPage = () => {
     if (hasAccessToken) {
       let data = {};
       if (orders.orders) {
+        console.log(orders.orders.cartIds);
+        if (!orders.orders.cartIds?.length) {
+          toast({
+            title: "Order cannot be placed",
+            description: "Please go back to checkout and try again",
+            variant: "danger",
+          });
+          return;
+        }
         data = orders.orders;
       }
       const response = await createOrder.mutateAsync(data);

@@ -73,6 +73,8 @@ const ProductListPage = () => {
           skuNo: item?.skuNo || "-",
           brandName: item?.brand?.brandName || "-",
           productPrice: item?.productPrice || "-",
+          productProductPriceId: item?.product_productPrice?.[0]?.id,
+          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
           status: item?.status || "-",
         };
       }) || []
@@ -176,7 +178,7 @@ const ProductListPage = () => {
                         <TableCell th-name="SKU No">{item?.skuNo}</TableCell>
                         <TableCell th-name="Brand">{item?.brandName}</TableCell>
                         <TableCell th-name="Price">
-                          ${item?.productPrice}
+                          ${item?.productProductPrice}
                         </TableCell>
                         <TableCell th-name="Status">
                           <Badge

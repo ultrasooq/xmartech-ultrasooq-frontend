@@ -38,6 +38,8 @@ export interface IRenderProduct {
   brandName: string;
   productPrice: string;
   status?: string;
+  productProductPriceId?: number;
+  productProductPrice?: string;
 }
 
 export type OptionProps = {
@@ -61,6 +63,8 @@ export interface TrendingProduct {
   status: string;
   productWishlist?: any[];
   inWishlist?: boolean;
+  productProductPriceId?: number;
+  productProductPrice?: string;
 }
 
 export type ProductImageProps = {

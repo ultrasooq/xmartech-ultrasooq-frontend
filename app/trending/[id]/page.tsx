@@ -81,8 +81,16 @@ const ProductDetailsPage = () => {
     actionType: "add" | "remove",
   ) => {
     if (haveAccessToken) {
+      if (!productDetails?.product_productPrice?.[0]?.id) {
+        toast({
+          title: `Oops! Something went wrong`,
+          description: "Product Price Id not found",
+          variant: "danger",
+        });
+        return;
+      }
       const response = await updateCartWithLogin.mutateAsync({
-        productId: Number(searchParams?.id),
+        productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
       });
 
@@ -96,8 +104,16 @@ const ProductDetailsPage = () => {
         return response.status;
       }
     } else {
+      if (!productDetails?.product_productPrice?.[0]?.id) {
+        toast({
+          title: `Oops! Something went wrong`,
+          description: "Product Price Id not found",
+          variant: "danger",
+        });
+        return;
+      }
       const response = await updateCartByDevice.mutateAsync({
-        productId: Number(searchParams?.id),
+        productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
         deviceId,
       });
@@ -232,7 +248,7 @@ const ProductDetailsPage = () => {
               productName={productDetails?.productName}
               brand={productDetails?.brand?.brandName}
               productPrice={productDetails?.productPrice}
-              offerPrice={productDetails?.offerPrice}
+              offerPrice={productDetails?.product_productPrice?.[0]?.offerPrice}
               skuNo={productDetails?.skuNo}
               category={productDetails?.category?.name}
               productTags={productDetails?.productTags}
@@ -243,13 +259,15 @@ const ProductDetailsPage = () => {
               productReview={productQueryById?.data?.data?.productReview}
               onAdd={handleAddToCart}
               isLoading={!productQueryById.isFetched}
-              soldBy={
-                productDetails?.adminBy?.tradeRole === "COMPANY"
-                  ? productDetails?.adminBy?.userProfile?.[0]?.companyName
-                  : productDetails?.adminBy?.tradeRole === "FREELANCER"
-                    ? `${productDetails?.adminBy?.firstName} ${productDetails?.adminBy?.lastName}`
-                    : null
-              }
+              // soldBy={
+              //   productDetails?.adminBy?.tradeRole === "COMPANY"
+              //     ? productDetails?.adminBy?.userProfile?.[0]?.companyName
+              //     : productDetails?.adminBy?.tradeRole === "FREELANCER"
+              //       ? `${productDetails?.adminBy?.firstName} ${productDetails?.adminBy?.lastName}`
+              //       : null
+              // }
+              soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
+                ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
             />
           </div>
         </div>

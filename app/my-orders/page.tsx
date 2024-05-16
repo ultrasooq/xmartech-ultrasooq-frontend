@@ -263,9 +263,12 @@ const MyOrdersPage = () => {
                   id: number;
                   productId: number;
                   purchasePrice: string;
-                  orderProduct_product: {
-                    productName: string;
-                    productImages: { id: number; image: string }[];
+                  orderProduct_productPrice: {
+                    offerPrice: string;
+                    productPrice_product: {
+                      productName: string;
+                      productImages: { id: number; image: string }[];
+                    };
                   };
                   orderProduct_order: {
                     orderNo: string;
@@ -278,9 +281,18 @@ const MyOrdersPage = () => {
                     key={item.id}
                     id={item.id}
                     productId={item.productId}
-                    purchasePrice={item.purchasePrice}
-                    productName={item.orderProduct_product?.productName}
-                    produtctImage={item.orderProduct_product?.productImages}
+                    // purchasePrice={item.purchasePrice}
+                    // productName={item.orderProduct_product?.productName}
+                    // produtctImage={item.orderProduct_product?.productImages}
+                    purchasePrice={item.orderProduct_productPrice?.offerPrice}
+                    productName={
+                      item.orderProduct_productPrice?.productPrice_product
+                        ?.productName
+                    }
+                    produtctImage={
+                      item.orderProduct_productPrice?.productPrice_product
+                        ?.productImages
+                    }
                     orderId={item.orderProduct_order?.orderNo}
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}

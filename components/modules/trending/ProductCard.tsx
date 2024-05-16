@@ -138,7 +138,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {calculateRatings(calculateAvgRating)}
             <span className="ml-2">{item.productReview?.length}</span>
           </div>
-          <h5>${item.offerPrice}</h5>
+          <h5>${item.productProductPrice}</h5>
         </div>
         {/* </Link> */}
       </div>

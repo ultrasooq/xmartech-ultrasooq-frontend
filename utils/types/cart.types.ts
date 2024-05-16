@@ -1,10 +1,14 @@
 export interface CartItem {
   id: number;
   productId: number;
-  productDetails: {
-    productName: string;
+  productPriceId: number;
+  productPriceDetails: {
     offerPrice: string;
-    productImages: { id: number; image: string }[];
+    productPrice_product: {
+      productName: string;
+      offerPrice: string;
+      productImages: { id: number; image: string }[];
+    };
   };
   quantity: number;
 }

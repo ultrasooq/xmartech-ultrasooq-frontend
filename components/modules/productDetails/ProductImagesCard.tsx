@@ -126,7 +126,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               onClick={hasItem ? onToCart : onAdd}
               className="h-14 flex-1 rounded-none bg-color-yellow text-base"
             >
-              {hasItem ? "Go To Cart" : "Add To Cart"}
+              {hasItem ? "Send To Cart" : "Add To Cart"}
             </Button>
             <Button
               onClick={onToCheckout}
