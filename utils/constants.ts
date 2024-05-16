@@ -298,3 +298,13 @@ export const formattedDate = (formatDate: string) =>
     month: "short",
     year: "numeric",
   });
+
+export const videoExtensions: string[] = ["mp4", "mkv", "avi", "mov", "wmv"];
+export const imageExtensions: string[] = [
+  "png",
+  "jpg",
+  "jpeg",
+  "gif",
+  "bmp",
+  "webp",
+];
