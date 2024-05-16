@@ -3,6 +3,7 @@ import {
   createBrand,
   fetchBrands,
   fetchCountries,
+  fetchLocation,
 } from "../requests/masters.requests";
 import { APIResponseError } from "@/utils/types/common.types";
 
@@ -53,3 +54,16 @@ export const useCreateBrand = () => {
     },
   });
 };
+
+export const useLocation = (enabled = true) =>
+  useQuery({
+    queryKey: ["location"],
+    queryFn: async () => {
+      const res = await fetchLocation();
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });

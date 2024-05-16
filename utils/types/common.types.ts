@@ -14,6 +14,15 @@ export interface ICountries {
   status: string;
 }
 
+export interface ILocations {
+  id: number;
+  locationName: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  status: string;
+}
+
 export interface IBrands {
   id: number;
   brandName: string;
