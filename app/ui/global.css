@@ -1123,6 +1123,10 @@
     @apply text-[#f44336] bg-[#fff2f1] border-[#F44336] !important;
   }
 
+  .shadcn-toast-custom.info {
+    @apply text-[#2196f3] bg-[#f1faff] border-[#2196f3] !important;
+  }
+
   /* end: shadcn-toast-custom */
 
   /* start: upload-identity-proof-both-side */
