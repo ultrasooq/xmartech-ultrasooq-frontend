@@ -32,6 +32,7 @@ import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTe
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import ReactPlayer from "react-player/lazy";
 import BrandSelect from "@/components/shared/BrandSelect";
+import { imageExtensions, videoExtensions } from "@/utils/constants";
 
 type ProductImageProps = {
   path: string;
@@ -41,9 +42,6 @@ type ProductImageProps = {
 type BasicInformationProps = {
   tagsList: any;
 };
-
-const videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"];
-const imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp"];
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
@@ -107,32 +105,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     ]);
   };
 
-  useEffect(() => {
-    if (catList[currentIndex]) {
-      let tempList = catList;
-      if (subCategoryById.data?.data?.children?.length) {
-        tempList[currentIndex] = subCategoryById.data?.data;
-        tempList = tempList.slice(0, currentIndex + 1);
-      }
-      setCatList([...tempList]);
-      return;
-    }
-
-    if (subCategoryById.data?.data?.children?.length) {
-      setCatList([...catList, subCategoryById.data?.data]);
-    }
-  }, [currentId, subCategoryById.data?.data?.children?.length, currentIndex]);
-
-  useEffect(
-    () => formContext.setValue("categoryId", Number(currentId)),
-    [currentId],
-  );
-
-  useEffect(
-    () => formContext.setValue("categoryLocation", listIds.join(",")),
-    [listIds?.length],
-  );
-
   const isVideo = (path: string) => {
     if (typeof path === "string") {
       const extension = path.split(".").pop()?.toLowerCase();
@@ -160,6 +132,32 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       return true;
     }
   };
+
+  useEffect(() => {
+    if (catList[currentIndex]) {
+      let tempList = catList;
+      if (subCategoryById.data?.data?.children?.length) {
+        tempList[currentIndex] = subCategoryById.data?.data;
+        tempList = tempList.slice(0, currentIndex + 1);
+      }
+      setCatList([...tempList]);
+      return;
+    }
+
+    if (subCategoryById.data?.data?.children?.length) {
+      setCatList([...catList, subCategoryById.data?.data]);
+    }
+  }, [currentId, subCategoryById.data?.data?.children?.length, currentIndex]);
+
+  useEffect(
+    () => formContext.setValue("categoryId", Number(currentId)),
+    [currentId],
+  );
+
+  useEffect(
+    () => formContext.setValue("categoryLocation", listIds.join(",")),
+    [listIds?.length],
+  );
 
   return (
     <div className="flex w-full flex-wrap">

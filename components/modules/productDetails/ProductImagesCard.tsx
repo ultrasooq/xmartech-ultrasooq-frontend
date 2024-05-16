@@ -16,6 +16,8 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 // import WishlistIcon from "@/public/images/wishlist.svg";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
+import ReactPlayer from "react-player/lazy";
+import { imageExtensions, videoExtensions } from "@/utils/constants";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -44,6 +46,30 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   const [api, setApi] = useState<CarouselApi>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const isVideo = (path: string) => {
+    if (typeof path === "string") {
+      const extension = path.split(".").pop()?.toLowerCase();
+      if (extension) {
+        if (videoExtensions.includes(extension)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+
+  const isImage = (path: any) => {
+    if (typeof path === "string") {
+      const extension = path.split(".").pop()?.toLowerCase();
+      if (extension) {
+        if (imageExtensions.includes(extension)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+
   useEffect(() => {
     if (!productDetails?.productImages?.length) return;
 
@@ -51,7 +77,9 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
       productDetails?.productImages?.map((item: any) =>
         item?.image && validator.isURL(item.image)
           ? item.image
-          : PlaceholderImage,
+          : item?.video && validator.isURL(item.video)
+            ? item.video
+            : PlaceholderImage,
       ),
     );
   }, [productDetails?.productImages?.length]);
@@ -68,6 +96,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
     });
   }, [api]);
 
+  console.log(previewImages);
   return (
     <div className="product-view-s1-left">
       <div className="grid grid-cols-4 gap-4">
@@ -92,12 +121,24 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                   <CarouselItem key={index} className="basis pl-1">
                     <div className="p-1">
                       <div className="relative min-h-[500px] w-full">
-                        <Image
-                          src={item}
-                          alt="primary-image"
-                          fill
-                          className="object-contain"
-                        />
+                        {isImage(item) ? (
+                          <Image
+                            src={item}
+                            alt="primary-image"
+                            fill
+                            className="object-contain"
+                          />
+                        ) : isVideo(item) ? (
+                          <div className="player-wrapper !py-[30%]">
+                            <ReactPlayer
+                              url={item}
+                              width="100%"
+                              height="100%"
+                              // playing
+                              controls
+                            />
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   </CarouselItem>
@@ -148,7 +189,8 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             <Button
               variant="ghost"
               className={cn(
-                previewImages[currentImageIndex] === item?.image
+                previewImages[currentImageIndex] === item?.image ||
+                  previewImages[currentImageIndex] === item?.video
                   ? "border-2 border-red-500"
                   : "",
                 "relative h-28 w-28 rounded-none bg-gray-100",

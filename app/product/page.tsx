@@ -15,9 +15,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
-
-const videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"];
-const imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp"];
+import { imageExtensions, videoExtensions } from "@/utils/constants";
 
 const formSchema = z
   .object({

@@ -33,6 +33,7 @@ import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import ReactPlayer from "react-player/lazy";
 import BrandSelect from "@/components/shared/BrandSelect";
+import { imageExtensions, videoExtensions } from "@/utils/constants";
 
 type ProductImageProps = {
   path: string;
@@ -43,9 +44,6 @@ type BasicInformationProps = {
   tagsList: any;
   isEditable?: boolean;
 };
-
-const videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"];
-const imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp"];
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
@@ -110,6 +108,34 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     ]);
   };
 
+  const isVideo = (path: string) => {
+    if (typeof path === "string") {
+      const extension = path.split(".").pop()?.toLowerCase();
+      if (extension) {
+        if (videoExtensions.includes(extension)) {
+          return true;
+        }
+      }
+      return false;
+    } else if (typeof path === "object") {
+      return true;
+    }
+  };
+
+  const isImage = (path: any) => {
+    if (typeof path === "string") {
+      const extension = path.split(".").pop()?.toLowerCase();
+      if (extension) {
+        if (imageExtensions.includes(extension)) {
+          return true;
+        }
+      }
+      return false;
+    } else if (typeof path === "object" && path?.type?.includes("image")) {
+      return true;
+    }
+  };
+
   useEffect(() => {
     if (catList[currentIndex]) {
       let tempList = catList;
@@ -151,34 +177,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     () => formContext.setValue("categoryLocation", listIds.join(",")),
     [listIds?.length],
   );
-
-  const isVideo = (path: string) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (videoExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    } else if (typeof path === "object") {
-      return true;
-    }
-  };
-
-  const isImage = (path: any) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (imageExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    } else if (typeof path === "object" && path?.type?.includes("image")) {
-      return true;
-    }
-  };
 
   return (
     <div className="flex w-full flex-wrap">

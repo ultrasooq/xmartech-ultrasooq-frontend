@@ -21,9 +21,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
-
-const videoExtensions = ["mp4", "mkv", "avi", "mov", "wmv"];
-const imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "webp"];
+import { imageExtensions, videoExtensions } from "@/utils/constants";
 
 const formSchema = z
   .object({
