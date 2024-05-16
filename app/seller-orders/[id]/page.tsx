@@ -195,9 +195,9 @@ const MyOrderDetailsPage = ({}) => {
                             <div className="image-container rounded border border-gray-300">
                               <Image
                                 src={
-                                  orderDetails?.orderProduct_product
-                                    ?.productImages?.[0]?.image ||
-                                  PlaceholderImage
+                                  orderDetails?.orderProduct_productPrice
+                                    ?.productPrice_product?.productImages?.[0]
+                                    ?.image || PlaceholderImage
                                 }
                                 alt="preview-product"
                                 width={120}
@@ -209,25 +209,28 @@ const MyOrderDetailsPage = ({}) => {
                             <figcaption>
                               <h3>
                                 {
-                                  orderDetails?.orderProduct_product
-                                    ?.productName
+                                  orderDetails.orderProduct_productPrice
+                                    ?.productPrice_product?.productName
                                 }
                               </h3>
                               {/* <p>Color: B.A.E Black</p> */}
                               <p className="mt-1">
                                 Seller:{" "}
                                 {
-                                  orderDetails?.orderProduct_product?.adminBy
-                                    ?.firstName
+                                  orderDetails?.orderProduct_productPrice
+                                    ?.adminDetail?.firstName
                                 }{" "}
                                 {
-                                  orderDetails?.orderProduct_product?.adminBy
-                                    ?.lastName
+                                  orderDetails?.orderProduct_productPrice
+                                    ?.adminDetail?.lastName
                                 }
                               </p>
                               <h4 className="mt-1">
                                 $
-                                {orderDetails?.orderProduct_product?.offerPrice}
+                                {
+                                  orderDetails?.orderProduct_productPrice
+                                    ?.offerPrice
+                                }
                               </h4>
                             </figcaption>
                           </figure>
@@ -449,10 +452,19 @@ const MyOrderDetailsPage = ({}) => {
                   <OtherItemCard
                     key={item?.id}
                     id={item?.id}
-                    productName={item?.orderProduct_product?.productName}
-                    offerPrice={item?.orderProduct_product?.offerPrice}
-                    productImages={item?.orderProduct_product?.productImages}
-                    sellerName={`${item?.orderProduct_product?.adminBy?.firstName} ${item?.orderProduct_product?.adminBy?.lastName}`}
+                    productName={
+                      item.orderProduct_productPrice?.productPrice_product
+                        ?.productName
+                    }
+                    offerPrice={item.orderProduct_productPrice?.offerPrice}
+                    productImages={
+                      item.orderProduct_productPrice?.productPrice_product
+                        ?.productImages
+                    }
+                    // productName={item?.orderProduct_product?.productName}
+                    // offerPrice={item?.orderProduct_product?.offerPrice}
+                    // productImages={item?.orderProduct_product?.productImages}
+                    sellerName={`${item?.orderProduct_productPrice?.adminDetail?.firstName} ${item?.orderProduct_productPrice?.adminDetail?.lastName}`}
                     orderNo={orderDetails?.orderProduct_order?.orderNo}
                     orderProductDate={item?.orderProductDate}
                     orderProductStatus={item?.orderProductStatus}

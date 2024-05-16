@@ -259,9 +259,12 @@ const SellerOrdersPage = () => {
                 (item: {
                   id: number;
                   purchasePrice: string;
-                  orderProduct_product: {
-                    productName: string;
-                    productImages: { id: number; image: string }[];
+                  orderProduct_productPrice: {
+                    offerPrice: string;
+                    productPrice_product: {
+                      productName: string;
+                      productImages: { id: number; image: string }[];
+                    };
                   };
                   sellerOrderNo: string;
                   orderProductStatus: string;
@@ -271,9 +274,15 @@ const SellerOrdersPage = () => {
                   <OrderCard
                     key={item.id}
                     id={item.id}
-                    purchasePrice={item.purchasePrice}
-                    productName={item.orderProduct_product?.productName}
-                    produtctImage={item.orderProduct_product?.productImages}
+                    purchasePrice={item.orderProduct_productPrice?.offerPrice}
+                    productName={
+                      item.orderProduct_productPrice?.productPrice_product
+                        ?.productName
+                    }
+                    produtctImage={
+                      item.orderProduct_productPrice?.productPrice_product
+                        ?.productImages
+                    }
                     sellerOrderId={item.sellerOrderNo}
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}
