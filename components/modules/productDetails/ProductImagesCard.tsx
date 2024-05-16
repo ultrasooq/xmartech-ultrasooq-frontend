@@ -96,7 +96,6 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
     });
   }, [api]);
 
-  console.log(previewImages);
   return (
     <div className="product-view-s1-left">
       <div className="grid grid-cols-4 gap-4">

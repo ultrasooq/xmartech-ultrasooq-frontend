@@ -14,6 +14,8 @@ import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import ShareIcon from "@/components/icons/ShareIcon";
+import { isBrowser } from "@/utils/helper";
+import { useToast } from "@/components/ui/use-toast";
 
 type ProductCardProps = {
   id: number;
@@ -44,6 +46,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   inWishlist,
   haveAccessToken,
 }) => {
+  const { toast } = useToast();
   const offerPercentage = useMemo(
     () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
     [offerPrice, productPrice],
@@ -76,24 +79,36 @@ const ProductCard: React.FC<ProductCardProps> = ({
     [productReview?.length],
   );
 
+  const copyToClipboard = () => {
+    if (!isBrowser()) return;
+    navigator.clipboard.writeText(`https://dev.ultrasooq.com/trending/${id}`);
+    toast({
+      title: "Copied",
+      description: "Link copied to clipboard",
+      variant: "info",
+    });
+  };
+
   return (
-    // <Link href={`/trending/${id}`}>
     <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
-      <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-        <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
-      </div>
-      <div className="relative mx-auto mb-4 h-36 w-36">
-        <Image
-          src={
-            productImages?.[0]?.image && validator.isURL(productImages[0].image)
-              ? productImages[0].image
-              : PlaceholderImage
-          }
-          alt="preview"
-          className="object-contain"
-          fill
-        />
-      </div>
+      <Link href={`/trending/${id}`}>
+        <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+          <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
+        </div>
+        <div className="relative mx-auto mb-4 h-36 w-36">
+          <Image
+            src={
+              productImages?.[0]?.image &&
+              validator.isURL(productImages[0].image)
+                ? productImages[0].image
+                : PlaceholderImage
+            }
+            alt="preview"
+            className="object-contain"
+            fill
+          />
+        </div>
+      </Link>
 
       <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
         <Button
@@ -126,36 +141,35 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Button
           variant="ghost"
           className="relative h-8 w-8 rounded-full p-0 shadow-md"
-          onClick={() => {
-            console.log("shared");
-          }}
+          onClick={copyToClipboard}
         >
           <ShareIcon />
         </Button>
       </div>
 
-      <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-        <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-          {productName}
-        </h4>
-        <div className="mt-2.5 w-full">
-          <h4 className="font-lg font-normal uppercase text-olive-green">
-            ${productProductPrice}
+      <Link href={`/trending/${id}`}>
+        <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
+          <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
+            {productName}
           </h4>
+          <div className="mt-2.5 w-full">
+            <h4 className="font-lg font-normal uppercase text-olive-green">
+              ${productProductPrice}
+            </h4>
+          </div>
+          <p className="truncate" title={shortDescription}>
+            {shortDescription}
+          </p>
+          <div className="flex">
+            {calculateRatings(calculateAvgRating)}
+            <span className="ml-2">{productReview?.length}</span>
+          </div>
+          <span className="w-auto text-base font-normal text-light-gray">
+            ${productPrice}
+          </span>
         </div>
-        <p className="truncate" title={shortDescription}>
-          {shortDescription}
-        </p>
-        <div className="flex">
-          {calculateRatings(calculateAvgRating)}
-          <span className="ml-2">{productReview?.length}</span>
-        </div>
-        <span className="w-auto text-base font-normal text-light-gray">
-          ${productPrice}
-        </span>
-      </div>
+      </Link>
     </div>
-    // </Link>
   );
 };
 
