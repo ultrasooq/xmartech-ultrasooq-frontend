@@ -9,6 +9,7 @@ type OtherItemCardProps = {
   id: number;
   productName: string;
   offerPrice: string;
+  orderQuantity?: number;
   productImages?: { id: number; image: string }[];
   sellerName?: string;
   orderNo: string;
@@ -21,6 +22,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   id,
   productName,
   offerPrice,
+  orderQuantity,
   productImages,
   sellerName,
   orderNo,
@@ -52,7 +54,9 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
                 <h3>{productName}</h3>
                 {/* <p>Color: B.A.E Black</p> */}
                 <p className="mt-1">Seller: {sellerName}</p>
-                <h4 className="mt-1">${offerPrice}</h4>
+                <h4 className="mt-1">
+                  ${Number(offerPrice) * (orderQuantity ?? 0)}
+                </h4>
               </figcaption>
             </figure>
           </Link>

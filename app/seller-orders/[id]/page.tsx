@@ -227,10 +227,14 @@ const MyOrderDetailsPage = ({}) => {
                               </p>
                               <h4 className="mt-1">
                                 $
-                                {
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.offerPrice
-                                }
+                                {orderDetails?.orderProduct_productPrice
+                                  ?.offerPrice
+                                  ? Number(
+                                      orderDetails?.orderProduct_productPrice
+                                        ?.offerPrice *
+                                        orderDetails?.orderQuantity,
+                                    )
+                                  : 0}
                               </h4>
                             </figcaption>
                           </figure>
