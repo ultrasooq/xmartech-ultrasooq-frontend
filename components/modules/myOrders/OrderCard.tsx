@@ -16,6 +16,7 @@ type OrderCardProps = {
   productName: string;
   produtctImage?: { id: number; image: string }[];
   productColor?: string;
+  orderQuantity?: number;
   orderId: string;
   orderStatus: string;
   orderProductDate: string;
@@ -30,6 +31,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   productName,
   produtctImage,
   productColor,
+  orderQuantity,
   orderId,
   orderStatus,
   orderProductDate,
@@ -73,7 +75,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
           </figure>
         </Link>
         <div className="center-price-info">
-          <h4>${purchasePrice}</h4>
+          <h4>${Number(purchasePrice) * (orderQuantity ?? 0)}</h4>
         </div>
         <div className="right-info">
           <h4>

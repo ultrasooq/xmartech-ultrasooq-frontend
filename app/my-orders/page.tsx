@@ -273,6 +273,7 @@ const MyOrdersPage = () => {
                   orderProduct_order: {
                     orderNo: string;
                   };
+                  orderQuantity: number;
                   orderProductStatus: string;
                   orderProductDate: string;
                   updatedAt: string;
@@ -293,6 +294,7 @@ const MyOrdersPage = () => {
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
                     }
+                    orderQuantity={item?.orderQuantity}
                     orderId={item.orderProduct_order?.orderNo}
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}

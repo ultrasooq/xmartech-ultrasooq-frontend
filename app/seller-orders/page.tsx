@@ -266,6 +266,7 @@ const SellerOrdersPage = () => {
                       productImages: { id: number; image: string }[];
                     };
                   };
+                  orderQuantity: number;
                   sellerOrderNo: string;
                   orderProductStatus: string;
                   orderProductDate: string;
@@ -283,6 +284,7 @@ const SellerOrdersPage = () => {
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
                     }
+                    orderQuantity={item?.orderQuantity}
                     sellerOrderId={item.sellerOrderNo}
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}
