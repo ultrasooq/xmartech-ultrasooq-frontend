@@ -32,6 +32,7 @@ const toastVariants = cva(
           "destructive group border-destructive bg-destructive text-destructive-foreground",
         danger: "shadcn-toast-custom error", // Modified by me
         success: "shadcn-toast-custom success", // Modified by me
+        info: "shadcn-toast-custom info", // Modified by me
       },
     },
     defaultVariants: {

@@ -15,6 +15,8 @@ import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import ShareIcon from "@/components/icons/ShareIcon";
+import { isBrowser } from "@/utils/helper";
+import { useToast } from "@/components/ui/use-toast";
 
 type SameBrandProductCardProps = {
   id: number;
@@ -45,6 +47,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   inWishlist,
   haveAccessToken,
 }) => {
+  const { toast } = useToast();
   const offerPercentage = useMemo(
     () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
     [offerPrice, productPrice],
@@ -77,25 +80,37 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
     [productReview?.length],
   );
 
+  const copyToClipboard = () => {
+    if (!isBrowser()) return;
+    navigator.clipboard.writeText(`https://dev.ultrasooq.com/trending/${id}`);
+    toast({
+      title: "Copied",
+      description: "Link copied to clipboard",
+      variant: "info",
+    });
+  };
+
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box">
-        <div className="image-container relative mb-4">
-          <span className="discount">
-            {!isNaN(offerPercentage) ? offerPercentage : 0}%
-          </span>
-          <Image
-            src={
-              productImages?.[0]?.image &&
-              validator.isURL(productImages[0].image)
-                ? productImages[0].image
-                : PlaceholderImage
-            }
-            alt="preview"
-            className="object-contain"
-            fill
-          />
-        </div>
+        <Link href={`/trending/${id}`}>
+          <div className="image-container relative mb-4">
+            <span className="discount">
+              {!isNaN(offerPercentage) ? offerPercentage : 0}%
+            </span>
+            <Image
+              src={
+                productImages?.[0]?.image &&
+                validator.isURL(productImages[0].image)
+                  ? productImages[0].image
+                  : PlaceholderImage
+              }
+              alt="preview"
+              className="object-contain"
+              fill
+            />
+          </div>
+        </Link>
 
         <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
           <Button
@@ -128,25 +143,25 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
           <Button
             variant="ghost"
             className="relative h-8 w-8 rounded-full p-0 shadow-md"
-            onClick={() => {
-              console.log("shared");
-            }}
+            onClick={copyToClipboard}
           >
             <ShareIcon />
           </Button>
         </div>
 
-        <div className="text-container">
-          <h4>{productName}</h4>
-          <p title={shortDescription} className="truncate">
-            {shortDescription}
-          </p>
-          <div className="rating_stars">
-            {calculateRatings(calculateAvgRating)}
-            <span>{productReview?.length}</span>
+        <Link href={`/trending/${id}`}>
+          <div className="text-container">
+            <h4>{productName}</h4>
+            <p title={shortDescription} className="truncate">
+              {shortDescription}
+            </p>
+            <div className="rating_stars">
+              {calculateRatings(calculateAvgRating)}
+              <span>{productReview?.length}</span>
+            </div>
+            <h5>${productProductPrice}</h5>
           </div>
-          <h5>${productProductPrice}</h5>
-        </div>
+        </Link>
       </div>
     </div>
   );

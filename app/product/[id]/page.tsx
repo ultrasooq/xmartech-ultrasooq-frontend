@@ -33,6 +33,7 @@ const formSchema = z
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
     brandId: z.number().min(1, { message: "Brand is required" }),
+    // productLocationId: z.number().min(1, { message: "Product Location is required" }),
     skuNo: z
       .string()
       .trim()
@@ -223,6 +224,7 @@ const EditProductPage = () => {
       {
         productPrice: updatedFormData.productPrice,
         offerPrice: updatedFormData.offerPrice,
+        // productLocationId: updatedFormData.productLocationId,
       },
     ];
     console.log("edit:", updatedFormData);

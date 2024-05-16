@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { FaCircleCheck } from "react-icons/fa6";
+import Link from "next/link";
 
 type RfqProductCardProps = {
   id: number;
@@ -50,20 +51,24 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
 
   return (
     <div className="product_list_part">
-      <div className="product_list_image relative border border-gray-300">
-        <Image
-          alt="pro-5"
-          src={
-            productImages?.[0]?.image &&
-            validator.isURL(productImages?.[0]?.image)
-              ? productImages[0].image
-              : PlaceholderImage
-          }
-          fill
-        />
-      </div>
+      <Link href={`/trending/${id}`}>
+        <div className="product_list_image relative border border-gray-300">
+          <Image
+            alt="pro-5"
+            src={
+              productImages?.[0]?.image &&
+              validator.isURL(productImages?.[0]?.image)
+                ? productImages[0].image
+                : PlaceholderImage
+            }
+            fill
+          />
+        </div>
+      </Link>
       <div className="product_list_content">
-        <p>{productName}</p>
+        <Link href={`/trending/${id}`}>
+          <p>{productName}</p>
+        </Link>
         {haveAccessToken ? (
           <div className="quantity_wrap mb-2">
             <label>Quantity</label>

@@ -166,6 +166,9 @@ export const useDeleteRfqCartItem = () => {
       queryClient.invalidateQueries({
         queryKey: ["rfq-cart-by-user"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["rfq-products"],
+      });
       // queryClient.invalidateQueries({
       //   queryKey: ["cart-by-device"],
       // });

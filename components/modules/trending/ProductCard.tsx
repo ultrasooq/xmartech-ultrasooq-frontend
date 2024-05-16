@@ -15,6 +15,8 @@ import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import ShareIcon from "@/components/icons/ShareIcon";
+import { useToast } from "@/components/ui/use-toast";
+import { isBrowser } from "@/utils/helper";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -31,6 +33,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   inWishlist,
   haveAccessToken,
 }) => {
+  const { toast } = useToast();
   const offerPercentage = useMemo(
     () => Math.floor(100 - (item.offerPrice / item.productPrice) * 100),
     [item.offerPrice, item.productPrice],
@@ -63,30 +66,43 @@ const ProductCard: React.FC<ProductCardProps> = ({
     [item.productReview?.length],
   );
 
+  const copyToClipboard = () => {
+    if (!isBrowser()) return;
+    navigator.clipboard.writeText(
+      `https://dev.ultrasooq.com/trending/${item.id}`,
+    );
+    toast({
+      title: "Copied",
+      description: "Link copied to clipboard",
+      variant: "info",
+    });
+  };
+
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box hover:bg-slate-100">
-        {/* <Link href={`/trending/${item.id}`}> */}
-        <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-          <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
-        </div>
-        <div className="relative mx-auto mb-4 h-36 w-36">
-          <Image
-            src={
-              item?.productImage && validator.isURL(item.productImage)
-                ? item.productImage
-                : PlaceholderImage
-            }
-            alt="product-image"
-            fill
-            sizes="(max-width: 768px) 100vw,
+        <Link href={`/trending/${item.id}`}>
+          <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+            <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
+          </div>
+          <div className="relative mx-auto mb-4 h-36 w-36">
+            <Image
+              src={
+                item?.productImage && validator.isURL(item.productImage)
+                  ? item.productImage
+                  : PlaceholderImage
+              }
+              alt="product-image"
+              fill
+              sizes="(max-width: 768px) 100vw,
               (max-width: 1200px) 50vw,
               33vw"
-            className="object-contain"
-            blurDataURL="/images/product-placeholder.png"
-            placeholder="blur"
-          />
-        </div>
+              className="object-contain"
+              blurDataURL="/images/product-placeholder.png"
+              placeholder="blur"
+            />
+          </div>
+        </Link>
 
         <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
           <Button
@@ -119,28 +135,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <Button
             variant="ghost"
             className="relative h-8 w-8 rounded-full p-0 shadow-md"
-            onClick={() => {
-              console.log("shared");
-            }}
+            onClick={copyToClipboard}
           >
             <ShareIcon />
           </Button>
         </div>
 
-        <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-          <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-            {item.productName}
-          </h4>
-          <p title={item.shortDescription} className="truncate">
-            {item.shortDescription}
-          </p>
-          <div className="my-1 flex">
-            {calculateRatings(calculateAvgRating)}
-            <span className="ml-2">{item.productReview?.length}</span>
+        <Link href={`/trending/${item.id}`}>
+          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
+            <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
+              {item.productName}
+            </h4>
+            <p title={item.shortDescription} className="truncate">
+              {item.shortDescription}
+            </p>
+            <div className="my-1 flex">
+              {calculateRatings(calculateAvgRating)}
+              <span className="ml-2">{item.productReview?.length}</span>
+            </div>
+            <h5>${item.productProductPrice}</h5>
           </div>
-          <h5>${item.productProductPrice}</h5>
-        </div>
-        {/* </Link> */}
+        </Link>
       </div>
     </div>
   );

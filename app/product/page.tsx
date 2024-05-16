@@ -28,6 +28,7 @@ const formSchemaForTypeP = z
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
     brandId: z.number().min(1, { message: "Brand is required" }),
+    // productLocationId: z.number().min(1, { message: "Product Location is required" }),
     skuNo: z
       .string()
       .trim()
@@ -224,6 +225,7 @@ const CreateProductPage = () => {
         productPrice:
           activeProductType === "R" ? 0 : updatedFormData.productPrice,
         offerPrice: activeProductType === "R" ? 0 : updatedFormData.offerPrice,
+        // productLocationId: updatedFormData.productLocationId,
       },
     ];
     if (activeProductType === "R") {
