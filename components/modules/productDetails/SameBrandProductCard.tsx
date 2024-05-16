@@ -21,6 +21,7 @@ type SameBrandProductCardProps = {
   productName: string;
   productImages: { id: number; image: string }[];
   shortDescription: string;
+  productProductPrice?: number;
   productPrice: string;
   offerPrice: string;
   productReview: { rating: number }[];
@@ -37,6 +38,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   shortDescription,
   productPrice,
   offerPrice,
+  productProductPrice,
   productReview,
   onAdd,
   onWishlist,
@@ -143,7 +145,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
             {calculateRatings(calculateAvgRating)}
             <span>{productReview?.length}</span>
           </div>
-          <h5>${offerPrice}</h5>
+          <h5>${productProductPrice}</h5>
         </div>
       </div>
     </div>

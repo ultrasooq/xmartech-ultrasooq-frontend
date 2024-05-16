@@ -20,6 +20,7 @@ type ProductCardProps = {
   productName: string;
   productImages: { id: number; image: string }[];
   shortDescription: string;
+  productProductPrice?: number;
   offerPrice: number;
   productPrice: number;
   productReview: { rating: number }[];
@@ -34,6 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   productName,
   productImages,
   shortDescription,
+  productProductPrice,
   offerPrice,
   productPrice,
   productReview,
@@ -138,7 +140,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </h4>
         <div className="mt-2.5 w-full">
           <h4 className="font-lg font-normal uppercase text-olive-green">
-            ${offerPrice}
+            ${productProductPrice}
           </h4>
         </div>
         <p className="truncate" title={shortDescription}>

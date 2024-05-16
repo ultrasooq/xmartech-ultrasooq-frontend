@@ -8,11 +8,12 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 type ProductCardProps = {
   cartId: number;
   productId: number;
+  productPriceId: number;
   productName: string;
   offerPrice: string;
   productQuantity: number;
   productImages: { id: number; image: string }[];
-  onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
+  onAdd: (args0: number, args1: "add" | "remove", args2: number) => void;
   onRemove: (args0: number) => void;
   onWishlist: (args0: number) => void;
   haveAccessToken: boolean;
@@ -21,6 +22,7 @@ type ProductCardProps = {
 const ProductCard: React.FC<ProductCardProps> = ({
   cartId,
   productId,
+  productPriceId,
   productName,
   offerPrice,
   productQuantity,
@@ -42,7 +44,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="image-container">
           <Image
             src={productImages?.[0]?.image || PlaceholderImage}
-            alt=""
+            alt="product-image"
             height={108}
             width={108}
           />
@@ -58,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity - 1);
-                    onAdd(quantity - 1, productId, "remove");
+                    onAdd(quantity - 1, "remove", productPriceId);
                   }}
                   disabled={quantity === 0}
                 >
@@ -75,7 +77,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity + 1);
-                    onAdd(quantity + 1, productId, "add");
+                    onAdd(quantity + 1, "add", productPriceId);
                   }}
                 >
                   <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
@@ -109,7 +111,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </figure>
       <div className="right-info">
         <h6>Price</h6>
-        <h5>${quantity * Number(offerPrice)}</h5>
+        <h5>
+          $
+          {quantity *
+            (offerPrice
+              ? isNaN(Number(offerPrice))
+                ? 0
+                : Number(offerPrice)
+              : 0)}
+        </h5>
       </div>
     </div>
   );
