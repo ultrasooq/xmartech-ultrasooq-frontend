@@ -16,8 +16,9 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
+import { v4 as uuidv4 } from "uuid";
 
-const formSchema = z
+const formSchemaForTypeP = z
   .object({
     productName: z
       .string()
@@ -79,11 +80,51 @@ const formSchema = z
     }
   });
 
+const formSchemaForTypeR = z.object({
+  productName: z
+    .string()
+    .trim()
+    .min(2, { message: "Product Name is required" })
+    .max(50, { message: "Product Name must be less than 50 characters" }),
+  categoryId: z.number().optional(),
+  categoryLocation: z.string().trim().optional(),
+  brandId: z.number().min(1, { message: "Brand is required" }),
+  productTagList: z
+    .array(
+      z.object({
+        label: z.string().trim(),
+        value: z.number(),
+      }),
+    )
+    .min(1, {
+      message: "Tag is required",
+    })
+    .transform((value) => {
+      let temp: any = [];
+      value.forEach((item) => {
+        temp.push({ tagId: item.value });
+      });
+      return temp;
+    }),
+  productImagesList: z.any().optional(),
+  placeOfOriginId: z
+    .string()
+    .trim()
+    .min(1, { message: "Place of Origin is required" })
+    .transform((value) => Number(value)),
+  shortDescription: z.string().trim(),
+  description: z.string().trim(),
+  specification: z.string().trim(),
+});
+
 const CreateProductPage = () => {
   const router = useRouter();
   const { toast } = useToast();
+  const [activeProductType, setActiveProductType] = useState<string>();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(
+      activeProductType === "R" ? formSchemaForTypeR : formSchemaForTypeP,
+    ),
     defaultValues: {
       productName: "",
       categoryId: 0,
@@ -101,8 +142,6 @@ const CreateProductPage = () => {
       productImages: [],
     },
   });
-
-  const [activeProductType, setActiveProductType] = useState<string>();
 
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
@@ -182,10 +221,15 @@ const CreateProductPage = () => {
     delete updatedFormData.productImages;
     updatedFormData.productPriceList = [
       {
-        productPrice: updatedFormData.productPrice,
-        offerPrice: updatedFormData.offerPrice,
+        productPrice:
+          activeProductType === "R" ? 0 : updatedFormData.productPrice,
+        offerPrice: activeProductType === "R" ? 0 : updatedFormData.offerPrice,
       },
     ];
+    if (activeProductType === "R") {
+      updatedFormData.skuNo = uuidv4();
+    }
+
     console.log("add:", updatedFormData);
     // return;
     const response = await createProduct.mutateAsync(updatedFormData);
@@ -238,7 +282,10 @@ const CreateProductPage = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    <BasicInformationSection tagsList={memoizedTags} />
+                    <BasicInformationSection
+                      tagsList={memoizedTags}
+                      activeProductType={activeProductType}
+                    />
                   </div>
                 </div>
 

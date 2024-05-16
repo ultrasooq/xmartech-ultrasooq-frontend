@@ -30,7 +30,7 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
                 <TableHead>Category</TableHead>
                 {/* <TableHead>SKU No</TableHead> */}
                 <TableHead>Brand</TableHead>
-                <TableHead>Price</TableHead>
+                {/* <TableHead>Price</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -61,9 +61,9 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
                   <TableCell th-name="Brand">
                     {item?.brand?.brandName || "-"}
                   </TableCell>
-                  <TableCell th-name="Price">
+                  {/* <TableCell th-name="Price">
                     ${item?.offerPrice || 0}
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

@@ -41,10 +41,12 @@ type ProductImageProps = {
 
 type BasicInformationProps = {
   tagsList: any;
+  activeProductType?: string;
 };
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
+  activeProductType,
 }) => {
   const formContext = useFormContext();
   const { toast } = useToast();
@@ -266,13 +268,15 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
             <BrandSelect />
-            <ControlledTextInput
-              label="SKU No"
-              name="skuNo"
-              placeholder="Enter SKU No"
-              type="number"
-              onWheel={(e) => e.currentTarget.blur()}
-            />
+            {activeProductType !== "R" ? (
+              <ControlledTextInput
+                label="SKU No"
+                name="skuNo"
+                placeholder="Enter SKU No"
+                type="number"
+                onWheel={(e) => e.currentTarget.blur()}
+              />
+            ) : null}
           </div>
 
           <AccordionMultiSelectV2
@@ -514,57 +518,59 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             </div>
           </div>
 
-          <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            <FormField
-              control={formContext.control}
-              name="productPrice"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Product Price</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                        $
+          {activeProductType !== "R" ? (
+            <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+              <FormField
+                control={formContext.control}
+                name="productPrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Product Price</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                          $
+                        </div>
+                        <Input
+                          type="number"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="Product Price"
+                          className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                          {...field}
+                        />
                       </div>
-                      <Input
-                        type="number"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="Product Price"
-                        className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={formContext.control}
-              name="offerPrice"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Offer Price</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                        $
+              <FormField
+                control={formContext.control}
+                name="offerPrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Offer Price</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                          $
+                        </div>
+                        <Input
+                          type="number"
+                          onWheel={(e) => e.currentTarget.blur()}
+                          placeholder="Offer Price"
+                          className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                          {...field}
+                        />
                       </div>
-                      <Input
-                        type="number"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="Offer Price"
-                        className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          ) : null}
 
           <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
             <ControlledSelectInput
