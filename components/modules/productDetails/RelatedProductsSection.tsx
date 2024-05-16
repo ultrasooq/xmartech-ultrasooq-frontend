@@ -59,6 +59,8 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         inWishlist: item?.product_wishlist?.find(
           (ele: any) => ele?.userId === me.data?.data?.id,
         ),
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
       })) || []
     );
   }, [
@@ -68,33 +70,45 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     calculateTagIds,
   ]);
 
-  const handleAddToCart = async (
-    quantity: number,
-    productId: number,
-    actionType: "add" | "remove",
-  ) => {
+  const handleAddToCart = async (quantity: number, productPriceId?: number) => {
     if (haveAccessToken) {
+      if (!productPriceId) {
+        toast({
+          title: `Oops! Something went wrong`,
+          description: "Product Price Id not found",
+          variant: "danger",
+        });
+        return;
+      }
       const response = await updateCartWithLogin.mutateAsync({
-        productId,
+        productPriceId,
         quantity,
       });
 
       if (response.status) {
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          title: `Item added to cart`,
           description: "Check your cart for more details",
           variant: "success",
         });
       }
     } else {
+      if (!productPriceId) {
+        toast({
+          title: `Oops! Something went wrong`,
+          description: "Product Price Id not found",
+          variant: "danger",
+        });
+        return;
+      }
       const response = await updateCartByDevice.mutateAsync({
-        productId,
+        productPriceId,
         quantity,
         deviceId,
       });
       if (response.status) {
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          title: `Item added to cart`,
           description: "Check your cart for more details",
           variant: "success",
         });
@@ -209,9 +223,12 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
                           : "-"
                       }
                       offerPrice={item?.offerPrice}
+                      productProductPrice={item?.productProductPrice}
                       productPrice={item?.productPrice}
                       productReview={item?.productReview}
-                      onAdd={() => handleAddToCart(-1, item?.id, "add")}
+                      onAdd={() =>
+                        handleAddToCart(-1, item?.productProductPriceId)
+                      }
                       onWishlist={() =>
                         handleAddToWishlist(item.id, item?.productWishlist)
                       }
