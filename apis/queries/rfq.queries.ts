@@ -138,6 +138,9 @@ export const useUpdateRfqCartWithLogin = () => {
       queryClient.invalidateQueries({
         queryKey: ["rfq-cart-by-user"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["rfq-products"],
+      });
       // queryClient.invalidateQueries({
       //   queryKey: ["rfq-cart-count-with-login"],
       // });
