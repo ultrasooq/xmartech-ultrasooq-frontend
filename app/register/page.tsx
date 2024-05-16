@@ -230,7 +230,7 @@ export default function RegisterPage() {
                       height={26}
                       width={26}
                     />
-                    <span>Sign In with Facebook</span>
+                    <span>Sign up with Facebook</span>
                   </Button>
                 </li>
                 <li className="w-full p-0 sm:w-6/12 sm:pl-3">
@@ -249,7 +249,7 @@ export default function RegisterPage() {
                       height={26}
                       width={26}
                     />
-                    <span>Sign In with Google</span>
+                    <span>Sign up with Google</span>
                   </Button>
                 </li>
               </ul>
