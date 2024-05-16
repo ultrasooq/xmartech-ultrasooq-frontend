@@ -1,12 +1,13 @@
 import Image from "next/image";
 import React from "react";
+import SuccessfulIcon from "@/public/images/successful.svg";
 
 const PasswordChangeSuccessContent = () => {
   return (
     <div className="flex flex-col items-center">
       <div className="relative mb-2 h-[160px] w-[190px]">
         <Image
-          src="/images/successful.svg"
+          src={SuccessfulIcon}
           className="m-auto"
           alt="successful-icon"
           fill
