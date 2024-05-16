@@ -132,13 +132,15 @@ const CheckoutPage = () => {
         (
           acc: number,
           curr: {
-            productDetails: {
+            productPriceDetails: {
               offerPrice: string;
             };
             quantity: number;
           },
         ) => {
-          return acc + +curr.productDetails.offerPrice * curr.quantity;
+          return (
+            acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
+          );
         },
         0,
       );
@@ -147,13 +149,15 @@ const CheckoutPage = () => {
         (
           acc: number,
           curr: {
-            productDetails: {
+            productPriceDetails: {
               offerPrice: string;
             };
             quantity: number;
           },
         ) => {
-          return acc + +curr.productDetails.offerPrice * curr.quantity;
+          return (
+            acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
+          );
         },
         0,
       );
@@ -166,12 +170,12 @@ const CheckoutPage = () => {
 
   const handleAddToCart = async (
     quantity: number,
-    productId: number,
     actionType: "add" | "remove",
+    productPriceId: number,
   ) => {
     if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
-        productId,
+        productPriceId,
         quantity,
       });
 
@@ -184,7 +188,7 @@ const CheckoutPage = () => {
       }
     } else {
       const response = await updateCartByDevice.mutateAsync({
-        productId,
+        productPriceId,
         quantity,
         deviceId,
       });
@@ -460,10 +464,17 @@ const CheckoutPage = () => {
                       key={item.id}
                       cartId={item.id}
                       productId={item.productId}
-                      productName={item.productDetails.productName}
-                      offerPrice={item.productDetails.offerPrice}
+                      productPriceId={item.productPriceId}
+                      productName={
+                        item.productPriceDetails?.productPrice_product
+                          ?.productName
+                      }
+                      offerPrice={item.productPriceDetails?.offerPrice}
                       productQuantity={item.quantity}
-                      productImages={item.productDetails.productImages}
+                      productImages={
+                        item.productPriceDetails?.productPrice_product
+                          ?.productImages
+                      }
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromCart}
                       onWishlist={handleAddToWishlist}
