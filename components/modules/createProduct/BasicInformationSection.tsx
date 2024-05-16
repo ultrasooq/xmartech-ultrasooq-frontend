@@ -339,7 +339,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   </button>
                                 ) : null}
 
-                                {item.path && isImage(item.path) ? (
+                                {item?.path && isImage(item.path) ? (
                                   <div className="relative h-44">
                                     <Image
                                       src={
@@ -379,7 +379,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                       id="productImages"
                                     />
                                   </div>
-                                ) : item.path && isVideo(item.path) ? (
+                                ) : item?.path && isVideo(item.path) ? (
                                   <div className="relative h-44">
                                     <div className="player-wrapper px-2">
                                       <ReactPlayer
@@ -589,7 +589,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
           <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
             {/* <ControlledSelectInput
               label="Product Location"
-              name="locationId"
+              name="productLocationId"
               options={memoizedLocations}
             /> */}
             <ControlledSelectInput
