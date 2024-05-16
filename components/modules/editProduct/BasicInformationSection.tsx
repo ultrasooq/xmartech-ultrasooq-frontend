@@ -14,10 +14,15 @@ import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
 // import { useUploadFile } from "@/apis/queries/upload.queries";
 import { v4 as uuidv4 } from "uuid";
-import { useBrands, useCountries } from "@/apis/queries/masters.queries";
+import {
+  useBrands,
+  useCountries,
+  useLocation,
+} from "@/apis/queries/masters.queries";
 import {
   IBrands,
   ICountries,
+  ILocations,
   ISelectOptions,
 } from "@/utils/types/common.types";
 import {
@@ -61,6 +66,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const categoryQuery = useCategory();
   const brandsQuery = useBrands({});
   const countriesQuery = useCountries();
+  const locationsQuery = useLocation();
   const subCategoryById = useSubCategoryById(currentId, !!currentId);
 
   const watchProductImages = formContext.watch("productImages");
@@ -88,6 +94,14 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       }) || []
     );
   }, [countriesQuery?.data?.data?.length]);
+
+  const memoizedLocations = useMemo(() => {
+    return (
+      locationsQuery?.data?.data.map((item: ILocations) => {
+        return { label: item.locationName, value: item.id?.toString() };
+      }) || []
+    );
+  }, [locationsQuery?.data?.data?.length]);
 
   const handleEditPreviewImage = (id: string, item: FileList) => {
     const tempArr = watchProductImages || [];
@@ -586,6 +600,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
           </div>
 
           <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+            {/* <ControlledSelectInput
+              label="Product Location"
+              name="locationId"
+              options={memoizedLocations}
+            /> */}
             <ControlledSelectInput
               label="Place of Origin"
               name="placeOfOriginId"
