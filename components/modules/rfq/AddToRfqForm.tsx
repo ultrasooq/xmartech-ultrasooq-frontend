@@ -20,6 +20,8 @@ import {
   useUpdateProduct,
 } from "@/apis/queries/product.queries";
 import { useAddProductDuplicateRfq } from "@/apis/queries/rfq.queries";
+import { imageExtensions, videoExtensions } from "@/utils/constants";
+import ReactPlayer from "react-player/lazy";
 
 type AddToRfqFormProps = {
   onClose: () => void;
@@ -113,12 +115,50 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
       const stringTypeArrays = watchProductImages
         .filter((item: any) => typeof item.path !== "object")
-        .map((item: any) => ({ image: item?.path, imageName: item?.path }));
+        .map((item: any) => {
+          const extension = item.path.split(".").pop()?.toLowerCase();
 
-      const formattedimageUrlArrays = imageUrlArray?.map((item: any) => ({
-        image: item,
-        imageName: item,
-      }));
+          if (extension) {
+            if (videoExtensions.includes(extension)) {
+              const videoName: string = item?.path.split("/").pop()!;
+              return {
+                video: item?.path,
+                videoName,
+              };
+            } else if (imageExtensions.includes(extension)) {
+              const imageName: string = item?.path.split("/").pop()!;
+              return {
+                image: item?.path,
+                imageName,
+              };
+            }
+          }
+        });
+
+      const formattedimageUrlArrays = imageUrlArray?.map((item: any) => {
+        const extension = item.split(".").pop()?.toLowerCase();
+
+        if (extension) {
+          if (videoExtensions.includes(extension)) {
+            const videoName: string = item.split("/").pop()!;
+            return {
+              video: item,
+              videoName,
+            };
+          } else if (imageExtensions.includes(extension)) {
+            const imageName: string = item.split("/").pop()!;
+            return {
+              image: item,
+              imageName,
+            };
+          }
+        }
+
+        return {
+          image: item,
+          imageName: item,
+        };
+      });
 
       updatedFormData.productImages = [
         ...stringTypeArrays,
@@ -126,17 +166,12 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       ];
 
       if (updatedFormData.productImages.length) {
-        updatedFormData.productImagesList = updatedFormData.productImages.map(
-          (item: any) => ({
-            image: item?.image,
-            imageName: item?.imageName,
-          }),
-        );
+        updatedFormData.productImagesList = updatedFormData.productImages;
       }
     }
 
     delete updatedFormData.productImages;
-    // console.log(updatedFormData);
+    console.log(updatedFormData);
     // return;
     if (
       selectedProductId &&
@@ -247,25 +282,67 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     }
   };
 
+  const isVideo = (path: string) => {
+    if (typeof path === "string") {
+      const extension = path.split(".").pop()?.toLowerCase();
+      if (extension) {
+        if (videoExtensions.includes(extension)) {
+          return true;
+        }
+      }
+      return false;
+    } else if (typeof path === "object") {
+      return true;
+    }
+  };
+
+  const isImage = (path: any) => {
+    if (typeof path === "string") {
+      const extension = path.split(".").pop()?.toLowerCase();
+      if (extension) {
+        if (imageExtensions.includes(extension)) {
+          return true;
+        }
+      }
+      return false;
+    } else if (typeof path === "object" && path?.type?.includes("image")) {
+      return true;
+    }
+  };
+
   useEffect(() => {
     if (productQueryById?.data?.data) {
       const product = productQueryById?.data?.data;
 
       const productImages = product?.productImages?.length
         ? product?.productImages?.map((item: any) => {
-            return {
-              path: item?.image,
-              id: uuidv4(),
-            };
+            if (item?.image) {
+              return {
+                path: item?.image,
+                id: uuidv4(),
+              };
+            } else if (item?.video) {
+              return {
+                path: item?.video,
+                id: uuidv4(),
+              };
+            }
           })
         : [];
 
       const productImagesList = product?.productImages
         ? product?.productImages?.map((item: any) => {
-            return {
-              image: item?.imageName,
-              imageName: item?.image,
-            };
+            if (item?.video) {
+              return {
+                video: item?.video,
+                videoName: item?.videoName,
+              };
+            } else if (item?.image) {
+              return {
+                image: item?.image,
+                imageName: item?.imageName,
+              };
+            }
           })
         : undefined;
 
@@ -333,24 +410,101 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                     />
                                   </button>
                                 ) : null}
-                                {item.path ? (
-                                  <Image
-                                    src={
-                                      typeof item.path === "object"
-                                        ? URL.createObjectURL(item.path)
-                                        : typeof item.path === "string"
-                                          ? item.path
-                                          : "/images/no-image.jpg"
-                                    }
-                                    alt="profile"
-                                    fill
-                                    priority
-                                  />
+                                {item.path && isImage(item.path) ? (
+                                  <div className="relative h-44">
+                                    <Image
+                                      src={
+                                        typeof item.path === "object"
+                                          ? URL.createObjectURL(item.path)
+                                          : typeof item.path === "string"
+                                            ? item.path
+                                            : "/images/no-image.jpg"
+                                      }
+                                      alt="profile"
+                                      fill
+                                      priority
+                                    />
+                                    <Input
+                                      type="file"
+                                      accept="image/*"
+                                      multiple={false}
+                                      className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                      onChange={(event) => {
+                                        if (event.target.files) {
+                                          if (
+                                            event.target.files[0].size > 1048576
+                                          ) {
+                                            toast({
+                                              title:
+                                                "One of your file size should be less than 1MB",
+                                              variant: "danger",
+                                            });
+                                            return;
+                                          }
+                                          handleEditPreviewImage(
+                                            item?.id,
+                                            event.target.files,
+                                          );
+                                        }
+                                      }}
+                                      id="productImages"
+                                    />
+                                  </div>
+                                ) : item.path && isVideo(item.path) ? (
+                                  <div className="relative h-44">
+                                    <div className="player-wrapper px-2">
+                                      <ReactPlayer
+                                        url={
+                                          typeof item.path === "object"
+                                            ? URL.createObjectURL(item.path)
+                                            : typeof item.path === "string"
+                                              ? item.path
+                                              : "/images/no-image.jpg"
+                                        }
+                                        width="100%"
+                                        height="100%"
+                                        // playing
+                                        controls
+                                      />
+                                    </div>
+
+                                    <div className="absolute h-20 w-full p-5">
+                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
+                                        Upload Video
+                                      </p>
+                                    </div>
+                                    <Input
+                                      type="file"
+                                      accept="video/*"
+                                      multiple={false}
+                                      className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+                                      onChange={(event) => {
+                                        if (event.target.files) {
+                                          if (
+                                            event.target.files[0].size > 1048576
+                                          ) {
+                                            toast({
+                                              title:
+                                                "One of your file size should be less than 1MB",
+                                              variant: "danger",
+                                            });
+                                            return;
+                                          }
+
+                                          handleEditPreviewImage(
+                                            item?.id,
+                                            event.target.files,
+                                          );
+                                        }
+                                      }}
+                                      id="productImages"
+                                    />
+                                  </div>
                                 ) : (
-                                  <AddImageContent description="Drop your Image , or " />
+                                  <AddImageContent description="Drop your File , or " />
                                 )}
 
-                                <Input
+                                {/* <Input
                                   type="file"
                                   accept="image/*"
                                   multiple={false}
@@ -367,7 +521,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                     }
                                   }
                                   id="productImages"
-                                />
+                                /> */}
                               </div>
                             </div>
                           </FormControl>
@@ -391,7 +545,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
                     <Input
                       type="file"
-                      accept="image/*"
+                      accept="image/*, video/*"
                       multiple
                       className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
                       onChange={(event) =>

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/lib/rfqStore";
+// import { useCartStore } from "@/lib/rfqStore";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
@@ -26,7 +26,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
   onAdd,
   onRemove,
 }) => {
-  const cart = useCartStore();
+  // const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                 onClick={() => {
                   setQuantity(quantity - 1);
                   onAdd(quantity - 1, rfqProductId, "remove");
-                  cart.updateCart({ quantity: quantity - 1, rfqProductId });
+                  // cart.updateCart({ quantity: quantity - 1, rfqProductId });
                 }}
                 disabled={quantity === 0}
               >
@@ -81,7 +81,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                 onClick={() => {
                   setQuantity(quantity + 1);
                   onAdd(quantity + 1, rfqProductId, "add");
-                  cart.updateCart({ quantity: quantity + 1, rfqProductId });
+                  // cart.updateCart({ quantity: quantity + 1, rfqProductId });
                 }}
               >
                 <Image
@@ -98,7 +98,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
             className="relative hover:shadow-sm"
             onClick={() => {
               onRemove(id);
-              cart.deleteCartItem(rfqProductId);
+              // cart.deleteCartItem(rfqProductId);
             }}
           >
             Remove

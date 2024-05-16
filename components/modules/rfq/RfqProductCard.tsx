@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/lib/rfqStore";
+// import { useCartStore } from "@/lib/rfqStore";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -41,7 +41,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   haveAccessToken,
 }) => {
   const router = useRouter();
-  const cart = useCartStore();
+  // const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -75,10 +75,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   onClick={() => {
                     setQuantity(quantity - 1);
                     onAdd(quantity - 1, id, "remove");
-                    cart.updateCart({
-                      quantity: quantity - 1,
-                      rfqProductId: id,
-                    });
+                    // cart.updateCart({
+                    //   quantity: quantity - 1,
+                    //   rfqProductId: id,
+                    // });
                   }}
                   disabled={quantity === 1}
                 >
@@ -96,10 +96,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   onClick={() => {
                     setQuantity(quantity + 1);
                     onAdd(quantity + 1, id, "add");
-                    cart.updateCart({
-                      quantity: quantity + 1,
-                      rfqProductId: id,
-                    });
+                    // cart.updateCart({
+                    //   quantity: quantity + 1,
+                    //   rfqProductId: id,
+                    // });
                   }}
                 >
                   <Image
@@ -140,7 +140,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 className="add_to_cart_button"
                 onClick={() => {
                   onAdd(1, id, "add");
-                  cart.updateCart({ quantity: 1, rfqProductId: id });
+                  // cart.updateCart({ quantity: 1, rfqProductId: id });
                 }}
               >
                 Add To RFQ Cart

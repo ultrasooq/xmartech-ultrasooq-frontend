@@ -18,7 +18,7 @@ import RfqCartMenu from "@/components/modules/rfq/RfqCartMenu";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useClickOutside } from "use-events";
-import { useCartStore } from "@/lib/rfqStore";
+// import { useCartStore } from "@/lib/rfqStore";
 // import CategoryFilterList from "@/components/modules/rfq/CategoryFilterList";
 // import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 import {
@@ -50,7 +50,7 @@ const RfqPage = () => {
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(8);
-  const cart = useCartStore();
+  // const cart = useCartStore();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
@@ -100,19 +100,29 @@ const RfqPage = () => {
         rfqProductsQuery.data?.data.map((item: any) => {
           return {
             ...item,
-            isAddedToCart: cart.cart.some(
-              (cartItem) => cartItem.rfqProductId === item.id,
-            ),
+            // isAddedToCart: cart.cart.some(
+            //   (cartItem) => cartItem.rfqProductId === item.id,
+            // ),
+            // quantity:
+            //   cart.cart.find((cartItem) => cartItem.rfqProductId === item.id)
+            //     ?.quantity || 0,
+            isAddedToCart:
+              item?.product_rfqCart?.length &&
+              item?.product_rfqCart[0]?.quantity > 0,
             quantity:
-              cart.cart.find((cartItem) => cartItem.rfqProductId === item.id)
-                ?.quantity || 0,
+              item?.product_rfqCart?.length &&
+              item?.product_rfqCart[0]?.quantity,
           };
         }) || []
       );
     } else {
       return [];
     }
-  }, [rfqProductsQuery.data?.data, me?.data?.data, cart.cart]);
+  }, [
+    rfqProductsQuery.data?.data,
+    me?.data?.data,
+    //  cart.cart
+  ]);
 
   useEffect(() => {
     if (isClickedOutside) {
