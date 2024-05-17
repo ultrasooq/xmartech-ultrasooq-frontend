@@ -42,14 +42,14 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
         Object.keys(formData)
           .map((item) => formData[item])
           ?.map((item) => (
-            <div className="mb-5 w-full">
+            <div key={item?.id} className="mb-5 w-full">
               <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
                 {item?.sectionTitle}
               </label>
 
               <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                 {item?.fields?.map((field: any) => (
-                  <div className="flex flex-col">
+                  <div key={field?.id} className="flex flex-col">
                     <Label className="mb-3.5">{field?.label}</Label>
 
                     {field?.type === "text" ? (
@@ -66,7 +66,10 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
                     ) : field?.type === "checkbox" ? (
                       <div className="flex gap-5">
                         {field?.options?.map((option: any) => (
-                          <div className="flex flex-wrap items-center space-x-2">
+                          <div
+                            key={option}
+                            className="flex flex-wrap items-center space-x-2"
+                          >
                             <Checkbox id={option} />
                             <Label>{option}</Label>
                           </div>
@@ -79,7 +82,11 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
                         </SelectTrigger>
                         <SelectContent>
                           {field?.options?.map((option: any) => (
-                            <SelectItem className="!py-2" value={option}>
+                            <SelectItem
+                              key={option}
+                              className="!py-2"
+                              value={option}
+                            >
                               {option}
                             </SelectItem>
                           ))}
@@ -91,7 +98,10 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
                         className="flex flex-wrap gap-5"
                       >
                         {field?.options?.map((option: any) => (
-                          <div className="flex items-center space-x-2">
+                          <div
+                            key={option}
+                            className="flex items-center space-x-2"
+                          >
                             <RadioGroupItem value={option} id={option} />
                             <Label htmlFor={option}>{option}</Label>
                           </div>
