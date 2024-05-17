@@ -56,7 +56,6 @@ const ProductListPage = () => {
     setSearchTerm(event.target.value);
   }, 1000);
 
-  const handleEditProductPage = (id: number) => router.push(`/product/${id}`);
   const handleToggleDeleteModal = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
     setSelectedProductId(undefined);
@@ -200,21 +199,19 @@ const ProductListPage = () => {
                               <HiOutlineDotsCircleHorizontal />
                             </button>
                             <div className="td-dots-dropdown-menu">
-                              <button
-                                type="button"
-                                className="td-dots-dropdown-item"
-                                onClick={() => handleEditProductPage(item?.id)}
+                              <Link
+                                href={`/product/${item?.id}`}
+                                className="td-dots-dropdown-item flex items-center gap-1"
                               >
-                                <span className="icon-container">
-                                  <img
-                                    src="/images/td-edit-icon.svg"
-                                    height={"auto"}
-                                    width={"auto"}
-                                    alt=""
-                                  />
-                                </span>
+                                <Image
+                                  src="/images/td-edit-icon.svg"
+                                  height={0}
+                                  width={0}
+                                  alt="edit-icon"
+                                  className="h-4 w-4"
+                                />
                                 Edit
-                              </button>
+                              </Link>
                               <button
                                 type="button"
                                 className="td-dots-dropdown-item"

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -11,7 +11,6 @@ import ProductDetailsSection from "@/components/modules/createProduct/ProductDet
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
 import {
-  useCreateProduct,
   useProductById,
   useUpdateProduct,
 } from "@/apis/queries/product.queries";
@@ -22,6 +21,8 @@ import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
+import BackgroundImage from "@/public/images/before-login-bg.png";
+import LoaderIcon from "@/public/images/load.png";
 
 const formSchema = z
   .object({
@@ -33,7 +34,11 @@ const formSchema = z
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
     brandId: z.number().min(1, { message: "Brand is required" }),
-    // productLocationId: z.number().min(1, { message: "Product Location is required" }),
+    productLocationId: z
+      .string()
+      .trim()
+      .min(1, { message: "Product Location is required" })
+      .transform((value) => Number(value)),
     skuNo: z
       .string()
       .trim()
@@ -99,6 +104,7 @@ const EditProductPage = () => {
       categoryId: 0,
       categoryLocation: "",
       brandId: 0,
+      productLocationId: "",
       skuNo: "",
       productTagList: undefined,
       productImagesList: undefined,
@@ -114,7 +120,6 @@ const EditProductPage = () => {
 
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
-  const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const productQueryById = useProductById(
     {
@@ -218,15 +223,15 @@ const EditProductPage = () => {
     }
 
     delete updatedFormData.productImages;
-
     updatedFormData.productId = Number(searchParams?.id);
     updatedFormData.productPriceList = [
       {
         productPrice: updatedFormData.productPrice,
         offerPrice: updatedFormData.offerPrice,
-        // productLocationId: updatedFormData.productLocationId,
+        productLocationId: updatedFormData.productLocationId,
       },
     ];
+    delete updatedFormData.productLocationId;
     console.log("edit:", updatedFormData);
     // return;
     const response = await updateProduct.mutateAsync(updatedFormData);
@@ -238,9 +243,9 @@ const EditProductPage = () => {
       });
       form.reset();
 
-      // queryClient.invalidateQueries({
-      //   queryKey: ["product-by-id", activeProductId],
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ["product-by-id", searchParams?.id],
+      });
       productQueryById.refetch();
 
       router.push("/products");
@@ -305,6 +310,9 @@ const EditProductPage = () => {
           ? product?.categoryLocation
           : "",
         brandId: product?.brandId ? product?.brandId : 0,
+        productLocationId: product?.product_productPrice?.[0]?.productLocationId
+          ? String(product?.product_productPrice?.[0]?.productLocationId)
+          : "",
         skuNo: product?.skuNo,
         productTagList: productTagList || undefined,
         productImages: productImages || [],
@@ -319,14 +327,14 @@ const EditProductPage = () => {
         specification: product?.specification,
       });
     }
-  }, [productQueryById?.data?.data]);
+  }, [productQueryById?.data?.data, searchParams?.id]);
 
   return (
     <>
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
-            src="/images/before-login-bg.png"
+            src={BackgroundImage}
             className="h-full w-full object-cover object-center"
             alt="background"
             fill
@@ -337,12 +345,14 @@ const EditProductPage = () => {
           <div className="flex flex-wrap">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-                <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    <BasicInformationSection
-                      tagsList={memoizedTags}
-                      isEditable={!!form.getValues("categoryLocation")}
-                    />
+                <BasicInformationSection
+                  tagsList={memoizedTags}
+                  isEditable={!!form.getValues("categoryLocation")}
+                />
+
+                <div className="grid w-full grid-cols-1 gap-x-5">
+                  <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+                    Hello
                   </div>
                 </div>
 
@@ -366,7 +376,7 @@ const EditProductPage = () => {
                         {updateProduct.isPending || uploadMultiple.isPending ? (
                           <>
                             <Image
-                              src="/images/load.png"
+                              src={LoaderIcon}
                               alt="loader-icon"
                               width={20}
                               height={20}

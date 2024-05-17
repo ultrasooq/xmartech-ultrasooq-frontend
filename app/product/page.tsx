@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
 import { v4 as uuidv4 } from "uuid";
+import BackgroundImage from "@/public/images/before-login-bg.png";
+import LoaderIcon from "@/public/images/load.png";
 
 const formSchemaForTypeP = z
   .object({
@@ -28,7 +30,11 @@ const formSchemaForTypeP = z
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
     brandId: z.number().min(1, { message: "Brand is required" }),
-    // productLocationId: z.number().min(1, { message: "Product Location is required" }),
+    productLocationId: z
+      .string()
+      .trim()
+      .min(1, { message: "Product Location is required" })
+      .transform((value) => Number(value)),
     skuNo: z
       .string()
       .trim()
@@ -225,9 +231,13 @@ const CreateProductPage = () => {
         productPrice:
           activeProductType === "R" ? 0 : updatedFormData.productPrice,
         offerPrice: activeProductType === "R" ? 0 : updatedFormData.offerPrice,
-        // productLocationId: updatedFormData.productLocationId,
+        productLocationId: updatedFormData.productLocationId,
       },
     ];
+    if (activeProductType === "R") {
+      delete updatedFormData.productPriceList[0].productLocationId;
+    }
+    delete updatedFormData.productLocationId;
     if (activeProductType === "R") {
       updatedFormData.skuNo = uuidv4();
     }
@@ -271,7 +281,7 @@ const CreateProductPage = () => {
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
-            src="/images/before-login-bg.png"
+            src={BackgroundImage}
             className="h-full w-full object-cover object-center"
             alt="background"
             fill
@@ -282,14 +292,10 @@ const CreateProductPage = () => {
           <div className="flex flex-wrap">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-                <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    <BasicInformationSection
-                      tagsList={memoizedTags}
-                      activeProductType={activeProductType}
-                    />
-                  </div>
-                </div>
+                <BasicInformationSection
+                  tagsList={memoizedTags}
+                  activeProductType={activeProductType}
+                />
 
                 <ProductDetailsSection />
 
@@ -311,7 +317,7 @@ const CreateProductPage = () => {
                         {createProduct.isPending || uploadMultiple.isPending ? (
                           <>
                             <Image
-                              src="/images/load.png"
+                              src={LoaderIcon}
                               alt="loader-icon"
                               width={20}
                               height={20}
