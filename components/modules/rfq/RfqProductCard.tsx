@@ -43,10 +43,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
 }) => {
   const router = useRouter();
   // const cart = useCartStore();
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
-    setQuantity(productQuantity || 1);
+    setQuantity(productQuantity || 0);
   }, [productQuantity]);
 
   return (
@@ -85,7 +85,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     //   rfqProductId: id,
                     // });
                   }}
-                  disabled={quantity === 1}
+                  disabled={quantity === 0}
                 >
                   <Image
                     src="/images/upDownBtn-minus.svg"
