@@ -327,7 +327,7 @@ const EditProductPage = () => {
         specification: product?.specification,
       });
     }
-  }, [productQueryById?.data?.data]);
+  }, [productQueryById?.data?.data, searchParams?.id]);
 
   return (
     <>
