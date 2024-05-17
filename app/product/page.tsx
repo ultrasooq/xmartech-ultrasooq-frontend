@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
 import { v4 as uuidv4 } from "uuid";
+import BackgroundImage from "@/public/images/before-login-bg.png";
+import LoaderIcon from "@/public/images/load.png";
 
 const formSchemaForTypeP = z
   .object({
@@ -271,7 +273,7 @@ const CreateProductPage = () => {
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
-            src="/images/before-login-bg.png"
+            src={BackgroundImage}
             className="h-full w-full object-cover object-center"
             alt="background"
             fill
@@ -282,12 +284,14 @@ const CreateProductPage = () => {
           <div className="flex flex-wrap">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-                <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    <BasicInformationSection
-                      tagsList={memoizedTags}
-                      activeProductType={activeProductType}
-                    />
+                <BasicInformationSection
+                  tagsList={memoizedTags}
+                  activeProductType={activeProductType}
+                />
+
+                <div className="grid w-full grid-cols-1 gap-x-5">
+                  <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+                    Hello
                   </div>
                 </div>
 
@@ -311,7 +315,7 @@ const CreateProductPage = () => {
                         {createProduct.isPending || uploadMultiple.isPending ? (
                           <>
                             <Image
-                              src="/images/load.png"
+                              src={LoaderIcon}
                               alt="loader-icon"
                               width={20}
                               height={20}

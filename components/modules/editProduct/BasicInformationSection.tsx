@@ -193,262 +193,273 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   );
 
   return (
-    <div className="flex w-full flex-wrap">
-      <div className="mb-4 w-full">
-        <div className="mt-2.5 w-full">
-          <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-            Basic Information
-          </label>
-        </div>
-      </div>
-      <div className="mb-3.5 w-full">
-        <div className="flex flex-wrap">
-          <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
-            <div className="flex w-full flex-col justify-between gap-y-2">
-              <Label>Product Category</Label>
-              <Controller
-                name="categoryId"
-                control={formContext.control}
-                render={({ field }) => (
-                  <select
-                    {...field}
-                    className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                    onChange={(e) => {
-                      if (e.target.value === "") {
-                        return;
-                      }
-                      setCurrentId(e.target.value);
-                      setCurrentIndex(0);
-
-                      if (listIds[0]) {
-                        let tempIds = listIds;
-                        tempIds[0] = e.target.value;
-                        tempIds = tempIds.slice(0, 1);
-
-                        setListIds([...tempIds]);
-                        return;
-                      }
-                      setListIds([...listIds, e.target.value]);
-                    }}
-                    value={catList[0]?.id || ""}
-                  >
-                    <option value="">Select Category</option>
-                    {memoizedCategories.map((item: ISelectOptions) => (
-                      <option value={item.value?.toString()} key={item.value}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              />
-              <p className="text-[13px] font-medium text-red-500">
-                {formContext.formState.errors["categoryId"]?.message as string}
-              </p>
-            </div>
-
-            {catList.length > 0 &&
-              catList.map((item, index) => (
-                <div
-                  key={item?.id}
-                  className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
-                >
-                  <div className="flex w-full flex-col justify-between gap-y-2">
-                    <Label>Sub Category</Label>
-                    <select
-                      className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                      onChange={(e) => {
-                        if (e.target.value === "") {
-                          return;
-                        }
-
-                        setCurrentId(e.target.value);
-                        setCurrentIndex(index + 1);
-
-                        if (listIds[index + 1]) {
-                          let tempIds = listIds;
-                          tempIds[index + 1] = e.target.value;
-                          tempIds = tempIds.slice(0, index + 2);
-                          setListIds([...tempIds]);
-                          return;
-                        }
-                        setListIds([...listIds, e.target.value]);
-                      }}
-                      value={item?.children
-                        ?.find((item: any) =>
-                          listIds.includes(item.id?.toString()) ? item : "",
-                        )
-                        ?.id?.toString()}
-                    >
-                      <option value="">Select Sub Category</option>
-                      {item?.children?.map((item: any) => (
-                        <option value={item.id?.toString()} key={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              ))}
-          </div>
-
-          <ControlledTextInput
-            label="Product Name"
-            name="productName"
-            placeholder="Product Name"
-          />
-
-          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-            <BrandSelect />
-            <ControlledTextInput
-              label="SKU No"
-              name="skuNo"
-              placeholder="Enter SKU No"
-              type="number"
-              onWheel={(e) => e.currentTarget.blur()}
-            />
-          </div>
-
-          <AccordionMultiSelectV2
-            label="Tag"
-            name="productTagList"
-            options={tagsList || []}
-            placeholder="Tag"
-            error={
-              formContext.formState.errors["productTagList"]?.message as string
-            }
-          />
-
-          <div className="relative mb-4 w-full">
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none text-color-dark">
-                Product Image
+    <div className="grid w-full grid-cols-4 gap-x-5">
+      <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+        <div className="flex w-full flex-wrap">
+          <div className="mb-4 w-full">
+            <div className="mt-2.5 w-full">
+              <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                Basic Information
               </label>
-              <div className="flex w-full flex-wrap">
-                <div className="grid grid-cols-5">
-                  {watchProductImages?.map((item: any, index: number) => (
-                    <FormField
-                      control={formContext.control}
-                      name="productImages"
-                      key={index}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <div className="relative mb-3 w-full px-2">
-                              <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                                {watchProductImages?.length ? (
-                                  <button
-                                    type="button"
-                                    className="common-close-btn-uploader-s1"
-                                    onClick={() => {
-                                      handleRemovePreviewImage(item?.id);
-                                      if (photosRef.current)
-                                        photosRef.current.value = "";
-                                    }}
-                                  >
-                                    <Image
-                                      src={CloseWhiteIcon}
-                                      alt="close-icon"
-                                      height={22}
-                                      width={22}
-                                    />
-                                  </button>
-                                ) : null}
+            </div>
+          </div>
+          <div className="mb-3.5 w-full">
+            <div className="flex flex-wrap">
+              <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
+                <div className="flex w-full flex-col justify-between gap-y-2">
+                  <Label>Product Category</Label>
+                  <Controller
+                    name="categoryId"
+                    control={formContext.control}
+                    render={({ field }) => (
+                      <select
+                        {...field}
+                        className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                        onChange={(e) => {
+                          if (e.target.value === "") {
+                            return;
+                          }
+                          setCurrentId(e.target.value);
+                          setCurrentIndex(0);
 
-                                {item?.path && isImage(item.path) ? (
-                                  <div className="relative h-44">
-                                    <Image
-                                      src={
-                                        typeof item.path === "object"
-                                          ? URL.createObjectURL(item.path)
-                                          : typeof item.path === "string"
-                                            ? item.path
-                                            : "/images/no-image.jpg"
-                                      }
-                                      alt="profile"
-                                      fill
-                                      priority
-                                    />
-                                    <Input
-                                      type="file"
-                                      accept="image/*"
-                                      multiple={false}
-                                      className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
-                                      onChange={(event) => {
-                                        if (event.target.files) {
-                                          if (
-                                            event.target.files[0].size > 1048576
-                                          ) {
-                                            toast({
-                                              title:
-                                                "One of your file size should be less than 1MB",
-                                              variant: "danger",
-                                            });
-                                            return;
+                          if (listIds[0]) {
+                            let tempIds = listIds;
+                            tempIds[0] = e.target.value;
+                            tempIds = tempIds.slice(0, 1);
+
+                            setListIds([...tempIds]);
+                            return;
+                          }
+                          setListIds([...listIds, e.target.value]);
+                        }}
+                        value={catList[0]?.id || ""}
+                      >
+                        <option value="">Select Category</option>
+                        {memoizedCategories.map((item: ISelectOptions) => (
+                          <option
+                            value={item.value?.toString()}
+                            key={item.value}
+                          >
+                            {item.label}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  />
+                  <p className="text-[13px] font-medium text-red-500">
+                    {
+                      formContext.formState.errors["categoryId"]
+                        ?.message as string
+                    }
+                  </p>
+                </div>
+
+                {catList.length > 0 &&
+                  catList.map((item, index) => (
+                    <div
+                      key={item?.id}
+                      className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
+                    >
+                      <div className="flex w-full flex-col justify-between gap-y-2">
+                        <Label>Sub Category</Label>
+                        <select
+                          className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          onChange={(e) => {
+                            if (e.target.value === "") {
+                              return;
+                            }
+
+                            setCurrentId(e.target.value);
+                            setCurrentIndex(index + 1);
+
+                            if (listIds[index + 1]) {
+                              let tempIds = listIds;
+                              tempIds[index + 1] = e.target.value;
+                              tempIds = tempIds.slice(0, index + 2);
+                              setListIds([...tempIds]);
+                              return;
+                            }
+                            setListIds([...listIds, e.target.value]);
+                          }}
+                          value={item?.children
+                            ?.find((item: any) =>
+                              listIds.includes(item.id?.toString()) ? item : "",
+                            )
+                            ?.id?.toString()}
+                        >
+                          <option value="">Select Sub Category</option>
+                          {item?.children?.map((item: any) => (
+                            <option value={item.id?.toString()} key={item.id}>
+                              {item.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              <ControlledTextInput
+                label="Product Name"
+                name="productName"
+                placeholder="Product Name"
+              />
+
+              <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                <BrandSelect />
+                <ControlledTextInput
+                  label="SKU No"
+                  name="skuNo"
+                  placeholder="Enter SKU No"
+                  type="number"
+                  onWheel={(e) => e.currentTarget.blur()}
+                />
+              </div>
+
+              <AccordionMultiSelectV2
+                label="Tag"
+                name="productTagList"
+                options={tagsList || []}
+                placeholder="Tag"
+                error={
+                  formContext.formState.errors["productTagList"]
+                    ?.message as string
+                }
+              />
+
+              <div className="relative mb-4 w-full">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium leading-none text-color-dark">
+                    Product Image
+                  </label>
+                  <div className="flex w-full flex-wrap">
+                    <div className="grid grid-cols-5">
+                      {watchProductImages?.map((item: any, index: number) => (
+                        <FormField
+                          control={formContext.control}
+                          name="productImages"
+                          key={index}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <div className="relative mb-3 w-full px-2">
+                                  <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                                    {watchProductImages?.length ? (
+                                      <button
+                                        type="button"
+                                        className="common-close-btn-uploader-s1"
+                                        onClick={() => {
+                                          handleRemovePreviewImage(item?.id);
+                                          if (photosRef.current)
+                                            photosRef.current.value = "";
+                                        }}
+                                      >
+                                        <Image
+                                          src={CloseWhiteIcon}
+                                          alt="close-icon"
+                                          height={22}
+                                          width={22}
+                                        />
+                                      </button>
+                                    ) : null}
+
+                                    {item?.path && isImage(item.path) ? (
+                                      <div className="relative h-44">
+                                        <Image
+                                          src={
+                                            typeof item.path === "object"
+                                              ? URL.createObjectURL(item.path)
+                                              : typeof item.path === "string"
+                                                ? item.path
+                                                : "/images/no-image.jpg"
                                           }
-                                          handleEditPreviewImage(
-                                            item?.id,
-                                            event.target.files,
-                                          );
-                                        }
-                                      }}
-                                      id="productImages"
-                                    />
-                                  </div>
-                                ) : item?.path && isVideo(item.path) ? (
-                                  <div className="relative h-44">
-                                    <div className="player-wrapper px-2">
-                                      <ReactPlayer
-                                        url={
-                                          typeof item.path === "object"
-                                            ? URL.createObjectURL(item.path)
-                                            : typeof item.path === "string"
-                                              ? item.path
-                                              : "/images/no-image.jpg"
-                                        }
-                                        width="100%"
-                                        height="100%"
-                                        // playing
-                                        controls
-                                      />
-                                    </div>
+                                          alt="profile"
+                                          fill
+                                          priority
+                                        />
+                                        <Input
+                                          type="file"
+                                          accept="image/*"
+                                          multiple={false}
+                                          className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                          onChange={(event) => {
+                                            if (event.target.files) {
+                                              if (
+                                                event.target.files[0].size >
+                                                1048576
+                                              ) {
+                                                toast({
+                                                  title:
+                                                    "One of your file size should be less than 1MB",
+                                                  variant: "danger",
+                                                });
+                                                return;
+                                              }
+                                              handleEditPreviewImage(
+                                                item?.id,
+                                                event.target.files,
+                                              );
+                                            }
+                                          }}
+                                          id="productImages"
+                                        />
+                                      </div>
+                                    ) : item?.path && isVideo(item.path) ? (
+                                      <div className="relative h-44">
+                                        <div className="player-wrapper px-2">
+                                          <ReactPlayer
+                                            url={
+                                              typeof item.path === "object"
+                                                ? URL.createObjectURL(item.path)
+                                                : typeof item.path === "string"
+                                                  ? item.path
+                                                  : "/images/no-image.jpg"
+                                            }
+                                            width="100%"
+                                            height="100%"
+                                            // playing
+                                            controls
+                                          />
+                                        </div>
 
-                                    <div className="absolute h-20 w-full p-5">
-                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
-                                        Upload Video
-                                      </p>
-                                    </div>
-                                    <Input
-                                      type="file"
-                                      accept="video/*"
-                                      multiple={false}
-                                      className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
-                                      onChange={(event) => {
-                                        if (event.target.files) {
-                                          if (
-                                            event.target.files[0].size > 1048576
-                                          ) {
-                                            toast({
-                                              title:
-                                                "One of your file size should be less than 1MB",
-                                              variant: "danger",
-                                            });
-                                            return;
-                                          }
+                                        <div className="absolute h-20 w-full p-5">
+                                          <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
+                                            Upload Video
+                                          </p>
+                                        </div>
+                                        <Input
+                                          type="file"
+                                          accept="video/*"
+                                          multiple={false}
+                                          className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+                                          onChange={(event) => {
+                                            if (event.target.files) {
+                                              if (
+                                                event.target.files[0].size >
+                                                1048576
+                                              ) {
+                                                toast({
+                                                  title:
+                                                    "One of your file size should be less than 1MB",
+                                                  variant: "danger",
+                                                });
+                                                return;
+                                              }
 
-                                          handleEditPreviewImage(
-                                            item?.id,
-                                            event.target.files,
-                                          );
-                                        }
-                                      }}
-                                      id="productImages"
-                                    />
-                                  </div>
-                                ) : (
-                                  <AddImageContent description="Drop your File , or " />
-                                )}
+                                              handleEditPreviewImage(
+                                                item?.id,
+                                                event.target.files,
+                                              );
+                                            }
+                                          }}
+                                          id="productImages"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <AddImageContent description="Drop your File , or " />
+                                    )}
 
-                                {/* <Input
+                                    {/* <Input
                                   type="file"
                                   accept="image/*"
                                   multiple={false}
@@ -485,138 +496,142 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   }
                                   id="productImages"
                                 /> */}
-                              </div>
-                            </div>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
-                  <div className="relative mb-3 w-full pl-2">
-                    <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                      <div className="text-sm font-medium leading-4 text-color-dark">
-                        <Image
-                          src="/images/plus.png"
-                          className="m-auto mb-3"
-                          alt="camera-icon"
-                          width={29}
-                          height={28}
+                                  </div>
+                                </div>
+                              </FormControl>
+                            </FormItem>
+                          )}
                         />
-                        <span>Add More</span>
+                      ))}
+                      <div className="relative mb-3 w-full pl-2">
+                        <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                          <div className="text-sm font-medium leading-4 text-color-dark">
+                            <Image
+                              src="/images/plus.png"
+                              className="m-auto mb-3"
+                              alt="camera-icon"
+                              width={29}
+                              height={28}
+                            />
+                            <span>Add More</span>
+                          </div>
+                        </div>
+
+                        <Input
+                          type="file"
+                          accept="image/*, video/*"
+                          multiple
+                          className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
+                          onChange={(event) => {
+                            if (event.target.files) {
+                              const filesArray = Array.from(event.target.files);
+
+                              if (
+                                filesArray.some((file) => file.size > 1048576)
+                              ) {
+                                toast({
+                                  title:
+                                    "One of your file size should be less than 1MB",
+                                  variant: "danger",
+                                });
+                                return;
+                              }
+
+                              const newImages = filesArray.map((file) => ({
+                                path: file,
+                                id: uuidv4(),
+                              }));
+                              const updatedProductImages = [
+                                ...(watchProductImages || []),
+                                ...newImages,
+                              ];
+                              formContext.setValue(
+                                "productImages",
+                                updatedProductImages,
+                              );
+                            }
+                          }}
+                          id="productImages"
+                          ref={photosRef}
+                        />
                       </div>
                     </div>
-
-                    <Input
-                      type="file"
-                      accept="image/*, video/*"
-                      multiple
-                      className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
-                      onChange={(event) => {
-                        if (event.target.files) {
-                          const filesArray = Array.from(event.target.files);
-
-                          if (filesArray.some((file) => file.size > 1048576)) {
-                            toast({
-                              title:
-                                "One of your file size should be less than 1MB",
-                              variant: "danger",
-                            });
-                            return;
-                          }
-
-                          const newImages = filesArray.map((file) => ({
-                            path: file,
-                            id: uuidv4(),
-                          }));
-                          const updatedProductImages = [
-                            ...(watchProductImages || []),
-                            ...newImages,
-                          ];
-                          formContext.setValue(
-                            "productImages",
-                            updatedProductImages,
-                          );
-                        }
-                      }}
-                      id="productImages"
-                      ref={photosRef}
-                    />
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            <FormField
-              control={formContext.control}
-              name="productPrice"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Product Price</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                        $
-                      </div>
-                      <Input
-                        type="number"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="Product Price"
-                        className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                <FormField
+                  control={formContext.control}
+                  name="productPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Product Price</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                            $
+                          </div>
+                          <Input
+                            type="number"
+                            onWheel={(e) => e.currentTarget.blur()}
+                            placeholder="Product Price"
+                            className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={formContext.control}
-              name="offerPrice"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Offer Price</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                        $
-                      </div>
-                      <Input
-                        type="number"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="Offer Price"
-                        className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+                <FormField
+                  control={formContext.control}
+                  name="offerPrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Offer Price</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                            $
+                          </div>
+                          <Input
+                            type="number"
+                            onWheel={(e) => e.currentTarget.blur()}
+                            placeholder="Offer Price"
+                            className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-          <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            {/* <ControlledSelectInput
+              <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                {/* <ControlledSelectInput
               label="Product Location"
               name="productLocationId"
               options={memoizedLocations}
             /> */}
-            <ControlledSelectInput
-              label="Place of Origin"
-              name="placeOfOriginId"
-              options={memoizedCountries}
-            />
-          </div>
+                <ControlledSelectInput
+                  label="Place of Origin"
+                  name="placeOfOriginId"
+                  options={memoizedCountries}
+                />
+              </div>
 
-          <div className="grid w-full grid-cols-1">
-            <ControlledRichTextEditor
-              label="Short Description"
-              name="shortDescription"
-            />
+              <div className="grid w-full grid-cols-1">
+                <ControlledRichTextEditor
+                  label="Short Description"
+                  name="shortDescription"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
