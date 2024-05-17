@@ -30,7 +30,11 @@ const formSchemaForTypeP = z
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
     brandId: z.number().min(1, { message: "Brand is required" }),
-    // productLocationId: z.number().min(1, { message: "Product Location is required" }),
+    productLocationId: z
+      .string()
+      .trim()
+      .min(1, { message: "Product Location is required" })
+      .transform((value) => Number(value)),
     skuNo: z
       .string()
       .trim()
@@ -227,9 +231,13 @@ const CreateProductPage = () => {
         productPrice:
           activeProductType === "R" ? 0 : updatedFormData.productPrice,
         offerPrice: activeProductType === "R" ? 0 : updatedFormData.offerPrice,
-        // productLocationId: updatedFormData.productLocationId,
+        productLocationId: updatedFormData.productLocationId,
       },
     ];
+    if (activeProductType === "R") {
+      delete updatedFormData.productPriceList[0].productLocationId;
+    }
+    delete updatedFormData.productLocationId;
     if (activeProductType === "R") {
       updatedFormData.skuNo = uuidv4();
     }
@@ -288,12 +296,6 @@ const CreateProductPage = () => {
                   tagsList={memoizedTags}
                   activeProductType={activeProductType}
                 />
-
-                <div className="grid w-full grid-cols-1 gap-x-5">
-                  <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    Hello
-                  </div>
-                </div>
 
                 <ProductDetailsSection />
 

@@ -34,7 +34,11 @@ const formSchema = z
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
     brandId: z.number().min(1, { message: "Brand is required" }),
-    // productLocationId: z.number().min(1, { message: "Product Location is required" }),
+    productLocationId: z
+      .string()
+      .trim()
+      .min(1, { message: "Product Location is required" })
+      .transform((value) => Number(value)),
     skuNo: z
       .string()
       .trim()
@@ -100,6 +104,7 @@ const EditProductPage = () => {
       categoryId: 0,
       categoryLocation: "",
       brandId: 0,
+      productLocationId: "",
       skuNo: "",
       productTagList: undefined,
       productImagesList: undefined,
@@ -218,15 +223,15 @@ const EditProductPage = () => {
     }
 
     delete updatedFormData.productImages;
-
     updatedFormData.productId = Number(searchParams?.id);
     updatedFormData.productPriceList = [
       {
         productPrice: updatedFormData.productPrice,
         offerPrice: updatedFormData.offerPrice,
-        // productLocationId: updatedFormData.productLocationId,
+        productLocationId: updatedFormData.productLocationId,
       },
     ];
+    delete updatedFormData.productLocationId;
     console.log("edit:", updatedFormData);
     // return;
     const response = await updateProduct.mutateAsync(updatedFormData);
@@ -238,9 +243,9 @@ const EditProductPage = () => {
       });
       form.reset();
 
-      // queryClient.invalidateQueries({
-      //   queryKey: ["product-by-id", activeProductId],
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ["product-by-id", searchParams?.id],
+      });
       productQueryById.refetch();
 
       router.push("/products");
@@ -305,6 +310,9 @@ const EditProductPage = () => {
           ? product?.categoryLocation
           : "",
         brandId: product?.brandId ? product?.brandId : 0,
+        productLocationId: product?.product_productPrice?.[0]?.productLocationId
+          ? String(product?.product_productPrice?.[0]?.productLocationId)
+          : "",
         skuNo: product?.skuNo,
         productTagList: productTagList || undefined,
         productImages: productImages || [],
