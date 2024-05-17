@@ -14,13 +14,8 @@ import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
 // import { useUploadFile } from "@/apis/queries/upload.queries";
 import { v4 as uuidv4 } from "uuid";
+import { useCountries, useLocation } from "@/apis/queries/masters.queries";
 import {
-  useBrands,
-  useCountries,
-  useLocation,
-} from "@/apis/queries/masters.queries";
-import {
-  IBrands,
   ICountries,
   ILocations,
   ISelectOptions,
@@ -64,7 +59,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
   // const upload = useUploadFile();
   const categoryQuery = useCategory();
-  const brandsQuery = useBrands({});
   const countriesQuery = useCountries();
   const locationsQuery = useLocation();
   const subCategoryById = useSubCategoryById(currentId, !!currentId);
@@ -78,14 +72,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       }) || []
     );
   }, [categoryQuery?.data?.data?.children?.length]);
-
-  const memoizedBrands = useMemo(() => {
-    return (
-      brandsQuery?.data?.data.map((item: IBrands) => {
-        return { label: item.brandName, value: item.id?.toString() };
-      }) || []
-    );
-  }, [brandsQuery?.data?.data?.length]);
 
   const memoizedCountries = useMemo(() => {
     return (
@@ -458,44 +444,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                     ) : (
                                       <AddImageContent description="Drop your File , or " />
                                     )}
-
-                                    {/* <Input
-                                  type="file"
-                                  accept="image/*"
-                                  multiple={false}
-                                  className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
-                                  onChange={(event) =>
-                                    // handleFileChanges(event, field, item)
-                                    {
-                                      if (event.target.files) {
-                                        handleEditPreviewImage(
-                                          item?.id,
-                                          event.target.files,
-                                        );
-                                      }
-                                    }
-                                  }
-                                  id="productImages"
-                                />
-
-                                <Input
-                                  type="file"
-                                  accept="video/*"
-                                  multiple={false}
-                                  className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
-                                  onChange={(event) =>
-                                    // handleFileChanges(event, field, item)
-                                    {
-                                      if (event.target.files) {
-                                        handleEditPreviewImage(
-                                          item?.id,
-                                          event.target.files,
-                                        );
-                                      }
-                                    }
-                                  }
-                                  id="productImages"
-                                /> */}
                                   </div>
                                 </div>
                               </FormControl>

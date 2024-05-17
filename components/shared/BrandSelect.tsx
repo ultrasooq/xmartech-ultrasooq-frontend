@@ -80,6 +80,7 @@ const ReactSelectInput = () => {
               (item: Option) => item.value === field.value,
             )}
             styles={customStyles}
+            instanceId="brandId"
           />
         )}
       />

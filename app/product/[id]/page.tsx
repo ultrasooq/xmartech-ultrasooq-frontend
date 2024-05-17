@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -11,7 +11,6 @@ import ProductDetailsSection from "@/components/modules/createProduct/ProductDet
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
 import {
-  useCreateProduct,
   useProductById,
   useUpdateProduct,
 } from "@/apis/queries/product.queries";
@@ -22,6 +21,8 @@ import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
+import BackgroundImage from "@/public/images/before-login-bg.png";
+import LoaderIcon from "@/public/images/load.png";
 
 const formSchema = z
   .object({
@@ -114,7 +115,6 @@ const EditProductPage = () => {
 
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
-  const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const productQueryById = useProductById(
     {
@@ -326,7 +326,7 @@ const EditProductPage = () => {
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
-            src="/images/before-login-bg.png"
+            src={BackgroundImage}
             className="h-full w-full object-cover object-center"
             alt="background"
             fill
@@ -368,7 +368,7 @@ const EditProductPage = () => {
                         {updateProduct.isPending || uploadMultiple.isPending ? (
                           <>
                             <Image
-                              src="/images/load.png"
+                              src={LoaderIcon}
                               alt="loader-icon"
                               width={20}
                               height={20}
