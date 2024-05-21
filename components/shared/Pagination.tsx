@@ -56,41 +56,43 @@ const Pagination: React.FC<PaginationProps> = ({
           First
         </Button>
       </li>
-      <ReactPaginate
-        breakLabel="..."
-        breakClassName="react-paginate"
-        breakLinkClassName="react-paginate"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={3}
-        pageCount={pageCount}
-        forcePage={page - 1}
-        renderOnZeroPageCount={null}
-        containerClassName="flex gap-3"
-        pageClassName="paginate-button"
-        activeClassName="active-paginate-button"
-        previousLabel={
-          <Button type="button" variant="outline" className="nextPrev">
-            <Image
-              src={PreviousIcon}
-              alt="prev-icon"
-              height={0}
-              width={0}
-              className="h-auto w-[7px]"
-            />
-          </Button>
-        }
-        nextLabel={
-          <Button type="button" variant="outline" className="nextPrev">
-            <Image
-              src={NextIcon}
-              alt="prev-icon"
-              height={0}
-              width={0}
-              className="h-auto w-[7px]"
-            />
-          </Button>
-        }
-      />
+      <li>
+        <ReactPaginate
+          breakLabel="..."
+          breakClassName="react-paginate"
+          breakLinkClassName="react-paginate"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={3}
+          pageCount={pageCount}
+          forcePage={page - 1}
+          renderOnZeroPageCount={null}
+          containerClassName="flex gap-3"
+          pageClassName="paginate-button"
+          activeClassName="active-paginate-button"
+          previousLabel={
+            <Button type="button" variant="outline" className="nextPrev">
+              <Image
+                src={PreviousIcon}
+                alt="prev-icon"
+                height={0}
+                width={0}
+                className="h-auto w-[7px]"
+              />
+            </Button>
+          }
+          nextLabel={
+            <Button type="button" variant="outline" className="nextPrev">
+              <Image
+                src={NextIcon}
+                alt="prev-icon"
+                height={0}
+                width={0}
+                className="h-auto w-[7px]"
+              />
+            </Button>
+          }
+        />
+      </li>
       <li>
         <Button
           type="button"

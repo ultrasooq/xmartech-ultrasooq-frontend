@@ -9,14 +9,21 @@ import Link from "next/link";
 
 type RfqCartMenuProps = {
   onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
+  haveAccessToken: boolean;
 };
 
-const RfqCartMenu: React.FC<RfqCartMenuProps> = ({ onAdd }) => {
+const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
+  onAdd,
+  haveAccessToken,
+}) => {
   const { toast } = useToast();
-  const rfqCartListByUser = useRfqCartListByUserId({
-    page: 1,
-    limit: 20,
-  });
+  const rfqCartListByUser = useRfqCartListByUserId(
+    {
+      page: 1,
+      limit: 20,
+    },
+    haveAccessToken,
+  );
 
   const deleteRfqCartItem = useDeleteRfqCartItem();
 
