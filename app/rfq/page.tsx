@@ -57,7 +57,7 @@ const RfqPage = () => {
   const handleToggleAddModal = () =>
     setIsAddToCartModalOpen(!isAddToCartModalOpen);
 
-  const me = useMe();
+  const me = useMe(haveAccessToken);
   const rfqProductsQuery = useRfqProducts({
     page,
     limit,
@@ -295,7 +295,10 @@ const RfqPage = () => {
                   </div>
                 </div>
               </div>
-              <RfqCartMenu onAdd={handleAddToCart} />
+              <RfqCartMenu
+                onAdd={handleAddToCart}
+                haveAccessToken={haveAccessToken}
+              />
             </div>
           </div>
         </div>
