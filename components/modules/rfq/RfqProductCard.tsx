@@ -80,7 +80,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity - 1);
-                    onAdd(quantity - 1, id, "remove");
+                    // onAdd(quantity - 1, id, "remove");
                     // cart.updateCart({
                     //   quantity: quantity - 1,
                     //   rfqProductId: id,
@@ -101,7 +101,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity + 1);
-                    onAdd(quantity + 1, id, "add");
+                    // onAdd(quantity + 1, id, "add");
                     // cart.updateCart({
                     //   quantity: quantity + 1,
                     //   rfqProductId: id,
@@ -135,7 +135,12 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               <button
                 type="button"
                 className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
-                disabled
+                disabled={quantity < 0}
+                onClick={() => {
+                  onAdd(quantity, id, "add");
+                  // console.log(quantity, id, "add");
+                  // cart.updateCart({ quantity: 1, rfqProductId: id });
+                }}
               >
                 <FaCircleCheck color="#00C48C" />
                 Added to RFQ Cart
@@ -144,8 +149,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               <button
                 type="button"
                 className="add_to_cart_button"
+                disabled={quantity === 0}
                 onClick={() => {
-                  onAdd(1, id, "add");
+                  onAdd(quantity, id, "add");
+                  // console.log(quantity, id, "add");
                   // cart.updateCart({ quantity: 1, rfqProductId: id });
                 }}
               >

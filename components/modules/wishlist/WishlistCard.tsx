@@ -117,7 +117,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
               {calculateRatings(calculateAvgRating)}
               <span className="ml-2">{wishlistData.productReview?.length}</span>
             </div>
-            <h5>${wishlistData.offerPrice}</h5>
+            <h5>${wishlistData.product_productPrice?.[0]?.offerPrice}</h5>
           </div>
         </Link>
       </div>
