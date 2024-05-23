@@ -1,21 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/utils/helper";
-import { useToast } from "@/components/ui/use-toast";
-import { useUpdateProfile } from "@/apis/queries/user.queries";
-import { useRouter } from "next/navigation";
-import { Dialog } from "@/components/ui/dialog";
-import ConfirmContent from "@/components/shared/ConfirmContent";
-import ReactSelect from "react-select";
-
-const customStyles = {
-  control: (base: any) => ({
-    ...base,
-    width: 200,
-    minHeight: 48,
-  }),
-};
 
 type ProfileCardProps = {
   userDetails: any;
@@ -23,66 +9,10 @@ type ProfileCardProps = {
 };
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
-  const { toast } = useToast();
-  const router = useRouter();
-  const updateProfile = useUpdateProfile();
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [tradeRole, setTradeRole] = useState({
-    label: "",
-    value: "",
-  });
-
   const memoizedInitials = useMemo(
     () => getInitials(userDetails?.firstName, userDetails?.lastName),
     [userDetails?.firstName, userDetails?.lastName],
   );
-
-  const handleConfirmModal = () => setIsConfirmModalOpen(!isConfirmModalOpen);
-
-  const handleTradeRole = async () => {
-    if (!tradeRole.value) return;
-
-    const data: { tradeRole: string } = {
-      tradeRole: tradeRole.value,
-    };
-
-    console.log(data);
-    // return;
-    const response = await updateProfile.mutateAsync(data);
-    if (response.status && response.data) {
-      toast({
-        title: "Trade Role Update Successful",
-        description: response.message,
-        variant: "success",
-      });
-      setIsConfirmModalOpen(false);
-      if (response.data.tradeRole === "FREELANCER") {
-        router.replace("/freelancer-profile-details");
-      } else if (response.data.tradeRole === "COMPANY") {
-        router.replace("/company-profile-details");
-      }
-    } else {
-      setIsConfirmModalOpen(false);
-      toast({
-        title: "Trade Role Update Failed",
-        description: response.message,
-        variant: "danger",
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (userDetails?.tradeRole === "BUYER") {
-      setTradeRole({
-        label:
-          userDetails?.tradeRole?.charAt(0) +
-          userDetails?.tradeRole?.substring(1).toLowerCase(),
-        value: userDetails?.tradeRole,
-      });
-    }
-  }, [userDetails?.tradeRole]);
-
-  // console.log(tradeRole);
 
   return (
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
@@ -144,61 +74,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
             </li>
           </ul>
         </div>
-
-        <div className="mt-5 flex w-full flex-wrap items-center justify-end">
-          <div className="my-2 flex flex-wrap items-center justify-between">
-            <p className="mr-2.5 text-sm font-bold leading-6">Trade Role</p>
-          </div>
-          {/* <select
-            className="!h-12 w-[200px] rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-            onChange={(e) => {
-              setIsConfirmModalOpen(true);
-              if (!isConfirmed) return;
-
-              setTradeRole(e.target.value);
-            }}
-            value={tradeRole}
-          >
-            <option value="">Select</option>
-            <option value="FREELANCER">Freelancer</option>
-            <option value="COMPANY">Company</option>
-          </select> */}
-
-          <ReactSelect
-            options={[
-              { value: "", label: "Select" },
-              { value: "BUYER", label: "Buyer" },
-              { value: "FREELANCER", label: "Freelancer" },
-              { value: "COMPANY", label: "Company" },
-            ]}
-            onChange={(e) => {
-              if (e?.value === "" || e?.value === userDetails?.tradeRole) {
-                return;
-              }
-              setTradeRole(e!);
-              setIsConfirmModalOpen(true);
-            }}
-            value={tradeRole}
-            styles={customStyles}
-          />
-        </div>
       </div>
-      <Dialog open={isConfirmModalOpen} onOpenChange={handleConfirmModal}>
-        <ConfirmContent
-          onClose={() => {
-            setIsConfirmModalOpen(false);
-            setTradeRole({
-              label:
-                userDetails?.tradeRole?.charAt(0) +
-                userDetails?.tradeRole?.substring(1).toLowerCase(),
-              value: userDetails?.tradeRole,
-            });
-          }}
-          onConfirm={() => handleTradeRole()}
-          isLoading={updateProfile.isPending}
-          description="change role"
-        />
-      </Dialog>
     </div>
   );
 };

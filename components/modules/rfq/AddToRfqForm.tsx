@@ -233,7 +233,10 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         placeOfOriginId: product?.placeOfOriginId
           ? product?.placeOfOriginId
           : 0,
-        shortDescription: product?.shortDescription || "",
+        productShortDescriptionList:
+          product?.product_productShortDescription?.map((item: any) => ({
+            shortDescription: item?.shortDescription,
+          })) || [],
         description: product?.description,
         specification: product?.specification,
         status: "ACTIVE",

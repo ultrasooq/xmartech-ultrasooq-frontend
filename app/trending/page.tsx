@@ -53,6 +53,7 @@ import {
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import BannerSection from "@/components/modules/trending/BannerSection";
 
 const TrendingPage = () => {
   const queryClient = useQueryClient();
@@ -149,8 +150,8 @@ const TrendingPage = () => {
         inWishlist: item?.product_wishlist?.find(
           (ele: any) => ele?.userId === me.data?.data?.id,
         ),
-        shortDescription: item?.shortDescription
-          ? stripHTML(item?.shortDescription)
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
           : "-",
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
@@ -289,55 +290,7 @@ const TrendingPage = () => {
   return (
     <>
       <div className="body-content-s1">
-        <div className="custom-inner-banner-s1">
-          <div className="container m-auto px-3">
-            <div className="custom-inner-banner-s1-captionBox relative">
-              <Image
-                src={TrendingBannerImage}
-                alt="trending-banner"
-                className="bg-image"
-                fill
-              />
-              <div className="text-container">
-                <ul className="page-indicator">
-                  <li>
-                    <a href="#">Home</a>
-                    <Image
-                      src={ChevronRightIcon}
-                      alt="next-icon"
-                      width={8}
-                      height={12}
-                    />
-                  </li>
-                  <li>
-                    <a href="#">Shop</a>
-                    <Image
-                      src={ChevronRightIcon}
-                      alt="next-icon"
-                      width={8}
-                      height={12}
-                    />
-                  </li>
-                  <li>Phones & Accessories</li>
-                </ul>
-                <h2>sed do eiusmod tempor incididunt</h2>
-                <h5>Only 2 days:</h5>
-                <h4>21/10 & 22/10</h4>
-                <div className="action-btns">
-                  <button
-                    type="button"
-                    className="theme-primary-btn custom-btn"
-                  >
-                    Shop Now
-                  </button>
-                </div>
-              </div>
-              <div className="relative h-[360px] w-[548px]">
-                <Image src={InnerBannerImage} alt="inner-banner" fill />
-              </div>
-            </div>
-          </div>
-        </div>
+        <BannerSection />
 
         <div className="trending-search-sec">
           <div className="container m-auto px-3">

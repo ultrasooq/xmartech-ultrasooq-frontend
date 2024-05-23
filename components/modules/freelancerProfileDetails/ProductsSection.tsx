@@ -44,8 +44,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = () => {
           skuNo: item?.skuNo,
           brandName: item?.brand?.brandName || "-",
           productReview: item?.productReview || [],
-          shortDescription: item?.shortDescription
-            ? stripHTML(item?.shortDescription)
+          shortDescription: item?.product_productShortDescription?.length
+            ? item?.product_productShortDescription?.[0]?.shortDescription
             : "-",
           status: item?.status || "-",
           productWishlist: item?.product_wishlist || [],

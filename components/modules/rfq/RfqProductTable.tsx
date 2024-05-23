@@ -28,6 +28,7 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
               <TableRow>
                 <TableHead>Product</TableHead>
                 <TableHead>Category</TableHead>
+                {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
                 {/* <TableHead>SKU No</TableHead> */}
                 <TableHead>Brand</TableHead>
                 {/* <TableHead>Price</TableHead> */}
@@ -37,24 +38,24 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
               {list?.map((item: any) => (
                 <TableRow key={item.id}>
                   <TableCell th-name="Product">
-                    <Link href={`/trending/${item.id}`}>
-                      <figure className="product-image-with-text">
-                        <div className="image-container rounded-lg">
-                          <Image
-                            src={
-                              item.productImages?.[0]?.image &&
-                              validator.isURL(item.productImages[0].image)
-                                ? item.productImages[0].image
-                                : PlaceholderImage
-                            }
-                            alt="product-image"
-                            height={80}
-                            width={80}
-                          />
-                        </div>
-                        <figcaption>{item?.productName}</figcaption>
-                      </figure>
-                    </Link>
+                    {/* <Link href={`/trending/${item.id}`}> */}
+                    <figure className="product-image-with-text">
+                      <div className="image-container rounded-lg">
+                        <Image
+                          src={
+                            item.productImages?.[0]?.image &&
+                            validator.isURL(item.productImages[0].image)
+                              ? item.productImages[0].image
+                              : PlaceholderImage
+                          }
+                          alt="product-image"
+                          height={80}
+                          width={80}
+                        />
+                      </div>
+                      <figcaption>{item?.productName}</figcaption>
+                    </figure>
+                    {/* </Link> */}
                   </TableCell>
                   <TableCell th-name="Category">
                     {item?.category?.name || "-"}
