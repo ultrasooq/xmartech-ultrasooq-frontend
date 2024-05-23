@@ -28,7 +28,7 @@ const ConfirmContent: React.FC<ConfirmContentProps> = ({
         <h1>Confirm</h1>
       </DialogHeader>
       <DialogDescription className="alert-popup-bodypart">
-        <h4>{`Are you sure you want to ${description}?`}</h4>
+        {`Are you sure you want to ${description}?`}
       </DialogDescription>
       <DialogFooter className="alert-actions">
         <div className="alert-actions-col">

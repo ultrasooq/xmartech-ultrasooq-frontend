@@ -1,18 +1,69 @@
 "use client";
-import { useMe } from "@/apis/queries/user.queries";
-import React from "react";
+import { useMe, useUpdateProfile } from "@/apis/queries/user.queries";
+import React, { useState } from "react";
 import Image from "next/image";
 import ProfileCard from "@/components/modules/buyerProfileDetails/ProfileCard";
 import InformationSection from "@/components/modules/freelancerProfileDetails/InformationSection";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Footer from "@/components/shared/Footer";
+import { Dialog } from "@/components/ui/dialog";
+import TradeRoleUpgradeContent from "@/components/modules/buyerProfileDetails/TradleRoleUpgradeContent";
+import ConfirmContent from "@/components/shared/ConfirmContent";
+import { useToast } from "@/components/ui/use-toast";
 
 const BuyerProfileDetailsPage = () => {
   const router = useRouter();
-  const userDetails = useMe();
+  const { toast } = useToast();
 
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [role, setRole] = useState<"COMPANY" | "FREELANCER">();
+  const handleRoleModal = () => setIsRoleModalOpen(!isRoleModalOpen);
+  const handleConfirmModal = () => {
+    setIsConfirmModalOpen(!isConfirmModalOpen);
+    setIsRoleModalOpen(false);
+    setRole(undefined);
+  };
   const handleBuyerProfilePage = () => router.push("/profile");
+
+  const userDetails = useMe();
+  const updateProfile = useUpdateProfile();
+  const handleTradeRole = (role: "COMPANY" | "FREELANCER") => setRole(role);
+
+  const onSubmit = async () => {
+    if (!role) return;
+
+    const data: { tradeRole: string } = {
+      tradeRole: role,
+    };
+
+    const response = await updateProfile.mutateAsync(data);
+    if (response.status && response.data) {
+      toast({
+        title: "Trade Role Update Successful",
+        description: response.message,
+        variant: "success",
+      });
+      setIsConfirmModalOpen(false);
+      setIsRoleModalOpen(false);
+      setRole(undefined);
+      if (response.data.tradeRole === "FREELANCER") {
+        router.replace("/freelancer-profile");
+      } else if (response.data.tradeRole === "COMPANY") {
+        router.replace("/company-profile");
+      }
+    } else {
+      setIsConfirmModalOpen(false);
+      setIsRoleModalOpen(false);
+      setRole(undefined);
+      toast({
+        title: "Trade Role Update Failed",
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  };
 
   return (
     <>
@@ -33,6 +84,19 @@ const BuyerProfileDetailsPage = () => {
                 My Profile
               </h2>
             </div>
+
+            <div className="mb-8 flex w-full items-center justify-between rounded-3xl bg-white p-9 font-normal shadow-md">
+              <p className="text-2xl">Do you want to update your profile?</p>
+
+              <button
+                type="button"
+                onClick={handleRoleModal}
+                className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-xl font-medium capitalize leading-6 text-white"
+              >
+                Update
+              </button>
+            </div>
+
             <ProfileCard
               userDetails={userDetails.data?.data}
               onEdit={handleBuyerProfilePage}
@@ -59,7 +123,34 @@ const BuyerProfileDetailsPage = () => {
             </div>
           </div>
         </div>
+
+        <Dialog open={isRoleModalOpen} onOpenChange={handleRoleModal}>
+          <TradeRoleUpgradeContent
+            onClose={() => {
+              setIsRoleModalOpen(false);
+              setRole(undefined);
+            }}
+            onConfirmRole={(value) => {
+              handleTradeRole(value);
+              setIsConfirmModalOpen(true);
+            }}
+          />
+        </Dialog>
+
+        <Dialog open={isConfirmModalOpen} onOpenChange={handleConfirmModal}>
+          <ConfirmContent
+            onClose={() => {
+              setIsRoleModalOpen(false);
+              setIsConfirmModalOpen(false);
+              setRole(undefined);
+            }}
+            onConfirm={() => onSubmit()}
+            isLoading={updateProfile.isPending}
+            description="change role"
+          />
+        </Dialog>
       </section>
+
       <Footer />
     </>
   );
