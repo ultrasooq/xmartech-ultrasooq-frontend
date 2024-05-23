@@ -150,8 +150,8 @@ const TrendingPage = () => {
         inWishlist: item?.product_wishlist?.find(
           (ele: any) => ele?.userId === me.data?.data?.id,
         ),
-        shortDescription: item?.shortDescription
-          ? stripHTML(item?.shortDescription)
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
           : "-",
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,

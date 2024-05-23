@@ -55,6 +55,9 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     return (
       relatedProductsQuery?.data?.data?.map((item: any) => ({
         ...item,
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
         productWishlist: item?.product_wishlist || [],
         inWishlist: item?.product_wishlist?.find(
           (ele: any) => ele?.userId === me.data?.data?.id,

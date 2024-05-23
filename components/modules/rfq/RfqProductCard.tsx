@@ -51,24 +51,25 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
 
   return (
     <div className="product_list_part">
-      <Link href={`/trending/${id}`}>
-        <div className="product_list_image relative border border-gray-300">
-          <Image
-            alt="pro-5"
-            src={
-              productImages?.[0]?.image &&
-              validator.isURL(productImages?.[0]?.image)
-                ? productImages[0].image
-                : PlaceholderImage
-            }
-            fill
-          />
-        </div>
-      </Link>
+      {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
+      {/* <Link href={`/trending/${id}`}> */}
+      <div className="product_list_image relative border border-gray-300">
+        <Image
+          alt="pro-5"
+          src={
+            productImages?.[0]?.image &&
+            validator.isURL(productImages?.[0]?.image)
+              ? productImages[0].image
+              : PlaceholderImage
+          }
+          fill
+        />
+      </div>
+      {/* </Link> */}
       <div className="product_list_content">
-        <Link href={`/trending/${id}`}>
-          <p>{productName}</p>
-        </Link>
+        {/* <Link href={`/trending/${id}`}> */}
+        <p>{productName}</p>
+        {/* </Link> */}
         {haveAccessToken ? (
           <div className="quantity_wrap mb-2">
             <label>Quantity</label>

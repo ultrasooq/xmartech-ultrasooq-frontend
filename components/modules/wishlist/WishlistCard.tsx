@@ -99,10 +99,19 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
             <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
               {wishlistData.productName}
             </h4>
-            <p title={wishlistData.shortDescription} className="truncate">
-              {wishlistData?.shortDescription
-                ? stripHTML(wishlistData.shortDescription)
-                : ""}
+            <p
+              title={
+                wishlistData?.product_productShortDescription?.length
+                  ? wishlistData?.product_productShortDescription?.[0]
+                      ?.shortDescription
+                  : "-"
+              }
+              className="truncate"
+            >
+              {wishlistData?.product_productShortDescription?.length
+                ? wishlistData?.product_productShortDescription?.[0]
+                    ?.shortDescription
+                : "-"}
             </p>
             <div className="my-1 flex">
               {calculateRatings(calculateAvgRating)}

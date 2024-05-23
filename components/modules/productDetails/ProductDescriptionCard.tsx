@@ -20,7 +20,7 @@ type ProductDescriptionCardProps = {
   skuNo: string;
   productTags: any[];
   category: string;
-  productShortDescription: string;
+  productShortDescription: any[];
   productQuantity: number;
   productReview: { rating: number }[];
   onAdd: (args0: number, args2: "add" | "remove") => void;
@@ -115,17 +115,13 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           <div className="row">
             <div className="col-12 col-md-12">
               <div className="col-12 col-md-12">
-                <div className="form-group min-h-[160px]">
-                  {productShortDescription ? (
-                    <ReactQuill
-                      theme="snow"
-                      value={productShortDescription}
-                      readOnly
-                      modules={{
-                        toolbar: false,
-                      }}
-                      className="readonly-quill"
-                    />
+                <div className="form-group min-h-[160px] pl-8">
+                  {productShortDescription?.length ? (
+                    <ul className="list-disc">
+                      {productShortDescription?.map((item) => (
+                        <li key={item?.id}>{item?.shortDescription}</li>
+                      ))}
+                    </ul>
                   ) : (
                     <p>No Description</p>
                   )}

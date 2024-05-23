@@ -252,7 +252,9 @@ const ProductDetailsPage = () => {
               skuNo={productDetails?.skuNo}
               category={productDetails?.category?.name}
               productTags={productDetails?.productTags}
-              productShortDescription={productDetails?.shortDescription}
+              productShortDescription={
+                productDetails?.product_productShortDescription
+              }
               productQuantity={
                 getProductQuantityByUser || getProductQuantityByDevice
               }
