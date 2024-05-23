@@ -10,7 +10,7 @@ import { Input, InputProps } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
 
 interface ControlledTextInputProps extends InputProps {
-  label: string;
+  label?: string;
   name: string;
 }
 

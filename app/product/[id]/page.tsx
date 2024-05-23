@@ -77,7 +77,19 @@ const formSchema = z
       .trim()
       .min(1, { message: "Place of Origin is required" })
       .transform((value) => Number(value)),
-    shortDescription: z.string().trim(),
+    productShortDescriptionList: z.array(
+      z.object({
+        shortDescription: z
+          .string()
+          .trim()
+          .min(2, {
+            message: "Short Description is required",
+          })
+          .max(20, {
+            message: "Short Description must be less than 20 characters",
+          }),
+      }),
+    ),
     description: z.string().trim(),
     specification: z.string().trim(),
   })
@@ -111,7 +123,11 @@ const EditProductPage = () => {
       productPrice: "",
       offerPrice: "",
       placeOfOriginId: "",
-      shortDescription: "",
+      productShortDescriptionList: [
+        {
+          shortDescription: "",
+        },
+      ],
       description: "",
       specification: "",
       productImages: [],
@@ -303,6 +319,17 @@ const EditProductPage = () => {
           })
         : undefined;
 
+      const productShortDescriptionList = product
+        ?.product_productShortDescription?.length
+        ? product?.product_productShortDescription.map((item: any) => ({
+            shortDescription: item?.shortDescription,
+          }))
+        : [
+            {
+              shortDescription: "",
+            },
+          ];
+
       form.reset({
         productName: product?.productName,
         categoryId: product?.categoryId ? product?.categoryId : 0,
@@ -322,7 +349,7 @@ const EditProductPage = () => {
         placeOfOriginId: product?.placeOfOriginId
           ? String(product?.placeOfOriginId)
           : "",
-        shortDescription: product?.shortDescription || "",
+        productShortDescriptionList: productShortDescriptionList,
         description: product?.description,
         specification: product?.specification,
       });

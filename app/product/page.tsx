@@ -73,7 +73,19 @@ const formSchemaForTypeP = z
       .trim()
       .min(1, { message: "Place of Origin is required" })
       .transform((value) => Number(value)),
-    shortDescription: z.string().trim(),
+    productShortDescriptionList: z.array(
+      z.object({
+        shortDescription: z
+          .string()
+          .trim()
+          .min(2, {
+            message: "Short Description is required",
+          })
+          .max(20, {
+            message: "Short Description must be less than 20 characters",
+          }),
+      }),
+    ),
     description: z.string().trim(),
     specification: z.string().trim(),
   })
@@ -119,7 +131,19 @@ const formSchemaForTypeR = z.object({
     .trim()
     .min(1, { message: "Place of Origin is required" })
     .transform((value) => Number(value)),
-  shortDescription: z.string().trim(),
+  productShortDescriptionList: z.array(
+    z.object({
+      shortDescription: z
+        .string()
+        .trim()
+        .min(2, {
+          message: "Short Description is required",
+        })
+        .max(20, {
+          message: "Short Description must be less than 20 characters",
+        }),
+    }),
+  ),
   description: z.string().trim(),
   specification: z.string().trim(),
 });
@@ -143,7 +167,11 @@ const CreateProductPage = () => {
       productPrice: "",
       offerPrice: "",
       placeOfOriginId: "",
-      shortDescription: "",
+      productShortDescriptionList: [
+        {
+          shortDescription: "",
+        },
+      ],
       description: "",
       specification: "",
       productImages: [],
