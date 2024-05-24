@@ -34,6 +34,7 @@ import BrandSelect from "@/components/shared/BrandSelect";
 import {
   CONSUMER_TYPE_LIST,
   DELIVER_AFTER_LIST,
+  PRODUCT_CONDITION_LIST,
   SELL_TYPE_LIST,
   imageExtensions,
   videoExtensions,
@@ -42,6 +43,7 @@ import DynamicForm from "@/components/shared/DynamicForm";
 import { Button } from "@/components/ui/button";
 import AddIcon from "@/public/images/add-icon.svg";
 import ReactSelect from "react-select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Option {
   readonly label: string;
@@ -102,6 +104,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const subCategoryById = useSubCategoryById(currentId, !!currentId);
 
   const watchProductImages = formContext.watch("productImages");
+  const watchSetUpPrice = formContext.watch("setUpPrice");
+  const watchConsumerType = formContext.watch(
+    "productPriceList.[0].consumerType",
+  );
+  const watchSellType = formContext.watch("productPriceList.[0].sellType");
 
   const memoizedCategories = useMemo(() => {
     return (
@@ -218,6 +225,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     [listIds?.length],
   );
 
+  console.log(watchConsumerType);
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
@@ -343,6 +351,37 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         onWheel={(e) => e.currentTarget.blur()}
                       />
                     ) : null}
+                  </div>
+
+                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                    <div className="mt-2 flex flex-col gap-y-3">
+                      <Label>Product Condition</Label>
+                      <Controller
+                        name="productCondition"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={PRODUCT_CONDITION_LIST}
+                            value={PRODUCT_CONDITION_LIST.find(
+                              (item: any) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="productCondition"
+                          />
+                        )}
+                      />
+
+                      <p className="text-[13px] text-red-500">
+                        {
+                          formContext.formState.errors["productCondition"]
+                            ?.message as string
+                        }
+                      </p>
+                    </div>
                   </div>
 
                   <AccordionMultiSelectV2
@@ -572,297 +611,540 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   <h3>Price</h3>
                   <div className="mb-4 w-full space-y-2">
                     <div className="text-with-checkagree">
-                      <div className="check-col">
-                        <input
-                          type="checkbox"
-                          className="custom-check-s1"
-                          id="setUpPriceCheck"
-                        ></input>
+                      <FormField
+                        control={formContext.control}
+                        name="setUpPrice"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>Set up price</FormLabel>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {watchSetUpPrice ? (
+                    <>
+                      <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+                        <div className="mt-2 flex flex-col gap-y-3">
+                          <Label>Consumer Type</Label>
+                          <Controller
+                            name="productPriceList.[0].consumerType"
+                            control={formContext.control}
+                            render={({ field }) => (
+                              <ReactSelect
+                                {...field}
+                                onChange={(newValue) => {
+                                  field.onChange(newValue?.value);
+                                }}
+                                options={CONSUMER_TYPE_LIST}
+                                value={CONSUMER_TYPE_LIST.find(
+                                  (item: Option) => item.value === field.value,
+                                )}
+                                styles={customStyles}
+                                instanceId="productPriceList.[0].consumerType"
+                              />
+                            )}
+                          />
+
+                          {consumerTypeMessage ? (
+                            <p className="text-[13px] text-red-500">
+                              {consumerTypeMessage}
+                            </p>
+                          ) : null}
+                        </div>
+
+                        <div className="mt-2 flex flex-col gap-y-3">
+                          <Label>Sell Type</Label>
+                          <Controller
+                            name="productPriceList.[0].sellType"
+                            control={formContext.control}
+                            render={({ field }) => (
+                              <ReactSelect
+                                {...field}
+                                onChange={(newValue) => {
+                                  field.onChange(newValue?.value);
+                                }}
+                                options={SELL_TYPE_LIST}
+                                value={SELL_TYPE_LIST.find(
+                                  (item: Option) => item.value === field.value,
+                                )}
+                                styles={customStyles}
+                                instanceId="productPriceList.[0].sellType"
+                              />
+                            )}
+                          />
+
+                          {sellTypeMessage ? (
+                            <p className="text-[13px] text-red-500">
+                              {sellTypeMessage}
+                            </p>
+                          ) : null}
+                        </div>
                       </div>
-                      <label className="text-col" htmlFor="setUpPriceCheck">
-                        Set up price
-                      </label>
-                    </div>
-                  </div>
 
-                  <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-                    <div className="mt-2 flex flex-col gap-y-3">
-                      <Label>Consumer Type</Label>
-                      <Controller
-                        name="productPriceList.[0].consumerType"
-                        control={formContext.control}
-                        render={({ field }) => (
-                          <ReactSelect
-                            {...field}
-                            onChange={(newValue) => {
-                              field.onChange(newValue?.value);
-                            }}
-                            options={CONSUMER_TYPE_LIST}
-                            value={CONSUMER_TYPE_LIST.find(
-                              (item: Option) => item.value === field.value,
+                      <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
+                        {watchConsumerType === "EVERYONE" ||
+                        watchConsumerType === "CONSUMER" ? (
+                          <FormField
+                            control={formContext.control}
+                            name="productPriceList.[0].consumerDiscount"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Consumer Discount</FormLabel>
+                                <FormControl>
+                                  <div className="relative">
+                                    <button
+                                      type="button"
+                                      className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                    >
+                                      -
+                                    </button>
+                                    <Input
+                                      type="number"
+                                      onWheel={(e) => e.currentTarget.blur()}
+                                      placeholder="Discount"
+                                      className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                      {...field}
+                                    />
+                                    <button
+                                      type="button"
+                                      className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
                             )}
-                            styles={customStyles}
-                            instanceId="productPriceList.[0].consumerType"
                           />
-                        )}
-                      />
+                        ) : null}
 
-                      {consumerTypeMessage ? (
-                        <p className="text-[13px] text-red-500">
-                          {consumerTypeMessage}
-                        </p>
-                      ) : null}
-                    </div>
-
-                    <div className="mt-2 flex flex-col gap-y-3">
-                      <Label>Sell Type</Label>
-                      <Controller
-                        name="productPriceList.[0].sellType"
-                        control={formContext.control}
-                        render={({ field }) => (
-                          <ReactSelect
-                            {...field}
-                            onChange={(newValue) => {
-                              field.onChange(newValue?.value);
-                            }}
-                            options={SELL_TYPE_LIST}
-                            value={SELL_TYPE_LIST.find(
-                              (item: Option) => item.value === field.value,
+                        {watchConsumerType === "EVERYONE" ||
+                        watchConsumerType === "VENDORS" ? (
+                          <FormField
+                            control={formContext.control}
+                            name="productPriceList.[0].vendorDiscount"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Vendor Discount</FormLabel>
+                                <FormControl>
+                                  <div className="relative">
+                                    <button
+                                      type="button"
+                                      className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                    >
+                                      -
+                                    </button>
+                                    <Input
+                                      type="number"
+                                      onWheel={(e) => e.currentTarget.blur()}
+                                      placeholder="Discount"
+                                      className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                      {...field}
+                                    />
+                                    <button
+                                      type="button"
+                                      className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
                             )}
-                            styles={customStyles}
-                            instanceId="productPriceList.[0].sellType"
                           />
-                        )}
-                      />
+                        ) : null}
 
-                      {sellTypeMessage ? (
-                        <p className="text-[13px] text-red-500">
-                          {sellTypeMessage}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
+                        {watchSellType === "BUYGROUP" ? (
+                          <>
+                            <FormField
+                              control={formContext.control}
+                              name="productPriceList.[0].minCustomer"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Min Customer</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        -
+                                      </button>
+                                      <Input
+                                        type="number"
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                        placeholder="Min"
+                                        className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                        {...field}
+                                      />
+                                      <button
+                                        type="button"
+                                        className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
-                  <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
-                    <FormField
-                      control={formContext.control}
-                      name="productPriceList.[0].consumerDiscount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Consumer Discount</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <button
-                                type="button"
-                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
-                              >
-                                -
-                              </button>
-                              <Input
-                                type="number"
-                                onWheel={(e) => e.currentTarget.blur()}
-                                placeholder="Discount"
-                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                            <FormField
+                              control={formContext.control}
+                              name="productPriceList.[0].maxCustomer"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Max Customer</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        -
+                                      </button>
+                                      <Input
+                                        type="number"
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                        placeholder="Max"
+                                        className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                        {...field}
+                                      />
+                                      <button
+                                        type="button"
+                                        className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </>
+                        ) : null}
+
+                        {watchSellType === "BUYGROUP" ? (
+                          <>
+                            <FormField
+                              control={formContext.control}
+                              name="productPriceList.[0].minQuantity"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Min Quantity</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        -
+                                      </button>
+                                      <Input
+                                        type="number"
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                        placeholder="Min"
+                                        className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                        {...field}
+                                      />
+                                      <button
+                                        type="button"
+                                        className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={formContext.control}
+                              name="productPriceList.[0].maxQuantity"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Max Quantity</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        -
+                                      </button>
+                                      <Input
+                                        type="number"
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                        placeholder="Max"
+                                        className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                        {...field}
+                                      />
+                                      <button
+                                        type="button"
+                                        className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </>
+                        ) : null}
+
+                        {watchSellType === "NORMALSELL" ||
+                        watchSellType === "BUYGROUP" ? (
+                          <>
+                            <FormField
+                              control={formContext.control}
+                              name="productPriceList.[0].minQuantityPerCustomer"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>
+                                    Min Quantity Per Customer
+                                  </FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        -
+                                      </button>
+                                      <Input
+                                        type="number"
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                        placeholder="Min"
+                                        className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                        {...field}
+                                      />
+                                      <button
+                                        type="button"
+                                        className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={formContext.control}
+                              name="productPriceList.[0].maxQuantityPerCustomer"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>
+                                    Max Quantity Per Customer
+                                  </FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        -
+                                      </button>
+                                      <Input
+                                        type="number"
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                        placeholder="Max"
+                                        className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                        {...field}
+                                      />
+                                      <button
+                                        type="button"
+                                        className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </>
+                        ) : null}
+
+                        {watchSellType === "BUYGROUP" ? (
+                          <>
+                            <FormField
+                              control={formContext.control}
+                              name="productPriceList.[0].minQuantityPerCustomer"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Time Open</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        -
+                                      </button>
+                                      <Input
+                                        type="number"
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                        placeholder="Open"
+                                        className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                        {...field}
+                                      />
+                                      <button
+                                        type="button"
+                                        className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={formContext.control}
+                              name="productPriceList.[0].maxQuantityPerCustomer"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Time Close</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <button
+                                        type="button"
+                                        className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        -
+                                      </button>
+                                      <Input
+                                        type="number"
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                        placeholder="Close"
+                                        className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                        {...field}
+                                      />
+                                      <button
+                                        type="button"
+                                        className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </>
+                        ) : null}
+                      </div>
+
+                      <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+                        <div className="mt-2 flex flex-col gap-y-3">
+                          <Label>Deliver After</Label>
+                          <Controller
+                            name="productPriceList.[0].deliveryAfter"
+                            control={formContext.control}
+                            render={({ field }) => (
+                              <ReactSelect
                                 {...field}
+                                onChange={(newValue) => {
+                                  field.onChange(newValue?.value);
+                                }}
+                                options={DELIVER_AFTER_LIST}
+                                value={DELIVER_AFTER_LIST.find(
+                                  (item: any) => item.value === field.value,
+                                )}
+                                styles={customStyles}
+                                instanceId="productPriceList.[0].deliveryAfter"
                               />
-                              <button
-                                type="button"
-                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={formContext.control}
-                      name="productPriceList.[0].vendorDiscount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Vendor Discount</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <button
-                                type="button"
-                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
-                              >
-                                -
-                              </button>
-                              <Input
-                                type="number"
-                                onWheel={(e) => e.currentTarget.blur()}
-                                placeholder="Discount"
-                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
-                                {...field}
-                              />
-                              <button
-                                type="button"
-                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={formContext.control}
-                      name="productPriceList.[0].minQuantity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Min Quantity</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <button
-                                type="button"
-                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
-                              >
-                                -
-                              </button>
-                              <Input
-                                type="number"
-                                onWheel={(e) => e.currentTarget.blur()}
-                                placeholder="Min"
-                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
-                                {...field}
-                              />
-                              <button
-                                type="button"
-                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={formContext.control}
-                      name="productPriceList.[0].maxQuantity"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Max Quantity</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <button
-                                type="button"
-                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
-                              >
-                                -
-                              </button>
-                              <Input
-                                type="number"
-                                onWheel={(e) => e.currentTarget.blur()}
-                                placeholder="Max"
-                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
-                                {...field}
-                              />
-                              <button
-                                type="button"
-                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-                    <div className="mt-2 flex flex-col gap-y-3">
-                      <Label>Deliver After</Label>
-                      <Controller
-                        name="productPriceList.[0].deliveryAfter"
-                        control={formContext.control}
-                        render={({ field }) => (
-                          <ReactSelect
-                            {...field}
-                            onChange={(newValue) => {
-                              field.onChange(newValue?.value);
-                            }}
-                            options={DELIVER_AFTER_LIST}
-                            value={DELIVER_AFTER_LIST.find(
-                              (item: any) => item.value === field.value,
                             )}
-                            styles={customStyles}
-                            instanceId="productPriceList.[0].deliveryAfter"
                           />
-                        )}
-                      />
 
-                      {deliveryAfterMessage ? (
-                        <p className="text-[13px] text-red-500">
-                          {deliveryAfterMessage}
-                        </p>
+                          {deliveryAfterMessage ? (
+                            <p className="text-[13px] text-red-500">
+                              {deliveryAfterMessage}
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      {activeProductType !== "R" ? (
+                        <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                          <FormField
+                            control={formContext.control}
+                            name="productPrice"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Product Price</FormLabel>
+                                <FormControl>
+                                  <div className="relative">
+                                    <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
+                                      $
+                                    </div>
+                                    <Input
+                                      type="number"
+                                      onWheel={(e) => e.currentTarget.blur()}
+                                      placeholder="Product Price"
+                                      className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                                      {...field}
+                                    />
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          {/* <FormField
+                            control={formContext.control}
+                            name="offerPrice"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Offer Price</FormLabel>
+                                <FormControl>
+                                  <div className="relative">
+                                    <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
+                                      $
+                                    </div>
+                                    <Input
+                                      type="number"
+                                      onWheel={(e) => e.currentTarget.blur()}
+                                      placeholder="Offer Price"
+                                      className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                                      {...field}
+                                    />
+                                  </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          /> */}
+                        </div>
                       ) : null}
-                    </div>
-                  </div>
-
-                  {activeProductType !== "R" ? (
-                    <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-                      <FormField
-                        control={formContext.control}
-                        name="productPrice"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Product Price</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
-                                  $
-                                </div>
-                                <Input
-                                  type="number"
-                                  onWheel={(e) => e.currentTarget.blur()}
-                                  placeholder="Product Price"
-                                  className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
-                                  {...field}
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={formContext.control}
-                        name="offerPrice"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Offer Price</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
-                                  $
-                                </div>
-                                <Input
-                                  type="number"
-                                  onWheel={(e) => e.currentTarget.blur()}
-                                  placeholder="Offer Price"
-                                  className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
-                                  {...field}
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    </>
                   ) : null}
 
                   <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">

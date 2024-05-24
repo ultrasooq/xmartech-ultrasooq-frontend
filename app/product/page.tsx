@@ -40,6 +40,10 @@ const formSchemaForTypeP = z
       .trim()
       .min(2, { message: "SKU No. is required" })
       .max(50, { message: "SKU No. must be less than 50 characters" }),
+    productCondition: z
+      .string()
+      .trim()
+      .min(1, { message: "Product Condition is required" }),
     productTagList: z
       .array(
         z.object({
@@ -105,6 +109,12 @@ const formSchemaForTypeP = z
           vendorDiscount: z.coerce
             .number()
             .max(100, { message: "Vendor Discount must be less than 100" }),
+          minQuantityPerCustomer: z.coerce
+            .number()
+            .min(1, { message: "Min Quantity Per Customer is required" }),
+          maxQuantityPerCustomer: z.coerce
+            .number()
+            .min(1, { message: "Max Quantity Per Customer is required" }),
           minQuantity: z.coerce
             .number()
             .min(1, { message: "Min Quantity is required" }),
@@ -120,6 +130,7 @@ const formSchemaForTypeP = z
           path: ["minQuantity"],
         }),
     ),
+    setUpPrice: z.boolean().optional(),
   })
   .superRefine(({ productPrice, offerPrice }, ctx) => {
     if (Number(productPrice) < Number(offerPrice)) {
@@ -194,6 +205,7 @@ const CreateProductPage = () => {
       categoryLocation: "",
       brandId: 0,
       skuNo: "",
+      productCondition: "",
       productTagList: undefined,
       productImagesList: undefined,
       productPrice: "",
@@ -214,11 +226,14 @@ const CreateProductPage = () => {
           sellType: "",
           consumerDiscount: 0,
           vendorDiscount: 0,
+          minQuantityPerCustomer: 0,
+          maxQuantityPerCustomer: 0,
           minQuantity: 0,
           maxQuantity: 0,
           deliveryAfter: 0,
         },
       ],
+      setUpPrice: true,
     },
   });
 

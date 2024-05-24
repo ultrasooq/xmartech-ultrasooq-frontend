@@ -333,10 +333,6 @@ export const SELL_TYPE_LIST = [
     label: "Buy Group",
     value: "BUYGROUP",
   },
-  {
-    label: "Others",
-    value: "OTHERS",
-  },
 ];
 
 export const DELIVER_AFTER_LIST = [
@@ -367,5 +363,16 @@ export const DELIVER_AFTER_LIST = [
   {
     label: "7",
     value: 7,
+  },
+];
+
+export const PRODUCT_CONDITION_LIST = [
+  {
+    label: "New",
+    value: "NEW",
+  },
+  {
+    label: "Old",
+    value: "OLD",
   },
 ];

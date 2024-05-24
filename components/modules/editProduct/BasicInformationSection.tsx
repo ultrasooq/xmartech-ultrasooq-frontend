@@ -890,8 +890,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             onChange={(newValue) => {
                               field.onChange(newValue?.value);
                             }}
-                            options={memoizedCountries}
-                            value={memoizedCountries.find(
+                            options={memoizedLocations}
+                            value={memoizedLocations.find(
                               (item: IOption) => item.value === field.value,
                             )}
                             styles={customStyles}
