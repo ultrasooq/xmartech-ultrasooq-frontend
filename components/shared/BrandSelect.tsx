@@ -1,15 +1,10 @@
 import { useBrands, useCreateBrand } from "@/apis/queries/masters.queries";
-import { IBrands } from "@/utils/types/common.types";
+import { IBrands, IOption } from "@/utils/types/common.types";
 import React, { useMemo, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { useToast } from "../ui/use-toast";
 import { Controller, useFormContext } from "react-hook-form";
 import { Label } from "../ui/label";
-
-interface Option {
-  readonly label: string;
-  readonly value: string;
-}
 
 const customStyles = {
   control: (base: any) => ({
@@ -22,7 +17,7 @@ const customStyles = {
 const ReactSelectInput = () => {
   const formContext = useFormContext();
   const { toast } = useToast();
-  const [value, setValue] = useState<Option | null>();
+  const [value, setValue] = useState<IOption | null>();
 
   const brandsQuery = useBrands({});
   const createBrand = useCreateBrand();
@@ -77,7 +72,7 @@ const ReactSelectInput = () => {
             onCreateOption={handleCreate}
             options={memoizedBrands}
             value={memoizedBrands.find(
-              (item: Option) => item.value === field.value,
+              (item: IOption) => item.value === field.value,
             )}
             styles={customStyles}
             instanceId="brandId"

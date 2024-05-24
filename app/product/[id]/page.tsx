@@ -35,10 +35,8 @@ const formSchema = z
     categoryLocation: z.string().trim().optional(),
     brandId: z.number().min(1, { message: "Brand is required" }),
     productLocationId: z
-      .string()
-      .trim()
-      .min(1, { message: "Product Location is required" })
-      .transform((value) => Number(value)),
+      .number()
+      .min(1, { message: "Product Location is required" }),
     skuNo: z
       .string()
       .trim()
@@ -73,10 +71,8 @@ const formSchema = z
       .min(1, { message: "Offer Price is required" })
       .transform((value) => Number(value)),
     placeOfOriginId: z
-      .string()
-      .trim()
-      .min(1, { message: "Place of Origin is required" })
-      .transform((value) => Number(value)),
+      .number()
+      .min(1, { message: "Place of Origin is required" }),
     productShortDescriptionList: z.array(
       z.object({
         shortDescription: z
@@ -148,13 +144,13 @@ const EditProductPage = () => {
       categoryId: 0,
       categoryLocation: "",
       brandId: 0,
-      productLocationId: "",
+      productLocationId: 0,
       skuNo: "",
       productTagList: undefined,
       productImagesList: undefined,
       productPrice: "",
       offerPrice: "",
-      placeOfOriginId: "",
+      placeOfOriginId: 0,
       productShortDescriptionList: [
         {
           shortDescription: "",
@@ -382,8 +378,8 @@ const EditProductPage = () => {
           : "",
         brandId: product?.brandId ? product?.brandId : 0,
         productLocationId: product?.product_productPrice?.[0]?.productLocationId
-          ? String(product?.product_productPrice?.[0]?.productLocationId)
-          : "",
+          ? product?.product_productPrice?.[0]?.productLocationId
+          : 0,
         skuNo: product?.skuNo,
         productTagList: productTagList || undefined,
         productImages: productImages || [],
@@ -406,8 +402,8 @@ const EditProductPage = () => {
         productPrice: product?.productPrice,
         offerPrice: product?.offerPrice,
         placeOfOriginId: product?.placeOfOriginId
-          ? String(product?.placeOfOriginId)
-          : "",
+          ? product?.placeOfOriginId
+          : 0,
         productShortDescriptionList: productShortDescriptionList,
         description: product?.description,
         specification: product?.specification,

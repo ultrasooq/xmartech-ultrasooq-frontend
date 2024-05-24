@@ -84,3 +84,8 @@ export type ProductImageProps = {
 export interface ControlledSelectOptions extends OptionProps {
   icon?: string;
 }
+
+export interface IOption {
+  readonly label: string;
+  readonly value: string;
+}
