@@ -196,7 +196,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
-        <div className="col-span-4 mb-3 w-full max-w-4xl mx-auto rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+        <div className="col-span-4 mx-auto mb-3 w-full max-w-4xl rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
           <div className="flex w-full flex-wrap">
             <div className="mb-4 w-full">
               <div className="mt-2.5 w-full">
@@ -415,10 +415,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                               url={
                                                 typeof item.path === "object"
                                                   ? URL.createObjectURL(
-                                                    item.path,
-                                                  )
+                                                      item.path,
+                                                    )
                                                   : typeof item.path ===
-                                                    "string"
+                                                      "string"
                                                     ? item.path
                                                     : "/images/no-image.jpg"
                                               }
@@ -531,21 +531,25 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
                 </div>
 
-                <div className="space-y-2 mb-4 w-full">
+                <div className="mb-4 w-full space-y-2">
                   <div className="text-with-checkagree">
                     <div className="check-col">
-                      <input type="checkbox" className="custom-check-s1" id="setUpPriceCheck"></input>
+                      <input
+                        type="checkbox"
+                        className="custom-check-s1"
+                        id="setUpPriceCheck"
+                      ></input>
                     </div>
-                    <label className="text-col" for="setUpPriceCheck">Set up price</label>
+                    <label className="text-col" htmlFor="setUpPriceCheck">
+                      Set up price
+                    </label>
                   </div>
                 </div>
 
                 <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Cosumer Type</Label>
-                    <select
-                      className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                    >
+                    <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
                       <option>Everyone</option>
                       <option>Consumer</option>
                       <option>Vendor</option>
@@ -554,14 +558,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                   <div className="space-y-2">
                     <Label>Sell Type</Label>
-                    <select
-                      className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                    >
+                    <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
                       <option>Normal Sell</option>
                     </select>
                   </div>
                 </div>
-
 
                 <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
                   <div className="space-y-2">
@@ -570,7 +571,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       <button type="button" className="upDown-btn minus">
                         <img src="/images/minus-icon-dark.svg" alt=""></img>
                       </button>
-                      <input type="number"
+                      <input
+                        type="number"
                         className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
                       />
                       <button type="button" className="upDown-btn plus">
@@ -585,7 +587,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       <button type="button" className="upDown-btn minus">
                         <img src="/images/minus-icon-dark.svg" alt=""></img>
                       </button>
-                      <input type="number"
+                      <input
+                        type="number"
                         className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
                       />
                       <button type="button" className="upDown-btn plus">
@@ -599,7 +602,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       <button type="button" className="upDown-btn minus">
                         <img src="/images/minus-icon-dark.svg" alt=""></img>
                       </button>
-                      <input type="number"
+                      <input
+                        type="number"
                         className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
                       />
                       <button type="button" className="upDown-btn plus">
@@ -614,7 +618,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       <button type="button" className="upDown-btn minus">
                         <img src="/images/minus-icon-dark.svg" alt=""></img>
                       </button>
-                      <input type="number"
+                      <input
+                        type="number"
                         className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
                       />
                       <button type="button" className="upDown-btn plus">
@@ -627,9 +632,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                 <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Deliver After</Label>
-                    <select
-                      className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                    >
+                    <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
                       <option>1 day</option>
                       <option>2 day</option>
                       <option>3 day</option>
@@ -763,29 +766,32 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-1 gap-x-5">
-        <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-          {!subCategoryById.data?.data?.category_dynamicFormCategory?.length ? (
-            <p className="text-center">No Form Found</p>
-          ) : null}
+      {subCategoryById.data?.data?.category_dynamicFormCategory?.length ? (
+        <div className="grid w-full grid-cols-1 gap-x-5">
+          <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+            {!subCategoryById.data?.data?.category_dynamicFormCategory
+              ?.length ? (
+              <p className="text-center">No Form Found</p>
+            ) : null}
 
-          <div className="space-y-5">
-            {subCategoryById.data?.data?.category_dynamicFormCategory?.map(
-              (form: {
-                categoryId: number;
-                // categoryLocation: null;
-                createdAt: string;
-                deletedAt: string | null;
-                formId: number;
-                formIdDetail: any;
-                id: number;
-                status: string;
-                updatedAt: string;
-              }) => <DynamicForm key={form.id} form={form} />,
-            )}
+            <div className="space-y-5">
+              {subCategoryById.data?.data?.category_dynamicFormCategory?.map(
+                (form: {
+                  categoryId: number;
+                  // categoryLocation: null;
+                  createdAt: string;
+                  deletedAt: string | null;
+                  formId: number;
+                  formIdDetail: any;
+                  id: number;
+                  status: string;
+                  updatedAt: string;
+                }) => <DynamicForm key={form.id} form={form} />,
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 };
