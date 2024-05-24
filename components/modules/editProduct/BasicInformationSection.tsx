@@ -540,6 +540,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     </div>
                   </div>
                 </div>
+
                 <div className="form-groups-common-sec-s1">
                   <h3>Price</h3>
                   <div className="mb-4 w-full space-y-2">
@@ -720,6 +721,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     />
                   </div>
                 </div>
+
                 <div className="form-groups-common-sec-s1">
                   <h3>Description</h3>
                   <div className="mb-3 grid w-full grid-cols-1 ">
