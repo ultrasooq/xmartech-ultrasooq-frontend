@@ -308,3 +308,64 @@ export const imageExtensions: string[] = [
   "bmp",
   "webp",
 ];
+
+export const CONSUMER_TYPE_LIST = [
+  {
+    label: "Everyone",
+    value: "EVERYONE",
+  },
+  {
+    label: "Consumer",
+    value: "CONSUMER",
+  },
+  {
+    label: "Vendors",
+    value: "VENDORS",
+  },
+];
+
+export const SELL_TYPE_LIST = [
+  {
+    label: "Normal Sell",
+    value: "NORMALSELL",
+  },
+  {
+    label: "Buy Group",
+    value: "BUYGROUP",
+  },
+  {
+    label: "Others",
+    value: "OTHERS",
+  },
+];
+
+export const DELIVER_AFTER_LIST = [
+  {
+    label: "1",
+    value: 1,
+  },
+  {
+    label: "2",
+    value: 2,
+  },
+  {
+    label: "3",
+    value: 3,
+  },
+  {
+    label: "4",
+    value: 4,
+  },
+  {
+    label: "5",
+    value: 5,
+  },
+  {
+    label: "6",
+    value: 6,
+  },
+  {
+    label: "7",
+    value: 7,
+  },
+];

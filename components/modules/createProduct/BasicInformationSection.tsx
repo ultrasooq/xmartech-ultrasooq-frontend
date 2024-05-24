@@ -31,10 +31,30 @@ import AddImageContent from "../profile/AddImageContent";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import ReactPlayer from "react-player/lazy";
 import BrandSelect from "@/components/shared/BrandSelect";
-import { imageExtensions, videoExtensions } from "@/utils/constants";
+import {
+  CONSUMER_TYPE_LIST,
+  DELIVER_AFTER_LIST,
+  SELL_TYPE_LIST,
+  imageExtensions,
+  videoExtensions,
+} from "@/utils/constants";
 import DynamicForm from "@/components/shared/DynamicForm";
 import { Button } from "@/components/ui/button";
 import AddIcon from "@/public/images/add-icon.svg";
+import ReactSelect from "react-select";
+
+interface Option {
+  readonly label: string;
+  readonly value: string;
+}
+
+const customStyles = {
+  control: (base: any) => ({
+    ...base,
+    height: 48,
+    minHeight: 48,
+  }),
+};
 
 type ProductImageProps = {
   path: string;
@@ -459,7 +479,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           />
                         ))}
                         <div className="relative mb-3 w-full pl-2">
-                          <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                          <div className="absolute m-auto bg-white flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
                             <div className="text-sm font-medium leading-4 text-color-dark">
                               <Image
                                 src="/images/plus.png"
@@ -514,6 +534,223 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div className="mb-4 w-full space-y-2">
+                  <div className="text-with-checkagree">
+                    <div className="check-col">
+                      <input
+                        type="checkbox"
+                        className="custom-check-s1"
+                        id="setUpPriceCheck"
+                      ></input>
+                    </div>
+                    <label className="text-col" htmlFor="setUpPriceCheck">
+                      Set up price
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+                  <div className="mt-2 flex flex-col gap-y-3">
+                    <Label>Consumer Type</Label>
+                    <Controller
+                      name="consumerType"
+                      control={formContext.control}
+                      render={({ field }) => (
+                        <ReactSelect
+                          {...field}
+                          onChange={(newValue) => {
+                            field.onChange(newValue?.value);
+                          }}
+                          options={CONSUMER_TYPE_LIST}
+                          value={CONSUMER_TYPE_LIST.find(
+                            (item: Option) => item.value === field.value,
+                          )}
+                          styles={customStyles}
+                          instanceId="consumerType"
+                        />
+                      )}
+                    />
+                    <p className="text-[13px] text-red-500">
+                      {
+                        formContext.formState.errors["consumerType"]
+                          ?.message as string
+                      }
+                    </p>
+                  </div>
+
+                  <div className="mt-2 flex flex-col gap-y-3">
+                    <Label>Sell Type</Label>
+                    <Controller
+                      name="sellType"
+                      control={formContext.control}
+                      render={({ field }) => (
+                        <ReactSelect
+                          {...field}
+                          onChange={(newValue) => {
+                            field.onChange(newValue?.value);
+                          }}
+                          options={SELL_TYPE_LIST}
+                          value={SELL_TYPE_LIST.find(
+                            (item: Option) => item.value === field.value,
+                          )}
+                          styles={customStyles}
+                          instanceId="sellType"
+                        />
+                      )}
+                    />
+                    <p className="text-[13px] text-red-500">
+                      {
+                        formContext.formState.errors["sellType"]
+                          ?.message as string
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
+                  <FormField
+                    control={formContext.control}
+                    name="consumerDiscount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Consumer Discount</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              -
+                            </div>
+                            <Input
+                              type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
+                              placeholder="Discount"
+                              className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                              {...field}
+                            />
+                            <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              +
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={formContext.control}
+                    name="vendorDiscount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Vendor Discount</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              -
+                            </div>
+                            <Input
+                              type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
+                              placeholder="Discount"
+                              className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                              {...field}
+                            />
+                            <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              +
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={formContext.control}
+                    name="minQuantity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Min Quantity</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              -
+                            </div>
+                            <Input
+                              type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
+                              placeholder="Min"
+                              className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                              {...field}
+                            />
+                            <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              +
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={formContext.control}
+                    name="maxQuantity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Max Quantity</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              -
+                            </div>
+                            <Input
+                              type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
+                              placeholder="Max"
+                              className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                              {...field}
+                            />
+                            <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              +
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+                  <div className="mt-2 flex flex-col gap-y-3">
+                    <Label>Deliver After</Label>
+                    <Controller
+                      name="deliveryAfter"
+                      control={formContext.control}
+                      render={({ field }) => (
+                        <ReactSelect
+                          {...field}
+                          onChange={(newValue) => {
+                            field.onChange(newValue?.value);
+                          }}
+                          options={DELIVER_AFTER_LIST}
+                          value={DELIVER_AFTER_LIST.find(
+                            (item: any) => item.value === field.value,
+                          )}
+                          styles={customStyles}
+                          instanceId="deliveryAfter"
+                        />
+                      )}
+                    />
+                    <p className="text-[13px] text-red-500">
+                      {
+                        formContext.formState.errors["deliveryAfter"]
+                          ?.message as string
+                      }
+                    </p>
                   </div>
                 </div>
 
@@ -643,29 +880,32 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-1 gap-x-5">
-        <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-          {!subCategoryById.data?.data?.category_dynamicFormCategory?.length ? (
-            <p className="text-center">No Form Found</p>
-          ) : null}
+      {subCategoryById.data?.data?.category_dynamicFormCategory?.length ? (
+        <div className="grid w-full grid-cols-1 gap-x-5">
+          <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+            {!subCategoryById.data?.data?.category_dynamicFormCategory
+              ?.length ? (
+              <p className="text-center">No Form Found</p>
+            ) : null}
 
-          <div className="space-y-5">
-            {subCategoryById.data?.data?.category_dynamicFormCategory?.map(
-              (form: {
-                categoryId: number;
-                // categoryLocation: null;
-                createdAt: string;
-                deletedAt: string | null;
-                formId: number;
-                formIdDetail: any;
-                id: number;
-                status: string;
-                updatedAt: string;
-              }) => <DynamicForm key={form.id} form={form} />,
-            )}
+            <div className="space-y-5">
+              {subCategoryById.data?.data?.category_dynamicFormCategory?.map(
+                (form: {
+                  categoryId: number;
+                  // categoryLocation: null;
+                  createdAt: string;
+                  deletedAt: string | null;
+                  formId: number;
+                  formIdDetail: any;
+                  id: number;
+                  status: string;
+                  updatedAt: string;
+                }) => <DynamicForm key={form.id} form={form} />,
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 };
