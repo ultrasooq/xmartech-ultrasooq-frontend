@@ -92,6 +92,38 @@ const formSchema = z
     ),
     description: z.string().trim(),
     specification: z.string().trim(),
+    productPriceList: z.array(
+      z
+        .object({
+          consumerType: z
+            .string()
+            .trim()
+            .min(1, { message: "Consumer Type is required" }),
+          sellType: z
+            .string()
+            .trim()
+            .min(1, { message: "Sell Type is required" }),
+          consumerDiscount: z.coerce
+            .number()
+            .max(100, { message: "Consumer Discount must be less than 100" }),
+          vendorDiscount: z.coerce
+            .number()
+            .max(100, { message: "Vendor Discount must be less than 100" }),
+          minQuantity: z.coerce
+            .number()
+            .min(1, { message: "Min Quantity is required" }),
+          maxQuantity: z.coerce
+            .number()
+            .min(1, { message: "Max Quantity is required" }),
+          deliveryAfter: z
+            .number()
+            .min(1, { message: "Delivery After is required" }),
+        })
+        .refine(({ minQuantity, maxQuantity }) => minQuantity <= maxQuantity, {
+          message: "Min Quantity must be less than or equal to Max Quantity",
+          path: ["minQuantity"],
+        }),
+    ),
   })
   .superRefine(({ productPrice, offerPrice }, ctx) => {
     if (Number(productPrice) < Number(offerPrice)) {
@@ -131,6 +163,17 @@ const EditProductPage = () => {
       description: "",
       specification: "",
       productImages: [],
+      productPriceList: [
+        {
+          consumerType: "",
+          sellType: "",
+          consumerDiscount: 0,
+          vendorDiscount: 0,
+          minQuantity: 0,
+          maxQuantity: 0,
+          deliveryAfter: 0,
+        },
+      ],
     },
   });
 
@@ -242,6 +285,7 @@ const EditProductPage = () => {
     updatedFormData.productId = Number(searchParams?.id);
     updatedFormData.productPriceList = [
       {
+        ...updatedFormData.productPriceList[0],
         productPrice: updatedFormData.productPrice,
         offerPrice: updatedFormData.offerPrice,
         productLocationId: updatedFormData.productLocationId,
@@ -277,7 +321,7 @@ const EditProductPage = () => {
   useEffect(() => {
     if (productQueryById?.data?.data) {
       const product = productQueryById?.data?.data;
-
+      console.log(product);
       const productTagList = product?.productTags
         ? product?.productTags?.map((item: any) => {
             return {
@@ -344,6 +388,21 @@ const EditProductPage = () => {
         productTagList: productTagList || undefined,
         productImages: productImages || [],
         productImagesList: productImagesList || undefined,
+        productPriceList: [
+          {
+            consumerType:
+              product?.product_productPrice?.[0]?.consumerType || "",
+            sellType: product?.product_productPrice?.[0]?.sellType || "",
+            consumerDiscount:
+              product?.product_productPrice?.[0]?.consumerDiscount || 0,
+            vendorDiscount:
+              product?.product_productPrice?.[0]?.vendorDiscount || 0,
+            minQuantity: product?.product_productPrice?.[0]?.minQuantity || 0,
+            maxQuantity: product?.product_productPrice?.[0]?.maxQuantity || 0,
+            deliveryAfter:
+              product?.product_productPrice?.[0]?.deliveryAfter || 0,
+          },
+        ],
         productPrice: product?.productPrice,
         offerPrice: product?.offerPrice,
         placeOfOriginId: product?.placeOfOriginId
@@ -368,7 +427,7 @@ const EditProductPage = () => {
             priority
           />
         </div>
-        <div className="container max-w-[950px] mx-auto relative z-10 m-auto px-3">
+        <div className="container relative z-10 m-auto mx-auto max-w-[950px] px-3">
           <div className="flex flex-wrap">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -377,13 +436,12 @@ const EditProductPage = () => {
                   isEditable={!!form.getValues("categoryLocation")}
                 />
 
-
                 <ProductDetailsSection />
 
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                  <div className="form-groups-common-sec-s1">
-                    <DescriptionAndSpecificationSection />
+                    <div className="form-groups-common-sec-s1">
+                      <DescriptionAndSpecificationSection />
                     </div>
                     <div className="mb-4 mt-4 inline-flex w-full items-center justify-end">
                       <button className="rounded-sm bg-transparent px-4 py-4 text-lg font-bold leading-6 text-[#7F818D]">

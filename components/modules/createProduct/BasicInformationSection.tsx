@@ -174,6 +174,24 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     }
   };
 
+  const consumerTypeMessage =
+    Array.isArray(formContext.formState.errors?.productPriceList) &&
+    formContext.formState.errors.productPriceList.length > 0
+      ? formContext.formState.errors.productPriceList[0]?.consumerType?.message
+      : undefined;
+
+  const sellTypeMessage =
+    Array.isArray(formContext.formState.errors?.productPriceList) &&
+    formContext.formState.errors.productPriceList.length > 0
+      ? formContext.formState.errors.productPriceList[0]?.sellType?.message
+      : undefined;
+
+  const deliveryAfterMessage =
+    Array.isArray(formContext.formState.errors?.productPriceList) &&
+    formContext.formState.errors.productPriceList.length > 0
+      ? formContext.formState.errors.productPriceList[0]?.deliveryAfter?.message
+      : undefined;
+
   useEffect(() => {
     if (catList[currentIndex]) {
       let tempList = catList;
@@ -200,7 +218,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     [listIds?.length],
   );
 
-  // console.log(subCategoryById.data?.data?.category_dynamicFormCategory);
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
@@ -572,7 +589,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     <div className="mt-2 flex flex-col gap-y-3">
                       <Label>Consumer Type</Label>
                       <Controller
-                        name="consumerType"
+                        name="productPriceList.[0].consumerType"
                         control={formContext.control}
                         render={({ field }) => (
                           <ReactSelect
@@ -585,22 +602,22 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                               (item: Option) => item.value === field.value,
                             )}
                             styles={customStyles}
-                            instanceId="consumerType"
+                            instanceId="productPriceList.[0].consumerType"
                           />
                         )}
                       />
-                      <p className="text-[13px] text-red-500">
-                        {
-                          formContext.formState.errors["consumerType"]
-                            ?.message as string
-                        }
-                      </p>
+
+                      {consumerTypeMessage ? (
+                        <p className="text-[13px] text-red-500">
+                          {consumerTypeMessage}
+                        </p>
+                      ) : null}
                     </div>
 
                     <div className="mt-2 flex flex-col gap-y-3">
                       <Label>Sell Type</Label>
                       <Controller
-                        name="sellType"
+                        name="productPriceList.[0].sellType"
                         control={formContext.control}
                         render={({ field }) => (
                           <ReactSelect
@@ -613,23 +630,23 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                               (item: Option) => item.value === field.value,
                             )}
                             styles={customStyles}
-                            instanceId="sellType"
+                            instanceId="productPriceList.[0].sellType"
                           />
                         )}
                       />
-                      <p className="text-[13px] text-red-500">
-                        {
-                          formContext.formState.errors["sellType"]
-                            ?.message as string
-                        }
-                      </p>
+
+                      {sellTypeMessage ? (
+                        <p className="text-[13px] text-red-500">
+                          {sellTypeMessage}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
 
                   <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
                     <FormField
                       control={formContext.control}
-                      name="consumerDiscount"
+                      name="productPriceList.[0].consumerDiscount"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Consumer Discount</FormLabel>
@@ -663,7 +680,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                     <FormField
                       control={formContext.control}
-                      name="vendorDiscount"
+                      name="productPriceList.[0].vendorDiscount"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Vendor Discount</FormLabel>
@@ -697,7 +714,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                     <FormField
                       control={formContext.control}
-                      name="minQuantity"
+                      name="productPriceList.[0].minQuantity"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Min Quantity</FormLabel>
@@ -731,7 +748,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                     <FormField
                       control={formContext.control}
-                      name="maxQuantity"
+                      name="productPriceList.[0].maxQuantity"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Max Quantity</FormLabel>
@@ -768,7 +785,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     <div className="mt-2 flex flex-col gap-y-3">
                       <Label>Deliver After</Label>
                       <Controller
-                        name="deliveryAfter"
+                        name="productPriceList.[0].deliveryAfter"
                         control={formContext.control}
                         render={({ field }) => (
                           <ReactSelect
@@ -781,16 +798,16 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                               (item: any) => item.value === field.value,
                             )}
                             styles={customStyles}
-                            instanceId="deliveryAfter"
+                            instanceId="productPriceList.[0].deliveryAfter"
                           />
                         )}
                       />
-                      <p className="text-[13px] text-red-500">
-                        {
-                          formContext.formState.errors["deliveryAfter"]
-                            ?.message as string
-                        }
-                      </p>
+
+                      {deliveryAfterMessage ? (
+                        <p className="text-[13px] text-red-500">
+                          {deliveryAfterMessage}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
 

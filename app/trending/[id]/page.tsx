@@ -330,7 +330,7 @@ const ProductDetailsPage = () => {
                   </TabsContent>
                   <TabsContent value="specification" className="mt-0">
                     <div className="w-full bg-white">
-                      <ReactQuill
+                      {/* <ReactQuill
                         theme="snow"
                         value={productDetails?.specification}
                         readOnly
@@ -338,12 +338,104 @@ const ProductDetailsPage = () => {
                           toolbar: false,
                         }}
                         className="readonly-quill"
-                      />
+                      /> */}
+
+                      <div className="specification-sec">
+                        <h2>Specification</h2>
+                        <table className="specification-table">
+                          <tbody>
+                            <tr>
+                              <th>Craft of Weaving</th>
+                              <td>Knit</td>
+                              <th>Applicable Season</th>
+                              <td>Spring and Summer</td>
+                            </tr>
+                            <tr>
+                              <th>Craft of Weaving</th>
+                              <td>Knit</td>
+                              <th>Applicable Season</th>
+                              <td>Spring and Summer</td>
+                            </tr>
+                            <tr>
+                              <th>Craft of Weaving</th>
+                              <td>Knit</td>
+                              <th>Applicable Season</th>
+                              <td>Spring and Summer</td>
+                            </tr>
+                            <tr>
+                              <th>Craft of Weaving</th>
+                              <td>Knit</td>
+                              <th>Applicable Season</th>
+                              <td>Spring and Summer</td>
+                            </tr>
+                            <tr>
+                              <th>Craft of Weaving</th>
+                              <td>Knit</td>
+                              <th>Applicable Season</th>
+                              <td>Spring and Summer</td>
+                            </tr>
+                            <tr>
+                              <th>Craft of Weaving</th>
+                              <td>Knit</td>
+                              <th>Applicable Season</th>
+                              <td>Spring and Summer</td>
+                            </tr>
+                            <tr>
+                              <th>Craft of Weaving</th>
+                              <td>Knit</td>
+                              <th>Applicable Season</th>
+                              <td>Spring and Summer</td>
+                            </tr>
+                            <tr>
+                              <th>Craft of Weaving</th>
+                              <td>Knit</td>
+                              <th>Applicable Season</th>
+                              <td>Spring and Summer</td>
+                            </tr>
+                            <tr>
+                              <th>Cn</th>
+                              <td colSpan={3}>Knit</td>
+                            </tr>
+                            <tr>
+                              <td colSpan={4} />
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </TabsContent>
                   <TabsContent value="vendor" className="mt-0">
                     <div className="w-full bg-white">
-                      <p>Vendor</p>
+                      <div className="vendor-information-card-ui">
+                        <div className="vendor-image">
+                          DK
+                        </div>
+                        <div className="vendor-info">
+                          <h2>Vendor Name</h2>
+                          <ul className="vendor-contact-info">
+                            <li>
+                              <a href="mailto:test@gmail.com">
+                                <span className="icon"><img src="/images/email.svg" alt="" /></span>
+                                <span className="text">test@gmail.com</span>
+                              </a>
+                            </li>
+                            <li>
+                              <a href="tel:1234567890">
+                                <span className="icon"><img src="/images/phone-call.svg" alt="" /></span>
+                                <span className="text">1234567890</span>
+                              </a>
+                            </li>
+                          </ul>
+                          <h5>Business Type</h5>
+                          <div className="tagLists">
+                            <div className="tagItem">
+                              <div className="tagIbox">Online Shop</div>
+                            </div>
+                          </div>
+                          <h5>Company ID: <strong>PUREFC0000058</strong></h5>
+
+                        </div>
+                      </div>
                     </div>
                   </TabsContent>
                   <TabsContent value="reviews" className="mt-0">
