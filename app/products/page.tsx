@@ -29,6 +29,7 @@ import Pagination from "@/components/shared/Pagination";
 import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
 import Link from "next/link";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import AddProductContent from "@/components/modules/products/AddProductContent";
 
 const ProductListPage = () => {
   const router = useRouter();
@@ -38,6 +39,8 @@ const ProductListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
+  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+
   const userDetails = useMe();
 
   const productsQuery = useProducts(
@@ -55,6 +58,9 @@ const ProductListPage = () => {
   const handleDebounce = debounce((event: any) => {
     setSearchTerm(event.target.value);
   }, 1000);
+
+  const handleAddProductModal = () =>
+    setIsAddProductModalOpen(!isAddProductModalOpen);
 
   const handleToggleDeleteModal = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -127,10 +133,13 @@ const ProductListPage = () => {
                 />
               </li>
               <li>
-                <Link href="/product" className="theme-primary-btn add-btn p-2">
+                <button
+                  className="theme-primary-btn add-btn p-2"
+                  onClick={handleAddProductModal}
+                >
                   <AddIcon />
                   <span className="d-none-mobile">Add Product</span>
-                </Link>
+                </button>
               </li>
             </ul>
           </CardHeader>
@@ -271,6 +280,13 @@ const ProductListPage = () => {
           onClose={() => handleConfirmation(false)}
           onConfirm={() => handleConfirmation(true)}
           isLoading={deleteProduct.isPending}
+        />
+      </Dialog>
+
+      <Dialog open={isAddProductModalOpen} onOpenChange={handleAddProductModal}>
+        <AddProductContent
+          onToExistingProduct={() => router.push("/rfq-list")}
+          onToNewProduct={() => router.push("/product")}
         />
       </Dialog>
     </section>
