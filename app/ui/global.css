@@ -3260,7 +3260,29 @@
     min-width: 300px;
 */
   }
-
+  .list-disc{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+  }
+  .list-disc li{
+    list-style: none;
+    display: flex;
+    align-items: flex-start;
+    column-gap: 10px;
+  }
+  .list-disc li::before{
+    content: '';
+    clear: both;
+    width: 14px;
+    display: inline-block;
+    height: 14px;
+    background-image: url(../../assets/images/list-disc.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    margin: 4.4px 0 0;
+  }
   /* start: responsive */
   @media (max-width: 1199.98px) {
     .product-list-s1 .product-list-s1-col {
