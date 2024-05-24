@@ -17,31 +17,39 @@ const TradeRoleUpgradeContent: React.FC<TradeRoleUpgradeContentProps> = ({
   onConfirmRole,
 }) => {
   return (
-    <DialogContent className="custom-ui-alert-popup danger-alert-popup">
-      <DialogHeader className="alert-popup-headerpart">
-        <h1 className="text-center !text-3xl">Update trade role</h1>
-      </DialogHeader>
-      <DialogDescription className="text-center !text-2xl !text-black">
-        Kindly select your preferred role
-      </DialogDescription>
-      <DialogFooter className="alert-actions !justify-center">
-        <div className="alert-actions-col">
-          <Button
-            onClick={() => onConfirmRole("FREELANCER")}
-            className="alert--submit-btn !bg-red-500 !text-lg"
-          >
-            Freelancer
-          </Button>
+    <DialogContent className="custom-action-type-chose-picker">
+      <div className="modal-headerpart">
+        <h5>Kindly select your preferred role</h5>
+      </div>
+      <div className="modal-bodypart">
+        <div className="import-pickup-type-selector-lists">
+          <div className="import-pickup-type-selector-item">
+            <input type="radio" className="select-controller" onClick={() => onConfirmRole("FREELANCER")} name="roleType" />
+            <div className="import-pickup-type-selector-box">
+              <div className="icon-container">
+                <img src="/images/freelancer.svg" alt="" />
+              </div>
+              <div className="text-container">
+                <h5>Freelancer</h5>
+                <p>Lorem Ipsum is simply Lorem 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+              </div>
+            </div>
+          </div>
+          <div className="import-pickup-type-selector-item">
+            <input type="radio" className="select-controller" onClick={() => onConfirmRole("COMPANY")} name="roleType" />
+            <div className="import-pickup-type-selector-box">
+              <div className="icon-container">
+                <img src="/images/company.svg" alt="" />
+              </div>
+              <div className="text-container">
+                <h5>Company</h5>
+                <p>Lorem Ipsum is simply Lorem  1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="alert-actions-col">
-          <Button
-            onClick={() => onConfirmRole("COMPANY")}
-            className="alert--submit-btn !bg-red-500 !text-lg"
-          >
-            Company
-          </Button>
-        </div>
-      </DialogFooter>
+      </div>
+      
     </DialogContent>
   );
 };

@@ -440,7 +440,7 @@ export default function RegisterPage() {
               Terms Of Use
             </DialogTitle>
           </DialogHeader>
-          <DialogDescription className="max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
+          <DialogDescription className="term-policy-modal-content max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
             <TermsContent />
           </DialogDescription>
         </DialogContent>
@@ -453,7 +453,7 @@ export default function RegisterPage() {
               Privacy Policy
             </DialogTitle>
           </DialogHeader>
-          <DialogDescription className="max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
+          <DialogDescription className="term-policy-modal-content max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
             <PolicyContent />
           </DialogDescription>
         </DialogContent>

@@ -85,18 +85,16 @@ const BuyerProfileDetailsPage = () => {
               </h2>
             </div>
 
-            <div className="mb-8 flex w-full items-center justify-between rounded-3xl bg-white p-9 font-normal shadow-md">
-              <p className="text-2xl">Do you want to update your profile?</p>
-
+            <div className="common-q-text-with-action">
+              <p>Do you want to upgrad your profile?</p>
               <button
                 type="button"
                 onClick={handleRoleModal}
-                className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-xl font-medium capitalize leading-6 text-white"
+                className="theme-primary-btn addbtn"
               >
                 Update
               </button>
-            </div>
-
+              </div>
             <ProfileCard
               userDetails={userDetails.data?.data}
               onEdit={handleBuyerProfilePage}
