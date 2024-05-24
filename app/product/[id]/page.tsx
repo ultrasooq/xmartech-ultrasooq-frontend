@@ -368,7 +368,7 @@ const EditProductPage = () => {
             priority
           />
         </div>
-        <div className="container max-w-4xl mx-auto relative z-10 m-auto px-3">
+        <div className="container max-w-[950px] mx-auto relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -377,17 +377,14 @@ const EditProductPage = () => {
                   isEditable={!!form.getValues("categoryLocation")}
                 />
 
-                <div className="grid w-full grid-cols-1 gap-x-5">
-                  <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    Hello
-                  </div>
-                </div>
 
                 <ProductDetailsSection />
 
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+                  <div className="form-groups-common-sec-s1">
                     <DescriptionAndSpecificationSection />
+                    </div>
                     <div className="mb-4 mt-4 inline-flex w-full items-center justify-end">
                       <button className="rounded-sm bg-transparent px-4 py-4 text-lg font-bold leading-6 text-[#7F818D]">
                         Save as Draft

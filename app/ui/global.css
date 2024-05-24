@@ -2986,10 +2986,33 @@
   .existing-product-add-lists .existing-product-add-box .text-container h3 a {
     color: inherit;
   }
-  .existing-product-add-lists .existing-product-add-box .leftdiv .form-container{
+
+  .existing-product-add-lists .existing-product-add-box .leftdiv .form-container {
     padding-top: 16px;
   }
+
   /* end: existing-product-add-page */
+  
+  .form-groups-common-sec-s1 {
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    padding: 8px 20px 0;
+    width: 100%;
+  }
+  .form-groups-common-sec-s1 input{
+    background-color: #fff;
+  }
+  .form-groups-common-sec-s1 .quill {
+    background-color: #fff;
+  }
+  .form-groups-common-sec-s1 h3 {
+    color: #000;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 40px;
+    margin: 0 0 4px;
+  }
 
   /* start: responsive */
   @media (max-width: 1199.98px) {

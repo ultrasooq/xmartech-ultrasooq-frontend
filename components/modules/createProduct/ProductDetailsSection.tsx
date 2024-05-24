@@ -197,14 +197,13 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
   };
 
   return (
-    <div className="grid w-full  max-w-4xl mx-auto grid-cols-4 gap-x-5">
+    <div className="grid w-full  max-w-[950px] mx-auto grid-cols-4 gap-x-5">
       <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
         <div className="flex w-full flex-wrap">
-          <div className="mt-2.5 w-full">
-            <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-              Product Details
-            </label>
-          </div>
+        <div className="form-groups-common-sec-s1">
+          <h3>
+            Product Details
+          </h3>
 
           <div className="mb-3.5 w-full">
             <div className="flex flex-wrap">
@@ -271,6 +270,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                 </Button>
               </div>
             </div>
+          </div>
           </div>
 
           <Dialog
