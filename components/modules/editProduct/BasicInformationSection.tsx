@@ -18,6 +18,7 @@ import { useCountries, useLocation } from "@/apis/queries/masters.queries";
 import {
   ICountries,
   ILocations,
+  IOption,
   ISelectOptions,
 } from "@/utils/types/common.types";
 import {
@@ -26,7 +27,6 @@ import {
   useSubCategoryById,
 } from "@/apis/queries/category.queries";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import AddImageContent from "../profile/AddImageContent";
 import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
@@ -115,7 +115,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const memoizedCountries = useMemo(() => {
     return (
       countriesQuery?.data?.data.map((item: ICountries) => {
-        return { label: item.countryName, value: item.id?.toString() };
+        return { label: item.countryName, value: item.id };
       }) || []
     );
   }, [countriesQuery?.data?.data?.length]);
@@ -123,7 +123,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const memoizedLocations = useMemo(() => {
     return (
       locationsQuery?.data?.data.map((item: ILocations) => {
-        return { label: item.locationName, value: item.id?.toString() };
+        return { label: item.locationName, value: item.id };
       }) || []
     );
   }, [locationsQuery?.data?.data?.length]);
@@ -879,16 +879,63 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
 
                   <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-                    <ControlledSelectInput
-                      label="Product Location"
-                      name="productLocationId"
-                      options={memoizedLocations}
-                    />
-                    <ControlledSelectInput
-                      label="Place of Origin"
-                      name="placeOfOriginId"
-                      options={memoizedCountries}
-                    />
+                    <div className="mt-2 flex flex-col gap-y-3">
+                      <Label>Product Location</Label>
+                      <Controller
+                        name="productLocationId"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={memoizedCountries}
+                            value={memoizedCountries.find(
+                              (item: IOption) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="productLocationId"
+                          />
+                        )}
+                      />
+
+                      <p className="text-[13px] text-red-500">
+                        {
+                          formContext.formState.errors["productLocationId"]
+                            ?.message as string
+                        }
+                      </p>
+                    </div>
+
+                    <div className="mt-2 flex flex-col gap-y-3">
+                      <Label>Place of Origin</Label>
+                      <Controller
+                        name="placeOfOriginId"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={memoizedCountries}
+                            value={memoizedCountries.find(
+                              (item: IOption) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="placeOfOriginId"
+                          />
+                        )}
+                      />
+
+                      <p className="text-[13px] text-red-500">
+                        {
+                          formContext.formState.errors["placeOfOriginId"]
+                            ?.message as string
+                        }
+                      </p>
+                    </div>
                   </div>
                 </div>
 
