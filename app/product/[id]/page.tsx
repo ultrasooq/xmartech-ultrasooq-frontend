@@ -368,7 +368,7 @@ const EditProductPage = () => {
             priority
           />
         </div>
-        <div className="container max-w-4xl mx-auto relative z-10 m-auto px-3">
+        <div className="container max-w-[950px] mx-auto relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">

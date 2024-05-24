@@ -197,7 +197,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
   };
 
   return (
-    <div className="grid w-full  max-w-4xl mx-auto grid-cols-4 gap-x-5">
+    <div className="grid w-full  max-w-[950px] mx-auto grid-cols-4 gap-x-5">
       <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
         <div className="flex w-full flex-wrap">
           <div className="mt-2.5 w-full">

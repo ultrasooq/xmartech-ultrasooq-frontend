@@ -196,7 +196,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
-        <div className="col-span-4 mb-3 w-full max-w-4xl mx-auto rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+        <div className="col-span-4 mb-3 w-full max-w-[950px] mx-auto rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
           <div className="flex w-full flex-wrap">
             <div className="mb-4 w-full">
               <div className="mt-2.5 w-full">
