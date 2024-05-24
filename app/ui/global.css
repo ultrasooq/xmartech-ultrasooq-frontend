@@ -3030,13 +3030,16 @@
     text-transform: capitalize;
     transition: all 0.5s;
   }
-  .existing-product-add-lists .existing-product-add-box-action .custom-btn:hover{
+
+  .existing-product-add-lists .existing-product-add-box-action .custom-btn:hover {
     box-shadow: 1px 1px 8px gray;
   }
+
   .existing-product-add-lists .existing-product-add-box-action .custom-btn.update {
     border: 1px solid var(--theme-primary-color);
     color: var(--theme-primary-color);
   }
+
   .existing-product-add-lists .existing-product-add-box-action .custom-btn.edit {
     border: 1px solid #7f818d;
     background-color: #7f818d;
@@ -3087,6 +3090,36 @@
   .form-groups-common-sec-s1 .relative .absolute.left-2 {
     z-index: 1;
     background-color: transparent;
+  }
+
+  .term-policy-modal-content {
+    padding: 32px 42px !important;
+  }
+
+  .common-q-text-with-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 16px;
+    width: 100%;
+    margin: 0 0 16px;
+  }
+
+  .common-q-text-with-action p {
+    margin: 0 !important;
+    font-size: 16px !important;
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  .common-q-text-with-action .addbtn {
+       /* margin-left: auto; */
+       flex: 0 0 auto;
+       padding: 0 16px;
+       border-radius: 5px;
+       font-size: 14px !important;
+       height: 40px;
+   
   }
 
   /* start: responsive */
@@ -3391,6 +3424,10 @@
 
     .add-new-address-modal .modal-header h2 {
       @apply text-base;
+    }
+
+    .term-policy-modal-content {
+      padding: 24px 32px !important;
     }
   }
 
