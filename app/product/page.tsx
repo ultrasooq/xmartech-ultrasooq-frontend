@@ -316,7 +316,7 @@ const CreateProductPage = () => {
             priority
           />
         </div>
-        <div className="container max-w-[950px] mx-auto relative z-10 m-auto px-3">
+        <div className="container relative z-10 m-auto mx-auto max-w-[950px] px-3">
           <div className="flex flex-wrap">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -329,34 +329,37 @@ const CreateProductPage = () => {
 
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-                    <DescriptionAndSpecificationSection />
-                    <div className="mb-4 mt-4 inline-flex w-full items-center justify-end">
-                      <button className="rounded-sm bg-transparent px-4 py-4 text-lg font-bold leading-6 text-[#7F818D]">
-                        Save as Draft
-                      </button>
+                    <div className="form-groups-common-sec-s1">
+                      <DescriptionAndSpecificationSection />
+                      <div className="mb-4 mt-4 inline-flex w-full items-center justify-end">
+                        <button className="rounded-sm bg-transparent px-4 py-4 text-lg font-bold leading-6 text-[#7F818D]">
+                          Save as Draft
+                        </button>
 
-                      <Button
-                        disabled={
-                          createProduct.isPending || uploadMultiple.isPending
-                        }
-                        type="submit"
-                        className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
-                      >
-                        {createProduct.isPending || uploadMultiple.isPending ? (
-                          <>
-                            <Image
-                              src={LoaderIcon}
-                              alt="loader-icon"
-                              width={20}
-                              height={20}
-                              className="mr-2 animate-spin"
-                            />
-                            Please wait
-                          </>
-                        ) : (
-                          "Continue"
-                        )}
-                      </Button>
+                        <Button
+                          disabled={
+                            createProduct.isPending || uploadMultiple.isPending
+                          }
+                          type="submit"
+                          className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                        >
+                          {createProduct.isPending ||
+                          uploadMultiple.isPending ? (
+                            <>
+                              <Image
+                                src={LoaderIcon}
+                                alt="loader-icon"
+                                width={20}
+                                height={20}
+                                className="mr-2 animate-spin"
+                              />
+                              Please wait
+                            </>
+                          ) : (
+                            "Continue"
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>

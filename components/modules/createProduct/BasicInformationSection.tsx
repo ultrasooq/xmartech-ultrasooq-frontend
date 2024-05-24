@@ -200,678 +200,694 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
-        <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+        <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
           <div className="flex w-full flex-wrap">
-            <div className="mb-4 w-full">
-              <div className="mt-2.5 w-full">
-                <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                  Basic Information
-                </label>
-              </div>
-            </div>
-            <div className="mb-3.5 w-full">
+            <div className=" w-full">
               <div className="flex flex-wrap">
-                <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
-                  <div className="flex w-full flex-col justify-between gap-y-2">
-                    <Label>Product Category</Label>
-                    <Controller
-                      name="categoryId"
-                      control={formContext.control}
-                      render={({ field }) => (
-                        <select
-                          {...field}
-                          className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                          onChange={(e) => {
-                            if (e.target.value === "") {
-                              return;
-                            }
-                            setCurrentId(e.target.value);
-                            setCurrentIndex(0);
-
-                            if (listIds[0]) {
-                              let tempIds = listIds;
-                              tempIds[0] = e.target.value;
-                              tempIds = tempIds.slice(0, 1);
-
-                              setListIds([...tempIds]);
-                              return;
-                            }
-                            setListIds([...listIds, e.target.value]);
-                          }}
-                          value={catList[0]?.id || ""}
-                        >
-                          <option value="">Select Category</option>
-                          {memoizedCategories.map((item: ISelectOptions) => (
-                            <option
-                              value={item.value?.toString()}
-                              key={item.value}
-                            >
-                              {item.label}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    />
-                    <p className="text-[13px] font-medium text-red-500">
-                      {
-                        formContext.formState.errors["categoryId"]
-                          ?.message as string
-                      }
-                    </p>
-                  </div>
-
-                  {catList.length > 0 &&
-                    catList.map((item, index) => (
-                      <div
-                        key={item?.id}
-                        className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
-                      >
-                        <div className="flex w-full flex-col justify-between gap-y-2">
-                          <Label>Sub Category</Label>
+                <div className="form-groups-common-sec-s1">
+                  <h3>Basic Information</h3>
+                  <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
+                    <div className="flex w-full flex-col justify-between gap-y-2">
+                      <Label>Product Category</Label>
+                      <Controller
+                        name="categoryId"
+                        control={formContext.control}
+                        render={({ field }) => (
                           <select
+                            {...field}
                             className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                             onChange={(e) => {
                               if (e.target.value === "") {
                                 return;
                               }
-
                               setCurrentId(e.target.value);
-                              setCurrentIndex(index + 1);
+                              setCurrentIndex(0);
 
-                              if (listIds[index + 1]) {
+                              if (listIds[0]) {
                                 let tempIds = listIds;
-                                tempIds[index + 1] = e.target.value;
-                                tempIds = tempIds.slice(0, index + 2);
+                                tempIds[0] = e.target.value;
+                                tempIds = tempIds.slice(0, 1);
+
                                 setListIds([...tempIds]);
                                 return;
                               }
                               setListIds([...listIds, e.target.value]);
                             }}
-                            value={item?.children
-                              ?.find((item: any) =>
-                                listIds.includes(item.id?.toString())
-                                  ? item
-                                  : "",
-                              )
-                              ?.id?.toString()}
+                            value={catList[0]?.id || ""}
                           >
-                            <option value="">Select Sub Category</option>
-                            {item?.children?.map((item: any) => (
-                              <option value={item.id?.toString()} key={item.id}>
-                                {item.name}
+                            <option value="">Select Category</option>
+                            {memoizedCategories.map((item: ISelectOptions) => (
+                              <option
+                                value={item.value?.toString()}
+                                key={item.value}
+                              >
+                                {item.label}
                               </option>
                             ))}
                           </select>
-                        </div>
-                      </div>
-                    ))}
-                </div>
+                        )}
+                      />
+                      <p className="text-[13px] font-medium text-red-500">
+                        {
+                          formContext.formState.errors["categoryId"]
+                            ?.message as string
+                        }
+                      </p>
+                    </div>
 
-                <ControlledTextInput
-                  label="Product Name"
-                  name="productName"
-                  placeholder="Product Name"
-                />
-
-                <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                  <BrandSelect />
-                  {activeProductType !== "R" ? (
-                    <ControlledTextInput
-                      label="SKU No"
-                      name="skuNo"
-                      placeholder="Enter SKU No"
-                      type="number"
-                      onWheel={(e) => e.currentTarget.blur()}
-                    />
-                  ) : null}
-                </div>
-
-                <AccordionMultiSelectV2
-                  label="Tag"
-                  name="productTagList"
-                  options={tagsList || []}
-                  placeholder="Tag"
-                  error={
-                    formContext.formState.errors["productTagList"]
-                      ?.message as string
-                  }
-                />
-
-                <div className="relative mb-4 w-full">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none text-color-dark">
-                      Product Image
-                    </label>
-                    <div className="flex w-full flex-wrap">
-                      <div className="grid grid-cols-5">
-                        {watchProductImages?.map((item: any, index: number) => (
-                          <FormField
-                            control={formContext.control}
-                            name="productImages"
-                            key={index}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <div className="relative mb-3 w-full px-2">
-                                    <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                                      {watchProductImages?.length ? (
-                                        <button
-                                          type="button"
-                                          className="common-close-btn-uploader-s1"
-                                          onClick={() => {
-                                            handleRemovePreviewImage(item?.id);
-                                            if (photosRef.current)
-                                              photosRef.current.value = "";
-                                          }}
-                                        >
-                                          <Image
-                                            src={CloseWhiteIcon}
-                                            alt="close-icon"
-                                            height={22}
-                                            width={22}
-                                          />
-                                        </button>
-                                      ) : null}
-
-                                      {item?.path && isImage(item.path) ? (
-                                        <div className="relative h-44">
-                                          <Image
-                                            src={
-                                              typeof item.path === "object"
-                                                ? URL.createObjectURL(item.path)
-                                                : typeof item.path === "string"
-                                                  ? item.path
-                                                  : "/images/no-image.jpg"
-                                            }
-                                            alt="profile"
-                                            fill
-                                            priority
-                                          />
-                                          <Input
-                                            type="file"
-                                            accept="image/*"
-                                            multiple={false}
-                                            className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
-                                            onChange={(event) => {
-                                              if (event.target.files) {
-                                                if (
-                                                  event.target.files[0].size >
-                                                  1048576
-                                                ) {
-                                                  toast({
-                                                    title:
-                                                      "One of your file size should be less than 1MB",
-                                                    variant: "danger",
-                                                  });
-                                                  return;
-                                                }
-                                                handleEditPreviewImage(
-                                                  item?.id,
-                                                  event.target.files,
-                                                );
-                                              }
-                                            }}
-                                            id="productImages"
-                                          />
-                                        </div>
-                                      ) : item?.path && isVideo(item.path) ? (
-                                        <div className="relative h-44">
-                                          <div className="player-wrapper px-2">
-                                            <ReactPlayer
-                                              url={
-                                                typeof item.path === "object"
-                                                  ? URL.createObjectURL(
-                                                      item.path,
-                                                    )
-                                                  : typeof item.path ===
-                                                      "string"
-                                                    ? item.path
-                                                    : "/images/no-image.jpg"
-                                              }
-                                              width="100%"
-                                              height="100%"
-                                              // playing
-                                              controls
-                                            />
-                                          </div>
-
-                                          <div className="absolute h-20 w-full p-5">
-                                            <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
-                                              Upload Video
-                                            </p>
-                                          </div>
-                                          <Input
-                                            type="file"
-                                            accept="video/*"
-                                            multiple={false}
-                                            className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
-                                            onChange={(event) => {
-                                              if (event.target.files) {
-                                                if (
-                                                  event.target.files[0].size >
-                                                  1048576
-                                                ) {
-                                                  toast({
-                                                    title:
-                                                      "One of your file size should be less than 1MB",
-                                                    variant: "danger",
-                                                  });
-                                                  return;
-                                                }
-
-                                                handleEditPreviewImage(
-                                                  item?.id,
-                                                  event.target.files,
-                                                );
-                                              }
-                                            }}
-                                            id="productImages"
-                                          />
-                                        </div>
-                                      ) : (
-                                        <AddImageContent description="Drop your File , or " />
-                                      )}
-                                    </div>
-                                  </div>
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                        <div className="relative mb-3 w-full pl-2">
-                          <div className="absolute m-auto bg-white flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                            <div className="text-sm font-medium leading-4 text-color-dark">
-                              <Image
-                                src="/images/plus.png"
-                                className="m-auto mb-3"
-                                alt="camera-icon"
-                                width={29}
-                                height={28}
-                              />
-                              <span>Add More</span>
-                            </div>
-                          </div>
-
-                          <Input
-                            type="file"
-                            accept="image/*, video/*"
-                            multiple
-                            className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
-                            onChange={(event) => {
-                              if (event.target.files) {
-                                const filesArray = Array.from(
-                                  event.target.files,
-                                );
-
-                                if (
-                                  filesArray.some((file) => file.size > 1048576)
-                                ) {
-                                  toast({
-                                    title:
-                                      "One of your file size should be less than 1MB",
-                                    variant: "danger",
-                                  });
+                    {catList.length > 0 &&
+                      catList.map((item, index) => (
+                        <div
+                          key={item?.id}
+                          className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
+                        >
+                          <div className="flex w-full flex-col justify-between gap-y-2">
+                            <Label>Sub Category</Label>
+                            <select
+                              className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                              onChange={(e) => {
+                                if (e.target.value === "") {
                                   return;
                                 }
 
-                                const newImages = filesArray.map((file) => ({
-                                  path: file,
-                                  id: uuidv4(),
-                                }));
-                                const updatedProductImages = [
-                                  ...(watchProductImages || []),
-                                  ...newImages,
-                                ];
-                                formContext.setValue(
-                                  "productImages",
-                                  updatedProductImages,
-                                );
-                              }
-                            }}
-                            id="productImages"
-                            ref={photosRef}
-                          />
+                                setCurrentId(e.target.value);
+                                setCurrentIndex(index + 1);
+
+                                if (listIds[index + 1]) {
+                                  let tempIds = listIds;
+                                  tempIds[index + 1] = e.target.value;
+                                  tempIds = tempIds.slice(0, index + 2);
+                                  setListIds([...tempIds]);
+                                  return;
+                                }
+                                setListIds([...listIds, e.target.value]);
+                              }}
+                              value={item?.children
+                                ?.find((item: any) =>
+                                  listIds.includes(item.id?.toString())
+                                    ? item
+                                    : "",
+                                )
+                                ?.id?.toString()}
+                            >
+                              <option value="">Select Sub Category</option>
+                              {item?.children?.map((item: any) => (
+                                <option
+                                  value={item.id?.toString()}
+                                  key={item.id}
+                                >
+                                  {item.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+
+                  <ControlledTextInput
+                    label="Product Name"
+                    name="productName"
+                    placeholder="Product Name"
+                  />
+
+                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                    <BrandSelect />
+                    {activeProductType !== "R" ? (
+                      <ControlledTextInput
+                        label="SKU No"
+                        name="skuNo"
+                        placeholder="Enter SKU No"
+                        type="number"
+                        onWheel={(e) => e.currentTarget.blur()}
+                      />
+                    ) : null}
+                  </div>
+
+                  <AccordionMultiSelectV2
+                    label="Tag"
+                    name="productTagList"
+                    options={tagsList || []}
+                    placeholder="Tag"
+                    error={
+                      formContext.formState.errors["productTagList"]
+                        ?.message as string
+                    }
+                  />
+
+                  <div className="relative mb-4 w-full">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium leading-none text-color-dark">
+                        Product Image
+                      </label>
+                      <div className="flex w-full flex-wrap">
+                        <div className="grid grid-cols-5">
+                          {watchProductImages?.map(
+                            (item: any, index: number) => (
+                              <FormField
+                                control={formContext.control}
+                                name="productImages"
+                                key={index}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <div className="relative mb-3 w-full px-2">
+                                        <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                                          {watchProductImages?.length ? (
+                                            <button
+                                              type="button"
+                                              className="common-close-btn-uploader-s1"
+                                              onClick={() => {
+                                                handleRemovePreviewImage(
+                                                  item?.id,
+                                                );
+                                                if (photosRef.current)
+                                                  photosRef.current.value = "";
+                                              }}
+                                            >
+                                              <Image
+                                                src={CloseWhiteIcon}
+                                                alt="close-icon"
+                                                height={22}
+                                                width={22}
+                                              />
+                                            </button>
+                                          ) : null}
+
+                                          {item?.path && isImage(item.path) ? (
+                                            <div className="relative h-44">
+                                              <Image
+                                                src={
+                                                  typeof item.path === "object"
+                                                    ? URL.createObjectURL(
+                                                        item.path,
+                                                      )
+                                                    : typeof item.path ===
+                                                        "string"
+                                                      ? item.path
+                                                      : "/images/no-image.jpg"
+                                                }
+                                                alt="profile"
+                                                fill
+                                                priority
+                                              />
+                                              <Input
+                                                type="file"
+                                                accept="image/*"
+                                                multiple={false}
+                                                className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                                onChange={(event) => {
+                                                  if (event.target.files) {
+                                                    if (
+                                                      event.target.files[0]
+                                                        .size > 1048576
+                                                    ) {
+                                                      toast({
+                                                        title:
+                                                          "One of your file size should be less than 1MB",
+                                                        variant: "danger",
+                                                      });
+                                                      return;
+                                                    }
+                                                    handleEditPreviewImage(
+                                                      item?.id,
+                                                      event.target.files,
+                                                    );
+                                                  }
+                                                }}
+                                                id="productImages"
+                                              />
+                                            </div>
+                                          ) : item?.path &&
+                                            isVideo(item.path) ? (
+                                            <div className="relative h-44">
+                                              <div className="player-wrapper px-2">
+                                                <ReactPlayer
+                                                  url={
+                                                    typeof item.path ===
+                                                    "object"
+                                                      ? URL.createObjectURL(
+                                                          item.path,
+                                                        )
+                                                      : typeof item.path ===
+                                                          "string"
+                                                        ? item.path
+                                                        : "/images/no-image.jpg"
+                                                  }
+                                                  width="100%"
+                                                  height="100%"
+                                                  // playing
+                                                  controls
+                                                />
+                                              </div>
+
+                                              <div className="absolute h-20 w-full p-5">
+                                                <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
+                                                  Upload Video
+                                                </p>
+                                              </div>
+                                              <Input
+                                                type="file"
+                                                accept="video/*"
+                                                multiple={false}
+                                                className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+                                                onChange={(event) => {
+                                                  if (event.target.files) {
+                                                    if (
+                                                      event.target.files[0]
+                                                        .size > 1048576
+                                                    ) {
+                                                      toast({
+                                                        title:
+                                                          "One of your file size should be less than 1MB",
+                                                        variant: "danger",
+                                                      });
+                                                      return;
+                                                    }
+
+                                                    handleEditPreviewImage(
+                                                      item?.id,
+                                                      event.target.files,
+                                                    );
+                                                  }
+                                                }}
+                                                id="productImages"
+                                              />
+                                            </div>
+                                          ) : (
+                                            <AddImageContent description="Drop your File , or " />
+                                          )}
+                                        </div>
+                                      </div>
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            ),
+                          )}
+                          <div className="relative mb-3 w-full pl-2">
+                            <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
+                              <div className="text-sm font-medium leading-4 text-color-dark">
+                                <Image
+                                  src="/images/plus.png"
+                                  className="m-auto mb-3"
+                                  alt="camera-icon"
+                                  width={29}
+                                  height={28}
+                                />
+                                <span>Add More</span>
+                              </div>
+                            </div>
+
+                            <Input
+                              type="file"
+                              accept="image/*, video/*"
+                              multiple
+                              className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
+                              onChange={(event) => {
+                                if (event.target.files) {
+                                  const filesArray = Array.from(
+                                    event.target.files,
+                                  );
+
+                                  if (
+                                    filesArray.some(
+                                      (file) => file.size > 1048576,
+                                    )
+                                  ) {
+                                    toast({
+                                      title:
+                                        "One of your file size should be less than 1MB",
+                                      variant: "danger",
+                                    });
+                                    return;
+                                  }
+
+                                  const newImages = filesArray.map((file) => ({
+                                    path: file,
+                                    id: uuidv4(),
+                                  }));
+                                  const updatedProductImages = [
+                                    ...(watchProductImages || []),
+                                    ...newImages,
+                                  ];
+                                  formContext.setValue(
+                                    "productImages",
+                                    updatedProductImages,
+                                  );
+                                }
+                              }}
+                              id="productImages"
+                              ref={photosRef}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="mb-4 w-full space-y-2">
-                  <div className="text-with-checkagree">
-                    <div className="check-col">
-                      <input
-                        type="checkbox"
-                        className="custom-check-s1"
-                        id="setUpPriceCheck"
-                      ></input>
-                    </div>
-                    <label className="text-col" htmlFor="setUpPriceCheck">
-                      Set up price
-                    </label>
-                  </div>
-                </div>
-
-                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-                  <div className="mt-2 flex flex-col gap-y-3">
-                    <Label>Consumer Type</Label>
-                    <Controller
-                      name="consumerType"
-                      control={formContext.control}
-                      render={({ field }) => (
-                        <ReactSelect
-                          {...field}
-                          onChange={(newValue) => {
-                            field.onChange(newValue?.value);
-                          }}
-                          options={CONSUMER_TYPE_LIST}
-                          value={CONSUMER_TYPE_LIST.find(
-                            (item: Option) => item.value === field.value,
-                          )}
-                          styles={customStyles}
-                          instanceId="consumerType"
-                        />
-                      )}
-                    />
-                    <p className="text-[13px] text-red-500">
-                      {
-                        formContext.formState.errors["consumerType"]
-                          ?.message as string
-                      }
-                    </p>
-                  </div>
-
-                  <div className="mt-2 flex flex-col gap-y-3">
-                    <Label>Sell Type</Label>
-                    <Controller
-                      name="sellType"
-                      control={formContext.control}
-                      render={({ field }) => (
-                        <ReactSelect
-                          {...field}
-                          onChange={(newValue) => {
-                            field.onChange(newValue?.value);
-                          }}
-                          options={SELL_TYPE_LIST}
-                          value={SELL_TYPE_LIST.find(
-                            (item: Option) => item.value === field.value,
-                          )}
-                          styles={customStyles}
-                          instanceId="sellType"
-                        />
-                      )}
-                    />
-                    <p className="text-[13px] text-red-500">
-                      {
-                        formContext.formState.errors["sellType"]
-                          ?.message as string
-                      }
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
-                  <FormField
-                    control={formContext.control}
-                    name="consumerDiscount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Consumer Discount</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                              -
-                            </div>
-                            <Input
-                              type="number"
-                              onWheel={(e) => e.currentTarget.blur()}
-                              placeholder="Discount"
-                              className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
-                              {...field}
-                            />
-                            <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                              +
-                            </div>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={formContext.control}
-                    name="vendorDiscount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Vendor Discount</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                              -
-                            </div>
-                            <Input
-                              type="number"
-                              onWheel={(e) => e.currentTarget.blur()}
-                              placeholder="Discount"
-                              className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
-                              {...field}
-                            />
-                            <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                              +
-                            </div>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={formContext.control}
-                    name="minQuantity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Min Quantity</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                              -
-                            </div>
-                            <Input
-                              type="number"
-                              onWheel={(e) => e.currentTarget.blur()}
-                              placeholder="Min"
-                              className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
-                              {...field}
-                            />
-                            <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                              +
-                            </div>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={formContext.control}
-                    name="maxQuantity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Max Quantity</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                              -
-                            </div>
-                            <Input
-                              type="number"
-                              onWheel={(e) => e.currentTarget.blur()}
-                              placeholder="Max"
-                              className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
-                              {...field}
-                            />
-                            <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                              +
-                            </div>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-                  <div className="mt-2 flex flex-col gap-y-3">
-                    <Label>Deliver After</Label>
-                    <Controller
-                      name="deliveryAfter"
-                      control={formContext.control}
-                      render={({ field }) => (
-                        <ReactSelect
-                          {...field}
-                          onChange={(newValue) => {
-                            field.onChange(newValue?.value);
-                          }}
-                          options={DELIVER_AFTER_LIST}
-                          value={DELIVER_AFTER_LIST.find(
-                            (item: any) => item.value === field.value,
-                          )}
-                          styles={customStyles}
-                          instanceId="deliveryAfter"
-                        />
-                      )}
-                    />
-                    <p className="text-[13px] text-red-500">
-                      {
-                        formContext.formState.errors["deliveryAfter"]
-                          ?.message as string
-                      }
-                    </p>
-                  </div>
-                </div>
-
-                {activeProductType !== "R" ? (
-                  <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-                    <FormField
-                      control={formContext.control}
-                      name="productPrice"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Product Price</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                                $
-                              </div>
-                              <Input
-                                type="number"
-                                onWheel={(e) => e.currentTarget.blur()}
-                                placeholder="Product Price"
-                                className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
-                                {...field}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={formContext.control}
-                      name="offerPrice"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Offer Price</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
-                                $
-                              </div>
-                              <Input
-                                type="number"
-                                onWheel={(e) => e.currentTarget.blur()}
-                                placeholder="Offer Price"
-                                className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
-                                {...field}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                ) : null}
-
-                <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-                  {activeProductType !== "R" ? (
-                    <ControlledSelectInput
-                      label="Product Location"
-                      name="productLocationId"
-                      options={memoizedLocations}
-                    />
-                  ) : null}
-                  <ControlledSelectInput
-                    label="Place of Origin"
-                    name="placeOfOriginId"
-                    options={memoizedCountries}
-                  />
-                </div>
-
-                <div className="grid w-full grid-cols-2">
-                  <div>
-                    <div className="flex w-full items-center justify-between">
-                      <label className="text-sm font-medium leading-none text-color-dark">
-                        Short Description
+                <div className="form-groups-common-sec-s1">
+                  <h3>Price</h3>
+                  <div className="mb-4 w-full space-y-2">
+                    <div className="text-with-checkagree">
+                      <div className="check-col">
+                        <input
+                          type="checkbox"
+                          className="custom-check-s1"
+                          id="setUpPriceCheck"
+                        ></input>
+                      </div>
+                      <label className="text-col" htmlFor="setUpPriceCheck">
+                        Set up price
                       </label>
+                    </div>
+                  </div>
 
-                      <Button
-                        type="button"
-                        onClick={appendShortDescription}
-                        className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                      >
-                        <Image
-                          src={AddIcon}
-                          className="mr-1"
-                          width={14}
-                          height={14}
-                          alt="add-icon"
-                        />
-                        <span>Add Short Description</span>
-                      </Button>
+                  <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+                    <div className="mt-2 flex flex-col gap-y-3">
+                      <Label>Consumer Type</Label>
+                      <Controller
+                        name="consumerType"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={CONSUMER_TYPE_LIST}
+                            value={CONSUMER_TYPE_LIST.find(
+                              (item: Option) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="consumerType"
+                          />
+                        )}
+                      />
+                      <p className="text-[13px] text-red-500">
+                        {
+                          formContext.formState.errors["consumerType"]
+                            ?.message as string
+                        }
+                      </p>
                     </div>
 
-                    {fieldArrayForShortDescription.fields.map(
-                      (field, index) => (
-                        <div key={field.id} className="relative w-full">
-                          <ControlledTextInput
-                            key={field.id}
-                            name={`productShortDescriptionList.${index}.shortDescription`}
-                            placeholder="Enter Short Description"
+                    <div className="mt-2 flex flex-col gap-y-3">
+                      <Label>Sell Type</Label>
+                      <Controller
+                        name="sellType"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={SELL_TYPE_LIST}
+                            value={SELL_TYPE_LIST.find(
+                              (item: Option) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="sellType"
                           />
+                        )}
+                      />
+                      <p className="text-[13px] text-red-500">
+                        {
+                          formContext.formState.errors["sellType"]
+                            ?.message as string
+                        }
+                      </p>
+                    </div>
+                  </div>
 
-                          {index !== 0 ? (
-                            <Button
-                              type="button"
-                              onClick={() => removeShortDescription(index)}
-                              className="absolute right-2 top-6 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                            >
-                              <Image
-                                src="/images/social-delete-icon.svg"
-                                height={32}
-                                width={32}
-                                alt="social-delete-icon"
+                  <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
+                    <FormField
+                      control={formContext.control}
+                      name="consumerDiscount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Consumer Discount</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                -
+                              </div>
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Discount"
+                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                {...field}
                               />
-                            </Button>
-                          ) : null}
-                        </div>
-                      ),
-                    )}
+                              <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                +
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={formContext.control}
+                      name="vendorDiscount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Vendor Discount</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                -
+                              </div>
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Discount"
+                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                {...field}
+                              />
+                              <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                +
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={formContext.control}
+                      name="minQuantity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Min Quantity</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                -
+                              </div>
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Min"
+                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                {...field}
+                              />
+                              <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                +
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={formContext.control}
+                      name="maxQuantity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Max Quantity</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                -
+                              </div>
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Max"
+                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                {...field}
+                              />
+                              <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                +
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+                    <div className="mt-2 flex flex-col gap-y-3">
+                      <Label>Deliver After</Label>
+                      <Controller
+                        name="deliveryAfter"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={DELIVER_AFTER_LIST}
+                            value={DELIVER_AFTER_LIST.find(
+                              (item: any) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="deliveryAfter"
+                          />
+                        )}
+                      />
+                      <p className="text-[13px] text-red-500">
+                        {
+                          formContext.formState.errors["deliveryAfter"]
+                            ?.message as string
+                        }
+                      </p>
+                    </div>
+                  </div>
+
+                  {activeProductType !== "R" ? (
+                    <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                      <FormField
+                        control={formContext.control}
+                        name="productPrice"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Product Price</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                  $
+                                </div>
+                                <Input
+                                  type="number"
+                                  onWheel={(e) => e.currentTarget.blur()}
+                                  placeholder="Product Price"
+                                  className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={formContext.control}
+                        name="offerPrice"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Offer Price</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                  $
+                                </div>
+                                <Input
+                                  type="number"
+                                  onWheel={(e) => e.currentTarget.blur()}
+                                  placeholder="Offer Price"
+                                  className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                                  {...field}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  ) : null}
+
+                  <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                    {activeProductType !== "R" ? (
+                      <ControlledSelectInput
+                        label="Product Location"
+                        name="productLocationId"
+                        options={memoizedLocations}
+                      />
+                    ) : null}
+                    <ControlledSelectInput
+                      label="Place of Origin"
+                      name="placeOfOriginId"
+                      options={memoizedCountries}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-groups-common-sec-s1">
+                  <h3>Description</h3>
+                  <div className="grid w-full grid-cols-1">
+                    <div>
+                      <div className="flex w-full items-center justify-between">
+                        <label className="text-sm font-medium leading-none text-color-dark">
+                          Short Description
+                        </label>
+
+                        <Button
+                          type="button"
+                          onClick={appendShortDescription}
+                          className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                        >
+                          <Image
+                            src={AddIcon}
+                            className="mr-1"
+                            width={14}
+                            height={14}
+                            alt="add-icon"
+                          />
+                          <span>Add Short Description</span>
+                        </Button>
+                      </div>
+
+                      {fieldArrayForShortDescription.fields.map(
+                        (field, index) => (
+                          <div key={field.id} className="relative w-full">
+                            <ControlledTextInput
+                              key={field.id}
+                              name={`productShortDescriptionList.${index}.shortDescription`}
+                              placeholder="Enter Short Description"
+                            />
+
+                            {index !== 0 ? (
+                              <Button
+                                type="button"
+                                onClick={() => removeShortDescription(index)}
+                                className="absolute right-2 top-6 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                              >
+                                <Image
+                                  src="/images/social-delete-icon.svg"
+                                  height={32}
+                                  width={32}
+                                  alt="social-delete-icon"
+                                />
+                              </Button>
+                            ) : null}
+                          </div>
+                        ),
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

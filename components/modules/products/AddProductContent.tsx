@@ -30,7 +30,7 @@ const AddProductContent: React.FC<AddProductContentProps> = ({
             <input type="radio" className="select-controller" name="isStartNewImport" onClick={onToNewProduct} />
             <div className="import-pickup-type-selector-box">
               <div className="icon-container">
-                <img src="/images/product.svg" alt="" />
+                <img src="/images/add-product.svg" alt="" />
               </div>
               <div className="text-container">
                 <h5>Add a new product</h5>
@@ -42,7 +42,7 @@ const AddProductContent: React.FC<AddProductContentProps> = ({
             <input type="radio" onClick={onToExistingProduct} className="select-controller" name="isStartNewImport" />
             <div className="import-pickup-type-selector-box">
               <div className="icon-container">
-                <img src="/images/product.svg" alt="" />
+                <img src="/images/existing-product.svg" alt="" />
               </div>
               <div className="text-container">
                 <h5>Choose from Existing product </h5>
