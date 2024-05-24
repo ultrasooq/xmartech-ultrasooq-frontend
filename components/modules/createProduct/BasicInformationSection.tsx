@@ -54,6 +54,10 @@ const customStyles = {
     height: 48,
     minHeight: 48,
   }),
+  menu: (base: any) => ({
+    ...base,
+    zIndex: 20,
+  }),
 };
 
 type ProductImageProps = {
@@ -631,9 +635,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           <FormLabel>Consumer Discount</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              <button
+                                type="button"
+                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
                                 -
-                              </div>
+                              </button>
                               <Input
                                 type="number"
                                 onWheel={(e) => e.currentTarget.blur()}
@@ -641,9 +648,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                 className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
                                 {...field}
                               />
-                              <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              <button
+                                type="button"
+                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
                                 +
-                              </div>
+                              </button>
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -659,9 +669,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           <FormLabel>Vendor Discount</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              <button
+                                type="button"
+                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
                                 -
-                              </div>
+                              </button>
                               <Input
                                 type="number"
                                 onWheel={(e) => e.currentTarget.blur()}
@@ -669,9 +682,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                 className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
                                 {...field}
                               />
-                              <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              <button
+                                type="button"
+                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
                                 +
-                              </div>
+                              </button>
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -687,9 +703,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           <FormLabel>Min Quantity</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              <button
+                                type="button"
+                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
                                 -
-                              </div>
+                              </button>
                               <Input
                                 type="number"
                                 onWheel={(e) => e.currentTarget.blur()}
@@ -697,9 +716,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                 className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
                                 {...field}
                               />
-                              <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              <button
+                                type="button"
+                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
                                 +
-                              </div>
+                              </button>
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -715,9 +737,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           <FormLabel>Max Quantity</FormLabel>
                           <FormControl>
                             <div className="relative">
-                              <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              <button
+                                type="button"
+                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
                                 -
-                              </div>
+                              </button>
                               <Input
                                 type="number"
                                 onWheel={(e) => e.currentTarget.blur()}
@@ -725,9 +750,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                 className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
                                 {...field}
                               />
-                              <div className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                              <button
+                                type="button"
+                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
                                 +
-                              </div>
+                              </button>
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -776,7 +804,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             <FormLabel>Product Price</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
                                   $
                                 </div>
                                 <Input
@@ -801,7 +829,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             <FormLabel>Offer Price</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]">
+                                <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
                                   $
                                 </div>
                                 <Input
