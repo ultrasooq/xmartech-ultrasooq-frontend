@@ -19,25 +19,39 @@ const AddProductContent: React.FC<AddProductContentProps> = ({
   onToNewProduct,
 }) => {
   return (
-    <DialogContent className="custom-ui-alert-popup danger-alert-popup">
-      <DialogHeader className="alert-popup-headerpart">
-        <h1>Choose</h1>
-      </DialogHeader>
-      <DialogDescription className="alert-popup-bodypart">
-        <h4>Select an option</h4>
-      </DialogDescription>
-      <DialogFooter className="alert-actions">
-        <div className="alert-actions-col">
-          <Button onClick={onToExistingProduct} className="alert--cancel-btn">
-            Add To Existing Product
-          </Button>
+    <DialogContent className="custom-action-type-chose-picker">
+      <div className="modal-headerpart">
+        <h5>Chose Add Product Type</h5>
+        {/* <button type="button" className="closebtn"><img src="/images/close.svg" alt=""/></button> */}
+      </div>
+      <div className="modal-bodypart">
+        <div className="import-pickup-type-selector-lists">
+          <div className="import-pickup-type-selector-item">
+            <input type="radio" className="select-controller" name="isStartNewImport" onClick={onToNewProduct} />
+            <div className="import-pickup-type-selector-box">
+              <div className="icon-container">
+                <img src="/images/product.svg" alt="" />
+              </div>
+              <div className="text-container">
+                <h5>Add a new product</h5>
+                <p>Lorem Ipsum is simply Lorem 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+              </div>
+            </div>
+          </div>
+          <div className="import-pickup-type-selector-item">
+            <input type="radio" onClick={onToExistingProduct} className="select-controller" name="isStartNewImport" />
+            <div className="import-pickup-type-selector-box">
+              <div className="icon-container">
+                <img src="/images/product.svg" alt="" />
+              </div>
+              <div className="text-container">
+                <h5>Choose from Existing product </h5>
+                <p>Lorem Ipsum is simply Lorem  1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="alert-actions-col">
-          <Button onClick={onToNewProduct} className="alert--submit-btn">
-            Add New Product
-          </Button>
-        </div>
-      </DialogFooter>
+      </div>
     </DialogContent>
   );
 };

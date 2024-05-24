@@ -531,7 +531,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
                 </div>
 
-                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                <div className="space-y-2 mb-4 w-full">
                   <div className="text-with-checkagree">
                     <div className="check-col">
                       <input type="checkbox" className="custom-check-s1" id="setUpPriceCheck"></input>
@@ -539,6 +539,108 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     <label className="text-col" for="setUpPriceCheck">Set up price</label>
                   </div>
                 </div>
+
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Cosumer Type</Label>
+                    <select
+                      className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                    >
+                      <option>Everyone</option>
+                      <option>Consumer</option>
+                      <option>Vendor</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Sell Type</Label>
+                    <select
+                      className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                    >
+                      <option>Normal Sell</option>
+                    </select>
+                  </div>
+                </div>
+
+
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-4">
+                  <div className="space-y-2">
+                    <Label>Consumer Discount</Label>
+                    <div className="theme-inputValue-picker-upDown">
+                      <button type="button" className="upDown-btn minus">
+                        <img src="/images/minus-icon-dark.svg" alt=""></img>
+                      </button>
+                      <input type="number"
+                        className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
+                      />
+                      <button type="button" className="upDown-btn plus">
+                        <img src="/images/plus-icon-dark.svg" alt=""></img>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Vendor Discount</Label>
+                    <div className="theme-inputValue-picker-upDown">
+                      <button type="button" className="upDown-btn minus">
+                        <img src="/images/minus-icon-dark.svg" alt=""></img>
+                      </button>
+                      <input type="number"
+                        className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
+                      />
+                      <button type="button" className="upDown-btn plus">
+                        <img src="/images/plus-icon-dark.svg" alt=""></img>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Min Quantity</Label>
+                    <div className="theme-inputValue-picker-upDown">
+                      <button type="button" className="upDown-btn minus">
+                        <img src="/images/minus-icon-dark.svg" alt=""></img>
+                      </button>
+                      <input type="number"
+                        className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
+                      />
+                      <button type="button" className="upDown-btn plus">
+                        <img src="/images/plus-icon-dark.svg" alt=""></img>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Max Quantity</Label>
+                    <div className="theme-inputValue-picker-upDown">
+                      <button type="button" className="upDown-btn minus">
+                        <img src="/images/minus-icon-dark.svg" alt=""></img>
+                      </button>
+                      <input type="number"
+                        className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
+                      />
+                      <button type="button" className="upDown-btn plus">
+                        <img src="/images/plus-icon-dark.svg" alt=""></img>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Deliver After</Label>
+                    <select
+                      className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                    >
+                      <option>1 day</option>
+                      <option>2 day</option>
+                      <option>3 day</option>
+                      <option>4 day</option>
+                      <option>5 day</option>
+                      <option>6 day</option>
+                      <option>7 day</option>
+                    </select>
+                  </div>
+                </div>
+
                 <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
                   <FormField
                     control={formContext.control}
