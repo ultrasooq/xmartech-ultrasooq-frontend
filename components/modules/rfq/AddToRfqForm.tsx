@@ -533,7 +533,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                     />
                   ))}
                   <div className="relative mb-3 w-full pl-2">
-                    <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                    <div className="absolute bg-white m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
                       <div className="text-sm font-medium leading-4 text-color-dark">
                         <Image
                           src="/images/plus.png"

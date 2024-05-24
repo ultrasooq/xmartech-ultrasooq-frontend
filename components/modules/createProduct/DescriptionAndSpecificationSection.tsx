@@ -4,13 +4,9 @@ import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTe
 const DescriptionAndSpecificationSection = () => {
   return (
     <div className="flex w-full flex-wrap">
-      <div className="mb-4 w-full">
-        <div className="mt-2.5 w-full">
-          <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+          <h3>
             Description & Specification
-          </label>
-        </div>
-      </div>
+          </h3>
       <div className="mb-3.5 w-full">
         <div className="relative mb-4 w-full">
           <ControlledRichTextEditor label="Description" name="description" />
