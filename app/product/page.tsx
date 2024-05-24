@@ -88,6 +88,38 @@ const formSchemaForTypeP = z
     ),
     description: z.string().trim(),
     specification: z.string().trim(),
+    productPriceList: z.array(
+      z
+        .object({
+          consumerType: z
+            .string()
+            .trim()
+            .min(1, { message: "Consumer Type is required" }),
+          sellType: z
+            .string()
+            .trim()
+            .min(1, { message: "Sell Type is required" }),
+          consumerDiscount: z.coerce
+            .number()
+            .max(100, { message: "Consumer Discount must be less than 100" }),
+          vendorDiscount: z.coerce
+            .number()
+            .max(100, { message: "Vendor Discount must be less than 100" }),
+          minQuantity: z.coerce
+            .number()
+            .min(1, { message: "Min Quantity is required" }),
+          maxQuantity: z.coerce
+            .number()
+            .min(1, { message: "Max Quantity is required" }),
+          deliveryAfter: z
+            .number()
+            .min(1, { message: "Delivery After is required" }),
+        })
+        .refine(({ minQuantity, maxQuantity }) => minQuantity <= maxQuantity, {
+          message: "Min Quantity must be less than or equal to Max Quantity",
+          path: ["minQuantity"],
+        }),
+    ),
   })
   .superRefine(({ productPrice, offerPrice }, ctx) => {
     if (Number(productPrice) < Number(offerPrice)) {
@@ -167,6 +199,7 @@ const CreateProductPage = () => {
       productPrice: "",
       offerPrice: "",
       placeOfOriginId: "",
+      productLocationId: "",
       productShortDescriptionList: [
         {
           shortDescription: "",
@@ -175,6 +208,17 @@ const CreateProductPage = () => {
       description: "",
       specification: "",
       productImages: [],
+      productPriceList: [
+        {
+          consumerType: "",
+          sellType: "",
+          consumerDiscount: 0,
+          vendorDiscount: 0,
+          minQuantity: 0,
+          maxQuantity: 0,
+          deliveryAfter: 0,
+        },
+      ],
     },
   });
 
@@ -256,6 +300,7 @@ const CreateProductPage = () => {
     delete updatedFormData.productImages;
     updatedFormData.productPriceList = [
       {
+        ...updatedFormData.productPriceList[0],
         productPrice:
           activeProductType === "R" ? 0 : updatedFormData.productPrice,
         offerPrice: activeProductType === "R" ? 0 : updatedFormData.offerPrice,

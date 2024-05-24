@@ -32,10 +32,34 @@ import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import ReactPlayer from "react-player/lazy";
 import BrandSelect from "@/components/shared/BrandSelect";
-import { imageExtensions, videoExtensions } from "@/utils/constants";
+import {
+  CONSUMER_TYPE_LIST,
+  DELIVER_AFTER_LIST,
+  SELL_TYPE_LIST,
+  imageExtensions,
+  videoExtensions,
+} from "@/utils/constants";
 import DynamicForm from "@/components/shared/DynamicForm";
 import { Button } from "@/components/ui/button";
 import AddIcon from "@/public/images/add-icon.svg";
+import ReactSelect from "react-select";
+
+interface Option {
+  readonly label: string;
+  readonly value: string;
+}
+
+const customStyles = {
+  control: (base: any) => ({
+    ...base,
+    height: 48,
+    minHeight: 48,
+  }),
+  menu: (base: any) => ({
+    ...base,
+    zIndex: 20,
+  }),
+};
 
 type ProductImageProps = {
   path: string;
@@ -150,6 +174,24 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       return true;
     }
   };
+
+  const consumerTypeMessage =
+    Array.isArray(formContext.formState.errors?.productPriceList) &&
+    formContext.formState.errors.productPriceList.length > 0
+      ? formContext.formState.errors.productPriceList[0]?.consumerType?.message
+      : undefined;
+
+  const sellTypeMessage =
+    Array.isArray(formContext.formState.errors?.productPriceList) &&
+    formContext.formState.errors.productPriceList.length > 0
+      ? formContext.formState.errors.productPriceList[0]?.sellType?.message
+      : undefined;
+
+  const deliveryAfterMessage =
+    Array.isArray(formContext.formState.errors?.productPriceList) &&
+    formContext.formState.errors.productPriceList.length > 0
+      ? formContext.formState.errors.productPriceList[0]?.deliveryAfter?.message
+      : undefined;
 
   useEffect(() => {
     if (catList[currentIndex]) {
@@ -559,100 +601,228 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
 
                   <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label>Cosumer Type</Label>
-                      <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                        <option>Everyone</option>
-                        <option>Consumer</option>
-                        <option>Vendor</option>
-                      </select>
+                    <div className="mt-2 flex flex-col gap-y-3">
+                      <Label>Consumer Type</Label>
+                      <Controller
+                        name="productPriceList.[0].consumerType"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={CONSUMER_TYPE_LIST}
+                            value={CONSUMER_TYPE_LIST.find(
+                              (item: Option) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="productPriceList.[0].consumerType"
+                          />
+                        )}
+                      />
+
+                      {consumerTypeMessage ? (
+                        <p className="text-[13px] text-red-500">
+                          {consumerTypeMessage}
+                        </p>
+                      ) : null}
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="mt-2 flex flex-col gap-y-3">
                       <Label>Sell Type</Label>
-                      <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                        <option>Normal Sell</option>
-                      </select>
+                      <Controller
+                        name="productPriceList.[0].sellType"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={SELL_TYPE_LIST}
+                            value={SELL_TYPE_LIST.find(
+                              (item: Option) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="productPriceList.[0].sellType"
+                          />
+                        )}
+                      />
+
+                      {sellTypeMessage ? (
+                        <p className="text-[13px] text-red-500">
+                          {sellTypeMessage}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
 
                   <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
-                    <div className="space-y-2">
-                      <Label>Consumer Discount</Label>
-                      <div className="theme-inputValue-picker-upDown">
-                        <button type="button" className="upDown-btn minus">
-                          <img src="/images/minus-icon-dark.svg" alt=""></img>
-                        </button>
-                        <input
-                          type="number"
-                          className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
-                        />
-                        <button type="button" className="upDown-btn plus">
-                          <img src="/images/plus-icon-dark.svg" alt=""></img>
-                        </button>
-                      </div>
-                    </div>
+                    <FormField
+                      control={formContext.control}
+                      name="productPriceList.[0].consumerDiscount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Consumer Discount</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
+                                -
+                              </button>
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Discount"
+                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                    <div className="space-y-2">
-                      <Label>Vendor Discount</Label>
-                      <div className="theme-inputValue-picker-upDown">
-                        <button type="button" className="upDown-btn minus">
-                          <img src="/images/minus-icon-dark.svg" alt=""></img>
-                        </button>
-                        <input
-                          type="number"
-                          className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
-                        />
-                        <button type="button" className="upDown-btn plus">
-                          <img src="/images/plus-icon-dark.svg" alt=""></img>
-                        </button>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Min Quantity</Label>
-                      <div className="theme-inputValue-picker-upDown">
-                        <button type="button" className="upDown-btn minus">
-                          <img src="/images/minus-icon-dark.svg" alt=""></img>
-                        </button>
-                        <input
-                          type="number"
-                          className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
-                        />
-                        <button type="button" className="upDown-btn plus">
-                          <img src="/images/plus-icon-dark.svg" alt=""></img>
-                        </button>
-                      </div>
-                    </div>
+                    <FormField
+                      control={formContext.control}
+                      name="productPriceList.[0].vendorDiscount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Vendor Discount</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
+                                -
+                              </button>
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Discount"
+                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                    <div className="space-y-2">
-                      <Label>Max Quantity</Label>
-                      <div className="theme-inputValue-picker-upDown">
-                        <button type="button" className="upDown-btn minus">
-                          <img src="/images/minus-icon-dark.svg" alt=""></img>
-                        </button>
-                        <input
-                          type="number"
-                          className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
-                        />
-                        <button type="button" className="upDown-btn plus">
-                          <img src="/images/plus-icon-dark.svg" alt=""></img>
-                        </button>
-                      </div>
-                    </div>
+                    <FormField
+                      control={formContext.control}
+                      name="productPriceList.[0].minQuantity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Min Quantity</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
+                                -
+                              </button>
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Min"
+                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={formContext.control}
+                      name="productPriceList.[0].maxQuantity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Max Quantity</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
+                                -
+                              </button>
+                              <Input
+                                type="number"
+                                onWheel={(e) => e.currentTarget.blur()}
+                                placeholder="Max"
+                                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                className="absolute right-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-                    <div className="space-y-2">
+                    <div className="mt-2 flex flex-col gap-y-3">
                       <Label>Deliver After</Label>
-                      <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                        <option>1 day</option>
-                        <option>2 day</option>
-                        <option>3 day</option>
-                        <option>4 day</option>
-                        <option>5 day</option>
-                        <option>6 day</option>
-                        <option>7 day</option>
-                      </select>
+                      <Controller
+                        name="productPriceList.[0].deliveryAfter"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={DELIVER_AFTER_LIST}
+                            value={DELIVER_AFTER_LIST.find(
+                              (item: any) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="productPriceList.[0].deliveryAfter"
+                          />
+                        )}
+                      />
+
+                      {deliveryAfterMessage ? (
+                        <p className="text-[13px] text-red-500">
+                          {deliveryAfterMessage}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
 
