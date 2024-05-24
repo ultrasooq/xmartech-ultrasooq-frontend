@@ -196,7 +196,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
-        <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+        <div className="col-span-4 mb-3 w-full max-w-4xl mx-auto rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
           <div className="flex w-full flex-wrap">
             <div className="mb-4 w-full">
               <div className="mt-2.5 w-full">
@@ -540,7 +540,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
                 </div>
 
-                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Cosumer Type</Label>
                     <select
@@ -563,7 +563,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                 </div>
 
 
-                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-4">
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
                   <div className="space-y-2">
                     <Label>Consumer Discount</Label>
                     <div className="theme-inputValue-picker-upDown">
@@ -624,7 +624,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
                 </div>
 
-                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Deliver After</Label>
                     <select
@@ -641,7 +641,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
                 </div>
 
-                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
                   <FormField
                     control={formContext.control}
                     name="productPrice"

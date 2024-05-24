@@ -2930,8 +2930,64 @@
   /* end: custom-action-type-chose-picker */
 
   /* start: existing-product-add-page */
-  .existing-product-add-page{
+  .existing-product-add-page {
     padding: 62px 0;
+  }
+
+  .existing-product-add-lists {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -10px;
+  }
+
+  .existing-product-add-lists .existing-product-add-item {
+    padding: 10px;
+    width: 100%;
+    max-width: 50%;
+  }
+
+  .existing-product-add-lists .existing-product-add-box {
+    border-radius: 8px;
+    box-shadow: 1px 1px 8px gray;
+    display: flex;
+  }
+
+  .existing-product-add-lists .existing-product-add-box .leftdiv {
+    width: 100%;
+    max-width: 50%;
+    border-right: 1px solid #e2e2e2;
+    padding: 10px 10px;
+    ;
+  }
+
+  .existing-product-add-lists .existing-product-add-box .rightdiv {
+    width: 100%;
+    padding: 10px 10px;
+    ;
+    max-width: 50%;
+  }
+
+  .existing-product-add-lists .existing-product-add-box .image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 160px;
+  }
+
+  .existing-product-add-lists .existing-product-add-box .text-container {
+    padding: 10px 0 0;
+    @apply border-t border-solid border-gray-300;
+  }
+
+  .existing-product-add-lists .existing-product-add-box .text-container h3 {
+    @apply text-sm font-normal capitalize text-color-blue lg:text-base;
+  }
+
+  .existing-product-add-lists .existing-product-add-box .text-container h3 a {
+    color: inherit;
+  }
+  .existing-product-add-lists .existing-product-add-box .leftdiv .form-container{
+    padding-top: 16px;
   }
   /* end: existing-product-add-page */
 
