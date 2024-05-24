@@ -196,11 +196,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
-        <div className="col-span-4 mb-3 w-full max-w-[950px] mx-auto rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+        <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
           <div className="flex w-full flex-wrap">
             <div className=" w-full">
               <div className="flex flex-wrap">
-
                 <div className="form-groups-common-sec-s1">
                   <h3>Basic Information</h3>
                   <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
@@ -289,7 +288,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             >
                               <option value="">Select Sub Category</option>
                               {item?.children?.map((item: any) => (
-                                <option value={item.id?.toString()} key={item.id}>
+                                <option
+                                  value={item.id?.toString()}
+                                  key={item.id}
+                                >
                                   {item.name}
                                 </option>
                               ))}
@@ -334,142 +336,151 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       </label>
                       <div className="flex w-full flex-wrap">
                         <div className="grid grid-cols-5">
-                          {watchProductImages?.map((item: any, index: number) => (
-                            <FormField
-                              control={formContext.control}
-                              name="productImages"
-                              key={index}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <div className="relative mb-3 w-full px-2">
-                                      <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                                        {watchProductImages?.length ? (
-                                          <button
-                                            type="button"
-                                            className="common-close-btn-uploader-s1"
-                                            onClick={() => {
-                                              handleRemovePreviewImage(item?.id);
-                                              if (photosRef.current)
-                                                photosRef.current.value = "";
-                                            }}
-                                          >
-                                            <Image
-                                              src={CloseWhiteIcon}
-                                              alt="close-icon"
-                                              height={22}
-                                              width={22}
-                                            />
-                                          </button>
-                                        ) : null}
-
-                                        {item?.path && isImage(item.path) ? (
-                                          <div className="relative h-44">
-                                            <Image
-                                              src={
-                                                typeof item.path === "object"
-                                                  ? URL.createObjectURL(item.path)
-                                                  : typeof item.path === "string"
-                                                    ? item.path
-                                                    : "/images/no-image.jpg"
-                                              }
-                                              alt="profile"
-                                              fill
-                                              priority
-                                            />
-                                            <Input
-                                              type="file"
-                                              accept="image/*"
-                                              multiple={false}
-                                              className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
-                                              onChange={(event) => {
-                                                if (event.target.files) {
-                                                  if (
-                                                    event.target.files[0].size >
-                                                    1048576
-                                                  ) {
-                                                    toast({
-                                                      title:
-                                                        "One of your file size should be less than 1MB",
-                                                      variant: "danger",
-                                                    });
-                                                    return;
-                                                  }
-                                                  handleEditPreviewImage(
-                                                    item?.id,
-                                                    event.target.files,
-                                                  );
-                                                }
+                          {watchProductImages?.map(
+                            (item: any, index: number) => (
+                              <FormField
+                                control={formContext.control}
+                                name="productImages"
+                                key={index}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormControl>
+                                      <div className="relative mb-3 w-full px-2">
+                                        <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                                          {watchProductImages?.length ? (
+                                            <button
+                                              type="button"
+                                              className="common-close-btn-uploader-s1"
+                                              onClick={() => {
+                                                handleRemovePreviewImage(
+                                                  item?.id,
+                                                );
+                                                if (photosRef.current)
+                                                  photosRef.current.value = "";
                                               }}
-                                              id="productImages"
-                                            />
-                                          </div>
-                                        ) : item?.path && isVideo(item.path) ? (
-                                          <div className="relative h-44">
-                                            <div className="player-wrapper px-2">
-                                              <ReactPlayer
-                                                url={
+                                            >
+                                              <Image
+                                                src={CloseWhiteIcon}
+                                                alt="close-icon"
+                                                height={22}
+                                                width={22}
+                                              />
+                                            </button>
+                                          ) : null}
+
+                                          {item?.path && isImage(item.path) ? (
+                                            <div className="relative h-44">
+                                              <Image
+                                                src={
                                                   typeof item.path === "object"
                                                     ? URL.createObjectURL(
-                                                      item.path,
-                                                    )
+                                                        item.path,
+                                                      )
                                                     : typeof item.path ===
-                                                      "string"
+                                                        "string"
                                                       ? item.path
                                                       : "/images/no-image.jpg"
                                                 }
-                                                width="100%"
-                                                height="100%"
-                                                // playing
-                                                controls
+                                                alt="profile"
+                                                fill
+                                                priority
+                                              />
+                                              <Input
+                                                type="file"
+                                                accept="image/*"
+                                                multiple={false}
+                                                className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                                onChange={(event) => {
+                                                  if (event.target.files) {
+                                                    if (
+                                                      event.target.files[0]
+                                                        .size > 1048576
+                                                    ) {
+                                                      toast({
+                                                        title:
+                                                          "One of your file size should be less than 1MB",
+                                                        variant: "danger",
+                                                      });
+                                                      return;
+                                                    }
+                                                    handleEditPreviewImage(
+                                                      item?.id,
+                                                      event.target.files,
+                                                    );
+                                                  }
+                                                }}
+                                                id="productImages"
                                               />
                                             </div>
-
-                                            <div className="absolute h-20 w-full p-5">
-                                              <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
-                                                Upload Video
-                                              </p>
-                                            </div>
-                                            <Input
-                                              type="file"
-                                              accept="video/*"
-                                              multiple={false}
-                                              className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
-                                              onChange={(event) => {
-                                                if (event.target.files) {
-                                                  if (
-                                                    event.target.files[0].size >
-                                                    1048576
-                                                  ) {
-                                                    toast({
-                                                      title:
-                                                        "One of your file size should be less than 1MB",
-                                                      variant: "danger",
-                                                    });
-                                                    return;
+                                          ) : item?.path &&
+                                            isVideo(item.path) ? (
+                                            <div className="relative h-44">
+                                              <div className="player-wrapper px-2">
+                                                <ReactPlayer
+                                                  url={
+                                                    typeof item.path ===
+                                                    "object"
+                                                      ? URL.createObjectURL(
+                                                          item.path,
+                                                        )
+                                                      : typeof item.path ===
+                                                          "string"
+                                                        ? item.path
+                                                        : "/images/no-image.jpg"
                                                   }
+                                                  width="100%"
+                                                  height="100%"
+                                                  // playing
+                                                  controls
+                                                />
+                                              </div>
 
-                                                  handleEditPreviewImage(
-                                                    item?.id,
-                                                    event.target.files,
-                                                  );
-                                                }
-                                              }}
-                                              id="productImages"
-                                            />
-                                          </div>
-                                        ) : (
-                                          <AddImageContent description="Drop your File , or " />
-                                        )}
+                                              <div className="absolute h-20 w-full p-5">
+                                                <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
+                                                  Upload Video
+                                                </p>
+                                              </div>
+                                              <Input
+                                                type="file"
+                                                accept="video/*"
+                                                multiple={false}
+                                                className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+                                                onChange={(event) => {
+                                                  if (event.target.files) {
+                                                    if (
+                                                      event.target.files[0]
+                                                        .size > 1048576
+                                                    ) {
+                                                      toast({
+                                                        title:
+                                                          "One of your file size should be less than 1MB",
+                                                        variant: "danger",
+                                                      });
+                                                      return;
+                                                    }
+
+                                                    handleEditPreviewImage(
+                                                      item?.id,
+                                                      event.target.files,
+                                                    );
+                                                  }
+                                                }}
+                                                id="productImages"
+                                              />
+                                            </div>
+                                          ) : (
+                                            <AddImageContent description="Drop your File , or " />
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          ))}
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            ),
+                          )}
                           <div className="relative mb-3 w-full pl-2">
-                            <div className="absolute m-auto flex bg-white h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                            <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
                               <div className="text-sm font-medium leading-4 text-color-dark">
                                 <Image
                                   src="/images/plus.png"
@@ -494,7 +505,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   );
 
                                   if (
-                                    filesArray.some((file) => file.size > 1048576)
+                                    filesArray.some(
+                                      (file) => file.size > 1048576,
+                                    )
                                   ) {
                                     toast({
                                       title:
@@ -529,21 +542,25 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                 </div>
                 <div className="form-groups-common-sec-s1">
                   <h3>Price</h3>
-                  <div className="space-y-2 mb-4 w-full">
+                  <div className="mb-4 w-full space-y-2">
                     <div className="text-with-checkagree">
                       <div className="check-col">
-                        <input type="checkbox" className="custom-check-s1" id="setUpPriceCheck"></input>
+                        <input
+                          type="checkbox"
+                          className="custom-check-s1"
+                          id="setUpPriceCheck"
+                        ></input>
                       </div>
-                      <label className="text-col" for="setUpPriceCheck">Set up price</label>
+                      <label className="text-col" htmlFor="setUpPriceCheck">
+                        Set up price
+                      </label>
                     </div>
                   </div>
 
                   <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label>Cosumer Type</Label>
-                      <select
-                        className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                      >
+                      <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
                         <option>Everyone</option>
                         <option>Consumer</option>
                         <option>Vendor</option>
@@ -552,14 +569,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                     <div className="space-y-2">
                       <Label>Sell Type</Label>
-                      <select
-                        className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                      >
+                      <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
                         <option>Normal Sell</option>
                       </select>
                     </div>
                   </div>
-
 
                   <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
                     <div className="space-y-2">
@@ -568,7 +582,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         <button type="button" className="upDown-btn minus">
                           <img src="/images/minus-icon-dark.svg" alt=""></img>
                         </button>
-                        <input type="number"
+                        <input
+                          type="number"
                           className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
                         />
                         <button type="button" className="upDown-btn plus">
@@ -583,7 +598,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         <button type="button" className="upDown-btn minus">
                           <img src="/images/minus-icon-dark.svg" alt=""></img>
                         </button>
-                        <input type="number"
+                        <input
+                          type="number"
                           className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
                         />
                         <button type="button" className="upDown-btn plus">
@@ -597,7 +613,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         <button type="button" className="upDown-btn minus">
                           <img src="/images/minus-icon-dark.svg" alt=""></img>
                         </button>
-                        <input type="number"
+                        <input
+                          type="number"
                           className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
                         />
                         <button type="button" className="upDown-btn plus">
@@ -612,7 +629,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         <button type="button" className="upDown-btn minus">
                           <img src="/images/minus-icon-dark.svg" alt=""></img>
                         </button>
-                        <input type="number"
+                        <input
+                          type="number"
                           className="theme-inputValue-picker-control !h-[48px] w-full rounded border !border-gray-300 text-sm focus-visible:!ring-0"
                         />
                         <button type="button" className="upDown-btn plus">
@@ -625,9 +643,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label>Deliver After</Label>
-                      <select
-                        className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                      >
+                      <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
                         <option>1 day</option>
                         <option>2 day</option>
                         <option>3 day</option>
@@ -706,7 +722,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                 </div>
                 <div className="form-groups-common-sec-s1">
                   <h3>Description</h3>
-                  <div className="grid w-full grid-cols-1 mb-3 ">
+                  <div className="mb-3 grid w-full grid-cols-1 ">
                     <div>
                       <div className="flex w-full items-center justify-between">
                         <label className="text-sm font-medium leading-none text-color-dark">
@@ -764,29 +780,32 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-1 gap-x-5">
-        <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
-          {!subCategoryById.data?.data?.category_dynamicFormCategory?.length ? (
-            <p className="text-center">No Form Found</p>
-          ) : null}
+      {subCategoryById.data?.data?.category_dynamicFormCategory?.length ? (
+        <div className="grid w-full grid-cols-1 gap-x-5">
+          <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+            {!subCategoryById.data?.data?.category_dynamicFormCategory
+              ?.length ? (
+              <p className="text-center">No Form Found</p>
+            ) : null}
 
-          <div className="space-y-5">
-            {subCategoryById.data?.data?.category_dynamicFormCategory?.map(
-              (form: {
-                categoryId: number;
-                // categoryLocation: null;
-                createdAt: string;
-                deletedAt: string | null;
-                formId: number;
-                formIdDetail: any;
-                id: number;
-                status: string;
-                updatedAt: string;
-              }) => <DynamicForm key={form.id} form={form} />,
-            )}
+            <div className="space-y-5">
+              {subCategoryById.data?.data?.category_dynamicFormCategory?.map(
+                (form: {
+                  categoryId: number;
+                  // categoryLocation: null;
+                  createdAt: string;
+                  deletedAt: string | null;
+                  formId: number;
+                  formIdDetail: any;
+                  id: number;
+                  status: string;
+                  updatedAt: string;
+                }) => <DynamicForm key={form.id} form={form} />,
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 };
