@@ -2698,6 +2698,43 @@
 
   /* end: ========================== rfq-product-list-page ====================== */
 
+  .text-with-checkagree {
+    display: flex;
+    column-gap: 10px;
+    align-items: center;
+  }
+
+  .text-with-checkagree .check-col {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+
+  .text-with-checkagree .check-col input {
+    margin: 0;
+  }
+
+  .text-with-checkagree .text-col {
+    @apply text-sm font-medium leading-none m-0;
+  }
+
+  .custom-check-s1 {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--theme-primary-color);
+    border-radius: 3px;
+    position: relative;
+  }
+  .custom-check-s1::after{
+    content: '';
+    clear: both;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+  }
+
   /* start: responsive */
   @media (max-width: 1199.98px) {
     .product-list-s1 .product-list-s1-col {
@@ -3178,7 +3215,7 @@ input::-ms-clear {
 } */
 
 .player-wrapper {
-  position: relative;   
+  position: relative;
   /* height: 50%; */
   padding-top: 5%;
 }

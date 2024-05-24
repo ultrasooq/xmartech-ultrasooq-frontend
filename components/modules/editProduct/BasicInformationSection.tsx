@@ -415,10 +415,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                               url={
                                                 typeof item.path === "object"
                                                   ? URL.createObjectURL(
-                                                      item.path,
-                                                    )
+                                                    item.path,
+                                                  )
                                                   : typeof item.path ===
-                                                      "string"
+                                                    "string"
                                                     ? item.path
                                                     : "/images/no-image.jpg"
                                               }
@@ -532,6 +532,14 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                 </div>
 
                 <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+                  <div className="text-with-checkagree">
+                    <div className="check-col">
+                      <input type="checkbox" className="custom-check-s1" id="setUpPriceCheck"></input>
+                    </div>
+                    <label className="text-col" for="setUpPriceCheck">Set up price</label>
+                  </div>
+                </div>
+                <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
                   <FormField
                     control={formContext.control}
                     name="productPrice"
@@ -596,7 +604,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   />
                 </div>
 
-                <div className="grid w-full grid-cols-2">
+                <div className="grid w-full grid-cols-1">
                   <div>
                     <div className="flex w-full items-center justify-between">
                       <label className="text-sm font-medium leading-none text-color-dark">
