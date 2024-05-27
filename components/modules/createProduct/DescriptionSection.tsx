@@ -1,0 +1,80 @@
+import React from "react";
+import { Button } from "@/components/ui/button";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import Image from "next/image";
+import AddIcon from "@/public/images/add-icon.svg";
+import { useFieldArray, useFormContext } from "react-hook-form";
+
+const DescriptionSection = () => {
+  const formContext = useFormContext();
+
+  const fieldArrayForShortDescription = useFieldArray({
+    control: formContext.control,
+    name: "productShortDescriptionList",
+  });
+
+  const appendShortDescription = () =>
+    fieldArrayForShortDescription.append({
+      shortDescription: "",
+    });
+
+  const removeShortDescription = (index: number) =>
+    fieldArrayForShortDescription.remove(index);
+
+  return (
+    <div className="form-groups-common-sec-s1">
+      <h3>Description</h3>
+      <div className="grid w-full grid-cols-1">
+        <div>
+          <div className="flex w-full items-center justify-between">
+            <label className="text-sm font-medium leading-none text-color-dark">
+              Short Description
+            </label>
+
+            <Button
+              type="button"
+              onClick={appendShortDescription}
+              className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+            >
+              <Image
+                src={AddIcon}
+                className="mr-1"
+                width={14}
+                height={14}
+                alt="add-icon"
+              />
+              <span>Add Short Description</span>
+            </Button>
+          </div>
+
+          {fieldArrayForShortDescription.fields.map((field, index) => (
+            <div key={field.id} className="relative w-full">
+              <ControlledTextInput
+                key={field.id}
+                name={`productShortDescriptionList.${index}.shortDescription`}
+                placeholder="Enter Short Description"
+              />
+
+              {index !== 0 ? (
+                <Button
+                  type="button"
+                  onClick={() => removeShortDescription(index)}
+                  className="absolute right-2 top-6 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                >
+                  <Image
+                    src="/images/social-delete-icon.svg"
+                    height={32}
+                    width={32}
+                    alt="social-delete-icon"
+                  />
+                </Button>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DescriptionSection;
