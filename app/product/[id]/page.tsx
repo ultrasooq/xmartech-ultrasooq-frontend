@@ -105,6 +105,12 @@ const formSchema = z
           vendorDiscount: z.coerce
             .number()
             .max(100, { message: "Vendor Discount must be less than 100" }),
+          minCustomer: z.coerce
+            .number()
+            .min(1, { message: "Min Customer is required" }),
+          maxCustomer: z.coerce
+            .number()
+            .min(1, { message: "Max Customer is required" }),
           minQuantityPerCustomer: z.coerce
             .number()
             .min(1, { message: "Min Quantity Per Customer is required" }),
@@ -117,6 +123,12 @@ const formSchema = z
           maxQuantity: z.coerce
             .number()
             .min(1, { message: "Max Quantity is required" }),
+          timeOpen: z.coerce
+            .number()
+            .min(1, { message: "Open Time is required" }),
+          timeClose: z.coerce
+            .number()
+            .min(1, { message: "Close Time is required" }),
           deliveryAfter: z
             .number()
             .min(1, { message: "Delivery After is required" }),
