@@ -12,11 +12,7 @@ import { Label } from "@/components/ui/label";
 import CounterTextInputField from "./CounterTextInputField";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  CONSUMER_TYPE_LIST,
-  DELIVER_AFTER_LIST,
-  SELL_TYPE_LIST,
-} from "@/utils/constants";
+import { CONSUMER_TYPE_LIST, SELL_TYPE_LIST } from "@/utils/constants";
 import { ICountries, ILocations, IOption } from "@/utils/types/common.types";
 import { useCountries, useLocation } from "@/apis/queries/masters.queries";
 
@@ -79,12 +75,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     Array.isArray(formContext.formState.errors?.productPriceList) &&
     formContext.formState.errors.productPriceList.length > 0
       ? formContext.formState.errors.productPriceList[0]?.sellType?.message
-      : undefined;
-
-  const deliveryAfterMessage =
-    Array.isArray(formContext.formState.errors?.productPriceList) &&
-    formContext.formState.errors.productPriceList.length > 0
-      ? formContext.formState.errors.productPriceList[0]?.deliveryAfter?.message
       : undefined;
 
   return (
@@ -258,33 +248,11 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           </div>
 
           <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-            <div className="mt-2 flex flex-col gap-y-3">
-              <Label>Deliver After</Label>
-              <Controller
-                name="productPriceList.[0].deliveryAfter"
-                control={formContext.control}
-                render={({ field }) => (
-                  <ReactSelect
-                    {...field}
-                    onChange={(newValue) => {
-                      field.onChange(newValue?.value);
-                    }}
-                    options={DELIVER_AFTER_LIST}
-                    value={DELIVER_AFTER_LIST.find(
-                      (item: any) => item.value === field.value,
-                    )}
-                    styles={customStyles}
-                    instanceId="productPriceList.[0].deliveryAfter"
-                  />
-                )}
-              />
-
-              {deliveryAfterMessage ? (
-                <p className="text-[13px] text-red-500">
-                  {deliveryAfterMessage}
-                </p>
-              ) : null}
-            </div>
+            <CounterTextInputField
+              label="Deliver After"
+              name="productPriceList.[0].deliveryAfter"
+              placeholder="After"
+            />
           </div>
 
           {activeProductType !== "R" ? (
