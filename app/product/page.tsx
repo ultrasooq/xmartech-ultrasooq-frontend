@@ -31,10 +31,8 @@ const formSchemaForTypeP = z
     categoryLocation: z.string().trim().optional(),
     brandId: z.number().min(1, { message: "Brand is required" }),
     productLocationId: z
-      .string()
-      .trim()
-      .min(1, { message: "Product Location is required" })
-      .transform((value) => Number(value)),
+      .number()
+      .min(1, { message: "Product Location is required" }),
     skuNo: z
       .string()
       .trim()
@@ -73,10 +71,8 @@ const formSchemaForTypeP = z
       .min(1, { message: "Offer Price is required" })
       .transform((value) => Number(value)),
     placeOfOriginId: z
-      .string()
-      .trim()
-      .min(1, { message: "Place of Origin is required" })
-      .transform((value) => Number(value)),
+      .number()
+      .min(1, { message: "Place of Origin is required" }),
     productShortDescriptionList: z.array(
       z.object({
         shortDescription: z
@@ -210,8 +206,8 @@ const CreateProductPage = () => {
       productImagesList: undefined,
       productPrice: "",
       offerPrice: "",
-      placeOfOriginId: "",
-      productLocationId: "",
+      placeOfOriginId: 0,
+      productLocationId: 0,
       productShortDescriptionList: [
         {
           shortDescription: "",

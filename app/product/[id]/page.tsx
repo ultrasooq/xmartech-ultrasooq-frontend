@@ -105,6 +105,12 @@ const formSchema = z
           vendorDiscount: z.coerce
             .number()
             .max(100, { message: "Vendor Discount must be less than 100" }),
+          minQuantityPerCustomer: z.coerce
+            .number()
+            .min(1, { message: "Min Quantity Per Customer is required" }),
+          maxQuantityPerCustomer: z.coerce
+            .number()
+            .min(1, { message: "Max Quantity Per Customer is required" }),
           minQuantity: z.coerce
             .number()
             .min(1, { message: "Min Quantity is required" }),
@@ -165,11 +171,14 @@ const EditProductPage = () => {
           sellType: "",
           consumerDiscount: 0,
           vendorDiscount: 0,
+          minQuantityPerCustomer: 0,
+          maxQuantityPerCustomer: 0,
           minQuantity: 0,
           maxQuantity: 0,
           deliveryAfter: 0,
         },
       ],
+      setUpPrice: true,
     },
   });
 
