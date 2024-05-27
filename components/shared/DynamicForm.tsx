@@ -33,16 +33,16 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
       ? JSON.parse(form?.formIdDetail?.formData)
       : {},
   );
-  console.log(
-    formData && Object.keys(formData).map((item) => formData[item])?.[0],
-  );
+  // console.log(
+  //   formData && Object.keys(formData).map((item) => formData[item])?.[0],
+  // );
   return (
     <>
       {formData &&
         Object.keys(formData)
           .map((item) => formData[item])
           ?.map((item) => (
-            <div key={item?.id} className="mb-5 w-full">
+            <div key={item?.sectionTitle} className="mb-5 w-full">
               <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
                 {item?.sectionTitle}
               </label>
