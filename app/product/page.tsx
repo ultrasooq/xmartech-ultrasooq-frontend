@@ -68,7 +68,7 @@ const formSchemaForTypeP = z
     offerPrice: z
       .string()
       .trim()
-      .min(1, { message: "Offer Price is required" })
+      .optional()
       .transform((value) => Number(value)),
     placeOfOriginId: z
       .number()
@@ -105,6 +105,12 @@ const formSchemaForTypeP = z
           vendorDiscount: z.coerce
             .number()
             .max(100, { message: "Vendor Discount must be less than 100" }),
+          minCustomer: z.coerce
+            .number()
+            .min(1, { message: "Min Customer is required" }),
+          maxCustomer: z.coerce
+            .number()
+            .min(1, { message: "Max Customer is required" }),
           minQuantityPerCustomer: z.coerce
             .number()
             .min(1, { message: "Min Quantity Per Customer is required" }),
@@ -117,13 +123,36 @@ const formSchemaForTypeP = z
           maxQuantity: z.coerce
             .number()
             .min(1, { message: "Max Quantity is required" }),
-          deliveryAfter: z
+          timeOpen: z.coerce
+            .number()
+            .min(1, { message: "Open Time is required" }),
+          timeClose: z.coerce
+            .number()
+            .min(1, { message: "Close Time is required" }),
+          deliveryAfter: z.coerce
             .number()
             .min(1, { message: "Delivery After is required" }),
         })
         .refine(({ minQuantity, maxQuantity }) => minQuantity <= maxQuantity, {
           message: "Min Quantity must be less than or equal to Max Quantity",
           path: ["minQuantity"],
+        })
+        .refine(
+          ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
+            minQuantityPerCustomer <= maxQuantityPerCustomer,
+          {
+            message:
+              "Min Quantity Per Customer must be less than or equal to Max Quantity Per Customer",
+            path: ["minQuantityPerCustomer"],
+          },
+        )
+        .refine(({ minCustomer, maxCustomer }) => minCustomer <= maxCustomer, {
+          message: "Min Customer must be less than or equal to Max Customer",
+          path: ["minCustomer"],
+        })
+        .refine(({ timeOpen, timeClose }) => timeOpen <= timeClose, {
+          message: "Open Time must be less than or equal to Close Time",
+          path: ["timeOpen"],
         }),
     ),
     setUpPrice: z.boolean().optional(),
@@ -222,10 +251,14 @@ const CreateProductPage = () => {
           sellType: "",
           consumerDiscount: 0,
           vendorDiscount: 0,
+          minCustomer: 0,
+          maxCustomer: 0,
           minQuantityPerCustomer: 0,
           maxQuantityPerCustomer: 0,
           minQuantity: 0,
           maxQuantity: 0,
+          timeOpen: 0,
+          timeClose: 0,
           deliveryAfter: 0,
         },
       ],
@@ -260,6 +293,9 @@ const CreateProductPage = () => {
       }
     }
   };
+
+  // console.log(form.formState.errors);
+  // console.log(form.formState.defaultValues);
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
@@ -327,7 +363,7 @@ const CreateProductPage = () => {
     }
 
     console.log("add:", updatedFormData);
-    // return;
+    return;
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {
