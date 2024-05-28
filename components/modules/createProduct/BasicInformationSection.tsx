@@ -266,18 +266,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <BrandSelect />
-                    {activeProductType !== "R" ? (
-                      <ControlledTextInput
-                        label="SKU No"
-                        name="skuNo"
-                        placeholder="Enter SKU No"
-                        type="number"
-                        onWheel={(e) => e.currentTarget.blur()}
-                      />
-                    ) : null}
-                  </div>
 
-                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <div className="mt-2 flex flex-col gap-y-3">
                       <Label>Product Condition</Label>
                       <Controller
