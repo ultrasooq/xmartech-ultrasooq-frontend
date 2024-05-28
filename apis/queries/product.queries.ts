@@ -1,6 +1,7 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  addMultiplePriceForProduct,
   createProduct,
   deleteProduct,
   fetchAllProducts,
@@ -180,3 +181,21 @@ export const useRelatedProducts = (
     // },
     enabled,
   });
+
+export const useAddMultiplePriceForProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation<any, APIResponseError, any>({
+    mutationFn: async (payload) => {
+      const res = await addMultiplePriceForProduct(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      // queryClient.invalidateQueries({
+      //   queryKey: ["price-products"],
+      // });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
