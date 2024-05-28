@@ -450,18 +450,30 @@ const CreateProductPage = () => {
         offerPrice:
           activeProductType === "R" ? 0 : updatedFormData.productPrice ?? 0,
         productLocationId: updatedFormData.productLocationId,
+        productCondition: updatedFormData.productCondition,
       },
     ];
     if (activeProductType === "R") {
       delete updatedFormData.productPriceList[0].productLocationId;
     }
     delete updatedFormData.productLocationId;
+    delete updatedFormData.setUpPrice;
+    delete updatedFormData.productCondition;
 
     updatedFormData.skuNo = randomSkuNo;
     updatedFormData.offerPrice = updatedFormData.productPrice;
 
     console.log("add:", updatedFormData);
     // return;
+    // TODO: category input field change
+    if (updatedFormData.categoryId === 0) {
+      toast({
+        title: "Product Create Failed",
+        description: "Please select category",
+        variant: "danger",
+      });
+      return;
+    }
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {
