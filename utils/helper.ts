@@ -87,3 +87,5 @@ export const getLoginType = () => {
 export const stripHTML = (text: string) => {
   return text.replace(/<[^>]*>/g, "");
 };
+
+export const generateRandomSkuNoWithTimeStamp = () => new Date().getTime();
