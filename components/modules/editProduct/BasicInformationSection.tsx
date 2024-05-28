@@ -20,10 +20,27 @@ import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import ReactPlayer from "react-player/lazy";
 import BrandSelect from "@/components/shared/BrandSelect";
-import { imageExtensions, videoExtensions } from "@/utils/constants";
+import {
+  PRODUCT_CONDITION_LIST,
+  imageExtensions,
+  videoExtensions,
+} from "@/utils/constants";
 import DescriptionSection from "../createProduct/DescriptionSection";
 import PriceSection from "../createProduct/PriceSection";
 import DynamicFormViewSection from "../createProduct/DynamicFormViewSection";
+import ReactSelect from "react-select";
+
+const customStyles = {
+  control: (base: any) => ({
+    ...base,
+    height: 48,
+    minHeight: 48,
+  }),
+  menu: (base: any) => ({
+    ...base,
+    zIndex: 20,
+  }),
+};
 
 type ProductImageProps = {
   path: string;
@@ -268,13 +285,34 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <BrandSelect />
-                    <ControlledTextInput
-                      label="SKU No"
-                      name="skuNo"
-                      placeholder="Enter SKU No"
-                      type="number"
-                      onWheel={(e) => e.currentTarget.blur()}
-                    />
+                    <div className="mt-2 flex flex-col gap-y-3">
+                      <Label>Product Condition</Label>
+                      <Controller
+                        name="productCondition"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={PRODUCT_CONDITION_LIST}
+                            value={PRODUCT_CONDITION_LIST.find(
+                              (item: any) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="productCondition"
+                          />
+                        )}
+                      />
+
+                      <p className="text-[13px] text-red-500">
+                        {
+                          formContext.formState.errors["productCondition"]
+                            ?.message as string
+                        }
+                      </p>
+                    </div>
                   </div>
 
                   <AccordionMultiSelectV2
