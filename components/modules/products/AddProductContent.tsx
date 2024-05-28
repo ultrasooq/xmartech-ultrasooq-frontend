@@ -36,7 +36,7 @@ const AddProductContent: React.FC<AddProductContentProps> = () => {
 
           <div className="import-pickup-type-selector-item">
             <Link
-              href="/rfq-list"
+              href="/manage-products"
               className="import-pickup-type-selector-box hover:!bg-gray-100"
             >
               <div className="icon-container">
