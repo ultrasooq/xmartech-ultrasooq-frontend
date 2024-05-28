@@ -25,6 +25,10 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
   const formContext = useFormContext();
   const [counter, setCounter] = useState(0);
 
+  useEffect(() => {
+    setCounter(formContext.watch(name));
+  }, [formContext.watch(name)]);
+
   return (
     <FormField
       control={formContext.control}
