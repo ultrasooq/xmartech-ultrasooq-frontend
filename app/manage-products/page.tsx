@@ -7,91 +7,61 @@ import {
 } from "@/utils/types/common.types";
 import { useBrands } from "@/apis/queries/masters.queries";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useAllProducts } from "@/apis/queries/product.queries";
+import {
+  useAddMultiplePriceForProduct,
+  useProducts,
+} from "@/apis/queries/product.queries";
 import ProductCard from "@/components/modules/trending/ProductCard";
-import GridIcon from "@/components/icons/GridIcon";
-import ListIcon from "@/components/icons/ListIcon";
-import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
-import ProductTable from "@/components/modules/trending/ProductTable";
 import { debounce } from "lodash";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import ReactSlider from "react-slider";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { stripHTML } from "@/utils/helper";
-import Image from "next/image";
-import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";
-import ChevronRightIcon from "@/public/images/nextarow.svg";
-import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
 import Footer from "@/components/shared/Footer";
 import Pagination from "@/components/shared/Pagination";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  useAddToWishList,
-  useDeleteFromWishList,
-} from "@/apis/queries/wishlist.queries";
-import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
-import {
-  useUpdateCartByDevice,
-  useUpdateCartWithLogin,
-} from "@/apis/queries/cart.queries";
-import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
-import BannerSection from "@/components/modules/trending/BannerSection";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 
 const ManageProductsPage = () => {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const deviceId = getOrCreateDeviceId() || "";
-  const [viewType, setViewType] = useState<"grid" | "list">("grid");
+  const [searchProductTerm, setSearchProductTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
-  const [priceRange, setPriceRange] = useState<number[]>([]);
-  const [minPriceInput, setMinPriceInput] = useState("");
-  const [maxPriceInput, setMaxPriceInput] = useState("");
-  const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(8);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
 
   const me = useMe();
-  const updateCartWithLogin = useUpdateCartWithLogin();
-  const updateCartByDevice = useUpdateCartByDevice();
-  const addToWishlist = useAddToWishList();
-  const deleteFromWishlist = useDeleteFromWishList();
-  const allProductsQuery = useAllProducts({
-    page,
-    limit,
-    sort: sortBy,
-    priceMin:
-      priceRange[0] === 0
-        ? 0
-        : (priceRange[0] || Number(minPriceInput)) ?? undefined,
-    priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
-    brandIds:
-      selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
-    userId: me.data?.data?.id,
-  });
+
+  const productsQuery = useProducts(
+    {
+      userId: String(me?.data?.data?.id),
+      page,
+      limit,
+      term: searchProductTerm !== "" ? searchProductTerm : undefined,
+      status: "ALL",
+    },
+    !!me?.data?.data?.id,
+  );
   const brandsQuery = useBrands({
     term: searchTerm,
   });
+  const addMultiplePriceForProductIds = useAddMultiplePriceForProduct();
 
   const memoizedBrands = useMemo(() => {
     return (
@@ -101,23 +71,26 @@ const ManageProductsPage = () => {
     );
   }, [brandsQuery?.data?.data?.length]);
 
-  const handleDebounce = debounce((event: any) => {
+  const handleProductDebounce = debounce((event: any) => {
+    setSearchProductTerm(event.target.value);
+  }, 1000);
+
+  const handleBrandDebounce = debounce((event: any) => {
     setSearchTerm(event.target.value);
   }, 1000);
 
-  const handlePriceDebounce = debounce((event: any) => {
-    setPriceRange(event);
-  }, 1000);
+  const handleProductIds = (checked: boolean | string, id: number) => {
+    let tempArr = selectedProductIds || [];
+    if (checked && !tempArr.find((ele: number) => ele === id)) {
+      tempArr = [...tempArr, id];
+    }
 
-  const handleMinPriceChange = debounce((event: any) => {
-    setMinPriceInput(event.target.value);
-    // setPriceRange([ Number(event.target.value),500]);
-  }, 1000);
+    if (!checked && tempArr.find((ele: number) => ele === id)) {
+      tempArr = tempArr.filter((ele: number) => ele !== id);
+    }
 
-  const handleMaxPriceChange = debounce((event: any) => {
-    setMaxPriceInput(event.target.value);
-    // setPriceRange([0, Number(event.target.value)]);
-  }, 1000);
+    setSelectedProductIds(tempArr);
+  };
 
   const handleBrandChange = (
     checked: boolean | string,
@@ -134,145 +107,74 @@ const ManageProductsPage = () => {
     setSelectedBrandIds(tempArr);
   };
 
+  // const memoizedProductList = useMemo(() => {
+  //   return (
+  //     allProductsQuery?.data?.data?.map((item: any) => ({
+  //       productImage: item?.productImages?.[0]?.image,
+  //       categoryName: item?.category?.name || "-",
+  //       skuNo: item?.skuNo,
+  //       brandName: item?.brand?.brandName || "-",
+  //       productReview: item?.productReview || [],
+  //       productProductPriceId: item?.product_productPrice?.[0]?.id,
+  //       productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+  //     })) || []
+  //   );
+  // }, []);
+
   const memoizedProductList = useMemo(() => {
     return (
-      allProductsQuery?.data?.data?.map((item: any) => ({
-        id: item.id,
-        productName: item?.productName || "-",
-        productPrice: item?.productPrice || 0,
-        offerPrice: item?.offerPrice || 0,
-        productImage: item?.productImages?.[0]?.image,
-        categoryName: item?.category?.name || "-",
-        skuNo: item?.skuNo,
-        brandName: item?.brand?.brandName || "-",
-        productReview: item?.productReview || [],
-        productWishlist: item?.product_wishlist || [],
-        inWishlist: item?.product_wishlist?.find(
-          (ele: any) => ele?.userId === me.data?.data?.id,
-        ),
-        shortDescription: item?.product_productShortDescription?.length
-          ? item?.product_productShortDescription?.[0]?.shortDescription
-          : "-",
-        productProductPriceId: item?.product_productPrice?.[0]?.id,
-        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-      })) || []
+      productsQuery.data?.data?.map((item: any) => {
+        return {
+          id: item?.id,
+          productImage: item?.productImages?.[0]?.image,
+          productName: item?.productName || "-",
+          categoryName: item?.category?.name || "-",
+          skuNo: item?.skuNo || "-",
+          brandName: item?.brand?.brandName || "-",
+          productPrice: item?.productPrice || 0,
+          offerPrice: item?.offerPrice || 0,
+          productProductPriceId: item?.product_productPrice?.[0]?.id,
+          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+          shortDescription: item?.product_productShortDescription?.length
+            ? item?.product_productShortDescription?.[0]?.shortDescription
+            : "-",
+        };
+      }) || []
     );
   }, [
-    allProductsQuery?.data?.data,
-    allProductsQuery?.data?.data?.length,
-    sortBy,
-    priceRange[0],
-    priceRange[1],
+    productsQuery.data?.data,
+    productsQuery.data?.data?.length,
     page,
     limit,
     searchTerm,
     selectedBrandIds,
   ]);
 
-  const handleAddToCart = async (quantity: number, productPriceId?: number) => {
-    if (haveAccessToken) {
-      if (!productPriceId) {
-        toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
-          variant: "danger",
-        });
-        return;
-      }
-      const response = await updateCartWithLogin.mutateAsync({
-        productPriceId,
-        quantity,
-      });
-
-      if (response.status) {
-        toast({
-          title: "Item added to cart",
-          description: "Check your cart for more details",
-          variant: "success",
-        });
-      }
-    } else {
-      if (!productPriceId) {
-        toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
-          variant: "danger",
-        });
-        return;
-      }
-      const response = await updateCartByDevice.mutateAsync({
-        productPriceId,
-        quantity,
-        deviceId,
-      });
-      if (response.status) {
-        toast({
-          title: "Item added to cart",
-          description: "Check your cart for more details",
-          variant: "success",
-        });
-        return response.status;
-      }
-    }
-  };
-
-  const handleDeleteFromWishlist = async (productId: number) => {
-    const response = await deleteFromWishlist.mutateAsync({
-      productId,
+  const onSubmit = async () => {
+    const data = selectedProductIds.map((item: number) => ({
+      productId: item,
+      status: "INACTIVE",
+    }));
+    console.log({
+      productPrice: data,
     });
-    if (response.status) {
-      toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
-        variant: "success",
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["all-products"],
-      });
-    } else {
-      toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
-        variant: "danger",
-      });
-    }
-  };
-
-  const handleAddToWishlist = async (
-    productId: number,
-    wishlistArr?: any[],
-  ) => {
-    const wishlistObject = wishlistArr?.find(
-      (item) => item.userId === me.data?.data?.id,
-    );
     // return;
-    if (wishlistObject) {
-      handleDeleteFromWishlist(wishlistObject?.productId);
-      return;
-    }
-
-    const response = await addToWishlist.mutateAsync({
-      productId,
+    const response = await addMultiplePriceForProductIds.mutateAsync({
+      productPrice: data,
     });
-    if (response.status) {
+
+    if (response.status && response.data) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: "Product Price Add Successful",
+        description: response.message,
         variant: "success",
       });
-      queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["all-products"],
-      });
+      setSelectedProductIds([]);
+      router.push("/rfq-list");
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: "Product Price Add Failed",
+        description: response.message,
         variant: "danger",
       });
     }
@@ -305,7 +207,7 @@ const ManageProductsPage = () => {
                   type="text"
                   placeholder="Search Product"
                   className="border-color-[rgb(232 232 232 / var(--tw-border-opacity))] h-[45px] w-full rounded-none border border-solid px-3 py-0 text-sm font-normal"
-                  onChange={handleDebounce}
+                  onChange={handleProductDebounce}
                 />
               </div>
               <Accordion
@@ -323,7 +225,7 @@ const ManageProductsPage = () => {
                         type="text"
                         placeholder="Search Brand"
                         className="custom-form-control-s1 searchInput rounded-none"
-                        onChange={handleDebounce}
+                        onChange={handleBrandDebounce}
                       />
                     </div>
                     <div className="filter-body-part">
@@ -364,7 +266,7 @@ const ManageProductsPage = () => {
               onClick={() => setProductFilter(false)}
             ></div>
             <div className="right-products">
-              {allProductsQuery.isLoading && viewType === "grid" ? (
+              {productsQuery.isLoading ? (
                 <div className="grid grid-cols-4 gap-5">
                   {Array.from({ length: 8 }).map((_, index) => (
                     <Skeleton key={index} className="h-80 w-full" />
@@ -372,7 +274,7 @@ const ManageProductsPage = () => {
                 </div>
               ) : null}
 
-              {!memoizedProductList.length && !allProductsQuery.isLoading ? (
+              {!memoizedProductList.length && !productsQuery.isLoading ? (
                 <p className="text-center text-sm font-medium">No data found</p>
               ) : null}
 
@@ -381,24 +283,22 @@ const ManageProductsPage = () => {
                   <ProductCard
                     key={item.id}
                     item={item}
-                    onAdd={() =>
-                      handleAddToCart(-1, item.productProductPriceId)
-                    }
-                    onWishlist={() =>
-                      handleAddToWishlist(item.id, item?.productWishlist)
-                    }
+                    onAdd={() => {}}
+                    onWishlist={() => {}}
                     inWishlist={item?.inWishlist}
                     haveAccessToken={haveAccessToken}
                     isSelectable
+                    selectedIds={selectedProductIds}
+                    onSelectedId={handleProductIds}
                   />
                 ))}
               </div>
 
-              {allProductsQuery.data?.totalCount > 8 ? (
+              {productsQuery.data?.totalCount > 8 ? (
                 <Pagination
                   page={page}
                   setPage={setPage}
-                  totalCount={allProductsQuery.data?.totalCount}
+                  totalCount={productsQuery.data?.totalCount}
                   limit={limit}
                 />
               ) : null}
@@ -407,14 +307,35 @@ const ManageProductsPage = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 z-10 flex w-full items-center justify-end border-t border-solid border-gray-300 bg-dark-orange px-10 py-3">
-        <a
-          href="#"
-          className="inline-block rounded-sm bg-white px-6 py-3 text-sm font-bold text-dark-orange"
-        >
-          Next
-        </a>
-      </div>
+      {selectedProductIds.length ? (
+        <div className="fixed bottom-0 left-0 z-10 flex w-full items-center justify-end border-t border-solid border-gray-300 bg-dark-orange px-10 py-3">
+          <p className="mr-4 text-base font-medium text-white">
+            {selectedProductIds.length} Selected
+          </p>
+          <Button
+            type="submit"
+            onClick={onSubmit}
+            size="lg"
+            className="flex items-center rounded-sm bg-white text-sm font-bold text-dark-orange"
+            disabled={addMultiplePriceForProductIds.isPending}
+          >
+            {addMultiplePriceForProductIds.isPending ? (
+              <>
+                <Image
+                  src={LoaderPrimaryIcon}
+                  alt="fb-icon"
+                  width={20}
+                  height={20}
+                  className="mr-2 animate-spin"
+                />
+                <span>Please wait</span>
+              </>
+            ) : (
+              "Next"
+            )}
+          </Button>
+        </div>
+      ) : null}
       <Footer />
     </>
   );

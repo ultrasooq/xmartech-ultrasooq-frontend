@@ -27,6 +27,8 @@ type ProductCardProps = {
   haveAccessToken: boolean;
   isInteractive?: boolean;
   isSelectable?: boolean;
+  selectedIds?: number[];
+  onSelectedId?: (args0: boolean | string, args1: number) => void;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -37,6 +39,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   haveAccessToken,
   isInteractive,
   isSelectable,
+  selectedIds,
+  onSelectedId,
 }) => {
   const { toast } = useToast();
   const offerPercentage = useMemo(
@@ -88,7 +92,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="product-list-s1-box relative hover:bg-slate-100">
         {isSelectable ? (
           <div className="absolute left-[10px] top-[20px]">
-            <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            <Checkbox
+              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+              checked={selectedIds?.includes(item.id)}
+              onCheckedChange={(checked) => onSelectedId?.(checked, item.id)}
+            />
           </div>
         ) : null}
         <Link href={`/trending/${item.id}`}>
