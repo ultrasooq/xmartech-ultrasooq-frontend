@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import {
   FormControl,
@@ -13,12 +13,14 @@ type CounterTextInputFieldProps = {
   name: string;
   label: string;
   placeholder: string;
+  errorMessage?: string;
 };
 
 const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
   name,
   label,
   placeholder,
+  errorMessage,
 }) => {
   const formContext = useFormContext();
   const [counter, setCounter] = useState(0);
@@ -68,6 +70,7 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
             </div>
           </FormControl>
           <FormMessage />
+          <p className="text-[13px] text-red-500">{errorMessage}</p>
         </FormItem>
       )}
     />
