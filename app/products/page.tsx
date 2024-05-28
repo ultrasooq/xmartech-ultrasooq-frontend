@@ -284,10 +284,7 @@ const ProductListPage = () => {
       </Dialog>
 
       <Dialog open={isAddProductModalOpen} onOpenChange={handleAddProductModal}>
-        <AddProductContent
-          onToExistingProduct={() => router.push("/rfq-list")}
-          onToNewProduct={() => router.push("/product")}
-        />
+        <AddProductContent />
       </Dialog>
     </section>
   );

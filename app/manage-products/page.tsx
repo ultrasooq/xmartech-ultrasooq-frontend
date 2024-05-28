@@ -55,7 +55,7 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import BannerSection from "@/components/modules/trending/BannerSection";
 
-const TrendingPage = () => {
+const ManageProductsPage = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
@@ -290,11 +290,24 @@ const TrendingPage = () => {
   return (
     <>
       <div className="body-content-s1">
-        <BannerSection />
-
-        <div className="trending-search-sec">
-          <div className="container m-auto px-3">
+        <div className="trending-search-sec manage_product_sec mt-0">
+          <div className="container m-auto flex flex-wrap px-3">
+            <div className="mb-5 flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
+              <div className="flex flex-wrap items-center justify-start">
+                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                  Choose Products
+                </h4>
+              </div>
+            </div>
             <div className={productFilter ? "left-filter show" : "left-filter"}>
+              <div className="filter-sub-header">
+                <Input
+                  type="text"
+                  placeholder="Search Product"
+                  className="border-color-[rgb(232 232 232 / var(--tw-border-opacity))] h-[45px] w-full rounded-none border border-solid px-3 py-0 text-sm font-normal"
+                  onChange={handleDebounce}
+                />
+              </div>
               <Accordion
                 type="multiple"
                 defaultValue={["brand"]}
@@ -344,65 +357,6 @@ const TrendingPage = () => {
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-
-                <AccordionItem value="price">
-                  <AccordionTrigger className="px-3 text-base hover:!no-underline">
-                    Price
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="px-4">
-                      <div className="px-2">
-                        <ReactSlider
-                          className="horizontal-slider"
-                          thumbClassName="example-thumb"
-                          trackClassName="example-track"
-                          defaultValue={[0, 500]}
-                          ariaLabel={["Lower thumb", "Upper thumb"]}
-                          ariaValuetext={(state) =>
-                            `Thumb value ${state.valueNow}`
-                          }
-                          renderThumb={(props, state) => (
-                            <div {...props} key={props.key}>
-                              {state.valueNow}
-                            </div>
-                          )}
-                          pearling
-                          minDistance={10}
-                          onChange={(value) => handlePriceDebounce(value)}
-                          // value={priceRange}
-                          max={500}
-                          min={0}
-                        />
-                      </div>
-                      <div className="flex justify-center">
-                        <Button
-                          variant="outline"
-                          className="mb-4"
-                          onClick={() => setPriceRange([])}
-                        >
-                          Clear
-                        </Button>
-                      </div>
-                      <div className="range-price-left-right-info">
-                        <Input
-                          type="number"
-                          placeholder="$0"
-                          className="custom-form-control-s1 rounded-none"
-                          onChange={handleMinPriceChange}
-                          onWheel={(e) => e.currentTarget.blur()}
-                        />
-                        <div className="center-divider"></div>
-                        <Input
-                          type="number"
-                          placeholder="$500"
-                          className="custom-form-control-s1 rounded-none"
-                          onChange={handleMaxPriceChange}
-                          onWheel={(e) => e.currentTarget.blur()}
-                        />
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
               </Accordion>
             </div>
             <div
@@ -410,58 +364,6 @@ const TrendingPage = () => {
               onClick={() => setProductFilter(false)}
             ></div>
             <div className="right-products">
-              <div className="products-header-filter">
-                <div className="le-info">
-                  <h3>Phones & Accessories</h3>
-                </div>
-                <div className="rg-filter">
-                  <p>{memoizedProductList.length} Products found</p>
-                  <ul>
-                    <li>
-                      <Select onValueChange={(e) => setSortBy(e)}>
-                        <SelectTrigger className="custom-form-control-s1 bg-white">
-                          <SelectValue placeholder="Sort by" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="desc">Sort by latest</SelectItem>
-                            <SelectItem value="asc">Sort by oldest</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </li>
-
-                    <li>
-                      <button
-                        type="button"
-                        className="view-type-btn"
-                        onClick={() => setViewType("grid")}
-                      >
-                        <GridIcon active={viewType === "grid"} />
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        type="button"
-                        className="view-type-btn"
-                        onClick={() => setViewType("list")}
-                      >
-                        <ListIcon active={viewType === "list"} />
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        type="button"
-                        className="view-type-btn"
-                        onClick={() => setProductFilter(true)}
-                      >
-                        <FilterMenuIcon />
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
               {allProductsQuery.isLoading && viewType === "grid" ? (
                 <div className="grid grid-cols-4 gap-5">
                   {Array.from({ length: 8 }).map((_, index) => (
@@ -474,31 +376,23 @@ const TrendingPage = () => {
                 <p className="text-center text-sm font-medium">No data found</p>
               ) : null}
 
-              {viewType === "grid" ? (
-                <div className="product-list-s1">
-                  {memoizedProductList.map((item: TrendingProduct) => (
-                    <ProductCard
-                      key={item.id}
-                      item={item}
-                      onAdd={() =>
-                        handleAddToCart(-1, item.productProductPriceId)
-                      }
-                      onWishlist={() =>
-                        handleAddToWishlist(item.id, item?.productWishlist)
-                      }
-                      inWishlist={item?.inWishlist}
-                      haveAccessToken={haveAccessToken}
-                      isInteractive
-                    />
-                  ))}
-                </div>
-              ) : null}
-
-              {viewType === "list" && memoizedProductList.length ? (
-                <div className="product-list-s1 p-4">
-                  <ProductTable list={memoizedProductList} />
-                </div>
-              ) : null}
+              <div className="product-list-s1">
+                {memoizedProductList.map((item: TrendingProduct) => (
+                  <ProductCard
+                    key={item.id}
+                    item={item}
+                    onAdd={() =>
+                      handleAddToCart(-1, item.productProductPriceId)
+                    }
+                    onWishlist={() =>
+                      handleAddToWishlist(item.id, item?.productWishlist)
+                    }
+                    inWishlist={item?.inWishlist}
+                    haveAccessToken={haveAccessToken}
+                    isSelectable
+                  />
+                ))}
+              </div>
 
               {allProductsQuery.data?.totalCount > 8 ? (
                 <Pagination
@@ -512,9 +406,18 @@ const TrendingPage = () => {
           </div>
         </div>
       </div>
+
+      <div className="fixed bottom-0 left-0 z-10 flex w-full items-center justify-end border-t border-solid border-gray-300 bg-dark-orange px-10 py-3">
+        <a
+          href="#"
+          className="inline-block rounded-sm bg-white px-6 py-3 text-sm font-bold text-dark-orange"
+        >
+          Next
+        </a>
+      </div>
       <Footer />
     </>
   );
 };
 
-export default TrendingPage;
+export default ManageProductsPage;
