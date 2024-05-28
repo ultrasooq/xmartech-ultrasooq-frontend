@@ -184,7 +184,7 @@ const formSchemaForTypeP = z.object({
           if (!minQuantity) {
             ctx.addIssue({
               code: "custom",
-              message: "Min Customer is required",
+              message: "Min Quantity is required",
               path: ["minQuantity"],
             });
           }
@@ -194,7 +194,7 @@ const formSchemaForTypeP = z.object({
           if (!maxQuantity) {
             ctx.addIssue({
               code: "custom",
-              message: "Max Customer is required",
+              message: "Max Quantity is required",
               path: ["maxQuantity"],
             });
           }
