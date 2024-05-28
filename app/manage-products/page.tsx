@@ -389,6 +389,7 @@ const ManageProductsPage = () => {
                     }
                     inWishlist={item?.inWishlist}
                     haveAccessToken={haveAccessToken}
+                    isSelectable
                   />
                 ))}
               </div>

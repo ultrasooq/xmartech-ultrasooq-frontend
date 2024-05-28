@@ -488,6 +488,7 @@ const TrendingPage = () => {
                       }
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
+                      isInteractive
                     />
                   ))}
                 </div>

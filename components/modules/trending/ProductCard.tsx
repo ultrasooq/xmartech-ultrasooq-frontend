@@ -25,6 +25,8 @@ type ProductCardProps = {
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
+  isInteractive?: boolean;
+  isSelectable?: boolean;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -33,6 +35,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onWishlist,
   inWishlist,
   haveAccessToken,
+  isInteractive,
+  isSelectable,
 }) => {
   const { toast } = useToast();
   const offerPercentage = useMemo(
@@ -82,9 +86,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box relative hover:bg-slate-100">
-        <div className="absolute left-[10px] top-[20px]">
-          <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-        </div>
+        {isSelectable ? (
+          <div className="absolute left-[10px] top-[20px]">
+            <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          </div>
+        ) : null}
         <Link href={`/trending/${item.id}`}>
           <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
             <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
@@ -108,42 +114,44 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </Link>
 
-        <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-          <Button
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full p-0 shadow-md"
-            onClick={onAdd}
-          >
-            <ShoppingIcon />
-          </Button>
-
-          <Link
-            href={`/trending/${item.id}`}
-            className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
-          >
-            <FiEye size={18} />
-          </Link>
-          {haveAccessToken ? (
+        {isInteractive ? (
+          <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
             <Button
               variant="ghost"
               className="relative h-8 w-8 rounded-full p-0 shadow-md"
-              onClick={onWishlist}
+              onClick={onAdd}
             >
-              {inWishlist ? (
-                <FaHeart color="red" size={16} />
-              ) : (
-                <FaRegHeart size={16} />
-              )}
+              <ShoppingIcon />
             </Button>
-          ) : null}
-          <Button
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full p-0 shadow-md"
-            onClick={copyToClipboard}
-          >
-            <ShareIcon />
-          </Button>
-        </div>
+
+            <Link
+              href={`/trending/${item.id}`}
+              className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+            >
+              <FiEye size={18} />
+            </Link>
+            {haveAccessToken ? (
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full p-0 shadow-md"
+                onClick={onWishlist}
+              >
+                {inWishlist ? (
+                  <FaHeart color="red" size={16} />
+                ) : (
+                  <FaRegHeart size={16} />
+                )}
+              </Button>
+            ) : null}
+            <Button
+              variant="ghost"
+              className="relative h-8 w-8 rounded-full p-0 shadow-md"
+              onClick={copyToClipboard}
+            >
+              <ShareIcon />
+            </Button>
+          </div>
+        ) : null}
 
         <Link href={`/trending/${item.id}`}>
           <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
