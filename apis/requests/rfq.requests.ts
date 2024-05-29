@@ -88,6 +88,7 @@ export const fetchRfqCartByUserId = (payload: {
 export const updateRfqCartWithLogin = (payload: {
   productId: number;
   quantity: number;
+  offerPrice: number;
 }) => {
   return axios({
     method: "PATCH",
