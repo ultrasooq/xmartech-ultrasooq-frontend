@@ -144,7 +144,7 @@ const ProductListPage = () => {
               <li>
                 <Link
                   className="theme-primary-btn add-btn p-2"
-                  href="/rfq-list"
+                  href="/manage-products"
                 >
                   <MdOutlineManageSearch size={24} />
                   <span className="d-none-mobile ml-1">Manage Products</span>
