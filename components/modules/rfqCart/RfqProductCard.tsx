@@ -14,7 +14,12 @@ type RfqProductCardProps = {
     image: string;
   }[];
   offerPrice: string;
-  onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
+  onAdd: (
+    args0: number,
+    args1: number,
+    args2: "add" | "remove",
+    args3: number,
+  ) => void;
   onRemove: (args0: number) => void;
 };
 
@@ -61,7 +66,12 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity - 1);
-                    onAdd(quantity - 1, rfqProductId, "remove");
+                    onAdd(
+                      quantity - 1,
+                      rfqProductId,
+                      "remove",
+                      offerPrice ? Number(offerPrice) : 0,
+                    );
                   }}
                   disabled={quantity === 0}
                 >
@@ -78,7 +88,12 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity + 1);
-                    onAdd(quantity + 1, rfqProductId, "add");
+                    onAdd(
+                      quantity + 1,
+                      rfqProductId,
+                      "add",
+                      offerPrice ? Number(offerPrice) : 0,
+                    );
                   }}
                 >
                   <Image
