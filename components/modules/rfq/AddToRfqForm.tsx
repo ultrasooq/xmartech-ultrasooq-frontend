@@ -19,16 +19,30 @@ import {
   useProductById,
   useUpdateProduct,
 } from "@/apis/queries/product.queries";
-import { useAddProductDuplicateRfq } from "@/apis/queries/rfq.queries";
+import {
+  useAddProductDuplicateRfq,
+  useUpdateRfqCartWithLogin,
+} from "@/apis/queries/rfq.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
 import ReactPlayer from "react-player/lazy";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
 
 type AddToRfqFormProps = {
   onClose: () => void;
   selectedProductId?: number;
+  selectedQuantity?: number;
 };
 
 const formSchema = z.object({
+  offerPrice: z.coerce
+    .number()
+    .min(1, {
+      message: "Offer price is required",
+    })
+    .max(1000000, {
+      message: "Offer price must be less than 1000000",
+    }),
   note: z
     .string()
     .trim()
@@ -44,12 +58,14 @@ const formSchema = z.object({
 const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   onClose,
   selectedProductId,
+  selectedQuantity,
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      offerPrice: 0,
       note: "",
       productImagesList: undefined,
       productImages: [] as { path: File; id: string }[],
@@ -69,6 +85,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     },
     !!selectedProductId,
   );
+  const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
 
   const handleEditPreviewImage = (id: string, item: FileList) => {
     const tempArr = watchProductImages || [];
@@ -100,7 +117,37 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     }
   };
 
-  const generateRandomSkuNoWithTimeStamp = () => new Date().getTime();
+  const handleAddToCart = async (
+    quantity: number,
+    productId: number,
+    offerPrice: number,
+  ) => {
+    const response = await updateRfqCartWithLogin.mutateAsync({
+      productId,
+      quantity,
+      offerPrice,
+    });
+
+    if (response.status) {
+      toast({
+        title: "Item added to cart",
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+      form.reset();
+      productQueryById.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ["rfq-products"],
+      });
+      onClose();
+    } else {
+      toast({
+        title: "Oops! Something went wrong",
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  };
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = { ...formData };
@@ -171,8 +218,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     }
 
     delete updatedFormData.productImages;
-    console.log(updatedFormData);
-    // return;
+
     if (
       selectedProductId &&
       productQueryById?.data?.data?.productType === "R"
@@ -219,6 +265,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
       const randomSkuNo = generateRandomSkuNoWithTimeStamp().toString();
       const data = {
+        ...updatedFormData,
         productType: "R",
         productName: product?.productName,
         categoryId: product?.categoryId ? product?.categoryId : 0,
@@ -240,7 +287,23 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         description: product?.description,
         specification: product?.specification,
         status: "ACTIVE",
-        ...updatedFormData,
+        productPriceList: [
+          {
+            consumerType: "",
+            sellType: "",
+            consumerDiscount: 0,
+            vendorDiscount: 0,
+            minCustomer: 0,
+            maxCustomer: 0,
+            minQuantityPerCustomer: 0,
+            maxQuantityPerCustomer: 0,
+            minQuantity: 0,
+            maxQuantity: 0,
+            timeOpen: 0,
+            timeClose: 0,
+            deliveryAfter: 0,
+          },
+        ],
       };
 
       console.log(data);
@@ -261,6 +324,12 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             description: dependentResponse.message,
             variant: "success",
           });
+
+          handleAddToCart(
+            selectedQuantity ? selectedQuantity : 1,
+            response.data.id,
+            formData?.offerPrice,
+          );
         } else {
           toast({
             title: "Product Duplicate Failed",
@@ -268,13 +337,6 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             variant: "danger",
           });
         }
-        form.reset();
-
-        productQueryById.refetch();
-        queryClient.invalidateQueries({
-          queryKey: ["rfq-products"],
-        });
-        onClose();
       } else {
         toast({
           title: "RFQ Product Add Failed",
@@ -359,12 +421,14 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
   // console.log(productQueryById.data?.data);
   // console.log(form.getValues());
+  // console.log(selectedQuantity);
 
   return (
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          {`${selectedProductId ? "Edit" : "Add"} New Product in RFQ List`}
+          {/* {`${selectedProductId ? "Edit" : "Add"} New Product in RFQ List`} */}
+          {selectedQuantity ? `Add to RFQ cart` : "Edit Product"}
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -533,7 +597,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                     />
                   ))}
                   <div className="relative mb-3 w-full pl-2">
-                    <div className="absolute bg-white m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
+                    <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
                       <div className="text-sm font-medium leading-4 text-color-dark">
                         <Image
                           src="/images/plus.png"
@@ -606,18 +670,29 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             rows={6}
           />
 
+          <ControlledTextInput
+            label="Offer Price"
+            name="offerPrice"
+            placeholder="Offer Price"
+            type="number"
+          />
+
           <Button
             disabled={
               uploadMultiple.isPending ||
               updateProduct.isPending ||
-              createProduct.isPending
+              createProduct.isPending ||
+              addDuplicateProduct.isPending ||
+              updateRfqCartWithLogin.isPending
             }
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
             {uploadMultiple.isPending ||
             updateProduct.isPending ||
-            createProduct.isPending ? (
+            createProduct.isPending ||
+            addDuplicateProduct.isPending ||
+            updateRfqCartWithLogin.isPending ? (
               <>
                 <Image
                   src="/images/load.png"
@@ -629,7 +704,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                 Please wait
               </>
             ) : (
-              `${selectedProductId ? "Edit" : "Add"} New Product in RFQ List`
+              `${selectedQuantity ? "Save" : "Edit"}`
             )}
           </Button>
         </form>
@@ -637,5 +712,6 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     </>
   );
 };
+// `${selectedProductId ? "Edit" : "Add"} New Product in RFQ List`
 
 export default AddToRfqForm;

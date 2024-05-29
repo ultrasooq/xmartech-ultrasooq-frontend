@@ -51,6 +51,7 @@ const RfqPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(8);
   // const cart = useCartStore();
+  const [quantity, setQuantity] = useState<number | undefined>();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
@@ -73,14 +74,22 @@ const RfqPage = () => {
     setSearchRfqTerm(event.target.value);
   }, 1000);
 
+  const handleRFQCart = (quantity: number, productId: number) => {
+    handleToggleAddModal();
+    setSelectedProductId(productId);
+    setQuantity(quantity);
+  };
+
   const handleAddToCart = async (
     quantity: number,
     productId: number,
     actionType: "add" | "remove",
+    offerPrice: number,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
+      offerPrice,
     });
 
     if (response.status) {
@@ -127,6 +136,7 @@ const RfqPage = () => {
   useEffect(() => {
     if (isClickedOutside) {
       setSelectedProductId(undefined);
+      setQuantity(undefined);
     }
   }, [isClickedOutside]);
 
@@ -260,7 +270,7 @@ const RfqPage = () => {
                               productStatus={item?.status}
                               productImages={item?.productImages}
                               productQuantity={item?.quantity || 0}
-                              onAdd={handleAddToCart}
+                              onAdd={handleRFQCart}
                               onToCart={handleCartPage}
                               onEdit={() => {
                                 handleToggleAddModal();
@@ -311,8 +321,10 @@ const RfqPage = () => {
               onClose={() => {
                 setIsAddToCartModalOpen(false);
                 setSelectedProductId(undefined);
+                setQuantity(undefined);
               }}
               selectedProductId={selectedProductId}
+              selectedQuantity={quantity}
             />
           </DialogContent>
         </Dialog>
