@@ -13,8 +13,14 @@ type RfqCartMenuCardProps = {
   productImages: {
     image: string;
   }[];
-  onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
+  onAdd: (
+    args0: number,
+    args1: number,
+    args2: "add" | "remove",
+    args3: number,
+  ) => void;
   onRemove: (args0: number) => void;
+  offerPrice: number;
 };
 
 const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
@@ -25,6 +31,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
   productImages,
   onAdd,
   onRemove,
+  offerPrice,
 }) => {
   // const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
@@ -62,7 +69,12 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                 className="relative hover:shadow-sm"
                 onClick={() => {
                   setQuantity(quantity - 1);
-                  onAdd(quantity - 1, rfqProductId, "remove");
+                  onAdd(
+                    quantity - 1,
+                    rfqProductId,
+                    "remove",
+                    offerPrice ? Number(offerPrice) : 0,
+                  );
                   // cart.updateCart({ quantity: quantity - 1, rfqProductId });
                 }}
                 disabled={quantity === 0}
@@ -80,7 +92,12 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                 className="relative hover:shadow-sm"
                 onClick={() => {
                   setQuantity(quantity + 1);
-                  onAdd(quantity + 1, rfqProductId, "add");
+                  onAdd(
+                    quantity + 1,
+                    rfqProductId,
+                    "add",
+                    offerPrice ? Number(offerPrice) : 0,
+                  );
                   // cart.updateCart({ quantity: quantity + 1, rfqProductId });
                 }}
               >

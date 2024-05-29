@@ -8,7 +8,12 @@ import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 
 type RfqCartMenuProps = {
-  onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
+  onAdd: (
+    args0: number,
+    args1: number,
+    args2: "add" | "remove",
+    args3: number,
+  ) => void;
   haveAccessToken: boolean;
 };
 
@@ -79,6 +84,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
             productImages={item?.rfqCart_productDetails?.productImages}
             onAdd={onAdd}
             onRemove={handleRemoveItemFromRfqCart}
+            offerPrice={item?.offerPrice}
           />
         ))}
       </div>

@@ -156,7 +156,7 @@ const ManageProductsPage = () => {
         variant: "success",
       });
       setSelectedProductIds([]);
-      router.push("/rfq-list");
+      router.push("/products");
     } else {
       toast({
         title: "Product Price Add Failed",
@@ -296,7 +296,7 @@ const ManageProductsPage = () => {
       {selectedProductIds.length ? (
         <div className="fixed bottom-0 left-0 z-10 flex w-full items-center justify-end border-t border-solid border-gray-300 bg-dark-orange px-10 py-3">
           <p className="mr-4 text-base font-medium text-white">
-            {selectedProductIds.length} Selected
+            {selectedProductIds.length} Products Selected
           </p>
           <Button
             type="submit"
