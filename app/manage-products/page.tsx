@@ -9,7 +9,7 @@ import { useBrands } from "@/apis/queries/masters.queries";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   useAddMultiplePriceForProduct,
-  useProducts,
+  useAllProducts,
 } from "@/apis/queries/product.queries";
 import ProductCard from "@/components/modules/trending/ProductCard";
 import { debounce } from "lodash";
@@ -40,6 +40,7 @@ const ManageProductsPage = () => {
   const [searchProductTerm, setSearchProductTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(8);
@@ -48,16 +49,15 @@ const ManageProductsPage = () => {
 
   const me = useMe();
 
-  const productsQuery = useProducts(
-    {
-      userId: String(me?.data?.data?.id),
-      page,
-      limit,
-      term: searchProductTerm !== "" ? searchProductTerm : undefined,
-      status: "ALL",
-    },
-    !!me?.data?.data?.id,
-  );
+  const allProductsQuery = useAllProducts({
+    page,
+    limit,
+    sort: sortBy,
+    brandIds:
+      selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    term: searchProductTerm !== "" ? searchProductTerm : undefined,
+    userId: me.data?.data?.id,
+  });
   const brandsQuery = useBrands({
     term: searchTerm,
   });
@@ -107,43 +107,29 @@ const ManageProductsPage = () => {
     setSelectedBrandIds(tempArr);
   };
 
-  // const memoizedProductList = useMemo(() => {
-  //   return (
-  //     allProductsQuery?.data?.data?.map((item: any) => ({
-  //       productImage: item?.productImages?.[0]?.image,
-  //       categoryName: item?.category?.name || "-",
-  //       skuNo: item?.skuNo,
-  //       brandName: item?.brand?.brandName || "-",
-  //       productReview: item?.productReview || [],
-  //       productProductPriceId: item?.product_productPrice?.[0]?.id,
-  //       productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-  //     })) || []
-  //   );
-  // }, []);
-
   const memoizedProductList = useMemo(() => {
     return (
-      productsQuery.data?.data?.map((item: any) => {
-        return {
-          id: item?.id,
-          productImage: item?.productImages?.[0]?.image,
-          productName: item?.productName || "-",
-          categoryName: item?.category?.name || "-",
-          skuNo: item?.skuNo || "-",
-          brandName: item?.brand?.brandName || "-",
-          productPrice: item?.productPrice || 0,
-          offerPrice: item?.offerPrice || 0,
-          productProductPriceId: item?.product_productPrice?.[0]?.id,
-          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-          shortDescription: item?.product_productShortDescription?.length
-            ? item?.product_productShortDescription?.[0]?.shortDescription
-            : "-",
-        };
-      }) || []
+      allProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+      })) || []
     );
   }, [
-    productsQuery.data?.data,
-    productsQuery.data?.data?.length,
+    allProductsQuery?.data?.data,
+    allProductsQuery?.data?.data?.length,
+    sortBy,
     page,
     limit,
     searchTerm,
@@ -266,7 +252,7 @@ const ManageProductsPage = () => {
               onClick={() => setProductFilter(false)}
             ></div>
             <div className="right-products">
-              {productsQuery.isLoading ? (
+              {allProductsQuery.isLoading ? (
                 <div className="grid grid-cols-4 gap-5">
                   {Array.from({ length: 8 }).map((_, index) => (
                     <Skeleton key={index} className="h-80 w-full" />
@@ -274,7 +260,7 @@ const ManageProductsPage = () => {
                 </div>
               ) : null}
 
-              {!memoizedProductList.length && !productsQuery.isLoading ? (
+              {!memoizedProductList.length && !allProductsQuery.isLoading ? (
                 <p className="text-center text-sm font-medium">No data found</p>
               ) : null}
 
@@ -294,11 +280,11 @@ const ManageProductsPage = () => {
                 ))}
               </div>
 
-              {productsQuery.data?.totalCount > 8 ? (
+              {allProductsQuery.data?.totalCount > 8 ? (
                 <Pagination
                   page={page}
                   setPage={setPage}
-                  totalCount={productsQuery.data?.totalCount}
+                  totalCount={allProductsQuery.data?.totalCount}
                   limit={limit}
                 />
               ) : null}
