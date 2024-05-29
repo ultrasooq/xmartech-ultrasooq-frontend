@@ -1,596 +1,95 @@
-import React from "react";
-import { Label } from "@/components/ui/label";
+"use client";
+import React, { useState } from "react";
+import { useAllManagedProducts } from "@/apis/queries/product.queries";
+import ManageProductCard from "@/components/modules/manageProducts/ManageProductCard";
+import Pagination from "@/components/shared/Pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const ManageProductsPage = () => {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(6);
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+
+  const allManagedProductsQuery = useAllManagedProducts({
+    page,
+    limit,
+  });
+
+  const handleProductIds = (checked: boolean | string, id: number) => {
+    let tempArr = selectedProductIds || [];
+    if (checked && !tempArr.find((ele: number) => ele === id)) {
+      tempArr = [...tempArr, id];
+    }
+
+    if (!checked && tempArr.find((ele: number) => ele === id)) {
+      tempArr = tempArr.filter((ele: number) => ele !== id);
+    }
+
+    setSelectedProductIds(tempArr);
+  };
+
+  console.log(selectedProductIds);
+
   return (
     <>
       <div className="existing-product-add-page">
         <div className="container m-auto flex px-3">
           <div className="existing-product-add-lists">
-            <div className="existing-product-add-item">
-              <div className="existing-product-add-box">
-                <div className="existing-product-add-box-row">
-                  <div className="leftdiv">
-                    <div className="image-container">
-                      <div className="existing_product_checkbox">
-                        <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-                        <img src="/images/hide.png" alt="" />
-                      </div>
-                      <img src="/images/ts-6.png" alt="" />
-                    </div>
-                    <div className="text-container">
-                      <h3>
-                        <a href="">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit.
-                        </a>
-                      </h3>
-                    </div>
-                    <div className="form-container">
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <div className="text-with-checkagree">
-                            <div className="check-col">
-                              <input
-                                typeof="checkbox"
-                                className="custom-check-s1"
-                                type="checkbox"
-                              />
-                            </div>
-                            <label
-                              className="text-col"
-                              htmlFor="setUpPriceCheck"
-                            >
-                              Stock
-                            </label>
-                          </div>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>100</span>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="text-with-checkagree">
-                            <div className="check-col">
-                              <input
-                                typeof="checkbox"
-                                className="custom-check-s1"
-                                type="checkbox"
-                              />
-                            </div>
-                            <label
-                              className="text-col"
-                              htmlFor="setUpPriceCheck"
-                            >
-                              Price
-                            </label>
-                          </div>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>1000</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <Label>Deliver After</Label>
-                          <span>2 days</span>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <Label>Product Location</Label>
-                          <span>Kolkata</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="rightdiv">
-                    <div className="form-container">
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <label>Time Open</label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>10:00am</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label>Time Close</label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>7:00pm</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Cosumer Type
-                          </label>
-                          <span>Everyone</span>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Sell Type
-                          </label>
-                          <span>Normal Sell</span>
-                        </div>
-                      </div>
-
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Vendor Discount
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>20%</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Consumer Discount
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>20%</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Min Quantity
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>2</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Max Quantity
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>10</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Min Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>50</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Max Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>1000</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Min Qty Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>100</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Max Qty Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>1000</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* <div className="existing-product-add-box-action">
-                  <button type="button" className="custom-btn update">
-                    update
-                  </button>
-                  <button
-                    type="button"
-                    className="custom-btn theme-primary-btn"
-                  >
-                    add
-                  </button>
-                  <button type="button" className="custom-btn edit">
-                    edit
-                  </button>
-                </div> */}
+            {allManagedProductsQuery.isLoading ? (
+              <div className="mx-2 grid w-full grid-cols-3 gap-5">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <Skeleton key={index} className="h-80 w-full" />
+                ))}
               </div>
-            </div>
+            ) : null}
 
-            <div className="existing-product-add-item">
-              <div className="existing-product-add-box">
-                <div className="existing-product-add-box-row">
-                  <div className="leftdiv">
-                    <div className="image-container">
-                      <div className="existing_product_checkbox">
-                        <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-                        <img src="/images/hide.png" alt="" />
-                      </div>
-                      <img src="/images/ts-6.png" alt="" />
-                    </div>
-                    <div className="text-container">
-                      <h3>
-                        <a href="">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit.
-                        </a>
-                      </h3>
-                    </div>
-                    <div className="form-container">
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <div className="text-with-checkagree">
-                            <div className="check-col">
-                              <input
-                                typeof="checkbox"
-                                className="custom-check-s1"
-                                type="checkbox"
-                              />
-                            </div>
-                            <label
-                              className="text-col"
-                              htmlFor="setUpPriceCheck"
-                            >
-                              Stock
-                            </label>
-                          </div>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>100</span>
-                          </div>
-                        </div>
+            {!allManagedProductsQuery.data?.data &&
+            !allManagedProductsQuery.isLoading ? (
+              <p className="w-full text-center text-base font-medium">
+                No data found
+              </p>
+            ) : null}
 
-                        <div className="space-y-2">
-                          <div className="text-with-checkagree">
-                            <div className="check-col">
-                              <input
-                                typeof="checkbox"
-                                className="custom-check-s1"
-                                type="checkbox"
-                              />
-                            </div>
-                            <label
-                              className="text-col"
-                              htmlFor="setUpPriceCheck"
-                            >
-                              Price
-                            </label>
-                          </div>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>1000</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <Label>Deliver After</Label>
-                          <span>2 days</span>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <Label>Product Location</Label>
-                          <span>Kolkata</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="rightdiv">
-                    <div className="form-container">
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <label>Time Open</label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>10:00am</span>
-                          </div>
-                        </div>
+            {allManagedProductsQuery.data?.data?.map(
+              (product: { id: number }) => (
+                <ManageProductCard
+                  selectedIds={selectedProductIds}
+                  onSelectedId={handleProductIds}
+                  key={product?.id}
+                  id={product?.id}
+                />
+              ),
+            )}
 
-                        <div className="flex flex-wrap space-y-2">
-                          <label>Time Close</label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>7:00pm</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Cosumer Type
-                          </label>
-                          <span>Everyone</span>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Sell Type
-                          </label>
-                          <span>Normal Sell</span>
-                        </div>
-                      </div>
-
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Vendor Discount
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>20%</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Consumer Discount
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>20%</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Min Quantity
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>2</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Max Quantity
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>10</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Min Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>50</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Max Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>1000</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Min Qty Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>100</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Max Qty Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>1000</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* <div className="existing-product-add-box-action">
-                  <button type="button" className="custom-btn update">
-                    update
-                  </button>
-                  <button
-                    type="button"
-                    className="custom-btn theme-primary-btn"
-                  >
-                    add
-                  </button>
-                  <button type="button" className="custom-btn edit">
-                    edit
-                  </button>
-                </div> */}
-              </div>
-            </div>
-
-            <div className="existing-product-add-item">
-              <div className="existing-product-add-box">
-                <div className="existing-product-add-box-row">
-                  <div className="leftdiv">
-                    <div className="image-container">
-                      <div className="existing_product_checkbox">
-                        <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-                        <img src="/images/hide.png" alt="" />
-                      </div>
-                      <img src="/images/ts-6.png" alt="" />
-                    </div>
-                    <div className="text-container">
-                      <h3>
-                        <a href="">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit.
-                        </a>
-                      </h3>
-                    </div>
-                    <div className="form-container">
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <div className="text-with-checkagree">
-                            <div className="check-col">
-                              <input
-                                typeof="checkbox"
-                                className="custom-check-s1"
-                                type="checkbox"
-                              />
-                            </div>
-                            <label
-                              className="text-col"
-                              htmlFor="setUpPriceCheck"
-                            >
-                              Stock
-                            </label>
-                          </div>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>100</span>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="text-with-checkagree">
-                            <div className="check-col">
-                              <input
-                                typeof="checkbox"
-                                className="custom-check-s1"
-                                type="checkbox"
-                              />
-                            </div>
-                            <label
-                              className="text-col"
-                              htmlFor="setUpPriceCheck"
-                            >
-                              Price
-                            </label>
-                          </div>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>1000</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <Label>Deliver After</Label>
-                          <span>2 days</span>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <Label>Product Location</Label>
-                          <span>Kolkata</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="rightdiv">
-                    <div className="form-container">
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <label>Time Open</label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>10:00am</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label>Time Close</label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>7:00pm</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Cosumer Type
-                          </label>
-                          <span>Everyone</span>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Sell Type
-                          </label>
-                          <span>Normal Sell</span>
-                        </div>
-                      </div>
-
-                      <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Vendor Discount
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>20%</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Consumer Discount
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>20%</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Min Quantity
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>2</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Max Quantity
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>10</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Min Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>50</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Max Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>1000</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Min Qty Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>100</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap space-y-2">
-                          <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Max Qty Consumer
-                          </label>
-                          <div className="theme-inputValue-picker-upDown">
-                            <span>1000</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {allManagedProductsQuery.data?.totalCount > 6 ? (
+              <Pagination
+                page={page}
+                setPage={setPage}
+                totalCount={allManagedProductsQuery.data?.totalCount}
+                limit={limit}
+              />
+            ) : null}
           </div>
+
           <div className="manage_product_list">
             <div className="manage_product_list_wrap">
               <h2>Manage the product</h2>
               <div className="all_select_button">
-                <button>Select All</button>
-                <button>Clean Select</button>
+                <button
+                  onClick={() =>
+                    setSelectedProductIds(
+                      allManagedProductsQuery.data?.data?.map(
+                        (product: { id: number }) => product?.id,
+                      ),
+                    )
+                  }
+                >
+                  Select All
+                </button>
+                <button onClick={() => setSelectedProductIds([])}>
+                  Clean Select
+                </button>
               </div>
               <div className="select_main_wrap">
                 <div className="select_type">
