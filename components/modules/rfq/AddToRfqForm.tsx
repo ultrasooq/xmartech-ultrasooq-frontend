@@ -224,6 +224,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       productQueryById?.data?.data?.productType === "R"
     ) {
       // R type product
+
+      // return;
       const response = await updateProduct.mutateAsync({
         productId: selectedProductId,
         productType: "R",
@@ -235,13 +237,21 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           description: response.message,
           variant: "success",
         });
-        form.reset();
 
-        productQueryById.refetch();
-        queryClient.invalidateQueries({
-          queryKey: ["rfq-products"],
-        });
-        onClose();
+        if (selectedQuantity) {
+          handleAddToCart(
+            selectedQuantity ? selectedQuantity : 1,
+            selectedProductId,
+            formData?.offerPrice,
+          );
+        } else {
+          form.reset();
+          productQueryById.refetch();
+          queryClient.invalidateQueries({
+            queryKey: ["rfq-products"],
+          });
+          onClose();
+        }
       } else {
         toast({
           title: "RFQ Product Update Failed",
@@ -306,7 +316,6 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         ],
       };
 
-      console.log(data);
       // return;
       const response = await createProduct.mutateAsync(data);
       if (response.status) {
@@ -325,11 +334,20 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             variant: "success",
           });
 
-          handleAddToCart(
-            selectedQuantity ? selectedQuantity : 1,
-            response.data.id,
-            formData?.offerPrice,
-          );
+          if (selectedQuantity) {
+            handleAddToCart(
+              selectedQuantity ? selectedQuantity : 1,
+              response.data.id,
+              formData?.offerPrice,
+            );
+          } else {
+            form.reset();
+            productQueryById.refetch();
+            queryClient.invalidateQueries({
+              queryKey: ["rfq-products"],
+            });
+            onClose();
+          }
         } else {
           toast({
             title: "Product Duplicate Failed",
@@ -421,7 +439,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
   // console.log(productQueryById.data?.data);
   // console.log(form.getValues());
-  // console.log(selectedQuantity);
+  console.log(selectedQuantity);
 
   return (
     <>
