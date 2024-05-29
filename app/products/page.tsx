@@ -10,18 +10,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { useDeleteProduct, useProducts } from "@/apis/queries/product.queries";
 import { IRenderProduct } from "@/utils/types/common.types";
 import Image from "next/image";
 import validator from "validator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import DeleteContent from "@/components/shared/DeleteContent";
 import { useToast } from "@/components/ui/use-toast";
 import { useMe } from "@/apis/queries/user.queries";
-import AddIcon from "@mui/icons-material/Add";
+import { IoMdAdd } from "react-icons/io";
+import { MdOutlineManageSearch } from "react-icons/md";
 import { debounce } from "lodash";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -137,9 +137,18 @@ const ProductListPage = () => {
                   className="theme-primary-btn add-btn p-2"
                   onClick={handleAddProductModal}
                 >
-                  <AddIcon />
+                  <IoMdAdd size={24} />
                   <span className="d-none-mobile">Add Product</span>
                 </button>
+              </li>
+              <li>
+                <Link
+                  className="theme-primary-btn add-btn p-2"
+                  href="/rfq-list"
+                >
+                  <MdOutlineManageSearch size={24} />
+                  <span className="d-none-mobile ml-1">Manage Products</span>
+                </Link>
               </li>
             </ul>
           </CardHeader>
