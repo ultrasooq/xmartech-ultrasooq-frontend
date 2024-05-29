@@ -9,6 +9,7 @@ import {
   fetchProducts,
   fetchRelatedProducts,
   fetchSameBrandProducts,
+  getAllManagedProducts,
   updateProduct,
 } from "../requests/product.request";
 import {
@@ -199,3 +200,22 @@ export const useAddMultiplePriceForProduct = () => {
     },
   });
 };
+
+export const useAllManagedProducts = (
+  payload: {
+    page: number;
+    limit: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["managed-products", payload],
+    queryFn: async () => {
+      const res = await getAllManagedProducts(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
