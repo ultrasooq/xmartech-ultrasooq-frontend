@@ -260,54 +260,67 @@ const formSchemaForTypeP = z
     }
   });
 
-const formSchemaForTypeR = z.object({
-  productName: z
-    .string()
-    .trim()
-    .min(2, { message: "Product Name is required" })
-    .max(50, { message: "Product Name must be less than 50 characters" }),
-  categoryId: z.number().optional(),
-  categoryLocation: z.string().trim().optional(),
-  brandId: z.number().min(1, { message: "Brand is required" }),
-  productTagList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
-      }),
-    )
-    .min(1, {
-      message: "Tag is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ tagId: item.value });
-      });
-      return temp;
-    }),
-  productImagesList: z.any().optional(),
-  placeOfOriginId: z
-    .string()
-    .trim()
-    .min(1, { message: "Place of Origin is required" })
-    .transform((value) => Number(value)),
-  productShortDescriptionList: z.array(
-    z.object({
-      shortDescription: z
-        .string()
-        .trim()
-        .min(2, {
-          message: "Short Description is required",
-        })
-        .max(20, {
-          message: "Short Description must be less than 20 characters",
+const formSchemaForTypeR = z
+  .object({
+    productName: z
+      .string()
+      .trim()
+      .min(2, { message: "Product Name is required" })
+      .max(50, { message: "Product Name must be less than 50 characters" }),
+    categoryId: z.number().optional(),
+    categoryLocation: z.string().trim().optional(),
+    brandId: z.number().min(1, { message: "Brand is required" }),
+    productCondition: z
+      .string()
+      .trim()
+      .min(1, { message: "Product Condition is required" }),
+    productTagList: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.number(),
         }),
-    }),
-  ),
-  description: z.string().trim(),
-  specification: z.string().trim(),
-});
+      )
+      .min(1, {
+        message: "Tag is required",
+      })
+      .transform((value) => {
+        let temp: any = [];
+        value.forEach((item) => {
+          temp.push({ tagId: item.value });
+        });
+        return temp;
+      }),
+    productImagesList: z.any().optional(),
+    placeOfOriginId: z
+      .number()
+      .min(1, { message: "Place of Origin is required" }),
+    productShortDescriptionList: z.array(
+      z.object({
+        shortDescription: z
+          .string()
+          .trim()
+          .min(2, {
+            message: "Short Description is required",
+          })
+          .max(20, {
+            message: "Short Description must be less than 20 characters",
+          }),
+      }),
+    ),
+    description: z.string().trim(),
+    specification: z.string().trim(),
+    setUpPrice: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.setUpPrice) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Offer Price is required",
+        path: ["offerPrice"],
+      });
+    }
+  });
 
 const defaultValues = {
   productName: "",
@@ -391,7 +404,7 @@ const CreateProductPage = () => {
   };
 
   // console.log(form.formState.errors);
-  // console.log(form.formState.defaultValues);
+  // console.log(form.getValues());
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
@@ -444,11 +457,15 @@ const CreateProductPage = () => {
     delete updatedFormData.productImages;
     updatedFormData.productPriceList = [
       {
-        ...updatedFormData.productPriceList[0],
+        ...(activeProductType !== "R" && updatedFormData.productPriceList[0]),
         productPrice:
-          activeProductType === "R" ? 0 : updatedFormData.productPrice ?? 0,
+          activeProductType === "R"
+            ? updatedFormData.offerPrice ?? 0
+            : updatedFormData.productPrice ?? 0,
         offerPrice:
-          activeProductType === "R" ? 0 : updatedFormData.productPrice ?? 0,
+          activeProductType === "R"
+            ? updatedFormData.offerPrice ?? 0
+            : updatedFormData.productPrice ?? 0,
         productLocationId: updatedFormData.productLocationId,
         productCondition: updatedFormData.productCondition,
       },
@@ -461,10 +478,11 @@ const CreateProductPage = () => {
     delete updatedFormData.productCondition;
 
     updatedFormData.skuNo = randomSkuNo;
-    updatedFormData.offerPrice = updatedFormData.productPrice;
+    updatedFormData.offerPrice =
+      activeProductType === "R"
+        ? updatedFormData.offerPrice ?? 0
+        : updatedFormData.productPrice ?? 0;
 
-    console.log("add:", updatedFormData);
-    // return;
     // TODO: category input field change
     if (updatedFormData.categoryId === 0) {
       toast({
@@ -474,6 +492,8 @@ const CreateProductPage = () => {
       });
       return;
     }
+    console.log("add2:", updatedFormData);
+    return;
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {

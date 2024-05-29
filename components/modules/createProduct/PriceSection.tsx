@@ -177,62 +177,64 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
       {watchSetUpPrice ? (
         <>
-          <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-            <div className="mt-2 flex flex-col gap-y-3">
-              <Label>Consumer Type</Label>
-              <Controller
-                name="productPriceList.[0].consumerType"
-                control={formContext.control}
-                render={({ field }) => (
-                  <ReactSelect
-                    {...field}
-                    onChange={(newValue) => {
-                      field.onChange(newValue?.value);
-                    }}
-                    options={CONSUMER_TYPE_LIST}
-                    value={CONSUMER_TYPE_LIST.find(
-                      (item: Option) => item.value === field.value,
-                    )}
-                    styles={customStyles}
-                    instanceId="productPriceList.[0].consumerType"
-                  />
-                )}
-              />
-              {!watchConsumerType && consumerTypeMessage ? (
-                <p className="text-[13px] text-red-500">
-                  {consumerTypeMessage.toString()}
-                </p>
-              ) : null}
-            </div>
+          {activeProductType !== "R" ? (
+            <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+              <div className="mt-2 flex flex-col gap-y-3">
+                <Label>Consumer Type</Label>
+                <Controller
+                  name="productPriceList.[0].consumerType"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      {...field}
+                      onChange={(newValue) => {
+                        field.onChange(newValue?.value);
+                      }}
+                      options={CONSUMER_TYPE_LIST}
+                      value={CONSUMER_TYPE_LIST.find(
+                        (item: Option) => item.value === field.value,
+                      )}
+                      styles={customStyles}
+                      instanceId="productPriceList.[0].consumerType"
+                    />
+                  )}
+                />
+                {!watchConsumerType && consumerTypeMessage ? (
+                  <p className="text-[13px] text-red-500">
+                    {consumerTypeMessage.toString()}
+                  </p>
+                ) : null}
+              </div>
 
-            <div className="mt-2 flex flex-col gap-y-3">
-              <Label>Sell Type</Label>
-              <Controller
-                name="productPriceList.[0].sellType"
-                control={formContext.control}
-                render={({ field }) => (
-                  <ReactSelect
-                    {...field}
-                    onChange={(newValue) => {
-                      field.onChange(newValue?.value);
-                    }}
-                    options={SELL_TYPE_LIST}
-                    value={SELL_TYPE_LIST.find(
-                      (item: Option) => item.value === field.value,
-                    )}
-                    styles={customStyles}
-                    instanceId="productPriceList.[0].sellType"
-                  />
-                )}
-              />
+              <div className="mt-2 flex flex-col gap-y-3">
+                <Label>Sell Type</Label>
+                <Controller
+                  name="productPriceList.[0].sellType"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      {...field}
+                      onChange={(newValue) => {
+                        field.onChange(newValue?.value);
+                      }}
+                      options={SELL_TYPE_LIST}
+                      value={SELL_TYPE_LIST.find(
+                        (item: Option) => item.value === field.value,
+                      )}
+                      styles={customStyles}
+                      instanceId="productPriceList.[0].sellType"
+                    />
+                  )}
+                />
 
-              {!watchSellType && sellTypeMessage ? (
-                <p className="text-[13px] text-red-500">
-                  {sellTypeMessage.toString()}
-                </p>
-              ) : null}
+                {!watchSellType && sellTypeMessage ? (
+                  <p className="text-[13px] text-red-500">
+                    {sellTypeMessage.toString()}
+                  </p>
+                ) : null}
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
             <div className="col-span-2 grid w-full grid-cols-2 gap-x-5 gap-y-4">
@@ -362,21 +364,23 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             ) : null}
           </div>
 
-          <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
-            <CounterTextInputField
-              label="Deliver After"
-              name="productPriceList.[0].deliveryAfter"
-              placeholder="After"
-              errorMessage={
-                !watchDeliveryAfter && deliveryAfterMessage
-                  ? deliveryAfterMessage.toString()
-                  : undefined
-              }
-            />
-          </div>
-
           {activeProductType !== "R" ? (
-            <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+            <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
+              <CounterTextInputField
+                label="Deliver After"
+                name="productPriceList.[0].deliveryAfter"
+                placeholder="After"
+                errorMessage={
+                  !watchDeliveryAfter && deliveryAfterMessage
+                    ? deliveryAfterMessage.toString()
+                    : undefined
+                }
+              />
+            </div>
+          ) : null}
+
+          <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+            {activeProductType !== "R" ? (
               <FormField
                 control={formContext.control}
                 name="productPrice"
@@ -401,8 +405,8 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   </FormItem>
                 )}
               />
-
-              {/* <FormField
+            ) : (
+              <FormField
                 control={formContext.control}
                 name="offerPrice"
                 render={({ field }) => (
@@ -425,9 +429,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
-            </div>
-          ) : null}
+              />
+            )}
+          </div>
         </>
       ) : null}
 
