@@ -142,3 +142,21 @@ export const addMultiplePriceForProduct = (payload: any) => {
     },
   });
 };
+
+export const getAllManagedProducts = (payload: {
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProductPriceByUser`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
