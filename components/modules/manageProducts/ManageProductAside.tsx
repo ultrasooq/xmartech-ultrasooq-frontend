@@ -1,7 +1,51 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  CONSUMER_TYPE_LIST,
+  PRODUCT_CONDITION_LIST,
+  SELL_TYPE_LIST,
+} from "@/utils/constants";
+import { Controller, useFormContext } from "react-hook-form";
+import ReactSelect from "react-select";
+import { Label } from "@/components/ui/label";
+import CounterTextInputField from "../createProduct/CounterTextInputField";
+import { useLocation } from "@/apis/queries/masters.queries";
+import { ILocations, IOption } from "@/utils/types/common.types";
+import { FiEyeOff } from "react-icons/fi";
+import { FiEye } from "react-icons/fi";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import { Input } from "@/components/ui/input";
+
+interface Option {
+  readonly label: string;
+  readonly value: string;
+}
+
+const customStyles = {
+  control: (base: any) => ({
+    ...base,
+    height: 48,
+    minHeight: 48,
+  }),
+  menu: (base: any) => ({
+    ...base,
+    zIndex: 20,
+  }),
+};
 
 const ManageProductAside = () => {
+  const formContext = useFormContext();
+
+  const locationsQuery = useLocation();
+
+  const memoizedLocations = useMemo(() => {
+    return (
+      locationsQuery?.data?.data.map((item: ILocations) => {
+        return { label: item.locationName, value: item.id };
+      }) || []
+    );
+  }, [locationsQuery?.data?.data?.length]);
+
   return (
     <aside className="manage_product_list">
       <div className="manage_product_list_wrap">
@@ -11,75 +55,300 @@ const ManageProductAside = () => {
           <button>Clean Select</button>
         </div>
         <div className="select_main_wrap">
-          <div className="select_type">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-            </div>
-            <div className="select_type_field">
-              <select>
-                <option>Select Brand</option>
-                <option>New</option>
-              </select>
-            </div>
+          <div className="mt-2 flex flex-col gap-y-3">
+            <Label>Product Location</Label>
+            <Controller
+              name="productLocationId"
+              control={formContext.control}
+              render={({ field }) => (
+                <ReactSelect
+                  {...field}
+                  onChange={(newValue) => {
+                    field.onChange(newValue?.value);
+                  }}
+                  options={memoizedLocations}
+                  value={memoizedLocations.find(
+                    (item: IOption) => item.value === field.value,
+                  )}
+                  styles={customStyles}
+                  instanceId="productLocationId"
+                />
+              )}
+            />
           </div>
-          <div className="select_type">
+
+          <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
             </div>
-            <div className="select_type_field">
-              <button>Hide all Selected</button>
-            </div>
-          </div>
-          <div className="select_type">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-            </div>
-            <div className="select_type_field">
-              <input
-                type="text"
-                placeholder="Ask for the Stock"
-                className="form-control"
+            <div className="flex w-full flex-col gap-y-3">
+              <Label>Product Condition</Label>
+              <Controller
+                name="productCondition"
+                control={formContext.control}
+                render={({ field }) => (
+                  <ReactSelect
+                    {...field}
+                    onChange={(newValue) => {
+                      field.onChange(newValue?.value);
+                    }}
+                    options={PRODUCT_CONDITION_LIST}
+                    value={PRODUCT_CONDITION_LIST.find(
+                      (item: any) => item.value === field.value,
+                    )}
+                    styles={customStyles}
+                    instanceId="productCondition"
+                  />
+                )}
               />
             </div>
           </div>
-          <div className="select_type">
+
+          <div className="select_type mb-4 !items-start gap-x-2">
             <div className="select_type_checkbox">
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
             </div>
-            <div className="select_type_field">
-              <input
-                type="text"
-                placeholder="Ask for the Price"
-                className="form-control"
+            <div className="select_type_field !flex h-[48px] !flex-row !items-center text-gray-500">
+              <button
+                type="button"
+                className="flex !w-[40px] items-center justify-center"
+              >
+                <FiEyeOff size={24} />
+              </button>
+              <Label>Hide all Selected</Label>
+            </div>
+          </div>
+
+          <div className="select_type mb-4 !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+
+            <Controller
+              name="consumerType"
+              control={formContext.control}
+              render={({ field }) => (
+                <Input
+                  className="theme-form-control-s1"
+                  placeholder="Ask for the Stock"
+                  {...field}
+                />
+              )}
+            />
+          </div>
+
+          <div className="select_type mb-4 !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+
+            <Controller
+              name="consumerType"
+              control={formContext.control}
+              render={({ field }) => (
+                <Input
+                  className="theme-form-control-s1"
+                  placeholder="Ask for the Price"
+                  {...field}
+                />
+              )}
+            />
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Deliver After"
+                name="deliveryAfter"
+                placeholder="After"
               />
             </div>
           </div>
-          <div className="select_type">
+
+          <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
             </div>
-            <div className="select_type_field">
-              <select>
-                <option>Customer Type</option>
-                <option>Everyone</option>
-              </select>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Time Open"
+                name="timeOpen"
+                placeholder="Open"
+              />
             </div>
           </div>
-          <div className="select_type">
+
+          <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
             </div>
-            <div className="select_type_field plus_minus_select">
-              <button>Delivery After</button>
-              <div className="theme-inputValue-picker-upDown">
-                <button type="button" className="upDown-btn minus">
-                  <img src="/images/minus-icon-dark.svg" alt=""></img>
-                </button>
-                <input type="number" className="form-control" value="0" />
-                <button type="button" className="upDown-btn plus">
-                  <img src="/images/plus-icon-dark.svg" alt=""></img>
-                </button>
-              </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Time Close"
+                name="timeClose"
+                placeholder="Close"
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="flex w-full flex-col gap-y-3">
+              <Label>Consumer Type</Label>
+              <Controller
+                name="consumerType"
+                control={formContext.control}
+                render={({ field }) => (
+                  <ReactSelect
+                    {...field}
+                    onChange={(newValue) => {
+                      field.onChange(newValue?.value);
+                    }}
+                    options={CONSUMER_TYPE_LIST}
+                    value={CONSUMER_TYPE_LIST.find(
+                      (item: Option) => item.value === field.value,
+                    )}
+                    styles={customStyles}
+                    instanceId="consumerType"
+                  />
+                )}
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="flex w-full flex-col gap-y-3">
+              <Label>Sell Type</Label>
+              <Controller
+                name="sellType"
+                control={formContext.control}
+                render={({ field }) => (
+                  <ReactSelect
+                    {...field}
+                    onChange={(newValue) => {
+                      field.onChange(newValue?.value);
+                    }}
+                    options={SELL_TYPE_LIST}
+                    value={SELL_TYPE_LIST.find(
+                      (item: Option) => item.value === field.value,
+                    )}
+                    styles={customStyles}
+                    instanceId="sellType"
+                  />
+                )}
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Vendor Discount"
+                name="vendorDiscount"
+                placeholder="Discount"
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Consumer Discount"
+                name="consumerDiscount"
+                placeholder="Discount"
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Min Quantity"
+                name="minQuantity"
+                placeholder="Min"
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Max Quantity"
+                name="maxQuantity"
+                placeholder="Max"
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Min Customer"
+                name="minCustomer"
+                placeholder="Min"
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Max Customer"
+                name="maxCustomer"
+                placeholder="Max"
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Min Quantity Per Customer"
+                name="minQuantityPerCustomer"
+                placeholder="Min"
+              />
+            </div>
+          </div>
+
+          <div className="select_type !items-start gap-x-2">
+            <div className="select_type_checkbox">
+              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+            </div>
+            <div className="grid w-full grid-cols-1 gap-x-5">
+              <CounterTextInputField
+                label="Max Quantity Per Customer"
+                name="maxQuantityPerCustomer"
+                placeholder="Max"
+              />
             </div>
           </div>
         </div>
