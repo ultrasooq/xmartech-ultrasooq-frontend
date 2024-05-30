@@ -34,7 +34,7 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
       control={formContext.control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="flex flex-col">
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <div className="relative">

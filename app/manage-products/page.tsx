@@ -41,7 +41,7 @@ const ManageProductsPage = () => {
             <div className="existing-product-add-lists">
               {allManagedProductsQuery.isLoading ? (
                 <div className="mx-2 grid w-full grid-cols-3 gap-5">
-                  {Array.from({ length: 6 }).map((_, index) => (
+                  {Array.from({ length: 3 }).map((_, index) => (
                     <Skeleton key={index} className="h-80 w-full" />
                   ))}
                 </div>
