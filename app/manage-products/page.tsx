@@ -1,22 +1,75 @@
 "use client";
 import React, { useState } from "react";
-import { useAllManagedProducts } from "@/apis/queries/product.queries";
+import {
+  useAllManagedProducts,
+  useUpdateMultipleProductPrice,
+} from "@/apis/queries/product.queries";
 import ManageProductCard from "@/components/modules/manageProducts/ManageProductCard";
 import Pagination from "@/components/shared/Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import ManageProductAside from "@/components/modules/manageProducts/ManageProductAside";
 import { FormProvider, useForm } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const schema = z.object({
+  productPrice: z.number().optional(),
+  offerPrice: z.coerce.number().optional(),
+  productLocationId: z.number().optional(),
+  stock: z.coerce.number().optional(),
+  deliveryAfter: z.number().optional(),
+  timeOpen: z.number().optional(),
+  timeClose: z.number().optional(),
+  consumerType: z.string().optional(),
+  sellType: z.string().optional(),
+  vendorDiscount: z.number().optional(),
+  consumerDiscount: z.number().optional(),
+  minQuantity: z.number().optional(),
+  maxQuantity: z.number().optional(),
+  minCustomer: z.number().optional(),
+  maxCustomer: z.number().optional(),
+  minQuantityPerCustomer: z.number().optional(),
+  maxQuantityPerCustomer: z.number().optional(),
+  productCondition: z.string().optional(),
+});
+
+const defaultValues = {
+  productPrice: 0,
+  offerPrice: 0,
+  productLocationId: undefined,
+  stock: 0,
+  deliveryAfter: 0,
+  timeOpen: 0,
+  timeClose: 0,
+  consumerType: "",
+  sellType: "",
+  vendorDiscount: 0,
+  consumerDiscount: 0,
+  minQuantity: 0,
+  maxQuantity: 0,
+  minCustomer: 0,
+  maxCustomer: 0,
+  minQuantityPerCustomer: 0,
+  maxQuantityPerCustomer: 0,
+  productCondition: "",
+};
 
 const ManageProductsPage = () => {
-  const form = useForm();
+  const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(6);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const form = useForm({
+    resolver: zodResolver(schema),
+    defaultValues,
+  });
 
   const allManagedProductsQuery = useAllManagedProducts({
     page,
     limit,
   });
+  const updateMultipleProductPrice = useUpdateMultipleProductPrice();
 
   const handleProductIds = (checked: boolean | string, id: number) => {
     let tempArr = selectedProductIds || [];
@@ -31,13 +84,60 @@ const ManageProductsPage = () => {
     setSelectedProductIds(tempArr);
   };
 
-  console.log(allManagedProductsQuery.data?.data);
+  const onSubmit = async (formData: any) => {
+    if (!selectedProductIds.length) {
+      toast({
+        title: "Update Failed",
+        description: "Please select at least one product",
+        variant: "danger",
+      });
+      return;
+    }
+    const updatedFormData = {
+      ...formData,
+      productPrice: formData.offerPrice,
+      status: "ACTIVE",
+    };
+
+    const formatData = selectedProductIds.map((ele: number) => {
+      return {
+        productPriceId: ele,
+        ...updatedFormData,
+      };
+    });
+    console.log({
+      productPrice: [...formatData],
+    });
+    // return;
+    const response = await updateMultipleProductPrice.mutateAsync({
+      productPrice: [...formatData],
+    });
+
+    if (response.status) {
+      toast({
+        title: "Update Successful",
+        description: "Products updated successfully",
+        variant: "success",
+      });
+      form.reset();
+      setSelectedProductIds([]);
+    } else {
+      toast({
+        title: "Update Failed",
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  };
 
   return (
     <>
       <div className="existing-product-add-page">
         <FormProvider {...form}>
-          <form className="container m-auto flex px-3">
+          <form
+            className="container m-auto flex px-3"
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
             <div className="existing-product-add-lists">
               {allManagedProductsQuery.isLoading ? (
                 <div className="mx-2 grid w-full grid-cols-3 gap-5">
@@ -123,7 +223,7 @@ const ManageProductsPage = () => {
               ) : null}
             </div>
 
-            <ManageProductAside />
+            <ManageProductAside isLoading={allManagedProductsQuery.isPending} />
           </form>
         </FormProvider>
       </div>

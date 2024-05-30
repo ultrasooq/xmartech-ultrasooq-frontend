@@ -11,6 +11,7 @@ import {
   fetchSameBrandProducts,
   getAllManagedProducts,
   getOneProductBySellerId,
+  updateMultipleProductPrice,
   updateProduct,
 } from "../requests/product.request";
 import {
@@ -189,6 +190,24 @@ export const useAddMultiplePriceForProduct = () => {
   return useMutation<any, APIResponseError, any>({
     mutationFn: async (payload) => {
       const res = await addMultiplePriceForProduct(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      // queryClient.invalidateQueries({
+      //   queryKey: ["price-products"],
+      // });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useUpdateMultipleProductPrice = () => {
+  const queryClient = useQueryClient();
+  return useMutation<any, APIResponseError, any>({
+    mutationFn: async (payload) => {
+      const res = await updateMultipleProductPrice(payload);
       return res.data;
     },
     onSuccess: () => {

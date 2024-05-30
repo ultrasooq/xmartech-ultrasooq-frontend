@@ -12,9 +12,9 @@ import CounterTextInputField from "../createProduct/CounterTextInputField";
 import { useLocation } from "@/apis/queries/masters.queries";
 import { ILocations, IOption } from "@/utils/types/common.types";
 import { FiEyeOff } from "react-icons/fi";
-import { FiEye } from "react-icons/fi";
-import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+// import { FiEye } from "react-icons/fi";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface Option {
   readonly label: string;
@@ -33,7 +33,13 @@ const customStyles = {
   }),
 };
 
-const ManageProductAside = () => {
+type ManageProductAsideProps = {
+  isLoading?: boolean;
+};
+
+const ManageProductAside: React.FC<ManageProductAsideProps> = ({
+  isLoading,
+}) => {
   const formContext = useFormContext();
 
   const locationsQuery = useLocation();
@@ -51,9 +57,10 @@ const ManageProductAside = () => {
       <div className="manage_product_list_wrap">
         <h2>Manage the product</h2>
         <div className="all_select_button">
-          <button>Select All</button>
-          <button>Clean Select</button>
+          <button type="button">Select All</button>
+          <button type="button">Clean Select</button>
         </div>
+
         <div className="select_main_wrap">
           <div className="mt-2 flex flex-col gap-y-3">
             <Label>Product Location</Label>
@@ -125,14 +132,18 @@ const ManageProductAside = () => {
             </div>
 
             <Controller
-              name="consumerType"
+              name="stock"
               control={formContext.control}
               render={({ field }) => (
-                <Input
-                  className="theme-form-control-s1"
-                  placeholder="Ask for the Stock"
-                  {...field}
-                />
+                <div className="space-y-2">
+                  <Label>Ask for the Stock</Label>
+                  <Input
+                    type="number"
+                    className="theme-form-control-s1"
+                    placeholder="Ask for the Stock"
+                    {...field}
+                  />
+                </div>
               )}
             />
           </div>
@@ -143,14 +154,18 @@ const ManageProductAside = () => {
             </div>
 
             <Controller
-              name="consumerType"
+              name="offerPrice"
               control={formContext.control}
               render={({ field }) => (
-                <Input
-                  className="theme-form-control-s1"
-                  placeholder="Ask for the Price"
-                  {...field}
-                />
+                <div className="space-y-2">
+                  <Label>Ask for the Price</Label>
+                  <Input
+                    type="number"
+                    className="theme-form-control-s1"
+                    placeholder="Ask for the Price"
+                    {...field}
+                  />
+                </div>
               )}
             />
           </div>
@@ -351,6 +366,16 @@ const ManageProductAside = () => {
               />
             </div>
           </div>
+        </div>
+
+        <div className="m-2">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full !bg-[#DF2100]"
+          >
+            {isLoading ? "Updating..." : "Update"}
+          </Button>
         </div>
       </div>
     </aside>
