@@ -260,54 +260,71 @@ const formSchemaForTypeP = z
     }
   });
 
-const formSchemaForTypeR = z.object({
-  productName: z
-    .string()
-    .trim()
-    .min(2, { message: "Product Name is required" })
-    .max(50, { message: "Product Name must be less than 50 characters" }),
-  categoryId: z.number().optional(),
-  categoryLocation: z.string().trim().optional(),
-  brandId: z.number().min(1, { message: "Brand is required" }),
-  productTagList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
-      }),
-    )
-    .min(1, {
-      message: "Tag is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ tagId: item.value });
-      });
-      return temp;
-    }),
-  productImagesList: z.any().optional(),
-  placeOfOriginId: z
-    .string()
-    .trim()
-    .min(1, { message: "Place of Origin is required" })
-    .transform((value) => Number(value)),
-  productShortDescriptionList: z.array(
-    z.object({
-      shortDescription: z
-        .string()
-        .trim()
-        .min(2, {
-          message: "Short Description is required",
-        })
-        .max(20, {
-          message: "Short Description must be less than 20 characters",
+const formSchemaForTypeR = z
+  .object({
+    productName: z
+      .string()
+      .trim()
+      .min(2, { message: "Product Name is required" })
+      .max(50, { message: "Product Name must be less than 50 characters" }),
+    categoryId: z.number().optional(),
+    categoryLocation: z.string().trim().optional(),
+    brandId: z.number().min(1, { message: "Brand is required" }),
+    productCondition: z
+      .string()
+      .trim()
+      .min(1, { message: "Product Condition is required" }),
+    productTagList: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.number(),
         }),
-    }),
-  ),
-  description: z.string().trim(),
-  specification: z.string().trim(),
-});
+      )
+      .min(1, {
+        message: "Tag is required",
+      })
+      .transform((value) => {
+        let temp: any = [];
+        value.forEach((item) => {
+          temp.push({ tagId: item.value });
+        });
+        return temp;
+      }),
+    productImagesList: z.any().optional(),
+    productPrice: z.coerce.number().optional(),
+    offerPrice: z.coerce.number().optional(),
+    placeOfOriginId: z
+      .number()
+      .min(1, { message: "Place of Origin is required" }),
+    productShortDescriptionList: z.array(
+      z.object({
+        shortDescription: z
+          .string()
+          .trim()
+          .min(2, {
+            message: "Short Description is required",
+          })
+          .max(20, {
+            message: "Short Description must be less than 20 characters",
+          }),
+      }),
+    ),
+    description: z.string().trim(),
+    specification: z.string().trim(),
+    setUpPrice: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.setUpPrice) {
+      if (data.offerPrice === 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Offer Price is required",
+          path: ["offerPrice"],
+        });
+      }
+    }
+  });
 
 const defaultValues = {
   productName: "",
@@ -390,8 +407,7 @@ const CreateProductPage = () => {
     }
   };
 
-  // console.log(form.formState.errors);
-  // console.log(form.formState.defaultValues);
+  console.log(form.formState.errors);
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
@@ -444,16 +460,38 @@ const CreateProductPage = () => {
     delete updatedFormData.productImages;
     updatedFormData.productPriceList = [
       {
-        ...updatedFormData.productPriceList[0],
+        ...(activeProductType !== "R" && updatedFormData.productPriceList[0]),
         productPrice:
-          activeProductType === "R" ? 0 : updatedFormData.productPrice ?? 0,
+          activeProductType === "R"
+            ? updatedFormData.offerPrice ?? 0
+            : updatedFormData.productPrice ?? 0,
         offerPrice:
-          activeProductType === "R" ? 0 : updatedFormData.productPrice ?? 0,
+          activeProductType === "R"
+            ? updatedFormData.offerPrice ?? 0
+            : updatedFormData.productPrice ?? 0,
         productLocationId: updatedFormData.productLocationId,
         productCondition: updatedFormData.productCondition,
       },
     ];
     if (activeProductType === "R") {
+      updatedFormData.productPriceList[0] = [
+        {
+          consumerType: "",
+          sellType: "",
+          consumerDiscount: 0,
+          vendorDiscount: 0,
+          minCustomer: 0,
+          maxCustomer: 0,
+          minQuantityPerCustomer: 0,
+          maxQuantityPerCustomer: 0,
+          minQuantity: 0,
+          maxQuantity: 0,
+          timeOpen: 0,
+          timeClose: 0,
+          deliveryAfter: 0,
+          ...updatedFormData.productPriceList[0],
+        },
+      ];
       delete updatedFormData.productPriceList[0].productLocationId;
     }
     delete updatedFormData.productLocationId;
@@ -461,10 +499,15 @@ const CreateProductPage = () => {
     delete updatedFormData.productCondition;
 
     updatedFormData.skuNo = randomSkuNo;
-    updatedFormData.offerPrice = updatedFormData.productPrice;
+    updatedFormData.offerPrice =
+      activeProductType === "R"
+        ? updatedFormData.offerPrice ?? 0
+        : updatedFormData.productPrice ?? 0;
+    updatedFormData.productPrice =
+      activeProductType === "R"
+        ? updatedFormData.offerPrice ?? 0
+        : updatedFormData.productPrice ?? 0;
 
-    console.log("add:", updatedFormData);
-    // return;
     // TODO: category input field change
     if (updatedFormData.categoryId === 0) {
       toast({
@@ -474,6 +517,8 @@ const CreateProductPage = () => {
       });
       return;
     }
+    console.log("add:", updatedFormData);
+    // return;
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {
@@ -500,6 +545,7 @@ const CreateProductPage = () => {
   useEffect(() => {
     if (!watchSetUpPrice) {
       form.setValue("productPrice", 0);
+      form.setValue("offerPrice", 0);
       form.setValue("productPriceList", [
         {
           consumerType: "",
