@@ -245,6 +245,7 @@ const ProductDetailsPage = () => {
               inWishlist={!!productQueryById?.data?.inWishlist}
             />
             <ProductDescriptionCard
+              productId={searchParams?.id ? (searchParams?.id as string) : ""}
               productName={productDetails?.productName}
               brand={productDetails?.brand?.brandName}
               productPrice={productDetails?.productPrice}
@@ -270,6 +271,10 @@ const ProductDetailsPage = () => {
               // }
               soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
                 ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
+              userId={me.data?.data?.id}
+              sellerId={
+                productDetails?.product_productPrice?.[0]?.adminDetail?.id
+              }
             />
           </div>
         </div>
@@ -407,21 +412,23 @@ const ProductDetailsPage = () => {
                   <TabsContent value="vendor" className="mt-0">
                     <div className="w-full bg-white">
                       <div className="vendor-information-card-ui">
-                        <div className="vendor-image">
-                          DK
-                        </div>
+                        <div className="vendor-image">DK</div>
                         <div className="vendor-info">
                           <h2>Vendor Name</h2>
                           <ul className="vendor-contact-info">
                             <li>
                               <a href="mailto:test@gmail.com">
-                                <span className="icon"><img src="/images/email.svg" alt="" /></span>
+                                <span className="icon">
+                                  <img src="/images/email.svg" alt="" />
+                                </span>
                                 <span className="text">test@gmail.com</span>
                               </a>
                             </li>
                             <li>
                               <a href="tel:1234567890">
-                                <span className="icon"><img src="/images/phone-call.svg" alt="" /></span>
+                                <span className="icon">
+                                  <img src="/images/phone-call.svg" alt="" />
+                                </span>
                                 <span className="text">1234567890</span>
                               </a>
                             </li>
@@ -432,8 +439,9 @@ const ProductDetailsPage = () => {
                               <div className="tagIbox">Online Shop</div>
                             </div>
                           </div>
-                          <h5>Company ID: <strong>PUREFC0000058</strong></h5>
-
+                          <h5>
+                            Company ID: <strong>PUREFC0000058</strong>
+                          </h5>
                         </div>
                       </div>
                     </div>

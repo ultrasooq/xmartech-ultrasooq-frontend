@@ -14,6 +14,7 @@ import SupportIcon from "@/public/images/support-24hr.svg";
 import Link from "next/link";
 
 type ProductDescriptionCardProps = {
+  productId: string;
   productName: string;
   brand: string;
   productPrice: string;
@@ -27,9 +28,12 @@ type ProductDescriptionCardProps = {
   onAdd: (args0: number, args2: "add" | "remove") => void;
   isLoading: boolean;
   soldBy: string;
+  userId?: number;
+  sellerId?: number;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
+  productId,
   productName,
   brand,
   productPrice,
@@ -43,6 +47,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   onAdd,
   isLoading,
   soldBy,
+  userId,
+  sellerId,
 }) => {
   const [quantity, setQuantity] = useState(1);
 
@@ -217,7 +223,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     ?.map((item) => item.productTagsTag?.tagName)
                     .join(", ")}
                 </p>
-                <Link href="/other-sellers" className="font-bold text-red-500">
+                <Link
+                  href={`/trending/${productId}/other-sellers`}
+                  className="font-bold text-red-500"
+                >
                   See other sellers
                 </Link>
               </div>
