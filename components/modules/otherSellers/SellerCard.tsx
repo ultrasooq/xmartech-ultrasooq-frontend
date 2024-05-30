@@ -1,0 +1,96 @@
+import React from "react";
+
+type SellerCardProps = {
+  productId: number;
+  sellerName: string;
+  offerPrice: string;
+  productPrice: string;
+  onAdd: () => void;
+  onToCheckout: () => void;
+};
+
+const SellerCard: React.FC<SellerCardProps> = ({
+  productId,
+  sellerName,
+  offerPrice,
+  productPrice,
+  onAdd,
+  onToCheckout,
+}) => {
+  return (
+    <div className="flex w-full flex-wrap border-b border-solid border-gray-300">
+      <div className="w-[24%]">
+        <div className="h-[57px] w-full border-b border-solid border-gray-300 px-3 py-4">
+          <span>Seller</span>
+        </div>
+        <div className="w-full px-3 py-4">
+          <h4 className="text-base font-medium text-dark-orange">
+            {sellerName}
+          </h4>
+          <ul>
+            <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
+              Cash On Delivery available
+            </li>
+            <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
+              7 Days Replacement Policy
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="w-[24%]">
+        <div className="h-[57px] w-full border-b border-solid border-gray-300 px-3 py-4">
+          <span>Price</span>
+        </div>
+        <div className="w-full px-3 py-4">
+          <div className="flex w-full items-end">
+            <span className="text-md font-medium text-black">
+              {offerPrice ? `$${offerPrice}` : `$${0}`}
+            </span>
+            <span className="ml-2 text-sm font-medium text-light-gray line-through">
+              {productPrice ? `$${productPrice}` : `$${0}`}
+            </span>
+          </div>
+          <div className="flex w-full">
+            <ul>
+              <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
+                Get ₹50 instant discount on first Flipkart UPI txn on order of
+                ₹200 and above
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div className="w-[24%]">
+        <div className="h-[57px] w-full border-b border-solid border-gray-300 px-3 py-4">
+          <span>Delivery</span>
+        </div>
+        <div className="w-full px-3 py-4">
+          <div className="my-2 flex w-full text-sm font-medium">
+            <p>FREE Delivery by Tomorrow, Friday if ordered before 5:05 PM</p>
+          </div>
+        </div>
+      </div>
+      <div className="w-[28%]">
+        <div className="h-[57px] w-full border-b border-solid border-gray-300 px-3 py-4"></div>
+        <div className="w-full px-3 py-4">
+          <div className="my-2 flex w-full items-center justify-end gap-2 text-sm font-medium">
+            <button
+              onClick={onAdd}
+              className="inline-block rounded-sm bg-dark-orange px-6 py-3 text-sm font-bold capitalize text-white"
+            >
+              ADD TO CART
+            </button>
+            <button
+              onClick={onToCheckout}
+              className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white"
+            >
+              BUY NOW
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SellerCard;
