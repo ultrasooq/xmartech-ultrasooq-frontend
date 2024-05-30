@@ -358,6 +358,8 @@ const EditProductPage = () => {
     }
   };
 
+  console.log(form.formState.errors);
+
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
       ...formData,
