@@ -3,14 +3,15 @@ import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import SecurePaymentIcon from "@/public/images/securePaymenticon.svg";
 import SupportIcon from "@/public/images/support-24hr.svg";
-import MinusIcon from "@/public/images/upDownBtn-minus.svg";
-import PlusIcon from "@/public/images/upDownBtn-plus.svg";
+// import MinusIcon from "@/public/images/upDownBtn-minus.svg";
+// import PlusIcon from "@/public/images/upDownBtn-plus.svg";
+import Link from "next/link";
 
 type ProductDescriptionCardProps = {
   productName: string;
@@ -216,6 +217,9 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     ?.map((item) => item.productTagsTag?.tagName)
                     .join(", ")}
                 </p>
+                <Link href="/other-sellers" className="font-bold text-red-500">
+                  See other sellers
+                </Link>
               </div>
             </div>
           </div>
