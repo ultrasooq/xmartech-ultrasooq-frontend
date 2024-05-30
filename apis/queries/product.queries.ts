@@ -10,6 +10,7 @@ import {
   fetchRelatedProducts,
   fetchSameBrandProducts,
   getAllManagedProducts,
+  getOneProductBySellerId,
   updateProduct,
 } from "../requests/product.request";
 import {
@@ -212,6 +213,26 @@ export const useAllManagedProducts = (
     queryKey: ["managed-products", payload],
     queryFn: async () => {
       const res = await getAllManagedProducts(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useOneProductBySellerId = (
+  payload: {
+    productId: string;
+    userId: string;
+    sellerId: string;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["product-by-seller", payload],
+    queryFn: async () => {
+      const res = await getOneProductBySellerId(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
