@@ -143,6 +143,19 @@ export const addMultiplePriceForProduct = (payload: any) => {
   });
 };
 
+export const updateMultipleProductPrice = (payload: any) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/updateMultipleProductPrice`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const getAllManagedProducts = (payload: {
   page: number;
   limit: number;
