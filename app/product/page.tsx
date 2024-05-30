@@ -292,6 +292,8 @@ const formSchemaForTypeR = z
         return temp;
       }),
     productImagesList: z.any().optional(),
+    productPrice: z.coerce.number().optional(),
+    offerPrice: z.coerce.number().optional(),
     placeOfOriginId: z
       .number()
       .min(1, { message: "Place of Origin is required" }),
@@ -314,11 +316,13 @@ const formSchemaForTypeR = z
   })
   .superRefine((data, ctx) => {
     if (data.setUpPrice) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Offer Price is required",
-        path: ["offerPrice"],
-      });
+      if (data.offerPrice === 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Offer Price is required",
+          path: ["offerPrice"],
+        });
+      }
     }
   });
 
@@ -403,8 +407,7 @@ const CreateProductPage = () => {
     }
   };
 
-  // console.log(form.formState.errors);
-  // console.log(form.getValues());
+  console.log(form.formState.errors);
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
@@ -471,6 +474,24 @@ const CreateProductPage = () => {
       },
     ];
     if (activeProductType === "R") {
+      updatedFormData.productPriceList[0] = [
+        {
+          consumerType: "",
+          sellType: "",
+          consumerDiscount: 0,
+          vendorDiscount: 0,
+          minCustomer: 0,
+          maxCustomer: 0,
+          minQuantityPerCustomer: 0,
+          maxQuantityPerCustomer: 0,
+          minQuantity: 0,
+          maxQuantity: 0,
+          timeOpen: 0,
+          timeClose: 0,
+          deliveryAfter: 0,
+          ...updatedFormData.productPriceList[0],
+        },
+      ];
       delete updatedFormData.productPriceList[0].productLocationId;
     }
     delete updatedFormData.productLocationId;
@@ -479,6 +500,10 @@ const CreateProductPage = () => {
 
     updatedFormData.skuNo = randomSkuNo;
     updatedFormData.offerPrice =
+      activeProductType === "R"
+        ? updatedFormData.offerPrice ?? 0
+        : updatedFormData.productPrice ?? 0;
+    updatedFormData.productPrice =
       activeProductType === "R"
         ? updatedFormData.offerPrice ?? 0
         : updatedFormData.productPrice ?? 0;
@@ -492,8 +517,8 @@ const CreateProductPage = () => {
       });
       return;
     }
-    console.log("add2:", updatedFormData);
-    return;
+    console.log("add:", updatedFormData);
+    // return;
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {
@@ -520,6 +545,7 @@ const CreateProductPage = () => {
   useEffect(() => {
     if (!watchSetUpPrice) {
       form.setValue("productPrice", 0);
+      form.setValue("offerPrice", 0);
       form.setValue("productPriceList", [
         {
           consumerType: "",
