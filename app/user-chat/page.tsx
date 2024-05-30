@@ -38,7 +38,7 @@ const UserChat = () => {
       <div className="w-[85%] px-2">
         <div className="flex w-full rounded-sm border border-solid border-gray-300">
           <div className="w-[22%] border-r border-solid border-gray-300">
-            <div className="w-full border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
+            <div className="flex min-h-[85px] w-full items-center border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
               <span>Request for RFQ</span>
             </div>
             <div className="flex w-full flex-wrap bg-white px-[20px] py-[25px] shadow-lg">
@@ -51,7 +51,7 @@ const UserChat = () => {
             </div>
           </div>
           <div className="w-[20%] border-r border-solid border-gray-300">
-            <div className="w-full border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
+            <div className="flex h-[85px] min-w-full items-center border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
               <span>Vendor Lists</span>
             </div>
             <div className="w-full p-4">
@@ -134,7 +134,7 @@ const UserChat = () => {
             </div>
           </div>
           <div className="w-[58%] border-r border-solid border-gray-300">
-            <div className="flex w-full items-center justify-between border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
+            <div className="flex min-h-[85px] w-full items-center justify-between border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
               <span>
                 Offering Price <b className="text-[#679A03]">$500</b>
               </span>
@@ -377,6 +377,32 @@ const UserChat = () => {
                     <div className="h-[32px] w-[32px] rounded-full">
                       <img src="/images/user-chat.png" />
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 flex w-full flex-wrap border-t border-solid border-gray-300 p-[20px]">
+              <div className="flex w-full items-center">
+                <div className="relative flex h-[32px] w-[32px] items-center">
+                  <input type="file" className="hidden opacity-0" />
+                  <div className="absolute left-0 top-0 w-auto">
+                    <img src="/images/attach.svg" />
+                  </div>
+                </div>
+                <div className="flex w-[calc(100%-6.5rem)] items-center">
+                  <textarea
+                    placeholder="Type your message...."
+                    className="h-[32px] w-full resize-none focus:outline-none"
+                  ></textarea>
+                </div>
+                <div className="flex w-[72px] items-center justify-between">
+                  <div className="w-auto">
+                    <img src="/images/smile.svg" />
+                  </div>
+                  <div className="w-auto">
+                    <button type="button" className="">
+                      <img src="/images/send-button.png" />
+                    </button>
                   </div>
                 </div>
               </div>
