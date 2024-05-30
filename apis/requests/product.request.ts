@@ -160,3 +160,22 @@ export const getAllManagedProducts = (payload: {
     },
   });
 };
+
+export const getOneProductBySellerId = (payload: {
+  productId: string;
+  userId: string;
+  sellerId: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/findOneProductBySellerId`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
