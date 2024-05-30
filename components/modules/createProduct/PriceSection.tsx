@@ -48,6 +48,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     "productPriceList.[0].consumerType",
   );
   const watchSellType = formContext.watch("productPriceList.[0].sellType");
+  // TODO: validation remove when user types
   const watchMinCustomer = formContext.watch(
     "productPriceList.[0].minCustomer",
   );
@@ -64,7 +65,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     "productPriceList.[0].minQuantity",
   );
   const watchMaxQuantity = formContext.watch(
-    "productPriceList.[0].minQuantity",
+    "productPriceList.[0].maxQuantity",
   );
   const watchTimeOpen = formContext.watch("productPriceList.[0].timeOpen");
   const watchTimeClose = formContext.watch("productPriceList.[0].timeClose");
@@ -264,7 +265,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   name="productPriceList.[0].minCustomer"
                   placeholder="Min"
                   errorMessage={
-                    !watchMinCustomer && minCustomerMessage
+                    minCustomerMessage
                       ? minCustomerMessage.toString()
                       : undefined
                   }
@@ -275,7 +276,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   name="productPriceList.[0].maxCustomer"
                   placeholder="Max"
                   errorMessage={
-                    !watchMaxCustomer && maxCustomerMessage
+                    maxCustomerMessage
                       ? maxCustomerMessage.toString()
                       : undefined
                   }
@@ -290,7 +291,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   name="productPriceList.[0].minQuantity"
                   placeholder="Min"
                   errorMessage={
-                    !watchMinQuantity && minQuantityMessage
+                    minQuantityMessage
                       ? minQuantityMessage.toString()
                       : undefined
                   }
@@ -301,7 +302,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   name="productPriceList.[0].maxQuantity"
                   placeholder="Max"
                   errorMessage={
-                    !watchMaxQuantity && maxQuantityMessage
+                    maxQuantityMessage
                       ? maxQuantityMessage.toString()
                       : undefined
                   }
@@ -316,7 +317,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   name="productPriceList.[0].minQuantityPerCustomer"
                   placeholder="Min"
                   errorMessage={
-                    !watchMinQuantityPerCustomer &&
                     minQuantityPerCustomerMessage
                       ? minQuantityPerCustomerMessage.toString()
                       : undefined
@@ -328,7 +328,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   name="productPriceList.[0].maxQuantityPerCustomer"
                   placeholder="Max"
                   errorMessage={
-                    !watchMaxQuantityPerCustomer &&
                     maxQuantityPerCustomerMessage
                       ? maxQuantityPerCustomerMessage.toString()
                       : undefined
@@ -344,9 +343,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   name="productPriceList.[0].timeOpen"
                   placeholder="Open"
                   errorMessage={
-                    !watchTimeOpen && timeOpenMessage
-                      ? timeOpenMessage.toString()
-                      : undefined
+                    timeOpenMessage ? timeOpenMessage.toString() : undefined
                   }
                 />
 
@@ -355,9 +352,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   name="productPriceList.[0].timeClose"
                   placeholder="Close"
                   errorMessage={
-                    !watchTimeClose && timeCloseMessage
-                      ? timeCloseMessage.toString()
-                      : undefined
+                    timeCloseMessage ? timeCloseMessage.toString() : undefined
                   }
                 />
               </>
@@ -371,7 +366,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 name="productPriceList.[0].deliveryAfter"
                 placeholder="After"
                 errorMessage={
-                  !watchDeliveryAfter && deliveryAfterMessage
+                  deliveryAfterMessage
                     ? deliveryAfterMessage.toString()
                     : undefined
                 }
