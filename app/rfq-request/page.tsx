@@ -11,8 +11,17 @@ import OfferPriceCard from "@/components/modules/rfqRequest/OfferPriceCard";
 import VendorCard from "@/components/modules/rfqRequest/VendorCard";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import Link from "next/link";
+import { useAllRfqQuotesUsersByBuyerId } from "@/apis/queries/rfq.queries";
 
 const RfqRequestPage = () => {
+  const allRfqQuotesQuery = useAllRfqQuotesUsersByBuyerId({
+    page: 1,
+    limit: 10,
+    quoteId: 25,
+  });
+
+  console.log(allRfqQuotesQuery.data?.data);
+
   return (
     <section className="m-auto flex w-full max-w-[1530px] py-8">
       <div className="w-[15%]">
