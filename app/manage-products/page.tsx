@@ -21,8 +21,11 @@ const schema = z.object({
   deliveryAfter: z.coerce.number().optional(),
   timeOpen: z.coerce.number().optional(),
   timeClose: z.coerce.number().optional(),
-  consumerType: z.string().optional(),
-  sellType: z.string().optional(),
+  consumerType: z
+    .string()
+    .trim()
+    .min(1, { message: "Consumer Type is required" }),
+  sellType: z.string().trim().min(1, { message: "Sell Type is required" }),
   vendorDiscount: z.coerce.number().optional(),
   consumerDiscount: z.coerce.number().optional(),
   minQuantity: z.coerce.number().optional(),

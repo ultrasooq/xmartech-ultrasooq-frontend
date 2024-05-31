@@ -52,6 +52,10 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
     );
   }, [locationsQuery?.data?.data?.length]);
 
+  const errors = formContext.formState.errors;
+  const consumerTypeMessage = errors?.consumerType?.message;
+  const sellTypeMessage = errors?.sellType?.message;
+
   return (
     <aside className="manage_product_list">
       <div className="manage_product_list_wrap">
@@ -210,9 +214,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           </div>
 
           <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
+            {/* <div className="select_type_checkbox">
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-            </div>
+            </div> */}
             <div className="flex w-full flex-col gap-y-3">
               <Label>Consumer Type</Label>
               <Controller
@@ -233,13 +237,19 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   />
                 )}
               />
+
+              {consumerTypeMessage ? (
+                <p className="text-[13px] text-red-500">
+                  {consumerTypeMessage.toString()}
+                </p>
+              ) : null}
             </div>
           </div>
 
           <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
+            {/* <div className="select_type_checkbox">
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-            </div>
+            </div> */}
             <div className="flex w-full flex-col gap-y-3">
               <Label>Sell Type</Label>
               <Controller
@@ -260,6 +270,11 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   />
                 )}
               />
+              {sellTypeMessage ? (
+                <p className="text-[13px] text-red-500">
+                  {sellTypeMessage.toString()}
+                </p>
+              ) : null}
             </div>
           </div>
 
