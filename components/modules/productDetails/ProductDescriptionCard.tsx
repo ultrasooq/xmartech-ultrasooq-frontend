@@ -30,6 +30,7 @@ type ProductDescriptionCardProps = {
   soldBy: string;
   userId?: number;
   sellerId?: number;
+  haveOtherSellers?: boolean;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -49,6 +50,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   soldBy,
   userId,
   sellerId,
+  haveOtherSellers,
 }) => {
   const [quantity, setQuantity] = useState(1);
 
@@ -223,12 +225,14 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     ?.map((item) => item.productTagsTag?.tagName)
                     .join(", ")}
                 </p>
-                <Link
-                  href={`/trending/${productId}/other-sellers`}
-                  className="font-bold text-red-500"
-                >
-                  See other sellers
-                </Link>
+                {haveOtherSellers ? (
+                  <Link
+                    href={`/trending/${productId}/other-sellers`}
+                    className="font-bold text-red-500"
+                  >
+                    See other sellers
+                  </Link>
+                ) : null}
               </div>
             </div>
           </div>

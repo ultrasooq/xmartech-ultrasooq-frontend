@@ -275,6 +275,7 @@ const ProductDetailsPage = () => {
               sellerId={
                 productDetails?.product_productPrice?.[0]?.adminDetail?.id
               }
+              haveOtherSellers={!!productQueryById.data?.otherSeller?.length}
             />
           </div>
         </div>

@@ -67,12 +67,9 @@ const AllSellers = () => {
     (item: any) => item.productId === Number(searchParams?.id),
   )?.quantity;
 
-  const handleAddToCart = async (
-    quantity: number,
-    actionType: "add" | "remove",
-  ) => {
+  const handleAddToCart = async (quantity: number, sellerId: number) => {
     if (haveAccessToken) {
-      if (!productDetails?.product_productPrice?.[0]?.id) {
+      if (!sellerId) {
         toast({
           title: `Oops! Something went wrong`,
           description: "Product Price Id not found",
@@ -81,13 +78,13 @@ const AllSellers = () => {
         return;
       }
       const response = await updateCartWithLogin.mutateAsync({
-        productPriceId: productDetails?.product_productPrice?.[0]?.id,
+        productPriceId: sellerId,
         quantity,
       });
 
       if (response.status) {
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          title: "Item added to removed from cart",
           description: "Check your cart for more details",
           variant: "success",
         });
@@ -110,7 +107,7 @@ const AllSellers = () => {
       });
       if (response.status) {
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          title: "Item added to removed from cart",
           description: "Check your cart for more details",
           variant: "success",
         });
@@ -119,13 +116,13 @@ const AllSellers = () => {
     }
   };
 
-  const handleCheckoutPage = async () => {
+  const handleCheckoutPage = async (sellerId: number) => {
     if (getProductQuantityByUser === 1 || getProductQuantityByDevice === 1) {
       router.push("/checkout");
       return;
     }
 
-    const response = await handleAddToCart(1, "add");
+    const response = await handleAddToCart(1, sellerId);
     if (response) {
       setTimeout(() => {
         router.push("/checkout");
@@ -202,8 +199,8 @@ const AllSellers = () => {
                   sellerName={`${item?.adminDetail?.firstName} ${item?.adminDetail?.lastName}`}
                   offerPrice={item?.offerPrice}
                   productPrice={item?.productPrice}
-                  onAdd={() => handleAddToCart(1, "add")}
-                  onToCheckout={handleCheckoutPage}
+                  onAdd={() => handleAddToCart(1, item?.id)}
+                  onToCheckout={() => handleCheckoutPage(item?.id)}
                 />
               ),
             )}
