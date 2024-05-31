@@ -12,8 +12,10 @@ type ManageProductCardProps = {
   productImage: string | null;
   productName: string;
   productPrice: string;
+  offerPrice: string;
   deliveryAfter: number;
   productLocation: string;
+  stock: number;
   consumerType: string;
   sellType: string;
   timeOpen: number | null;
@@ -35,8 +37,10 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   productImage,
   productName,
   productPrice,
+  offerPrice,
   deliveryAfter,
   productLocation,
+  stock,
   consumerType,
   sellType,
   timeOpen,
@@ -94,7 +98,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </label>
                   </div>
                   <div className="theme-inputValue-picker-upDown">
-                    <span>-</span>
+                    <span>{stock || "-"}</span>
                   </div>
                 </div>
 
@@ -105,7 +109,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </label>
                   </div>
                   <div className="theme-inputValue-picker-upDown">
-                    <span>{productPrice || "-"}</span>
+                    <span>{offerPrice || "-"}</span>
                   </div>
                 </div>
               </div>

@@ -18,19 +18,19 @@ const schema = z.object({
   offerPrice: z.coerce.number().optional(),
   productLocationId: z.number().optional(),
   stock: z.coerce.number().optional(),
-  deliveryAfter: z.number().optional(),
-  timeOpen: z.number().optional(),
-  timeClose: z.number().optional(),
+  deliveryAfter: z.coerce.number().optional(),
+  timeOpen: z.coerce.number().optional(),
+  timeClose: z.coerce.number().optional(),
   consumerType: z.string().optional(),
   sellType: z.string().optional(),
-  vendorDiscount: z.number().optional(),
-  consumerDiscount: z.number().optional(),
-  minQuantity: z.number().optional(),
-  maxQuantity: z.number().optional(),
-  minCustomer: z.number().optional(),
-  maxCustomer: z.number().optional(),
-  minQuantityPerCustomer: z.number().optional(),
-  maxQuantityPerCustomer: z.number().optional(),
+  vendorDiscount: z.coerce.number().optional(),
+  consumerDiscount: z.coerce.number().optional(),
+  minQuantity: z.coerce.number().optional(),
+  maxQuantity: z.coerce.number().optional(),
+  minCustomer: z.coerce.number().optional(),
+  maxCustomer: z.coerce.number().optional(),
+  minQuantityPerCustomer: z.coerce.number().optional(),
+  maxQuantityPerCustomer: z.coerce.number().optional(),
   productCondition: z.string().optional(),
 });
 
@@ -95,7 +95,10 @@ const ManageProductsPage = () => {
     }
     const updatedFormData = {
       ...formData,
-      productPrice: formData.offerPrice,
+      productPrice:
+        formData.offerPrice && formData.offerPrice !== 0
+          ? formData.offerPrice
+          : undefined,
       status: "ACTIVE",
     };
 
@@ -103,6 +106,61 @@ const ManageProductsPage = () => {
       return {
         productPriceId: ele,
         ...updatedFormData,
+        stock:
+          updatedFormData.stock && updatedFormData.stock !== 0
+            ? updatedFormData.stock
+            : undefined,
+        offerPrice:
+          updatedFormData.offerPrice && updatedFormData.offerPrice !== 0
+            ? updatedFormData.offerPrice
+            : undefined,
+        deliveryAfter:
+          updatedFormData.deliveryAfter && updatedFormData.deliveryAfter !== 0
+            ? updatedFormData.deliveryAfter
+            : undefined,
+        timeOpen:
+          updatedFormData.timeOpen && updatedFormData.timeOpen !== 0
+            ? updatedFormData.timeOpen
+            : undefined,
+        timeClose:
+          updatedFormData.timeClose && updatedFormData.timeClose !== 0
+            ? updatedFormData.timeClose
+            : undefined,
+        minQuantity:
+          updatedFormData.minQuantity && updatedFormData.minQuantity !== 0
+            ? updatedFormData.minQuantity
+            : undefined,
+        maxQuantity:
+          updatedFormData.maxQuantity && updatedFormData.maxQuantity !== 0
+            ? updatedFormData.maxQuantity
+            : undefined,
+        minCustomer:
+          updatedFormData.minCustomer && updatedFormData.minCustomer !== 0
+            ? updatedFormData.minCustomer
+            : undefined,
+        maxCustomer:
+          updatedFormData.maxCustomer && updatedFormData.maxCustomer !== 0
+            ? updatedFormData.maxCustomer
+            : undefined,
+        minQuantityPerCustomer:
+          updatedFormData.minQuantityPerCustomer &&
+          updatedFormData.minQuantityPerCustomer !== 0
+            ? updatedFormData.minQuantityPerCustomer
+            : undefined,
+        maxQuantityPerCustomer:
+          updatedFormData.maxQuantityPerCustomer &&
+          updatedFormData.maxQuantityPerCustomer !== 0
+            ? updatedFormData.maxQuantityPerCustomer
+            : undefined,
+        vendorDiscount:
+          updatedFormData.vendorDiscount && updatedFormData.vendorDiscount !== 0
+            ? updatedFormData.vendorDiscount
+            : undefined,
+        consumerDiscount:
+          updatedFormData.consumerDiscount &&
+          updatedFormData.consumerDiscount !== 0
+            ? updatedFormData.consumerDiscount
+            : undefined,
       };
     });
     console.log({
@@ -166,9 +224,11 @@ const ManageProductsPage = () => {
                     productName: string;
                   };
                   productPrice: string;
+                  offerPrice: string;
                   productPrice_productLocation: {
                     locationName: string;
                   };
+                  stock: number;
                   consumerType: string;
                   sellType: string;
                   deliveryAfter: number;
@@ -193,10 +253,12 @@ const ManageProductsPage = () => {
                     }
                     productName={product?.productPrice_product?.productName}
                     productPrice={product?.productPrice}
+                    offerPrice={product?.offerPrice}
                     deliveryAfter={product?.deliveryAfter}
                     productLocation={
                       product?.productPrice_productLocation?.locationName
                     }
+                    stock={product?.stock}
                     consumerType={product?.consumerType}
                     sellType={product?.sellType}
                     timeOpen={product?.timeOpen}
