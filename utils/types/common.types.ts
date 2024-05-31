@@ -47,6 +47,7 @@ export interface IRenderProduct {
   brandName: string;
   productPrice: string;
   status?: string;
+  priceStatus?: string;
   productProductPriceId?: number;
   productProductPrice?: string;
 }

@@ -81,6 +81,7 @@ const ProductListPage = () => {
           productProductPriceId: item?.product_productPrice?.[0]?.id,
           productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
           status: item?.status || "-",
+          priceStatus: item?.product_productPrice?.[0]?.status,
         };
       }) || []
     );
@@ -164,7 +165,8 @@ const ProductListPage = () => {
                       <TableHead>SKU No</TableHead>
                       <TableHead>Brand</TableHead>
                       <TableHead>Price</TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>Product Status</TableHead>
+                      <TableHead>Price Status</TableHead>
                       <TableHead className="text-center">Action</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -208,11 +210,23 @@ const ProductListPage = () => {
                             {item?.status}
                           </Badge>
                         </TableCell>
+                        <TableCell th-name="Status">
+                          <Badge
+                            className={cn(
+                              item?.priceStatus === "ACTIVE"
+                                ? "!bg-green-500"
+                                : "!bg-red-500",
+                            )}
+                          >
+                            {item?.priceStatus}
+                          </Badge>
+                        </TableCell>
                         <TableCell th-name="Action">
                           <div className="td-dots-dropdown">
                             <button
                               className="td-dots-dropdown-btn"
                               type="button"
+                              disabled
                             >
                               <HiOutlineDotsCircleHorizontal />
                             </button>
