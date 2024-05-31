@@ -33,6 +33,35 @@ import LogoIcon from "@/public/images/logo.png";
 import { useWishlistCount } from "@/apis/queries/wishlist.queries";
 import { signOut } from "next-auth/react";
 
+type ButtonLinkProps = {
+  href: string;
+  onClick?: () => void;
+  children: React.ReactNode;
+  className?: string;
+};
+
+const ButtonLink: React.FC<ButtonLinkProps> = ({
+  href,
+  onClick,
+  children,
+  className,
+  ...props
+}) => {
+  return (
+    <Link href={href} passHref legacyBehavior>
+      <a onClick={onClick} {...props}>
+        <button
+          type="button"
+          className="flex cursor-pointer px-10 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
+          onClick={onClick}
+        >
+          {children}
+        </button>
+      </a>
+    </Link>
+  );
+};
+
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -356,8 +385,8 @@ const Header = () => {
           <div className="hidden h-[44px] w-full px-3 md:flex md:px-0">
             <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-start">
               {memoizedMenu.map((item: any) => (
-                <Button
-                  type="button"
+                <ButtonLink
+                  // type="button"
                   key={item.id}
                   onClick={() => {
                     setMenuId(item.id);
@@ -371,8 +400,15 @@ const Header = () => {
                       router.push("/rfq");
                     }
                   }}
-                  variant="link"
-                  className="flex cursor-pointer px-10 py-3 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
+                  href={
+                    item.name.toLowerCase().includes("store")
+                      ? "/trending"
+                      : item.name.toLowerCase().includes("rfqs")
+                        ? "/rfq"
+                        : "/trending"
+                  }
+                  // variant="link"
+                  // className="flex cursor-pointer px-10 py-3 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
                 >
                   <div className="flex gap-x-3">
                     <Image
@@ -384,7 +420,7 @@ const Header = () => {
                     />{" "}
                     <p>{item?.name}</p>
                   </div>
-                </Button>
+                </ButtonLink>
               ))}
             </div>
           </div>
