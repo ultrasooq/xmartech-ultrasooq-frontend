@@ -79,11 +79,13 @@ const RfqCartPage = () => {
     productId: number,
     actionType: "add" | "remove",
     offerPrice: number,
+    note: string,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
       offerPrice,
+      note,
     });
 
     if (response.status) {
@@ -179,7 +181,7 @@ const RfqCartPage = () => {
 
                     <div>
                       <Label>Date</Label>
-                      <ControlledDatePicker name="rfqDate" />
+                      <ControlledDatePicker name="rfqDate" futureDate />
                     </div>
                   </form>
                 </Form>
@@ -201,6 +203,7 @@ const RfqCartPage = () => {
                       offerPrice={item?.rfqCart_productDetails?.offerPrice}
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromRfqCart}
+                      note={item?.note}
                     />
                   ))}
 

@@ -121,11 +121,13 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     quantity: number,
     productId: number,
     offerPrice: number,
+    note: string,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
       offerPrice,
+      note,
     });
 
     if (response.status) {
@@ -243,6 +245,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             selectedQuantity ? selectedQuantity : 1,
             selectedProductId,
             formData?.offerPrice,
+            formData?.note,
           );
         } else {
           form.reset();
@@ -339,6 +342,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
               selectedQuantity ? selectedQuantity : 1,
               response.data.id,
               formData?.offerPrice,
+              formData?.note,
             );
           } else {
             form.reset();
