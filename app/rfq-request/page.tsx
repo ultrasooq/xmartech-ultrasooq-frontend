@@ -13,12 +13,10 @@ import {
   useAllRfqQuotesUsersByBuyerId,
   useFindOneRfqQuotesUsersByBuyerID,
 } from "@/apis/queries/rfq.queries";
-import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import ChatSection from "@/components/modules/rfqRequest/ChatSection";
 
 const RfqRequestPage = () => {
-  const searchQuery = useSearchParams();
   const [rfqQuoteId, setRfqQuoteId] = useState<number | undefined>();
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
 
@@ -37,8 +35,11 @@ const RfqRequestPage = () => {
   const rfqQuoteDetailsById = rfqQuotesUsersByBuyerIdQuery.data?.data;
 
   useEffect(() => {
-    if (searchQuery?.get("rfqQuotesId")) {
-      setRfqQuoteId(Number(searchQuery.get("rfqQuotesId")));
+    const params = new URLSearchParams(document.location.search);
+    let rfqQuotesId = params.get("rfqQuotesId");
+
+    if (rfqQuotesId) {
+      setRfqQuoteId(Number(rfqQuotesId));
     }
   }, [allRfqQuotesQuery.data?.data]);
 

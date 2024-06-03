@@ -1,8 +1,8 @@
 import React from "react";
 import Image from "next/image";
 import RatingIcon from "@/public/images/rating.png";
-import GlobalIcon from "@/public/images/global.png";
 import { cn } from "@/lib/utils";
+import AvatarPlaceholder from "@/public/images/no-user-image.png";
 
 type VendorCardProps = {
   offerPrice: string;
@@ -30,7 +30,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
     >
       <div className="relative h-[40px] w-[40px] rounded-full">
         <Image
-          src={profilePicture || GlobalIcon}
+          src={profilePicture || AvatarPlaceholder}
           alt="global-icon"
           fill
           className="rounded-full"

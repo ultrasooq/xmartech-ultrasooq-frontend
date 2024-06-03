@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
+import AvatarPlaceholder from "@/public/images/no-user-image.png";
 
 type ProductReviewCardProps = {
   productName: string;
@@ -42,7 +43,7 @@ const ProductReviewCard: React.FC<ProductReviewCardProps> = ({
         <div className="flex flex-row">
           <div className="relative h-16 w-16 rounded-sm">
             <Image
-              src={productImage?.[0]?.image || "/images/no-user-image.png"}
+              src={productImage?.[0]?.image || AvatarPlaceholder}
               alt="review-icon"
               fill
               className="rounded-sm"
