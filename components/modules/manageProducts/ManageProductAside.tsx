@@ -90,7 +90,13 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
+              {/* <Controller
+                name="isProductConditionRequired"
+                control={formContext.control}
+                render={({ field }) => ( */}
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              {/* )}
+              /> */}
             </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Product Condition</Label>
@@ -214,9 +220,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           </div>
 
           <div className="select_type !items-start gap-x-2">
-            {/* <div className="select_type_checkbox">
+            <div className="select_type_checkbox">
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-            </div> */}
+            </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Consumer Type</Label>
               <Controller
@@ -247,9 +253,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           </div>
 
           <div className="select_type !items-start gap-x-2">
-            {/* <div className="select_type_checkbox">
+            <div className="select_type_checkbox">
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-            </div> */}
+            </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Sell Type</Label>
               <Controller
