@@ -1,9 +1,7 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import TaskIcon from "@/public/images/task-icon.svg";
-import ProIcon from "@/public/images/pro-2.png";
-import UserChatIcon from "@/public/images/user-chat.png";
 import AttachIcon from "@/public/images/attach.svg";
 import SmileIcon from "@/public/images/smile.svg";
 import SendIcon from "@/public/images/send-button.png";
@@ -11,16 +9,38 @@ import OfferPriceCard from "@/components/modules/rfqRequest/OfferPriceCard";
 import VendorCard from "@/components/modules/rfqRequest/VendorCard";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import Link from "next/link";
-import { useAllRfqQuotesUsersByBuyerId } from "@/apis/queries/rfq.queries";
+import {
+  useAllRfqQuotesUsersByBuyerId,
+  useFindOneRfqQuotesUsersByBuyerID,
+} from "@/apis/queries/rfq.queries";
+import { useSearchParams } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
+import ChatSection from "@/components/modules/rfqRequest/ChatSection";
 
 const RfqRequestPage = () => {
-  const allRfqQuotesQuery = useAllRfqQuotesUsersByBuyerId({
-    page: 1,
-    limit: 10,
-    quoteId: 25,
-  });
+  const searchQuery = useSearchParams();
+  const [rfqQuoteId, setRfqQuoteId] = useState<number | undefined>();
+  const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
 
-  console.log(allRfqQuotesQuery.data?.data);
+  const allRfqQuotesQuery = useAllRfqQuotesUsersByBuyerId(
+    {
+      page: 1,
+      limit: 10,
+      rfqQuotesId: rfqQuoteId ?? 0,
+    },
+    !!rfqQuoteId,
+  );
+  const rfqQuotesUsersByBuyerIdQuery = useFindOneRfqQuotesUsersByBuyerID({
+    rfqQuotesId: rfqQuoteId ?? 0,
+  });
+  const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
+  const rfqQuoteDetailsById = rfqQuotesUsersByBuyerIdQuery.data?.data;
+
+  useEffect(() => {
+    if (searchQuery?.get("rfqQuotesId")) {
+      setRfqQuoteId(Number(searchQuery.get("rfqQuotesId")));
+    }
+  }, [allRfqQuotesQuery.data?.data]);
 
   return (
     <section className="m-auto flex w-full max-w-[1530px] py-8">
@@ -68,17 +88,46 @@ const RfqRequestPage = () => {
             <div className="flex h-[85px] min-w-full items-center border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
               <span>Vendor Lists</span>
             </div>
-            <div className="w-full p-4">
-              <VendorCard />
-              <VendorCard />
-              <VendorCard />
-              <VendorCard />
+            <div className="max-h-[426px] w-full overflow-y-auto p-4">
+              {allRfqQuotesQuery?.isLoading ? (
+                <div className="my-2 space-y-2">
+                  {Array.from({ length: 2 }).map((_, i) => (
+                    <Skeleton key={i} className="h-24 w-full" />
+                  ))}
+                </div>
+              ) : null}
+
+              {rfqQuotesDetails?.map(
+                (item: {
+                  id: number;
+                  offerPrice: string;
+                  sellerIDDetail: {
+                    firstName: string;
+                    lastName: string;
+                    profilePicture: string;
+                  };
+                }) => (
+                  <VendorCard
+                    key={item?.id}
+                    name={`${item?.sellerIDDetail?.firstName} ${item?.sellerIDDetail?.lastName}`}
+                    profilePicture={item?.sellerIDDetail?.profilePicture}
+                    offerPrice={item?.offerPrice}
+                    onClick={() => setActiveSellerId(item?.id)}
+                    isSelected={activeSellerId === item?.id}
+                  />
+                ),
+              )}
             </div>
           </div>
           <div className="w-[58%] border-r border-solid border-gray-300">
             <div className="flex min-h-[85px] w-full items-center justify-between border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
               <span>
-                Offering Price <b className="text-[#679A03]">$500</b>
+                Offering Price{" "}
+                <b className="text-[#679A03]">
+                  {rfqQuotesDetails?.[0]?.offerPrice
+                    ? `$${rfqQuotesDetails?.[0]?.offerPrice}`
+                    : "-"}
+                </b>
               </span>
               <Link
                 href="/user-chat"
@@ -110,99 +159,32 @@ const RfqRequestPage = () => {
                       Address
                     </div>
                   </div>
-                  <OfferPriceCard />
-                  <OfferPriceCard />
-                  <OfferPriceCard />
-                  <OfferPriceCard />
-                  <div className="w-full p-4">
-                    <div className="flex w-full">
-                      <div className="w-[25%] text-xs font-normal text-gray-500">
-                        <div className="flex w-full flex-wrap">
-                          <div className="border-color-[#DBDBDB] h-auto w-[48px] border border-solid p-1">
-                            <Image src={ProIcon} alt="pro-icon" />
-                          </div>
-                          <div className="font-nromal flex w-[calc(100%-3rem)] items-center justify-start pl-3  text-xs text-black">
-                            Lorem Ipsum is simply dummy text..
-                          </div>
-                        </div>
-                      </div>
-                      <div className="w-[15%] p-4 text-xs font-normal text-black">
-                        Oct 21, 2024
-                      </div>
-                      <div className="w-[10%] p-4 text-xs font-normal text-black">
-                        New
-                      </div>
-                      <div className="w-[20%] p-4 text-xs font-normal text-black">
-                        1
-                      </div>
-                      <div className="w-[10%] p-4 text-xs font-normal text-black">
-                        $100.00
-                      </div>
-                      <div className="w-[20%] p-4 text-xs font-normal text-black">
-                        Address
-                      </div>
-                    </div>
-                    <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4">
-                      <span className="mb-2 text-sm font-normal text-gray-500">
-                        Vendor Note:
-                      </span>
-                      <p className="text-sm font-normal text-black">
-                        Lorem Ipsum is simply dummy text of the printing and
-                        typesetting industry. Lorem Ipsum has been the
-                        industry&apos;s standard dummy text ever since the
-                        1500s, when an unknown printer took a galley of type and
-                        scrambled it to make a type specimen book
-                      </p>
-                    </div>
-                  </div>
+                  {rfqQuoteDetailsById?.rfqQuotesProducts?.map(
+                    (item: {
+                      id: number;
+                      offerPrice: string;
+                      note: string;
+                      quantity: number;
+                      rfqProductDetails: {
+                        productName: string;
+                      };
+                    }) => (
+                      <OfferPriceCard
+                        key={item?.id}
+                        offerPrice={item?.offerPrice}
+                        note={item?.note}
+                        quantity={item?.quantity}
+                        address={
+                          rfqQuoteDetailsById?.rfqQuotes_rfqQuoteAddress
+                            ?.address
+                        }
+                        productName={item?.rfqProductDetails?.productName}
+                      />
+                    ),
+                  )}
                 </div>
               </div>
-              <div className="w-full">
-                <div className="d-flex w-full">
-                  <div className="mt-5 flex w-full flex-wrap items-end">
-                    <div className="h-[32px] w-[32px] rounded-full">
-                      <Image src={UserChatIcon} alt="user-chat-icon" />
-                    </div>
-                    <div className="w-[calc(100%-2rem)] pl-2">
-                      <div className="mb-1 w-full rounded-xl bg-[#F1F2F6] p-3 text-sm">
-                        <p>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit, sed do eiusmod tempor incididunt ut labore et
-                          dolore magna aliqua. Ut enim ad minim veniam, quis
-                          nostrud exercitation ullamco laboris nisi ut aliquip
-                          ex..
-                        </p>
-                      </div>
-                      <div className="w-full text-left text-sm font-normal text-[#AEAFB8]">
-                        <span>Message seen 1:22pm</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-5 flex w-full flex-wrap items-end">
-                    <div className="w-[calc(100%-2rem)] pr-2 text-right">
-                      <div className="mb-1 inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
-                        <p>
-                          cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                          occaecat.
-                        </p>
-                      </div>
-                      <div className="mb-1 inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
-                        <p>
-                          Sed ut perspiciatis unde omnis iste natus error sit
-                          voluptatem accusantium doloremque laudantium, totam
-                          rem aperiam, eaque ipsa quae ab...
-                        </p>
-                      </div>
-                      <div className="w-full text-right text-sm font-normal text-[#AEAFB8]">
-                        <span>Message seen 1:22pm</span>
-                      </div>
-                    </div>
-                    <div className="h-[32px] w-[32px] rounded-full">
-                      <Image src={UserChatIcon} alt="user-chat-icon" />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ChatSection />
             </div>
             <div className="mt-6 flex w-full flex-wrap border-t border-solid border-gray-300 p-[20px]">
               <div className="flex w-full items-center">
