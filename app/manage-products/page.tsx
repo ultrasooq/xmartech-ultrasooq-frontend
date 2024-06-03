@@ -21,11 +21,10 @@ const schema = z.object({
   deliveryAfter: z.coerce.number().optional(),
   timeOpen: z.coerce.number().optional(),
   timeClose: z.coerce.number().optional(),
-  consumerType: z
-    .string()
-    .trim()
-    .min(1, { message: "Consumer Type is required" }),
-  sellType: z.string().trim().min(1, { message: "Sell Type is required" }),
+  consumerType: z.string().trim().optional(),
+  // .min(1, { message: "Consumer Type is required" }),
+  sellType: z.string().trim().optional(),
+  // .min(1, { message: "Sell Type is required" }),
   vendorDiscount: z.coerce.number().optional(),
   consumerDiscount: z.coerce.number().optional(),
   minQuantity: z.coerce.number().optional(),
@@ -35,6 +34,7 @@ const schema = z.object({
   minQuantityPerCustomer: z.coerce.number().optional(),
   maxQuantityPerCustomer: z.coerce.number().optional(),
   productCondition: z.string().optional(),
+  // isProductConditionRequired: z.boolean().optional(),
 });
 
 const defaultValues = {
@@ -56,6 +56,7 @@ const defaultValues = {
   minQuantityPerCustomer: 0,
   maxQuantityPerCustomer: 0,
   productCondition: "",
+  // isProductConditionRequired: false,
 };
 
 const ManageProductsPage = () => {
@@ -164,6 +165,23 @@ const ManageProductsPage = () => {
           updatedFormData.consumerDiscount !== 0
             ? updatedFormData.consumerDiscount
             : undefined,
+        productCondition:
+          updatedFormData.productCondition &&
+          updatedFormData.productCondition !== ""
+            ? updatedFormData.productCondition
+            : undefined,
+        consumerType:
+          updatedFormData.consumerType && updatedFormData.consumerType !== ""
+            ? updatedFormData.consumerType
+            : undefined,
+        sellType:
+          updatedFormData.sellType && updatedFormData.sellType !== ""
+            ? updatedFormData.sellType
+            : undefined,
+        status:
+          updatedFormData.offerPrice && updatedFormData.offerPrice !== 0
+            ? "ACTIVE"
+            : "INACTIVE",
       };
     });
     console.log({
