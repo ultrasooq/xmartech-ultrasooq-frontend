@@ -8,6 +8,7 @@ import {
   fetchAllRfqQuotesByBuyerId,
   fetchAllRfqQuotesUsersByBuyerId,
   fetchAllRfqQuotesUsersBySellerId,
+  fetchOneRfqQuotesUsersByBuyerID,
   fetchRfqCartByUserId,
   fetchRfqProductById,
   fetchRfqProducts,
@@ -128,7 +129,7 @@ export const useUpdateRfqCartWithLogin = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { productId: number; quantity: number; offerPrice: number }
+    { productId: number; quantity: number; offerPrice: number; note: string }
   >({
     mutationFn: async (payload) => {
       const res = await updateRfqCartWithLogin(payload);
@@ -193,7 +194,7 @@ export const useAllRfqQuotesByBuyerId = (
   enabled = true,
 ) =>
   useQuery({
-    queryKey: ["rfq-quotes", payload],
+    queryKey: ["rfq-quotes-request", payload],
     queryFn: async () => {
       const res = await fetchAllRfqQuotesByBuyerId(payload);
       return res.data;
@@ -208,14 +209,32 @@ export const useAllRfqQuotesUsersByBuyerId = (
   payload: {
     page: number;
     limit: number;
-    quoteId: number;
+    rfqQuotesId: number;
   },
   enabled = true,
 ) =>
   useQuery({
-    queryKey: ["rfq-quotes", payload],
+    queryKey: ["rfq-quotes-users", payload],
     queryFn: async () => {
       const res = await fetchAllRfqQuotesUsersByBuyerId(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useFindOneRfqQuotesUsersByBuyerID = (
+  payload: {
+    rfqQuotesId: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["rfq-quotes-by-buyer-id", payload],
+    queryFn: async () => {
+      const res = await fetchOneRfqQuotesUsersByBuyerID(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
@@ -232,7 +251,7 @@ export const useAllRfqQuotesUsersBySellerId = (
   enabled = true,
 ) =>
   useQuery({
-    queryKey: ["rfq-quotes", payload],
+    queryKey: ["rfq-quotes-by-seller-id", payload],
     queryFn: async () => {
       const res = await fetchAllRfqQuotesUsersBySellerId(payload);
       return res.data;
@@ -256,7 +275,7 @@ export const useAddRfqQuotes = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["rfq-quotes"],
+        queryKey: ["rfq-quotes-request"],
       });
     },
     onError: (err: APIResponseError) => {

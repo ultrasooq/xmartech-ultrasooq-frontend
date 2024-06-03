@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import TaskIcon from "@/public/images/task-icon.svg";
 import AttachIcon from "@/public/images/attach.svg";
@@ -9,38 +9,20 @@ import OfferPriceCard from "@/components/modules/rfqRequest/OfferPriceCard";
 import VendorCard from "@/components/modules/rfqRequest/VendorCard";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import Link from "next/link";
-import {
-  useAllRfqQuotesUsersByBuyerId,
-  useFindOneRfqQuotesUsersByBuyerID,
-} from "@/apis/queries/rfq.queries";
-import { useSearchParams } from "next/navigation";
+import { useAllRfqQuotesUsersBySellerId } from "@/apis/queries/rfq.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import ChatSection from "@/components/modules/rfqRequest/ChatSection";
 
-const RfqRequestPage = () => {
-  const searchQuery = useSearchParams();
-  const [rfqQuoteId, setRfqQuoteId] = useState<number | undefined>();
+const SellerRfqRequestPage = () => {
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
+  const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
 
-  const allRfqQuotesQuery = useAllRfqQuotesUsersByBuyerId(
-    {
-      page: 1,
-      limit: 10,
-      rfqQuotesId: rfqQuoteId ?? 0,
-    },
-    !!rfqQuoteId,
-  );
-  const rfqQuotesUsersByBuyerIdQuery = useFindOneRfqQuotesUsersByBuyerID({
-    rfqQuotesId: rfqQuoteId ?? 0,
+  const allRfqQuotesQuery = useAllRfqQuotesUsersBySellerId({
+    page: 1,
+    limit: 10,
   });
-  const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
-  const rfqQuoteDetailsById = rfqQuotesUsersByBuyerIdQuery.data?.data;
 
-  useEffect(() => {
-    if (searchQuery?.get("rfqQuotesId")) {
-      setRfqQuoteId(Number(searchQuery.get("rfqQuotesId")));
-    }
-  }, [allRfqQuotesQuery.data?.data]);
+  const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
 
   return (
     <section className="m-auto flex w-full max-w-[1530px] py-8">
@@ -86,7 +68,7 @@ const RfqRequestPage = () => {
           </div>
           <div className="w-[20%] border-r border-solid border-gray-300">
             <div className="flex h-[85px] min-w-full items-center border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
-              <span>Vendor Lists</span>
+              <span>Customers</span>
             </div>
             <div className="max-h-[426px] w-full overflow-y-auto p-4">
               {allRfqQuotesQuery?.isLoading ? (
@@ -101,18 +83,36 @@ const RfqRequestPage = () => {
                 (item: {
                   id: number;
                   offerPrice: string;
-                  sellerIDDetail: {
+                  buyerIDDetail: {
                     firstName: string;
                     lastName: string;
                     profilePicture: string;
                   };
+                  rfqQuotesUser_rfqQuotes: {
+                    rfqQuotesProducts: any[];
+                    rfqQuotes_rfqQuoteAddress: {
+                      address: string;
+                    };
+                  };
                 }) => (
                   <VendorCard
                     key={item?.id}
-                    name={`${item?.sellerIDDetail?.firstName} ${item?.sellerIDDetail?.lastName}`}
-                    profilePicture={item?.sellerIDDetail?.profilePicture}
+                    name={`${item?.buyerIDDetail?.firstName} ${item?.buyerIDDetail?.lastName}`}
+                    profilePicture={item?.buyerIDDetail?.profilePicture}
                     offerPrice={item?.offerPrice}
-                    onClick={() => setActiveSellerId(item?.id)}
+                    onClick={() => {
+                      setActiveSellerId(item?.id);
+                      setQuoteProducts(
+                        item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
+                          (i: any) => ({
+                            ...i,
+                            address:
+                              item?.rfqQuotesUser_rfqQuotes
+                                ?.rfqQuotes_rfqQuoteAddress.address,
+                          }),
+                        ) || [],
+                      );
+                    }}
                     isSelected={activeSellerId === item?.id}
                   />
                 ),
@@ -159,7 +159,7 @@ const RfqRequestPage = () => {
                       Address
                     </div>
                   </div>
-                  {rfqQuoteDetailsById?.rfqQuotesProducts?.map(
+                  {quoteProducts?.map(
                     (item: {
                       id: number;
                       offerPrice: string;
@@ -168,16 +168,14 @@ const RfqRequestPage = () => {
                       rfqProductDetails: {
                         productName: string;
                       };
+                      address: string;
                     }) => (
                       <OfferPriceCard
                         key={item?.id}
                         offerPrice={item?.offerPrice}
                         note={item?.note}
                         quantity={item?.quantity}
-                        address={
-                          rfqQuoteDetailsById?.rfqQuotes_rfqQuoteAddress
-                            ?.address
-                        }
+                        address={item?.address}
                         productName={item?.rfqProductDetails?.productName}
                       />
                     ),
@@ -219,4 +217,4 @@ const RfqRequestPage = () => {
   );
 };
 
-export default RfqRequestPage;
+export default SellerRfqRequestPage;

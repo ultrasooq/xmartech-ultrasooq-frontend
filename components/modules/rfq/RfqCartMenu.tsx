@@ -13,6 +13,7 @@ type RfqCartMenuProps = {
     args1: number,
     args2: "add" | "remove",
     args3: number,
+    args4: string,
   ) => void;
   haveAccessToken: boolean;
 };
@@ -85,6 +86,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
             onAdd={onAdd}
             onRemove={handleRemoveItemFromRfqCart}
             offerPrice={item?.offerPrice}
+            note={item?.note}
           />
         ))}
       </div>

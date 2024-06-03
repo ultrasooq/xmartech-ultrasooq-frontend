@@ -1,6 +1,5 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -14,6 +13,11 @@ import Pagination from "@/components/shared/Pagination";
 import { useAllRfqQuotesByBuyerId } from "@/apis/queries/rfq.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/shared/Footer";
+import { MONTHS } from "@/utils/constants";
+import validator from "validator";
+import Image from "next/image";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
+import Link from "next/link";
 
 const RfqProductList = () => {
   const [page, setPage] = useState(1);
@@ -28,7 +32,10 @@ const RfqProductList = () => {
       rfqQuotesByBuyerIdQuery.data?.data?.map((item: any) => {
         return {
           id: item?.id,
-          productImage: item?.rfqQuotesProducts,
+          productImages:
+            item?.rfqQuotesProducts
+              ?.map((ele: any) => ele?.rfqProductDetails?.productImages)
+              ?.flat() || [],
           rfqDate: item?.rfqQuotes_rfqQuoteAddress?.rfqDate || "-",
         };
       }) || []
@@ -39,21 +46,6 @@ const RfqProductList = () => {
     () => (originalDateString: string) => {
       const originalDate = new Date(originalDateString);
 
-      const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
-
       const year = originalDate.getFullYear();
       const monthIndex = originalDate.getMonth();
       const day = originalDate.getDate();
@@ -62,7 +54,7 @@ const RfqProductList = () => {
       const seconds = originalDate.getSeconds();
       const amOrPm = hours >= 12 ? "pm" : "am";
       const formattedHours = hours % 12 || 12;
-      const formattedDateString = `${months[monthIndex]} ${day}, ${year}  ${formattedHours}:${minutes}:${seconds} ${amOrPm}`;
+      const formattedDateString = `${MONTHS[monthIndex]} ${day}, ${year}  ${formattedHours}:${minutes}:${seconds} ${amOrPm}`;
 
       return formattedDateString;
     },
@@ -95,8 +87,26 @@ const RfqProductList = () => {
                   {memoizedRfqQuotesProducts?.map((item: any) => (
                     <TableRow key={item?.id}>
                       <TableCell>
-                        <div className="td-product-group-images">
-                          <div className="img-item">
+                        <Link href={`/rfq-request?rfqQuotesId=${item?.id}`}>
+                          <div className="td-product-group-images">
+                            {item?.productImages?.map((ele: any) => (
+                              <div key={ele?.id} className="img-item">
+                                <div className="img-container">
+                                  <Image
+                                    src={
+                                      ele?.image && validator.isURL(ele.image)
+                                        ? ele.image
+                                        : PlaceholderImage
+                                    }
+                                    height={0}
+                                    width={0}
+                                    className="h-[80px] w-[80px]"
+                                    alt="preview"
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                            {/* <div className="img-item">
                             <div className="img-container">
                               <img src="/images/pro1.png" alt="" />
                             </div>
@@ -116,8 +126,9 @@ const RfqProductList = () => {
                               <img src="/images/pro4.png" alt="" />
                               <span>+5</span>
                             </div>
+                          </div> */}
                           </div>
-                        </div>
+                        </Link>
                       </TableCell>
                       <TableCell>RFQ000{item?.id}</TableCell>
                       <TableCell>{formatDate(item?.rfqDate)}</TableCell>

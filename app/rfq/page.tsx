@@ -85,11 +85,13 @@ const RfqPage = () => {
     productId: number,
     actionType: "add" | "remove",
     offerPrice: number,
+    note: string,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
       offerPrice,
+      note,
     });
 
     if (response.status) {

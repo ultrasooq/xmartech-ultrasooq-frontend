@@ -19,8 +19,10 @@ type RfqProductCardProps = {
     args1: number,
     args2: "add" | "remove",
     args3: number,
+    args4: string,
   ) => void;
   onRemove: (args0: number) => void;
+  note: string;
 };
 
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
@@ -32,6 +34,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   offerPrice,
   onAdd,
   onRemove,
+  note,
 }) => {
   const [quantity, setQuantity] = useState(1);
   // const cart = useCartStore();
@@ -71,6 +74,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                       rfqProductId,
                       "remove",
                       offerPrice ? Number(offerPrice) : 0,
+                      note,
                     );
                   }}
                   disabled={quantity === 0}
@@ -93,6 +97,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                       rfqProductId,
                       "add",
                       offerPrice ? Number(offerPrice) : 0,
+                      note,
                     );
                   }}
                 >
