@@ -12,7 +12,7 @@ import OtherItemCard from "@/components/modules/myOrderDetails/OtherItemCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/shared/Footer";
 import Link from "next/link";
-import { formattedDate } from "@/utils/constants";
+import { MONTHS, formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ReviewForm from "@/components/shared/ReviewForm";
@@ -49,25 +49,10 @@ const MyOrderDetailsPage = ({}) => {
     orderByIdQuery.data?.otherData?.[0]?.order_orderProducts;
 
   function formatDate(inputDate: string): string {
-    const months: string[] = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-
     const dateObj = new Date(inputDate);
     const dayOfWeek = dateObj.toLocaleString("en", { weekday: "short" });
     const dayOfMonth = dateObj.getDate();
-    const month = months[dateObj.getMonth()];
+    const month = MONTHS[dateObj.getMonth()];
 
     // Function to add suffix to day of the month
     function getDaySuffix(day: number): string {
