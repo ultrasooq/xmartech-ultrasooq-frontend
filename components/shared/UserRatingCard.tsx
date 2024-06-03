@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import { Button } from "../ui/button";
+import AvatarPlaceholder from "@/public/images/no-user-image.png";
 
 type UserRatingCardProps = {
   rating: number;
@@ -99,7 +100,7 @@ const UserRatingCard: React.FC<UserRatingCardProps> = ({
       <div className="flex w-full flex-wrap items-start justify-between">
         <div className="relative h-12 w-12 rounded-full">
           <Image
-            src={profilePicture || "/images/no-user-image.png"}
+            src={profilePicture || AvatarPlaceholder}
             alt="review-icon"
             fill
             className="rounded-full"
