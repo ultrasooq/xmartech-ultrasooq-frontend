@@ -13,12 +13,10 @@ import {
   useAllRfqQuotesUsersByBuyerId,
   useFindOneRfqQuotesUsersByBuyerID,
 } from "@/apis/queries/rfq.queries";
-import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import ChatSection from "@/components/modules/rfqRequest/ChatSection";
 
 const RfqRequestPage = () => {
-  const searchQuery = useSearchParams();
   const [rfqQuoteId, setRfqQuoteId] = useState<number | undefined>();
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
 
