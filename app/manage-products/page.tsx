@@ -227,7 +227,7 @@ const ManageProductsPage = () => {
     console.log({
       productPrice: [...formatData],
     });
-    return;
+    // return;
     const response = await updateMultipleProductPrice.mutateAsync({
       productPrice: [...formatData],
     });
