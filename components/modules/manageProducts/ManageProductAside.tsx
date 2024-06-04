@@ -52,6 +52,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
     );
   }, [locationsQuery?.data?.data?.length]);
 
+  const watchConsumerType = formContext.watch("consumerType");
+  const watchSellType = formContext.watch("sellType");
+
   const watchIsProductConditionRequired = formContext.watch(
     "isProductConditionRequired",
   );
@@ -264,31 +267,35 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Time Open"
+                  name="timeOpen"
+                  placeholder="Open"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Time Open"
-                name="timeOpen"
-                placeholder="Open"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Time Close"
+                  name="timeClose"
+                  placeholder="Close"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Time Close"
-                name="timeClose"
-                placeholder="Close"
-              />
-            </div>
-          </div>
+          ) : null}
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
@@ -377,112 +384,130 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchConsumerType === "EVERYONE" ||
+          watchConsumerType === "CONSUMER" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Vendor Discount"
+                  name="vendorDiscount"
+                  placeholder="Discount"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Vendor Discount"
-                name="vendorDiscount"
-                placeholder="Discount"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchConsumerType === "EVERYONE" ||
+          watchConsumerType === "VENDORS" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Consumer Discount"
+                  name="consumerDiscount"
+                  placeholder="Discount"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Consumer Discount"
-                name="consumerDiscount"
-                placeholder="Discount"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Min Quantity"
+                  name="minQuantity"
+                  placeholder="Min"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Min Quantity"
-                name="minQuantity"
-                placeholder="Min"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Max Quantity"
+                  name="maxQuantity"
+                  placeholder="Max"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Max Quantity"
-                name="maxQuantity"
-                placeholder="Max"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Min Customer"
+                  name="minCustomer"
+                  placeholder="Min"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Min Customer"
-                name="minCustomer"
-                placeholder="Min"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Max Customer"
+                  name="maxCustomer"
+                  placeholder="Max"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Max Customer"
-                name="maxCustomer"
-                placeholder="Max"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Min Quantity Per Customer"
+                  name="minQuantityPerCustomer"
+                  placeholder="Min"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Min Quantity Per Customer"
-                name="minQuantityPerCustomer"
-                placeholder="Min"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Max Quantity Per Customer"
+                  name="maxQuantityPerCustomer"
+                  placeholder="Max"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Max Quantity Per Customer"
-                name="maxQuantityPerCustomer"
-                placeholder="Max"
-              />
-            </div>
-          </div>
+          ) : null}
         </div>
 
-        <div className="m-2">
+        <div className="mt-4">
           <Button
             type="submit"
             disabled={isLoading}
