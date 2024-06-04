@@ -13,29 +13,45 @@ import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-const schema = z.object({
-  productPrice: z.number().optional(),
-  offerPrice: z.coerce.number().optional(),
-  productLocationId: z.number().optional(),
-  stock: z.coerce.number().optional(),
-  deliveryAfter: z.coerce.number().optional(),
-  timeOpen: z.coerce.number().optional(),
-  timeClose: z.coerce.number().optional(),
-  consumerType: z.string().trim().optional(),
-  // .min(1, { message: "Consumer Type is required" }),
-  sellType: z.string().trim().optional(),
-  // .min(1, { message: "Sell Type is required" }),
-  vendorDiscount: z.coerce.number().optional(),
-  consumerDiscount: z.coerce.number().optional(),
-  minQuantity: z.coerce.number().optional(),
-  maxQuantity: z.coerce.number().optional(),
-  minCustomer: z.coerce.number().optional(),
-  maxCustomer: z.coerce.number().optional(),
-  minQuantityPerCustomer: z.coerce.number().optional(),
-  maxQuantityPerCustomer: z.coerce.number().optional(),
-  productCondition: z.string().optional(),
-  // isProductConditionRequired: z.boolean().optional(),
-});
+const schema = z
+  .object({
+    productPrice: z.number().optional(),
+    offerPrice: z.coerce.number().optional(),
+    productLocationId: z.number().optional(),
+    stock: z.coerce.number().optional(),
+    deliveryAfter: z.coerce.number().optional(),
+    timeOpen: z.coerce.number().optional(),
+    timeClose: z.coerce.number().optional(),
+    consumerType: z.string().trim().optional(),
+    sellType: z.string().trim().optional(),
+    vendorDiscount: z.coerce.number().optional(),
+    consumerDiscount: z.coerce.number().optional(),
+    minQuantity: z.coerce.number().optional(),
+    maxQuantity: z.coerce.number().optional(),
+    minCustomer: z.coerce.number().optional(),
+    maxCustomer: z.coerce.number().optional(),
+    minQuantityPerCustomer: z.coerce.number().optional(),
+    maxQuantityPerCustomer: z.coerce.number().optional(),
+    productCondition: z.string().optional(),
+    isConsumerTypeRequired: z.boolean().optional(),
+    isProductConditionRequired: z.boolean().optional(),
+    isSellTypeRequired: z.boolean().optional(),
+  })
+  .refine(
+    (data) => !data.isProductConditionRequired || !!data.productCondition,
+    {
+      message: "Product Condition is required",
+      path: ["productCondition"],
+    },
+  )
+  .refine((data) => !data.isConsumerTypeRequired || !!data.consumerType, {
+    message: "Consumer Type is required",
+    path: ["consumerType"],
+  })
+  .refine((data) => !data.isSellTypeRequired || !!data.sellType, {
+    message: "Sell Type is required",
+    path: ["sellType"],
+  });
 
 const defaultValues = {
   productPrice: 0,
@@ -56,7 +72,9 @@ const defaultValues = {
   minQuantityPerCustomer: 0,
   maxQuantityPerCustomer: 0,
   productCondition: "",
-  // isProductConditionRequired: false,
+  isProductConditionRequired: false,
+  isConsumerTypeRequired: false,
+  isSellTypeRequired: false,
 };
 
 const ManageProductsPage = () => {
@@ -87,6 +105,8 @@ const ManageProductsPage = () => {
 
     setSelectedProductIds(tempArr);
   };
+
+  console.log(form.getValues(), "form values");
 
   const onSubmit = async (formData: any) => {
     if (!selectedProductIds.length) {
@@ -187,7 +207,7 @@ const ManageProductsPage = () => {
     console.log({
       productPrice: [...formatData],
     });
-    // return;
+    return;
     const response = await updateMultipleProductPrice.mutateAsync({
       productPrice: [...formatData],
     });

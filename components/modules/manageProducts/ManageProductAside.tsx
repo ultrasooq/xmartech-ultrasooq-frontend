@@ -52,7 +52,16 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
     );
   }, [locationsQuery?.data?.data?.length]);
 
+  const watchIsProductConditionRequired = formContext.watch(
+    "isProductConditionRequired",
+  );
+  const watchIsConsumerTypeRequired = formContext.watch(
+    "isConsumerTypeRequired",
+  );
+  const watchIsSellTypeRequired = formContext.watch("isSellTypeRequired");
+
   const errors = formContext.formState.errors;
+  const productConditionMessage = errors?.productCondition?.message;
   const consumerTypeMessage = errors?.consumerType?.message;
   const sellTypeMessage = errors?.sellType?.message;
 
@@ -90,13 +99,17 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
-              {/* <Controller
+              <Controller
                 name="isProductConditionRequired"
                 control={formContext.control}
-                render={({ field }) => ( */}
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-              {/* )}
-              /> */}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
             </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Product Condition</Label>
@@ -115,9 +128,16 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     )}
                     styles={customStyles}
                     instanceId="productCondition"
+                    isDisabled={!watchIsProductConditionRequired}
                   />
                 )}
               />
+
+              {productConditionMessage ? (
+                <p className="text-[13px] text-red-500">
+                  {productConditionMessage.toString()}
+                </p>
+              ) : null}
             </div>
           </div>
 
@@ -221,7 +241,17 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              <Controller
+                name="isConsumerTypeRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
             </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Consumer Type</Label>
@@ -240,6 +270,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     )}
                     styles={customStyles}
                     instanceId="consumerType"
+                    isDisabled={!watchIsConsumerTypeRequired}
                   />
                 )}
               />
@@ -254,7 +285,17 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              <Controller
+                name="isSellTypeRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
             </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Sell Type</Label>
@@ -273,6 +314,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     )}
                     styles={customStyles}
                     instanceId="sellType"
+                    isDisabled={!watchIsSellTypeRequired}
                   />
                 )}
               />
