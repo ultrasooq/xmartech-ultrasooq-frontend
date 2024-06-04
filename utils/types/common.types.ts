@@ -50,6 +50,7 @@ export interface IRenderProduct {
   priceStatus?: string;
   productProductPriceId?: number;
   productProductPrice?: string;
+  isOwner: boolean;
 }
 
 export type OptionProps = {

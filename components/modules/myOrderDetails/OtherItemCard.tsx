@@ -57,6 +57,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
                 <h4 className="mt-1">
                   ${Number(offerPrice) * (orderQuantity ?? 0)}
                 </h4>
+                <p className="text-gray-500">Quantity x {orderQuantity || 0}</p>
               </figcaption>
             </figure>
           </Link>

@@ -156,7 +156,7 @@ const ExistingProductsPage = () => {
         variant: "success",
       });
       setSelectedProductIds([]);
-      router.push("/products");
+      router.push("/manage-products");
     } else {
       toast({
         title: "Product Price Add Failed",

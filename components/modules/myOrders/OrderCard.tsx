@@ -76,6 +76,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
         </Link>
         <div className="center-price-info">
           <h4>${Number(purchasePrice) * (orderQuantity ?? 0)}</h4>
+          <p className="text-gray-500">Quantity x {orderQuantity || 0}</p>
         </div>
         <div className="right-info">
           <h4>

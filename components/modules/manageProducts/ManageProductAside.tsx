@@ -16,6 +16,13 @@ import { FiEyeOff } from "react-icons/fi";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+const UPDATED_SELL_TYPE_LIST = [
+  {
+    label: "Everyone",
+    value: "EVERYONE",
+  },
+  ...SELL_TYPE_LIST,
+];
 interface Option {
   readonly label: string;
   readonly value: string;
@@ -73,7 +80,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   const sellTypeMessage = errors?.sellType?.message;
 
   return (
-    <aside className="manage_product_list">
+    <aside className="manage_product_list h-fit">
       <div className="manage_product_list_wrap">
         <h2>Manage the product</h2>
         <div className="all_select_button">
@@ -366,8 +373,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     onChange={(newValue) => {
                       field.onChange(newValue?.value);
                     }}
-                    options={SELL_TYPE_LIST}
-                    value={SELL_TYPE_LIST.find(
+                    options={UPDATED_SELL_TYPE_LIST}
+                    value={UPDATED_SELL_TYPE_LIST.find(
                       (item: Option) => item.value === field.value,
                     )}
                     styles={customStyles}
@@ -416,7 +423,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           ) : null}
 
-          {watchSellType === "BUYGROUP" ? (
+          {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
             <div className="select_type !items-start gap-x-2">
               <div className="select_type_checkbox">
                 <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
@@ -431,7 +438,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           ) : null}
 
-          {watchSellType === "BUYGROUP" ? (
+          {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
             <div className="select_type !items-start gap-x-2">
               <div className="select_type_checkbox">
                 <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
@@ -446,7 +453,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           ) : null}
 
-          {watchSellType === "BUYGROUP" ? (
+          {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
             <div className="select_type !items-start gap-x-2">
               <div className="select_type_checkbox">
                 <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
@@ -461,7 +468,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           ) : null}
 
-          {watchSellType === "BUYGROUP" ? (
+          {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
             <div className="select_type !items-start gap-x-2">
               <div className="select_type_checkbox">
                 <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
@@ -476,7 +483,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           ) : null}
 
-          {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" ? (
+          {watchSellType === "EVERYONE" ||
+          watchSellType === "NORMALSELL" ||
+          watchSellType === "BUYGROUP" ? (
             <div className="select_type !items-start gap-x-2">
               <div className="select_type_checkbox">
                 <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
@@ -491,7 +500,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           ) : null}
 
-          {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" ? (
+          {watchSellType === "EVERYONE" ||
+          watchSellType === "NORMALSELL" ||
+          watchSellType === "BUYGROUP" ? (
             <div className="select_type !items-start gap-x-2">
               <div className="select_type_checkbox">
                 <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />

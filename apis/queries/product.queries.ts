@@ -132,7 +132,7 @@ export const useAllProducts = (
   enabled = true,
 ) =>
   useQuery({
-    queryKey: ["all-products", payload],
+    queryKey: ["existing-products", payload],
     queryFn: async () => {
       const res = await fetchAllProducts(payload);
       return res.data;
@@ -193,9 +193,9 @@ export const useAddMultiplePriceForProduct = () => {
       return res.data;
     },
     onSuccess: () => {
-      // queryClient.invalidateQueries({
-      //   queryKey: ["price-products"],
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ["existing-products"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -211,9 +211,12 @@ export const useUpdateMultipleProductPrice = () => {
       return res.data;
     },
     onSuccess: () => {
-      // queryClient.invalidateQueries({
-      //   queryKey: ["price-products"],
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ["managed-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["existing-products"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);

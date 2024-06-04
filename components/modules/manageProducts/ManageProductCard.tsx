@@ -66,7 +66,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   checked={selectedIds?.includes(id)}
                   onCheckedChange={(checked) => onSelectedId?.(checked, id)}
                 />
-                <img src="/images/hide.png" alt="" />
+                {/* <img src="/images/hide.png" alt="" /> */}
               </div>
               <div className="relative mx-auto my-4 h-36 w-36">
                 <Image

@@ -471,6 +471,12 @@ const CreateProductPage = () => {
             : updatedFormData.productPrice ?? 0,
         productLocationId: updatedFormData.productLocationId,
         productCondition: updatedFormData.productCondition,
+        status:
+          activeProductType !== "R" && updatedFormData.productPrice !== 0
+            ? "ACTIVE"
+            : activeProductType === "R" && updatedFormData.offerPrice !== 0
+              ? "ACTIVE"
+              : "INACTIVE",
       },
     ];
     if (activeProductType === "R") {

@@ -33,9 +33,9 @@ const RfqProductList = () => {
         return {
           id: item?.id,
           productImages:
-            item?.rfqQuotesProducts
-              ?.map((ele: any) => ele?.rfqProductDetails?.productImages)
-              ?.flat() || [],
+            item?.rfqQuotesProducts?.map(
+              (ele: any) => ele?.rfqProductDetails?.productImages?.[0]?.image,
+            ) || [],
           rfqDate: item?.rfqQuotes_rfqQuoteAddress?.rfqDate || "-",
         };
       }) || []
@@ -90,17 +90,15 @@ const RfqProductList = () => {
                         <Link href={`/rfq-request?rfqQuotesId=${item?.id}`}>
                           <div className="td-product-group-images">
                             {item?.productImages?.map((ele: any) => (
-                              <div key={ele?.id} className="img-item">
-                                <div className="img-container">
+                              <div key={ele} className="img-item">
+                                <div className="img-container relative h-[80px] w-[80px]">
                                   <Image
                                     src={
-                                      ele?.image && validator.isURL(ele.image)
-                                        ? ele.image
+                                      ele && validator.isURL(ele)
+                                        ? ele
                                         : PlaceholderImage
                                     }
-                                    height={0}
-                                    width={0}
-                                    className="h-[80px] w-[80px]"
+                                    fill
                                     alt="preview"
                                   />
                                 </div>
@@ -131,7 +129,9 @@ const RfqProductList = () => {
                         </Link>
                       </TableCell>
                       <TableCell>RFQ000{item?.id}</TableCell>
-                      <TableCell>{formatDate(item?.rfqDate)}</TableCell>
+                      <TableCell>
+                        <p className="text-sm">{formatDate(item?.rfqDate)}</p>
+                      </TableCell>
                       <TableCell>0</TableCell>
                       <TableCell th-name="Action">
                         <div className="td-dots-dropdown">
@@ -142,8 +142,8 @@ const RfqProductList = () => {
                             <HiOutlineDotsCircleHorizontal />
                           </button>
                           <div className="td-dots-dropdown-menu">
-                            <button
-                              type="button"
+                            <Link
+                              href={`/rfq-request?rfqQuotesId=${item?.id}`}
                               className="td-dots-dropdown-item"
                             >
                               <span className="icon-container">
@@ -155,7 +155,7 @@ const RfqProductList = () => {
                                 />
                               </span>
                               View
-                            </button>
+                            </Link>
                             <button
                               type="button"
                               className="td-dots-dropdown-item"

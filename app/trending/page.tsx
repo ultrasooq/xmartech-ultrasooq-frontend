@@ -230,7 +230,7 @@ const TrendingPage = () => {
         queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
       });
       queryClient.invalidateQueries({
-        queryKey: ["all-products"],
+        queryKey: ["existing-products"],
       });
     } else {
       toast({
@@ -267,7 +267,7 @@ const TrendingPage = () => {
         queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
       });
       queryClient.invalidateQueries({
-        queryKey: ["all-products"],
+        queryKey: ["existing-products"],
       });
     } else {
       toast({
