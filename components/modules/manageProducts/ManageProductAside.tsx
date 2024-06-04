@@ -243,7 +243,17 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              <Controller
+                name="isDeliveryAfterRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
             </div>
             <div className="grid w-full grid-cols-1 gap-x-5">
               <CounterTextInputField

@@ -37,6 +37,7 @@ const schema = z
     isProductConditionRequired: z.boolean().optional(),
     isStockRequired: z.boolean().optional(),
     isOfferPriceRequired: z.boolean().optional(),
+    isDeliveryAfterRequired: z.boolean().optional(),
     isConsumerTypeRequired: z.boolean().optional(),
     isSellTypeRequired: z.boolean().optional(),
   })
@@ -54,6 +55,10 @@ const schema = z
   .refine((data) => !data.isOfferPriceRequired || !!data.offerPrice, {
     message: "Offer Price is required",
     path: ["offerPrice"],
+  })
+  .refine((data) => !data.isDeliveryAfterRequired || !!data.deliveryAfter, {
+    message: "Delivery After is required",
+    path: ["deliveryAfter"],
   })
   .refine((data) => !data.isConsumerTypeRequired || !!data.consumerType, {
     message: "Consumer Type is required",
@@ -86,6 +91,7 @@ const defaultValues = {
   isProductConditionRequired: false,
   isStockRequired: false,
   isOfferPriceRequired: false,
+  isDeliveryAfterRequired: false,
   isConsumerTypeRequired: false,
   isSellTypeRequired: false,
 };
