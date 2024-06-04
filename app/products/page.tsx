@@ -30,6 +30,16 @@ import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
 import Link from "next/link";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import AddProductContent from "@/components/modules/products/AddProductContent";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
+import EditIcon from "@/public/images/td-edit-icon.svg";
+import TrashIcon from "@/public/images/td-trash-icon.svg";
 
 const ProductListPage = () => {
   const router = useRouter();
@@ -41,17 +51,17 @@ const ProductListPage = () => {
   const [limit, setLimit] = useState(5);
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
 
-  const userDetails = useMe();
+  const me = useMe();
 
   const productsQuery = useProducts(
     {
-      userId: String(userDetails?.data?.data?.id),
+      userId: String(me?.data?.data?.id),
       page,
       limit,
       term: searchTerm !== "" ? searchTerm : undefined,
       status: "ALL",
     },
-    !!userDetails?.data?.data?.id,
+    !!me?.data?.data?.id,
   );
   const deleteProduct = useDeleteProduct();
 
@@ -82,10 +92,11 @@ const ProductListPage = () => {
           productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
           status: item?.status || "-",
           priceStatus: item?.product_productPrice?.[0]?.status,
+          isOwner: item?.adminId === me?.data?.data?.id,
         };
       }) || []
     );
-  }, [productsQuery.data?.data]);
+  }, [productsQuery.data?.data, me?.data?.data?.id]);
 
   const handleConfirmation = async (isConfirmed: boolean) => {
     if (!isConfirmed) {
@@ -166,7 +177,7 @@ const ProductListPage = () => {
                       <TableHead>Brand</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Product Status</TableHead>
-                      <TableHead>Price Status</TableHead>
+                      {/* <TableHead>Price Status</TableHead> */}
                       <TableHead className="text-center">Action</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -210,7 +221,7 @@ const ProductListPage = () => {
                             {item?.status}
                           </Badge>
                         </TableCell>
-                        <TableCell th-name="Status">
+                        {/* <TableCell th-name="Status">
                           <Badge
                             className={cn(
                               item?.priceStatus === "ACTIVE"
@@ -220,50 +231,51 @@ const ProductListPage = () => {
                           >
                             {item?.priceStatus}
                           </Badge>
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell th-name="Action">
-                          <div className="td-dots-dropdown">
-                            <button
-                              className="td-dots-dropdown-btn"
-                              type="button"
-                              disabled
-                            >
-                              <HiOutlineDotsCircleHorizontal />
-                            </button>
-                            <div className="td-dots-dropdown-menu">
-                              <Link
-                                href={`/product/${item?.id}`}
-                                className="td-dots-dropdown-item flex items-center gap-1"
+                          <Menubar className="w-fit px-0">
+                            <MenubarMenu>
+                              <MenubarTrigger
+                                disabled={!item?.isOwner}
+                                className={!item?.isOwner ? "bg-gray-100" : ""}
                               >
-                                <Image
-                                  src="/images/td-edit-icon.svg"
-                                  height={0}
-                                  width={0}
-                                  alt="edit-icon"
-                                  className="h-4 w-4"
-                                />
-                                Edit
-                              </Link>
-                              <button
-                                type="button"
-                                className="td-dots-dropdown-item"
-                                onClick={() => {
-                                  handleToggleDeleteModal();
-                                  setSelectedProductId(item?.id);
-                                }}
-                              >
-                                <span className="icon-container">
-                                  <img
-                                    src="/images/td-trash-icon.svg"
-                                    height={"auto"}
-                                    width={"auto"}
-                                    alt=""
+                                <HiOutlineDotsCircleHorizontal size={24} />
+                              </MenubarTrigger>
+                              <MenubarContent className="min-w-0">
+                                <MenubarItem>
+                                  <Link
+                                    href={`/product/${item?.id}`}
+                                    className="td-dots-dropdown-item flex items-center gap-1"
+                                  >
+                                    <Image
+                                      src={EditIcon}
+                                      height={0}
+                                      width={0}
+                                      alt="edit-icon"
+                                      className="mr-2 h-4 w-4"
+                                    />
+                                    Edit
+                                  </Link>
+                                </MenubarItem>
+                                <MenubarSeparator />
+                                <MenubarItem
+                                  onClick={() => {
+                                    handleToggleDeleteModal();
+                                    setSelectedProductId(item?.id);
+                                  }}
+                                >
+                                  <Image
+                                    src={TrashIcon}
+                                    height={0}
+                                    width={0}
+                                    alt="trash-icon"
+                                    className="mr-2 h-4 w-4"
                                   />
-                                </span>
-                                Delete
-                              </button>
-                            </div>
-                          </div>
+                                  Delete
+                                </MenubarItem>
+                              </MenubarContent>
+                            </MenubarMenu>
+                          </Menubar>
                         </TableCell>
                       </TableRow>
                     ))}
