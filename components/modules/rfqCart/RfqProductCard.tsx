@@ -125,7 +125,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       </figure>
       <div className="price-info">
         <h5>Price</h5>
-        <p>${offerPrice}</p>
+        <p>${offerPrice ? Number(offerPrice) * quantity : 0}</p>
       </div>
     </div>
   );

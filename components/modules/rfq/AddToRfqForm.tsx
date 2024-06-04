@@ -443,7 +443,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
   // console.log(productQueryById.data?.data);
   // console.log(form.getValues());
-  console.log(selectedQuantity);
+  // console.log(selectedQuantity);
 
   return (
     <>

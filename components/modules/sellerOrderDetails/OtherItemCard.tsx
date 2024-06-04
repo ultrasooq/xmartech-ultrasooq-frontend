@@ -9,6 +9,7 @@ type OtherItemCardProps = {
   id: number;
   productName: string;
   offerPrice: string;
+  orderQuantity?: number;
   productImages?: { id: number; image: string }[];
   sellerName?: string;
   orderNo: string;
@@ -21,6 +22,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   id,
   productName,
   offerPrice,
+  orderQuantity,
   productImages,
   sellerName,
   orderNo,

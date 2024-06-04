@@ -224,6 +224,9 @@ const MyOrderDetailsPage = ({}) => {
                                     )
                                   : 0}
                               </h4>
+                              <p className="text-gray-500">
+                                Quantity x {orderDetails?.orderQuantity || 0}
+                              </p>
                             </figcaption>
                           </figure>
                         </Link>
