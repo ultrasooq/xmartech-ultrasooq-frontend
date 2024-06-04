@@ -12,6 +12,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 const schema = z
   .object({
@@ -33,8 +34,10 @@ const schema = z
     minQuantityPerCustomer: z.coerce.number().optional(),
     maxQuantityPerCustomer: z.coerce.number().optional(),
     productCondition: z.string().optional(),
-    isConsumerTypeRequired: z.boolean().optional(),
     isProductConditionRequired: z.boolean().optional(),
+    isStockRequired: z.boolean().optional(),
+    isOfferPriceRequired: z.boolean().optional(),
+    isConsumerTypeRequired: z.boolean().optional(),
     isSellTypeRequired: z.boolean().optional(),
   })
   .refine(
@@ -44,6 +47,14 @@ const schema = z
       path: ["productCondition"],
     },
   )
+  .refine((data) => !data.isStockRequired || !!data.stock, {
+    message: "Stock is required",
+    path: ["stock"],
+  })
+  .refine((data) => !data.isOfferPriceRequired || !!data.offerPrice, {
+    message: "Offer Price is required",
+    path: ["offerPrice"],
+  })
   .refine((data) => !data.isConsumerTypeRequired || !!data.consumerType, {
     message: "Consumer Type is required",
     path: ["consumerType"],
@@ -73,11 +84,14 @@ const defaultValues = {
   maxQuantityPerCustomer: 0,
   productCondition: "",
   isProductConditionRequired: false,
+  isStockRequired: false,
+  isOfferPriceRequired: false,
   isConsumerTypeRequired: false,
   isSellTypeRequired: false,
 };
 
 const ManageProductsPage = () => {
+  const router = useRouter();
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(6);
@@ -220,6 +234,7 @@ const ManageProductsPage = () => {
       });
       form.reset();
       setSelectedProductIds([]);
+      router.push("/products");
     } else {
       toast({
         title: "Update Failed",
@@ -241,7 +256,7 @@ const ManageProductsPage = () => {
               {allManagedProductsQuery.isLoading ? (
                 <div className="mx-2 grid w-full grid-cols-3 gap-5">
                   {Array.from({ length: 3 }).map((_, index) => (
-                    <Skeleton key={index} className="h-80 w-full" />
+                    <Skeleton key={index} className="h-96 w-full" />
                   ))}
                 </div>
               ) : null}

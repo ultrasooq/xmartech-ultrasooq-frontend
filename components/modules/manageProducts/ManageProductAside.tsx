@@ -55,6 +55,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   const watchIsProductConditionRequired = formContext.watch(
     "isProductConditionRequired",
   );
+  const watchIsStockRequired = formContext.watch("isStockRequired");
+  const watchIsOfferPriceRequired = formContext.watch("isOfferPriceRequired");
   const watchIsConsumerTypeRequired = formContext.watch(
     "isConsumerTypeRequired",
   );
@@ -62,6 +64,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
   const errors = formContext.formState.errors;
   const productConditionMessage = errors?.productCondition?.message;
+  const stockMessage = errors?.stock?.message;
+  const offerPriceMessage = errors?.offerPrice?.message;
   const consumerTypeMessage = errors?.consumerType?.message;
   const sellTypeMessage = errors?.sellType?.message;
 
@@ -158,46 +162,83 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type mb-4 !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-            </div>
-
-            <Controller
-              name="stock"
-              control={formContext.control}
-              render={({ field }) => (
-                <div className="space-y-2">
-                  <Label>Ask for the Stock</Label>
-                  <Input
-                    type="number"
-                    className="theme-form-control-s1"
-                    placeholder="Ask for the Stock"
-                    {...field}
+              <Controller
+                name="isStockRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                   />
-                </div>
-              )}
-            />
+                )}
+              />
+            </div>
+            <div className="flex w-full flex-col gap-y-3">
+              <Controller
+                name="stock"
+                control={formContext.control}
+                render={({ field }) => (
+                  <div className="space-y-2">
+                    <Label>Ask for the Stock</Label>
+                    <Input
+                      type="number"
+                      className="theme-form-control-s1"
+                      placeholder="Ask for the Stock"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                      disabled={!watchIsStockRequired}
+                    />
+                  </div>
+                )}
+              />
+              {stockMessage ? (
+                <p className="text-[13px] text-red-500">
+                  {stockMessage.toString()}
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <div className="select_type mb-4 !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              <Controller
+                name="isOfferPriceRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
             </div>
 
-            <Controller
-              name="offerPrice"
-              control={formContext.control}
-              render={({ field }) => (
-                <div className="space-y-2">
-                  <Label>Ask for the Price</Label>
-                  <Input
-                    type="number"
-                    className="theme-form-control-s1"
-                    placeholder="Ask for the Price"
-                    {...field}
-                  />
-                </div>
-              )}
-            />
+            <div className="flex w-full flex-col gap-y-3">
+              <Controller
+                name="offerPrice"
+                control={formContext.control}
+                render={({ field }) => (
+                  <div className="space-y-2">
+                    <Label>Ask for the Price</Label>
+                    <Input
+                      type="number"
+                      className="theme-form-control-s1"
+                      placeholder="Ask for the Price"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                      disabled={!watchIsOfferPriceRequired}
+                    />
+                  </div>
+                )}
+              />
+              {offerPriceMessage ? (
+                <p className="text-[13px] text-red-500">
+                  {offerPriceMessage.toString()}
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <div className="select_type !items-start gap-x-2">
