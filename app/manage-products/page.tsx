@@ -12,30 +12,62 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
-const schema = z.object({
-  productPrice: z.number().optional(),
-  offerPrice: z.coerce.number().optional(),
-  productLocationId: z.number().optional(),
-  stock: z.coerce.number().optional(),
-  deliveryAfter: z.coerce.number().optional(),
-  timeOpen: z.coerce.number().optional(),
-  timeClose: z.coerce.number().optional(),
-  consumerType: z.string().trim().optional(),
-  // .min(1, { message: "Consumer Type is required" }),
-  sellType: z.string().trim().optional(),
-  // .min(1, { message: "Sell Type is required" }),
-  vendorDiscount: z.coerce.number().optional(),
-  consumerDiscount: z.coerce.number().optional(),
-  minQuantity: z.coerce.number().optional(),
-  maxQuantity: z.coerce.number().optional(),
-  minCustomer: z.coerce.number().optional(),
-  maxCustomer: z.coerce.number().optional(),
-  minQuantityPerCustomer: z.coerce.number().optional(),
-  maxQuantityPerCustomer: z.coerce.number().optional(),
-  productCondition: z.string().optional(),
-  // isProductConditionRequired: z.boolean().optional(),
-});
+const schema = z
+  .object({
+    productPrice: z.number().optional(),
+    offerPrice: z.coerce.number().optional(),
+    productLocationId: z.number().optional(),
+    stock: z.coerce.number().optional(),
+    deliveryAfter: z.coerce.number().optional(),
+    timeOpen: z.coerce.number().optional(),
+    timeClose: z.coerce.number().optional(),
+    consumerType: z.string().trim().optional(),
+    sellType: z.string().trim().optional(),
+    vendorDiscount: z.coerce.number().optional(),
+    consumerDiscount: z.coerce.number().optional(),
+    minQuantity: z.coerce.number().optional(),
+    maxQuantity: z.coerce.number().optional(),
+    minCustomer: z.coerce.number().optional(),
+    maxCustomer: z.coerce.number().optional(),
+    minQuantityPerCustomer: z.coerce.number().optional(),
+    maxQuantityPerCustomer: z.coerce.number().optional(),
+    productCondition: z.string().optional(),
+    isProductConditionRequired: z.boolean().optional(),
+    isStockRequired: z.boolean().optional(),
+    isOfferPriceRequired: z.boolean().optional(),
+    isDeliveryAfterRequired: z.boolean().optional(),
+    isConsumerTypeRequired: z.boolean().optional(),
+    isSellTypeRequired: z.boolean().optional(),
+  })
+  .refine(
+    (data) => !data.isProductConditionRequired || !!data.productCondition,
+    {
+      message: "Product Condition is required",
+      path: ["productCondition"],
+    },
+  )
+  .refine((data) => !data.isStockRequired || !!data.stock, {
+    message: "Stock is required",
+    path: ["stock"],
+  })
+  .refine((data) => !data.isOfferPriceRequired || !!data.offerPrice, {
+    message: "Offer Price is required",
+    path: ["offerPrice"],
+  })
+  .refine((data) => !data.isDeliveryAfterRequired || !!data.deliveryAfter, {
+    message: "Delivery After is required",
+    path: ["deliveryAfter"],
+  })
+  .refine((data) => !data.isConsumerTypeRequired || !!data.consumerType, {
+    message: "Consumer Type is required",
+    path: ["consumerType"],
+  })
+  .refine((data) => !data.isSellTypeRequired || !!data.sellType, {
+    message: "Sell Type is required",
+    path: ["sellType"],
+  });
 
 const defaultValues = {
   productPrice: 0,
@@ -56,10 +88,16 @@ const defaultValues = {
   minQuantityPerCustomer: 0,
   maxQuantityPerCustomer: 0,
   productCondition: "",
-  // isProductConditionRequired: false,
+  isProductConditionRequired: false,
+  isStockRequired: false,
+  isOfferPriceRequired: false,
+  isDeliveryAfterRequired: false,
+  isConsumerTypeRequired: false,
+  isSellTypeRequired: false,
 };
 
 const ManageProductsPage = () => {
+  const router = useRouter();
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(6);
@@ -87,6 +125,8 @@ const ManageProductsPage = () => {
 
     setSelectedProductIds(tempArr);
   };
+
+  console.log(form.getValues(), "form values");
 
   const onSubmit = async (formData: any) => {
     if (!selectedProductIds.length) {
@@ -200,6 +240,7 @@ const ManageProductsPage = () => {
       });
       form.reset();
       setSelectedProductIds([]);
+      router.push("/products");
     } else {
       toast({
         title: "Update Failed",
@@ -221,7 +262,7 @@ const ManageProductsPage = () => {
               {allManagedProductsQuery.isLoading ? (
                 <div className="mx-2 grid w-full grid-cols-3 gap-5">
                   {Array.from({ length: 3 }).map((_, index) => (
-                    <Skeleton key={index} className="h-80 w-full" />
+                    <Skeleton key={index} className="h-96 w-full" />
                   ))}
                 </div>
               ) : null}

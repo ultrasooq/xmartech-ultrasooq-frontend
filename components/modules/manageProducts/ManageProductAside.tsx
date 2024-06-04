@@ -52,7 +52,23 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
     );
   }, [locationsQuery?.data?.data?.length]);
 
+  const watchConsumerType = formContext.watch("consumerType");
+  const watchSellType = formContext.watch("sellType");
+
+  const watchIsProductConditionRequired = formContext.watch(
+    "isProductConditionRequired",
+  );
+  const watchIsStockRequired = formContext.watch("isStockRequired");
+  const watchIsOfferPriceRequired = formContext.watch("isOfferPriceRequired");
+  const watchIsConsumerTypeRequired = formContext.watch(
+    "isConsumerTypeRequired",
+  );
+  const watchIsSellTypeRequired = formContext.watch("isSellTypeRequired");
+
   const errors = formContext.formState.errors;
+  const productConditionMessage = errors?.productCondition?.message;
+  const stockMessage = errors?.stock?.message;
+  const offerPriceMessage = errors?.offerPrice?.message;
   const consumerTypeMessage = errors?.consumerType?.message;
   const sellTypeMessage = errors?.sellType?.message;
 
@@ -90,13 +106,17 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
-              {/* <Controller
+              <Controller
                 name="isProductConditionRequired"
                 control={formContext.control}
-                render={({ field }) => ( */}
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-              {/* )}
-              /> */}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
             </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Product Condition</Label>
@@ -115,9 +135,16 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     )}
                     styles={customStyles}
                     instanceId="productCondition"
+                    isDisabled={!watchIsProductConditionRequired}
                   />
                 )}
               />
+
+              {productConditionMessage ? (
+                <p className="text-[13px] text-red-500">
+                  {productConditionMessage.toString()}
+                </p>
+              ) : null}
             </div>
           </div>
 
@@ -138,51 +165,98 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type mb-4 !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-            </div>
-
-            <Controller
-              name="stock"
-              control={formContext.control}
-              render={({ field }) => (
-                <div className="space-y-2">
-                  <Label>Ask for the Stock</Label>
-                  <Input
-                    type="number"
-                    className="theme-form-control-s1"
-                    placeholder="Ask for the Stock"
-                    {...field}
+              <Controller
+                name="isStockRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                   />
-                </div>
-              )}
-            />
+                )}
+              />
+            </div>
+            <div className="flex w-full flex-col gap-y-3">
+              <Controller
+                name="stock"
+                control={formContext.control}
+                render={({ field }) => (
+                  <div className="space-y-2">
+                    <Label>Ask for the Stock</Label>
+                    <Input
+                      type="number"
+                      className="theme-form-control-s1"
+                      placeholder="Ask for the Stock"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                      disabled={!watchIsStockRequired}
+                    />
+                  </div>
+                )}
+              />
+              {stockMessage ? (
+                <p className="text-[13px] text-red-500">
+                  {stockMessage.toString()}
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <div className="select_type mb-4 !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              <Controller
+                name="isOfferPriceRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
             </div>
 
-            <Controller
-              name="offerPrice"
-              control={formContext.control}
-              render={({ field }) => (
-                <div className="space-y-2">
-                  <Label>Ask for the Price</Label>
-                  <Input
-                    type="number"
-                    className="theme-form-control-s1"
-                    placeholder="Ask for the Price"
-                    {...field}
-                  />
-                </div>
-              )}
-            />
+            <div className="flex w-full flex-col gap-y-3">
+              <Controller
+                name="offerPrice"
+                control={formContext.control}
+                render={({ field }) => (
+                  <div className="space-y-2">
+                    <Label>Ask for the Price</Label>
+                    <Input
+                      type="number"
+                      className="theme-form-control-s1"
+                      placeholder="Ask for the Price"
+                      {...field}
+                      onWheel={(e) => e.currentTarget.blur()}
+                      disabled={!watchIsOfferPriceRequired}
+                    />
+                  </div>
+                )}
+              />
+              {offerPriceMessage ? (
+                <p className="text-[13px] text-red-500">
+                  {offerPriceMessage.toString()}
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              <Controller
+                name="isDeliveryAfterRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
             </div>
             <div className="grid w-full grid-cols-1 gap-x-5">
               <CounterTextInputField
@@ -193,35 +267,49 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Time Open"
+                  name="timeOpen"
+                  placeholder="Open"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Time Open"
-                name="timeOpen"
-                placeholder="Open"
-              />
+          ) : null}
+
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Time Close"
+                  name="timeClose"
+                  placeholder="Close"
+                />
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-            </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Time Close"
-                name="timeClose"
-                placeholder="Close"
+              <Controller
+                name="isConsumerTypeRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
               />
-            </div>
-          </div>
-
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
             </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Consumer Type</Label>
@@ -240,6 +328,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     )}
                     styles={customStyles}
                     instanceId="consumerType"
+                    isDisabled={!watchIsConsumerTypeRequired}
                   />
                 )}
               />
@@ -254,7 +343,17 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type !items-start gap-x-2">
             <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              <Controller
+                name="isSellTypeRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
             </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Sell Type</Label>
@@ -273,6 +372,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     )}
                     styles={customStyles}
                     instanceId="sellType"
+                    isDisabled={!watchIsSellTypeRequired}
                   />
                 )}
               />
@@ -284,112 +384,130 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchConsumerType === "EVERYONE" ||
+          watchConsumerType === "CONSUMER" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Vendor Discount"
+                  name="vendorDiscount"
+                  placeholder="Discount"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Vendor Discount"
-                name="vendorDiscount"
-                placeholder="Discount"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchConsumerType === "EVERYONE" ||
+          watchConsumerType === "VENDORS" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Consumer Discount"
+                  name="consumerDiscount"
+                  placeholder="Discount"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Consumer Discount"
-                name="consumerDiscount"
-                placeholder="Discount"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Min Quantity"
+                  name="minQuantity"
+                  placeholder="Min"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Min Quantity"
-                name="minQuantity"
-                placeholder="Min"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Max Quantity"
+                  name="maxQuantity"
+                  placeholder="Max"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Max Quantity"
-                name="maxQuantity"
-                placeholder="Max"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Min Customer"
+                  name="minCustomer"
+                  placeholder="Min"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Min Customer"
-                name="minCustomer"
-                placeholder="Min"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Max Customer"
+                  name="maxCustomer"
+                  placeholder="Max"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Max Customer"
-                name="maxCustomer"
-                placeholder="Max"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Min Quantity Per Customer"
+                  name="minQuantityPerCustomer"
+                  placeholder="Min"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Min Quantity Per Customer"
-                name="minQuantityPerCustomer"
-                placeholder="Min"
-              />
-            </div>
-          </div>
+          ) : null}
 
-          <div className="select_type !items-start gap-x-2">
-            <div className="select_type_checkbox">
-              <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+          {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" ? (
+            <div className="select_type !items-start gap-x-2">
+              <div className="select_type_checkbox">
+                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
+              </div>
+              <div className="grid w-full grid-cols-1 gap-x-5">
+                <CounterTextInputField
+                  label="Max Quantity Per Customer"
+                  name="maxQuantityPerCustomer"
+                  placeholder="Max"
+                />
+              </div>
             </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <CounterTextInputField
-                label="Max Quantity Per Customer"
-                name="maxQuantityPerCustomer"
-                placeholder="Max"
-              />
-            </div>
-          </div>
+          ) : null}
         </div>
 
-        <div className="m-2">
+        <div className="mt-4">
           <Button
             type="submit"
             disabled={isLoading}
