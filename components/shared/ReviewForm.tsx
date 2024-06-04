@@ -79,7 +79,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
               queryKey: ["product-by-id", searchParams?.id],
             });
             queryClient.refetchQueries({
-              queryKey: ["all-products", { page: 1, limit: 40 }],
+              queryKey: ["existing-products", { page: 1, limit: 40 }],
             });
             queryClient.refetchQueries({
               queryKey: ["review-by-id", { productReviewId: reviewId }],
@@ -112,7 +112,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
             queryKey: ["product-by-id", searchParams?.id],
           });
           queryClient.refetchQueries({
-            queryKey: ["all-products", { page: 1, limit: 40 }],
+            queryKey: ["existing-products", { page: 1, limit: 40 }],
           });
         },
       });
