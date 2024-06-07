@@ -123,6 +123,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
           </div>
         </figcaption>
       </figure>
+      <p>
+        <span>Note:</span> {note}
+      </p>
       <div className="price-info">
         <h5>Price</h5>
         <p>${offerPrice ? Number(offerPrice) * quantity : 0}</p>

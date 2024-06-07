@@ -90,7 +90,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
         <div className="select_main_wrap">
           <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Product Location</Label>
+            <Label>Person Location</Label>
             <Controller
               name="productLocationId"
               control={formContext.control}
