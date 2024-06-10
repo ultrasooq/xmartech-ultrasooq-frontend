@@ -23,7 +23,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${inter.className}`}>
           <ReactQueryProvider>
-            <main className="overflow-x-hidden">
+            <main className="overflow-x-visible">
               <Sidebar />
               <Header />
               <NextTopLoader color="#DB2302" showSpinner={false} />

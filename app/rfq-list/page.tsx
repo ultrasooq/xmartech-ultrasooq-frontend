@@ -189,19 +189,19 @@ const RfqList = () => {
                   </div>
                 </div>
                 {/* <div className="existing-product-add-box-action">
-                  <button type="button" className="custom-btn update">
-                    update
-                  </button>
-                  <button
-                    type="button"
-                    className="custom-btn theme-primary-btn"
-                  >
-                    add
-                  </button>
-                  <button type="button" className="custom-btn edit">
-                    edit
-                  </button>
-                </div> */}
+                    <button type="button" className="custom-btn update">
+                      update
+                    </button>
+                    <button
+                      type="button"
+                      className="custom-btn theme-primary-btn"
+                    >
+                      add
+                    </button>
+                    <button type="button" className="custom-btn edit">
+                      edit
+                    </button>
+                  </div> */}
               </div>
             </div>
 
@@ -386,19 +386,19 @@ const RfqList = () => {
                   </div>
                 </div>
                 {/* <div className="existing-product-add-box-action">
-                  <button type="button" className="custom-btn update">
-                    update
-                  </button>
-                  <button
-                    type="button"
-                    className="custom-btn theme-primary-btn"
-                  >
-                    add
-                  </button>
-                  <button type="button" className="custom-btn edit">
-                    edit
-                  </button>
-                </div> */}
+                    <button type="button" className="custom-btn update">
+                      update
+                    </button>
+                    <button
+                      type="button"
+                      className="custom-btn theme-primary-btn"
+                    >
+                      add
+                    </button>
+                    <button type="button" className="custom-btn edit">
+                      edit
+                    </button>
+                  </div> */}
               </div>
             </div>
 
@@ -583,19 +583,19 @@ const RfqList = () => {
                   </div>
                 </div>
                 {/* <div className="existing-product-add-box-action">
-                  <button type="button" className="custom-btn update">
-                    update
-                  </button>
-                  <button
-                    type="button"
-                    className="custom-btn theme-primary-btn"
-                  >
-                    add
-                  </button>
-                  <button type="button" className="custom-btn edit">
-                    edit
-                  </button>
-                </div> */}
+                    <button type="button" className="custom-btn update">
+                      update
+                    </button>
+                    <button
+                      type="button"
+                      className="custom-btn theme-primary-btn"
+                    >
+                      add
+                    </button>
+                    <button type="button" className="custom-btn edit">
+                      edit
+                    </button>
+                  </div> */}
               </div>
             </div>
 
