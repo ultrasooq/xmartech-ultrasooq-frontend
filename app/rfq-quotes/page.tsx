@@ -19,7 +19,7 @@ import Image from "next/image";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import Link from "next/link";
 
-const RfqProductList = () => {
+const RfqQuotesPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const rfqQuotesByBuyerIdQuery = useAllRfqQuotesByBuyerId({
@@ -89,21 +89,26 @@ const RfqProductList = () => {
                       <TableCell>
                         <Link href={`/rfq-request?rfqQuotesId=${item?.id}`}>
                           <div className="td-product-group-images">
-                            {item?.productImages?.map((ele: any) => (
-                              <div key={ele} className="img-item">
-                                <div className="img-container relative h-[80px] w-[80px]">
-                                  <Image
-                                    src={
-                                      ele && validator.isURL(ele)
-                                        ? ele
-                                        : PlaceholderImage
-                                    }
-                                    fill
-                                    alt="preview"
-                                  />
+                            {item?.productImages?.map(
+                              (ele: any, index: number) => (
+                                <div
+                                  key={`${ele}_${index}`}
+                                  className="img-item"
+                                >
+                                  <div className="img-container relative h-[80px] w-[80px]">
+                                    <Image
+                                      src={
+                                        ele && validator.isURL(ele)
+                                          ? ele
+                                          : PlaceholderImage
+                                      }
+                                      fill
+                                      alt="preview"
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              ),
+                            )}
                             {/* <div className="img-item">
                             <div className="img-container">
                               <img src="/images/pro1.png" alt="" />
@@ -210,4 +215,4 @@ const RfqProductList = () => {
   );
 };
 
-export default RfqProductList;
+export default RfqQuotesPage;

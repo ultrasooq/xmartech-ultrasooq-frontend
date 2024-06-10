@@ -322,18 +322,16 @@ const Header = () => {
                             </Link>
                             <DropdownMenuSeparator />
                             <Link href="/seller-orders">
-                              <DropdownMenuItem>Order List</DropdownMenuItem>
+                              <DropdownMenuItem>Orders</DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
-                            <Link href="/rfq-product-list">
-                              <DropdownMenuItem>
-                                RFQ Quote List
-                              </DropdownMenuItem>
+                            <Link href="/rfq-quotes">
+                              <DropdownMenuItem>RFQ Quotes</DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
                             <Link href="/seller-rfq-request">
                               <DropdownMenuItem>
-                                RFQ Seller Request List
+                                RFQ Seller Requests
                               </DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator />
