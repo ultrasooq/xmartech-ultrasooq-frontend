@@ -233,49 +233,53 @@ const ProductListPage = () => {
                           </Badge>
                         </TableCell> */}
                         <TableCell th-name="Action">
-                          <Menubar className="w-fit px-0">
-                            <MenubarMenu>
-                              <MenubarTrigger
-                                disabled={!item?.isOwner}
-                                className={!item?.isOwner ? "bg-gray-100" : ""}
-                              >
-                                <HiOutlineDotsCircleHorizontal size={24} />
-                              </MenubarTrigger>
-                              <MenubarContent className="min-w-0">
-                                <MenubarItem>
-                                  <Link
-                                    href={`/product/${item?.id}`}
-                                    className="td-dots-dropdown-item flex items-center gap-1"
+                          {item?.isOwner ? (
+                            <Menubar className="w-fit px-0">
+                              <MenubarMenu>
+                                <MenubarTrigger
+                                  disabled={!item?.isOwner}
+                                  className={
+                                    !item?.isOwner ? "bg-gray-100" : ""
+                                  }
+                                >
+                                  <HiOutlineDotsCircleHorizontal size={24} />
+                                </MenubarTrigger>
+                                <MenubarContent className="min-w-0">
+                                  <MenubarItem>
+                                    <Link
+                                      href={`/product/${item?.id}`}
+                                      className="td-dots-dropdown-item flex items-center gap-1"
+                                    >
+                                      <Image
+                                        src={EditIcon}
+                                        height={0}
+                                        width={0}
+                                        alt="edit-icon"
+                                        className="mr-2 h-4 w-4"
+                                      />
+                                      Edit
+                                    </Link>
+                                  </MenubarItem>
+                                  <MenubarSeparator />
+                                  <MenubarItem
+                                    onClick={() => {
+                                      handleToggleDeleteModal();
+                                      setSelectedProductId(item?.id);
+                                    }}
                                   >
                                     <Image
-                                      src={EditIcon}
+                                      src={TrashIcon}
                                       height={0}
                                       width={0}
-                                      alt="edit-icon"
+                                      alt="trash-icon"
                                       className="mr-2 h-4 w-4"
                                     />
-                                    Edit
-                                  </Link>
-                                </MenubarItem>
-                                <MenubarSeparator />
-                                <MenubarItem
-                                  onClick={() => {
-                                    handleToggleDeleteModal();
-                                    setSelectedProductId(item?.id);
-                                  }}
-                                >
-                                  <Image
-                                    src={TrashIcon}
-                                    height={0}
-                                    width={0}
-                                    alt="trash-icon"
-                                    className="mr-2 h-4 w-4"
-                                  />
-                                  Delete
-                                </MenubarItem>
-                              </MenubarContent>
-                            </MenubarMenu>
-                          </Menubar>
+                                    Delete
+                                  </MenubarItem>
+                                </MenubarContent>
+                              </MenubarMenu>
+                            </Menubar>
+                          ) : null}
                         </TableCell>
                       </TableRow>
                     ))}
