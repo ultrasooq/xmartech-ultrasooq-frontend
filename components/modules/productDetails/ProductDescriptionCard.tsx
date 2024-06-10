@@ -11,7 +11,16 @@ import SecurePaymentIcon from "@/public/images/securePaymenticon.svg";
 import SupportIcon from "@/public/images/support-24hr.svg";
 // import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 // import PlusIcon from "@/public/images/upDownBtn-plus.svg";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import OtherSellerSection from "../trending/OtherSellerSection";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -226,12 +235,26 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     .join(", ")}
                 </p>
                 {haveOtherSellers ? (
-                  <Link
-                    href={`/trending/${productId}/other-sellers`}
-                    className="font-bold text-red-500"
-                  >
-                    See other sellers
-                  </Link>
+                  <Drawer direction="right">
+                    <DrawerTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="font-bold text-red-500"
+                      >
+                        See other sellers
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent className="left-auto right-0 top-0 mt-0 w-[600px] rounded-none">
+                      <ScrollArea className="h-screen">
+                        <div className="mx-auto w-full p-2">
+                          <DrawerHeader>
+                            <DrawerTitle>All Sellers</DrawerTitle>
+                          </DrawerHeader>
+                          <OtherSellerSection />
+                        </div>
+                      </ScrollArea>
+                    </DrawerContent>
+                  </Drawer>
                 ) : null}
               </div>
             </div>
