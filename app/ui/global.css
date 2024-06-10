@@ -2950,6 +2950,7 @@
     flex-wrap: wrap;
     margin: 0 -16px;
     width: 74%;
+    padding-right: 6%;
   }
 
   .existing-product-add-lists .existing-product-add-item {

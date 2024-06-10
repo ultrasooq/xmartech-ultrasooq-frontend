@@ -255,7 +255,7 @@ const ManageProductsPage = () => {
       <div className="existing-product-add-page">
         <FormProvider {...form}>
           <form
-            className="container m-auto flex px-3"
+            className="m-auto flex w-full px-3 pl-[14%]"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className="existing-product-wrap flex">
