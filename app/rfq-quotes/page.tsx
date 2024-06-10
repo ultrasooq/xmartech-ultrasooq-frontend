@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/table";
 import { HiOutlineDotsCircleHorizontal } from "react-icons/hi";
 import Pagination from "@/components/shared/Pagination";
-import { useAllRfqQuotesByBuyerId } from "@/apis/queries/rfq.queries";
+import {
+  useAllRfqQuotesByBuyerId,
+  useDeleteRfqQuote,
+} from "@/apis/queries/rfq.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/shared/Footer";
 import { MONTHS } from "@/utils/constants";
@@ -18,14 +21,33 @@ import validator from "validator";
 import Image from "next/image";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import Link from "next/link";
+import BackgroundPreviewImage from "@/public/images/rfq-product-list-sec-bg.png";
+import TrashIcon from "@/public/images/td-trash-icon.svg";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
+import { CgDetailsMore } from "react-icons/cg";
+import { Dialog } from "@/components/ui/dialog";
+import DeleteContent from "@/components/shared/DeleteContent";
+import { useToast } from "@/components/ui/use-toast";
 
 const RfqQuotesPage = () => {
+  const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<number>();
+
   const rfqQuotesByBuyerIdQuery = useAllRfqQuotesByBuyerId({
     page,
     limit,
   });
+  const deleteRfqQuote = useDeleteRfqQuote();
 
   const memoizedRfqQuotesProducts = useMemo(() => {
     return (
@@ -61,11 +83,48 @@ const RfqQuotesPage = () => {
     [memoizedRfqQuotesProducts],
   );
 
+  const handleToggleDeleteModal = () => {
+    setIsDeleteModalOpen(!isDeleteModalOpen);
+    setSelectedProductId(undefined);
+  };
+
+  const handleConfirmation = async (isConfirmed: boolean) => {
+    if (!isConfirmed) {
+      setIsDeleteModalOpen(false);
+      setSelectedProductId(undefined);
+      return;
+    }
+
+    if (!selectedProductId) return;
+
+    const response = await deleteRfqQuote.mutateAsync({
+      rfqQuotesId: selectedProductId,
+    });
+    if (response.status && response.data) {
+      setIsDeleteModalOpen(false);
+    }
+    if (response.status && response.data) {
+      toast({
+        title: "Product Delete Successful",
+        description: response.message,
+        variant: "success",
+      });
+      setIsDeleteModalOpen(false);
+      setSelectedProductId(undefined);
+    } else {
+      toast({
+        title: "Product Delete Failed",
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  };
+
   return (
     <>
       <div className="rfq-product-list-page">
         <div className="sec-bg">
-          <img src="/images/rfq-product-list-sec-bg.png" alt="" />
+          <Image src={BackgroundPreviewImage} alt="background-preview" />
         </div>
         <div className="container m-auto px-3">
           <div className="headerpart">
@@ -139,44 +198,40 @@ const RfqQuotesPage = () => {
                       </TableCell>
                       <TableCell>0</TableCell>
                       <TableCell th-name="Action">
-                        <div className="td-dots-dropdown">
-                          <button
-                            className="td-dots-dropdown-btn"
-                            type="button"
-                          >
-                            <HiOutlineDotsCircleHorizontal />
-                          </button>
-                          <div className="td-dots-dropdown-menu">
-                            <Link
-                              href={`/rfq-request?rfqQuotesId=${item?.id}`}
-                              className="td-dots-dropdown-item"
-                            >
-                              <span className="icon-container">
-                                <img
-                                  src="/images/td-view-icon.svg"
-                                  height={"auto"}
-                                  width={"auto"}
-                                  alt=""
+                        <Menubar className="w-fit px-0">
+                          <MenubarMenu>
+                            <MenubarTrigger>
+                              <HiOutlineDotsCircleHorizontal size={24} />
+                            </MenubarTrigger>
+                            <MenubarContent className="min-w-0">
+                              <MenubarItem>
+                                <Link
+                                  href={`/rfq-request?rfqQuotesId=${item?.id}`}
+                                  className="td-dots-dropdown-item flex items-center gap-1"
+                                >
+                                  <CgDetailsMore height={24} width={24} />
+                                  View
+                                </Link>
+                              </MenubarItem>
+                              <MenubarSeparator />
+                              <MenubarItem
+                                onClick={() => {
+                                  handleToggleDeleteModal();
+                                  setSelectedProductId(item?.id);
+                                }}
+                              >
+                                <Image
+                                  src={TrashIcon}
+                                  height={0}
+                                  width={0}
+                                  alt="trash-icon"
+                                  className="mr-2 h-4 w-4"
                                 />
-                              </span>
-                              View
-                            </Link>
-                            <button
-                              type="button"
-                              className="td-dots-dropdown-item"
-                            >
-                              <span className="icon-container">
-                                <img
-                                  src="/images/td-trash-icon.svg"
-                                  height={"auto"}
-                                  width={"auto"}
-                                  alt=""
-                                />
-                              </span>
-                              Delete
-                            </button>
-                          </div>
-                        </div>
+                                Delete
+                              </MenubarItem>
+                            </MenubarContent>
+                          </MenubarMenu>
+                        </Menubar>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -209,6 +264,14 @@ const RfqQuotesPage = () => {
             </div>
           </div>
         </div>
+
+        <Dialog open={isDeleteModalOpen} onOpenChange={handleToggleDeleteModal}>
+          <DeleteContent
+            onClose={() => handleConfirmation(false)}
+            onConfirm={() => handleConfirmation(true)}
+            isLoading={deleteRfqQuote.isPending}
+          />
+        </Dialog>
       </div>
       <Footer />
     </>
