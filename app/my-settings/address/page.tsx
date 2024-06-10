@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { v4 as uuidv4 } from "uuid";
+import { IoMdAdd } from "react-icons/io";
 
 type AddressPageProps = {};
 
@@ -67,17 +68,7 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
               type="button"
               onClick={() => handleToggleAddModal()}
             >
-              <img
-                alt="add-icon"
-                loading="lazy"
-                width={14}
-                height={14}
-                decoding="async"
-                data-nimg={1}
-                src="/images/addbtn.svg"
-                style={{ color: "transparent" }}
-              />{" "}
-              Add a new address{" "}
+              <IoMdAdd size={24} /> Add a new address{" "}
             </button>
           </div>
         </div>

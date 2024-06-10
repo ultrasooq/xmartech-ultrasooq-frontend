@@ -1,11 +1,8 @@
 import React from "react";
-import {
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogContent,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { DialogContent } from "@/components/ui/dialog";
+import Image from "next/image";
+import FreelancerIcon from "@/public/images/freelancer.svg";
+import CompanyIcon from "@/public/images/company.svg";
 
 type TradeRoleUpgradeContentProps = {
   onClose?: () => void;
@@ -24,32 +21,49 @@ const TradeRoleUpgradeContent: React.FC<TradeRoleUpgradeContentProps> = ({
       <div className="modal-bodypart">
         <div className="import-pickup-type-selector-lists">
           <div className="import-pickup-type-selector-item">
-            <input type="radio" className="select-controller" onClick={() => onConfirmRole("FREELANCER")} name="roleType" />
+            <input
+              type="radio"
+              className="select-controller"
+              onClick={() => onConfirmRole("FREELANCER")}
+              name="roleType"
+            />
             <div className="import-pickup-type-selector-box">
               <div className="icon-container">
-                <img src="/images/freelancer.svg" alt="" />
+                <Image src={FreelancerIcon} alt="freelancer-icon" />
               </div>
               <div className="text-container">
                 <h5>Freelancer</h5>
-                <p>Lorem Ipsum is simply Lorem 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <p>
+                  Lorem Ipsum is simply Lorem 1500s, when an unknown printer
+                  took a galley of type and scrambled it to make a type specimen
+                  book.
+                </p>
               </div>
             </div>
           </div>
           <div className="import-pickup-type-selector-item">
-            <input type="radio" className="select-controller" onClick={() => onConfirmRole("COMPANY")} name="roleType" />
+            <input
+              type="radio"
+              className="select-controller"
+              onClick={() => onConfirmRole("COMPANY")}
+              name="roleType"
+            />
             <div className="import-pickup-type-selector-box">
               <div className="icon-container">
-                <img src="/images/company.svg" alt="" />
+                <Image src={CompanyIcon} alt="company-icon" />
               </div>
               <div className="text-container">
                 <h5>Company</h5>
-                <p>Lorem Ipsum is simply Lorem  1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <p>
+                  Lorem Ipsum is simply Lorem 1500s, when an unknown printer
+                  took a galley of type and scrambled it to make a type specimen
+                  book.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
     </DialogContent>
   );
 };

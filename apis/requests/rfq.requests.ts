@@ -215,3 +215,18 @@ export const addProductDuplicateRfq = (payload: { productId: number }) => {
     },
   });
 };
+
+export const deleteRfqQuote = (payload: { rfqQuotesId: number }) => {
+  return axios({
+    method: "DELETE",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/deleteOneRfqQuote`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

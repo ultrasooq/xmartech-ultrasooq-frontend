@@ -1,6 +1,7 @@
 import Image from "next/image";
 // import { Inter } from 'next/font/google'
 import { useRouter } from "next/router";
+import LogoIcon from "@/public/images/logo.png";
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -12,7 +13,7 @@ export default function House() {
   };
   return (
     <main className={`flex min-h-screen flex-col justify-between p-0 `}>
-      <header className="w-full">
+      {/* <header className="w-full">
         <div className="w-full bg-dark-cyan">
           <div className="container m-auto px-3">
             <div className="hidden sm:hidden md:flex md:gap-x-2.5">
@@ -45,11 +46,6 @@ export default function House() {
               </div>
             </div>
             <div className="flex flex-wrap sm:flex sm:flex-wrap md:flex md:flex-wrap">
-              <div className="order-1 flex w-5/12 items-center py-4 sm:order-1 sm:w-5/12 md:order-1 md:w-2/12 lg:w-1/6">
-                <a href="#">
-                  <img src="images/logo.png" />
-                </a>
-              </div>
               <div className="order-3 flex w-10/12 items-center py-4 sm:order-3 sm:w-10/12 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
                 <div className="h-11 w-24 md:w-24 lg:w-auto">
                   <select className="h-full w-full focus:outline-none">
@@ -83,7 +79,6 @@ export default function House() {
                 <ul className="flex items-center justify-end gap-x-4">
                   <li className="relative flex pb-3 pl-0 pr-1 pt-0">
                     <a className="flex flex-wrap items-center">
-                      <img src="images/wishlist.svg" />
                       <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
                         0
                       </div>
@@ -91,15 +86,13 @@ export default function House() {
                   </li>
                   <li className="relative flex pb-3 pl-0 pr-1 pt-0">
                     <a className="flex flex-wrap items-center">
-                      <img src="images/cart.svg" />
                       <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
                         0
                       </div>
                     </a>
                   </li>
                   <li className="relative flex pb-3 pl-0 pr-1 pt-0">
-                    <img src="images/login.svg" />
-                    <a className="ml-1.5 flex flex flex-col flex-wrap items-start items-center text-sm font-bold text-white">
+                    <a className="ml-1.5 flex flex-col flex-wrap items-center text-sm font-bold text-white">
                       <span onClick={() => Router.push("/login")}>Login </span>
                       <span onClick={() => Router.push("/register")}>
                         {" "}
@@ -109,47 +102,37 @@ export default function House() {
                   </li>
                 </ul>
               </div>
-              <div className="order-4 flex w-2/12 items-center justify-end py-4 md:hidden">
-                <img src="images/humberger-white-icon.svg" />
-              </div>
             </div>
             <div className="fixed left-0 top-0 z-20 hidden h-full w-full bg-dark-cyan px-3 md:static md:flex md:px-0">
               <ul className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 md:flex-row md:justify-between">
                 <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                   <a href="javascript:void(0);" className="flex gap-x-2">
-                    {" "}
-                    <img src="images/menu-icon-home.svg" /> Home
+                    Home
                   </a>
                 </li>
                 <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                   <a href="javascript:void(0);" className="flex gap-x-2">
-                    {" "}
-                    <img src="images/menu-icon-trending.svg" /> Trending & Hot
-                    Deals
+                    Trending & Hot Deals
                   </a>
                 </li>
                 <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                   <a href="javascript:void(0);" className="flex gap-x-2">
-                    {" "}
-                    <img src="images/menu-icon-buy.svg" /> buygroup
+                    buygroup
                   </a>
                 </li>
                 <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                   <a href="javascript:void(0);" className="flex gap-x-2">
-                    {" "}
-                    <img src="images/menu-icon-rfq.svg" /> rfq
+                    rfq
                   </a>
                 </li>
                 <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                   <a href="javascript:void(0);" className="flex gap-x-2">
-                    {" "}
-                    <img src="images/menu-icon-pos.svg" /> pos store
+                    pos store
                   </a>
                 </li>
                 <li className="flex py-3 text-sm font-semibold uppercase text-white md:py-5 md:text-sm lg:text-base xl:text-lg">
                   <a href="javascript:void(0);" className="flex gap-x-2">
-                    {" "}
-                    <img src="images/menu-icon-service.svg" /> Service
+                    Service
                   </a>
                 </li>
               </ul>
@@ -160,11 +143,9 @@ export default function House() {
           <div className="container m-auto px-3">
             <div className="flex">
               <div className="flex w-5/12 py-3 md:w-2/6">
-                <img src="images/humberger-icon.svg" />
                 <span className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
                   All Categories
                 </span>
-                <img src="images/humberger-down-icon.svg" />
               </div>
               <div className="flex w-7/12 items-center justify-end md:w-4/6">
                 <ul className="flex items-center justify-end gap-x-4">
@@ -183,7 +164,7 @@ export default function House() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       <section className="w-100 py-8">
         <div className="container mx-auto px-4">
@@ -217,13 +198,6 @@ export default function House() {
                   <span>Check demo</span>
                 </a>
               </div>
-              <div className="flex w-full items-center md:w-1/2">
-                <img
-                  className="mx-auto h-48"
-                  src="artemis-assets/images/chart-folder.png"
-                  alt=""
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -253,13 +227,6 @@ export default function House() {
       </div>
 
       <figure className="rounded-xl bg-slate-100 p-8 dark:bg-slate-800 md:flex md:p-2">
-        <img
-          className="mx-auto h-24 w-24 rounded-full md:h-auto md:w-48 md:rounded-none"
-          src="./classic.jpg"
-          alt=""
-          width="384"
-          height="512"
-        />
         <div className="space-y-4 pt-6 text-center md:p-8 md:text-left">
           <blockquote>
             <p className="text-lg font-medium">
@@ -278,14 +245,6 @@ export default function House() {
       </figure>
 
       <div className="flex font-sans ">
-        <div className="relative w-56 flex-none">
-          <img
-            src="./classic.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full rounded-lg object-cover"
-            loading="lazy"
-          />
-        </div>
         <form className="flex-auto p-6">
           <div className="flex flex-wrap">
             <h1 className="flex-auto font-medium text-slate-900">
@@ -397,14 +356,6 @@ export default function House() {
       </div>
 
       <div className="flex font-serif">
-        <div className="relative w-52 flex-none">
-          <img
-            src="./classic.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full rounded-lg object-cover"
-            loading="lazy"
-          />
-        </div>
         <form className="flex-auto p-6">
           <div className="flex flex-wrap items-baseline">
             <h1 className="mb-3 w-full flex-none text-2xl leading-none text-slate-900">
@@ -518,14 +469,6 @@ export default function House() {
       </div>
 
       <div className="flex p-6 font-mono">
-        <div className="relative z-10 mb-10 w-48 flex-none before:absolute before:left-1 before:top-1 before:h-full before:w-full before:bg-teal-400">
-          <img
-            src="./classic.jpg"
-            alt=""
-            className="absolute inset-0 z-10 h-full w-full rounded-lg object-cover"
-            loading="lazy"
-          />
-        </div>
         <form className="flex-auto pl-6">
           <div className="relative flex flex-wrap items-baseline pb-6 before:absolute before:-left-60 before:-right-6 before:-top-6 before:bottom-0 before:bg-black">
             <h1 className="relative mb-2 w-full flex-none text-2xl font-semibold text-white">

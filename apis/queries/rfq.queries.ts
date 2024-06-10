@@ -5,6 +5,7 @@ import {
   addRfqProduct,
   addRfqQuotes,
   deleteRfqCartItem,
+  deleteRfqQuote,
   fetchAllRfqQuotesByBuyerId,
   fetchAllRfqQuotesUsersByBuyerId,
   fetchAllRfqQuotesUsersBySellerId,
@@ -296,6 +297,30 @@ export const useAddProductDuplicateRfq = () => {
       return res.data;
     },
     onSuccess: () => {},
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useDeleteRfqQuote = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {
+      rfqQuotesId: number;
+    }
+  >({
+    mutationFn: async (payload) => {
+      const res = await deleteRfqQuote(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["rfq-quotes-request"],
+      });
+    },
     onError: (err: APIResponseError) => {
       console.log(err);
     },

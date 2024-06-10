@@ -7,6 +7,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
+import PhoneIcon from "@/public/images/phoneicon.svg";
+import LocationIcon from "@/public/images/locationicon.svg";
 
 type AddressCardProps = {
   id: number;
@@ -49,7 +51,7 @@ const AddressCard: React.FC<AddressCardProps> = ({
               <li>
                 <p>
                   <span className="icon-container">
-                    <img src="/images/phoneicon.svg" alt="" />
+                    <Image src={PhoneIcon} alt="phone-icon" />
                   </span>
                   <span className="text-container">{phoneNumber}</span>
                 </p>
@@ -57,7 +59,7 @@ const AddressCard: React.FC<AddressCardProps> = ({
               <li>
                 <p>
                   <span className="icon-container">
-                    <img src="/images/locationicon.svg" alt="" />
+                    <Image src={LocationIcon} alt="location-icon" />
                   </span>
                   <span className="text-container">
                     {address} {city}, {province}, {postCode}, {country}
