@@ -17,7 +17,6 @@ export function middleware(request: NextRequest) {
     "/home",
     "/trending",
     "/trending/:id",
-    "/trending/:id/other-sellers",
     "/cart",
     "/checkout",
     "/orders",
