@@ -216,13 +216,13 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap sm:flex sm:flex-wrap md:flex md:flex-wrap">
-            <div className="order-1 flex w-5/12 items-center py-4 sm:order-1 sm:w-5/12 md:order-1 md:w-2/12 lg:w-1/6">
+          <div className="!flex !flex-wrap">
+            <div className="!order-1 !flex !w-5/12 flex-1 !items-center !py-4 md:!w-2/12 lg:!w-1/6">
               <Link href="/home">
-                <Image src={LogoIcon} width={155} height={22} alt="logo" />
+                <Image src={LogoIcon} alt="logo" />
               </Link>
             </div>
-            <div className="order-3 flex w-10/12 items-center py-4 sm:order-3 sm:w-10/12 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
+            <div className="!order-3 flex w-10/12 items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
               <div className="h-11 w-24 md:w-24 lg:w-auto">
                 <select className="h-full w-full focus:outline-none">
                   <option>All</option>
@@ -376,14 +376,14 @@ const Header = () => {
                 </li>
               </ul>
             </div>
-            <div className="order-4 flex w-2/12 items-center justify-end py-4 md:hidden">
+            {/* <div className="order-4 flex w-2/12 items-center justify-end py-4 md:!hidden">
               <Image
                 src={HamburgerWhiteIcon}
                 alt="hamburger-icon"
                 height={28}
                 width={28}
               />
-            </div>
+            </div> */}
           </div>
 
           <div className="hidden h-[44px] w-full px-3 md:flex md:px-0">
