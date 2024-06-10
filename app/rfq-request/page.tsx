@@ -45,51 +45,51 @@ const RfqRequestPage = () => {
 
   return (
     <section className="m-auto flex w-full max-w-[1530px] py-8">
-      <div className="w-[15%]">
-        <div className="w-full px-4 py-10 shadow-lg">
+      <div className="w-[10%]">
+        <div className="w-full px-1 py-1 shadow-lg">
           <ul>
-            <li className="w-full py-4">
+            <li className="w-full py-1">
               <Link
                 href="/"
-                className="flex items-center justify-start rounded-xl p-3"
+                className="flex items-center justify-start rounded-xl p-1"
               >
-                <div className="flex h-[33px] w-[33px] items-center justify-center ">
+                <div className="flex h-[20px] w-[20px] items-center justify-center ">
                   <Image src={TaskIcon} alt="Task Icon" />
                 </div>
-                <div className="text-md pl-3 font-medium text-[#828593]">
+                <div className="pl-1 text-sm font-medium text-[#828593]">
                   Puremoon
                 </div>
               </Link>
             </li>
-            <li className="w-full py-4">
+            <li className="w-full py-1">
               <Link
                 href="/user-chat"
-                className="flex items-center justify-start rounded-xl p-3"
+                className="flex items-center justify-start rounded-xl p-1"
               >
-                <div className="flex h-[33px] w-[33px] items-center justify-center ">
+                <div className="flex h-[20px] w-[20px] items-center justify-center ">
                   <Image src={TaskIcon} alt="Task Icon" />
                 </div>
-                <div className="text-md pl-3 font-medium text-[#828593]">
-                  Puremoon
+                <div className="pl-1 text-sm font-medium text-[#828593]">
+                  RFQ
                 </div>
               </Link>
             </li>
           </ul>
         </div>
       </div>
-      <div className="w-[85%] px-2">
+      <div className="w-[90%] px-2">
         <div className="flex w-full rounded-sm border border-solid border-gray-300">
-          <div className="w-[22%] border-r border-solid border-gray-300">
-            <div className="flex min-h-[85px] w-full items-center border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
+          <div className="w-[20%] border-r border-solid border-gray-300">
+            <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Request for RFQ</span>
             </div>
             <RequestProductCard />
           </div>
           <div className="w-[20%] border-r border-solid border-gray-300">
-            <div className="flex h-[85px] min-w-full items-center border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
+            <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Vendor Lists</span>
             </div>
-            <div className="max-h-[426px] w-full overflow-y-auto p-4">
+            <div className="max-h-[100%] w-full overflow-y-auto p-4">
               {allRfqQuotesQuery?.isLoading ? (
                 <div className="my-2 space-y-2">
                   {Array.from({ length: 2 }).map((_, i) => (
@@ -120,8 +120,8 @@ const RfqRequestPage = () => {
               )}
             </div>
           </div>
-          <div className="w-[58%] border-r border-solid border-gray-300">
-            <div className="flex min-h-[85px] w-full items-center justify-between border-b border-solid border-gray-300 px-[20px] py-[20px] text-lg font-normal text-[#333333]">
+          <div className="w-[60%] border-r border-solid border-gray-300">
+            <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>
                 Offering Price{" "}
                 <b className="text-[#679A03]">
@@ -132,31 +132,31 @@ const RfqRequestPage = () => {
               </span>
               <Link
                 href="/user-chat"
-                className="inline-block rounded-sm bg-dark-orange px-6 py-3 text-sm font-bold capitalize text-white"
+                className="inline-block rounded-sm bg-dark-orange px-3 py-2 text-xs font-bold capitalize text-white"
               >
                 checkout
               </Link>
             </div>
             <div className="flex w-full flex-wrap p-[20px]">
-              <div className="w-full">
+              <div className="mb-5 max-h-[300px] w-full overflow-y-auto">
                 <div className="w-full rounded-sm border border-solid border-gray-300">
                   <div className="flex w-full border-b border-solid border-gray-300">
-                    <div className="w-[25%] p-4 text-xs font-normal text-gray-500">
+                    <div className="w-[25%] px-3 py-3 text-sm font-normal text-gray-500">
                       Product
                     </div>
-                    <div className="w-[15%] p-4 text-xs font-normal text-gray-500">
+                    <div className="w-[15%] px-3 py-3 text-sm font-normal text-gray-500">
                       Delivery Date
                     </div>
-                    <div className="w-[10%] p-4 text-xs font-normal text-gray-500">
+                    <div className="w-[10%] px-3 py-3 text-sm font-normal text-gray-500">
                       Brand
                     </div>
-                    <div className="w-[20%] p-4 text-xs font-normal text-gray-500">
+                    <div className="w-[20%] px-3 py-3 text-sm font-normal text-gray-500">
                       Number Of Piece
                     </div>
-                    <div className="w-[10%] p-4 text-xs font-normal text-gray-500">
+                    <div className="w-[10%] px-3 py-3 text-sm font-normal text-gray-500">
                       Price
                     </div>
-                    <div className="w-[20%] p-4 text-xs font-normal text-gray-500">
+                    <div className="w-[20%] px-3 py-3 text-sm font-normal text-gray-500">
                       Address
                     </div>
                   </div>
@@ -187,7 +187,7 @@ const RfqRequestPage = () => {
               </div>
               <ChatSection />
             </div>
-            <div className="mt-6 flex w-full flex-wrap border-t border-solid border-gray-300 p-[20px]">
+            <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
               <div className="flex w-full items-center">
                 <div className="relative flex h-[32px] w-[32px] items-center">
                   <input type="file" className="hidden opacity-0" />
@@ -205,7 +205,7 @@ const RfqRequestPage = () => {
                   <div className="w-auto">
                     <Image src={SmileIcon} alt="smile-icon" />
                   </div>
-                  <div className="w-auto">
+                  <div className="flex w-auto">
                     <button type="button" className="">
                       <Image src={SendIcon} alt="send-icon" />
                     </button>

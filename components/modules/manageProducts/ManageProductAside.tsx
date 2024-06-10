@@ -155,7 +155,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type mb-4 !items-start gap-x-2">
+          <div className="select_type mb-2 !items-start gap-x-2">
             <div className="select_type_checkbox">
               <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
             </div>
@@ -170,7 +170,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type mb-4 !items-start gap-x-2">
+          <div className="select_type mb-2 !items-start gap-x-2">
             <div className="select_type_checkbox">
               <Controller
                 name="isStockRequired"
@@ -210,7 +210,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type mb-4 !items-start gap-x-2">
+          <div className="select_type mb-2 !items-start gap-x-2">
             <div className="select_type_checkbox">
               <Controller
                 name="isOfferPriceRequired"

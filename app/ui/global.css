@@ -2938,20 +2938,28 @@
 
   /* start: existing-product-add-page */
   .existing-product-add-page {
-    padding: 62px 0;
+    padding: 40px 0;
+  }
+
+  .existing-product-add-page .existing-product-wrap {
+    /* height: calc(100vh - 100px); */
   }
 
   .existing-product-add-lists {
     display: flex;
     flex-wrap: wrap;
     margin: 0 -16px;
-    width: 78%;
+    width: 74%;
+    padding-right: 6%;
   }
 
   .existing-product-add-lists .existing-product-add-item {
     padding: 10px;
     width: 100%;
     max-width: 33.33%;
+    display: flex;
+    margin-top: 4px;
+    padding-top: 0;
   }
 
   .existing-product-add-lists .existing-product-add-box {
@@ -2968,13 +2976,13 @@
     width: 100%;
     max-width: 100%;
     border-right: 1px solid #e2e2e2;
-    padding: 10px 10px;
+    padding: 10px 10px 0;
     ;
   }
 
   .existing-product-add-lists .existing-product-add-box .rightdiv {
     width: 100%;
-    padding: 10px 10px;
+    padding: 0 10px 10px;
     max-width: 100%;
   }
 
@@ -2982,7 +2990,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 160px;
+    height: 100px;
+    padding-bottom: 10px;
     position: relative;
   }
 
@@ -3082,10 +3091,14 @@
   }
 
   .manage_product_list {
-    width: 23%;
+    width: 27%;
+    height: 98vh !important;
     float: right;
-    margin: 10px 0 0 auto;
+    margin: 4px 0 0 auto;
     padding: 10px;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
   }
 
   .manage_product_list {

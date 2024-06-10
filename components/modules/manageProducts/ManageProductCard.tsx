@@ -68,7 +68,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 />
                 {/* <img src="/images/hide.png" alt="" /> */}
               </div>
-              <div className="relative mx-auto my-4 h-36 w-36">
+              <div className="relative mx-auto h-[100%] w-[100%]">
                 <Image
                   src={
                     productImage && validator.isURL(productImage)
@@ -90,8 +90,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <h3>{productName || "-"}</h3>
             </div>
             <div className="form-container">
-              <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                <div className="space-y-2">
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="space-y-2 rounded bg-[#f1f1f1] p-2">
                   <div className="text-with-checkagree">
                     <label className="text-col" htmlFor="setUpPriceCheck">
                       Stock
@@ -102,7 +102,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 rounded bg-[#f1f1f1] p-2">
                   <div className="text-with-checkagree">
                     <label className="text-col" htmlFor="setUpPriceCheck">
                       Price
@@ -113,8 +113,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                 </div>
               </div>
-              <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-2">
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
                   <Label>Deliver After</Label>
                   <span>
                     {deliveryAfter
@@ -122,7 +122,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       : "-"}
                   </span>
                 </div>
-                <div className="flex flex-wrap space-y-2">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
                   <Label>Product Location</Label>
                   <span>{productLocation || "-"}</span>
                 </div>
@@ -131,15 +131,15 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
           </div>
           <div className="rightdiv">
             <div className="form-container">
-              <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-2">
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
                   <label>Time Open</label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>{timeOpen || "-"}</span>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap space-y-2">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
                   <label>Time Close</label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>{timeClose || "-"}</span>
@@ -147,24 +147,24 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
               </div>
 
-              <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Consumer Type
                   </label>
                   <span>{consumerType || "-"}</span>
                 </div>
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Sell Type
                   </label>
                   <span>{sellType || "-"}</span>
                 </div>
               </div>
 
-              <div className="mb-4 grid w-full grid-cols-1 gap-x-3 gap-y-3 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Vendor Discount
                   </label>
                   <div className="theme-inputValue-picker-upDown">
@@ -173,8 +173,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Consumer Discount
                   </label>
                   <div className="theme-inputValue-picker-upDown">
@@ -184,16 +184,16 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Min Quantity
                   </label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>{minQuantity || "-"}</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Max Quantity
                   </label>
                   <div className="theme-inputValue-picker-upDown">
@@ -201,16 +201,16 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Min Consumer
                   </label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>{minCustomer || "-"}</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Max Consumer
                   </label>
                   <div className="theme-inputValue-picker-upDown">
@@ -218,16 +218,16 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Min Qty Consumer
                   </label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>{minQuantityPerCustomer || "-"}</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap space-y-2">
-                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Max Qty Consumer
                   </label>
                   <div className="theme-inputValue-picker-upDown">
