@@ -40,6 +40,7 @@ import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import AddImageContent from "@/components/modules/profile/AddImageContent";
+import ClostIcon from "@/public/images/close-white.svg";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -693,8 +694,8 @@ export default function ProfilePage() {
                                           // TODO: remove from S3
                                         }}
                                       >
-                                        <img
-                                          src="/images/close-white.svg"
+                                        <Image
+                                          src={ClostIcon}
                                           alt="close-icon"
                                         />
                                       </button>
@@ -776,8 +777,8 @@ export default function ProfilePage() {
                                           // TODO: remove from S3
                                         }}
                                       >
-                                        <img
-                                          src="/images/close-white.svg"
+                                        <Image
+                                          src={ClostIcon}
                                           alt="close-icon"
                                         />
                                       </button>

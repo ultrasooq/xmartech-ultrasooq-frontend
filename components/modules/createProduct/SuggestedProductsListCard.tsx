@@ -1,4 +1,7 @@
 import React from "react";
+import IphoneIcon from "@/public/images/iphone.png";
+import ExportIcon from "@/public/images/export.png";
+import Image from "next/image";
 
 const SuggestedProductsListCard = () => {
   return (
@@ -15,7 +18,11 @@ const SuggestedProductsListCard = () => {
         <div className="mb-2 flex w-full items-start rounded-lg border border-solid border-gray-300 p-2">
           <div className="flex w-[calc(100%_-_2rem)] items-center py-2">
             <div className="flex h-[64px] w-[64px] items-center justify-center rounded-lg border border-solid border-gray-300 p-1">
-              <img src="/images/iphone.png" className="max-h-full max-w-full" />
+              <Image
+                src={IphoneIcon}
+                className="max-h-full max-w-full"
+                alt="iphone-icon"
+              />
             </div>
             <div className="w-[calc(100%_-_4rem)] pl-3">
               <p className="mb-2.5 text-sm font-normal leading-4 text-[#1D77D1]">
@@ -34,14 +41,18 @@ const SuggestedProductsListCard = () => {
               href="#"
               className="flex h-[28px] w-[28px] items-center justify-center rounded-md bg-red-200"
             >
-              <img src="/images/export.png" />
+              <Image src={ExportIcon} alt="export-icon" />
             </a>
           </div>
         </div>
         <div className="mb-2 flex w-full items-start rounded-lg border border-solid border-gray-300 p-2">
           <div className="flex w-[calc(100%_-_2rem)] items-center py-2">
             <div className="flex h-[64px] w-[64px] items-center justify-center rounded-lg border border-solid border-gray-300 p-1">
-              <img src="/images/iphone.png" className="max-h-full max-w-full" />
+              <Image
+                src={IphoneIcon}
+                className="max-h-full max-w-full"
+                alt="iphone-icon"
+              />
             </div>
             <div className="w-[calc(100%_-_4rem)] pl-3">
               <p className="mb-2.5 text-sm font-normal leading-4 text-[#1D77D1]">
@@ -60,14 +71,18 @@ const SuggestedProductsListCard = () => {
               href="#"
               className="flex h-[28px] w-[28px] items-center justify-center rounded-md bg-red-200"
             >
-              <img src="/images/export.png" />
+              <Image src={ExportIcon} alt="export-icon" />
             </a>
           </div>
         </div>
         <div className="mb-2 flex w-full items-start rounded-lg border border-solid border-gray-300 p-2">
           <div className="flex w-[calc(100%_-_2rem)] items-center py-2">
             <div className="flex h-[64px] w-[64px] items-center justify-center rounded-lg border border-solid border-gray-300 p-1">
-              <img src="/images/iphone.png" className="max-h-full max-w-full" />
+              <Image
+                src={IphoneIcon}
+                className="max-h-full max-w-full"
+                alt="iphone-icon"
+              />
             </div>
             <div className="w-[calc(100%_-_4rem)] pl-3">
               <p className="mb-2.5 text-sm font-normal leading-4 text-[#1D77D1]">
@@ -86,14 +101,18 @@ const SuggestedProductsListCard = () => {
               href="#"
               className="flex h-[28px] w-[28px] items-center justify-center rounded-md bg-red-200"
             >
-              <img src="/images/export.png" />
+              <Image src={ExportIcon} alt="export-icon" />
             </a>
           </div>
         </div>
         <div className="mb-2 flex w-full items-start rounded-lg border border-solid border-gray-300 p-2">
           <div className="flex w-[calc(100%_-_2rem)] items-center py-2">
             <div className="flex h-[64px] w-[64px] items-center justify-center rounded-lg border border-solid border-gray-300 p-1">
-              <img src="/images/iphone.png" className="max-h-full max-w-full" />
+              <Image
+                src={IphoneIcon}
+                className="max-h-full max-w-full"
+                alt="iphone-icon"
+              />
             </div>
             <div className="w-[calc(100%_-_4rem)] pl-3">
               <p className="mb-2.5 text-sm font-normal leading-4 text-[#1D77D1]">
@@ -112,14 +131,18 @@ const SuggestedProductsListCard = () => {
               href="#"
               className="flex h-[28px] w-[28px] items-center justify-center rounded-md bg-red-200"
             >
-              <img src="/images/export.png" />
+              <Image src={ExportIcon} alt="export-icon" />
             </a>
           </div>
         </div>
         <div className="mb-2 flex w-full items-start rounded-lg border border-solid border-gray-300 p-2">
           <div className="flex w-[calc(100%_-_2rem)] items-center py-2">
             <div className="flex h-[64px] w-[64px] items-center justify-center rounded-lg border border-solid border-gray-300 p-1">
-              <img src="/images/iphone.png" className="max-h-full max-w-full" />
+              <Image
+                src={IphoneIcon}
+                className="max-h-full max-w-full"
+                alt="iphone-icon"
+              />
             </div>
             <div className="w-[calc(100%_-_4rem)] pl-3">
               <p className="mb-2.5 text-sm font-normal leading-4 text-[#1D77D1]">
@@ -138,7 +161,7 @@ const SuggestedProductsListCard = () => {
               href="#"
               className="flex h-[28px] w-[28px] items-center justify-center rounded-md bg-red-200"
             >
-              <img src="/images/export.png" />
+              <Image src={ExportIcon} alt="export-icon" />
             </a>
           </div>
         </div>

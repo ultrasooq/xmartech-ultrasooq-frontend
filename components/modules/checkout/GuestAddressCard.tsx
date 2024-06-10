@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import DropdownIcon from "@/public/images/custom-hover-dropdown-btn.svg";
+import PhoneIcon from "@/public/images/phoneicon.svg";
+import LocationIcon from "@/public/images/locationicon.svg";
 
 type GuestAddressCardProps = {
   firstName?: string;
@@ -44,7 +46,7 @@ const GuestAddressCard: React.FC<GuestAddressCardProps> = ({
             <li>
               <p>
                 <span className="icon-container">
-                  <img src="/images/phoneicon.svg" alt="" />
+                  <Image src={PhoneIcon} alt="phone-icon" />
                 </span>
                 <span className="text-container">{phoneNumber}</span>
               </p>
@@ -52,7 +54,7 @@ const GuestAddressCard: React.FC<GuestAddressCardProps> = ({
             <li>
               <p>
                 <span className="icon-container">
-                  <img src="/images/locationicon.svg" alt="" />
+                  <Image src={LocationIcon} alt="location-icon" />
                 </span>
                 <span className="text-container">
                   {address} {city}, {province}, {postCode}, {country}

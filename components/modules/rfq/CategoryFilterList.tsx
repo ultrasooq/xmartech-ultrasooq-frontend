@@ -1,11 +1,13 @@
 import React from "react";
+import SymbolIcon from "@/public/images/symbol.svg";
+import Image from "next/image";
 
 const CategoryFilterList = () => {
   return (
     <div className="product_filter_box">
       <div className="product_filter_box_head">
         <h4>Categories</h4>
-        <img src="images/symbol.svg" alt="symbol-icon" />
+        <Image src={SymbolIcon} alt="symbol-icon" />
       </div>
       <div className="check_filter">
         <div className="categori_list">

@@ -30,6 +30,9 @@ import {
 import { useMe } from "@/apis/queries/user.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import Footer from "@/components/shared/Footer";
+import Image from "next/image";
+import EmailIcon from "@/public/images/email.svg";
+import PhoneCallIcon from "@/public/images/phone-call.svg";
 
 const ProductDetailsPage = () => {
   const queryClient = useQueryClient();
@@ -420,7 +423,7 @@ const ProductDetailsPage = () => {
                             <li>
                               <a href="mailto:test@gmail.com">
                                 <span className="icon">
-                                  <img src="/images/email.svg" alt="" />
+                                  <Image src={EmailIcon} alt="email-icon" />
                                 </span>
                                 <span className="text">test@gmail.com</span>
                               </a>
@@ -428,7 +431,7 @@ const ProductDetailsPage = () => {
                             <li>
                               <a href="tel:1234567890">
                                 <span className="icon">
-                                  <img src="/images/phone-call.svg" alt="" />
+                                  <Image src={PhoneCallIcon} alt="phone-icon" />
                                 </span>
                                 <span className="text">1234567890</span>
                               </a>
@@ -478,10 +481,10 @@ const ProductDetailsPage = () => {
               <div className="suggestion-lists-s1 mt-3">
                 {/* TODO: hide ad section for now */}
                 {/* <div className="suggestion-list-s1-col">
-            <div className="suggestion-banner">
-              <img src="/images/suggestion-pic1.png" alt="" />
-            </div>
-          </div> */}
+                  <div className="suggestion-banner">
+                    <Image src="/images/suggestion-pic1.png" alt="suggested-preview" />
+                  </div>
+                </div> */}
                 <SameBrandSection productDetails={productDetails} />
               </div>
             </div>
