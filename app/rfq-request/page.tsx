@@ -58,14 +58,14 @@ const RfqRequestPage = () => {
   }, [allRfqQuotesQuery.data?.data]);
 
   return (
-    <section className="m-auto flex w-full max-w-[1530px] py-8">
-      <div className="w-[10%]">
-        <div className="w-full px-1 py-1 shadow-lg">
+    <section className="m-auto flex w-full max-w-[1400px] py-8">
+      <div className="w-[15%]">
+        <div className="w-full px-0 py-0 shadow-lg">
           <ul>
             <li className="w-full py-1">
               <Link
                 href="/"
-                className="flex items-center justify-start rounded-xl p-1"
+                className="flex items-center justify-start rounded-xl p-2"
               >
                 <div className="flex h-[20px] w-[20px] items-center justify-center ">
                   <Image src={TaskIcon} alt="Task Icon" />
@@ -77,26 +77,28 @@ const RfqRequestPage = () => {
             </li>
             <li
               className={cn(
-                pathname?.includes("rfq-request") ? "bg-gray-100" : "",
+                pathname?.includes("rfq-request") ? "bg-dark-orange" : "",
                 "w-full py-1",
               )}
             >
               <Link
                 href={`/rfq-request?rfqQuotesId=${rfqQuoteId}`}
-                className="flex items-center justify-start rounded-xl p-1"
+                className="flex items-center justify-start rounded-xl p-2 text-white"
               >
                 <div className="flex h-[20px] w-[20px] items-center justify-center ">
-                  <Image src={TaskIcon} alt="Task Icon" />
+                  <Image
+                    src={TaskIcon}
+                    alt="Task Icon"
+                    className="brightness-0 invert"
+                  />
                 </div>
-                <div className="pl-1 text-sm font-medium text-[#828593]">
-                  RFQ
-                </div>
+                <div className="pl-1 text-sm font-medium text-white">RFQ</div>
               </Link>
             </li>
           </ul>
         </div>
       </div>
-      <div className="w-[90%] px-2">
+      <div className="w-[85%] px-2">
         <div className="flex w-full rounded-sm border border-solid border-gray-300">
           <div className="w-[20%] border-r border-solid border-gray-300">
             <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
@@ -104,7 +106,7 @@ const RfqRequestPage = () => {
             </div>
             <RequestProductCard rfqId={rfqQuoteId} />
           </div>
-          <div className="w-[20%] border-r border-solid border-gray-300">
+          <div className="w-[18%] border-r border-solid border-gray-300">
             <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Vendor Lists</span>
             </div>
@@ -139,7 +141,7 @@ const RfqRequestPage = () => {
               )}
             </div>
           </div>
-          <div className="w-[60%] border-r border-solid border-gray-300">
+          <div className="w-[62%] border-r border-solid border-gray-300">
             <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>
                 Offering Price{" "}
@@ -160,22 +162,22 @@ const RfqRequestPage = () => {
               <div className="mb-5 max-h-[300px] w-full overflow-y-auto">
                 <div className="w-full rounded-sm border border-solid border-gray-300">
                   <div className="flex w-full border-b border-solid border-gray-300">
-                    <div className="w-[25%] px-3 py-3 text-sm font-normal text-gray-500">
+                    <div className="w-[25%] px-1.5 py-3 text-sm font-normal text-gray-500">
                       Product
                     </div>
-                    <div className="w-[15%] px-3 py-3 text-sm font-normal text-gray-500">
+                    <div className="w-[15%] px-1.5 py-3 text-sm font-normal text-gray-500">
                       Delivery Date
                     </div>
-                    <div className="w-[10%] px-3 py-3 text-sm font-normal text-gray-500">
+                    <div className="w-[10%] px-1.5 py-3 text-sm font-normal text-gray-500">
                       Brand
                     </div>
-                    <div className="w-[20%] px-3 py-3 text-sm font-normal text-gray-500">
+                    <div className="w-[20%] px-1.5 py-3 text-sm font-normal text-gray-500">
                       Number Of Piece
                     </div>
-                    <div className="w-[10%] px-3 py-3 text-sm font-normal text-gray-500">
+                    <div className="w-[10%] px-1.5 py-3 text-sm font-normal text-gray-500">
                       Price
                     </div>
-                    <div className="w-[20%] px-3 py-3 text-sm font-normal text-gray-500">
+                    <div className="w-[20%] px-1.5 py-3 text-sm font-normal text-gray-500">
                       Address
                     </div>
                   </div>
