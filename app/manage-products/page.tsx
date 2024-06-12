@@ -13,6 +13,14 @@ import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
+import { Card, CardHeader } from "@/components/ui/card";
+import Link from "next/link";
+import { IoMdAdd } from "react-icons/io";
+import { Input } from "@/components/ui/input";
+import { MdOutlineManageSearch } from "react-icons/md";
+import { debounce } from "lodash";
+import { Dialog } from "@/components/ui/dialog";
+import AddProductContent from "@/components/modules/products/AddProductContent";
 
 const schema = z
   .object({
@@ -102,6 +110,9 @@ const ManageProductsPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(6);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues,
@@ -112,6 +123,13 @@ const ManageProductsPage = () => {
     limit,
   });
   const updateMultipleProductPrice = useUpdateMultipleProductPrice();
+
+  const handleDebounce = debounce((event: any) => {
+    setSearchTerm(event.target.value);
+  }, 1000);
+
+  const handleAddProductModal = () =>
+    setIsAddProductModalOpen(!isAddProductModalOpen);
 
   const handleProductIds = (checked: boolean | string, id: number) => {
     let tempArr = selectedProductIds || [];
@@ -253,6 +271,38 @@ const ManageProductsPage = () => {
   return (
     <>
       <div className="existing-product-add-page">
+        <Card className="body-content-s1-card">
+          <CardHeader className="body-content-s1-search">
+            <ul className="right-filter-lists">
+              <li>
+                <Input
+                  type="text"
+                  placeholder="Search Product"
+                  className="search-box"
+                  onChange={handleDebounce}
+                />
+              </li>
+              <li>
+                <button
+                  className="theme-primary-btn add-btn p-2"
+                  onClick={handleAddProductModal}
+                >
+                  <IoMdAdd size={24} />
+                  <span className="d-none-mobile">Add Product</span>
+                </button>
+              </li>
+              <li>
+                <Link
+                  className="theme-primary-btn add-btn p-2"
+                  href="/manage-products"
+                >
+                  <MdOutlineManageSearch size={24} />
+                  <span className="d-none-mobile ml-1">Manage Products</span>
+                </Link>
+              </li>
+            </ul>
+          </CardHeader>
+        </Card>
         <FormProvider {...form}>
           <form
             className="m-auto flex w-full px-3 pl-[14%]"
@@ -354,6 +404,13 @@ const ManageProductsPage = () => {
             </div>
           </form>
         </FormProvider>
+
+        <Dialog
+          open={isAddProductModalOpen}
+          onOpenChange={handleAddProductModal}
+        >
+          <AddProductContent />
+        </Dialog>
       </div>
     </>
   );
