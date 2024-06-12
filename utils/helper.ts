@@ -89,3 +89,14 @@ export const stripHTML = (text: string) => {
 };
 
 export const generateRandomSkuNoWithTimeStamp = () => new Date().getTime();
+
+// FORMAT EG: Jun 10, 2024
+export const formatDate = (isoString: string): string => {
+  const date = new Date(isoString);
+  const options: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  };
+  return date.toLocaleDateString("en-US", options);
+};
