@@ -15,8 +15,11 @@ import {
 } from "@/apis/queries/rfq.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import ChatSection from "@/components/modules/rfqRequest/ChatSection";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 const RfqRequestPage = () => {
+  const pathname = usePathname();
   const [rfqQuoteId, setRfqQuoteId] = useState<number | undefined>();
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
 
@@ -28,9 +31,12 @@ const RfqRequestPage = () => {
     },
     !!rfqQuoteId,
   );
-  const rfqQuotesUsersByBuyerIdQuery = useFindOneRfqQuotesUsersByBuyerID({
-    rfqQuotesId: rfqQuoteId ?? 0,
-  });
+  const rfqQuotesUsersByBuyerIdQuery = useFindOneRfqQuotesUsersByBuyerID(
+    {
+      rfqQuotesId: rfqQuoteId ? rfqQuoteId : undefined,
+    },
+    !!rfqQuoteId,
+  );
   const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
   const rfqQuoteDetailsById = rfqQuotesUsersByBuyerIdQuery.data?.data;
 
@@ -61,9 +67,14 @@ const RfqRequestPage = () => {
                 </div>
               </Link>
             </li>
-            <li className="w-full py-1">
+            <li
+              className={cn(
+                pathname?.includes("rfq-request") ? "bg-gray-100" : "",
+                "w-full py-1",
+              )}
+            >
               <Link
-                href="/user-chat"
+                href={`/rfq-request?rfqQuotesId=${rfqQuoteId}`}
                 className="flex items-center justify-start rounded-xl p-1"
               >
                 <div className="flex h-[20px] w-[20px] items-center justify-center ">
@@ -131,7 +142,7 @@ const RfqRequestPage = () => {
                 </b>
               </span>
               <Link
-                href="/user-chat"
+                href="#"
                 className="inline-block rounded-sm bg-dark-orange px-3 py-2 text-xs font-bold capitalize text-white"
               >
                 checkout
