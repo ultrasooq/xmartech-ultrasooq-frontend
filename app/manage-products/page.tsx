@@ -271,41 +271,39 @@ const ManageProductsPage = () => {
   return (
     <>
       <div className="existing-product-add-page">
-        <Card className="body-content-s1-card">
-          <CardHeader className="body-content-s1-search">
-            <ul className="right-filter-lists">
-              <li>
-                <Input
-                  type="text"
-                  placeholder="Search Product"
-                  className="search-box"
-                  onChange={handleDebounce}
-                />
-              </li>
-              <li>
-                <button
-                  className="theme-primary-btn add-btn p-2"
-                  onClick={handleAddProductModal}
-                >
-                  <IoMdAdd size={24} />
-                  <span className="d-none-mobile">Add Product</span>
-                </button>
-              </li>
-              <li>
-                <Link
-                  className="theme-primary-btn add-btn p-2"
-                  href="/manage-products"
-                >
-                  <MdOutlineManageSearch size={24} />
-                  <span className="d-none-mobile ml-1">Manage Products</span>
-                </Link>
-              </li>
-            </ul>
-          </CardHeader>
-        </Card>
+        <div className="container m-auto">
+          <Card className="m-auto border-0 shadow-none">
+            <CardHeader className="mb-3 flex flex-row flex-nowrap items-center justify-between px-3 py-0">
+              <div className="w-auto">
+                <h2 className="text-2xl font-medium capitalize text-color-dark">
+                  Manage Product
+                </h2>
+              </div>
+              <ul className="right-filter-lists flex flex-row flex-nowrap gap-x-2">
+                <li>
+                  <Input
+                    type="text"
+                    placeholder="Search Product"
+                    className="search-box h-[40px]"
+                    onChange={handleDebounce}
+                  />
+                </li>
+                <li>
+                  <button
+                    className="theme-primary-btn add-btn p-2"
+                    onClick={handleAddProductModal}
+                  >
+                    <IoMdAdd size={24} />
+                    <span className="d-none-mobile">Add Product</span>
+                  </button>
+                </li>
+              </ul>
+            </CardHeader>
+          </Card>
+        </div>
         <FormProvider {...form}>
           <form
-            className="m-auto flex w-full px-3 pl-[14%]"
+            className="existing-product-main m-auto flex w-full px-3"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <div className="existing-product-wrap flex">

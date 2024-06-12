@@ -153,7 +153,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
-        <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+        <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
           <div className="flex w-full flex-wrap">
             <div className=" w-full">
               <div className="flex flex-wrap">
@@ -314,7 +314,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         Product Image
                       </label>
                       <div className="flex w-full flex-wrap">
-                        <div className="grid grid-cols-5">
+                        <div className="grid grid-cols-4">
                           {watchProductImages?.map(
                             (item: any, index: number) => (
                               <FormField

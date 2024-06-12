@@ -49,6 +49,14 @@ const RfqRequestPage = () => {
     }
   }, [allRfqQuotesQuery.data?.data]);
 
+  useEffect(() => {
+    const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
+
+    if (rfqQuotesDetails) {
+      setActiveSellerId(rfqQuotesDetails[0]?.id);
+    }
+  }, [allRfqQuotesQuery.data?.data]);
+
   return (
     <section className="m-auto flex w-full max-w-[1530px] py-8">
       <div className="w-[10%]">
@@ -94,7 +102,7 @@ const RfqRequestPage = () => {
             <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Request for RFQ</span>
             </div>
-            <RequestProductCard />
+            <RequestProductCard rfqId={rfqQuoteId} />
           </div>
           <div className="w-[20%] border-r border-solid border-gray-300">
             <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
@@ -189,6 +197,10 @@ const RfqRequestPage = () => {
                         address={
                           rfqQuoteDetailsById?.rfqQuotes_rfqQuoteAddress
                             ?.address
+                        }
+                        deliveryDate={
+                          rfqQuoteDetailsById?.rfqQuotes_rfqQuoteAddress
+                            ?.rfqDate
                         }
                         productName={item?.rfqProductDetails?.productName}
                       />

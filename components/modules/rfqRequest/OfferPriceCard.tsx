@@ -1,12 +1,14 @@
 import React from "react";
 import Image from "next/image";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { formatDate } from "@/utils/helper";
 
 type OfferPriceCardProps = {
   offerPrice: string;
   note: string;
   quantity: number;
   address: string;
+  deliveryDate: string;
   productName: string;
 };
 
@@ -15,6 +17,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   note,
   quantity,
   address,
+  deliveryDate,
   productName,
 }) => {
   return (
@@ -31,7 +34,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
           </div>
         </div>
         <div className="w-[15%] p-4 text-xs font-normal text-black">
-          {/* Oct 21, 2024 */}-
+          {formatDate(deliveryDate) || "-"}
         </div>
         <div className="w-[10%] p-4 text-xs font-normal text-black">-</div>
         <div className="w-[20%] p-4 text-xs font-normal text-black">

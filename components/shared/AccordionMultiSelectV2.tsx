@@ -46,7 +46,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
         className="mb-4 w-full rounded border border-solid border-gray-300 bg-white"
       >
         <AccordionItem value="item-1" className="border-b-0 px-3">
-          <AccordionTrigger className="flex h-auto min-h-[65px] justify-between py-0 hover:!no-underline">
+          <AccordionTrigger className="flex h-auto min-h-[48px] justify-between py-0 hover:!no-underline">
             <div className="my-2 flex flex-wrap">
               {(watcher || [])?.map((item: OptionProps) => (
                 <p

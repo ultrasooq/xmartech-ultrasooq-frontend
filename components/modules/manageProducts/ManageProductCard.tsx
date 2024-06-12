@@ -91,7 +91,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
             </div>
             <div className="form-container">
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="space-y-1 rounded bg-[#f1f1f1] p-1">
                   <div className="text-with-checkagree">
                     <label className="text-col" htmlFor="setUpPriceCheck">
                       Stock
@@ -102,7 +102,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                 </div>
 
-                <div className="space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="space-y-1 rounded bg-[#f1f1f1] p-1">
                   <div className="text-with-checkagree">
                     <label className="text-col" htmlFor="setUpPriceCheck">
                       Price
@@ -114,7 +114,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
               </div>
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <Label>Deliver After</Label>
                   <span>
                     {deliveryAfter
@@ -122,7 +122,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       : "-"}
                   </span>
                 </div>
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <Label>Product Location</Label>
                   <span>{productLocation || "-"}</span>
                 </div>
@@ -132,14 +132,14 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
           <div className="rightdiv">
             <div className="form-container">
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label>Time Open</label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>{timeOpen || "-"}</span>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label>Time Close</label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>{timeClose || "-"}</span>
@@ -148,13 +148,13 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               </div>
 
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Consumer Type
                   </label>
                   <span>{consumerType || "-"}</span>
                 </div>
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Sell Type
                   </label>
@@ -163,7 +163,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               </div>
 
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Vendor Discount
                   </label>
@@ -173,7 +173,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Consumer Discount
                   </label>
@@ -184,7 +184,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Min Quantity
                   </label>
@@ -192,7 +192,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     <span>{minQuantity || "-"}</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Max Quantity
                   </label>
@@ -201,7 +201,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Min Consumer
                   </label>
@@ -209,7 +209,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     <span>{minCustomer || "-"}</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Max Consumer
                   </label>
@@ -218,7 +218,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                 </div>
 
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Min Qty Consumer
                   </label>
@@ -226,7 +226,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     <span>{minQuantityPerCustomer || "-"}</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap space-y-2 rounded bg-[#f1f1f1] p-2">
+                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Max Qty Consumer
                   </label>
