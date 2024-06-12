@@ -48,9 +48,9 @@ const VendorCard: React.FC<VendorCardProps> = ({
             {offerPrice ? `$${offerPrice}` : "-"}
           </span>
         </div>
-        <div className="flex w-full">
+        {/* <div className="flex w-full">
           <Image src={RatingIcon} alt="rating-icon" />
-        </div>
+        </div> */}
       </div>
     </button>
   );
