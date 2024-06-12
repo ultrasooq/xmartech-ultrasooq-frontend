@@ -605,7 +605,7 @@ const CreateProductPage = () => {
                 <ProductDetailsSection />
 
                 <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
                     <div className="form-groups-common-sec-s1">
                       <DescriptionAndSpecificationSection />
                       <div className="mb-4 mt-4 inline-flex w-full items-center justify-end">

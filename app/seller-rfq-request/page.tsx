@@ -70,7 +70,7 @@ const SellerRfqRequestPage = () => {
             <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Customers</span>
             </div>
-            <div className="max-h-[100%] w-full overflow-y-auto p-2">
+            <div className="max-h-[720px] w-full overflow-y-auto p-2">
               {allRfqQuotesQuery?.isLoading ? (
                 <div className="my-2 space-y-2">
                   {Array.from({ length: 2 }).map((_, i) => (

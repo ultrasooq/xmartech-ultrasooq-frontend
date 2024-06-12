@@ -39,7 +39,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <ul className="theme-pagination-s1">
+    <ul className="theme-pagination-s1 pt-7">
       <li>
         <Button
           type="button"
