@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import TaskIcon from "@/public/images/task-icon.svg";
 import AttachIcon from "@/public/images/attach.svg";
@@ -12,8 +12,11 @@ import Link from "next/link";
 import { useAllRfqQuotesUsersBySellerId } from "@/apis/queries/rfq.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import ChatSection from "@/components/modules/rfqRequest/ChatSection";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 const SellerRfqRequestPage = () => {
+  const pathname = usePathname();
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
   const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
 
@@ -23,6 +26,24 @@ const SellerRfqRequestPage = () => {
   });
 
   const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
+
+  useEffect(() => {
+    const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
+
+    if (rfqQuotesDetails) {
+      setActiveSellerId(rfqQuotesDetails[0]?.id);
+      setQuoteProducts(
+        rfqQuotesDetails[0]?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
+          (i: any) => ({
+            ...i,
+            address:
+              rfqQuotesDetails[0]?.rfqQuotesUser_rfqQuotes
+                ?.rfqQuotes_rfqQuoteAddress.address,
+          }),
+        ) || [],
+      );
+    }
+  }, [allRfqQuotesQuery.data?.data]);
 
   return (
     <section className="m-auto flex w-full max-w-[1530px] py-8">
@@ -42,7 +63,12 @@ const SellerRfqRequestPage = () => {
                 </div>
               </Link>
             </li>
-            <li className="w-full py-1">
+            <li
+              className={cn(
+                pathname?.includes("seller-rfq-request") ? "bg-gray-100" : "",
+                "w-full py-1",
+              )}
+            >
               <Link
                 href="/user-chat"
                 className="flex items-center justify-start rounded-xl p-1"
@@ -60,15 +86,15 @@ const SellerRfqRequestPage = () => {
       </div>
       <div className="w-[90%] px-2">
         <div className="flex w-full rounded-sm border border-solid border-gray-300">
-          <div className="w-[20%] border-r border-solid border-gray-300">
+          {/* <div className="w-[20%] border-r border-solid border-gray-300">
             <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Request for RFQ</span>
             </div>
             <RequestProductCard />
-          </div>
-          <div className="w-[20%] border-r border-solid border-gray-300">
+          </div> */}
+          <div className="w-[40%] border-r border-solid border-gray-300">
             <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-              <span>Customers</span>
+              <span>Request for RFQ</span>
             </div>
             <div className="max-h-[720px] w-full overflow-y-auto p-2">
               {allRfqQuotesQuery?.isLoading ? (
@@ -130,7 +156,7 @@ const SellerRfqRequestPage = () => {
                 </b>
               </span>
               <Link
-                href="/user-chat"
+                href="#"
                 className="inline-block rounded-sm bg-dark-orange px-3 py-2 text-xs font-bold capitalize text-white"
               >
                 checkout

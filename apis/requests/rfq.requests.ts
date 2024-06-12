@@ -156,7 +156,7 @@ export const fetchAllRfqQuotesUsersByBuyerId = (payload: {
 };
 
 export const fetchOneRfqQuotesUsersByBuyerID = (payload: {
-  rfqQuotesId: number;
+  rfqQuotesId?: number;
 }) => {
   return axios({
     method: "GET",
