@@ -53,7 +53,7 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
                 type="number"
                 onWheel={(e) => e.currentTarget.blur()}
                 placeholder={placeholder}
-                className="!h-[48px] rounded border-gray-300 px-12 focus-visible:!ring-0"
+                className="!h-[48px] rounded border-gray-300 px-12 text-center focus-visible:!ring-0"
                 {...field}
                 value={counter}
                 onChange={(e) => {

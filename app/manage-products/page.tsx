@@ -276,7 +276,7 @@ const ManageProductsPage = () => {
             <CardHeader className="mb-3 flex flex-row flex-nowrap items-center justify-between px-3 py-0">
               <div className="w-auto">
                 <h2 className="text-2xl font-medium capitalize text-color-dark">
-                  Manage Product
+                  Products
                 </h2>
               </div>
               <ul className="right-filter-lists flex flex-row flex-nowrap gap-x-2">
