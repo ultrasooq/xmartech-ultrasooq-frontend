@@ -6,7 +6,7 @@ import AttachIcon from "@/public/images/attach.svg";
 import SmileIcon from "@/public/images/smile.svg";
 import SendIcon from "@/public/images/send-button.png";
 import OfferPriceCard from "@/components/modules/rfqRequest/OfferPriceCard";
-import VendorCard from "@/components/modules/rfqRequest/VendorCard";
+// import VendorCard from "@/components/modules/rfqRequest/VendorCard";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import Link from "next/link";
 import { useAllRfqQuotesUsersBySellerId } from "@/apis/queries/rfq.queries";
@@ -39,6 +39,9 @@ const SellerRfqRequestPage = () => {
             address:
               rfqQuotesDetails[0]?.rfqQuotesUser_rfqQuotes
                 ?.rfqQuotes_rfqQuoteAddress.address,
+            deliveryDate:
+              rfqQuotesDetails[0]?.rfqQuotesUser_rfqQuotes
+                ?.rfqQuotes_rfqQuoteAddress.rfqDate,
           }),
         ) || [],
       );
@@ -94,12 +97,6 @@ const SellerRfqRequestPage = () => {
           </div>
           <div className="w-[80%] px-2">
             <div className="flex w-full rounded-sm border border-solid border-gray-300">
-              {/* <div className="w-[20%] border-r border-solid border-gray-300">
-                <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-                  <span>Request for RFQ</span>
-                </div>
-                <RequestProductCard />
-              </div> */}
               <div className="w-[30%] border-r border-solid border-gray-300">
                 <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
                   <span>Request for RFQ</span>
@@ -126,14 +123,16 @@ const SellerRfqRequestPage = () => {
                         rfqQuotesProducts: any[];
                         rfqQuotes_rfqQuoteAddress: {
                           address: string;
+                          rfqDate: string;
                         };
                       };
                     }) => (
-                      <VendorCard
+                      <RequestProductCard
                         key={item?.id}
-                        name={`${item?.buyerIDDetail?.firstName} ${item?.buyerIDDetail?.lastName}`}
-                        profilePicture={item?.buyerIDDetail?.profilePicture}
-                        offerPrice={item?.offerPrice}
+                        rfqId={item?.id}
+                        // name={`${item?.buyerIDDetail?.firstName} ${item?.buyerIDDetail?.lastName}`}
+                        // profilePicture={item?.buyerIDDetail?.profilePicture}
+                        // offerPrice={item?.offerPrice}
                         onClick={() => {
                           setActiveSellerId(item?.id);
                           setQuoteProducts(
@@ -143,6 +142,9 @@ const SellerRfqRequestPage = () => {
                                 address:
                                   item?.rfqQuotesUser_rfqQuotes
                                     ?.rfqQuotes_rfqQuoteAddress.address,
+                                deliveryDate:
+                                  item?.rfqQuotesUser_rfqQuotes
+                                    ?.rfqQuotes_rfqQuoteAddress.rfqDate,
                               }),
                             ) || [],
                           );
@@ -203,6 +205,7 @@ const SellerRfqRequestPage = () => {
                             productName: string;
                           };
                           address: string;
+                          deliveryDate: string;
                         }) => (
                           <OfferPriceCard
                             key={item?.id}
@@ -210,6 +213,7 @@ const SellerRfqRequestPage = () => {
                             note={item?.note}
                             quantity={item?.quantity}
                             address={item?.address}
+                            deliveryDate={item?.deliveryDate}
                             productName={item?.rfqProductDetails?.productName}
                           />
                         ),
