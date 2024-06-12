@@ -228,7 +228,7 @@ export const useAllRfqQuotesUsersByBuyerId = (
 
 export const useFindOneRfqQuotesUsersByBuyerID = (
   payload: {
-    rfqQuotesId: number;
+    rfqQuotesId?: number;
   },
   enabled = true,
 ) =>
