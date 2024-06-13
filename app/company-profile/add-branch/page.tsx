@@ -181,6 +181,7 @@ const AddBranchPage = () => {
         return { label: item.countryName, value: item.countryName };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countriesData?.length]);
 
   const memoizedTags = useMemo(() => {

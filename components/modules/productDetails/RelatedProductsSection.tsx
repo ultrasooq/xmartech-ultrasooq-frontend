@@ -35,6 +35,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
 
   const me = useMe();
   const updateCartWithLogin = useUpdateCartWithLogin();
@@ -66,6 +67,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
       })) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     relatedProductsQuery?.data?.data,
     me.data?.data?.id,
@@ -183,13 +185,12 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
   };
 
   useEffect(() => {
-    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     if (accessToken) {
       setHaveAccessToken(true);
     } else {
       setHaveAccessToken(false);
     }
-  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+  }, [accessToken]);
 
   return (
     <section className="w-full py-8">

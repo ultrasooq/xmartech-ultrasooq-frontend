@@ -279,6 +279,7 @@ export default function CompanyProfilePage() {
         return { label: item.countryName, value: item.countryName };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countriesQuery?.data?.data?.length]);
 
   const memoizedTags = useMemo(() => {
@@ -287,11 +288,12 @@ export default function CompanyProfilePage() {
         return { label: item.tagName, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagsQuery?.data?.data?.length]);
 
   const memoizedLastTwoHundredYears = useMemo(() => {
     return getLastTwoHundredYears() || [];
-  }, [getLastTwoHundredYears().length]);
+  }, []);
 
   const handleUploadedFile = async (files: FileList | null) => {
     if (files) {

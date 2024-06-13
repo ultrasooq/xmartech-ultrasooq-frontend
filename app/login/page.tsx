@@ -151,6 +151,7 @@ export default function LoginPage() {
         handleSocialLogin(session.user);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   // console.log(session);

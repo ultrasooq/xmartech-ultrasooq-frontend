@@ -44,6 +44,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
 
     const result = totalRating / productReview?.length;
     return !isNaN(result) ? Math.floor(result) : 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productReview?.length]);
 
   const calculateRatings = useMemo(
@@ -58,6 +59,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       }
       return stars;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [productReview?.length],
   );
 
@@ -65,7 +67,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     return reviewsQuery?.data?.data?.some(
       (item: { userId: string }) => item.userId === me?.data?.data?.id,
     );
-  }, [productReview?.length]);
+  }, [me?.data?.data?.id, reviewsQuery?.data?.data]);
 
   return (
     <div className="w-full">

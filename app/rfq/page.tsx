@@ -48,6 +48,7 @@ const RfqPage = () => {
   const [selectedProductId, setSelectedProductId] = useState<number>();
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(8);
   // const cart = useCartStore();
@@ -131,7 +132,7 @@ const RfqPage = () => {
     }
   }, [
     rfqProductsQuery.data?.data,
-    me?.data?.data,
+    // me?.data?.data,
     //  cart.cart
   ]);
 
@@ -143,13 +144,12 @@ const RfqPage = () => {
   }, [isClickedOutside]);
 
   useEffect(() => {
-    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     if (accessToken) {
       setHaveAccessToken(true);
     } else {
       setHaveAccessToken(false);
     }
-  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+  }, [accessToken]);
 
   return (
     <>

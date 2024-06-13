@@ -105,7 +105,7 @@ export default function EditProfilePage() {
 
   const memoizedLastTwoHundredYears = useMemo(() => {
     return getLastTwoHundredYears() || [];
-  }, [getLastTwoHundredYears().length]);
+  }, []);
 
   const memoizedCountries = useMemo(() => {
     return (
@@ -113,6 +113,7 @@ export default function EditProfilePage() {
         return { label: item.countryName, value: item.countryName };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countriesQuery?.data?.data?.length]);
 
   const memoizedTags = useMemo(() => {
@@ -121,6 +122,7 @@ export default function EditProfilePage() {
         return { label: item.tagName, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagsQuery?.data?.data?.length]);
 
   const handleUploadedFile = async (files: FileList | null) => {
@@ -197,6 +199,7 @@ export default function EditProfilePage() {
           undefined,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     uniqueUser.data?.data?.userProfile?.length,
     memoizedTags?.length,

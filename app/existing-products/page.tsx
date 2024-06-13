@@ -45,6 +45,7 @@ const ExistingProductsPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(8);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
 
   const me = useMe();
@@ -69,6 +70,7 @@ const ExistingProductsPage = () => {
         return { label: item.brandName, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brandsQuery?.data?.data?.length]);
 
   const handleProductDebounce = debounce((event: any) => {
@@ -126,6 +128,7 @@ const ExistingProductsPage = () => {
           : "-",
       })) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     allProductsQuery?.data?.data,
     allProductsQuery?.data?.data?.length,
@@ -167,13 +170,12 @@ const ExistingProductsPage = () => {
   };
 
   useEffect(() => {
-    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     if (accessToken) {
       setHaveAccessToken(true);
     } else {
       setHaveAccessToken(false);
     }
-  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+  }, [accessToken]);
 
   return (
     <>

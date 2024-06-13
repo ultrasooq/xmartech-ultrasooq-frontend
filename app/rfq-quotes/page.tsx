@@ -80,6 +80,7 @@ const RfqQuotesPage = () => {
 
       return formattedDateString;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [memoizedRfqQuotesProducts],
   );
 

@@ -20,6 +20,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
   const workingDays = userDetails?.userBranch?.[0]?.workingDays;
   const memoizedParsedDays = useMemo(
     () => parsedDays(userDetails?.userBranch?.[0]?.workingDays),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [workingDays],
   );
 

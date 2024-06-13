@@ -576,6 +576,7 @@ const EditProductPage = () => {
         specification: product?.specification,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productQueryById?.data?.data, searchParams?.id]);
 
   return (

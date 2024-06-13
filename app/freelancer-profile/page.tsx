@@ -170,6 +170,7 @@ export default function FreelancerProfilePage() {
         return { label: item.countryName, value: item.countryName };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countriesQuery?.data?.data?.length]);
 
   const memoizedTags = useMemo(() => {
@@ -269,7 +270,8 @@ export default function FreelancerProfilePage() {
         tagList: tagList || undefined,
       });
     }
-  }, [userDetails.data?.status]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userDetails.data?.data, userDetails.data?.status]);
 
   return (
     <section className="relative w-full py-7">

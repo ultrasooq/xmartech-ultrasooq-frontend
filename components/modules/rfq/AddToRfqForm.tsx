@@ -439,6 +439,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         productImagesList: productImagesList || undefined,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProductId, productQueryById?.data]);
 
   // console.log(productQueryById.data?.data);

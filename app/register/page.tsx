@@ -188,6 +188,7 @@ export default function RegisterPage() {
         email: session?.user?.email || "",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   // console.log(session);

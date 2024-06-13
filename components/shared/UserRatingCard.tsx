@@ -92,6 +92,7 @@ const UserRatingCard: React.FC<UserRatingCardProps> = ({
       }
       return stars;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [rating],
   );
 

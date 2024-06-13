@@ -73,6 +73,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
     const result = totalRating / productReview?.length;
     return !isNaN(result) ? Math.floor(result) : 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productReview?.length]);
 
   const calculateRatings = useMemo(
@@ -87,6 +88,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       }
       return stars;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [productReview?.length],
   );
 

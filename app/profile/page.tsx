@@ -333,6 +333,7 @@ export default function ProfilePage() {
       setIdentityFrontImageFile(identityProof || "");
       setIdentityBackImageFile(identityProofBack || "");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me.data]);
 
   return (

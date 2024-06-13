@@ -27,7 +27,8 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
 
   useEffect(() => {
     setCounter(formContext.watch(name));
-  }, [formContext.watch(name)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formContext.watch(name), name]);
 
   return (
     <FormField

@@ -143,6 +143,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
         rating: reviewByIdQuery?.data?.data?.rating,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reviewId, reviewByIdQuery?.data?.data]);
 
   return (

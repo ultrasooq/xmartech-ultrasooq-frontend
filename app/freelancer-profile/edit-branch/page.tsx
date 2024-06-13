@@ -173,6 +173,7 @@ export default function EditBranchPage() {
         return { label: item.countryName, value: item.countryName };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countriesQuery?.data?.data?.length]);
 
   const memoizedTags = useMemo(() => {
@@ -181,6 +182,7 @@ export default function EditBranchPage() {
         return { label: item.tagName, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tagsQuery?.data?.data?.length]);
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
@@ -268,6 +270,7 @@ export default function EditBranchPage() {
         tagList: tagList || undefined,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     branchQueryById.data?.data,
     memoizedTags?.length,

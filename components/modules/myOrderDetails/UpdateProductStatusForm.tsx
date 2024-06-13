@@ -156,7 +156,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
                   ? true
                   : false,
       })),
-    [STATUS_LIST.length, orderProductStatus],
+    [orderProductStatus],
   );
 
   useEffect(() => {
@@ -166,6 +166,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
         status: orderProductStatus,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderProductStatus]);
 
   return (

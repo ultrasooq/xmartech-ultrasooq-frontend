@@ -570,6 +570,7 @@ const CreateProductPage = () => {
         },
       ]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchSetUpPrice, form.setValue]);
 
   useEffect(() => {

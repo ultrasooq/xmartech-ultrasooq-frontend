@@ -79,6 +79,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         return { label: item.countryName, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countriesQuery?.data?.data?.length]);
 
   const memoizedLocations = useMemo(() => {
@@ -87,6 +88,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         return { label: item.locationName, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationsQuery?.data?.data?.length]);
 
   const errors = formContext.formState.errors;

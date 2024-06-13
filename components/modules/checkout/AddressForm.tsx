@@ -119,6 +119,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
         return { label: item.countryName, value: item.countryName };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countriesQuery?.data?.data?.length]);
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
@@ -180,6 +181,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
         postCode: addressDetails?.postCode,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     addressByIdQuery.data?.data,
     countriesQuery?.data?.data?.length,
