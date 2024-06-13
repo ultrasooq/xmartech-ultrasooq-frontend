@@ -191,6 +191,14 @@ const SellerRfqRequestPage = () => {
                       Address
                     </div>
                   </div>
+                  {allRfqQuotesQuery.isLoading ? (
+                    <div className="m-2 space-y-2">
+                      {Array.from({ length: 2 }).map((_, i) => (
+                        <Skeleton key={i} className="h-24 w-full" />
+                      ))}
+                    </div>
+                  ) : null}
+
                   {quoteProducts?.map(
                     (item: {
                       id: number;

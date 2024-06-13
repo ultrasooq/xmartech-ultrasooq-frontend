@@ -537,7 +537,7 @@ const CreateProductPage = () => {
       if (activeProductType === "R") {
         router.push("/rfq");
       } else {
-        router.push("/products");
+        router.push("/manage-products");
       }
     } else {
       toast({
