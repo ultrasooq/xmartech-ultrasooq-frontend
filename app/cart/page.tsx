@@ -23,6 +23,7 @@ const CartListPage = () => {
   const { toast } = useToast();
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const deviceId = getOrCreateDeviceId() || "";
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
 
   const cartListByDeviceQuery = useCartListByDevice(
     {
@@ -160,13 +161,12 @@ const CartListPage = () => {
   };
 
   useEffect(() => {
-    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     if (accessToken) {
       setHaveAccessToken(true);
     } else {
       setHaveAccessToken(false);
     }
-  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+  }, [accessToken]);
 
   return (
     <div className="cart-page">

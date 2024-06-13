@@ -173,13 +173,15 @@ const AddBranchPage = () => {
   const upload = useUploadFile();
   const createCompanyBranch = useCreateCompanyBranch();
 
+  const countriesData = countriesQuery?.data?.data || [];
+
   const memoizedCountries = useMemo(() => {
     return (
-      countriesQuery?.data?.data.map((item: ICountries) => {
+      countriesData.map((item: ICountries) => {
         return { label: item.countryName, value: item.countryName };
       }) || []
     );
-  }, [countriesQuery?.data?.data?.length]);
+  }, [countriesData?.length]);
 
   const memoizedTags = useMemo(() => {
     return (
