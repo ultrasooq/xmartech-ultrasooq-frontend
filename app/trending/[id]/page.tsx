@@ -43,6 +43,8 @@ const ProductDetailsPage = () => {
   const deviceId = getOrCreateDeviceId() || "";
   const [activeTab, setActiveTab] = useState("description");
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  const type = searchQuery?.get("type");
 
   const me = useMe();
   const productQueryById = useProductById(
@@ -76,6 +78,7 @@ const ProductDetailsPage = () => {
   const productDetails = productQueryById.data?.data;
   const calculateTagIds = useMemo(
     () => productDetails?.productTags.map((item: any) => item.tagId).join(","),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [productDetails?.productTags?.length],
   );
 
@@ -218,18 +221,16 @@ const ProductDetailsPage = () => {
   };
 
   useEffect(() => {
-    const type = searchQuery?.get("type");
     if (type) setActiveTab(type);
-  }, [searchQuery?.get("type")]);
+  }, [type]);
 
   useEffect(() => {
-    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     if (accessToken) {
       setHaveAccessToken(true);
     } else {
       setHaveAccessToken(false);
     }
-  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+  }, [accessToken]);
 
   return (
     <>

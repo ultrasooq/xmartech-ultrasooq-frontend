@@ -61,7 +61,8 @@ export default function EditProfilePage() {
         aboutUs: userDetails.data?.data?.userProfile?.[0]?.aboutUs || "",
       });
     }
-  }, [userDetails.data?.status]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userDetails.data?.data, userDetails.data?.status]);
 
   return (
     <section className="relative w-full py-7">

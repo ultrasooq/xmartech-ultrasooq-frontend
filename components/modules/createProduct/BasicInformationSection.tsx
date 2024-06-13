@@ -75,6 +75,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         return { label: item.name, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryQuery?.data?.data?.children?.length]);
 
   const handleEditPreviewImage = (id: string, item: FileList) => {
@@ -138,15 +139,18 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     if (subCategoryById.data?.data?.children?.length) {
       setCatList([...catList, subCategoryById.data?.data]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentId, subCategoryById.data?.data?.children?.length, currentIndex]);
 
   useEffect(
     () => formContext.setValue("categoryId", Number(currentId)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentId],
   );
 
   useEffect(
     () => formContext.setValue("categoryLocation", listIds.join(",")),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [listIds?.length],
   );
 
