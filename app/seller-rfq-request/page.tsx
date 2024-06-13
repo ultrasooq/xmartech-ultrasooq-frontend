@@ -55,7 +55,7 @@ const SellerRfqRequestPage = () => {
           <ul>
             <li className="w-full py-1">
               <Link
-                href="/"
+                href="#"
                 className="flex items-center justify-start rounded-xl p-2"
               >
                 <div className="flex h-[20px] w-[20px] items-center justify-center ">
@@ -75,7 +75,7 @@ const SellerRfqRequestPage = () => {
               )}
             >
               <Link
-                href="/user-chat"
+                href="/seller-rfq-request"
                 className="flex items-center justify-start rounded-xl p-2 text-white"
               >
                 <div className="flex h-[20px] w-[20px] items-center justify-center ">
