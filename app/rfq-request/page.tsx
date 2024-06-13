@@ -104,7 +104,14 @@ const RfqRequestPage = () => {
             <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Request for RFQ</span>
             </div>
-            <RequestProductCard rfqId={rfqQuoteId} />
+            <RequestProductCard
+              rfqId={rfqQuoteId}
+              productImages={
+                rfqQuoteDetailsById?.rfqQuotesProducts?.map(
+                  (item: any) => item?.rfqProductDetails?.productImages,
+                )?.[0]
+              }
+            />
           </div>
           <div className="w-[18%] border-r border-solid border-gray-300">
             <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
@@ -116,6 +123,14 @@ const RfqRequestPage = () => {
                   {Array.from({ length: 2 }).map((_, i) => (
                     <Skeleton key={i} className="h-24 w-full" />
                   ))}
+                </div>
+              ) : null}
+
+              {!allRfqQuotesQuery?.isLoading && !rfqQuotesDetails?.length ? (
+                <div className="my-2 space-y-2">
+                  <p className="text-center text-sm font-normal text-gray-500">
+                    No data found
+                  </p>
                 </div>
               ) : null}
 
@@ -189,6 +204,15 @@ const RfqRequestPage = () => {
                     </div>
                   ) : null}
 
+                  {!rfqQuotesUsersByBuyerIdQuery?.isLoading &&
+                  !rfqQuoteDetailsById?.rfqQuotesProducts?.length ? (
+                    <div className="my-2 space-y-2 py-10">
+                      <p className="text-center text-sm font-normal text-gray-500">
+                        No data found
+                      </p>
+                    </div>
+                  ) : null}
+
                   {rfqQuoteDetailsById?.rfqQuotesProducts?.map(
                     (item: {
                       id: number;
@@ -197,6 +221,10 @@ const RfqRequestPage = () => {
                       quantity: number;
                       rfqProductDetails: {
                         productName: string;
+                        productImages: {
+                          id: number;
+                          image: string;
+                        }[];
                       };
                     }) => (
                       <OfferPriceCard
@@ -211,6 +239,9 @@ const RfqRequestPage = () => {
                         deliveryDate={
                           rfqQuoteDetailsById?.rfqQuotes_rfqQuoteAddress
                             ?.rfqDate
+                        }
+                        productImage={
+                          item?.rfqProductDetails?.productImages[0]?.image
                         }
                         productName={item?.rfqProductDetails?.productName}
                       />

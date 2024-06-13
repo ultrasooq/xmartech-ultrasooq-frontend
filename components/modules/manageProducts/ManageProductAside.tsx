@@ -106,8 +106,50 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
       <div className="manage_product_list_wrap">
         <h2>Manage the product</h2>
         <div className="all_select_button">
-          <button type="button">Select All</button>
-          <button type="button">Clean Select</button>
+          <button
+            type="button"
+            onClick={() => {
+              formContext.setValue("isHiddenRequired", true);
+              formContext.setValue("isProductConditionRequired", true);
+              formContext.setValue("isStockRequired", true);
+              formContext.setValue("isOfferPriceRequired", true);
+              formContext.setValue("isConsumerTypeRequired", true);
+              formContext.setValue("isSellTypeRequired", true);
+              formContext.setValue("isDeliveryAfterRequired", true);
+              formContext.setValue("isVendorDiscountRequired", true);
+              formContext.setValue("isConsumerDiscountRequired", true);
+              formContext.setValue("isMinQuantityRequired", true);
+              formContext.setValue("isMaxQuantityRequired", true);
+              formContext.setValue("isMinCustomerRequired", true);
+              formContext.setValue("isMaxCustomerRequired", true);
+              formContext.setValue("isMinQuantityPerCustomerRequired", true);
+              formContext.setValue("isMaxQuantityPerCustomerRequired", true);
+            }}
+          >
+            Select All
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              formContext.setValue("isHiddenRequired", false);
+              formContext.setValue("isProductConditionRequired", false);
+              formContext.setValue("isStockRequired", false);
+              formContext.setValue("isOfferPriceRequired", false);
+              formContext.setValue("isConsumerTypeRequired", false);
+              formContext.setValue("isSellTypeRequired", false);
+              formContext.setValue("isDeliveryAfterRequired", false);
+              formContext.setValue("isVendorDiscountRequired", false);
+              formContext.setValue("isConsumerDiscountRequired", false);
+              formContext.setValue("isMinQuantityRequired", false);
+              formContext.setValue("isMaxQuantityRequired", false);
+              formContext.setValue("isMinCustomerRequired", false);
+              formContext.setValue("isMaxCustomerRequired", false);
+              formContext.setValue("isMinQuantityPerCustomerRequired", false);
+              formContext.setValue("isMaxQuantityPerCustomerRequired", false);
+            }}
+          >
+            Clean Select
+          </button>
         </div>
 
         <div className="select_main_wrap">

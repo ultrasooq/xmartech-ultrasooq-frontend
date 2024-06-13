@@ -178,12 +178,19 @@ const ManageProductsPage = () => {
       return {
         productPriceId: ele,
         ...updatedFormData,
-        stock:
-          updatedFormData.stock && updatedFormData.stock !== 0
+        stock: updatedFormData.isStockRequired
+          ? undefined
+          : updatedFormData.stock && updatedFormData.stock !== 0
             ? updatedFormData.stock
             : undefined,
-        offerPrice:
-          updatedFormData.offerPrice && updatedFormData.offerPrice !== 0
+        offerPrice: updatedFormData.isOfferPriceRequired
+          ? undefined
+          : updatedFormData.offerPrice && updatedFormData.offerPrice !== 0
+            ? updatedFormData.offerPrice
+            : undefined,
+        productPrice: updatedFormData.isOfferPriceRequired
+          ? undefined
+          : updatedFormData.offerPrice && updatedFormData.offerPrice !== 0
             ? updatedFormData.offerPrice
             : undefined,
         deliveryAfter:
@@ -250,14 +257,37 @@ const ManageProductsPage = () => {
           updatedFormData.offerPrice && updatedFormData.offerPrice !== 0
             ? "ACTIVE"
             : "INACTIVE",
+        askForStock: updatedFormData.isStockRequired ? "true" : "false",
+        askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
       };
     });
+
+    const finalData = formatData.map((item) => {
+      delete item.isConsumerDiscountRequired,
+        delete item.isConsumerTypeRequired,
+        delete item.isDeliveryAfterRequired,
+        delete item.isHiddenRequired,
+        delete item.isMaxCustomerRequired,
+        delete item.isMaxQuantityPerCustomerRequired,
+        delete item.isMaxQuantityRequired,
+        delete item.isMinCustomerRequired,
+        delete item.isMinQuantityPerCustomerRequired,
+        delete item.isMinQuantityRequired,
+        delete item.isProductConditionRequired,
+        delete item.isSellTypeRequired,
+        delete item.isOfferPriceRequired;
+      delete item.isStockRequired;
+      delete item.isVendorDiscountRequired;
+
+      return item;
+    });
+
     console.log({
-      productPrice: [...formatData],
+      productPrice: [...finalData],
     });
     // return;
     const response = await updateMultipleProductPrice.mutateAsync({
-      productPrice: [...formatData],
+      productPrice: [...finalData],
     });
 
     if (response.status) {

@@ -68,6 +68,9 @@ const RfqQuotesPage = () => {
     () => (originalDateString: string) => {
       const originalDate = new Date(originalDateString);
 
+      if (!originalDate || originalDate.toString() === "Invalid Date")
+        return "-";
+
       const year = originalDate.getFullYear();
       const monthIndex = originalDate.getMonth();
       const day = originalDate.getDate();

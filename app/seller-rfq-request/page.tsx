@@ -38,10 +38,10 @@ const SellerRfqRequestPage = () => {
             ...i,
             address:
               rfqQuotesDetails[0]?.rfqQuotesUser_rfqQuotes
-                ?.rfqQuotes_rfqQuoteAddress.address,
+                ?.rfqQuotes_rfqQuoteAddress?.address,
             deliveryDate:
               rfqQuotesDetails[0]?.rfqQuotesUser_rfqQuotes
-                ?.rfqQuotes_rfqQuoteAddress.rfqDate,
+                ?.rfqQuotes_rfqQuoteAddress?.rfqDate,
           }),
         ) || [],
       );
@@ -106,6 +106,14 @@ const SellerRfqRequestPage = () => {
                 </div>
               ) : null}
 
+              {!allRfqQuotesQuery?.isLoading && !rfqQuotesDetails?.length ? (
+                <div className="my-2 space-y-2">
+                  <p className="text-center text-sm font-normal text-gray-500">
+                    No data found
+                  </p>
+                </div>
+              ) : null}
+
               {rfqQuotesDetails?.map(
                 (item: {
                   id: number;
@@ -116,7 +124,14 @@ const SellerRfqRequestPage = () => {
                     profilePicture: string;
                   };
                   rfqQuotesUser_rfqQuotes: {
-                    rfqQuotesProducts: any[];
+                    rfqQuotesProducts: {
+                      rfqProductDetails: {
+                        productImages: {
+                          id: number;
+                          image: string;
+                        }[];
+                      };
+                    }[];
                     rfqQuotes_rfqQuoteAddress: {
                       address: string;
                       rfqDate: string;
@@ -137,15 +152,20 @@ const SellerRfqRequestPage = () => {
                             ...i,
                             address:
                               item?.rfqQuotesUser_rfqQuotes
-                                ?.rfqQuotes_rfqQuoteAddress.address,
+                                ?.rfqQuotes_rfqQuoteAddress?.address,
                             deliveryDate:
                               item?.rfqQuotesUser_rfqQuotes
-                                ?.rfqQuotes_rfqQuoteAddress.rfqDate,
+                                ?.rfqQuotes_rfqQuoteAddress?.rfqDate,
                           }),
                         ) || [],
                       );
                     }}
                     isSelected={activeSellerId === item?.id}
+                    productImages={
+                      item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts?.map(
+                        (i: any) => i?.rfqProductDetails?.productImages,
+                      )?.[0]
+                    }
                   />
                 ),
               )}
@@ -199,6 +219,14 @@ const SellerRfqRequestPage = () => {
                     </div>
                   ) : null}
 
+                  {!allRfqQuotesQuery?.isLoading && !quoteProducts?.length ? (
+                    <div className="my-2 space-y-2 py-10">
+                      <p className="text-center text-sm font-normal text-gray-500">
+                        No data found
+                      </p>
+                    </div>
+                  ) : null}
+
                   {quoteProducts?.map(
                     (item: {
                       id: number;
@@ -207,6 +235,10 @@ const SellerRfqRequestPage = () => {
                       quantity: number;
                       rfqProductDetails: {
                         productName: string;
+                        productImages: {
+                          id: number;
+                          image: string;
+                        }[];
                       };
                       address: string;
                       deliveryDate: string;
@@ -218,6 +250,9 @@ const SellerRfqRequestPage = () => {
                         quantity={item?.quantity}
                         address={item?.address}
                         deliveryDate={item?.deliveryDate}
+                        productImage={
+                          item?.rfqProductDetails?.productImages[0]?.image
+                        }
                         productName={item?.rfqProductDetails?.productName}
                       />
                     ),
