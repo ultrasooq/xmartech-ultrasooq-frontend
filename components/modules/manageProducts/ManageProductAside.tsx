@@ -58,6 +58,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
         return { label: item.locationName, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationsQuery?.data?.data?.length]);
 
   const watchConsumerType = formContext.watch("consumerType");

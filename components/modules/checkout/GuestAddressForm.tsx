@@ -122,12 +122,14 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
     if (addressType === "shipping" && guestShippingAddress) {
       form.reset(guestShippingAddress);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guestShippingAddress, addressType]);
 
   useEffect(() => {
     if (addressType === "billing" && guestBillingAddress) {
       form.reset(guestBillingAddress);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guestBillingAddress, addressType]);
 
   return (

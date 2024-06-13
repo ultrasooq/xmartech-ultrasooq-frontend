@@ -34,6 +34,7 @@ const ProductReviewCard: React.FC<ProductReviewCardProps> = ({
       }
       return stars;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [rating],
   );
 

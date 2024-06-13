@@ -32,6 +32,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
       );
       return socialLinks;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails?.userSocialLink?.length]);
 
   return (

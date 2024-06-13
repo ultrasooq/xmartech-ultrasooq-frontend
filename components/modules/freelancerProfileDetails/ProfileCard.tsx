@@ -50,7 +50,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
     // console.log(isToday, getActiveDays, isActiveInCurrentDay);
 
     return isToday || (getActiveDays && isActiveInCurrentDay);
-  }, [workingDays, startTime, endTime, userDetails?.onlineOffline]);
+  }, [
+    workingDays,
+    startTime,
+    endTime,
+    userDetails?.onlineOfflineDateStatus,
+    userDetails?.onlineOffline,
+  ]);
 
   const handleTimeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (!e.target.value) return;

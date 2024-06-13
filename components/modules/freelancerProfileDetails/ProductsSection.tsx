@@ -57,7 +57,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = () => {
         };
       }) || []
     );
-  }, [productsQuery.data?.data]);
+  }, [productsQuery.data?.data, me.data?.data?.id]);
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({

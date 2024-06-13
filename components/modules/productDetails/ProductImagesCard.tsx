@@ -82,6 +82,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             : PlaceholderImage,
       ),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productDetails?.productImages?.length]);
 
   useEffect(() => {
