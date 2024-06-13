@@ -130,6 +130,7 @@ const ManageProductsPage = () => {
   const allManagedProductsQuery = useAllManagedProducts({
     page,
     limit,
+    term: searchTerm !== "" ? searchTerm : undefined,
   });
   const updateMultipleProductPrice = useUpdateMultipleProductPrice();
 
@@ -326,10 +327,10 @@ const ManageProductsPage = () => {
                         </div>
                       ) : null}
 
-                      {!allManagedProductsQuery.data?.data &&
+                      {!allManagedProductsQuery.data?.data.length &&
                       !allManagedProductsQuery.isLoading ? (
-                        <p className="w-full text-center text-base font-medium">
-                          No data found
+                        <p className="w-full py-10 text-center text-base font-medium">
+                          No product found
                         </p>
                       ) : null}
 
