@@ -461,7 +461,7 @@ const EditProductPage = () => {
       });
       productQueryById.refetch();
 
-      router.push("/products");
+      router.push("/manage-products");
     } else {
       toast({
         title: "Product Update Failed",

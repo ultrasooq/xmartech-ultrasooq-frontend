@@ -258,7 +258,7 @@ const ManageProductsPage = () => {
       });
       form.reset();
       setSelectedProductIds([]);
-      router.push("/products");
+      router.push("/manage-products");
     } else {
       toast({
         title: "Update Failed",
