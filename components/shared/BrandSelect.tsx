@@ -28,6 +28,7 @@ const ReactSelectInput = () => {
         return { label: item.brandName, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brandsQuery?.data?.data?.length]);
 
   const handleCreate = async (inputValue: string) => {

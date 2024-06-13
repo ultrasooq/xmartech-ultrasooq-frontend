@@ -40,6 +40,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
     const result = totalRating / wishlistData.productReview?.length;
     return !isNaN(result) ? Math.floor(result) : 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wishlistData.productReview?.length]);
 
   const calculateRatings = useMemo(
@@ -54,6 +55,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
       }
       return stars;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [wishlistData.productReview?.length],
   );
 

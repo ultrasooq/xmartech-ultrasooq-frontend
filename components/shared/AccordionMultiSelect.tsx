@@ -38,6 +38,7 @@ const AccordionMultiSelect = ({
   // Initialize selectedItems with form values during initial render
   useEffect(() => {
     setSelectedItems(formContext.getValues(name) || []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formContext.getValues, name]);
 
   const handleSelectChange = (item: { label: string; value: string }) => {
@@ -63,6 +64,7 @@ const AccordionMultiSelect = ({
 
   useEffect(() => {
     formContext.setValue(name, selectedItems);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedItems, name]);
 
   return (

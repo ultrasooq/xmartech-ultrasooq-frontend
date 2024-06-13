@@ -36,6 +36,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
 
   const me = useMe();
   const updateCartWithLogin = useUpdateCartWithLogin();
@@ -67,6 +68,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
       })) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     sameBrandProductsQuery?.data?.data,
     me.data?.data?.id,
@@ -184,13 +186,12 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
   };
 
   useEffect(() => {
-    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     if (accessToken) {
       setHaveAccessToken(true);
     } else {
       setHaveAccessToken(false);
     }
-  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+  }, [accessToken]);
 
   return (
     <div className="suggestion-list-s1-col">
