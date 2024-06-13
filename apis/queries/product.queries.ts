@@ -228,6 +228,7 @@ export const useAllManagedProducts = (
   payload: {
     page: number;
     limit: number;
+    term?: string;
   },
   enabled = true,
 ) =>

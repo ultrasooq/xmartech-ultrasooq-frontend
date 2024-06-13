@@ -159,6 +159,7 @@ export const updateMultipleProductPrice = (payload: any) => {
 export const getAllManagedProducts = (payload: {
   page: number;
   limit: number;
+  term?: string;
 }) => {
   return axios({
     method: "GET",
