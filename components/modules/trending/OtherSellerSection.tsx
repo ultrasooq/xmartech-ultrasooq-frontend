@@ -27,6 +27,7 @@ const OtherSellerSection = () => {
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
 
   const me = useMe();
   const productQueryById = useProductById(
@@ -128,13 +129,12 @@ const OtherSellerSection = () => {
   };
 
   useEffect(() => {
-    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     if (accessToken) {
       setHaveAccessToken(true);
     } else {
       setHaveAccessToken(false);
     }
-  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+  }, [accessToken]);
 
   //   console.log(productQueryById.data?.data);
   //   console.log(productQueryById.data?.otherSeller);
