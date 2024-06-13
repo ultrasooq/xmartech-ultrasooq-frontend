@@ -64,7 +64,7 @@ const RfqRequestPage = () => {
           <ul>
             <li className="w-full py-1">
               <Link
-                href="/"
+                href="#"
                 className="flex items-center justify-start rounded-xl p-2"
               >
                 <div className="flex h-[20px] w-[20px] items-center justify-center ">
