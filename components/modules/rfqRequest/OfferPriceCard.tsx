@@ -9,6 +9,7 @@ type OfferPriceCardProps = {
   quantity: number;
   address: string;
   deliveryDate: string;
+  productImage: string;
   productName: string;
 };
 
@@ -18,6 +19,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   quantity,
   address,
   deliveryDate,
+  productImage,
   productName,
 }) => {
   return (
@@ -25,8 +27,12 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
       <div className="flex w-full">
         <div className="w-[25%] text-xs font-normal text-gray-500">
           <div className="flex w-full flex-wrap">
-            <div className="border-color-[#DBDBDB] h-auto w-[48px] border border-solid p-1">
-              <Image src={PlaceholderImage} alt="preview" />
+            <div className="border-color-[#DBDBDB] relative h-[48px] w-[48px] border border-solid p-2">
+              <Image
+                src={productImage || PlaceholderImage}
+                alt="preview"
+                fill
+              />
             </div>
             <div className="font-nromal flex w-[calc(100%-3rem)] items-center justify-start pl-3 text-xs text-black">
               {productName || "-"}

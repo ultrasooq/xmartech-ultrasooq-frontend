@@ -93,6 +93,8 @@ export const generateRandomSkuNoWithTimeStamp = () => new Date().getTime();
 // FORMAT EG: Jun 10, 2024
 export const formatDate = (isoString: string): string => {
   const date = new Date(isoString);
+
+  if (!date || date.toString() === "Invalid Date") return "-";
   const options: Intl.DateTimeFormatOptions = {
     month: "short",
     day: "2-digit",
