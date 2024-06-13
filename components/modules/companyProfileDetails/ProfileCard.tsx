@@ -38,8 +38,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
 
     return getActiveDays && isActiveInCurrentDay;
   }, [
+    userDetails?.userBranch,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     userDetails?.userBranch?.map((item: any) => item?.workingDays),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     userDetails?.userBranch?.map((item: any) => item?.startTime),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     userDetails?.userBranch?.map((item: any) => item?.endTime),
   ]);
 

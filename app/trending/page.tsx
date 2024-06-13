@@ -70,6 +70,7 @@ const TrendingPage = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(8);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
 
   const me = useMe();
   const updateCartWithLogin = useUpdateCartWithLogin();
@@ -99,6 +100,7 @@ const TrendingPage = () => {
         return { label: item.brandName, value: item.id };
       }) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brandsQuery?.data?.data?.length]);
 
   const handleDebounce = debounce((event: any) => {
@@ -157,11 +159,14 @@ const TrendingPage = () => {
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
       })) || []
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     allProductsQuery?.data?.data,
     allProductsQuery?.data?.data?.length,
     sortBy,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     priceRange[0],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     priceRange[1],
     page,
     limit,
@@ -279,13 +284,12 @@ const TrendingPage = () => {
   };
 
   useEffect(() => {
-    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     if (accessToken) {
       setHaveAccessToken(true);
     } else {
       setHaveAccessToken(false);
     }
-  }, [getCookie(PUREMOON_TOKEN_KEY)]);
+  }, [accessToken]);
 
   return (
     <>

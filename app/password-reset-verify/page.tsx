@@ -1,5 +1,11 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -44,14 +50,14 @@ export default function PasswordResetVerifyPage() {
     [],
   );
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (count === 0) {
       return;
     }
     return setInterval(() => {
       setCount((prevCount) => prevCount - 1);
     }, 1000);
-  };
+  }, [count]);
 
   const onSubmit = async (formData: any) => {
     if (otp.join("") === "") {
@@ -177,6 +183,7 @@ export default function PasswordResetVerifyPage() {
         form.setValue("email", storedEmail.toLowerCase());
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -184,7 +191,7 @@ export default function PasswordResetVerifyPage() {
     const countDown = startTimer();
 
     return () => clearInterval(countDown);
-  }, [count]);
+  }, [count, startTimer]);
 
   return (
     <section className="relative w-full py-7">
