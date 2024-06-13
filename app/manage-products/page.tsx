@@ -206,12 +206,12 @@ const ManageProductsPage = () => {
             : undefined,
         minQuantityPerCustomer:
           updatedFormData.minQuantityPerCustomer &&
-          updatedFormData.minQuantityPerCustomer !== 0
+            updatedFormData.minQuantityPerCustomer !== 0
             ? updatedFormData.minQuantityPerCustomer
             : undefined,
         maxQuantityPerCustomer:
           updatedFormData.maxQuantityPerCustomer &&
-          updatedFormData.maxQuantityPerCustomer !== 0
+            updatedFormData.maxQuantityPerCustomer !== 0
             ? updatedFormData.maxQuantityPerCustomer
             : undefined,
         vendorDiscount:
@@ -220,12 +220,12 @@ const ManageProductsPage = () => {
             : undefined,
         consumerDiscount:
           updatedFormData.consumerDiscount &&
-          updatedFormData.consumerDiscount !== 0
+            updatedFormData.consumerDiscount !== 0
             ? updatedFormData.consumerDiscount
             : undefined,
         productCondition:
           updatedFormData.productCondition &&
-          updatedFormData.productCondition !== ""
+            updatedFormData.productCondition !== ""
             ? updatedFormData.productCondition
             : undefined,
         consumerType:
@@ -271,14 +271,15 @@ const ManageProductsPage = () => {
   return (
     <>
       <div className="existing-product-add-page">
-        <div className="container m-auto">
-          <Card className="m-auto border-0 shadow-none">
-            <CardHeader className="mb-3 flex flex-row flex-nowrap items-center justify-between px-3 py-0">
-              <div className="w-auto">
-                <h2 className="text-2xl font-medium capitalize text-color-dark">
-                  Products
-                </h2>
-              </div>
+
+        <div className="existing-product-add-layout">
+          <div className="container m-auto px-3">
+
+            {/* start: existing-product-add-headerPart */}
+            <div className="existing-product-add-headerPart">
+              <h2 className="text-2xl font-medium capitalize text-color-dark">
+                Products
+              </h2>
               <ul className="right-filter-lists flex flex-row flex-nowrap gap-x-2">
                 <li>
                   <Input
@@ -298,118 +299,122 @@ const ManageProductsPage = () => {
                   </button>
                 </li>
               </ul>
-            </CardHeader>
-          </Card>
-        </div>
-        <FormProvider {...form}>
-          <form
-            className="existing-product-main m-auto flex w-full px-3"
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <div className="existing-product-wrap flex">
-              <div className="existing-product-add-lists">
-                {allManagedProductsQuery.isLoading ? (
-                  <div className="mx-2 grid w-full grid-cols-3 gap-5">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                      <Skeleton key={index} className="h-96 w-full" />
-                    ))}
-                  </div>
-                ) : null}
-
-                {!allManagedProductsQuery.data?.data &&
-                !allManagedProductsQuery.isLoading ? (
-                  <p className="w-full text-center text-base font-medium">
-                    No data found
-                  </p>
-                ) : null}
-
-                {allManagedProductsQuery.data?.data?.map(
-                  (product: {
-                    id: number;
-                    productPrice_product: {
-                      productImages: {
-                        id: number;
-                        image: string | null;
-                        video: string | null;
-                      }[];
-                      productName: string;
-                    };
-                    productPrice: string;
-                    offerPrice: string;
-                    productPrice_productLocation: {
-                      locationName: string;
-                    };
-                    stock: number;
-                    consumerType: string;
-                    sellType: string;
-                    deliveryAfter: number;
-                    timeOpen: number | null;
-                    timeClose: number | null;
-                    vendorDiscount: number | null;
-                    consumerDiscount: number | null;
-                    minQuantity: number | null;
-                    maxQuantity: number | null;
-                    minCustomer: number | null;
-                    maxCustomer: number | null;
-                    minQuantityPerCustomer: number | null;
-                    maxQuantityPerCustomer: number | null;
-                  }) => (
-                    <ManageProductCard
-                      selectedIds={selectedProductIds}
-                      onSelectedId={handleProductIds}
-                      key={product?.id}
-                      id={product?.id}
-                      productImage={
-                        product?.productPrice_product?.productImages?.[0]?.image
-                      }
-                      productName={product?.productPrice_product?.productName}
-                      productPrice={product?.productPrice}
-                      offerPrice={product?.offerPrice}
-                      deliveryAfter={product?.deliveryAfter}
-                      productLocation={
-                        product?.productPrice_productLocation?.locationName
-                      }
-                      stock={product?.stock}
-                      consumerType={product?.consumerType}
-                      sellType={product?.sellType}
-                      timeOpen={product?.timeOpen}
-                      timeClose={product?.timeClose}
-                      vendorDiscount={product?.vendorDiscount}
-                      consumerDiscount={product?.consumerDiscount}
-                      minQuantity={product?.minQuantity}
-                      maxQuantity={product?.maxQuantity}
-                      minCustomer={product?.minCustomer}
-                      maxCustomer={product?.maxCustomer}
-                      minQuantityPerCustomer={product?.minQuantityPerCustomer}
-                      maxQuantityPerCustomer={product?.maxQuantityPerCustomer}
-                    />
-                  ),
-                )}
-
-                {allManagedProductsQuery.data?.totalCount > 6 ? (
-                  <Pagination
-                    page={page}
-                    setPage={setPage}
-                    totalCount={allManagedProductsQuery.data?.totalCount}
-                    limit={limit}
-                  />
-                ) : null}
-              </div>
-
-              <ManageProductAside
-                isLoading={allManagedProductsQuery.isPending}
-              />
             </div>
-          </form>
-        </FormProvider>
+            {/* end: existing-product-add-headerPart */}
 
-        <Dialog
-          open={isAddProductModalOpen}
-          onOpenChange={handleAddProductModal}
-        >
-          <AddProductContent />
-        </Dialog>
+            {/* start: existing-product-add-body */}
+            <div className="existing-product-add-body">
+              <FormProvider {...form}>
+                <form className="existing-product-add-wrapper"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                >
+                  <div className="left-content">
+                  <div className="existing-product-add-lists">
+                    {allManagedProductsQuery.isLoading ? (
+                      <div className="mx-2 grid w-full grid-cols-3 gap-5">
+                        {Array.from({ length: 3 }).map((_, index) => (
+                          <Skeleton key={index} className="h-96 w-full" />
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {!allManagedProductsQuery.data?.data &&
+                      !allManagedProductsQuery.isLoading ? (
+                      <p className="w-full text-center text-base font-medium">
+                        No data found
+                      </p>
+                    ) : null}
+
+                    {allManagedProductsQuery.data?.data?.map(
+                      (product: {
+                        id: number;
+                        productPrice_product: {
+                          productImages: {
+                            id: number;
+                            image: string | null;
+                            video: string | null;
+                          }[];
+                          productName: string;
+                        };
+                        productPrice: string;
+                        offerPrice: string;
+                        productPrice_productLocation: {
+                          locationName: string;
+                        };
+                        stock: number;
+                        consumerType: string;
+                        sellType: string;
+                        deliveryAfter: number;
+                        timeOpen: number | null;
+                        timeClose: number | null;
+                        vendorDiscount: number | null;
+                        consumerDiscount: number | null;
+                        minQuantity: number | null;
+                        maxQuantity: number | null;
+                        minCustomer: number | null;
+                        maxCustomer: number | null;
+                        minQuantityPerCustomer: number | null;
+                        maxQuantityPerCustomer: number | null;
+                      }) => (
+                        <ManageProductCard
+                          selectedIds={selectedProductIds}
+                          onSelectedId={handleProductIds}
+                          key={product?.id}
+                          id={product?.id}
+                          productImage={
+                            product?.productPrice_product?.productImages?.[0]?.image
+                          }
+                          productName={product?.productPrice_product?.productName}
+                          productPrice={product?.productPrice}
+                          offerPrice={product?.offerPrice}
+                          deliveryAfter={product?.deliveryAfter}
+                          productLocation={
+                            product?.productPrice_productLocation?.locationName
+                          }
+                          stock={product?.stock}
+                          consumerType={product?.consumerType}
+                          sellType={product?.sellType}
+                          timeOpen={product?.timeOpen}
+                          timeClose={product?.timeClose}
+                          vendorDiscount={product?.vendorDiscount}
+                          consumerDiscount={product?.consumerDiscount}
+                          minQuantity={product?.minQuantity}
+                          maxQuantity={product?.maxQuantity}
+                          minCustomer={product?.minCustomer}
+                          maxCustomer={product?.maxCustomer}
+                          minQuantityPerCustomer={product?.minQuantityPerCustomer}
+                          maxQuantityPerCustomer={product?.maxQuantityPerCustomer}
+                        />
+                      ),
+                    )}
+
+                    {allManagedProductsQuery.data?.totalCount > 6 ? (
+                      <Pagination
+                        page={page}
+                        setPage={setPage}
+                        totalCount={allManagedProductsQuery.data?.totalCount}
+                        limit={limit}
+                      />
+                    ) : null}
+                  </div>
+                  </div>
+                  <ManageProductAside
+                    isLoading={allManagedProductsQuery.isPending}
+                  />
+                </form>
+              </FormProvider>
+            </div>
+            {/* end: existing-product-add-body */}
+
+          </div>
+        </div>
       </div>
+      <Dialog
+        open={isAddProductModalOpen}
+        onOpenChange={handleAddProductModal}
+      >
+        <AddProductContent />
+      </Dialog>
     </>
   );
 };
