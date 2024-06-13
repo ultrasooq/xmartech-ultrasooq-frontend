@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 
 type CounterTextInputFieldProps = {
   name: string;
-  label: string;
+  label?: string;
   placeholder: string;
   errorMessage?: string;
 };
