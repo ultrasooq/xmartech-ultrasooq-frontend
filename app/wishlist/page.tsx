@@ -14,6 +14,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import Pagination from "@/components/shared/Pagination";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMe } from "@/apis/queries/user.queries";
 
 const WishlistPage = () => {
   const router = useRouter();
@@ -22,6 +24,9 @@ const WishlistPage = () => {
   const [limit, setLimit] = useState(10);
   const wishlistQuery = useWishlist({ page, limit });
   const deleteFromWishlist = useDeleteFromWishList();
+  const queryClient = useQueryClient();
+
+  const me = useMe();
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -32,6 +37,12 @@ const WishlistPage = () => {
         title: "Item removed from wishlist",
         description: "Check your wishlist for more details",
         variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({

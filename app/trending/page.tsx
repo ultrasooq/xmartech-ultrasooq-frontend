@@ -32,11 +32,11 @@ import {
 import ReactSlider from "react-slider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { stripHTML } from "@/utils/helper";
-import Image from "next/image";
-import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";
-import ChevronRightIcon from "@/public/images/nextarow.svg";
-import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
+// import { stripHTML } from "@/utils/helper";
+// import Image from "next/image";
+// import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";
+// import ChevronRightIcon from "@/public/images/nextarow.svg";
+// import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
 import Footer from "@/components/shared/Footer";
 import Pagination from "@/components/shared/Pagination";
 import { useToast } from "@/components/ui/use-toast";
@@ -232,10 +232,10 @@ const TrendingPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["existing-products"],
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({
@@ -269,10 +269,10 @@ const TrendingPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["existing-products"],
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({

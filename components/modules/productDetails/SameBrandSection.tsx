@@ -134,10 +134,10 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["same-brand-products"],
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({
@@ -171,10 +171,10 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["same-brand-products"],
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({

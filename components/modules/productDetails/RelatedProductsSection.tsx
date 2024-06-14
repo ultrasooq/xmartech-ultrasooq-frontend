@@ -133,10 +133,10 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["related-products"],
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({
@@ -170,10 +170,10 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["related-products"],
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({
