@@ -34,7 +34,7 @@ type AddToRfqFormProps = {
   selectedQuantity?: number;
 };
 
-const formSchema = z.object({
+const addFormSchema = z.object({
   offerPrice: z.coerce
     .number()
     .min(1, {
@@ -55,6 +55,32 @@ const formSchema = z.object({
   productImagesList: z.any().optional(),
 });
 
+const editFormSchema = z.object({
+  note: z
+    .string()
+    .trim()
+    .min(2, {
+      message: "Description is required",
+    })
+    .max(100, {
+      message: "Description must be less than 100 characters",
+    }),
+  productImagesList: z.any().optional(),
+});
+
+const addDefaultValues = {
+  offerPrice: 0,
+  note: "",
+  productImagesList: undefined,
+  productImages: [] as { path: File; id: string }[],
+};
+
+const editDefaultValues = {
+  note: "",
+  productImagesList: undefined,
+  productImages: [] as { path: File; id: string }[],
+};
+
 const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   onClose,
   selectedProductId,
@@ -63,13 +89,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      offerPrice: 0,
-      note: "",
-      productImagesList: undefined,
-      productImages: [] as { path: File; id: string }[],
-    },
+    resolver: zodResolver(selectedQuantity ? addFormSchema : editFormSchema),
+    defaultValues: selectedQuantity ? addDefaultValues : editDefaultValues,
   });
   const photosRef = useRef<HTMLInputElement>(null);
 
@@ -693,12 +714,14 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             rows={6}
           />
 
-          <ControlledTextInput
-            label="Offer Price"
-            name="offerPrice"
-            placeholder="Offer Price"
-            type="number"
-          />
+          {selectedQuantity ? (
+            <ControlledTextInput
+              label="Offer Price"
+              name="offerPrice"
+              placeholder="Offer Price"
+              type="number"
+            />
+          ) : null}
 
           <Button
             disabled={
@@ -727,7 +750,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                 Please wait
               </>
             ) : (
-              `${selectedQuantity ? "Save" : "Edit"}`
+              `${selectedQuantity ? "Add to Cart" : "Edit"}`
             )}
           </Button>
         </form>
