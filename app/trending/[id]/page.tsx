@@ -459,6 +459,9 @@ const ProductDetailsPage = () => {
                         productReview={
                           productQueryById?.data?.data?.productReview
                         }
+                        isCreator={
+                          me?.data?.data?.id === productDetails?.adminId
+                        }
                       />
                     </div>
                   </TabsContent>
