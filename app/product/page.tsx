@@ -537,7 +537,7 @@ const CreateProductPage = () => {
       return;
     }
     console.log("add:", updatedFormData);
-    return;
+
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {
