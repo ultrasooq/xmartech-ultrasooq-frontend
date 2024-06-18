@@ -280,6 +280,12 @@ const ProductDetailsPage = () => {
                 productDetails?.product_productPrice?.[0]?.adminDetail?.id
               }
               haveOtherSellers={!!productQueryById.data?.otherSeller?.length}
+              productProductPrice={
+                productDetails?.product_productPrice?.[0]?.productPrice
+              }
+              consumerDiscount={
+                productDetails?.product_productPrice?.[0]?.consumerDiscount
+              }
             />
           </div>
         </div>

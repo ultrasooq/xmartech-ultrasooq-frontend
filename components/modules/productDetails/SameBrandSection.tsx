@@ -66,6 +66,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
         ),
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -237,6 +238,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
                           }
                           inWishlist={item?.inWishlist}
                           haveAccessToken={haveAccessToken}
+                          consumerDiscount={item?.consumerDiscount}
                         />
                       </div>
                     </CarouselItem>

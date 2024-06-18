@@ -40,6 +40,8 @@ type ProductDescriptionCardProps = {
   userId?: number;
   sellerId?: number;
   haveOtherSellers?: boolean;
+  productProductPrice?: string;
+  consumerDiscount?: number;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -60,8 +62,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   userId,
   sellerId,
   haveOtherSellers,
+  productProductPrice,
+  consumerDiscount,
 }) => {
   const [quantity, setQuantity] = useState(1);
+
+  const calculateDiscountedPrice = () => {
+    const price = productProductPrice ? Number(productProductPrice) : 0;
+    const discount = consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
 
   const calculateAvgRating = useMemo(() => {
     const totalRating = productReview?.reduce(
@@ -123,7 +133,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             <span className="mt-1">({productReview?.length} Reviews)</span>
           </div>
           <h3>
-            ${offerPrice} <span>${productPrice}</span>
+            ${calculateDiscountedPrice()} <span>${productProductPrice}</span>
           </h3>
         </div>
       )}

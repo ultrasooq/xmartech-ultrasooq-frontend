@@ -31,6 +31,7 @@ type SameBrandProductCardProps = {
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
+  consumerDiscount?: number;
 };
 
 const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
@@ -46,12 +47,15 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   onWishlist,
   inWishlist,
   haveAccessToken,
+  consumerDiscount,
 }) => {
   const { toast } = useToast();
-  const offerPercentage = useMemo(
-    () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
-    [offerPrice, productPrice],
-  );
+
+  const calculateDiscountedPrice = () => {
+    const price = productProductPrice ? Number(productProductPrice) : 0;
+    const discount = consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
 
   const calculateAvgRating = useMemo(() => {
     const totalRating = productReview?.reduce(
@@ -97,9 +101,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
       <div className="product-list-s1-box">
         <Link href={`/trending/${id}`}>
           <div className="image-container relative mb-4">
-            <span className="discount">
-              {!isNaN(offerPercentage) ? offerPercentage : 0}%
-            </span>
+            <span className="discount">{consumerDiscount || 0}%</span>
             <Image
               src={
                 productImages?.[0]?.image &&
@@ -161,7 +163,12 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
               {calculateRatings(calculateAvgRating)}
               <span>{productReview?.length}</span>
             </div>
-            <h5>${productProductPrice}</h5>
+            <h5>
+              ${calculateDiscountedPrice()}{" "}
+              <span className="text-gray-500 !line-through">
+                ${productProductPrice}
+              </span>
+            </h5>
           </div>
         </Link>
       </div>

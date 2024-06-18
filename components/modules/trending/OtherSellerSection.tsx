@@ -172,6 +172,9 @@ const OtherSellerSection = () => {
                 offerPrice: string;
                 productPrice: string;
                 productId: number;
+                consumerDiscount: number;
+                askForPrice: string;
+                askForStock: string;
               }) => (
                 <SellerCard
                   key={item?.id}
@@ -181,6 +184,10 @@ const OtherSellerSection = () => {
                   productPrice={item?.productPrice}
                   onAdd={() => handleAddToCart(1, item?.id)}
                   onToCheckout={() => handleCheckoutPage(item?.id)}
+                  productProductPrice={item?.offerPrice}
+                  consumerDiscount={item?.consumerDiscount}
+                  askForPrice={item?.askForPrice}
+                  askForStock={item?.askForStock}
                 />
               ),
             )}

@@ -7,6 +7,10 @@ type SellerCardProps = {
   productPrice: string;
   onAdd: () => void;
   onToCheckout: () => void;
+  productProductPrice?: string;
+  consumerDiscount?: number;
+  askForPrice?: string;
+  askForStock?: string;
 };
 
 const SellerCard: React.FC<SellerCardProps> = ({
@@ -16,7 +20,17 @@ const SellerCard: React.FC<SellerCardProps> = ({
   productPrice,
   onAdd,
   onToCheckout,
+  productProductPrice,
+  consumerDiscount,
+  askForPrice,
+  askForStock,
 }) => {
+  const calculateDiscountedPrice = () => {
+    const price = productProductPrice ? Number(productProductPrice) : 0;
+    const discount = consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
+
   return (
     <div className="w-full">
       <div className="grid w-full grid-cols-3 border-b border-solid border-gray-300">
@@ -45,10 +59,12 @@ const SellerCard: React.FC<SellerCardProps> = ({
           <div className="w-full px-3 py-4">
             <div className="flex w-full items-end">
               <span className="text-md font-medium text-black">
-                {offerPrice ? `$${offerPrice}` : `$${0}`}
+                {calculateDiscountedPrice
+                  ? `$${calculateDiscountedPrice()}`
+                  : `$${0}`}
               </span>
               <span className="ml-2 text-sm font-medium text-light-gray line-through">
-                {productPrice ? `$${productPrice}` : `$${0}`}
+                {productProductPrice ? `$${productProductPrice}` : `$${0}`}
               </span>
             </div>
             <div className="flex w-full">
@@ -74,20 +90,31 @@ const SellerCard: React.FC<SellerCardProps> = ({
       </div>
 
       <div className="w-full border-b border-solid border-gray-300 p-3">
-        <div className="flex w-full items-center justify-end gap-2 text-sm font-medium">
-          <button
-            onClick={onAdd}
-            className="inline-block rounded-sm bg-dark-orange px-6 py-3 text-sm font-bold capitalize text-white"
-          >
-            ADD TO CART
-          </button>
-          <button
-            onClick={onToCheckout}
-            className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white"
-          >
-            BUY NOW
-          </button>
-        </div>
+        {askForPrice !== "true" && askForStock !== "true" ? (
+          <div className="flex w-full items-center justify-end gap-2 text-sm font-medium">
+            <button
+              onClick={onAdd}
+              className="inline-block rounded-sm bg-dark-orange px-6 py-3 text-sm font-bold capitalize text-white"
+            >
+              ADD TO CART
+            </button>
+            <button
+              onClick={onToCheckout}
+              className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white"
+            >
+              BUY NOW
+            </button>
+          </div>
+        ) : (
+          <div className="flex w-full items-center justify-end gap-2 text-sm font-medium">
+            <button
+              onClick={onToCheckout}
+              className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white"
+            >
+              MESSAGE
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

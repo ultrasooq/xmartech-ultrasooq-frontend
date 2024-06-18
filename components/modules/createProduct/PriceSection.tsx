@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CONSUMER_TYPE_LIST, SELL_TYPE_LIST } from "@/utils/constants";
 import { ICountries, ILocations, IOption } from "@/utils/types/common.types";
 import { useCountries, useLocation } from "@/apis/queries/masters.queries";
+import { Switch } from "@/components/ui/switch";
 
 interface Option {
   readonly label: string;
@@ -155,7 +156,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   return (
     <div className="form-groups-common-sec-s1">
       <h3>Price</h3>
-      <div className="mb-4 w-full space-y-2">
+      <div className="mb-4 flex w-full flex-row items-center gap-x-5">
         <div className="text-with-checkagree">
           <FormField
             control={formContext.control}
@@ -176,6 +177,40 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             )}
           />
         </div>
+
+        {!watchSetUpPrice ? (
+          <>
+            <div className="flex flex-row items-center gap-x-3">
+              <Controller
+                name="isStockRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Switch
+                    checked={!!field.value}
+                    onCheckedChange={field.onChange}
+                    className="data-[state=checked]:!bg-dark-orange"
+                  />
+                )}
+              />
+              <Label>Ask for the Stock</Label>
+            </div>
+
+            <div className="flex flex-row items-center gap-x-3">
+              <Controller
+                name="isOfferPriceRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Switch
+                    checked={!!field.value}
+                    onCheckedChange={field.onChange}
+                    className="data-[state=checked]:!bg-dark-orange"
+                  />
+                )}
+              />
+              <Label>Ask for the Price</Label>
+            </div>
+          </>
+        ) : null}
       </div>
 
       {watchSetUpPrice ? (

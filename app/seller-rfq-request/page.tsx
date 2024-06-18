@@ -48,6 +48,11 @@ const SellerRfqRequestPage = () => {
     }
   }, [allRfqQuotesQuery.data?.data]);
 
+  console.log(
+    rfqQuotesDetails?.[0]?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts
+      ?.map((item: any) => item?.rfqProductDetails?.productImages)
+      ?.map((item: any) => item?.[0]),
+  );
   return (
     <section className="m-auto flex w-full max-w-[1400px] py-8">
       <div className="w-[15%]">
@@ -161,11 +166,11 @@ const SellerRfqRequestPage = () => {
                       );
                     }}
                     isSelected={activeSellerId === item?.id}
-                    productImages={
-                      item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts?.map(
-                        (i: any) => i?.rfqProductDetails?.productImages,
-                      )?.[0]
-                    }
+                    productImages={item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts
+                      ?.map(
+                        (item: any) => item?.rfqProductDetails?.productImages,
+                      )
+                      ?.map((item: any) => item?.[0])}
                   />
                 ),
               )}

@@ -76,6 +76,7 @@ export interface TrendingProduct {
   inWishlist?: boolean;
   productProductPriceId?: number;
   productProductPrice?: string;
+  consumerDiscount?: number;
 }
 
 export type ProductImageProps = {
