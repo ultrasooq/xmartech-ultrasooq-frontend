@@ -35,6 +35,9 @@ export const useCreateProduct = () => {
         queryKey: ["products"],
       });
       queryClient.invalidateQueries({
+        queryKey: ["managed-products"],
+      });
+      queryClient.invalidateQueries({
         queryKey: ["existing-products"],
       });
       queryClient.invalidateQueries({
