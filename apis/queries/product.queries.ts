@@ -35,6 +35,9 @@ export const useCreateProduct = () => {
         queryKey: ["products"],
       });
       queryClient.invalidateQueries({
+        queryKey: ["existing-products"],
+      });
+      queryClient.invalidateQueries({
         queryKey: ["rfq-products"],
       });
     },
@@ -93,6 +96,9 @@ export const useDeleteProduct = () => {
       queryClient.invalidateQueries({
         queryKey: ["products"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["existing-products"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -110,6 +116,9 @@ export const useUpdateProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["existing-products"],
       });
     },
     onError: (err: APIResponseError) => {

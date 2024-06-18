@@ -43,10 +43,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onSelectedId,
 }) => {
   const { toast } = useToast();
-  const offerPercentage = useMemo(
-    () => Math.floor(100 - (item.offerPrice / item.productPrice) * 100),
-    [item.offerPrice, item.productPrice],
-  );
+  const calculateDiscountedPrice = () => {
+    const price = item.productProductPrice
+      ? Number(item.productProductPrice)
+      : 0;
+    const discount = item.consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
 
   const calculateAvgRating = useMemo(() => {
     const totalRating = item.productReview?.reduce(
@@ -103,7 +106,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         ) : null}
         <Link href={`/trending/${item.id}`}>
           <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-            <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
+            <span>{item.consumerDiscount || 0}%</span>
           </div>
           <div className="relative mx-auto mb-4 h-36 w-36">
             <Image
@@ -175,7 +178,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
               {calculateRatings(calculateAvgRating)}
               <span className="ml-2">{item.productReview?.length}</span>
             </div>
-            <h5>${item.productProductPrice}</h5>
+            <h5>
+              ${calculateDiscountedPrice()}{" "}
+              <span className="text-gray-500 !line-through">
+                ${item.productProductPrice}
+              </span>
+            </h5>
           </div>
         </Link>
       </div>

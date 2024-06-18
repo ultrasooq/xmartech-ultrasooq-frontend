@@ -65,6 +65,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         ),
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -133,10 +134,10 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["related-products"],
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({
@@ -170,10 +171,10 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: ["product-by-id", { productId, userId: me.data?.data?.id }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["related-products"],
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
       });
     } else {
       toast({
@@ -238,6 +239,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
                       }
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
+                      consumerDiscount={item?.consumerDiscount}
                     />
                   </div>
                 </CarouselItem>

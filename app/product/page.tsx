@@ -219,6 +219,8 @@ const formSchemaForTypeP = z
     specification: z.string().trim(),
     productPriceList: z.array(baseProductPriceItemSchema).optional(),
     setUpPrice: z.boolean(),
+    isStockRequired: z.boolean().optional(),
+    isOfferPriceRequired: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.setUpPrice) {
@@ -313,6 +315,8 @@ const formSchemaForTypeR = z
     description: z.string().trim(),
     specification: z.string().trim(),
     setUpPrice: z.boolean(),
+    isStockRequired: z.boolean().optional(),
+    isOfferPriceRequired: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.setUpPrice) {
@@ -365,6 +369,8 @@ const defaultValues = {
     },
   ],
   setUpPrice: true,
+  isStockRequired: false,
+  isOfferPriceRequired: false,
 };
 
 const CreateProductPage = () => {
@@ -461,6 +467,8 @@ const CreateProductPage = () => {
     updatedFormData.productPriceList = [
       {
         ...(activeProductType !== "R" && updatedFormData.productPriceList[0]),
+        askForStock: updatedFormData.isStockRequired ? "true" : "false",
+        askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
         productPrice:
           activeProductType === "R"
             ? updatedFormData.offerPrice ?? 0
@@ -495,6 +503,8 @@ const CreateProductPage = () => {
           timeOpen: 0,
           timeClose: 0,
           deliveryAfter: 0,
+          askForStock: updatedFormData.isStockRequired ? "true" : "false",
+          askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
           ...updatedFormData.productPriceList[0],
         },
       ];
@@ -503,6 +513,9 @@ const CreateProductPage = () => {
     delete updatedFormData.productLocationId;
     delete updatedFormData.setUpPrice;
     delete updatedFormData.productCondition;
+
+    delete updatedFormData.isStockRequired;
+    delete updatedFormData.isOfferPriceRequired;
 
     updatedFormData.skuNo = randomSkuNo;
     updatedFormData.offerPrice =
@@ -524,7 +537,7 @@ const CreateProductPage = () => {
       return;
     }
     console.log("add:", updatedFormData);
-    // return;
+    return;
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {

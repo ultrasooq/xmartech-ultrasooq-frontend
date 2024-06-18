@@ -13,12 +13,14 @@ type ReviewSectionProps = {
   productId?: string;
   hasAccessToken?: boolean;
   productReview: { rating: number }[];
+  isCreator: boolean;
 };
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({
   productId,
   hasAccessToken,
   productReview,
+  isCreator,
 }) => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [sortType, setSortType] = useState<"highest" | "lowest" | "newest">(
@@ -89,9 +91,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
           </div>
         </div>
         <div className="w-auto">
-          {hasAccessToken &&
-          me.data?.data?.tradeRole === "BUYER" &&
-          !reviewExists ? (
+          {hasAccessToken && !isCreator && !reviewExists ? (
             <button
               type="button"
               onClick={handleToggleReviewModal}

@@ -50,6 +50,18 @@ export const useAddToWishList = () => {
       queryClient.invalidateQueries({
         queryKey: ["cart-count-with-login"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["existing-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["same-brand-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["related-products"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -80,6 +92,18 @@ export const useDeleteFromWishList = () => {
       });
       queryClient.invalidateQueries({
         queryKey: ["cart-count-with-login"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["existing-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["same-brand-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["related-products"],
       });
     },
     onError: (err: APIResponseError) => {

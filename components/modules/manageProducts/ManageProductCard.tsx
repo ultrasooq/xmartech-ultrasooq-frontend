@@ -9,6 +9,8 @@ type ManageProductCardProps = {
   selectedIds?: number[];
   onSelectedId?: (args0: boolean | string, args1: number) => void;
   id: number;
+  askForPrice: string;
+  askForStock: string;
   productImage: string | null;
   productName: string;
   productPrice: string;
@@ -34,6 +36,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   selectedIds,
   onSelectedId,
   id,
+  askForPrice,
+  askForStock,
   productImage,
   productName,
   productPrice,
@@ -98,7 +102,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </label>
                   </div>
                   <div className="theme-inputValue-picker-upDown">
-                    <span>{stock || "-"}</span>
+                    <span>
+                      {askForStock === "true" ? "Ask for Stock" : stock || "-"}
+                    </span>
                   </div>
                 </div>
 
@@ -109,7 +115,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </label>
                   </div>
                   <div className="theme-inputValue-picker-upDown">
-                    <span>{offerPrice || "-"}</span>
+                    <span>
+                      {askForPrice === "true"
+                        ? "Ask for the Price"
+                        : offerPrice || "-"}
+                    </span>
                   </div>
                 </div>
               </div>

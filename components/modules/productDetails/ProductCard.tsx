@@ -30,6 +30,7 @@ type ProductCardProps = {
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
+  consumerDiscount: number;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -45,12 +46,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onWishlist,
   inWishlist,
   haveAccessToken,
+  consumerDiscount,
 }) => {
   const { toast } = useToast();
   const offerPercentage = useMemo(
     () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
     [offerPrice, productPrice],
   );
+
+  const calculateDiscountedPrice = () => {
+    const price = productProductPrice ? Number(productProductPrice) : 0;
+    const discount = consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
 
   const calculateAvgRating = useMemo(() => {
     const totalRating = productReview?.reduce(
@@ -95,7 +103,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
       <Link href={`/trending/${id}`}>
         <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-          <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
+          <span>{consumerDiscount || 0}%</span>
         </div>
         <div className="relative mx-auto mb-4 h-36 w-36">
           <Image
@@ -156,7 +164,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </h4>
           <div className="mt-2.5 w-full">
             <h4 className="font-lg font-normal uppercase text-olive-green">
-              ${productProductPrice}
+              ${calculateDiscountedPrice()}
             </h4>
           </div>
           <p className="truncate" title={shortDescription}>
@@ -167,7 +175,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <span className="ml-2">{productReview?.length}</span>
           </div>
           <span className="w-auto text-base font-normal text-light-gray">
-            ${productPrice}
+            ${productProductPrice}
           </span>
         </div>
       </Link>

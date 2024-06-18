@@ -65,14 +65,14 @@ const schema = z
       path: ["productCondition"],
     },
   )
-  .refine((data) => data.isStockRequired || !!data.stock, {
-    message: "Stock is required",
-    path: ["stock"],
-  })
-  .refine((data) => data.isOfferPriceRequired || !!data.offerPrice, {
-    message: "Offer Price is required",
-    path: ["offerPrice"],
-  })
+  // .refine((data) => data.isStockRequired || !!data.stock, {
+  //   message: "Stock is required",
+  //   path: ["stock"],
+  // })
+  // .refine((data) => data.isOfferPriceRequired || !!data.offerPrice, {
+  //   message: "Offer Price is required",
+  //   path: ["offerPrice"],
+  // })
   .refine((data) => !data.isDeliveryAfterRequired || !!data.deliveryAfter, {
     message: "Delivery After is required",
     path: ["deliveryAfter"],
@@ -367,6 +367,8 @@ const ManageProductsPage = () => {
                       {allManagedProductsQuery.data?.data?.map(
                         (product: {
                           id: number;
+                          askForPrice: string;
+                          askForStock: string;
                           productPrice_product: {
                             productImages: {
                               id: number;
@@ -400,6 +402,8 @@ const ManageProductsPage = () => {
                             onSelectedId={handleProductIds}
                             key={product?.id}
                             id={product?.id}
+                            askForPrice={product?.askForPrice}
+                            askForStock={product?.askForStock}
                             productImage={
                               product?.productPrice_product?.productImages?.[0]
                                 ?.image
