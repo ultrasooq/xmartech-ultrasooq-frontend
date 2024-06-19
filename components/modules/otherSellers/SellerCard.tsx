@@ -107,10 +107,7 @@ const SellerCard: React.FC<SellerCardProps> = ({
           </div>
         ) : (
           <div className="flex w-full items-center justify-end gap-2 text-sm font-medium">
-            <button
-              onClick={onToCheckout}
-              className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white"
-            >
+            <button className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white">
               MESSAGE
             </button>
           </div>
