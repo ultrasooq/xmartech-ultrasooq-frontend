@@ -372,6 +372,7 @@ const ManageProductsPage = () => {
                       {allManagedProductsQuery.data?.data?.map(
                         (product: {
                           id: number;
+                          status: string;
                           askForPrice: string;
                           askForStock: string;
                           productPrice_product: {
@@ -407,6 +408,7 @@ const ManageProductsPage = () => {
                             onSelectedId={handleProductIds}
                             key={product?.id}
                             id={product?.id}
+                            status={product?.status}
                             askForPrice={product?.askForPrice}
                             askForStock={product?.askForStock}
                             productImage={
