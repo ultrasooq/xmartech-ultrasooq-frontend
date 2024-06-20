@@ -319,6 +319,10 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           product?.product_productShortDescription?.map((item: any) => ({
             shortDescription: item?.shortDescription,
           })) || [],
+        productSpecificationList:
+          product?.product_productSpecification?.map((item: any) => ({
+            specification: item?.specification,
+          })) || [],
         description: product?.description,
         specification: product?.specification,
         status: "ACTIVE",
@@ -340,7 +344,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           },
         ],
       };
-
+      console.log(data);
       // return;
       const response = await createProduct.mutateAsync(data);
       if (response.status) {
