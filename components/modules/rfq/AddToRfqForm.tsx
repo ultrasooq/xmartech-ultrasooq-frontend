@@ -16,7 +16,8 @@ import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useCreateProduct,
-  useProductById,
+  // useProductById,
+  useRfqProductById,
   useUpdateProduct,
 } from "@/apis/queries/product.queries";
 import {
@@ -100,7 +101,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const createProduct = useCreateProduct();
   const addDuplicateProduct = useAddProductDuplicateRfq();
   const updateProduct = useUpdateProduct();
-  const productQueryById = useProductById(
+  const productQueryById = useRfqProductById(
     {
       productId: selectedProductId ? selectedProductId.toString() : "",
     },

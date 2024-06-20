@@ -8,6 +8,7 @@ import {
   fetchProductById,
   fetchProducts,
   fetchRelatedProducts,
+  fetchRfqProductById,
   fetchSameBrandProducts,
   getAllManagedProducts,
   getOneProductBySellerId,
@@ -80,6 +81,22 @@ export const useProductById = (
     queryKey: ["product-by-id", payload],
     queryFn: async () => {
       const res = await fetchProductById(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useRfqProductById = (
+  payload: { productId: string; userId?: number },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["product-rfq-by-id", payload],
+    queryFn: async () => {
+      const res = await fetchRfqProductById(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
@@ -207,6 +224,9 @@ export const useAddMultiplePriceForProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["existing-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["managed-products"],
       });
     },
     onError: (err: APIResponseError) => {
