@@ -338,7 +338,9 @@ const ProductDetailsPage = () => {
                     <div className="w-full bg-white">
                       <ReactQuill
                         theme="snow"
-                        value={productDetails?.description}
+                        value={
+                          productDetails?.description || "No Description found"
+                        }
                         readOnly
                         modules={{ toolbar: false }}
                         className="readonly-quill"
@@ -356,8 +358,36 @@ const ProductDetailsPage = () => {
                         }}
                         className="readonly-quill"
                       /> */}
-
-                      <div className="specification-sec">
+                      <div className="info-col py-3">
+                        <div className="row">
+                          <div className="col-12 col-md-12">
+                            <div className="col-12 col-md-12">
+                              <div className="form-group min-h-[160px] pl-8">
+                                {productDetails?.product_productSpecification
+                                  ?.length ? (
+                                  <ul className="list-disc">
+                                    {productDetails?.product_productSpecification?.map(
+                                      (item: {
+                                        id: number;
+                                        specification: string;
+                                      }) => (
+                                        <li key={item?.id}>
+                                          {item?.specification}
+                                        </li>
+                                      ),
+                                    )}
+                                  </ul>
+                                ) : (
+                                  <p className="text-[13px]">
+                                    No Specification found
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* <div className="specification-sec">
                         <h2>Specification</h2>
                         <table className="specification-table">
                           <tbody>
@@ -418,12 +448,12 @@ const ProductDetailsPage = () => {
                             </tr>
                           </tbody>
                         </table>
-                      </div>
+                      </div> */}
                     </div>
                   </TabsContent>
                   <TabsContent value="vendor" className="mt-0">
                     <div className="w-full bg-white">
-                      <VendorSection />
+                      <VendorSection adminId={productDetails?.product_productPrice?.[0]?.adminId}/>
                     </div>
                   </TabsContent>
                   <TabsContent value="reviews" className="mt-0">
