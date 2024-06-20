@@ -450,7 +450,7 @@ const ManageProductsPage = () => {
                     </div>
                   </div>
                   <ManageProductAside
-                    isLoading={allManagedProductsQuery.isPending}
+                    isLoading={updateMultipleProductPrice.isPending}
                   />
                 </form>
               </FormProvider>
