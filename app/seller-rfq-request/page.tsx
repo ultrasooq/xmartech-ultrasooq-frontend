@@ -14,12 +14,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ChatSection from "@/components/modules/rfqRequest/ChatSection";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { useCreatePrivateRoom } from "@/apis/queries/chat.queries";
+import { findRoomId } from "@/apis/requests/chat.requests";
+import useSocket from "../hooks/useSocket ";
+import { useAuth } from "@/context/AuthContext";
 
 const SellerRfqRequestPage = () => {
   const pathname = usePathname();
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
+  const [selectedProduct, setSelectedProduct] = useState<any>("");
   const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
-
+  const {user} = useAuth()
+  const createPrivateRoom = useCreatePrivateRoom();
   const allRfqQuotesQuery = useAllRfqQuotesUsersBySellerId({
     page: 1,
     limit: 10,
@@ -53,6 +59,32 @@ const SellerRfqRequestPage = () => {
       ?.map((item: any) => item?.rfqProductDetails?.productImages)
       ?.map((item: any) => item?.[0]),
   );
+
+  const handleSendMessage = async () => {
+    try {
+      if(selectedProduct.sellerID) {
+        const payloadRoomFind = {
+          creatorId: selectedProduct?.sellerID,
+          buyerId: selectedProduct?.buyerID
+        }
+
+        const findRoom = await findRoomId(payloadRoomFind);
+        if(findRoom?.data?.roomId) {
+
+        } else {
+          const payload = {
+            creatorId: selectedProduct?.sellerID,
+            participants: [selectedProduct?.sellerID, selectedProduct?.buyerID]
+          }
+          const res = await createPrivateRoom.mutateAsync(payload)
+        }
+      }
+    }catch(error) {
+
+    }
+  }
+
+  // console.log("lisa", selectedProduct)
   return (
     <section className="m-auto flex w-full max-w-[1400px] py-8">
       <div className="w-[15%]">
@@ -150,6 +182,7 @@ const SellerRfqRequestPage = () => {
                     // profilePicture={item?.buyerIDDetail?.profilePicture}
                     // offerPrice={item?.offerPrice}
                     onClick={() => {
+                      setSelectedProduct(item)
                       setActiveSellerId(item?.id);
                       setQuoteProducts(
                         item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
@@ -264,7 +297,7 @@ const SellerRfqRequestPage = () => {
                   )}
                 </div>
               </div>
-              <ChatSection />
+              {/* <ChatSection /> */}
             </div>
             <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
               <div className="flex w-full items-center">
@@ -285,7 +318,7 @@ const SellerRfqRequestPage = () => {
                     <Image src={SmileIcon} alt="smile-icon" />
                   </div>
                   <div className="flex w-auto">
-                    <button type="button" className="">
+                    <button onClick={handleSendMessage} type="button" className="">
                       <Image src={SendIcon} alt="send-icon" />
                     </button>
                   </div>
