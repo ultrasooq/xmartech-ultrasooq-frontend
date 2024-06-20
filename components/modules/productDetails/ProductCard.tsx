@@ -31,6 +31,7 @@ type ProductCardProps = {
   inWishlist?: boolean;
   haveAccessToken: boolean;
   consumerDiscount: number;
+  askForPrice?: string;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -47,12 +48,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   inWishlist,
   haveAccessToken,
   consumerDiscount,
+  askForPrice,
 }) => {
   const { toast } = useToast();
-  const offerPercentage = useMemo(
-    () => Math.floor(100 - (Number(offerPrice) / Number(productPrice)) * 100),
-    [offerPrice, productPrice],
-  );
 
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
@@ -121,13 +119,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </Link>
 
       <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-        <Button
-          variant="ghost"
-          className="relative h-8 w-8 rounded-full p-0 shadow-md"
-          onClick={onAdd}
-        >
-          <ShoppingIcon />
-        </Button>
+        {askForPrice !== "true" ? (
+          <Button
+            variant="ghost"
+            className="relative h-8 w-8 rounded-full p-0 shadow-md"
+            onClick={onAdd}
+          >
+            <ShoppingIcon />
+          </Button>
+        ) : null}
 
         <Link
           href={`/trending/${id}`}
@@ -180,7 +180,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </Link>
 
       <div className="mt-2">
-        {!productProductPrice || productProductPrice === "0" ? (
+        {askForPrice === "true" ? (
           <button
             type="button"
             className="inline-block w-full rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"

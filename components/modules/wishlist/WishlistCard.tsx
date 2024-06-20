@@ -22,13 +22,14 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   onDeleteFromWishlist,
   id,
 }) => {
-  // const offerPercentage = useMemo(
-  //   () =>
-  //     Math.floor(
-  //       100 - (wishlistData.offerPrice / wishlistData.productPrice) * 100,
-  //     ),
-  //   [wishlistData.offerPrice, wishlistData.productPrice],
-  // );
+  const calculateDiscountedPrice = () => {
+    const price = wishlistData.product_productPrice?.[0]?.productProductPrice
+      ? Number(wishlistData.product_productPrice?.[0]?.productProductPrice)
+      : 0;
+    const discount =
+      wishlistData.product_productPrice?.[0]?.consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
 
   const calculateAvgRating = useMemo(() => {
     const totalRating = wishlistData.productReview?.reduce(
@@ -75,9 +76,6 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
           />
         </Button>
         <Link href={`/trending/${wishlistData.id}`}>
-          {/* <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-            <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
-          </div> */}
           <div className="relative mx-auto mb-4 h-36 w-36">
             <Image
               src={
@@ -119,9 +117,25 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
               {calculateRatings(calculateAvgRating)}
               <span className="ml-2">{wishlistData.productReview?.length}</span>
             </div>
-            <h5>${wishlistData.product_productPrice?.[0]?.offerPrice}</h5>
           </div>
         </Link>
+        <div>
+          {wishlistData?.product_productPrice?.[0]?.askForPrice === "true" ? (
+            <button
+              type="button"
+              className="inline-block w-full rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"
+            >
+              Message
+            </button>
+          ) : (
+            <h5 className="py-1 text-[#1D77D1]">
+              ${calculateDiscountedPrice()}{" "}
+              <span className="text-gray-500 !line-through">
+                ${wishlistData.product_productPrice?.[0]?.offerPrice}
+              </span>
+            </h5>
+          )}
+        </div>
       </div>
     </div>
   );
