@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import Image from "next/image";
 import AddIcon from "@/public/images/add-icon.svg";
+import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useFieldArray, useFormContext } from "react-hook-form";
 
 const DescriptionSection = () => {
@@ -36,13 +37,7 @@ const DescriptionSection = () => {
               onClick={appendShortDescription}
               className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
             >
-              <Image
-                src={AddIcon}
-                className="mr-1"
-                width={14}
-                height={14}
-                alt="add-icon"
-              />
+              <Image src={AddIcon} className="mr-1" alt="add-icon" />
               <span>Add Short Description</span>
             </Button>
           </div>
@@ -61,12 +56,7 @@ const DescriptionSection = () => {
                   onClick={() => removeShortDescription(index)}
                   className="absolute right-2 top-6 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
                 >
-                  <Image
-                    src="/images/social-delete-icon.svg"
-                    height={32}
-                    width={32}
-                    alt="social-delete-icon"
-                  />
+                  <Image src={TrashIcon} alt="social-delete-icon" />
                 </Button>
               ) : null}
             </div>

@@ -16,7 +16,8 @@ import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useCreateProduct,
-  useProductById,
+  // useProductById,
+  useRfqProductById,
   useUpdateProduct,
 } from "@/apis/queries/product.queries";
 import {
@@ -100,7 +101,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const createProduct = useCreateProduct();
   const addDuplicateProduct = useAddProductDuplicateRfq();
   const updateProduct = useUpdateProduct();
-  const productQueryById = useProductById(
+  const productQueryById = useRfqProductById(
     {
       productId: selectedProductId ? selectedProductId.toString() : "",
     },
@@ -318,6 +319,10 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           product?.product_productShortDescription?.map((item: any) => ({
             shortDescription: item?.shortDescription,
           })) || [],
+        productSpecificationList:
+          product?.product_productSpecification?.map((item: any) => ({
+            specification: item?.specification,
+          })) || [],
         description: product?.description,
         specification: product?.specification,
         status: "ACTIVE",
@@ -339,7 +344,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           },
         ],
       };
-
+      console.log(data);
       // return;
       const response = await createProduct.mutateAsync(data);
       if (response.status) {
