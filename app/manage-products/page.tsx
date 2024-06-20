@@ -174,11 +174,6 @@ const ManageProductsPage = () => {
       status: "ACTIVE",
     };
 
-    console.log(
-      updatedFormData?.isOfferPriceRequired,
-      updatedFormData?.offerPrice,
-    );
-
     const formatData = selectedProductIds.map((ele: number) => {
       return {
         productPriceId: ele,

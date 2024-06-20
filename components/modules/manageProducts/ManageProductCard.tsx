@@ -91,14 +91,15 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   placeholder="blur"
                 />
               </div>
-              <div
+              {/* TODO: remove for now */}
+              {/* <div
                 className={cn(
                   status === "ACTIVE" ? "bg-green-500" : "bg-red-500",
                   "absolute right-0 top-0 rounded-md px-2 py-1 shadow-md",
                 )}
               >
                 <p className="text-xs font-semibold text-white">{status}</p>
-              </div>
+              </div> */}
             </div>
             <div className="text-container">
               <h3>{productName || "-"}</h3>
