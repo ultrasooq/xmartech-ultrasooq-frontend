@@ -92,8 +92,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     });
   };
 
-  console.log(item.productProductPrice);
-
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box relative hover:bg-slate-100">
@@ -131,13 +129,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {isInteractive ? (
           <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-            <Button
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full p-0 shadow-md"
-              onClick={onAdd}
-            >
-              <ShoppingIcon />
-            </Button>
+            {item?.askForPrice !== "true" ? (
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full p-0 shadow-md"
+                onClick={onAdd}
+              >
+                <ShoppingIcon />
+              </Button>
+            ) : null}
 
             <Link
               href={`/trending/${item.id}`}

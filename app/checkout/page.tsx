@@ -127,6 +127,15 @@ const CheckoutPage = () => {
     return [];
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
+  const calculateDiscountedPrice = (
+    offerPrice: string,
+    consumerDiscount: number,
+  ) => {
+    const price = offerPrice ? Number(offerPrice) : 0;
+    const discount = consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
+
   const calculateTotalAmount = () => {
     if (cartListByUser.data?.data?.length) {
       return cartListByUser.data?.data?.reduce(
@@ -135,12 +144,18 @@ const CheckoutPage = () => {
           curr: {
             productPriceDetails: {
               offerPrice: string;
+              consumerDiscount: number;
             };
             quantity: number;
           },
         ) => {
           return (
-            acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
+            acc +
+            +calculateDiscountedPrice(
+              curr.productPriceDetails?.offerPrice ?? 0,
+              curr?.productPriceDetails?.consumerDiscount,
+            ) *
+              curr.quantity
           );
         },
         0,
@@ -474,6 +489,9 @@ const CheckoutPage = () => {
                       productImages={
                         item.productPriceDetails?.productPrice_product
                           ?.productImages
+                      }
+                      consumerDiscount={
+                        item.productPriceDetails?.consumerDiscount
                       }
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromCart}

@@ -14,12 +14,21 @@ import validator from "validator";
 import { TrendingProduct } from "@/utils/types/common.types";
 import Link from "next/link";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { Item } from "@radix-ui/react-accordion";
 
 type ProducTableProps = {
   list: TrendingProduct[];
 };
 
 const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
+  const calculateDiscountedPrice = ({ item }: { item: any }) => {
+    const price = item.productProductPrice
+      ? Number(item.productProductPrice)
+      : 0;
+    const discount = item.consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
+
   return (
     <CardContent className="main-content w-full">
       <Card className="main-content-card !p-0 shadow-none">
@@ -61,7 +70,16 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
                   {/* <TableCell th-name="SKU No">{item?.skuNo}</TableCell> */}
                   <TableCell th-name="Brand">{item?.brandName}</TableCell>
                   <TableCell th-name="Price">
-                    ${item?.productProductPrice}
+                    {item?.askForPrice === "true" ? (
+                      <button
+                        type="button"
+                        className="inline-block rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"
+                      >
+                        Message
+                      </button>
+                    ) : (
+                      `$${calculateDiscountedPrice({ item })}`
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

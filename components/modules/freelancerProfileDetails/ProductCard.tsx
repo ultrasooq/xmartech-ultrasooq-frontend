@@ -32,10 +32,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
   inWishlist,
   haveAccessToken,
 }) => {
-  const offerPercentage = useMemo(
-    () => Math.floor(100 - (item.offerPrice / item.productPrice) * 100),
-    [item.offerPrice, item.productPrice],
-  );
+  const calculateDiscountedPrice = () => {
+    const price = item.productProductPrice
+      ? Number(item.productProductPrice)
+      : 0;
+    const discount = item.consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
 
   const calculateAvgRating = useMemo(() => {
     const totalRating = item.productReview?.reduce(
@@ -76,7 +79,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     >
       <div className="product-list-s1-box relative cursor-pointer ">
         <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-          <span>{!isNaN(offerPercentage) ? offerPercentage : 0}%</span>
+          <span>{item.consumerDiscount || 0}%</span>
         </div>
         <div className="relative mx-auto mb-4 h-36 w-36">
           <Image
@@ -98,13 +101,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {haveAccessToken ? (
           <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-            <Button
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full p-0 shadow-md"
-              onClick={onAdd}
-            >
-              <ShoppingIcon />
-            </Button>
+            {item?.askForPrice !== "true" ? (
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full p-0 shadow-md"
+                onClick={onAdd}
+              >
+                <ShoppingIcon />
+              </Button>
+            ) : null}
 
             <Link
               href={`/trending/${item.id}`}
@@ -148,8 +153,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {calculateRatings(calculateAvgRating)}
             <span className="ml-2">{item.productReview?.length}</span>
           </div>
-          <h5>${item.productProductPrice}</h5>
         </div>
+      </div>
+
+      <div>
+        {item?.askForPrice === "true" ? (
+          <button
+            type="button"
+            className="inline-block w-full rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"
+          >
+            Message
+          </button>
+        ) : (
+          <h5 className="py-1 text-[#1D77D1]">
+            ${calculateDiscountedPrice()}{" "}
+            <span className="text-gray-500 !line-through">
+              ${item.productProductPrice}
+            </span>
+          </h5>
+        )}
       </div>
     </div>
     // </Link>

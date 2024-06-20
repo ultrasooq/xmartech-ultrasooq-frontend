@@ -32,6 +32,7 @@ type SameBrandProductCardProps = {
   inWishlist?: boolean;
   haveAccessToken: boolean;
   consumerDiscount?: number;
+  askForPrice?: string;
 };
 
 const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
@@ -48,6 +49,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   inWishlist,
   haveAccessToken,
   consumerDiscount,
+  askForPrice,
 }) => {
   const { toast } = useToast();
 
@@ -119,13 +121,15 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
         </Link>
 
         <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-          <Button
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full p-0 shadow-md"
-            onClick={onAdd}
-          >
-            <ShoppingIcon />
-          </Button>
+          {askForPrice !== "true" ? (
+            <Button
+              variant="ghost"
+              className="relative h-8 w-8 rounded-full p-0 shadow-md"
+              onClick={onAdd}
+            >
+              <ShoppingIcon />
+            </Button>
+          ) : null}
 
           <Link
             href={`/trending/${id}`}
@@ -169,7 +173,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
         </Link>
 
         <div className="mt-2">
-          {!productProductPrice || productProductPrice === "0" ? (
+          {askForPrice === "true" ? (
             <button
               type="button"
               className="inline-block w-full rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"

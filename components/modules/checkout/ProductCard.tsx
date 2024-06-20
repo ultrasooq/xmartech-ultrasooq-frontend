@@ -17,6 +17,7 @@ type ProductCardProps = {
   onRemove: (args0: number) => void;
   onWishlist: (args0: number) => void;
   haveAccessToken: boolean;
+  consumerDiscount: number;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -31,8 +32,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onRemove,
   onWishlist,
   haveAccessToken,
+  consumerDiscount,
 }) => {
   const [quantity, setQuantity] = useState(1);
+
+  const calculateDiscountedPrice = () => {
+    const price = offerPrice ? Number(offerPrice) : 0;
+    const discount = consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
 
   useEffect(() => {
     setQuantity(productQuantity);
@@ -111,15 +119,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </figure>
       <div className="right-info">
         <h6>Price</h6>
-        <h5>
-          $
-          {quantity *
-            (offerPrice
-              ? isNaN(Number(offerPrice))
-                ? 0
-                : Number(offerPrice)
-              : 0)}
-        </h5>
+        <h5>${quantity * calculateDiscountedPrice()}</h5>
       </div>
     </div>
   );
