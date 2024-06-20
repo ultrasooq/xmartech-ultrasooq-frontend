@@ -42,6 +42,7 @@ type ProductDescriptionCardProps = {
   haveOtherSellers?: boolean;
   productProductPrice?: string;
   consumerDiscount?: number;
+  askForPrice?: string;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -64,6 +65,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   haveOtherSellers,
   productProductPrice,
   consumerDiscount,
+  askForPrice,
 }) => {
   const [quantity, setQuantity] = useState(1);
 
@@ -133,7 +135,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             <span className="mt-1">({productReview?.length} Reviews)</span>
           </div>
           <h3>
-            ${calculateDiscountedPrice()} <span>${productProductPrice}</span>
+            {askForPrice === "true" ? (
+              <span className="!font-semibold !text-dark-orange !no-underline">
+                Ask for Price
+              </span>
+            ) : (
+              <>
+                ${calculateDiscountedPrice()}{" "}
+                <span>${productProductPrice}</span>
+              </>
+            )}
           </h3>
         </div>
       )}

@@ -103,7 +103,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                   <div className="theme-inputValue-picker-upDown">
                     <span>
-                      {askForStock === "true" ? "Ask for Stock" : stock || "-"}
+                      {askForStock === "true"
+                        ? "Ask for Stock"
+                        : stock
+                          ? stock
+                          : "-"}
                     </span>
                   </div>
                 </div>

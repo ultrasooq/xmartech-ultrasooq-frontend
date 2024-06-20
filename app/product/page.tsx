@@ -532,6 +532,7 @@ const CreateProductPage = () => {
           deliveryAfter: 0,
           askForStock: updatedFormData.isStockRequired ? "true" : "false",
           askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
+          status: updatedFormData.isOfferPriceRequired ? "ACTIVE" : "INACTIVE",
           ...updatedFormData.productPriceList[0],
         },
       ];

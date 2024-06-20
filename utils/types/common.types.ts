@@ -77,6 +77,7 @@ export interface TrendingProduct {
   productProductPriceId?: number;
   productProductPrice?: string;
   consumerDiscount?: number;
+  askForPrice?: string;
 }
 
 export type ProductImageProps = {

@@ -22,7 +22,7 @@ type ProductCardProps = {
   productName: string;
   productImages: { id: number; image: string }[];
   shortDescription: string;
-  productProductPrice?: number;
+  productProductPrice?: string;
   offerPrice: number;
   productPrice: number;
   productReview: { rating: number }[];
@@ -164,7 +164,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </h4>
           <div className="mt-2.5 w-full">
             <h4 className="font-lg font-normal uppercase text-olive-green">
-              ${calculateDiscountedPrice()}
+              {!productProductPrice || productProductPrice === "0"
+                ? "-"
+                : `${calculateDiscountedPrice()}`}
             </h4>
           </div>
           <p className="truncate" title={shortDescription}>
@@ -174,11 +176,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {calculateRatings(calculateAvgRating)}
             <span className="ml-2">{productReview?.length}</span>
           </div>
-          <span className="w-auto text-base font-normal text-light-gray">
-            ${productProductPrice}
-          </span>
         </div>
       </Link>
+
+      <div className="mt-2">
+        {!productProductPrice || productProductPrice === "0" ? (
+          <button
+            type="button"
+            className="inline-block w-full rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"
+          >
+            Message
+          </button>
+        ) : (
+          <h5 className="py-1 text-[#1D77D1]">
+            ${calculateDiscountedPrice()}{" "}
+            <span className="text-gray-500 !line-through">
+              ${productProductPrice}
+            </span>
+          </h5>
+        )}
+      </div>
     </div>
   );
 };

@@ -92,6 +92,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     });
   };
 
+  console.log(item.productProductPrice);
+
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box relative hover:bg-slate-100">
@@ -178,14 +180,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
               {calculateRatings(calculateAvgRating)}
               <span className="ml-2">{item.productReview?.length}</span>
             </div>
-            <h5>
+          </div>
+        </Link>
+        <div>
+          {item?.askForPrice === "true" ? (
+            <button
+              type="button"
+              className="inline-block w-full rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"
+            >
+              Message
+            </button>
+          ) : (
+            <h5 className="py-1 text-[#1D77D1]">
               ${calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
                 ${item.productProductPrice}
               </span>
             </h5>
-          </div>
-        </Link>
+          )}
+        </div>
       </div>
     </div>
   );
