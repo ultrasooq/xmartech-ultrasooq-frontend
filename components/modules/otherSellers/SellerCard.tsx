@@ -11,6 +11,8 @@ type SellerCardProps = {
   consumerDiscount?: number;
   askForPrice?: string;
   askForStock?: string;
+  deliveryAfter?: number;
+  productLocation?: string;
 };
 
 const SellerCard: React.FC<SellerCardProps> = ({
@@ -24,6 +26,8 @@ const SellerCard: React.FC<SellerCardProps> = ({
   consumerDiscount,
   askForPrice,
   askForStock,
+  deliveryAfter,
+  productLocation,
 }) => {
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
@@ -44,7 +48,7 @@ const SellerCard: React.FC<SellerCardProps> = ({
             </h4>
             <ul>
               <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
-                Cash On Delivery available
+                Product Location: {productLocation || "N/A"}
               </li>
               <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
                 7 Days Replacement Policy
@@ -83,7 +87,11 @@ const SellerCard: React.FC<SellerCardProps> = ({
           </div>
           <div className="w-full px-3 py-4">
             <div className="my-2 flex w-full text-sm font-medium">
-              <p>FREE Delivery by Tomorrow, Friday if ordered before 5:05 PM</p>
+              {deliveryAfter ? (
+                <p>Delivery after {deliveryAfter} days</p>
+              ) : (
+                <p>No delivery days provided</p>
+              )}
             </div>
           </div>
         </div>

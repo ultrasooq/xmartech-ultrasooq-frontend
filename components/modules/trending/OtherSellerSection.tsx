@@ -137,7 +137,7 @@ const OtherSellerSection = () => {
   }, [accessToken]);
 
   //   console.log(productQueryById.data?.data);
-  //   console.log(productQueryById.data?.otherSeller);
+  console.log(productQueryById.data?.otherSeller);
 
   return (
     <section className="w-full">
@@ -175,6 +175,10 @@ const OtherSellerSection = () => {
                 consumerDiscount: number;
                 askForPrice: string;
                 askForStock: string;
+                deliveryAfter: number;
+                productPrice_productLocation: {
+                  locationName: string;
+                };
               }) => (
                 <SellerCard
                   key={item?.id}
@@ -188,6 +192,10 @@ const OtherSellerSection = () => {
                   consumerDiscount={item?.consumerDiscount}
                   askForPrice={item?.askForPrice}
                   askForStock={item?.askForStock}
+                  deliveryAfter={item?.deliveryAfter}
+                  productLocation={
+                    item?.productPrice_productLocation?.locationName
+                  }
                 />
               ),
             )}
