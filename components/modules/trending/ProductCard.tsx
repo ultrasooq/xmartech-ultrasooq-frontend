@@ -92,8 +92,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     });
   };
 
-  console.log(item.productProductPrice);
-
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box relative hover:bg-slate-100">
