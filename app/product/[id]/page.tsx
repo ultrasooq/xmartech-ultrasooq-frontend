@@ -227,6 +227,17 @@ const formSchema = z
           }),
       }),
     ),
+    productSpecificationList: z.array(
+      z.object({
+        specification: z
+          .string()
+          .trim()
+          .min(2, { message: "Specification is required" })
+          .max(20, {
+            message: "Specification must be less than 20 characters",
+          }),
+      }),
+    ),
     description: z.string().trim(),
     specification: z.string().trim(),
     productPriceList: z.array(baseProductPriceItemSchema).optional(),
@@ -288,6 +299,11 @@ const defaultValues = {
   productShortDescriptionList: [
     {
       shortDescription: "",
+    },
+  ],
+  productSpecificationList: [
+    {
+      specification: "",
     },
   ],
   description: "",
@@ -527,6 +543,17 @@ const EditProductPage = () => {
             },
           ];
 
+      const productSpecificationList = product?.product_productSpecification
+        ?.length
+        ? product?.product_productSpecification.map((item: any) => ({
+            specification: item?.specification,
+          }))
+        : [
+            {
+              specification: "",
+            },
+          ];
+
       form.reset({
         productName: product?.productName,
         categoryId: product?.categoryId ? product?.categoryId : 0,
@@ -572,6 +599,7 @@ const EditProductPage = () => {
           ? product?.placeOfOriginId
           : 0,
         productShortDescriptionList: productShortDescriptionList,
+        productSpecificationList: productSpecificationList,
         description: product?.description,
         specification: product?.specification,
       });

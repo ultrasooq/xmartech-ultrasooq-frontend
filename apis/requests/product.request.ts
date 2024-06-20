@@ -56,6 +56,24 @@ export const fetchProductById = (payload: {
   });
 };
 
+export const fetchRfqProductById = (payload: {
+  productId: string;
+  userId?: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/rfqFindOne`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const deleteProduct = (payload: IDeleteProductRequest) => {
   return axios({
     method: "DELETE",
@@ -184,6 +202,21 @@ export const getOneProductBySellerId = (payload: {
     method: "GET",
     url: urlcat(
       `${process.env.NEXT_PUBLIC_API_URL}/product/findOneProductBySellerId`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const getVendorDetails = (payload: { adminId: string }) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/vendorDetails`,
       payload,
     ),
     headers: {
