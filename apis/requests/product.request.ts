@@ -226,3 +226,22 @@ export const getVendorDetails = (payload: { adminId: string }) => {
     },
   });
 };
+
+export const getVendorProducts = (payload: {
+  adminId: string;
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/vendorAllProduct`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

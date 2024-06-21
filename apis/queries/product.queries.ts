@@ -13,6 +13,7 @@ import {
   getAllManagedProducts,
   getOneProductBySellerId,
   getVendorDetails,
+  getVendorProducts,
   updateMultipleProductPrice,
   updateProduct,
 } from "../requests/product.request";
@@ -307,6 +308,26 @@ export const useVendorDetails = (
     queryKey: ["vendor-details", payload],
     queryFn: async () => {
       const res = await getVendorDetails(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useVendorProducts = (
+  payload: {
+    adminId: string;
+    page: number;
+    limit: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["vendor-products", payload],
+    queryFn: async () => {
+      const res = await getVendorProducts(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
