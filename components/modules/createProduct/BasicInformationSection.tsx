@@ -533,13 +533,13 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         </div>
       </div>
 
-      {subCategoryById.data?.data?.category_dynamicFormCategory?.length ? (
+      {/* {subCategoryById.data?.data?.category_dynamicFormCategory?.length ? (
         <DynamicFormViewSection
           dynamicFormList={
             subCategoryById.data?.data?.category_dynamicFormCategory
           }
         />
-      ) : null}
+      ) : null} */}
     </>
   );
 };

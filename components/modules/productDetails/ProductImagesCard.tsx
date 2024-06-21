@@ -164,14 +164,15 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
           {isLoading ? <Skeleton className="min-h-[500px] w-full" /> : null}
 
-          {askForPrice === "true" ? (
+          {!isLoading && askForPrice === "true" ? (
             <Button
               type="button"
               className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
             >
               Message
             </Button>
-          ) : (
+          ) : null}
+          {!isLoading && askForPrice !== "true" ? (
             <div className="flex w-full gap-x-3 self-end">
               <Button
                 type="button"
@@ -188,7 +189,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 Buy Now
               </Button>
             </div>
-          )}
+          ) : null}
         </div>
 
         <div className="col-span-1 m-auto flex !h-full flex-col gap-4 self-start">
