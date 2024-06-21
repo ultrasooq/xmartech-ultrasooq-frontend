@@ -5,6 +5,18 @@ export interface CreatePrivateRoomRequest {
 }
 
 export interface FindRoomRequest {
-    creatorId: number;
+    rfqId: number;
     buyerId: number;
+}
+
+
+export interface SendMessageRequest {
+    content: string;
+    userId: number;
+    roomId: number
+}
+
+
+export interface ChatHistoryRequest {
+    roomId: number | null;
 }

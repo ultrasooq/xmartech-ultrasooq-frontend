@@ -10,6 +10,7 @@ interface AuthContextType {
   user: User | null;
   setUser: (user: User | null) => void;
   isAuthenticated: boolean;
+  clearUser: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,8 +20,12 @@ export const AuthProvider: React.FC<{ user: User | null; children: React.ReactNo
 
   const isAuthenticated = !!user;
 
+  const clearUser = () => {
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, setUser, isAuthenticated, clearUser }}>
       {children}
     </AuthContext.Provider>
   );

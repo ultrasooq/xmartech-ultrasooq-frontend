@@ -10,7 +10,6 @@ import SessionWrapper from "@/components/SessionWrapper";
 import { cookies } from 'next/headers'
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
-import ChatAuth from "@/components/modules/chatAuth/ChatAuth";
 import { AuthProvider } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketContext";
 
@@ -67,7 +66,6 @@ export default async function RootLayout({
                   <NextTopLoader color="#DB2302" showSpinner={false} />
                   {children}
                   <Toaster />
-                  <ChatAuth user={{id: userData?.data?.id}}/>
                 </main>
               </SocketProvider>
             </AuthProvider>

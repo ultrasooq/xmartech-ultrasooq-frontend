@@ -6,7 +6,7 @@ import { createPrivateRoom, findRoomId } from "../requests/chat.requests";
 export const useCreatePrivateRoom = () => {
     const queryClient = useQueryClient();
     return useMutation<
-        { data: any; message: string; status: boolean },
+        { data: any; message: string; status: boolean, id: string },
         APIResponseError,
         CreatePrivateRoomRequest
     >({
@@ -24,14 +24,3 @@ export const useCreatePrivateRoom = () => {
         },
     });
 };
-
-
-export const useFindRoom = (creatorId: number, buyerId: number) =>
-    useQuery<{ roomId: number | null }, APIResponseError>({
-        queryKey: ['find-room', { creatorId, buyerId }],
-        queryFn: async () => {
-            const res = await findRoomId({ creatorId, buyerId });
-            return res.data;
-        },
-        enabled: !!creatorId && !!buyerId, // Only run the query if both creatorId and buyerId are provided
-    });
