@@ -16,6 +16,7 @@ import { CONSUMER_TYPE_LIST, SELL_TYPE_LIST } from "@/utils/constants";
 import { ICountries, ILocations, IOption } from "@/utils/types/common.types";
 import { useCountries, useLocation } from "@/apis/queries/masters.queries";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 interface Option {
   readonly label: string;
@@ -158,63 +159,31 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   return (
     <div className="form-groups-common-sec-s1">
-      <h3>Price</h3>
-      <div className="mb-4 flex w-full flex-row items-center gap-x-5">
-        <div className="text-with-checkagree">
-          <FormField
-            control={formContext.control}
-            name="setUpPrice"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border bg-white p-4">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Set up price</FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
+      <h3 className={cn(activeProductType === "R" ? "!mb-0" : "")}>Price</h3>
+      {activeProductType !== "R" ? (
+        <div className="mb-4 flex w-full flex-row items-center gap-x-5">
+          <div className="text-with-checkagree">
+            <FormField
+              control={formContext.control}
+              name="setUpPrice"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border bg-white p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Set up price</FormLabel>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
-
-        {watchSetUpPrice ? (
-          <>
-            <div className="flex flex-row items-center gap-x-3">
-              <Controller
-                name="isStockRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
-                )}
-              />
-              <Label>Ask for the Stock</Label>
-            </div>
-
-            <div className="flex flex-row items-center gap-x-3">
-              <Controller
-                name="isOfferPriceRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
-                )}
-              />
-              <Label>Ask for the Price</Label>
-            </div>
-          </>
-        ) : null}
-      </div>
+      ) : null}
 
       {watchSetUpPrice ? (
         <>
@@ -414,8 +383,44 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             </div>
           ) : null}
 
+          {activeProductType !== "R" && watchSetUpPrice ? (
+            <div className="mb-4 flex w-full flex-row items-center gap-x-5">
+              <>
+                <div className="flex flex-row items-center gap-x-3">
+                  <Controller
+                    name="isOfferPriceRequired"
+                    control={formContext.control}
+                    render={({ field }) => (
+                      <Switch
+                        checked={!!field.value}
+                        onCheckedChange={field.onChange}
+                        className="data-[state=checked]:!bg-dark-orange"
+                      />
+                    )}
+                  />
+                  <Label>Ask for the Price</Label>
+                </div>
+
+                <div className="flex flex-row items-center gap-x-3">
+                  <Controller
+                    name="isStockRequired"
+                    control={formContext.control}
+                    render={({ field }) => (
+                      <Switch
+                        checked={!!field.value}
+                        onCheckedChange={field.onChange}
+                        className="data-[state=checked]:!bg-dark-orange"
+                      />
+                    )}
+                  />
+                  <Label>Ask for the Stock</Label>
+                </div>
+              </>
+            </div>
+          ) : null}
+
           <div className="mb-4 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
-            {activeProductType !== "R" ? (
+            {activeProductType !== "R" && !watchIsOfferPriceRequired ? (
               <FormField
                 control={formContext.control}
                 name="productPrice"
@@ -441,7 +446,8 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   </FormItem>
                 )}
               />
-            ) : (
+            ) : null}
+            {activeProductType === "R" && !watchIsOfferPriceRequired ? (
               <FormField
                 control={formContext.control}
                 name="offerPrice"
@@ -467,28 +473,30 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   </FormItem>
                 )}
               />
-            )}
+            ) : null}
 
-            <FormField
-              control={formContext.control}
-              name="productPriceList.[0].stock"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Stock</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      onWheel={(e) => e.currentTarget.blur()}
-                      placeholder="Stock"
-                      className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
-                      disabled={watchIsStockRequired}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {activeProductType !== "R" && !watchIsStockRequired ? (
+              <FormField
+                control={formContext.control}
+                name="productPriceList.[0].stock"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Stock</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        placeholder="Stock"
+                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                        disabled={watchIsStockRequired}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : null}
           </div>
         </>
       ) : null}

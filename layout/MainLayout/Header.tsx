@@ -117,7 +117,7 @@ const Header = () => {
       )?.children;
     }
     return tempArr || [];
-  }, [menuId]);
+  }, [categoryQuery.data?.data, menuId]);
 
   const memoizedSubCategory = useMemo(() => {
     let tempArr: any = [];
@@ -127,6 +127,7 @@ const Header = () => {
       )?.children;
     }
     return tempArr || [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, menuId]);
 
   const memoizedSubSubCategory = useMemo(() => {
@@ -137,6 +138,7 @@ const Header = () => {
       )?.children;
     }
     return tempArr || [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subCategoryId, categoryId, menuId]);
 
   const handleProfile = () => {
@@ -193,11 +195,11 @@ const Header = () => {
                 <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                   <a href="#">Store Location</a>
                 </li>
-                {userDetails?.data?.data?.tradeRole === "BUYER" ? (
-                  <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <Link href="/my-orders">Track Your Order</Link>
-                  </li>
-                ) : null}
+                {/* {userDetails?.data?.data?.tradeRole === "BUYER" ? ( */}
+                <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
+                  <Link href="/my-orders">Track Your Order</Link>
+                </li>
+                {/* ) : null} */}
                 <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                   <select className="border-0 bg-transparent text-white focus:outline-none">
                     <option className="bg-dark-cyan">USD</option>

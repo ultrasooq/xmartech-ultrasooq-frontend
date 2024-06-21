@@ -321,6 +321,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           })) || [],
         productSpecificationList:
           product?.product_productSpecification?.map((item: any) => ({
+            label: item?.label,
             specification: item?.specification,
           })) || [],
         description: product?.description,
@@ -548,11 +549,12 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                       onChange={(event) => {
                                         if (event.target.files) {
                                           if (
-                                            event.target.files[0].size > 1048576
+                                            event.target.files[0].size >
+                                            524288000
                                           ) {
                                             toast({
                                               title:
-                                                "One of your file size should be less than 1MB",
+                                                "One of your file size should be less than 500MB",
                                               variant: "danger",
                                             });
                                             return;
@@ -597,11 +599,12 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                       onChange={(event) => {
                                         if (event.target.files) {
                                           if (
-                                            event.target.files[0].size > 1048576
+                                            event.target.files[0].size >
+                                            524288000
                                           ) {
                                             toast({
                                               title:
-                                                "One of your file size should be less than 1MB",
+                                                "One of your file size should be less than 500MB",
                                               variant: "danger",
                                             });
                                             return;
@@ -671,11 +674,11 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                             const filesArray = Array.from(event.target.files);
                             console.log(filesArray);
                             if (
-                              filesArray.some((file) => file.size > 1048576)
+                              filesArray.some((file) => file.size > 524288000)
                             ) {
                               toast({
                                 title:
-                                  "One of your image size should be less than 1MB",
+                                  "One of your image size should be less than 500MB",
                                 variant: "danger",
                               });
                               return;

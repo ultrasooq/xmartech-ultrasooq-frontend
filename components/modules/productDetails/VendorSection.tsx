@@ -5,6 +5,7 @@ import PhoneCallIcon from "@/public/images/phone-call.svg";
 import { useVendorDetails } from "@/apis/queries/product.queries";
 import { COMPANY_UNIQUE_ID } from "@/utils/constants";
 import NoImagePlaceholder from "@/public/images/no-image.jpg";
+import Link from "next/link";
 
 type VendorSectionProps = {
   adminId?: string;
@@ -55,9 +56,19 @@ const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
         />
       </div>
       <div className="vendor-info">
-        <h2>
-          {vendor?.firstName} {vendor?.lastName}
-        </h2>
+        <Link
+          href={
+            vendor?.tradeRole === "COMPANY"
+              ? "/company-profile-details"
+              : vendor?.tradeRole === "FREELANCER"
+                ? "/freelancer-profile-details"
+                : "#"
+          }
+        >
+          <h2>
+            {vendor?.firstName} {vendor?.lastName}
+          </h2>
+        </Link>
         <ul className="vendor-contact-info">
           <li>
             <a href="mailto:test@gmail.com">
