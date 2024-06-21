@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import ProductCard from "./ProductCard";
 import { useMe } from "@/apis/queries/user.queries";
-import { useProducts } from "@/apis/queries/product.queries";
+import { useProducts, useVendorProducts } from "@/apis/queries/product.queries";
 import { stripHTML } from "@/utils/helper";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -11,9 +11,11 @@ import {
   useDeleteFromWishList,
 } from "@/apis/queries/wishlist.queries";
 
-type ProductsSectionProps = {};
+type ProductsSectionProps = {
+  sellerId?: string;
+};
 
-const ProductsSection: React.FC<ProductsSectionProps> = () => {
+const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -25,8 +27,18 @@ const ProductsSection: React.FC<ProductsSectionProps> = () => {
       limit: 10,
       status: "ALL",
     },
-    !!me?.data?.data?.id,
+    !!me?.data?.data?.id && !sellerId,
   );
+
+  const vendorProductsQuery = useVendorProducts(
+    {
+      adminId: sellerId || "",
+      page: 1,
+      limit: 10,
+    },
+    !!sellerId,
+  );
+
   const updateCartWithLogin = useUpdateCartWithLogin();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
@@ -60,6 +72,36 @@ const ProductsSection: React.FC<ProductsSectionProps> = () => {
       }) || []
     );
   }, [productsQuery.data?.data, me.data?.data?.id]);
+
+  const memoizedVendorProducts = useMemo(() => {
+    return (
+      vendorProductsQuery.data?.data?.map((item: any) => {
+        return {
+          id: item?.id,
+          productName: item?.productName || "-",
+          productPrice: item?.productPrice || 0,
+          offerPrice: item?.offerPrice || 0,
+          productImage: item?.productImages?.[0]?.image,
+          categoryName: item?.category?.name || "-",
+          skuNo: item?.skuNo,
+          brandName: item?.brand?.brandName || "-",
+          productReview: item?.productReview || [],
+          shortDescription: item?.product_productShortDescription?.length
+            ? item?.product_productShortDescription?.[0]?.shortDescription
+            : "-",
+          status: item?.status || "-",
+          productWishlist: item?.product_wishlist || [],
+          inWishlist: item?.product_wishlist?.find(
+            (ele: any) => ele?.userId === me.data?.data?.id,
+          ),
+          productProductPriceId: item?.product_productPrice?.[0]?.id,
+          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+          consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        };
+      }) || []
+    );
+  }, [vendorProductsQuery.data?.data, me.data?.data?.id]);
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -152,25 +194,47 @@ const ProductsSection: React.FC<ProductsSectionProps> = () => {
         Products
       </h2>
 
-      {!memoizedProducts.length ? (
+      {!sellerId && !memoizedProducts.length ? (
+        <p className="p-4 text-center text-base font-medium text-color-dark">
+          No Products Found
+        </p>
+      ) : null}
+
+      {sellerId && !memoizedVendorProducts.length ? (
         <p className="p-4 text-center text-base font-medium text-color-dark">
           No Products Found
         </p>
       ) : null}
 
       <div className="grid grid-cols-5 gap-3">
-        {memoizedProducts.map((item: any) => (
-          <ProductCard
-            key={item.id}
-            item={item}
-            onAdd={() => handleAddToCart(-1, item?.productProductPriceId)}
-            onWishlist={() =>
-              handleAddToWishlist(item.id, item?.productWishlist)
-            }
-            inWishlist={item?.inWishlist}
-            haveAccessToken={!!me.data?.data}
-          />
-        ))}
+        {!sellerId &&
+          memoizedProducts.map((item: any) => (
+            <ProductCard
+              key={item.id}
+              item={item}
+              onAdd={() => handleAddToCart(-1, item?.productProductPriceId)}
+              onWishlist={() =>
+                handleAddToWishlist(item.id, item?.productWishlist)
+              }
+              inWishlist={item?.inWishlist}
+              haveAccessToken={!!me.data?.data}
+            />
+          ))}
+
+        {sellerId &&
+          memoizedVendorProducts.map((item: any) => (
+            <ProductCard
+              key={item.id}
+              item={item}
+              onAdd={() => handleAddToCart(-1, item?.productProductPriceId)}
+              onWishlist={() =>
+                handleAddToWishlist(item.id, item?.productWishlist)
+              }
+              inWishlist={item?.inWishlist}
+              haveAccessToken={!!me.data?.data}
+              isSeller
+            />
+          ))}
       </div>
     </div>
   );

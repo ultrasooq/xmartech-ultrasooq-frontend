@@ -23,6 +23,7 @@ type ProductCardProps = {
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
+  isSeller?: boolean;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -31,6 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onWishlist,
   inWishlist,
   haveAccessToken,
+  isSeller,
 }) => {
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
@@ -123,17 +125,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <FiEye size={18} />
             </Link>
 
-            <Button
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full p-0 shadow-md"
-              onClick={onWishlist}
-            >
-              {inWishlist ? (
-                <FaHeart color="red" size={16} />
-              ) : (
-                <FaRegHeart size={16} />
-              )}
-            </Button>
+            {!isSeller ? (
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full p-0 shadow-md"
+                onClick={onWishlist}
+              >
+                {inWishlist ? (
+                  <FaHeart color="red" size={16} />
+                ) : (
+                  <FaRegHeart size={16} />
+                )}
+              </Button>
+            ) : null}
 
             {/* <Button
               variant="ghost"

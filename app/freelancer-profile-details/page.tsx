@@ -12,10 +12,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
 import { PlusIcon } from "@radix-ui/react-icons";
 import Footer from "@/components/shared/Footer";
+import { useSearchParams } from "next/navigation";
+import { useVendorDetails } from "@/apis/queries/product.queries";
+import VendorCard from "@/components/modules/companyProfileDetails/VendorCard";
+import VendorInformationSection from "@/components/modules/freelancerProfileDetails/VendorInformationSection";
+import VendorMoreInformationSection from "@/components/modules/freelancerProfileDetails/VendorMoreInformationSection";
 
 export default function FreelancerProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
+  const searchQuery = useSearchParams();
+  const sellerId = searchQuery?.get("userId");
+
+  const vendorQuery = useVendorDetails(
+    {
+      adminId: sellerId || "",
+    },
+    !!sellerId,
+  );
+
+  const vendor = vendorQuery.data?.data;
 
   const handleFreelancerProfilePage = () => router.push("/profile");
   const handleEditFreelancerProfilePage = () =>
@@ -46,10 +62,19 @@ export default function FreelancerProfileDetailsPage() {
                 My Profile
               </h2>
             </div>
-            <ProfileCard
-              userDetails={userDetails.data?.data}
-              onEdit={handleFreelancerProfilePage}
-            />
+
+            {!sellerId ? (
+              <ProfileCard
+                userDetails={userDetails.data?.data}
+                onEdit={handleFreelancerProfilePage}
+              />
+            ) : null}
+
+            {/* importing from company module */}
+            {sellerId ? (
+              <VendorCard vendor={vendor} isLoading={vendorQuery.isLoading} />
+            ) : null}
+
             <div className="mt-12 w-full">
               <Tabs defaultValue="profile-info">
                 <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
@@ -59,12 +84,14 @@ export default function FreelancerProfileDetailsPage() {
                   >
                     Profile Info
                   </TabsTrigger>
-                  <TabsTrigger
-                    value="ratings"
-                    className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
-                  >
-                    Ratings & Reviews
-                  </TabsTrigger>
+                  {!sellerId ? (
+                    <TabsTrigger
+                      value="ratings"
+                      className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
+                    >
+                      Ratings & Reviews
+                    </TabsTrigger>
+                  ) : null}
                   <TabsTrigger
                     value="products"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
@@ -74,35 +101,48 @@ export default function FreelancerProfileDetailsPage() {
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    <InformationSection
-                      userDetails={userDetails.data?.data}
-                      onEdit={handleFreelancerProfilePage}
-                    />
+                    {!sellerId ? (
+                      <InformationSection
+                        userDetails={userDetails.data?.data}
+                        onEdit={handleFreelancerProfilePage}
+                      />
+                    ) : null}
+
+                    {sellerId ? (
+                      <VendorInformationSection vendor={vendor} />
+                    ) : null}
 
                     {!userDetails.data?.data?.userBranch?.length ? (
                       <>
                         <p className="pt-5 text-center text-lg font-medium text-color-dark">
                           No Branch Exists
                         </p>
-                        <div className="mb-5 flex w-full items-center justify-end pt-4">
-                          <button
-                            type="button"
-                            onClick={handleAddFreelancerBranchPage}
-                            className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
-                          >
-                            <PlusIcon className="mr-1 h-5 w-5" />
-                            Add
-                          </button>
-                        </div>
+                        {!sellerId ? (
+                          <div className="mb-5 flex w-full items-center justify-end pt-4">
+                            <button
+                              type="button"
+                              onClick={handleAddFreelancerBranchPage}
+                              className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                            >
+                              <PlusIcon className="mr-1 h-5 w-5" />
+                              Add
+                            </button>
+                          </div>
+                        ) : null}
                       </>
                     ) : null}
 
-                    {userDetails?.data?.data?.userBranch?.length ? (
+                    {!sellerId &&
+                    userDetails?.data?.data?.userBranch?.length ? (
                       <MoreInformationSection
                         userDetails={userDetails.data?.data}
                         onEditProfile={handleEditFreelancerProfilePage}
                         onEditBranch={handleEditFreelancerBranchPage}
                       />
+                    ) : null}
+
+                    {sellerId && userDetails?.data?.data?.userBranch?.length ? (
+                      <VendorMoreInformationSection vendor={vendor} />
                     ) : null}
                   </div>
                 </TabsContent>
@@ -113,7 +153,7 @@ export default function FreelancerProfileDetailsPage() {
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    <ProductsSection />
+                    <ProductsSection sellerId={sellerId as string} />
                   </div>
                 </TabsContent>
               </Tabs>
