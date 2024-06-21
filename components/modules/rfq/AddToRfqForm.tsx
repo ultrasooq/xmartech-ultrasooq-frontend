@@ -321,6 +321,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           })) || [],
         productSpecificationList:
           product?.product_productSpecification?.map((item: any) => ({
+            label: item?.label,
             specification: item?.specification,
           })) || [],
         description: product?.description,

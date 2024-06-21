@@ -359,65 +359,36 @@ const ProductDetailsPage = () => {
                   </TabsContent>
                   <TabsContent value="specification" className="mt-0">
                     <div className="w-full bg-white">
-                      {/* <ReactQuill
-                        theme="snow"
-                        value={productDetails?.specification}
-                        readOnly
-                        modules={{
-                          toolbar: false,
-                        }}
-                        className="readonly-quill"
-                      /> */}
-                      <div className="info-col py-3">
-                        <div className="row">
-                          <div className="col-12 col-md-12">
-                            <div className="col-12 col-md-12">
-                              <div className="form-group min-h-[160px] pl-8">
-                                {productDetails?.product_productSpecification
-                                  ?.length ? (
-                                  <ul className="list-disc">
-                                    {productDetails?.product_productSpecification?.map(
-                                      (item: {
-                                        id: number;
-                                        specification: string;
-                                      }) => (
-                                        <li key={item?.id}>
-                                          {item?.specification}
-                                        </li>
-                                      ),
-                                    )}
-                                  </ul>
-                                ) : (
-                                  <p className="text-[13px]">
-                                    No Specification found
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
+                      {!productDetails?.product_productSpecification?.length ? (
+                        <div className="specification-sec">
+                          <h2>No specification found</h2>
                         </div>
-                      </div>
+                      ) : null}
                       {productDetails?.product_productSpecification?.length ? (
                         <div className="specification-sec">
                           <h2>Specification</h2>
                           <table className="specification-table">
                             <tbody>
-                              {productDetails?.product_productSpecification?.map(
-                                (item: {
-                                  id: number;
-                                  specification: string;
-                                }) => (
-                                  <tr key={item?.id}>
-                                    <td>{item?.specification}</td>
-                                  </tr>
-                                ),
-                              )}
+                              <tr className="grid grid-cols-2">
+                                {productDetails?.product_productSpecification?.map(
+                                  (item: {
+                                    id: number;
+                                    label: string;
+                                    specification: string;
+                                  }) => (
+                                    <div key={item?.id}>
+                                      <th>{item?.label}</th>
+                                      <td>{item?.specification}</td>
+                                    </div>
+                                  ),
+                                )}
+                              </tr>
                             </tbody>
                           </table>
                         </div>
                       ) : null}
 
-                      <div className="specification-sec">
+                      {/* <div className="specification-sec">
                         <h2>Specification</h2>
                         <table className="specification-table">
                           <tbody>
@@ -469,16 +440,9 @@ const ProductDetailsPage = () => {
                               <th>Applicable Season</th>
                               <td>Spring and Summer</td>
                             </tr>
-                            <tr>
-                              <th>Cn</th>
-                              <td colSpan={3}>Knit</td>
-                            </tr>
-                            <tr>
-                              <td colSpan={4} />
-                            </tr>
                           </tbody>
                         </table>
-                      </div>
+                      </div>*/}
                     </div>
                   </TabsContent>
                   <TabsContent value="vendor" className="mt-0">

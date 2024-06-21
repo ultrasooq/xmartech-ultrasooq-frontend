@@ -229,6 +229,13 @@ const formSchema = z
     ),
     productSpecificationList: z.array(
       z.object({
+        label: z
+          .string()
+          .trim()
+          .min(2, { message: "Label is required" })
+          .max(20, {
+            message: "Label must be less than 20 characters",
+          }),
         specification: z
           .string()
           .trim()
@@ -303,6 +310,7 @@ const defaultValues = {
   ],
   productSpecificationList: [
     {
+      label: "",
       specification: "",
     },
   ],
@@ -546,10 +554,12 @@ const EditProductPage = () => {
       const productSpecificationList = product?.product_productSpecification
         ?.length
         ? product?.product_productSpecification.map((item: any) => ({
+            label: item?.label,
             specification: item?.specification,
           }))
         : [
             {
+              label: "",
               specification: "",
             },
           ];
