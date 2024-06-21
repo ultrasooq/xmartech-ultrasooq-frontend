@@ -1,6 +1,6 @@
 "use client";
 import { useMe } from "@/apis/queries/user.queries";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import ProfileCard from "@/components/modules/freelancerProfileDetails/ProfileCard";
 import InformationSection from "@/components/modules/freelancerProfileDetails/InformationSection";
@@ -12,7 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
 import { PlusIcon } from "@radix-ui/react-icons";
 import Footer from "@/components/shared/Footer";
-import { useSearchParams } from "next/navigation";
 import { useVendorDetails } from "@/apis/queries/product.queries";
 import VendorCard from "@/components/modules/companyProfileDetails/VendorCard";
 import VendorInformationSection from "@/components/modules/freelancerProfileDetails/VendorInformationSection";
@@ -21,14 +20,13 @@ import VendorMoreInformationSection from "@/components/modules/freelancerProfile
 export default function FreelancerProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
-  const searchQuery = useSearchParams();
-  const sellerId = searchQuery?.get("userId");
+  const [activeSellerId, setActiveSellerId] = useState<string | null>();
 
   const vendorQuery = useVendorDetails(
     {
-      adminId: sellerId || "",
+      adminId: activeSellerId || "",
     },
-    !!sellerId,
+    !!activeSellerId,
   );
 
   const vendor = vendorQuery.data?.data;
@@ -42,6 +40,12 @@ export default function FreelancerProfileDetailsPage() {
     );
   const handleAddFreelancerBranchPage = () =>
     router.push("/freelancer-profile");
+
+  useEffect(() => {
+    const params = new URLSearchParams(document.location.search);
+    let sellerId = params.get("userId");
+    setActiveSellerId(sellerId);
+  }, []);
 
   return (
     <>
@@ -63,7 +67,7 @@ export default function FreelancerProfileDetailsPage() {
               </h2>
             </div>
 
-            {!sellerId ? (
+            {!activeSellerId ? (
               <ProfileCard
                 userDetails={userDetails.data?.data}
                 onEdit={handleFreelancerProfilePage}
@@ -71,7 +75,7 @@ export default function FreelancerProfileDetailsPage() {
             ) : null}
 
             {/* importing from company module */}
-            {sellerId ? (
+            {activeSellerId ? (
               <VendorCard vendor={vendor} isLoading={vendorQuery.isLoading} />
             ) : null}
 
@@ -84,7 +88,7 @@ export default function FreelancerProfileDetailsPage() {
                   >
                     Profile Info
                   </TabsTrigger>
-                  {!sellerId ? (
+                  {!activeSellerId ? (
                     <TabsTrigger
                       value="ratings"
                       className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
@@ -101,14 +105,14 @@ export default function FreelancerProfileDetailsPage() {
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    {!sellerId ? (
+                    {!activeSellerId ? (
                       <InformationSection
                         userDetails={userDetails.data?.data}
                         onEdit={handleFreelancerProfilePage}
                       />
                     ) : null}
 
-                    {sellerId ? (
+                    {activeSellerId ? (
                       <VendorInformationSection vendor={vendor} />
                     ) : null}
 
@@ -117,7 +121,7 @@ export default function FreelancerProfileDetailsPage() {
                         <p className="pt-5 text-center text-lg font-medium text-color-dark">
                           No Branch Exists
                         </p>
-                        {!sellerId ? (
+                        {!activeSellerId ? (
                           <div className="mb-5 flex w-full items-center justify-end pt-4">
                             <button
                               type="button"
@@ -132,7 +136,7 @@ export default function FreelancerProfileDetailsPage() {
                       </>
                     ) : null}
 
-                    {!sellerId &&
+                    {!activeSellerId &&
                     userDetails?.data?.data?.userBranch?.length ? (
                       <MoreInformationSection
                         userDetails={userDetails.data?.data}
@@ -141,7 +145,8 @@ export default function FreelancerProfileDetailsPage() {
                       />
                     ) : null}
 
-                    {sellerId && userDetails?.data?.data?.userBranch?.length ? (
+                    {activeSellerId &&
+                    userDetails?.data?.data?.userBranch?.length ? (
                       <VendorMoreInformationSection vendor={vendor} />
                     ) : null}
                   </div>
@@ -153,7 +158,7 @@ export default function FreelancerProfileDetailsPage() {
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    <ProductsSection sellerId={sellerId as string} />
+                    <ProductsSection sellerId={activeSellerId as string} />
                   </div>
                 </TabsContent>
               </Tabs>

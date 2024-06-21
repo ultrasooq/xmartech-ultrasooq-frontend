@@ -6,8 +6,8 @@ import MoreInformationSection from "@/components/modules/companyProfileDetails/M
 import ProfileCard from "@/components/modules/companyProfileDetails/ProfileCard";
 import ReviewSection from "@/components/modules/freelancerProfileDetails/ReviewSection";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import ServicesSection from "@/components/shared/ServicesSection";
 import { PlusIcon } from "@radix-ui/react-icons";
@@ -22,14 +22,13 @@ import VendorMoreInformationSection from "@/components/modules/companyProfileDet
 export default function CompanyProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
-  const searchQuery = useSearchParams();
-  const sellerId = searchQuery?.get("userId");
+  const [activeSellerId, setActiveSellerId] = useState<string | null>();
 
   const vendorQuery = useVendorDetails(
     {
-      adminId: sellerId || "",
+      adminId: activeSellerId || "",
     },
-    !!sellerId,
+    !!activeSellerId,
   );
 
   const vendor = vendorQuery.data?.data;
@@ -48,6 +47,12 @@ export default function CompanyProfileDetailsPage() {
     );
   const handleEditCompanyBranchPage = (branchId: number) =>
     router.push(`/company-profile/edit-branch?branchId=${branchId}`);
+
+  useEffect(() => {
+    const params = new URLSearchParams(document.location.search);
+    let sellerId = params.get("userId");
+    setActiveSellerId(sellerId);
+  }, []);
 
   return (
     <>
@@ -70,14 +75,14 @@ export default function CompanyProfileDetailsPage() {
               </h2>
             </div>
 
-            {!sellerId ? (
+            {!activeSellerId ? (
               <ProfileCard
                 userDetails={userDetails.data?.data}
                 onEdit={handleEditCompanyPage}
               />
             ) : null}
 
-            {sellerId ? (
+            {activeSellerId ? (
               <VendorCard vendor={vendor} isLoading={vendorQuery.isLoading} />
             ) : null}
 
@@ -90,7 +95,7 @@ export default function CompanyProfileDetailsPage() {
                   >
                     Profile Info
                   </TabsTrigger>
-                  {!sellerId ? (
+                  {!activeSellerId ? (
                     <TabsTrigger
                       value="ratings"
                       className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
@@ -107,25 +112,26 @@ export default function CompanyProfileDetailsPage() {
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    {!sellerId ? (
+                    {!activeSellerId ? (
                       <InformationSection
                         userDetails={userDetails.data?.data}
                         onEdit={handleCompanyProfilePage}
                       />
                     ) : null}
 
-                    {sellerId ? (
+                    {activeSellerId ? (
                       <VendorInformationSection vendor={vendor} />
                     ) : null}
 
-                    {!sellerId && userDetails.data?.data?.userBranch?.length ? (
+                    {!activeSellerId &&
+                    userDetails.data?.data?.userBranch?.length ? (
                       <MoreInformationSection
                         userDetails={userDetails.data?.data}
                         onEdit={handleEditCompanyPage}
                       />
                     ) : null}
 
-                    {sellerId && vendor?.userBranch?.length ? (
+                    {activeSellerId && vendor?.userBranch?.length ? (
                       <VendorMoreInformationSection vendor={vendor} />
                     ) : null}
 
@@ -136,7 +142,7 @@ export default function CompanyProfileDetailsPage() {
                       </p>
                     ) : null}
                     <div className="mb-4 w-full pt-4">
-                      {!sellerId ? (
+                      {!activeSellerId ? (
                         <div className="mb-5 flex w-full items-center justify-end">
                           <button
                             type="button"
@@ -148,7 +154,7 @@ export default function CompanyProfileDetailsPage() {
                           </button>
                         </div>
                       ) : null}
-                      {!sellerId &&
+                      {!activeSellerId &&
                         userDetails.data?.data?.userBranch
                           .sort(
                             (a: any, b: any) => b?.mainOffice - a?.mainOffice,
@@ -164,7 +170,7 @@ export default function CompanyProfileDetailsPage() {
                             </React.Fragment>
                           ))}
 
-                      {sellerId &&
+                      {activeSellerId &&
                         vendor?.userBranch
                           .sort(
                             (a: any, b: any) => b?.mainOffice - a?.mainOffice,
@@ -186,7 +192,7 @@ export default function CompanyProfileDetailsPage() {
                 <TabsContent value="products" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {/* importing from freelancer details module */}
-                    <ProductsSection sellerId={sellerId as string} />
+                    <ProductsSection sellerId={activeSellerId as string} />
                   </div>
                 </TabsContent>
               </Tabs>

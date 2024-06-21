@@ -166,8 +166,10 @@ const OtherSellerSection = () => {
               (item: {
                 id: number;
                 adminDetail: {
+                  id: number;
                   firstName: string;
                   lastName: string;
+                  tradeRole: string;
                 };
                 offerPrice: string;
                 productPrice: string;
@@ -196,6 +198,8 @@ const OtherSellerSection = () => {
                   productLocation={
                     item?.productPrice_productLocation?.locationName
                   }
+                  sellerId={item?.adminDetail?.id}
+                  soldByTradeRole={item?.adminDetail?.tradeRole}
                 />
               ),
             )}
