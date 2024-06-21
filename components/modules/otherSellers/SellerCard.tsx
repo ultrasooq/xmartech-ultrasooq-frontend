@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 type SellerCardProps = {
@@ -13,6 +14,8 @@ type SellerCardProps = {
   askForStock?: string;
   deliveryAfter?: number;
   productLocation?: string;
+  sellerId?: number;
+  soldByTradeRole?: string;
 };
 
 const SellerCard: React.FC<SellerCardProps> = ({
@@ -28,6 +31,8 @@ const SellerCard: React.FC<SellerCardProps> = ({
   askForStock,
   deliveryAfter,
   productLocation,
+  sellerId,
+  soldByTradeRole,
 }) => {
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
@@ -43,9 +48,19 @@ const SellerCard: React.FC<SellerCardProps> = ({
             <span>Seller</span>
           </div>
           <div className="w-full px-3 py-4">
-            <h4 className="text-base font-medium text-dark-orange">
-              {sellerName}
-            </h4>
+            <Link
+              href={
+                soldByTradeRole === "COMPANY"
+                  ? `/company-profile-details?userId=${sellerId}`
+                  : soldByTradeRole === "FREELANCER"
+                    ? `/freelancer-profile-details?userId=${sellerId}`
+                    : "#"
+              }
+            >
+              <h4 className="text-base font-medium text-dark-orange">
+                {sellerName}
+              </h4>
+            </Link>
             <ul>
               <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
                 Product Location: {productLocation || "N/A"}
