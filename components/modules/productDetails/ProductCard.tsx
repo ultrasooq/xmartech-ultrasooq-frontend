@@ -100,9 +100,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
       <Link href={`/trending/${id}`}>
-        <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-          <span>{consumerDiscount || 0}%</span>
-        </div>
+        {askForPrice !== "true" ? (
+          consumerDiscount ? (
+            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+              <span>{consumerDiscount}%</span>
+            </div>
+          ) : null
+        ) : null}
         <div className="relative mx-auto mb-4 h-36 w-36">
           <Image
             src={
@@ -148,13 +152,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </Button>
         ) : null}
-        <Button
+        {/* <Button
           variant="ghost"
           className="relative h-8 w-8 rounded-full p-0 shadow-md"
           onClick={copyToClipboard}
         >
           <ShareIcon />
-        </Button>
+        </Button> */}
       </div>
 
       <Link href={`/trending/${id}`}>

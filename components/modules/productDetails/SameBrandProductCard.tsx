@@ -98,14 +98,16 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
     });
   };
 
-  console.log(productProductPrice);
-
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box">
         <Link href={`/trending/${id}`}>
           <div className="image-container relative mb-4">
-            <span className="discount">{consumerDiscount || 0}%</span>
+            {askForPrice !== "true" ? (
+              consumerDiscount ? (
+                <span className="discount">{consumerDiscount}%</span>
+              ) : null
+            ) : null}
             <Image
               src={
                 productImages?.[0]?.image &&
@@ -150,13 +152,13 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
               )}
             </Button>
           ) : null}
-          <Button
+          {/* <Button
             variant="ghost"
             className="relative h-8 w-8 rounded-full p-0 shadow-md"
             onClick={copyToClipboard}
           >
             <ShareIcon />
-          </Button>
+          </Button> */}
         </div>
 
         <Link href={`/trending/${id}`}>

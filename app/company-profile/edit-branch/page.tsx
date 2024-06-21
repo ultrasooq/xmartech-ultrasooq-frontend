@@ -434,10 +434,10 @@ export default function EditBranchPage() {
                               {...field}
                               onChange={(event) => {
                                 if (event.target.files?.[0]) {
-                                  if (event.target.files[0].size > 1048576) {
+                                  if (event.target.files[0].size > 524288000) {
                                     toast({
                                       title:
-                                        "Image size should be less than 1MB",
+                                        "Image size should be less than 500MB",
                                       variant: "danger",
                                     });
                                     return;
@@ -510,10 +510,10 @@ export default function EditBranchPage() {
                               {...field}
                               onChange={(event) => {
                                 if (event.target.files?.[0]) {
-                                  if (event.target.files[0].size > 1048576) {
+                                  if (event.target.files[0].size > 524288000) {
                                     toast({
                                       title:
-                                        "Image size should be less than 1MB",
+                                        "Image size should be less than 500MB",
                                       variant: "danger",
                                     });
                                     return;

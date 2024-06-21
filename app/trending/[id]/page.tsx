@@ -279,6 +279,10 @@ const ProductDetailsPage = () => {
               // }
               soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
                 ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
+              soldByTradeRole={
+                productDetails?.product_productPrice?.[0]?.adminDetail
+                  ?.tradeRole
+              }
               userId={me.data?.data?.id}
               sellerId={
                 productDetails?.product_productPrice?.[0]?.adminDetail?.id
@@ -355,106 +359,34 @@ const ProductDetailsPage = () => {
                   </TabsContent>
                   <TabsContent value="specification" className="mt-0">
                     <div className="w-full bg-white">
-                      {/* <ReactQuill
-                        theme="snow"
-                        value={productDetails?.specification}
-                        readOnly
-                        modules={{
-                          toolbar: false,
-                        }}
-                        className="readonly-quill"
-                      /> */}
-                      <div className="info-col py-3">
-                        <div className="row">
-                          <div className="col-12 col-md-12">
-                            <div className="col-12 col-md-12">
-                              <div className="form-group min-h-[160px] pl-8">
-                                {productDetails?.product_productSpecification
-                                  ?.length ? (
-                                  <ul className="list-disc">
-                                    {productDetails?.product_productSpecification?.map(
-                                      (item: {
-                                        id: number;
-                                        specification: string;
-                                      }) => (
-                                        <li key={item?.id}>
-                                          {item?.specification}
-                                        </li>
-                                      ),
-                                    )}
-                                  </ul>
-                                ) : (
-                                  <p className="text-[13px]">
-                                    No Specification found
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
+                      {!productDetails?.product_productSpecification?.length ? (
+                        <div className="specification-sec">
+                          <h2>No specification found</h2>
                         </div>
-                      </div>
-                      {/* <div className="specification-sec">
-                        <h2>Specification</h2>
-                        <table className="specification-table">
-                          <tbody>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Cn</th>
-                              <td colSpan={3}>Knit</td>
-                            </tr>
-                            <tr>
-                              <td colSpan={4} />
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div> */}
+                      ) : null}
+                      {productDetails?.product_productSpecification?.length ? (
+                        <div className="specification-sec">
+                          <h2>Specification</h2>
+                          <table className="specification-table">
+                            <tbody>
+                              <tr className="grid grid-cols-2">
+                                {productDetails?.product_productSpecification?.map(
+                                  (item: {
+                                    id: number;
+                                    label: string;
+                                    specification: string;
+                                  }) => (
+                                    <div key={item?.id}>
+                                      <th>{item?.label}</th>
+                                      <td>{item?.specification}</td>
+                                    </div>
+                                  ),
+                                )}
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : null}
                     </div>
                   </TabsContent>
                   <TabsContent value="vendor" className="mt-0">
@@ -504,14 +436,20 @@ const ProductDetailsPage = () => {
                     <Image src="/images/suggestion-pic1.png" alt="suggested-preview" />
                   </div>
                 </div> */}
-                <SameBrandSection productDetails={productDetails} />
+                <SameBrandSection
+                  productDetails={productDetails}
+                  productId={searchParams?.id as string}
+                />
               </div>
             </div>
           </div>
         </div>
 
         <div className="product-view-s1-details-more-suggestion-sliders">
-          <RelatedProductsSection calculateTagIds={calculateTagIds} />
+          <RelatedProductsSection
+            calculateTagIds={calculateTagIds}
+            productId={searchParams?.id as string}
+          />
         </div>
       </div>
       <Footer />

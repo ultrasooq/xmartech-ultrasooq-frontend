@@ -17,6 +17,7 @@ const DescriptionAndSpecificationSection = () => {
 
   const appendSpecification = () =>
     fieldArrayForSpecification.append({
+      label: "",
       specification: "",
     });
 
@@ -49,18 +50,29 @@ const DescriptionAndSpecificationSection = () => {
               </div>
 
               {fieldArrayForSpecification.fields.map((field, index) => (
-                <div key={field.id} className="relative w-full">
+                <div
+                  key={field.id}
+                  className="relative grid w-full grid-cols-2 gap-5"
+                >
+                  <ControlledTextInput
+                    key={field.id}
+                    name={`productSpecificationList.${index}.label`}
+                    placeholder="Enter Specification"
+                    label="Label"
+                  />
+
                   <ControlledTextInput
                     key={field.id}
                     name={`productSpecificationList.${index}.specification`}
                     placeholder="Enter Specification"
+                    label="Value"
                   />
 
                   {index !== 0 ? (
                     <Button
                       type="button"
                       onClick={() => removeSpecification(index)}
-                      className="absolute right-2 top-6 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                      className="absolute right-2 top-3 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
                     >
                       <Image src={TrashIcon} alt="social-delete-icon" />
                     </Button>

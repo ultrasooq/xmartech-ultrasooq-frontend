@@ -62,6 +62,9 @@ export const useAddToWishList = () => {
       queryClient.invalidateQueries({
         queryKey: ["related-products"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["vendor-products"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -104,6 +107,9 @@ export const useDeleteFromWishList = () => {
       });
       queryClient.invalidateQueries({
         queryKey: ["related-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["vendor-products"],
       });
     },
     onError: (err: APIResponseError) => {

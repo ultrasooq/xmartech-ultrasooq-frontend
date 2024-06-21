@@ -26,10 +26,12 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 
 type RelatedProductsSectionProps = {
   calculateTagIds: string;
+  productId?: string;
 };
 
 const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
   calculateTagIds,
+  productId,
 }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -48,6 +50,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
       limit: 10,
       tagIds: calculateTagIds,
       userId: me.data?.data?.id,
+      productId,
     },
     !!calculateTagIds,
   );

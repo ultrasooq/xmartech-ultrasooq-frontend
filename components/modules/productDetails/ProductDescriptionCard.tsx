@@ -1,16 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { Skeleton } from "@/components/ui/skeleton";
-// import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import SecurePaymentIcon from "@/public/images/securePaymenticon.svg";
 import SupportIcon from "@/public/images/support-24hr.svg";
-// import MinusIcon from "@/public/images/upDownBtn-minus.svg";
-// import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -21,6 +17,7 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import OtherSellerSection from "../trending/OtherSellerSection";
+import Link from "next/link";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -37,6 +34,7 @@ type ProductDescriptionCardProps = {
   onAdd: (args0: number, args2: "add" | "remove") => void;
   isLoading: boolean;
   soldBy: string;
+  soldByTradeRole: string;
   userId?: number;
   sellerId?: number;
   haveOtherSellers?: boolean;
@@ -60,6 +58,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   onAdd,
   isLoading,
   soldBy,
+  soldByTradeRole,
   userId,
   sellerId,
   haveOtherSellers,
@@ -127,7 +126,17 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
             <div className="rgdiv flex w-1/2 gap-x-2">
               <h5 className="!w-20 !capitalize !text-dark-orange">Sold By:</h5>
-              <h5>{soldBy}</h5>
+              <Link
+                href={
+                  soldByTradeRole === "COMPANY"
+                    ? `/company-profile-details?userId=${sellerId}`
+                    : soldByTradeRole === "FREELANCER"
+                      ? `/freelancer-profile-details?userId=${sellerId}`
+                      : "#"
+                }
+              >
+                <h5>{soldBy}</h5>
+              </Link>
             </div>
           </div>
           <div className="rating">
@@ -175,42 +184,6 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       <div className="info-col top-btm-border">
         <div className="form-group mb-0">
           <div className="quantity-with-right-payment-info">
-            {/* TODO: ask whether to keep or not */}
-            {/* <div className="left-qty">
-              <label>Quantity</label>
-              <div className="flex w-28 items-center justify-center gap-x-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (quantity > 1) {
-                      setQuantity(quantity - 1);
-                      onAdd(quantity - 1, "remove");
-                    }
-                  }}
-                  className="relative hover:shadow-sm"
-                  disabled={quantity === 1}
-                >
-                  <Image
-                    src={MinusIcon}
-                    alt="minus-icon"
-                    fill
-                    className="p-[10px]"
-                  />
-                </Button>
-                <p>{quantity}</p>
-                <Button
-                  variant="outline"
-                  className="relative hover:shadow-sm"
-                  onClick={() => {
-                    setQuantity(quantity + 1);
-                    onAdd(quantity + 1, "add");
-                  }}
-                >
-                  <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
-                </Button>
-              </div>
-            </div> */}
-
             <div className="right-payment-info">
               <ul>
                 <li>
