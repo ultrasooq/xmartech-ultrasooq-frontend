@@ -34,6 +34,7 @@ const baseProductPriceItemSchema = z.object({
   timeOpen: z.coerce.number().optional(),
   timeClose: z.coerce.number().optional(),
   deliveryAfter: z.coerce.number().optional(),
+  stock: z.coerce.number().optional(),
 });
 
 const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
@@ -243,13 +244,13 @@ const formSchemaForTypeP = z
         result.error.issues.forEach((issue) => ctx.addIssue(issue));
       }
 
-      if (data.productPrice === 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Product Price is required",
-          path: ["productPrice"],
-        });
-      }
+      // if (data.productPrice === 0) {
+      //   ctx.addIssue({
+      //     code: "custom",
+      //     message: "Product Price is required",
+      //     path: ["productPrice"],
+      //   });
+      // }
     } else {
       data.productPrice = 0;
       data.offerPrice = 0;
@@ -268,6 +269,7 @@ const formSchemaForTypeP = z
           timeOpen: 0,
           timeClose: 0,
           deliveryAfter: 0,
+          stock: 0,
         }));
       }
     }
@@ -342,13 +344,13 @@ const formSchemaForTypeR = z
   })
   .superRefine((data, ctx) => {
     if (data.setUpPrice) {
-      if (data.offerPrice === 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Offer Price is required",
-          path: ["offerPrice"],
-        });
-      }
+      // if (data.offerPrice === 0) {
+      //   ctx.addIssue({
+      //     code: "custom",
+      //     message: "Offer Price is required",
+      //     path: ["offerPrice"],
+      //   });
+      // }
     }
   });
 
@@ -393,6 +395,7 @@ const defaultValues = {
       timeOpen: 0,
       timeClose: 0,
       deliveryAfter: 0,
+      stock: 0,
     },
   ],
   setUpPrice: true,
@@ -496,20 +499,36 @@ const CreateProductPage = () => {
         ...(activeProductType !== "R" && updatedFormData.productPriceList[0]),
         askForStock: updatedFormData.isStockRequired ? "true" : "false",
         askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
-        productPrice:
-          activeProductType === "R"
+        productPrice: updatedFormData.isOfferPriceRequired
+          ? 0
+          : activeProductType === "R"
             ? updatedFormData.offerPrice ?? 0
             : updatedFormData.productPrice ?? 0,
-        offerPrice:
-          activeProductType === "R"
+        offerPrice: updatedFormData.isOfferPriceRequired
+          ? 0
+          : activeProductType === "R"
             ? updatedFormData.offerPrice ?? 0
             : updatedFormData.productPrice ?? 0,
+        stock: updatedFormData.isStockRequired
+          ? 0
+          : updatedFormData.productPriceList?.[0]?.stock
+            ? updatedFormData.productPriceList[0].stock
+            : 0,
         productLocationId: updatedFormData.productLocationId,
         productCondition: updatedFormData.productCondition,
+        // status:
+        //   activeProductType !== "R" && updatedFormData.productPrice !== 0
+        //     ? "ACTIVE"
+        //     : activeProductType === "R" && updatedFormData.offerPrice !== 0
+        //       ? "ACTIVE"
+        //       : "INACTIVE",
         status:
-          activeProductType !== "R" && updatedFormData.productPrice !== 0
-            ? "ACTIVE"
-            : activeProductType === "R" && updatedFormData.offerPrice !== 0
+          activeProductType === "R"
+            ? updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired
+              ? "ACTIVE"
+              : "INACTIVE"
+            : updatedFormData.productPrice ||
+                updatedFormData.isOfferPriceRequired
               ? "ACTIVE"
               : "INACTIVE",
       },
@@ -530,8 +549,15 @@ const CreateProductPage = () => {
           timeOpen: 0,
           timeClose: 0,
           deliveryAfter: 0,
-          askForStock: updatedFormData.isStockRequired ? "true" : "false",
-          askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
+          stock: 0,
+          askForStock: updatedFormData.isStockRequired ? "true" : undefined,
+          askForPrice: updatedFormData.isOfferPriceRequired
+            ? "true"
+            : undefined,
+          // status:
+          //   updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired
+          //     ? "ACTIVE"
+          //     : undefined,
           ...updatedFormData.productPriceList[0],
         },
       ];
@@ -607,6 +633,7 @@ const CreateProductPage = () => {
           timeOpen: 0,
           timeClose: 0,
           deliveryAfter: 0,
+          stock: 0,
         },
       ]);
     }

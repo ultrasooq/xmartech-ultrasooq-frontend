@@ -23,7 +23,7 @@ type SameBrandProductCardProps = {
   productName: string;
   productImages: { id: number; image: string }[];
   shortDescription: string;
-  productProductPrice?: number;
+  productProductPrice?: string;
   productPrice: string;
   offerPrice: string;
   productReview: { rating: number }[];
@@ -32,6 +32,7 @@ type SameBrandProductCardProps = {
   inWishlist?: boolean;
   haveAccessToken: boolean;
   consumerDiscount?: number;
+  askForPrice?: string;
 };
 
 const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
@@ -48,6 +49,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   inWishlist,
   haveAccessToken,
   consumerDiscount,
+  askForPrice,
 }) => {
   const { toast } = useToast();
 
@@ -96,6 +98,8 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
     });
   };
 
+  console.log(productProductPrice);
+
   return (
     <div className="product-list-s1-col">
       <div className="product-list-s1-box">
@@ -117,13 +121,15 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
         </Link>
 
         <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-          <Button
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full p-0 shadow-md"
-            onClick={onAdd}
-          >
-            <ShoppingIcon />
-          </Button>
+          {askForPrice !== "true" ? (
+            <Button
+              variant="ghost"
+              className="relative h-8 w-8 rounded-full p-0 shadow-md"
+              onClick={onAdd}
+            >
+              <ShoppingIcon />
+            </Button>
+          ) : null}
 
           <Link
             href={`/trending/${id}`}
@@ -163,14 +169,26 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
               {calculateRatings(calculateAvgRating)}
               <span>{productReview?.length}</span>
             </div>
-            <h5>
+          </div>
+        </Link>
+
+        <div className="mt-2">
+          {askForPrice === "true" ? (
+            <button
+              type="button"
+              className="inline-block w-full rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"
+            >
+              Message
+            </button>
+          ) : (
+            <h5 className="py-1 text-[#1D77D1]">
               ${calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
                 ${productProductPrice}
               </span>
             </h5>
-          </div>
-        </Link>
+          )}
+        </div>
       </div>
     </div>
   );

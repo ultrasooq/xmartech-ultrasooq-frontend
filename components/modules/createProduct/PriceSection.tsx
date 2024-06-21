@@ -45,6 +45,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   const locationsQuery = useLocation();
 
   const watchSetUpPrice = formContext.watch("setUpPrice");
+  const watchIsOfferPriceRequired = formContext.watch("isOfferPriceRequired");
+  const watchIsStockRequired = formContext.watch("isStockRequired");
+
   const watchConsumerType = formContext.watch(
     "productPriceList.[0].consumerType",
   );
@@ -178,7 +181,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           />
         </div>
 
-        {!watchSetUpPrice ? (
+        {watchSetUpPrice ? (
           <>
             <div className="flex flex-row items-center gap-x-3">
               <Controller
@@ -429,6 +432,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                           onWheel={(e) => e.currentTarget.blur()}
                           placeholder="Product Price"
                           className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                          disabled={watchIsOfferPriceRequired}
                           {...field}
                         />
                       </div>
@@ -454,6 +458,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                           onWheel={(e) => e.currentTarget.blur()}
                           placeholder="Offer Price"
                           className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                          disabled={watchIsOfferPriceRequired}
                           {...field}
                         />
                       </div>
@@ -463,6 +468,27 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 )}
               />
             )}
+
+            <FormField
+              control={formContext.control}
+              name="productPriceList.[0].stock"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Stock</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      onWheel={(e) => e.currentTarget.blur()}
+                      placeholder="Stock"
+                      className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                      disabled={watchIsStockRequired}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </>
       ) : null}

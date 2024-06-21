@@ -54,6 +54,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = () => {
           ),
           productProductPriceId: item?.product_productPrice?.[0]?.id,
           productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+          consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          askForPrice: item?.product_productPrice?.[0]?.askForPrice,
         };
       }) || []
     );

@@ -248,6 +248,9 @@ const ProductDetailsPage = () => {
               onWishlist={handleAddToWishlist}
               haveAccessToken={haveAccessToken}
               inWishlist={!!productQueryById?.data?.inWishlist}
+              askForPrice={
+                productDetails?.product_productPrice?.[0]?.askForPrice
+              }
             />
             <ProductDescriptionCard
               productId={searchParams?.id ? (searchParams?.id as string) : ""}
@@ -286,6 +289,9 @@ const ProductDetailsPage = () => {
               }
               consumerDiscount={
                 productDetails?.product_productPrice?.[0]?.consumerDiscount
+              }
+              askForPrice={
+                productDetails?.product_productPrice?.[0]?.askForPrice
               }
             />
           </div>
@@ -453,7 +459,11 @@ const ProductDetailsPage = () => {
                   </TabsContent>
                   <TabsContent value="vendor" className="mt-0">
                     <div className="w-full bg-white">
-                      <VendorSection adminId={productDetails?.product_productPrice?.[0]?.adminId}/>
+                      <VendorSection
+                        adminId={
+                          productDetails?.product_productPrice?.[0]?.adminId
+                        }
+                      />
                     </div>
                   </TabsContent>
                   <TabsContent value="reviews" className="mt-0">

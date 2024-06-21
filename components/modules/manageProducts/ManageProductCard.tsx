@@ -4,11 +4,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import Image from "next/image";
 import validator from "validator";
+import { cn } from "@/lib/utils";
 
 type ManageProductCardProps = {
   selectedIds?: number[];
   onSelectedId?: (args0: boolean | string, args1: number) => void;
   id: number;
+  status: string;
   askForPrice: string;
   askForStock: string;
   productImage: string | null;
@@ -36,6 +38,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   selectedIds,
   onSelectedId,
   id,
+  status,
   askForPrice,
   askForStock,
   productImage,
@@ -70,7 +73,6 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   checked={selectedIds?.includes(id)}
                   onCheckedChange={(checked) => onSelectedId?.(checked, id)}
                 />
-                {/* <img src="/images/hide.png" alt="" /> */}
               </div>
               <div className="relative mx-auto h-[100%] w-[100%]">
                 <Image
@@ -89,6 +91,15 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   placeholder="blur"
                 />
               </div>
+              {/* TODO: remove for now */}
+              {/* <div
+                className={cn(
+                  status === "ACTIVE" ? "bg-green-500" : "bg-red-500",
+                  "absolute right-0 top-0 rounded-md px-2 py-1 shadow-md",
+                )}
+              >
+                <p className="text-xs font-semibold text-white">{status}</p>
+              </div> */}
             </div>
             <div className="text-container">
               <h3>{productName || "-"}</h3>
@@ -103,7 +114,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
                   <div className="theme-inputValue-picker-upDown">
                     <span>
-                      {askForStock === "true" ? "Ask for Stock" : stock || "-"}
+                      {askForStock === "true"
+                        ? "Ask for Stock"
+                        : stock
+                          ? stock
+                          : "-"}
                     </span>
                   </div>
                 </div>

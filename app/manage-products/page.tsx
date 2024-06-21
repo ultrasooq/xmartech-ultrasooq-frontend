@@ -179,18 +179,18 @@ const ManageProductsPage = () => {
         productPriceId: ele,
         ...updatedFormData,
         stock: updatedFormData.isStockRequired
-          ? undefined
+          ? 0
           : updatedFormData.stock && updatedFormData.stock !== 0
             ? updatedFormData.stock
-            : undefined,
+            : 0,
         offerPrice: updatedFormData.isOfferPriceRequired
-          ? undefined
-          : updatedFormData.offerPrice && updatedFormData.offerPrice !== 0
+          ? 0
+          : updatedFormData.offerPrice
             ? updatedFormData.offerPrice
             : undefined,
         productPrice: updatedFormData.isOfferPriceRequired
-          ? undefined
-          : updatedFormData.offerPrice && updatedFormData.offerPrice !== 0
+          ? 0
+          : updatedFormData.offerPrice
             ? updatedFormData.offerPrice
             : undefined,
         deliveryAfter:
@@ -254,11 +254,11 @@ const ManageProductsPage = () => {
             ? updatedFormData.sellType
             : undefined,
         status:
-          updatedFormData.offerPrice && updatedFormData.offerPrice !== 0
+          updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired
             ? "ACTIVE"
-            : "INACTIVE",
-        askForStock: updatedFormData.isStockRequired ? "true" : "false",
-        askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
+            : undefined,
+        askForStock: updatedFormData.isStockRequired ? "true" : undefined,
+        askForPrice: updatedFormData.isOfferPriceRequired ? "true" : undefined,
       };
     });
 
@@ -367,6 +367,7 @@ const ManageProductsPage = () => {
                       {allManagedProductsQuery.data?.data?.map(
                         (product: {
                           id: number;
+                          status: string;
                           askForPrice: string;
                           askForStock: string;
                           productPrice_product: {
@@ -402,6 +403,7 @@ const ManageProductsPage = () => {
                             onSelectedId={handleProductIds}
                             key={product?.id}
                             id={product?.id}
+                            status={product?.status}
                             askForPrice={product?.askForPrice}
                             askForStock={product?.askForStock}
                             productImage={
@@ -450,7 +452,7 @@ const ManageProductsPage = () => {
                     </div>
                   </div>
                   <ManageProductAside
-                    isLoading={allManagedProductsQuery.isPending}
+                    isLoading={updateMultipleProductPrice.isPending}
                   />
                 </form>
               </FormProvider>

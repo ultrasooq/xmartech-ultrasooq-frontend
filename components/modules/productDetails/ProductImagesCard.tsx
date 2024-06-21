@@ -29,6 +29,7 @@ type ProductImagesCardProps = {
   onWishlist: () => void;
   haveAccessToken: boolean;
   inWishlist?: boolean;
+  askForPrice?: string;
 };
 
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
@@ -41,6 +42,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   onWishlist,
   haveAccessToken,
   inWishlist,
+  askForPrice,
 }) => {
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
@@ -162,20 +164,31 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
           {isLoading ? <Skeleton className="min-h-[500px] w-full" /> : null}
 
-          <div className="flex w-full gap-x-3 self-end">
+          {askForPrice === "true" ? (
             <Button
-              onClick={hasItem ? onToCart : onAdd}
-              className="h-14 flex-1 rounded-none bg-color-yellow text-base"
+              type="button"
+              className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
             >
-              {hasItem ? "Send To Cart" : "Add To Cart"}
+              Message
             </Button>
-            <Button
-              onClick={onToCheckout}
-              className="h-14 flex-1 rounded-none bg-dark-orange text-base"
-            >
-              Buy Now
-            </Button>
-          </div>
+          ) : (
+            <div className="flex w-full gap-x-3 self-end">
+              <Button
+                type="button"
+                onClick={hasItem ? onToCart : onAdd}
+                className="h-14 flex-1 rounded-none bg-color-yellow text-base"
+              >
+                {hasItem ? "Send To Cart" : "Add To Cart"}
+              </Button>
+              <Button
+                type="button"
+                onClick={onToCheckout}
+                className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+              >
+                Buy Now
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="col-span-1 m-auto flex !h-full flex-col gap-4 self-start">

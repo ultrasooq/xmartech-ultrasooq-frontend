@@ -127,6 +127,7 @@ const ExistingProductsPage = () => {
           ? item?.product_productShortDescription?.[0]?.shortDescription
           : "-",
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps

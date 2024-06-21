@@ -66,6 +66,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -240,6 +241,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
                       consumerDiscount={item?.consumerDiscount}
+                      askForPrice={item?.askForPrice}
                     />
                   </div>
                 </CarouselItem>
