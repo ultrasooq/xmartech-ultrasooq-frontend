@@ -105,9 +105,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         ) : null}
         <Link href={`/trending/${item.id}`}>
-          <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-            <span>{item.consumerDiscount || 0}%</span>
-          </div>
+          {item?.askForPrice !== "true" ? (
+            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+              <span>{item.consumerDiscount || 0}%</span>
+            </div>
+          ) : null}
           <div className="relative mx-auto mb-4 h-36 w-36">
             <Image
               src={
@@ -158,13 +160,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 )}
               </Button>
             ) : null}
-            <Button
+            {/* <Button
               variant="ghost"
               className="relative h-8 w-8 rounded-full p-0 shadow-md"
               onClick={copyToClipboard}
             >
               <ShareIcon />
-            </Button>
+            </Button> */}
           </div>
         ) : null}
 
