@@ -377,11 +377,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                   if (event.target.files) {
                                                     if (
                                                       event.target.files[0]
-                                                        .size > 1048576
+                                                        .size > 524288000
                                                     ) {
                                                       toast({
                                                         title:
-                                                          "One of your file size should be less than 1MB",
+                                                          "One of your file size should be less than 500MB",
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -432,11 +432,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                   if (event.target.files) {
                                                     if (
                                                       event.target.files[0]
-                                                        .size > 1048576
+                                                        .size > 524288000
                                                     ) {
                                                       toast({
                                                         title:
-                                                          "One of your file size should be less than 1MB",
+                                                          "One of your file size should be less than 500MB",
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -489,12 +489,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                                   if (
                                     filesArray.some(
-                                      (file) => file.size > 1048576,
+                                      (file) => file.size > 524288000,
                                     )
                                   ) {
                                     toast({
                                       title:
-                                        "One of your file size should be less than 1MB",
+                                        "One of your file size should be less than 500MB",
                                       variant: "danger",
                                     });
                                     return;
