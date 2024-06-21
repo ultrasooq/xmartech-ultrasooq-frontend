@@ -22,6 +22,7 @@ import GoogleIcon from "@/public/images/google-icon.png";
 import LoaderIcon from "@/public/images/load.png";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = z.object({
   email: z
@@ -49,6 +50,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
+  const { setUser } = useAuth()
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -64,7 +66,7 @@ export default function LoginPage() {
   const updateCart = useUpdateUserCartByDeviceId();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const response = await login.mutateAsync(values);
+    const response: any = await login.mutateAsync(values);
 
     if (response?.status && response?.accessToken) {
       // store in cookie
@@ -73,6 +75,7 @@ export default function LoginPage() {
       // TODO: delete cart for trade role freelancer and company if logged in using device id
       // update cart
       await updateCart.mutateAsync({ deviceId });
+      setUser({id: response.data?.id})
       toast({
         title: "Login Successful",
         description: "You have successfully logged in.",

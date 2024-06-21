@@ -32,6 +32,7 @@ import HamburgerDownIcon from "@/public/images/humberger-down-icon.svg";
 import LogoIcon from "@/public/images/logo.png";
 import { useWishlistCount } from "@/apis/queries/wishlist.queries";
 import { signOut } from "next-auth/react";
+import { useAuth } from "@/context/AuthContext";
 
 type ButtonLinkProps = {
   href: string;
@@ -73,7 +74,7 @@ const Header = () => {
   const [subCategoryId, setSubCategoryId] = useState();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
-
+  const { clearUser } = useAuth()
   const wishlistCount = useWishlistCount(hasAccessToken);
   const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
   const cartCountWithoutLogin = useCartCountWithoutLogin(
@@ -158,7 +159,7 @@ const Header = () => {
     setIsLoggedIn(false);
     deleteCookie(PUREMOON_TOKEN_KEY);
     queryClient.clear();
-
+    clearUser();
     const data = await signOut({
       redirect: false,
       callbackUrl: "/home",
