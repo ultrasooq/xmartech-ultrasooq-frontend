@@ -279,6 +279,10 @@ const ProductDetailsPage = () => {
               // }
               soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
                 ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
+              soldByTradeRole={
+                productDetails?.product_productPrice?.[0]?.adminDetail
+                  ?.tradeRole
+              }
               userId={me.data?.data?.id}
               sellerId={
                 productDetails?.product_productPrice?.[0]?.adminDetail?.id
@@ -393,7 +397,27 @@ const ProductDetailsPage = () => {
                           </div>
                         </div>
                       </div>
-                      {/* <div className="specification-sec">
+                      {productDetails?.product_productSpecification?.length ? (
+                        <div className="specification-sec">
+                          <h2>Specification</h2>
+                          <table className="specification-table">
+                            <tbody>
+                              {productDetails?.product_productSpecification?.map(
+                                (item: {
+                                  id: number;
+                                  specification: string;
+                                }) => (
+                                  <tr key={item?.id}>
+                                    <td>{item?.specification}</td>
+                                  </tr>
+                                ),
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : null}
+
+                      <div className="specification-sec">
                         <h2>Specification</h2>
                         <table className="specification-table">
                           <tbody>
@@ -454,7 +478,7 @@ const ProductDetailsPage = () => {
                             </tr>
                           </tbody>
                         </table>
-                      </div> */}
+                      </div>
                     </div>
                   </TabsContent>
                   <TabsContent value="vendor" className="mt-0">

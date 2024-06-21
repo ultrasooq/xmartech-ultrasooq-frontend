@@ -117,7 +117,7 @@ const Header = () => {
       )?.children;
     }
     return tempArr || [];
-  }, [menuId]);
+  }, [categoryQuery.data?.data, menuId]);
 
   const memoizedSubCategory = useMemo(() => {
     let tempArr: any = [];
@@ -127,6 +127,7 @@ const Header = () => {
       )?.children;
     }
     return tempArr || [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId, menuId]);
 
   const memoizedSubSubCategory = useMemo(() => {
@@ -137,6 +138,7 @@ const Header = () => {
       )?.children;
     }
     return tempArr || [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subCategoryId, categoryId, menuId]);
 
   const handleProfile = () => {

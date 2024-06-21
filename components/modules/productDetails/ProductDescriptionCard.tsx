@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import OtherSellerSection from "../trending/OtherSellerSection";
+import Link from "next/link";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -37,6 +38,7 @@ type ProductDescriptionCardProps = {
   onAdd: (args0: number, args2: "add" | "remove") => void;
   isLoading: boolean;
   soldBy: string;
+  soldByTradeRole: string;
   userId?: number;
   sellerId?: number;
   haveOtherSellers?: boolean;
@@ -60,6 +62,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   onAdd,
   isLoading,
   soldBy,
+  soldByTradeRole,
   userId,
   sellerId,
   haveOtherSellers,
@@ -127,7 +130,17 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
             <div className="rgdiv flex w-1/2 gap-x-2">
               <h5 className="!w-20 !capitalize !text-dark-orange">Sold By:</h5>
-              <h5>{soldBy}</h5>
+              <Link
+                href={
+                  soldByTradeRole === "COMPANY"
+                    ? "/company-profile-details"
+                    : soldByTradeRole === "FREELANCER"
+                      ? "/freelancer-profile-details"
+                      : "#"
+                }
+              >
+                <h5>{soldBy}</h5>
+              </Link>
             </div>
           </div>
           <div className="rating">
