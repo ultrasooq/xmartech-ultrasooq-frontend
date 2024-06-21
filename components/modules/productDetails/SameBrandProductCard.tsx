@@ -104,7 +104,9 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
         <Link href={`/trending/${id}`}>
           <div className="image-container relative mb-4">
             {askForPrice !== "true" ? (
-              <span className="discount">{consumerDiscount || 0}%</span>
+              consumerDiscount ? (
+                <span className="discount">{consumerDiscount}%</span>
+              ) : null
             ) : null}
             <Image
               src={

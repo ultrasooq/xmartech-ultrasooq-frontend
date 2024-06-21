@@ -106,9 +106,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         ) : null}
         <Link href={`/trending/${item.id}`}>
           {item?.askForPrice !== "true" ? (
-            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-              <span>{item.consumerDiscount || 0}%</span>
-            </div>
+            item.consumerDiscount ? (
+              <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+                <span>{item.consumerDiscount}%</span>
+              </div>
+            ) : null
           ) : null}
           <div className="relative mx-auto mb-4 h-36 w-36">
             <Image
