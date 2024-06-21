@@ -436,14 +436,20 @@ const ProductDetailsPage = () => {
                     <Image src="/images/suggestion-pic1.png" alt="suggested-preview" />
                   </div>
                 </div> */}
-                <SameBrandSection productDetails={productDetails} />
+                <SameBrandSection
+                  productDetails={productDetails}
+                  productId={searchParams?.id as string}
+                />
               </div>
             </div>
           </div>
         </div>
 
         <div className="product-view-s1-details-more-suggestion-sliders">
-          <RelatedProductsSection calculateTagIds={calculateTagIds} />
+          <RelatedProductsSection
+            calculateTagIds={calculateTagIds}
+            productId={searchParams?.id as string}
+          />
         </div>
       </div>
       <Footer />

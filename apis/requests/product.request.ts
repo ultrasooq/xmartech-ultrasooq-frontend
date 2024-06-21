@@ -123,6 +123,7 @@ export const fetchSameBrandProducts = (payload: {
   limit: number;
   brandIds: string;
   userId?: number;
+  productId?: string;
 }) => {
   return axios({
     method: "GET",
@@ -138,6 +139,7 @@ export const fetchRelatedProducts = (payload: {
   limit: number;
   tagIds: string;
   userId?: number;
+  productId?: string;
 }) => {
   return axios({
     method: "GET",

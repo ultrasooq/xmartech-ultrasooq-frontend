@@ -180,6 +180,7 @@ export const useSameBrandProducts = (
     limit: number;
     brandIds: string;
     userId?: number;
+    productId?: string;
   },
   enabled = true,
 ) =>
@@ -201,6 +202,7 @@ export const useRelatedProducts = (
     limit: number;
     tagIds: string;
     userId?: number;
+    productId?: string;
   },
   enabled = true,
 ) =>
