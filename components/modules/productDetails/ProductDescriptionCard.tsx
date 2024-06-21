@@ -1,16 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { Skeleton } from "@/components/ui/skeleton";
-// import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import SecurePaymentIcon from "@/public/images/securePaymenticon.svg";
 import SupportIcon from "@/public/images/support-24hr.svg";
-// import MinusIcon from "@/public/images/upDownBtn-minus.svg";
-// import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -133,9 +129,9 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
               <Link
                 href={
                   soldByTradeRole === "COMPANY"
-                    ? "/company-profile-details"
+                    ? `/company-profile-details?userId=${sellerId}`
                     : soldByTradeRole === "FREELANCER"
-                      ? "/freelancer-profile-details"
+                      ? `/freelancer-profile-details?userId=${sellerId}`
                       : "#"
                 }
               >
@@ -188,42 +184,6 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       <div className="info-col top-btm-border">
         <div className="form-group mb-0">
           <div className="quantity-with-right-payment-info">
-            {/* TODO: ask whether to keep or not */}
-            {/* <div className="left-qty">
-              <label>Quantity</label>
-              <div className="flex w-28 items-center justify-center gap-x-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (quantity > 1) {
-                      setQuantity(quantity - 1);
-                      onAdd(quantity - 1, "remove");
-                    }
-                  }}
-                  className="relative hover:shadow-sm"
-                  disabled={quantity === 1}
-                >
-                  <Image
-                    src={MinusIcon}
-                    alt="minus-icon"
-                    fill
-                    className="p-[10px]"
-                  />
-                </Button>
-                <p>{quantity}</p>
-                <Button
-                  variant="outline"
-                  className="relative hover:shadow-sm"
-                  onClick={() => {
-                    setQuantity(quantity + 1);
-                    onAdd(quantity + 1, "add");
-                  }}
-                >
-                  <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
-                </Button>
-              </div>
-            </div> */}
-
             <div className="right-payment-info">
               <ul>
                 <li>

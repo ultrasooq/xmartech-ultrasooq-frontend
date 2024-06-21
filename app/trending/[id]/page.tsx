@@ -387,62 +387,6 @@ const ProductDetailsPage = () => {
                           </table>
                         </div>
                       ) : null}
-
-                      {/* <div className="specification-sec">
-                        <h2>Specification</h2>
-                        <table className="specification-table">
-                          <tbody>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                            <tr>
-                              <th>Craft of Weaving</th>
-                              <td>Knit</td>
-                              <th>Applicable Season</th>
-                              <td>Spring and Summer</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>*/}
                     </div>
                   </TabsContent>
                   <TabsContent value="vendor" className="mt-0">

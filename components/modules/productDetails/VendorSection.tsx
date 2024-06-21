@@ -59,9 +59,9 @@ const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
         <Link
           href={
             vendor?.tradeRole === "COMPANY"
-              ? "/company-profile-details"
+              ? `/company-profile-details?userId=${adminId}`
               : vendor?.tradeRole === "FREELANCER"
-                ? "/freelancer-profile-details"
+                ? `/freelancer-profile-details?userId=${adminId}`
                 : "#"
           }
         >
