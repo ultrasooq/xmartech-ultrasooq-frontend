@@ -123,6 +123,7 @@ export const fetchSameBrandProducts = (payload: {
   limit: number;
   brandIds: string;
   userId?: number;
+  productId?: string;
 }) => {
   return axios({
     method: "GET",
@@ -138,6 +139,7 @@ export const fetchRelatedProducts = (payload: {
   limit: number;
   tagIds: string;
   userId?: number;
+  productId?: string;
 }) => {
   return axios({
     method: "GET",
@@ -217,6 +219,25 @@ export const getVendorDetails = (payload: { adminId: string }) => {
     method: "GET",
     url: urlcat(
       `${process.env.NEXT_PUBLIC_API_URL}/product/vendorDetails`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const getVendorProducts = (payload: {
+  adminId: string;
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/vendorAllProduct`,
       payload,
     ),
     headers: {

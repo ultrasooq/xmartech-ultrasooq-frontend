@@ -23,6 +23,7 @@ type ProductCardProps = {
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
+  isSeller?: boolean;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -31,6 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onWishlist,
   inWishlist,
   haveAccessToken,
+  isSeller,
 }) => {
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
@@ -79,9 +81,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="product-list-s1-box relative cursor-pointer ">
         <Link href={`/trending/${item.id}`}>
           {item?.askForPrice !== "true" ? (
-            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-              <span>{item.consumerDiscount || 0}%</span>
-            </div>
+            item.consumerDiscount ? (
+              <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+                <span>{item.consumerDiscount || 0}%</span>
+              </div>
+            ) : null
           ) : null}
           <div className="relative mx-auto mb-4 h-36 w-36">
             <Image
@@ -121,17 +125,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <FiEye size={18} />
             </Link>
 
-            <Button
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full p-0 shadow-md"
-              onClick={onWishlist}
-            >
-              {inWishlist ? (
-                <FaHeart color="red" size={16} />
-              ) : (
-                <FaRegHeart size={16} />
-              )}
-            </Button>
+            {!isSeller ? (
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full p-0 shadow-md"
+                onClick={onWishlist}
+              >
+                {inWishlist ? (
+                  <FaHeart color="red" size={16} />
+                ) : (
+                  <FaRegHeart size={16} />
+                )}
+              </Button>
+            ) : null}
 
             {/* <Button
               variant="ghost"

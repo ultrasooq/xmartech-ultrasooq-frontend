@@ -27,10 +27,12 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 
 type SameBrandSectionProps = {
   productDetails: any;
+  productId?: string;
 };
 
 const SameBrandSection: React.FC<SameBrandSectionProps> = ({
   productDetails,
+  productId,
 }) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -49,8 +51,9 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
       limit: 10,
       brandIds: productDetails?.brandId,
       userId: me.data?.data?.id,
+      productId,
     },
-    !!productDetails?.brandId,
+    !!productDetails?.brandId && !!productId,
   );
 
   const memoizedSameBrandProductList = useMemo(() => {

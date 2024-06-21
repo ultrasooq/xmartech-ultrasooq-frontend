@@ -6,17 +6,33 @@ import MoreInformationSection from "@/components/modules/companyProfileDetails/M
 import ProfileCard from "@/components/modules/companyProfileDetails/ProfileCard";
 import ReviewSection from "@/components/modules/freelancerProfileDetails/ReviewSection";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import ServicesSection from "@/components/shared/ServicesSection";
 import { PlusIcon } from "@radix-ui/react-icons";
 import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
 import Footer from "@/components/shared/Footer";
+import { useVendorDetails } from "@/apis/queries/product.queries";
+import VendorCard from "@/components/modules/companyProfileDetails/VendorCard";
+import VendorBranchSection from "@/components/modules/companyProfileDetails/VendorBranchSection";
+import VendorInformationSection from "@/components/modules/companyProfileDetails/VendorInformationSection";
+import VendorMoreInformationSection from "@/components/modules/companyProfileDetails/VendorMoreInfomationSection";
 
 export default function CompanyProfileDetailsPage() {
   const router = useRouter();
   const userDetails = useMe();
+  const searchQuery = useSearchParams();
+  const sellerId = searchQuery?.get("userId");
+
+  const vendorQuery = useVendorDetails(
+    {
+      adminId: sellerId || "",
+    },
+    !!sellerId,
+  );
+
+  const vendor = vendorQuery.data?.data;
 
   const handleCompanyProfilePage = () => router.push("/profile");
   const handleAddCompanyBranchPage = () => {
@@ -53,10 +69,17 @@ export default function CompanyProfileDetailsPage() {
                 Profile
               </h2>
             </div>
-            <ProfileCard
-              userDetails={userDetails.data?.data}
-              onEdit={handleEditCompanyPage}
-            />
+
+            {!sellerId ? (
+              <ProfileCard
+                userDetails={userDetails.data?.data}
+                onEdit={handleEditCompanyPage}
+              />
+            ) : null}
+
+            {sellerId ? (
+              <VendorCard vendor={vendor} isLoading={vendorQuery.isLoading} />
+            ) : null}
 
             <div className="mt-12 w-full">
               <Tabs defaultValue="profile-info">
@@ -67,12 +90,14 @@ export default function CompanyProfileDetailsPage() {
                   >
                     Profile Info
                   </TabsTrigger>
-                  <TabsTrigger
-                    value="ratings"
-                    className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
-                  >
-                    Ratings & Reviews
-                  </TabsTrigger>
+                  {!sellerId ? (
+                    <TabsTrigger
+                      value="ratings"
+                      className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
+                    >
+                      Ratings & Reviews
+                    </TabsTrigger>
+                  ) : null}
                   <TabsTrigger
                     value="products"
                     className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
@@ -82,15 +107,26 @@ export default function CompanyProfileDetailsPage() {
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    <InformationSection
-                      userDetails={userDetails.data?.data}
-                      onEdit={handleCompanyProfilePage}
-                    />
-                    {userDetails.data?.data?.userBranch?.length ? (
+                    {!sellerId ? (
+                      <InformationSection
+                        userDetails={userDetails.data?.data}
+                        onEdit={handleCompanyProfilePage}
+                      />
+                    ) : null}
+
+                    {sellerId ? (
+                      <VendorInformationSection vendor={vendor} />
+                    ) : null}
+
+                    {!sellerId && userDetails.data?.data?.userBranch?.length ? (
                       <MoreInformationSection
                         userDetails={userDetails.data?.data}
                         onEdit={handleEditCompanyPage}
                       />
+                    ) : null}
+
+                    {sellerId && vendor?.userBranch?.length ? (
+                      <VendorMoreInformationSection vendor={vendor} />
                     ) : null}
 
                     {/* Branch Section */}
@@ -100,28 +136,44 @@ export default function CompanyProfileDetailsPage() {
                       </p>
                     ) : null}
                     <div className="mb-4 w-full pt-4">
-                      <div className="mb-5 flex w-full items-center justify-end">
-                        <button
-                          type="button"
-                          onClick={handleAddCompanyBranchPage}
-                          className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
-                        >
-                          <PlusIcon className="mr-1 h-5 w-5" />
-                          Add
-                        </button>
-                      </div>
-                      {userDetails.data?.data?.userBranch
-                        .sort((a: any, b: any) => b?.mainOffice - a?.mainOffice)
-                        .map((item: any) => (
-                          <React.Fragment key={item.id}>
-                            <BranchSection
-                              branchDetails={item}
-                              onEditBranch={() =>
-                                handleEditCompanyBranchPage(item.id)
-                              }
-                            />
-                          </React.Fragment>
-                        ))}
+                      {!sellerId ? (
+                        <div className="mb-5 flex w-full items-center justify-end">
+                          <button
+                            type="button"
+                            onClick={handleAddCompanyBranchPage}
+                            className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                          >
+                            <PlusIcon className="mr-1 h-5 w-5" />
+                            Add
+                          </button>
+                        </div>
+                      ) : null}
+                      {!sellerId &&
+                        userDetails.data?.data?.userBranch
+                          .sort(
+                            (a: any, b: any) => b?.mainOffice - a?.mainOffice,
+                          )
+                          .map((item: any) => (
+                            <React.Fragment key={item.id}>
+                              <BranchSection
+                                branchDetails={item}
+                                onEditBranch={() =>
+                                  handleEditCompanyBranchPage(item.id)
+                                }
+                              />
+                            </React.Fragment>
+                          ))}
+
+                      {sellerId &&
+                        vendor?.userBranch
+                          .sort(
+                            (a: any, b: any) => b?.mainOffice - a?.mainOffice,
+                          )
+                          .map((item: any) => (
+                            <React.Fragment key={item.id}>
+                              <VendorBranchSection branchDetails={item} />
+                            </React.Fragment>
+                          ))}
                     </div>
                   </div>
                 </TabsContent>
@@ -134,7 +186,7 @@ export default function CompanyProfileDetailsPage() {
                 <TabsContent value="products" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {/* importing from freelancer details module */}
-                    <ProductsSection />
+                    <ProductsSection sellerId={sellerId as string} />
                   </div>
                 </TabsContent>
               </Tabs>
