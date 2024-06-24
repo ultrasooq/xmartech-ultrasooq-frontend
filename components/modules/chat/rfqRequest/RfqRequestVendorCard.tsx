@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import RatingIcon from "@/public/images/rating.png";
+import moment from "moment";
 import { cn } from "@/lib/utils";
 import AvatarPlaceholder from "@/public/images/no-user-image.png";
 
@@ -10,6 +10,14 @@ type VendorCardProps = {
   profilePicture: string;
   onClick?: () => void;
   isSelected?: boolean;
+  seller: {
+    firstName: string;
+    lastName: string;
+    profilePicture: string;
+    unreadMsgCount: number;
+    latestMessageContent: string;
+    latestMessageCreatedAt: string;
+  }
 };
 
 const VendorCard: React.FC<VendorCardProps> = ({
@@ -18,6 +26,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
   profilePicture,
   onClick,
   isSelected,
+  seller
 }) => {
   return (
     <button
@@ -48,6 +57,34 @@ const VendorCard: React.FC<VendorCardProps> = ({
             {offerPrice ? `$${offerPrice}` : "-"}
           </span>
         </div>
+
+        <div>
+          <div className="flex space-x-2 p-2">
+            <div className="flex items-center space-x-1">
+              <div className="text-xs font-normal text-gray-500">
+                {seller?.latestMessageContent}
+              </div>
+              {seller?.unreadMsgCount ? (
+                <div className="flex items-center justify-center h-5 w-5 text-xs font-semibold text-white bg-blue-500 rounded-full">
+                  {seller?.unreadMsgCount}
+                </div>
+              ) : null}
+            </div>
+          </div>
+          {seller?.latestMessageCreatedAt && (
+            <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
+              <span>
+                {seller.latestMessageCreatedAt
+                  ? moment(seller.latestMessageCreatedAt)
+                    .startOf("seconds")
+                    .fromNow()
+                  : ""}
+              </span>
+            </div>
+          )}
+        </div>
+
+
         {/* <div className="flex w-full">
           <Image src={RatingIcon} alt="rating-icon" />
         </div> */}

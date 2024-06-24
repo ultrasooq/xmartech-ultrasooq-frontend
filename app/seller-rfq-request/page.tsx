@@ -5,7 +5,7 @@ import TaskIcon from "@/public/images/task-icon.svg";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import Chat from "@/components/modules/chat/Chat";
+import SellerChat from "@/components/modules/chat/seller/SellerChat";
 
 const SellerRfqRequestPage = () => {
   const pathname = usePathname();
@@ -54,7 +54,7 @@ const SellerRfqRequestPage = () => {
         </div>
       </div>
       <div className="w-[85%] px-2">
-        <Chat/>
+        <SellerChat />
       </div>
     </section>
   );

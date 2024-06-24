@@ -4,11 +4,22 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 
+
+interface newMessageType {
+  content: string;
+  userId: number;
+  roomId: number;
+  rfqId: number;
+  createdAt: string;
+}
+
 interface SocketContextType {
   socket: Socket | null;
   connected: boolean;
   sendMessage: (message: { roomId: number; rfqId: number; content: string }) => void;
-  newMessage: string;
+  newMessage: newMessageType | null;
+  errorMessage: string;
+  clearErrorMessage: () => void;
   newRoom: number | null;
   cratePrivateRoom: (newRoom: {
     participants: number[];
@@ -18,6 +29,7 @@ interface SocketContextType {
   disconnectSocket: () => void;
 }
 
+
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -25,7 +37,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user } = useAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [newMessage, setNewMessage] = useState<string>("");
+  const [newMessage, setNewMessage] = useState<newMessageType | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [newRoom, setNewRoom] = useState<number | null>(null);
   const [connected, setConnected] = useState(false);
 
@@ -45,12 +58,20 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("Disconnected from socket server");
       });
 
-      socketIo.on("receivedMessage", (message: string) => {
+      socketIo.on("receivedMessage", (message: newMessageType) => {
         setNewMessage(message)
       });
 
       socketIo.on("newRoomCreated", (room: { roomId: number }) => {
         setNewRoom(room.roomId)
+      });
+
+      socketIo.on("createPrivateRoomError", (error: { message: string }) => {
+        setErrorMessage("Failed")
+      });
+
+      socketIo.on("sendMessageError", (error: { message: string }) => {
+        setErrorMessage("Failed")
       });
 
 
@@ -65,11 +86,14 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         socket.disconnect();
         setSocket(null);
         setConnected(false);
+        setNewRoom(null);
+        setErrorMessage("");
+        setNewMessage(null)
       }
     }
   }, [user]);
 
-  const sendMessage = ({ roomId, content, rfqId}: { roomId: number; rfqId: number; content: string; }) => {
+  const sendMessage = ({ roomId, content, rfqId }: { roomId: number; rfqId: number; content: string; }) => {
     if (socket) {
       socket.emit("sendMessage", { roomId, rfqId, content, userId: user?.id });
     }
@@ -86,8 +110,15 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       socket.disconnect();
       setSocket(null);
       setConnected(false);
+      setNewRoom(null);
+      setErrorMessage("");
+      setNewMessage(null)
     }
   };
+
+  const clearErrorMessage = () => {
+    setErrorMessage("")
+  }
 
   return (
     <SocketContext.Provider
@@ -98,7 +129,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         sendMessage,
         disconnectSocket,
         cratePrivateRoom,
-        newRoom
+        newRoom,
+        errorMessage,
+        clearErrorMessage
       }}
     >
       {children}

@@ -4,13 +4,13 @@ import UserChatIcon from "@/public/images/user-chat.png";
 import moment from "moment";
 import { useAuth } from "@/context/AuthContext";
 
-interface ChatHistoryProps {
+interface SellerChatHistoryProps {
     roomId: number | null;
     selectedChatHistory: any[];
     chatHistoryLoading: boolean
 }
 
-const ChatHistory: React.FC<ChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading }) => {
+const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading }) => {
     const { user } = useAuth();
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -47,14 +47,19 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ roomId, selectedChatHistory, 
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="h-[32px] w-[32px] rounded-full">
-                                            <Image src={UserChatIcon} alt="user-chat-icon" />
+                                        <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
+                                            <span className="flex items-center justify-center h-full w-full">
+                                              {`${chat?.user?.firstName?.[0] ?? ''}${chat?.user?.lastName?.[0] ?? ''}`}
+                                            </span>
+                                            {/* <Image src={UserChatIcon} alt="user-chat-icon" /> */}
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="mt-5 flex w-full flex-wrap items-end">
-                                        <div className="h-[32px] w-[32px] rounded-full">
-                                            <Image src={UserChatIcon} alt="user-chat-icon" />
+                                        <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
+                                            <span className="flex items-center justify-center h-full w-full">
+                                            {`${chat?.user?.firstName?.[0] ?? ''}${chat?.user?.lastName?.[0] ?? ''}`}
+                                            </span>
                                         </div>
                                         <div className="w-[calc(100%-2rem)] pl-2">
                                             <div className="mb-1 w-full rounded-xl bg-[#F1F2F6] p-3 text-sm">
@@ -63,7 +68,13 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ roomId, selectedChatHistory, 
                                                 </p>
                                             </div>
                                             <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
-                                                <span>Message seen 1:22pm</span>
+                                                <span>
+                                                    {chat.createdAt
+                                                        ? moment(chat.createdAt)
+                                                            .startOf("seconds")
+                                                            .fromNow()
+                                                        : ""}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -84,4 +95,4 @@ const ChatHistory: React.FC<ChatHistoryProps> = ({ roomId, selectedChatHistory, 
     );
 };
 
-export default ChatHistory;
+export default SellerChatHistory;
