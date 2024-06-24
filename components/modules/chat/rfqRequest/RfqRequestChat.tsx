@@ -78,6 +78,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         if (selectedVendor?.sellerID && selectedVendor?.buyerID) {
             checkRoomId()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedVendor]);
 
     // receive a message
@@ -85,6 +86,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         if (newMessage?.rfqId === parseInt(rfqQuoteId)) {
             handleNewMessage(newMessage)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newMessage]);
 
     // get chat history
@@ -92,6 +94,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         if (selectedRoom) {
             handleChatHistory()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRoom]);
 
     // if new room crated
@@ -111,6 +114,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             });
             clearErrorMessage()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorMessage])
 
     const handleNewMessage = (message: any) => {
