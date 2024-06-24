@@ -10,25 +10,23 @@ import { useAllRfqQuotesUsersBySellerId } from "@/apis/queries/rfq.queries";
 import { useSocket } from "@/context/SocketContext";
 import { findRoomId, getChatHistory } from "@/apis/requests/chat.requests";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
-import ChatHistory from "./ChatHistory";
+import SellerChatHistory from "./SellerChatHistory";
 import { useToast } from "@/components/ui/use-toast";
 
 
-interface ChatProps {
+interface SellerChatProps {
 
 }
 
-const Chat: React.FC<ChatProps> = () => {
+const SellerChat: React.FC<SellerChatProps> = () => {
     const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
     const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<any>("");
-    const [loading, setLoading] = useState<boolean>(true)
     const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
     const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
     const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
-    const [selectedChat, setSelectedChat] = useState<any>(null);
     const [message, setMessage] = useState<string>('');
-    const { connected, sendMessage, cratePrivateRoom, newMessage, newRoom } = useSocket()
+    const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage } = useSocket()
     const { toast } = useToast();
 
     const allRfqQuotesQuery = useAllRfqQuotesUsersBySellerId({
@@ -78,11 +76,24 @@ const Chat: React.FC<ChatProps> = () => {
         if (newMessage) handleNewMessage(newMessage)
     }, [newMessage]);
 
+    // if new room crated
     useEffect(() => {
         if (newRoom) {
             setSelectedRoom(newRoom)
         }
     }, [newRoom])
+
+    // if any error exception
+    useEffect(() => {
+        if (errorMessage) {
+            toast({
+                title: "Chat",
+                description: errorMessage,
+                variant: "danger",
+            });
+            clearErrorMessage()
+        }
+    }, [errorMessage])
 
     const handleNewMessage = (message: any) => {
         const chatHistory = [...selectedChatHistory]
@@ -119,7 +130,7 @@ const Chat: React.FC<ChatProps> = () => {
         const msgPayload = {
             roomId: roomId,
             content: message,
-            rfqId: selectedProduct?.id
+            rfqId: selectedProduct?.rfqQuotesId
         }
         sendMessage(msgPayload)
     }
@@ -129,7 +140,7 @@ const Chat: React.FC<ChatProps> = () => {
             const payload = {
                 participants: [selectedProduct?.sellerID, selectedProduct?.buyerID],
                 content: message,
-                rfqId: selectedProduct?.id
+                rfqId: selectedProduct?.rfqQuotesId
             }
             cratePrivateRoom(payload);
         } catch (error) {
@@ -140,8 +151,8 @@ const Chat: React.FC<ChatProps> = () => {
     const checkRoomId = async () => {
         try {
             const payloadRoomFind = {
-                rfqId: selectedProduct?.id,
-                buyerId: selectedProduct?.buyerID
+                rfqId: selectedProduct?.rfqQuotesId,
+                userId: selectedProduct?.buyerID
             }
             const room = await findRoomId(payloadRoomFind);
             if (room?.data?.roomId) {
@@ -172,7 +183,7 @@ const Chat: React.FC<ChatProps> = () => {
         }
     }
 
-    const handleKeyDown = (e: any) => {
+    const handleSendMessageKeyDown = (e: any) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSendMessage();
@@ -350,7 +361,7 @@ const Chat: React.FC<ChatProps> = () => {
                             </div>
                         </div>
                         {rfqQuotesDetails?.length > 0 ? (
-                            <ChatHistory
+                            <SellerChatHistory
                                 roomId={selectedRoom}
                                 selectedChatHistory={selectedChatHistory}
                                 chatHistoryLoading={chatHistoryLoading}
@@ -373,7 +384,7 @@ const Chat: React.FC<ChatProps> = () => {
                                         value={message}
                                         placeholder="Type your message...."
                                         className="h-[32px] w-full resize-none text-sm focus:outline-none"
-                                        onKeyDown={handleKeyDown}
+                                        onKeyDown={handleSendMessageKeyDown}
                                     ></textarea>
                                 </div>
                                 <div className="flex w-[72px] items-center justify-between">
@@ -395,4 +406,4 @@ const Chat: React.FC<ChatProps> = () => {
     )
 }
 
-export default Chat;
+export default SellerChat;

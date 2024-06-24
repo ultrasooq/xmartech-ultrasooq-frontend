@@ -6,7 +6,7 @@ export interface CreatePrivateRoomRequest {
 
 export interface FindRoomRequest {
     rfqId: number;
-    buyerId: number;
+    userId: number;
 }
 
 
