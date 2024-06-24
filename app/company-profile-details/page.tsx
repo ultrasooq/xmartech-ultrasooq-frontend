@@ -21,8 +21,14 @@ import VendorMoreInformationSection from "@/components/modules/companyProfileDet
 
 export default function CompanyProfileDetailsPage() {
   const router = useRouter();
-  const userDetails = useMe();
+  const [activeTab, setActiveTab] = useState("profile-info");
   const [activeSellerId, setActiveSellerId] = useState<string | null>();
+  const [activeProductPriceId, setActiveProductPriceId] = useState<
+    string | null
+  >();
+  const [activeProductId, setActiveProductId] = useState<string | null>();
+
+  const userDetails = useMe();
 
   const vendorQuery = useVendorDetails(
     {
@@ -51,7 +57,10 @@ export default function CompanyProfileDetailsPage() {
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
     let sellerId = params.get("userId");
+    let type = params.get("type");
+
     setActiveSellerId(sellerId);
+    setActiveTab(type || "profile-info");
   }, []);
 
   return (
@@ -87,7 +96,7 @@ export default function CompanyProfileDetailsPage() {
             ) : null}
 
             <div className="mt-12 w-full">
-              <Tabs defaultValue="profile-info">
+              <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
                 <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
                   <TabsTrigger
                     value="profile-info"
@@ -95,14 +104,14 @@ export default function CompanyProfileDetailsPage() {
                   >
                     Profile Info
                   </TabsTrigger>
-                  {!activeSellerId ? (
-                    <TabsTrigger
-                      value="ratings"
-                      className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
-                    >
-                      Ratings & Reviews
-                    </TabsTrigger>
-                  ) : null}
+
+                  <TabsTrigger
+                    value="ratings"
+                    className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
+                  >
+                    Ratings & Reviews
+                  </TabsTrigger>
+
                   <TabsTrigger
                     value="products"
                     className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"
@@ -186,7 +195,7 @@ export default function CompanyProfileDetailsPage() {
                 <TabsContent value="ratings" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {/* importing from freelancer details module */}
-                    <ReviewSection />
+                    <ReviewSection sellerId={activeSellerId as string} />
                   </div>
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">

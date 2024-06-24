@@ -22,10 +22,14 @@ import Link from "next/link";
 import { MONTHS, formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { PiStarFill } from "react-icons/pi";
+// import SellerReviewForm from "@/components/shared/SellerReviewForm";
 
 const MyOrderDetailsPage = ({}) => {
   const searchParams = useParams();
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  // const [reviewId, setReviewId] = useState<number>();
 
   const handleToggleStatusModal = () =>
     setIsStatusModalOpen(!isStatusModalOpen);
@@ -79,6 +83,9 @@ const MyOrderDetailsPage = ({}) => {
 
     return `${dayOfWeek}, ${dayWithSuffix} ${month}`;
   }
+
+  // const handleToggleReviewModal = () =>
+  //   setIsReviewModalOpen(!isReviewModalOpen);
 
   return (
     <>
@@ -430,6 +437,35 @@ const MyOrderDetailsPage = ({}) => {
                               Update Status
                             </button>
                           </div>
+
+                          {/* {orderDetails?.orderProductStatus === "DELIVERED" ? (
+                            // <div className="more-actions">
+                            //   <button
+                            //     type="button"
+                            //     className="theme-primary-btn update-status-btn"
+                            //     onClick={handleToggleReviewModal}
+                            //   >
+                            //     <PiStarFill />
+                            //     Rate & Review Product
+                            //   </button>
+                            // </div>
+                            <Link
+                              href={
+                                orderDetails?.orderProduct_productPrice
+                                  ?.adminDetail?.tradeRole === "COMPANY"
+                                  ? `/company-profile-details?userId=${orderDetails?.orderProduct_productPrice?.adminDetail?.id}&productPriceId=${orderDetails?.orderProduct_productPrice?.id}&productId=${orderDetails?.orderProduct_productPrice?.productId}&type=ratings`
+                                  : orderDetails?.orderProduct_productPrice
+                                        ?.adminDetail?.tradeRole ===
+                                      "FREELANCER"
+                                    ? `/freelancer-profile-details?userId=${orderDetails?.orderProduct_productPrice?.adminDetail?.id}&productPriceId=${orderDetails?.orderProduct_productPrice?.id}&productId=${orderDetails?.orderProduct_productPrice?.productId}&type=ratings`
+                                    : "#"
+                              }
+                              className="ratingLink"
+                            >
+                              <PiStarFill />
+                              Rate & Review Product
+                            </Link>
+                          ) : null} */}
                         </div>
                       </div>
                     </div>
@@ -487,6 +523,21 @@ const MyOrderDetailsPage = ({}) => {
           />
         </DialogContent>
       </Dialog>
+
+      {/* <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
+        <DialogContent>
+          <SellerReviewForm
+            onClose={() => {
+              setReviewId(undefined);
+              handleToggleReviewModal();
+            }}
+            reviewId={reviewId}
+            productPriceId={orderDetails?.orderProduct_productPrice?.id}
+            adminId={orderDetails?.orderProduct_productPrice?.adminDetail?.id}
+            productId={orderDetails?.orderProduct_productPrice?.productId}
+          />
+        </DialogContent>
+      </Dialog> */}
     </>
   );
 };

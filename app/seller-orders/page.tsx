@@ -260,11 +260,17 @@ const SellerOrdersPage = () => {
                   id: number;
                   purchasePrice: string;
                   orderProduct_productPrice: {
+                    id: number;
                     offerPrice: string;
                     productPrice_product: {
                       productName: string;
                       productImages: { id: number; image: string }[];
                     };
+                    adminDetail: {
+                      id: number;
+                      tradeRole: string;
+                    };
+                    productId: number;
                   };
                   orderQuantity: number;
                   sellerOrderNo: string;
@@ -289,6 +295,12 @@ const SellerOrdersPage = () => {
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}
                     updatedAt={item.updatedAt}
+                    sellerId={item.orderProduct_productPrice?.adminDetail?.id}
+                    tradeRole={
+                      item.orderProduct_productPrice?.adminDetail?.tradeRole
+                    }
+                    productPriceId={item.orderProduct_productPrice?.id}
+                    productId={item.orderProduct_productPrice?.productId}
                   />
                 ),
               )}

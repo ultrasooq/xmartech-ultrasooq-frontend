@@ -1,51 +1,48 @@
-import React, { useMemo, useState } from "react";
-import Image from "next/image";
-import { useReviewsForSeller } from "@/apis/queries/review.queries";
-import { FaStar } from "react-icons/fa";
-import { FaRegStar } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { useAllProductPriceReviewBySellerId } from "@/apis/queries/review.queries";
 import { Button } from "@/components/ui/button";
 import ProductReviewCard from "./ProductReviewCard";
-import { stripHTML } from "@/utils/helper";
+import Image from "next/image";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import SellerReviewForm from "@/components/shared/SellerReviewForm";
 
-type ReviewSectionProps = {};
+type ReviewSectionProps = {
+  sellerId?: string;
+};
 
-const ReviewSection: React.FC<ReviewSectionProps> = () => {
+const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [sortType, setSortType] = useState<"highest" | "lowest" | "newest">(
     "newest",
   );
+  const [reviewId, setReviewId] = useState<number>();
+  const [activeProductPriceId, setActiveProductPriceId] = useState<
+    string | null
+  >();
+  const [activeProductId, setActiveProductId] = useState<string | null>();
 
-  const reviewsQuery = useReviewsForSeller({
-    page: 1,
-    limit: 10,
-    sortType,
-  });
+  const reviewsQuery = useAllProductPriceReviewBySellerId(
+    {
+      page: 1,
+      limit: 10,
+      sortType,
+      sellerId: sellerId || "",
+    },
+    !!sellerId,
+  );
 
-  //   const calculateAvgRating = useMemo(() => {
-  //     const totalRating = productReview?.reduce(
-  //       (acc: number, item: { rating: number }) => {
-  //         return acc + item.rating;
-  //       },
-  //       0,
-  //     );
+  const handleToggleReviewModal = () =>
+    setIsReviewModalOpen(!isReviewModalOpen);
 
-  //     const result = totalRating / productReview?.length;
-  //     return !isNaN(result) ? Math.floor(result) : 0;
-  //   }, [productReview?.length]);
+  useEffect(() => {
+    const params = new URLSearchParams(document.location.search);
 
-  //   const calculateRatings = useMemo(
-  //     () => (rating: number) => {
-  //       const stars = [];
-  //       for (let i = 1; i <= 5; i++) {
-  //         if (i <= rating) {
-  //           stars.push(<FaStar key={i} color="#FFC107" size={20} />);
-  //         } else {
-  //           stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
-  //         }
-  //       }
-  //       return stars;
-  //     },
-  //     [productReview?.length],
-  //   );
+    let productPriceId = params.get("productPriceId");
+    let productId = params.get("productId");
+
+    setActiveProductPriceId(productPriceId);
+    setActiveProductId(productId);
+  }, []);
 
   return (
     <div className="w-full">
@@ -65,6 +62,25 @@ const ReviewSection: React.FC<ReviewSectionProps> = () => {
               <p>Based on {reviewsQuery.data?.data?.length} Reviews</p>
             </div>
           </div>
+        </div>
+
+        <div className="w-auto">
+          {activeProductPriceId && activeProductId && sellerId ? (
+            <button
+              type="button"
+              onClick={handleToggleReviewModal}
+              className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
+            >
+              <Image
+                src="/images/pen-icon.svg"
+                height={20}
+                width={20}
+                className="mr-2"
+                alt="pen-icon"
+              />
+              <span>Write A Review</span>
+            </button>
+          ) : null}
         </div>
       </div>
       <div className="flex w-full items-center justify-end py-5">
@@ -147,6 +163,23 @@ const ReviewSection: React.FC<ReviewSectionProps> = () => {
           Load More
         </span>
       </div> */}
+
+      <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
+        <DialogContent>
+          <SellerReviewForm
+            onClose={() => {
+              setReviewId(undefined);
+              handleToggleReviewModal();
+            }}
+            reviewId={reviewId}
+            productPriceId={
+              activeProductPriceId ? Number(activeProductPriceId) : 0
+            }
+            adminId={sellerId ? Number(sellerId) : 0}
+            productId={activeProductId ? Number(activeProductId) : 0}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
