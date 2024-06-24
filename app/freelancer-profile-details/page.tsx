@@ -19,6 +19,8 @@ import VendorMoreInformationSection from "@/components/modules/freelancerProfile
 
 export default function FreelancerProfileDetailsPage() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState("profile-info");
+
   const userDetails = useMe();
   const [activeSellerId, setActiveSellerId] = useState<string | null>();
 
@@ -44,7 +46,10 @@ export default function FreelancerProfileDetailsPage() {
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
     let sellerId = params.get("userId");
+    let type = params.get("type");
+
     setActiveSellerId(sellerId);
+    setActiveTab(type || "profile-info");
   }, []);
 
   return (
@@ -80,7 +85,7 @@ export default function FreelancerProfileDetailsPage() {
             ) : null}
 
             <div className="mt-12 w-full">
-              <Tabs defaultValue="profile-info">
+              <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
                 <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
                   <TabsTrigger
                     value="profile-info"
@@ -88,14 +93,14 @@ export default function FreelancerProfileDetailsPage() {
                   >
                     Profile Info
                   </TabsTrigger>
-                  {!activeSellerId ? (
-                    <TabsTrigger
-                      value="ratings"
-                      className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
-                    >
-                      Ratings & Reviews
-                    </TabsTrigger>
-                  ) : null}
+
+                  <TabsTrigger
+                    value="ratings"
+                    className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
+                  >
+                    Ratings & Reviews
+                  </TabsTrigger>
+
                   <TabsTrigger
                     value="products"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
@@ -153,7 +158,7 @@ export default function FreelancerProfileDetailsPage() {
                 </TabsContent>
                 <TabsContent value="ratings" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    <ReviewSection />
+                    <ReviewSection sellerId={activeSellerId as string} />
                   </div>
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">

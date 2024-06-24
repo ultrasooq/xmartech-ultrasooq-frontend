@@ -2,10 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { APIResponseError } from "@/utils/types/common.types";
 import {
   addReview,
-  fetchAllReviewBySellerId,
+  addSellerReview,
+  fetchAllProductPriceReviewBySellerId,
+  // fetchAllReviewBySellerId,
   fetchReviewById,
   fetchReviews,
+  fetchSellerReviewById,
   updateReview,
+  updateSellerReview,
 } from "../requests/review.requests";
 
 export const useReviews = (
@@ -94,18 +98,117 @@ export const useReviewById = (
     enabled,
   });
 
-export const useReviewsForSeller = (
+// export const useReviewsForSeller = (
+//   payload: {
+//     page: number;
+//     limit: number;
+//     sortType?: "highest" | "lowest" | "newest";
+//   },
+//   enabled = true,
+// ) =>
+//   useQuery({
+//     queryKey: ["reviews-for-seller", payload],
+//     queryFn: async () => {
+//       const res = await fetchAllReviewBySellerId(payload);
+//       return res.data;
+//     },
+//     // onError: (err: APIResponseError) => {
+//     //   console.log(err);
+//     // },
+//     enabled,
+//   });
+
+export const useAddSellerReview = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {
+      productPriceId: number;
+      adminId: number;
+      productId: number;
+      title: string;
+      description: string;
+      rating: number;
+    }
+  >({
+    mutationFn: async (payload) => {
+      const res = await addSellerReview(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      // queryClient.invalidateQueries({
+      //   queryKey: ["seller-reviews"],
+      // });
+      queryClient.invalidateQueries({
+        queryKey: ["reviews-for-seller"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useUpdateSellerReview = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {
+      productReviewId: number;
+      title: string;
+      description: string;
+      rating: number;
+    }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateSellerReview(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      // queryClient.invalidateQueries({
+      //   queryKey: ["seller-reviews"],
+      // });
+      queryClient.invalidateQueries({
+        queryKey: ["reviews-for-seller"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useSellerReviewById = (
+  payload: { productPriceReviewId: number },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["seller-review-by-id", payload],
+    queryFn: async () => {
+      const res = await fetchSellerReviewById(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useAllProductPriceReviewBySellerId = (
   payload: {
     page: number;
     limit: number;
     sortType?: "highest" | "lowest" | "newest";
+    sellerId: string;
   },
   enabled = true,
 ) =>
   useQuery({
     queryKey: ["reviews-for-seller", payload],
     queryFn: async () => {
-      const res = await fetchAllReviewBySellerId(payload);
+      const res = await fetchAllProductPriceReviewBySellerId(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {

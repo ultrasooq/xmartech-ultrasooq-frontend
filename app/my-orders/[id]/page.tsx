@@ -432,6 +432,25 @@ const MyOrderDetailsPage = ({}) => {
                             <MdHelpCenter />
                             Need Help?
                           </Button>
+
+                          {orderDetails?.orderProductStatus === "DELIVERED" ? (
+                            <Link
+                              href={
+                                orderDetails?.orderProduct_productPrice
+                                  ?.adminDetail?.tradeRole === "COMPANY"
+                                  ? `/company-profile-details?userId=${orderDetails?.orderProduct_productPrice?.adminDetail?.id}&productPriceId=${orderDetails?.orderProduct_productPrice?.id}&productId=${orderDetails?.orderProduct_productPrice?.productId}&type=ratings`
+                                  : orderDetails?.orderProduct_productPrice
+                                        ?.adminDetail?.tradeRole ===
+                                      "FREELANCER"
+                                    ? `/freelancer-profile-details?userId=${orderDetails?.orderProduct_productPrice?.adminDetail?.id}&productPriceId=${orderDetails?.orderProduct_productPrice?.id}&productId=${orderDetails?.orderProduct_productPrice?.productId}&type=ratings`
+                                    : "#"
+                              }
+                              className="ratingLink"
+                            >
+                              <PiStarFill />
+                              Rate & Review Seller
+                            </Link>
+                          ) : null}
                         </div>
                       </div>
                     </div>

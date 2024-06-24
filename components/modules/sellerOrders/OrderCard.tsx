@@ -4,6 +4,7 @@ import React from "react";
 import { SELLER_DELIVERY_STATUS, formattedDate } from "@/utils/constants";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { PiStarFill } from "react-icons/pi";
 
 type OrderCardProps = {
   id: number;
@@ -16,6 +17,10 @@ type OrderCardProps = {
   orderStatus: string;
   orderProductDate: string;
   updatedAt: string;
+  tradeRole?: string;
+  sellerId?: number;
+  productPriceId?: number;
+  productId?: number;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -29,7 +34,12 @@ const OrderCard: React.FC<OrderCardProps> = ({
   orderStatus,
   orderProductDate,
   updatedAt,
+  tradeRole,
+  sellerId,
+  productPriceId,
+  productId,
 }) => {
+  console.log(tradeRole, sellerId, productPriceId, productId);
   return (
     <div className="my-order-card">
       <h5 className="mb-2">
@@ -93,6 +103,22 @@ const OrderCard: React.FC<OrderCardProps> = ({
             ) : null}
           </h4>
           <p>{SELLER_DELIVERY_STATUS[orderStatus]}</p>
+
+          {/* {orderStatus === "DELIVERED" ? (
+            <Link
+              href={
+                tradeRole === "COMPANY"
+                  ? `/company-profile-details?userId=${sellerId}&productPriceId=${productPriceId}&productId=${productId}&type=ratings`
+                  : tradeRole === "FREELANCER"
+                    ? `/freelancer-profile-details?userId=${sellerId}&productPriceId=${productPriceId}&productId=${productId}&type=ratings`
+                    : "#"
+              }
+              className="ratingLink"
+            >
+              <PiStarFill />
+              Rate & Review Product
+            </Link>
+          ) : null} */}
         </div>
       </div>
     </div>
