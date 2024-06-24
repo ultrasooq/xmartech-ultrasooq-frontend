@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { formatDate } from "@/utils/helper";
@@ -22,6 +22,22 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   productImage,
   productName,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedOfferPrice, setEditedOfferPrice] = useState(offerPrice);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveClick = () => {
+    setIsEditing(false);
+  };
+
+  const handleCancelClick = () => {
+    setEditedOfferPrice(offerPrice);
+    setIsEditing(false);
+  };
+
   return (
     <div className="w-full border-b border-solid border-gray-300 p-4">
       <div className="flex w-full">
@@ -47,7 +63,25 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
           {quantity}
         </div>
         <div className="w-[10%] p-4 text-xs font-normal text-black">
-          {offerPrice ? `$${offerPrice}` : "-"}
+          {isEditing ? (
+            <div>
+              <input
+                type="text"
+                value={editedOfferPrice}
+                onChange={(e) => setEditedOfferPrice(e.target.value)}
+                className="border rounded p-1 w-10"
+              />
+              <div className="flex w-full">
+                <button onClick={handleSaveClick} className="ml-2 text-blue-500">Save</button>
+                <button onClick={handleCancelClick} className="ml-2 text-red-500">Cancel</button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              {editedOfferPrice ? `$${editedOfferPrice}` : "-"}
+              <button onClick={handleEditClick} className="ml-2 text-blue-500">Edit</button>
+            </div>
+          )}
         </div>
         <div className="w-[20%] p-4 text-xs font-normal text-black">
           {address || "-"}

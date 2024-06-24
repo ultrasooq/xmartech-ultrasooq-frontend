@@ -62,6 +62,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         if (selectedProduct?.sellerID && selectedProduct?.buyerID) {
             checkRoomId()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedProduct]);
 
     // get chat history
@@ -69,11 +70,15 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         if (selectedRoom) {
             handleChatHistory()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRoom]);
 
     // receive a messaage
     useEffect(() => {
-        if (newMessage) handleNewMessage(newMessage)
+        if (newMessage) {
+            handleNewMessage(newMessage)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newMessage]);
 
     // if new room crated
@@ -93,6 +98,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             });
             clearErrorMessage()
         }
+         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorMessage])
 
     const handleNewMessage = (message: any) => {
