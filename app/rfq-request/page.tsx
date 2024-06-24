@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from 'next/navigation'
 import TaskIcon from "@/public/images/task-icon.svg";
@@ -9,9 +9,14 @@ import { usePathname } from "next/navigation";
 import RfqRequestChat from "@/components/modules/chat/rfqRequest/RfqRequestChat";
 
 const RfqRequestPage = () => {
-  const searchParams = useSearchParams()
-  const rfqQuotesId = searchParams?.get("rfqQuotesId");
+  const [rfqQuotesId, setRfqQuotesId] = useState<string | null>()
   const pathname = usePathname();
+
+  useEffect(() => {
+    const params = new URLSearchParams(document.location.search);
+    let rfqId = params.get("rfqQuotesId");
+    setRfqQuotesId(rfqId);
+  }, []);
 
   return (
     <section className="m-auto flex w-full max-w-[1400px] py-8">
