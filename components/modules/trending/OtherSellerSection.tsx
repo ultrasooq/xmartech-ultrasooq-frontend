@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  useOneProductBySellerId,
+  // useOneWithProductPrice,
   useProductById,
 } from "@/apis/queries/product.queries";
 import { useMe } from "@/apis/queries/user.queries";
@@ -21,13 +21,24 @@ import {
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 
-const OtherSellerSection = () => {
+type OtherSellerSectionProps = {
+  setIsDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  otherSellerDetails?: any[];
+};
+
+const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
+  setIsDrawerOpen,
+  otherSellerDetails,
+}) => {
   const router = useRouter();
   const searchParams = useParams();
+  // const searchQuery = useSearchParams();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  // const otherSellerId = searchQuery?.get("sellerId");
+  // const otherProductId = searchQuery?.get("productId");
 
   const me = useMe();
   const productQueryById = useProductById(
@@ -54,6 +65,13 @@ const OtherSellerSection = () => {
     },
     haveAccessToken,
   );
+  // const productQueryByOtherSeller = useOneWithProductPrice(
+  //   {
+  //     productId: otherProductId ? Number(otherProductId) : 0,
+  //     adminId: otherSellerId ? Number(otherSellerId) : 0,
+  //   },
+  //   !!otherProductId && !!otherSellerId,
+  // );
 
   const productDetails = productQueryById.data?.data;
 
@@ -136,9 +154,6 @@ const OtherSellerSection = () => {
     }
   }, [accessToken]);
 
-  //   console.log(productQueryById.data?.data);
-  console.log(productQueryById.data?.otherSeller);
-
   return (
     <section className="w-full">
       <div className="container m-auto px-3">
@@ -162,7 +177,7 @@ const OtherSellerSection = () => {
               </div>
             </div>
 
-            {productQueryById.data?.otherSeller?.map(
+            {otherSellerDetails?.map(
               (item: {
                 id: number;
                 adminDetail: {
@@ -200,14 +215,20 @@ const OtherSellerSection = () => {
                   }
                   sellerId={item?.adminDetail?.id}
                   soldByTradeRole={item?.adminDetail?.tradeRole}
+                  onChooseSeller={() => {
+                    router.push(
+                      `/trending/${searchParams?.id}?sellerId=${item?.adminDetail?.id}&productId=${item?.productId}`,
+                    );
+                    router.refresh();
+                    setIsDrawerOpen(false);
+                  }}
                 />
               ),
             )}
           </div>
         </div>
 
-        {!productQueryById.data?.otherSeller?.length &&
-        !productQueryById.isLoading ? (
+        {!otherSellerDetails?.length && !productQueryById.isLoading ? (
           <p className="py-10 text-center text-sm font-medium">
             No Sellers Found
           </p>

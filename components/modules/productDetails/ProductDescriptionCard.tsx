@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
@@ -13,7 +13,7 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
+  // DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import OtherSellerSection from "../trending/OtherSellerSection";
@@ -41,6 +41,7 @@ type ProductDescriptionCardProps = {
   productProductPrice?: string;
   consumerDiscount?: number;
   askForPrice?: string;
+  otherSellerDetails?: any[];
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -65,8 +66,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   productProductPrice,
   consumerDiscount,
   askForPrice,
+  otherSellerDetails,
 }) => {
   const [quantity, setQuantity] = useState(1);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
@@ -143,18 +146,15 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             {calculateRatings(calculateAvgRating)}
             <span className="mt-1">({productReview?.length} Reviews)</span>
           </div>
-          <h3>
-            {askForPrice === "true" ? (
-              <span className="!font-semibold !text-dark-orange !no-underline">
-                Ask for Price
-              </span>
-            ) : (
-              <>
-                ${calculateDiscountedPrice()}{" "}
-                <span>${productProductPrice}</span>
-              </>
-            )}
-          </h3>
+          {askForPrice === "true" ? (
+            <h3 className="w-fit rounded !bg-dark-orange px-4 py-2 !font-semibold !normal-case !text-white !no-underline shadow-md">
+              Ask for price
+            </h3>
+          ) : (
+            <h3>
+              ${calculateDiscountedPrice()} <span>${productProductPrice}</span>
+            </h3>
+          )}
         </div>
       )}
 
@@ -231,22 +231,30 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     .join(", ")}
                 </p>
                 {haveOtherSellers ? (
-                  <Drawer direction="right">
-                    <DrawerTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="font-bold text-red-500"
-                      >
-                        See other sellers
-                      </Button>
-                    </DrawerTrigger>
+                  <Drawer
+                    direction="right"
+                    open={isDrawerOpen}
+                    onOpenChange={setIsDrawerOpen}
+                  >
+                    {/* <DrawerTrigger asChild> */}
+                    <Button
+                      variant="ghost"
+                      className="font-bold text-red-500"
+                      onClick={() => setIsDrawerOpen(true)}
+                    >
+                      See other sellers
+                    </Button>
+                    {/* </DrawerTrigger> */}
                     <DrawerContent className="left-auto right-0 top-0 mt-0 w-[600px] rounded-none">
                       <ScrollArea className="h-screen">
                         <div className="mx-auto w-full p-2">
                           <DrawerHeader>
                             <DrawerTitle>All Sellers</DrawerTitle>
                           </DrawerHeader>
-                          <OtherSellerSection />
+                          <OtherSellerSection
+                            setIsDrawerOpen={setIsDrawerOpen}
+                            otherSellerDetails={otherSellerDetails}
+                          />
                         </div>
                       </ScrollArea>
                     </DrawerContent>
