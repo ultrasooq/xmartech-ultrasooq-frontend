@@ -13,11 +13,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { Card, CardHeader } from "@/components/ui/card";
-import Link from "next/link";
+// import { Card, CardHeader } from "@/components/ui/card";
+// import Link from "next/link";
 import { IoMdAdd } from "react-icons/io";
 import { Input } from "@/components/ui/input";
-import { MdOutlineManageSearch } from "react-icons/md";
+// import { MdOutlineManageSearch } from "react-icons/md";
 import { debounce } from "lodash";
 import { Dialog } from "@/components/ui/dialog";
 import AddProductContent from "@/components/modules/products/AddProductContent";
@@ -367,6 +367,7 @@ const ManageProductsPage = () => {
                       {allManagedProductsQuery.data?.data?.map(
                         (product: {
                           id: number;
+                          productId: number;
                           status: string;
                           askForPrice: string;
                           askForStock: string;
@@ -403,6 +404,7 @@ const ManageProductsPage = () => {
                             onSelectedId={handleProductIds}
                             key={product?.id}
                             id={product?.id}
+                            productId={product?.productId}
                             status={product?.status}
                             askForPrice={product?.askForPrice}
                             askForStock={product?.askForStock}

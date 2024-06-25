@@ -16,6 +16,7 @@ type SellerCardProps = {
   productLocation?: string;
   sellerId?: number;
   soldByTradeRole?: string;
+  onChooseSeller?: () => void;
 };
 
 const SellerCard: React.FC<SellerCardProps> = ({
@@ -33,6 +34,7 @@ const SellerCard: React.FC<SellerCardProps> = ({
   productLocation,
   sellerId,
   soldByTradeRole,
+  onChooseSeller,
 }) => {
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
@@ -65,9 +67,6 @@ const SellerCard: React.FC<SellerCardProps> = ({
               <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
                 Product Location: {productLocation || "N/A"}
               </li>
-              {/* <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
-                7 Days Replacement Policy
-              </li> */}
             </ul>
           </div>
         </div>
@@ -86,14 +85,6 @@ const SellerCard: React.FC<SellerCardProps> = ({
                 <span className="ml-2 text-sm font-medium text-light-gray line-through">
                   {productProductPrice ? `$${productProductPrice}` : `$${0}`}
                 </span>
-              </div>
-              <div className="flex w-full">
-                {/* <ul>
-                <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
-                  Get ₹50 instant discount on first Flipkart UPI txn on order of
-                  ₹200 and above
-                </li>
-              </ul> */}
               </div>
             </div>
           </div>
@@ -115,28 +106,35 @@ const SellerCard: React.FC<SellerCardProps> = ({
       </div>
 
       <div className="w-full border-b border-solid border-gray-300 p-3">
-        {askForPrice !== "true" ? (
-          <div className="flex w-full items-center justify-end gap-2 text-sm font-medium">
-            <button
-              onClick={onAdd}
-              className="inline-block rounded-sm bg-dark-orange px-6 py-3 text-sm font-bold capitalize text-white"
-            >
-              ADD TO CART
-            </button>
-            <button
-              onClick={onToCheckout}
-              className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white"
-            >
-              BUY NOW
-            </button>
-          </div>
-        ) : (
-          <div className="flex w-full items-center justify-end gap-2 text-sm font-medium">
+        <div className="flex w-full items-center justify-between gap-2 text-sm font-medium">
+          <button
+            onClick={onChooseSeller}
+            className="whitespace-nowrap rounded-sm bg-gray-500 px-6 py-3 text-sm font-bold capitalize text-white"
+          >
+            CHOOSE SELLER
+          </button>
+
+          {askForPrice !== "true" ? (
+            <div className="flex w-full items-center justify-end gap-2 text-sm font-medium">
+              <button
+                onClick={onAdd}
+                className="inline-block rounded-sm bg-dark-orange px-6 py-3 text-sm font-bold capitalize text-white"
+              >
+                ADD TO CART
+              </button>
+              <button
+                onClick={onToCheckout}
+                className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white"
+              >
+                BUY NOW
+              </button>
+            </div>
+          ) : (
             <button className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white">
               MESSAGE
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
