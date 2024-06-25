@@ -16,7 +16,6 @@ import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useCreateProduct,
-  // useProductById,
   useRfqProductById,
   useUpdateProduct,
 } from "@/apis/queries/product.queries";
@@ -27,7 +26,8 @@ import {
 import { imageExtensions, videoExtensions } from "@/utils/constants";
 import ReactPlayer from "react-player/lazy";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
+import { generateRandomSkuNoWithTimeStamp, isBrowser } from "@/utils/helper";
+import LoaderIcon from "@/public/images/load.png";
 
 type AddToRfqFormProps = {
   onClose: () => void;
@@ -38,21 +38,17 @@ type AddToRfqFormProps = {
 const addFormSchema = z.object({
   offerPrice: z.coerce
     .number()
-    .min(1, {
-      message: "Offer price is required",
-    })
     .max(1000000, {
       message: "Offer price must be less than 1000000",
-    }),
+    })
+    .optional(),
   note: z
     .string()
     .trim()
-    .min(2, {
-      message: "Description is required",
-    })
     .max(100, {
       message: "Description must be less than 100 characters",
-    }),
+    })
+    .optional(),
   productImagesList: z.any().optional(),
 });
 
@@ -60,12 +56,10 @@ const editFormSchema = z.object({
   note: z
     .string()
     .trim()
-    .min(2, {
-      message: "Description is required",
-    })
     .max(100, {
       message: "Description must be less than 100 characters",
-    }),
+    })
+    .optional(),
   productImagesList: z.any().optional(),
 });
 
@@ -394,6 +388,12 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         });
       }
     }
+
+    if (isBrowser())
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
   };
 
   const isVideo = (path: string) => {
@@ -469,15 +469,10 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProductId, productQueryById?.data]);
 
-  // console.log(productQueryById.data?.data);
-  // console.log(form.getValues());
-  // console.log(selectedQuantity);
-
   return (
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          {/* {`${selectedProductId ? "Edit" : "Add"} New Product in RFQ List`} */}
           {selectedQuantity ? `Add to RFQ cart` : "Edit Product"}
         </DialogTitle>
         <Button
@@ -749,7 +744,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             updateRfqCartWithLogin.isPending ? (
               <>
                 <Image
-                  src="/images/load.png"
+                  src={LoaderIcon}
                   alt="loader-icon"
                   width={20}
                   height={20}
@@ -766,6 +761,5 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     </>
   );
 };
-// `${selectedProductId ? "Edit" : "Add"} New Product in RFQ List`
 
 export default AddToRfqForm;

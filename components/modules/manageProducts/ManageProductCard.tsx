@@ -4,12 +4,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import Image from "next/image";
 import validator from "validator";
-import { cn } from "@/lib/utils";
+// import { cn } from "@/lib/utils";
+import EditIcon from "@/public/images/edit-rfq.png";
+// import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type ManageProductCardProps = {
   selectedIds?: number[];
   onSelectedId?: (args0: boolean | string, args1: number) => void;
   id: number;
+  productId: number;
   status: string;
   askForPrice: string;
   askForStock: string;
@@ -38,6 +42,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   selectedIds,
   onSelectedId,
   id,
+  productId,
   status,
   askForPrice,
   askForStock,
@@ -100,6 +105,16 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               >
                 <p className="text-xs font-semibold text-white">{status}</p>
               </div> */}
+              <div className="absolute right-0 top-0 z-10">
+                <Link href={`/product/${productId}`}>
+                  <Image
+                    src={EditIcon}
+                    alt="review-dot-icon"
+                    height={21}
+                    width={21}
+                  />
+                </Link>
+              </div>
             </div>
             <div className="text-container">
               <h3>{productName || "-"}</h3>

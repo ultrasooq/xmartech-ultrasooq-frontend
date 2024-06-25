@@ -248,7 +248,7 @@ const formSchema = z
     description: z.string().trim(),
     specification: z.string().trim(),
     productPriceList: z.array(baseProductPriceItemSchema).optional(),
-    setUpPrice: z.boolean(),
+    setUpPrice: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.setUpPrice) {
@@ -334,7 +334,7 @@ const defaultValues = {
       deliveryAfter: 0,
     },
   ],
-  setUpPrice: true,
+  setUpPrice: false,
 };
 
 const EditProductPage = () => {
@@ -636,9 +636,10 @@ const EditProductPage = () => {
                 <BasicInformationSection
                   tagsList={memoizedTags}
                   isEditable={!!form.getValues("categoryLocation")}
+                  hasId={!!searchParams?.id}
                 />
 
-                <ProductDetailsSection />
+                {!searchParams?.id ? <ProductDetailsSection /> : null}
 
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">

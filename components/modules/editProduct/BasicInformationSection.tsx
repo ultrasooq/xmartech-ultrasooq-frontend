@@ -51,12 +51,14 @@ type BasicInformationProps = {
   tagsList: any;
   isEditable?: boolean;
   activeProductType?: string;
+  hasId?: boolean;
 };
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
   isEditable,
   activeProductType,
+  hasId,
 }) => {
   const formContext = useFormContext();
   const { toast } = useToast();
@@ -183,153 +185,162 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
               <div className="flex flex-wrap">
                 <div className="form-groups-common-sec-s1">
                   <h3>Basic Information</h3>
-                  <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
-                    <div className="flex w-full flex-col justify-between gap-y-2">
-                      <Label>Product Category</Label>
-                      <Controller
-                        name="categoryId"
-                        control={formContext.control}
-                        render={({ field }) => (
-                          <select
-                            {...field}
-                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                            onChange={(e) => {
-                              if (e.target.value === "") {
-                                return;
-                              }
-                              setCurrentId(e.target.value);
-                              setCurrentIndex(0);
-
-                              if (listIds[0]) {
-                                let tempIds = listIds;
-                                tempIds[0] = e.target.value;
-                                tempIds = tempIds.slice(0, 1);
-
-                                setListIds([...tempIds]);
-                                return;
-                              }
-                              setListIds([...listIds, e.target.value]);
-                            }}
-                            value={catList[0]?.id || ""}
-                          >
-                            <option value="">Select Category</option>
-                            {memoizedCategories.map((item: ISelectOptions) => (
-                              <option
-                                value={item.value?.toString()}
-                                key={item.value}
-                              >
-                                {item.label}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                      />
-                      <p className="text-[13px] font-medium text-red-500">
-                        {
-                          formContext.formState.errors["categoryId"]
-                            ?.message as string
-                        }
-                      </p>
-                    </div>
-
-                    {catList.length > 0 &&
-                      catList.map((item, index) => (
-                        <div
-                          key={item?.id}
-                          className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
-                        >
-                          <div className="flex w-full flex-col justify-between gap-y-2">
-                            <Label>Sub Category</Label>
+                  {!hasId ? (
+                    <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
+                      <div className="flex w-full flex-col justify-between gap-y-2">
+                        <Label>Product Category</Label>
+                        <Controller
+                          name="categoryId"
+                          control={formContext.control}
+                          render={({ field }) => (
                             <select
+                              {...field}
                               className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                               onChange={(e) => {
                                 if (e.target.value === "") {
                                   return;
                                 }
-
                                 setCurrentId(e.target.value);
-                                setCurrentIndex(index + 1);
+                                setCurrentIndex(0);
 
-                                if (listIds[index + 1]) {
+                                if (listIds[0]) {
                                   let tempIds = listIds;
-                                  tempIds[index + 1] = e.target.value;
-                                  tempIds = tempIds.slice(0, index + 2);
+                                  tempIds[0] = e.target.value;
+                                  tempIds = tempIds.slice(0, 1);
+
                                   setListIds([...tempIds]);
                                   return;
                                 }
                                 setListIds([...listIds, e.target.value]);
                               }}
-                              value={item?.children
-                                ?.find((item: any) =>
-                                  listIds.includes(item.id?.toString())
-                                    ? item
-                                    : "",
-                                )
-                                ?.id?.toString()}
+                              value={catList[0]?.id || ""}
                             >
-                              <option value="">Select Sub Category</option>
-                              {item?.children?.map((item: any) => (
-                                <option
-                                  value={item.id?.toString()}
-                                  key={item.id}
-                                >
-                                  {item.name}
-                                </option>
-                              ))}
+                              <option value="">Select Category</option>
+                              {memoizedCategories.map(
+                                (item: ISelectOptions) => (
+                                  <option
+                                    value={item.value?.toString()}
+                                    key={item.value}
+                                  >
+                                    {item.label}
+                                  </option>
+                                ),
+                              )}
                             </select>
+                          )}
+                        />
+                        <p className="text-[13px] font-medium text-red-500">
+                          {
+                            formContext.formState.errors["categoryId"]
+                              ?.message as string
+                          }
+                        </p>
+                      </div>
+
+                      {catList.length > 0 &&
+                        catList.map((item, index) => (
+                          <div
+                            key={item?.id}
+                            className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
+                          >
+                            <div className="flex w-full flex-col justify-between gap-y-2">
+                              <Label>Sub Category</Label>
+                              <select
+                                className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                                onChange={(e) => {
+                                  if (e.target.value === "") {
+                                    return;
+                                  }
+
+                                  setCurrentId(e.target.value);
+                                  setCurrentIndex(index + 1);
+
+                                  if (listIds[index + 1]) {
+                                    let tempIds = listIds;
+                                    tempIds[index + 1] = e.target.value;
+                                    tempIds = tempIds.slice(0, index + 2);
+                                    setListIds([...tempIds]);
+                                    return;
+                                  }
+                                  setListIds([...listIds, e.target.value]);
+                                }}
+                                value={item?.children
+                                  ?.find((item: any) =>
+                                    listIds.includes(item.id?.toString())
+                                      ? item
+                                      : "",
+                                  )
+                                  ?.id?.toString()}
+                              >
+                                <option value="">Select Sub Category</option>
+                                {item?.children?.map((item: any) => (
+                                  <option
+                                    value={item.id?.toString()}
+                                    key={item.id}
+                                  >
+                                    {item.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                  </div>
+                        ))}
+                    </div>
+                  ) : null}
 
                   <ControlledTextInput
                     label="Product Name"
                     name="productName"
                     placeholder="Product Name"
+                    disabled={hasId}
                   />
 
-                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                    <BrandSelect />
-                    <div className="mt-2 flex flex-col gap-y-3">
-                      <Label>Product Condition</Label>
-                      <Controller
-                        name="productCondition"
-                        control={formContext.control}
-                        render={({ field }) => (
-                          <ReactSelect
-                            {...field}
-                            onChange={(newValue) => {
-                              field.onChange(newValue?.value);
-                            }}
-                            options={PRODUCT_CONDITION_LIST}
-                            value={PRODUCT_CONDITION_LIST.find(
-                              (item: any) => item.value === field.value,
-                            )}
-                            styles={customStyles}
-                            instanceId="productCondition"
-                          />
-                        )}
-                      />
+                  {!hasId ? (
+                    <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                      <BrandSelect />
+                      <div className="mt-2 flex flex-col gap-y-3">
+                        <Label>Product Condition</Label>
+                        <Controller
+                          name="productCondition"
+                          control={formContext.control}
+                          render={({ field }) => (
+                            <ReactSelect
+                              {...field}
+                              onChange={(newValue) => {
+                                field.onChange(newValue?.value);
+                              }}
+                              options={PRODUCT_CONDITION_LIST}
+                              value={PRODUCT_CONDITION_LIST.find(
+                                (item: any) => item.value === field.value,
+                              )}
+                              styles={customStyles}
+                              instanceId="productCondition"
+                            />
+                          )}
+                        />
 
-                      <p className="text-[13px] text-red-500">
-                        {
-                          formContext.formState.errors["productCondition"]
-                            ?.message as string
-                        }
-                      </p>
+                        <p className="text-[13px] text-red-500">
+                          {
+                            formContext.formState.errors["productCondition"]
+                              ?.message as string
+                          }
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  ) : null}
 
-                  <AccordionMultiSelectV2
-                    label="Tag"
-                    name="productTagList"
-                    options={tagsList || []}
-                    placeholder="Tag"
-                    error={
-                      formContext.formState.errors["productTagList"]
-                        ?.message as string
-                    }
-                  />
+                  {!hasId ? (
+                    <AccordionMultiSelectV2
+                      label="Tag"
+                      name="productTagList"
+                      options={tagsList || []}
+                      placeholder="Tag"
+                      error={
+                        formContext.formState.errors["productTagList"]
+                          ?.message as string
+                      }
+                    />
+                  ) : null}
 
                   <div className="relative mb-4 w-full">
                     <div className="space-y-2">
@@ -544,7 +555,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                 </div>
 
                 {/* imported from create product module */}
-                <PriceSection activeProductType={activeProductType} />
+                {!hasId ? (
+                  <PriceSection activeProductType={activeProductType} />
+                ) : null}
 
                 {/* imported from create product module */}
                 <DescriptionSection />

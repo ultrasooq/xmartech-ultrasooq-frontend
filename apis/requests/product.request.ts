@@ -195,15 +195,14 @@ export const getAllManagedProducts = (payload: {
   });
 };
 
-export const getOneProductBySellerId = (payload: {
-  productId: string;
-  userId: string;
-  sellerId: string;
+export const getOneWithProductPrice = (payload: {
+  productId: number;
+  adminId: number;
 }) => {
   return axios({
     method: "GET",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/findOneProductBySellerId`,
+      `${process.env.NEXT_PUBLIC_API_URL}/product/findOneWithProductPrice`,
       payload,
     ),
     headers: {

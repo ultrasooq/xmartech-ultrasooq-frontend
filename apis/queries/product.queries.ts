@@ -11,7 +11,7 @@ import {
   fetchRfqProductById,
   fetchSameBrandProducts,
   getAllManagedProducts,
-  getOneProductBySellerId,
+  getOneWithProductPrice,
   getVendorDetails,
   getVendorProducts,
   updateMultipleProductPrice,
@@ -280,18 +280,17 @@ export const useAllManagedProducts = (
     enabled,
   });
 
-export const useOneProductBySellerId = (
+export const useOneWithProductPrice = (
   payload: {
-    productId: string;
-    userId: string;
-    sellerId: string;
+    productId: number;
+    adminId: number;
   },
   enabled = true,
 ) =>
   useQuery({
-    queryKey: ["product-by-seller", payload],
+    queryKey: ["product-by-other-seller", payload],
     queryFn: async () => {
-      const res = await getOneProductBySellerId(payload);
+      const res = await getOneWithProductPrice(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
