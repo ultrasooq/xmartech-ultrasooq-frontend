@@ -26,7 +26,6 @@ import { isArray } from "lodash";
 import UnAuthUserIcon from "@/public/images/login.svg";
 import WishlistIcon from "@/public/images/wishlist.svg";
 import CartIcon from "@/public/images/cart.svg";
-import HamburgerWhiteIcon from "@/public/images/humberger-white-icon.svg";
 import HamburgerIcon from "@/public/images/humberger-icon.svg";
 import HamburgerDownIcon from "@/public/images/humberger-down-icon.svg";
 import LogoIcon from "@/public/images/logo.png";
@@ -74,23 +73,19 @@ const Header = () => {
   const [subCategoryId, setSubCategoryId] = useState();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
-  const { clearUser } = useAuth()
+  const { clearUser } = useAuth();
   const wishlistCount = useWishlistCount(hasAccessToken);
   const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
   const cartCountWithoutLogin = useCartCountWithoutLogin(
     { deviceId },
     !hasAccessToken,
   );
-  const userDetails = useMe(!!accessToken);
+  const me = useMe(!!accessToken);
   const categoryQuery = useCategory();
 
   const memoizedInitials = useMemo(
-    () =>
-      getInitials(
-        userDetails.data?.data?.firstName,
-        userDetails.data?.data?.lastName,
-      ),
-    [userDetails.data?.data?.firstName, userDetails.data?.data?.lastName],
+    () => getInitials(me.data?.data?.firstName, me.data?.data?.lastName),
+    [me.data?.data?.firstName, me.data?.data?.lastName],
   );
 
   const memoizedMenu = useMemo(() => {
@@ -143,7 +138,7 @@ const Header = () => {
   }, [subCategoryId, categoryId, menuId]);
 
   const handleProfile = () => {
-    switch (userDetails?.data?.data?.tradeRole) {
+    switch (me?.data?.data?.tradeRole) {
       case "BUYER":
         return "/buyer-profile-details";
       case "FREELANCER":
@@ -196,7 +191,7 @@ const Header = () => {
                 <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                   <a href="#">Store Location</a>
                 </li>
-                {/* {userDetails?.data?.data?.tradeRole === "BUYER" ? ( */}
+                {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
                 <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                   <Link href="/my-orders">Track Your Order</Link>
                 </li>
@@ -295,9 +290,9 @@ const Header = () => {
                   {isLoggedIn ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger>
-                        {userDetails?.data?.data?.profilePicture ? (
+                        {me?.data?.data?.profilePicture ? (
                           <Image
-                            src={userDetails?.data?.data?.profilePicture}
+                            src={me?.data?.data?.profilePicture}
                             alt="image-icon"
                             height={44}
                             width={44}
@@ -318,7 +313,7 @@ const Header = () => {
                           </DropdownMenuItem>
                         </Link>
                         <DropdownMenuSeparator />
-                        {userDetails?.data?.data?.tradeRole !== "BUYER" ? (
+                        {me?.data?.data?.tradeRole !== "BUYER" ? (
                           <>
                             <Link href="/manage-products">
                               <DropdownMenuItem>Products</DropdownMenuItem>

@@ -73,9 +73,9 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
                     {item?.askForPrice === "true" ? (
                       <button
                         type="button"
-                        className="inline-block rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"
+                        className="inline-block rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
                       >
-                        Message
+                        Ask vendor for price
                       </button>
                     ) : (
                       `$${calculateDiscountedPrice({ item })}`

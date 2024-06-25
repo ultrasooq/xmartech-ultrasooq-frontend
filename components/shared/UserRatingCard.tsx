@@ -4,6 +4,7 @@ import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import { Button } from "../ui/button";
 import AvatarPlaceholder from "@/public/images/no-user-image.png";
+import EditIcon from "@/public/images/edit-rfq.png";
 
 type UserRatingCardProps = {
   rating: number;
@@ -113,7 +114,7 @@ const UserRatingCard: React.FC<UserRatingCardProps> = ({
             {isBuyer ? (
               <Button variant="ghost" className="p-2" onClick={onEdit}>
                 <Image
-                  src="/images/edit-rfq.png"
+                  src={EditIcon}
                   alt="review-dot-icon"
                   height={21}
                   width={21}

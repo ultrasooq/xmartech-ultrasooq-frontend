@@ -169,7 +169,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               type="button"
               className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
             >
-              Message
+              Ask vendor for price
             </Button>
           ) : null}
           {!isLoading && askForPrice !== "true" ? (

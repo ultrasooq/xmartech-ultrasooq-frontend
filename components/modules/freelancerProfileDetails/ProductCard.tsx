@@ -171,9 +171,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {item?.askForPrice === "true" ? (
           <button
             type="button"
-            className="inline-block w-full rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"
+            className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
           >
-            Message
+            Ask vendor for price
           </button>
         ) : (
           <Link href={`/trending/${item.id}`}>

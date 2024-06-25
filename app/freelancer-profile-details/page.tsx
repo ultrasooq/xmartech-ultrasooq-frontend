@@ -8,7 +8,6 @@ import ReviewSection from "@/components/modules/freelancerProfileDetails/ReviewS
 import MoreInformationSection from "@/components/modules/freelancerProfileDetails/MoreInformationSection";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import ServicesSection from "@/components/shared/ServicesSection";
 import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
 import { PlusIcon } from "@radix-ui/react-icons";
 import Footer from "@/components/shared/Footer";
@@ -21,7 +20,7 @@ export default function FreelancerProfileDetailsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile-info");
 
-  const userDetails = useMe();
+  const me = useMe();
   const [activeSellerId, setActiveSellerId] = useState<string | null>();
 
   const vendorQuery = useVendorDetails(
@@ -38,7 +37,7 @@ export default function FreelancerProfileDetailsPage() {
     router.push(`/freelancer-profile/edit-profile`);
   const handleEditFreelancerBranchPage = () =>
     router.push(
-      `/freelancer-profile/edit-branch?branchId=${userDetails.data?.data?.userBranch?.[0]?.id}`,
+      `/freelancer-profile/edit-branch?branchId=${me.data?.data?.userBranch?.[0]?.id}`,
     );
   const handleAddFreelancerBranchPage = () =>
     router.push("/freelancer-profile");
@@ -74,7 +73,7 @@ export default function FreelancerProfileDetailsPage() {
 
             {!activeSellerId ? (
               <ProfileCard
-                userDetails={userDetails.data?.data}
+                userDetails={me.data?.data}
                 onEdit={handleFreelancerProfilePage}
               />
             ) : null}
@@ -112,7 +111,7 @@ export default function FreelancerProfileDetailsPage() {
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {!activeSellerId ? (
                       <InformationSection
-                        userDetails={userDetails.data?.data}
+                        userDetails={me.data?.data}
                         onEdit={handleFreelancerProfilePage}
                       />
                     ) : null}
@@ -121,7 +120,7 @@ export default function FreelancerProfileDetailsPage() {
                       <VendorInformationSection vendor={vendor} />
                     ) : null}
 
-                    {!userDetails.data?.data?.userBranch?.length ? (
+                    {!me.data?.data?.userBranch?.length ? (
                       <>
                         <p className="pt-5 text-center text-lg font-medium text-color-dark">
                           No Branch Exists
@@ -141,24 +140,28 @@ export default function FreelancerProfileDetailsPage() {
                       </>
                     ) : null}
 
-                    {!activeSellerId &&
-                    userDetails?.data?.data?.userBranch?.length ? (
+                    {!activeSellerId && me?.data?.data?.userBranch?.length ? (
                       <MoreInformationSection
-                        userDetails={userDetails.data?.data}
+                        userDetails={me.data?.data}
                         onEditProfile={handleEditFreelancerProfilePage}
                         onEditBranch={handleEditFreelancerBranchPage}
                       />
                     ) : null}
 
-                    {activeSellerId &&
-                    userDetails?.data?.data?.userBranch?.length ? (
+                    {activeSellerId && me?.data?.data?.userBranch?.length ? (
                       <VendorMoreInformationSection vendor={vendor} />
                     ) : null}
                   </div>
                 </TabsContent>
                 <TabsContent value="ratings" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    <ReviewSection sellerId={activeSellerId as string} />
+                    <ReviewSection
+                      sellerId={
+                        activeSellerId
+                          ? (activeSellerId as string)
+                          : me.data?.data?.id
+                      }
+                    />
                   </div>
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">

@@ -123,9 +123,9 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
           {wishlistData?.product_productPrice?.[0]?.askForPrice === "true" ? (
             <button
               type="button"
-              className="inline-block w-full rounded-sm bg-color-yellow px-6 py-1 text-sm font-bold capitalize text-white"
+              className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
             >
-              Message
+              Ask vendor for price
             </button>
           ) : (
             <h5 className="py-1 text-[#1D77D1]">

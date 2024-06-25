@@ -26,14 +26,14 @@ export default function EditProfilePage() {
     },
   });
 
-  const userDetails = useMe();
+  const me = useMe();
   const updateFreelancerProfile = useUpdateFreelancerProfile();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const data = {
       aboutUs: formData.aboutUs,
       profileType: "FREELANCER",
-      userProfileId: userDetails.data?.data?.userProfile?.[0]?.id as number,
+      userProfileId: me.data?.data?.userProfile?.[0]?.id as number,
     };
 
     const response = await updateFreelancerProfile.mutateAsync(data);
@@ -56,13 +56,13 @@ export default function EditProfilePage() {
   };
 
   useEffect(() => {
-    if (userDetails.data?.data) {
+    if (me.data?.data) {
       form.reset({
-        aboutUs: userDetails.data?.data?.userProfile?.[0]?.aboutUs || "",
+        aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userDetails.data?.data, userDetails.data?.status]);
+  }, [me.data?.data, me.data?.status]);
 
   return (
     <section className="relative w-full py-7">

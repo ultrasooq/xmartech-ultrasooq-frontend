@@ -145,6 +145,11 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
                     productImage={review?.productReview_product?.productImages}
                     title={review.title}
                     review={review.description}
+                    // onEdit={() => {
+                    //   setReviewId(review.id);
+                    //   handleToggleReviewModal();
+                    // }}
+                    isEditable={!!activeProductId && !!activeProductPriceId}
                   />
                 ),
               )
