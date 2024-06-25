@@ -11,6 +11,8 @@ type OfferPriceCardProps = {
   deliveryDate: string;
   productImage: string;
   productName: string;
+  productId: number;
+  onRequestPrice: (productId: number, requestedPrice: number) => void;
 };
 
 const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
@@ -21,6 +23,8 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   deliveryDate,
   productImage,
   productName,
+  productId,
+  onRequestPrice
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedOfferPrice, setEditedOfferPrice] = useState(offerPrice);
@@ -31,10 +35,10 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
 
   const handleSaveClick = () => {
     setIsEditing(false);
+    onRequestPrice(productId, parseInt(editedOfferPrice))
   };
 
   const handleCancelClick = () => {
-    setEditedOfferPrice(offerPrice);
     setIsEditing(false);
   };
 
