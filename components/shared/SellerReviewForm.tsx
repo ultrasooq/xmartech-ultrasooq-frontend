@@ -17,6 +17,7 @@ import Ratings from "./Ratings";
 import { useToast } from "../ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import LoaderIcon from "@/public/images/load.png";
 
 type ReviewFormProps = {
   onClose: () => void;
@@ -209,10 +210,8 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
             {addReview.isPending ? (
               <>
                 <Image
-                  src="/images/load.png"
+                  src={LoaderIcon}
                   alt="loader-icon"
-                  width={20}
-                  height={20}
                   className="mr-2 animate-spin"
                 />
                 Please wait

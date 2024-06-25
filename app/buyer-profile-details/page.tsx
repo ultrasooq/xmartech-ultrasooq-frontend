@@ -27,7 +27,7 @@ const BuyerProfileDetailsPage = () => {
   };
   const handleBuyerProfilePage = () => router.push("/profile");
 
-  const userDetails = useMe();
+  const me = useMe();
   const updateProfile = useUpdateProfile();
   const handleTradeRole = (role: "COMPANY" | "FREELANCER") => setRole(role);
 
@@ -94,9 +94,9 @@ const BuyerProfileDetailsPage = () => {
               >
                 Update
               </button>
-              </div>
+            </div>
             <ProfileCard
-              userDetails={userDetails.data?.data}
+              userDetails={me.data?.data}
               onEdit={handleBuyerProfilePage}
             />
             <div className="mt-12 w-full">
@@ -112,7 +112,7 @@ const BuyerProfileDetailsPage = () => {
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     <InformationSection
-                      userDetails={userDetails.data?.data}
+                      userDetails={me.data?.data}
                       onEdit={handleBuyerProfilePage}
                     />
                   </div>

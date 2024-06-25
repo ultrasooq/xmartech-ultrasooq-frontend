@@ -9,7 +9,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import ServicesSection from "@/components/shared/ServicesSection";
 import { PlusIcon } from "@radix-ui/react-icons";
 import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
 import Footer from "@/components/shared/Footer";
@@ -28,7 +27,7 @@ export default function CompanyProfileDetailsPage() {
   >();
   const [activeProductId, setActiveProductId] = useState<string | null>();
 
-  const userDetails = useMe();
+  const me = useMe();
 
   const vendorQuery = useVendorDetails(
     {
@@ -41,16 +40,14 @@ export default function CompanyProfileDetailsPage() {
 
   const handleCompanyProfilePage = () => router.push("/profile");
   const handleAddCompanyBranchPage = () => {
-    if (!userDetails.data?.data?.userBranch?.length) {
+    if (!me.data?.data?.userBranch?.length) {
       router.push("/company-profile");
     } else {
       router.push("/company-profile/add-branch");
     }
   };
   const handleEditCompanyPage = () =>
-    router.push(
-      `/company-profile/edit-profile?userId=${userDetails.data?.data.id}`,
-    );
+    router.push(`/company-profile/edit-profile?userId=${me.data?.data.id}`);
   const handleEditCompanyBranchPage = (branchId: number) =>
     router.push(`/company-profile/edit-branch?branchId=${branchId}`);
 
@@ -86,7 +83,7 @@ export default function CompanyProfileDetailsPage() {
 
             {!activeSellerId ? (
               <ProfileCard
-                userDetails={userDetails.data?.data}
+                userDetails={me.data?.data}
                 onEdit={handleEditCompanyPage}
               />
             ) : null}
@@ -123,7 +120,7 @@ export default function CompanyProfileDetailsPage() {
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {!activeSellerId ? (
                       <InformationSection
-                        userDetails={userDetails.data?.data}
+                        userDetails={me.data?.data}
                         onEdit={handleCompanyProfilePage}
                       />
                     ) : null}
@@ -132,10 +129,9 @@ export default function CompanyProfileDetailsPage() {
                       <VendorInformationSection vendor={vendor} />
                     ) : null}
 
-                    {!activeSellerId &&
-                    userDetails.data?.data?.userBranch?.length ? (
+                    {!activeSellerId && me.data?.data?.userBranch?.length ? (
                       <MoreInformationSection
-                        userDetails={userDetails.data?.data}
+                        userDetails={me.data?.data}
                         onEdit={handleEditCompanyPage}
                       />
                     ) : null}
@@ -145,7 +141,7 @@ export default function CompanyProfileDetailsPage() {
                     ) : null}
 
                     {/* Branch Section */}
-                    {!userDetails.data?.data?.userBranch?.length ? (
+                    {!me.data?.data?.userBranch?.length ? (
                       <p className="pt-5 text-center text-lg font-medium text-color-dark">
                         No Branch Exists
                       </p>
@@ -164,7 +160,7 @@ export default function CompanyProfileDetailsPage() {
                         </div>
                       ) : null}
                       {!activeSellerId &&
-                        userDetails.data?.data?.userBranch
+                        me.data?.data?.userBranch
                           .sort(
                             (a: any, b: any) => b?.mainOffice - a?.mainOffice,
                           )
@@ -195,7 +191,13 @@ export default function CompanyProfileDetailsPage() {
                 <TabsContent value="ratings" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {/* importing from freelancer details module */}
-                    <ReviewSection sellerId={activeSellerId as string} />
+                    <ReviewSection
+                      sellerId={
+                        activeSellerId
+                          ? (activeSellerId as string)
+                          : me.data?.data?.id
+                      }
+                    />
                   </div>
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">

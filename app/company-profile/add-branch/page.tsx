@@ -167,7 +167,7 @@ const AddBranchPage = () => {
   const [proofOfAddressImageFile, setProofOfAddressImageFile] =
     useState<FileList | null>();
 
-  const userDetails = useMe();
+  const me = useMe();
   const countriesQuery = useCountries();
   const tagsQuery = useTags();
   const upload = useUploadFile();
@@ -207,7 +207,7 @@ const AddBranchPage = () => {
     let data = {
       ...formData,
       profileType: "COMPANY",
-      userProfileId: userDetails.data?.data?.userProfile?.[0]?.id as number,
+      userProfileId: me.data?.data?.userProfile?.[0]?.id as number,
     };
 
     formData.uploadBranchImage = branchImageFile;

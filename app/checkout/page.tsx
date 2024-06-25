@@ -12,7 +12,7 @@ import {
 } from "@/apis/queries/cart.queries";
 import AddressCard from "@/components/modules/checkout/AddressCard";
 import AddressForm from "@/components/modules/checkout/AddressForm";
-import { Skeleton } from "@/components/ui/skeleton";
+// import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import {
   useAllUserAddress,
@@ -87,7 +87,7 @@ const CheckoutPage = () => {
   const orders = useOrderStore();
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const userDetails = useMe(haveAccessToken);
+  const me = useMe(haveAccessToken);
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
@@ -270,9 +270,9 @@ const CheckoutPage = () => {
     if (addresszType === "shipping") {
       setSelectedOrderDetails((prevState) => ({
         ...prevState,
-        firstName: item.firstName || userDetails.data?.data?.firstName,
-        lastName: item.lastName || userDetails.data?.data?.lastName,
-        email: userDetails.data?.data?.email,
+        firstName: item.firstName || me.data?.data?.firstName,
+        lastName: item.lastName || me.data?.data?.lastName,
+        email: me.data?.data?.email,
         cc: item.cc,
         phone: item.phoneNumber,
         shippingAddress: item.address,
@@ -284,9 +284,9 @@ const CheckoutPage = () => {
     } else if (addresszType === "billing") {
       setSelectedOrderDetails((prevState) => ({
         ...prevState,
-        firstName: item.firstName || userDetails.data?.data?.firstName,
-        lastName: item.lastName || userDetails.data?.data?.lastName,
-        email: userDetails.data?.data?.email,
+        firstName: item.firstName || me.data?.data?.firstName,
+        lastName: item.lastName || me.data?.data?.lastName,
+        email: me.data?.data?.email,
         cc: item.cc,
         phone: item.phoneNumber,
         billingAddress: item.address,
@@ -502,7 +502,7 @@ const CheckoutPage = () => {
                 </div>
               </div>
 
-              {!userDetails.data ? (
+              {!me.data ? (
                 <div className="card-item selected-address">
                   <div className="card-inner-headerPart">
                     <div className="lediv">
@@ -528,7 +528,7 @@ const CheckoutPage = () => {
                 <div className="card-inner-headerPart">
                   <div className="lediv">
                     <h3>
-                      {userDetails?.data
+                      {me?.data
                         ? `Select Shipping address`
                         : "Shipping address"}
                     </h3>
@@ -601,7 +601,7 @@ const CheckoutPage = () => {
                   ) : null}
                 </div>
 
-                {!userDetails.data && !guestShippingAddress ? (
+                {!me.data && !guestShippingAddress ? (
                   <div className="card-item cart-items for-add">
                     <div className="top-heading">
                       <Button
@@ -630,9 +630,7 @@ const CheckoutPage = () => {
                 <div className="card-inner-headerPart">
                   <div className="lediv">
                     <h3>
-                      {userDetails?.data
-                        ? `Select Billing address`
-                        : "Billing address"}
+                      {me?.data ? `Select Billing address` : "Billing address"}
                     </h3>
                   </div>
 
@@ -738,7 +736,7 @@ const CheckoutPage = () => {
                   ) : null}
                 </div>
 
-                {!userDetails.data && !guestBillingAddress ? (
+                {!me.data && !guestBillingAddress ? (
                   <div className="card-item cart-items for-add">
                     <div className="top-heading">
                       <Button
@@ -763,7 +761,7 @@ const CheckoutPage = () => {
                 ) : null}
               </div>
 
-              {userDetails.data ? (
+              {me.data ? (
                 <div className="card-item cart-items for-add">
                   <div className="top-heading">
                     <Button
@@ -826,7 +824,7 @@ const CheckoutPage = () => {
           className="add-new-address-modal gap-0 p-0"
           ref={wrapperRef}
         >
-          {userDetails.data ? (
+          {me.data ? (
             <AddressForm
               onClose={() => {
                 setIsAddModalOpen(false);

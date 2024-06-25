@@ -159,7 +159,7 @@ export default function FreelancerProfilePage() {
     },
   });
 
-  const userDetails = useMe();
+  const me = useMe();
   const countriesQuery = useCountries();
   const tagsQuery = useTags();
   const createFreelancerProfile = useCreateFreelancerProfile();
@@ -218,10 +218,10 @@ export default function FreelancerProfilePage() {
   };
 
   useEffect(() => {
-    if (userDetails.data?.data) {
-      const businessTypeList = userDetails.data?.data?.userBranch?.[0]
+    if (me.data?.data) {
+      const businessTypeList = me.data?.data?.userBranch?.[0]
         ?.userBranchBusinessType
-        ? userDetails.data?.data?.userBranch?.[0]?.userBranchBusinessType?.map(
+        ? me.data?.data?.userBranch?.[0]?.userBranchBusinessType?.map(
             (item: any) => {
               return {
                 label: item?.userBranch_BusinessType_Tag?.tagName,
@@ -231,8 +231,8 @@ export default function FreelancerProfilePage() {
           )
         : [];
 
-      const workingDays = userDetails.data?.data?.userBranch?.[0]?.workingDays
-        ? JSON.parse(userDetails.data.data.userBranch[0].workingDays)
+      const workingDays = me.data?.data?.userBranch?.[0]?.workingDays
+        ? JSON.parse(me.data.data.userBranch[0].workingDays)
         : {
             sun: 0,
             mon: 0,
@@ -243,35 +243,32 @@ export default function FreelancerProfilePage() {
             sat: 0,
           };
 
-      const tagList = userDetails.data?.data?.userBranch?.[0]?.userBranchTags
-        ? userDetails.data?.data?.userBranch?.[0]?.userBranchTags?.map(
-            (item: any) => {
-              return {
-                label: item?.userBranchTagsTag?.tagName,
-                value: item?.userBranchTagsTag?.id,
-              };
-            },
-          )
+      const tagList = me.data?.data?.userBranch?.[0]?.userBranchTags
+        ? me.data?.data?.userBranch?.[0]?.userBranchTags?.map((item: any) => {
+            return {
+              label: item?.userBranchTagsTag?.tagName,
+              value: item?.userBranchTagsTag?.id,
+            };
+          })
         : [];
 
       form.reset({
-        aboutUs: userDetails.data?.data?.userProfile?.[0]?.aboutUs || "",
+        aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
         businessTypeList: businessTypeList || undefined,
-        startTime: userDetails.data?.data?.userBranch?.[0]?.startTime || "",
-        endTime: userDetails.data?.data?.userBranch?.[0]?.endTime || "",
-        address: userDetails.data?.data?.userBranch?.[0]?.address || "",
-        city: userDetails.data?.data?.userBranch?.[0]?.city || "",
-        province: userDetails.data?.data?.userBranch?.[0]?.province || "",
-        country: userDetails.data?.data?.userBranch?.[0]?.country || "",
-        contactNumber:
-          userDetails.data?.data?.userBranch?.[0]?.contactNumber || "",
-        contactName: userDetails.data?.data?.userBranch?.[0]?.contactName || "",
+        startTime: me.data?.data?.userBranch?.[0]?.startTime || "",
+        endTime: me.data?.data?.userBranch?.[0]?.endTime || "",
+        address: me.data?.data?.userBranch?.[0]?.address || "",
+        city: me.data?.data?.userBranch?.[0]?.city || "",
+        province: me.data?.data?.userBranch?.[0]?.province || "",
+        country: me.data?.data?.userBranch?.[0]?.country || "",
+        contactNumber: me.data?.data?.userBranch?.[0]?.contactNumber || "",
+        contactName: me.data?.data?.userBranch?.[0]?.contactName || "",
         workingDays,
         tagList: tagList || undefined,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userDetails.data?.data, userDetails.data?.status]);
+  }, [me.data?.data, me.data?.status]);
 
   return (
     <section className="relative w-full py-7">
