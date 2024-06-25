@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import { useProductById } from "@/apis/queries/product.queries";
+import {
+  useProductById,
+  useOneWithProductPrice,
+} from "@/apis/queries/product.queries";
 // import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
 import RelatedProductsSection from "@/components/modules/productDetails/RelatedProductsSection";
 import SameBrandSection from "@/components/modules/productDetails/SameBrandSection";
@@ -30,9 +33,9 @@ import {
 import { useMe } from "@/apis/queries/user.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import Footer from "@/components/shared/Footer";
-import Image from "next/image";
-import EmailIcon from "@/public/images/email.svg";
-import PhoneCallIcon from "@/public/images/phone-call.svg";
+// import Image from "next/image";
+// import EmailIcon from "@/public/images/email.svg";
+// import PhoneCallIcon from "@/public/images/phone-call.svg";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
 
 const ProductDetailsPage = () => {
@@ -46,6 +49,8 @@ const ProductDetailsPage = () => {
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const type = searchQuery?.get("type");
+  const otherSellerId = searchQuery?.get("sellerId");
+  const otherProductId = searchQuery?.get("productId");
 
   const me = useMe();
   const productQueryById = useProductById(
@@ -53,9 +58,8 @@ const ProductDetailsPage = () => {
       productId: searchParams?.id ? (searchParams?.id as string) : "",
       userId: me.data?.data?.id,
     },
-    !!searchParams?.id,
+    !!searchParams?.id && !otherSellerId && !otherProductId,
   );
-
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
@@ -75,8 +79,24 @@ const ProductDetailsPage = () => {
   const updateCartByDevice = useUpdateCartByDevice();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
+  const productQueryByOtherSeller = useOneWithProductPrice(
+    {
+      productId: otherProductId ? Number(otherProductId) : 0,
+      adminId: otherSellerId ? Number(otherSellerId) : 0,
+    },
+    !!otherProductId && !!otherSellerId,
+  );
 
-  const productDetails = productQueryById.data?.data;
+  const productDetails = !otherSellerId
+    ? productQueryById.data?.data
+    : productQueryByOtherSeller.data?.data;
+  const productInWishlist = !otherSellerId
+    ? productQueryById.data?.inWishlist
+    : productQueryByOtherSeller.data?.inWishlist;
+  const otherSellerDetails = !otherSellerId
+    ? productQueryById.data?.otherSeller
+    : productQueryByOtherSeller.data?.otherSeller;
+
   const calculateTagIds = useMemo(
     () => productDetails?.productTags.map((item: any) => item.tagId).join(","),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -192,7 +212,7 @@ const ProductDetailsPage = () => {
   };
 
   const handleAddToWishlist = async () => {
-    if (!!productQueryById?.data?.inWishlist) {
+    if (!!productInWishlist) {
       handleDeleteFromWishlist();
       return;
     }
@@ -244,10 +264,15 @@ const ProductDetailsPage = () => {
               onToCart={handleCartPage}
               onToCheckout={handleCheckoutPage}
               hasItem={hasItemByUser || hasItemByDevice}
-              isLoading={!productQueryById.isFetched}
+              isLoading={
+                !(
+                  productQueryById.isFetched ||
+                  productQueryByOtherSeller.isFetched
+                )
+              }
               onWishlist={handleAddToWishlist}
               haveAccessToken={haveAccessToken}
-              inWishlist={!!productQueryById?.data?.inWishlist}
+              inWishlist={!!productInWishlist}
               askForPrice={
                 productDetails?.product_productPrice?.[0]?.askForPrice
               }
@@ -267,9 +292,14 @@ const ProductDetailsPage = () => {
               productQuantity={
                 getProductQuantityByUser || getProductQuantityByDevice
               }
-              productReview={productQueryById?.data?.data?.productReview}
+              productReview={productDetails?.productReview}
               onAdd={handleAddToCart}
-              isLoading={!productQueryById.isFetched}
+              isLoading={
+                !(
+                  productQueryById.isFetched ||
+                  productQueryByOtherSeller.isFetched
+                )
+              }
               // soldBy={
               //   productDetails?.adminBy?.tradeRole === "COMPANY"
               //     ? productDetails?.adminBy?.userProfile?.[0]?.companyName
@@ -287,7 +317,7 @@ const ProductDetailsPage = () => {
               sellerId={
                 productDetails?.product_productPrice?.[0]?.adminDetail?.id
               }
-              haveOtherSellers={!!productQueryById.data?.otherSeller?.length}
+              haveOtherSellers={!!otherSellerDetails?.length}
               productProductPrice={
                 productDetails?.product_productPrice?.[0]?.productPrice
               }
@@ -297,6 +327,7 @@ const ProductDetailsPage = () => {
               askForPrice={
                 productDetails?.product_productPrice?.[0]?.askForPrice
               }
+              otherSellerDetails={otherSellerDetails}
             />
           </div>
         </div>
@@ -403,9 +434,7 @@ const ProductDetailsPage = () => {
                       <ReviewSection
                         productId={searchParams?.id as string}
                         hasAccessToken={haveAccessToken}
-                        productReview={
-                          productQueryById?.data?.data?.productReview
-                        }
+                        productReview={productDetails?.productReview}
                         isCreator={
                           me?.data?.data?.id === productDetails?.adminId
                         }
