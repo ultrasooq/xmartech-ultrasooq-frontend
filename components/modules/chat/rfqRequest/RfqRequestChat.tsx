@@ -123,6 +123,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         if (rfqRequest) {
             handleRfqRequest(rfqRequest)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rfqRequest])
 
     const handleNewMessage = (message: any) => {

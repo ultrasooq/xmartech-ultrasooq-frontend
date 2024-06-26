@@ -95,6 +95,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         if (rfqRequest) {
             handleRfqRequest(rfqRequest)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rfqRequest])
 
     // if any error exception
