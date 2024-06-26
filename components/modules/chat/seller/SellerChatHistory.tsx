@@ -1,8 +1,9 @@
-import Image from "next/image";
 import React, { useEffect, useState, useRef } from "react";
-import UserChatIcon from "@/public/images/user-chat.png";
 import moment from "moment";
 import { useAuth } from "@/context/AuthContext";
+import { useUpdateRfqPriceRequestStatus } from "@/apis/queries/chat.queries";
+import { RfqProductPriceRequestStatus } from "@/utils/types/chat.types";
+import { useSocket } from "@/context/SocketContext";
 
 interface SellerChatHistoryProps {
     roomId: number | null;
@@ -13,6 +14,8 @@ interface SellerChatHistoryProps {
 const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading }) => {
     const { user } = useAuth();
     const chatContainerRef = useRef<HTMLDivElement>(null);
+    const updatePriceStatus = useUpdateRfqPriceRequestStatus();
+    const { updateRfqRequestStatus } = useSocket()
 
     useEffect(() => {
         if (chatContainerRef.current) {
@@ -20,6 +23,18 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
         }
     }, [selectedChatHistory]);
 
+
+    const handlePriceStatus = async (id: number, status: RfqProductPriceRequestStatus) => {
+        try {
+            const payload = {
+                id,
+                status,
+                roomId: roomId
+            }
+            updateRfqRequestStatus(payload)
+        } catch (error) {
+        }
+    }
 
     return (
         <div ref={chatContainerRef} className="h-[300px] w-full overflow-y-auto">
@@ -35,6 +50,19 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
                                                 <p>
                                                     {chat.content}
                                                 </p>
+
+                                                {chat?.rfqProductPriceRequest && (
+                                                    <div>
+                                                        <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>
+                                                        <p>status:
+                                                            {chat.rfqProductPriceRequest?.status === "APPROVED" ?
+                                                                <span className="text-white bg-blue-700 p-0.5 rounded-sm">Approved</span>
+                                                                : chat.rfqProductPriceRequest?.status === "REJECTED" ?
+                                                                    <span className="text-white bg-red-600 p-0.5 rounded-sm">Rejected</span> : <span className="text-white bg-yellow-600 p-0.5 rounded-sm">Pending</span>
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
@@ -49,7 +77,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
                                         </div>
                                         <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
                                             <span className="flex items-center justify-center h-full w-full">
-                                              {`${chat?.user?.firstName?.[0] ?? ''}${chat?.user?.lastName?.[0] ?? ''}`}
+                                                {`${chat?.user?.firstName?.[0] ?? ''}${chat?.user?.lastName?.[0] ?? ''}`}
                                             </span>
                                             {/* <Image src={UserChatIcon} alt="user-chat-icon" /> */}
                                         </div>
@@ -58,7 +86,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
                                     <div className="mt-5 flex w-full flex-wrap items-end">
                                         <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
                                             <span className="flex items-center justify-center h-full w-full">
-                                            {`${chat?.user?.firstName?.[0] ?? ''}${chat?.user?.lastName?.[0] ?? ''}`}
+                                                {`${chat?.user?.firstName?.[0] ?? ''}${chat?.user?.lastName?.[0] ?? ''}`}
                                             </span>
                                         </div>
                                         <div className="w-[calc(100%-2rem)] pl-2">
@@ -66,6 +94,24 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
                                                 <p>
                                                     {chat.content}
                                                 </p>
+                                                {chat?.rfqProductPriceRequest && (
+                                                    <div>
+                                                        <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>
+                                                        <p>status:
+                                                            {chat.rfqProductPriceRequest?.status === "APPROVED" ?
+                                                                <span className="text-white bg-blue-700 p-0.5 rounded-sm">Approved</span>
+                                                                : chat.rfqProductPriceRequest?.status === "REJECTED" ?
+                                                                    <span className="text-white bg-red-600 p-0.5 rounded-sm">Rejected</span> : <span className="text-white bg-yellow-700 p-0.5 rounded-sm">Pending</span>
+                                                            }
+                                                        </p>
+                                                        {chat.rfqProductPriceRequest?.status === "PENDING" && (
+                                                            <div className="mt-2">
+                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest.id, RfqProductPriceRequestStatus.APPROVED)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-2 py-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Accept</button>
+                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest.id, RfqProductPriceRequestStatus.REJECTED)} type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 rounded-lg px-2 py-2 me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Reject</button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
                                                 <span>

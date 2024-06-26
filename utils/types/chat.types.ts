@@ -1,3 +1,8 @@
+export enum RfqProductPriceRequestStatus {
+    APPROVED = "A",
+    REJECTED = "R",
+    PENDING = "P",
+}
 
 export interface CreatePrivateRoomRequest {
     creatorId: string;
@@ -16,7 +21,12 @@ export interface SendMessageRequest {
     roomId: number
 }
 
-
 export interface ChatHistoryRequest {
     roomId: number | null;
+}
+
+export interface RfqPriceStatusUpdateRequest {
+    id: number;
+    status: RfqProductPriceRequestStatus;
+    userId?: number;
 }

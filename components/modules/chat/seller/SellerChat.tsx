@@ -12,6 +12,7 @@ import { findRoomId, getChatHistory } from "@/apis/requests/chat.requests";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import SellerChatHistory from "./SellerChatHistory";
 import { useToast } from "@/components/ui/use-toast";
+import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
 
 
 interface SellerChatProps {
@@ -21,24 +22,25 @@ interface SellerChatProps {
 const SellerChat: React.FC<SellerChatProps> = () => {
     const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
     const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
+    const [rfqQuotes, setRfqQuotes] = useState<any[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<any>("");
     const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
     const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
     const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
     const [message, setMessage] = useState<string>('');
-    const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage } = useSocket()
+    const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest } = useSocket()
     const { toast } = useToast();
 
     const allRfqQuotesQuery = useAllRfqQuotesUsersBySellerId({
         page: 1,
         limit: 10,
     });
-    const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
 
     useEffect(() => {
         const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
 
         if (rfqQuotesDetails?.length > 0) {
+            setRfqQuotes(rfqQuotesDetails)
             setActiveSellerId(rfqQuotesDetails[0]?.id);
             setSelectedProduct(rfqQuotesDetails[0])
             setQuoteProducts(
@@ -88,6 +90,14 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         }
     }, [newRoom])
 
+    // if rfqRequest
+    useEffect(() => {
+        if (rfqRequest) {
+            handleRfqRequest(rfqRequest)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [rfqRequest])
+
     // if any error exception
     useEffect(() => {
         if (errorMessage) {
@@ -98,22 +108,27 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             });
             clearErrorMessage()
         }
-         // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorMessage])
 
     const handleNewMessage = (message: any) => {
-        const chatHistory = [...selectedChatHistory]
-        chatHistory.push(message);
-        setSelectedChatHistory(chatHistory)
+        const index = rfqQuotes.findIndex((rfq: any) => message?.rfqId === rfq.rfqQuotesId);
+        if (index !== -1) {
+            if (selectedProduct?.rfqQuotesId === message.rfqId) {
+                const chatHistory = [...selectedChatHistory]
+                chatHistory.push(message);
+                setSelectedChatHistory(chatHistory)
+            }
+        }
     }
 
     const handleSendMessage = async () => {
         try {
             if (message) {
                 if (selectedRoom) {
-                    sendNewMessage(selectedRoom)
+                    sendNewMessage(selectedRoom, message)
                 } else if (!selectedRoom && selectedProduct?.sellerID && selectedProduct?.buyerID) {
-                    handleCreateRoom();
+                    handleCreateRoom(message);
                 }
                 setMessage("")
             } else {
@@ -132,21 +147,27 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         }
     }
 
-    const sendNewMessage = (roomId: number) => {
+    const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
         const msgPayload = {
             roomId: roomId,
-            content: message,
-            rfqId: selectedProduct?.rfqQuotesId
+            content,
+            rfqId: selectedProduct?.rfqQuotesId,
+            requestedPrice,
+            rfqQuoteProductId,
+            sellerId
         }
         sendMessage(msgPayload)
     }
 
-    const handleCreateRoom = async () => {
+    const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
         try {
             const payload = {
                 participants: [selectedProduct?.sellerID, selectedProduct?.buyerID],
-                content: message,
-                rfqId: selectedProduct?.rfqQuotesId
+                content,
+                rfqId: selectedProduct?.rfqQuotesId,
+                requestedPrice,
+                rfqQuoteProductId,
+                sellerId
             }
             cratePrivateRoom(payload);
         } catch (error) {
@@ -196,6 +217,37 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         }
     };
 
+    const handleRequestPrice = (productId: number, requestedPrice: number) => {
+        if (selectedRoom && requestedPrice) {
+            sendNewMessage(selectedRoom, CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedProduct?.sellerID, requestedPrice)
+        } else if (!selectedRoom && requestedPrice && selectedProduct?.sellerID && selectedProduct?.buyerID) {
+            handleCreateRoom(CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedProduct?.sellerID, requestedPrice);
+        }
+    }
+
+
+    const handleRfqRequest = (rRequest: {
+        id: number;
+        messageId: number;
+        rfqQuoteProductId: number;
+        status: string;
+    }) => {
+        const chatHistory = [...selectedChatHistory]
+        const index = chatHistory.findIndex((chat) => chat.id === rRequest.messageId);
+        if (index !== -1) {
+            const currentMsg = chatHistory[index];
+            const updatedMessage = {
+                ...currentMsg,
+                rfqProductPriceRequest: {
+                    ...currentMsg.rfqProductPriceRequest,
+                    status: rRequest.status
+                }
+            }
+            chatHistory[index] = updatedMessage
+            setSelectedChatHistory(chatHistory)
+        }
+    }
+
     return (
         <div>
             <div className="flex w-full rounded-sm border border-solid border-gray-300">
@@ -212,7 +264,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                             </div>
                         ) : null}
 
-                        {!allRfqQuotesQuery?.isLoading && !rfqQuotesDetails?.length ? (
+                        {!allRfqQuotesQuery?.isLoading && !rfqQuotes?.length ? (
                             <div className="my-2 space-y-2">
                                 <p className="text-center text-sm font-normal text-gray-500">
                                     No data found
@@ -220,7 +272,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                             </div>
                         ) : null}
 
-                        {rfqQuotesDetails?.map(
+                        {rfqQuotes?.map(
                             (item: {
                                 id: number;
                                 offerPrice: string;
@@ -283,8 +335,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                         <span>
                             Offering Price{" "}
                             <b className="text-[#679A03]">
-                                {rfqQuotesDetails?.[0]?.offerPrice
-                                    ? `$${rfqQuotesDetails?.[0]?.offerPrice}`
+                                {selectedProduct?.offerPrice
+                                    ? `$${selectedProduct?.offerPrice}`
                                     : "-"}
                             </b>
                         </span>
@@ -352,6 +404,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                     }) => (
                                         <OfferPriceCard
                                             key={item?.id}
+                                            productId={item?.id}
                                             offerPrice={item?.offerPrice}
                                             note={item?.note}
                                             quantity={item?.quantity}
@@ -361,12 +414,13 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                                 item?.rfqProductDetails?.productImages[0]?.image
                                             }
                                             productName={item?.rfqProductDetails?.productName}
+                                            onRequestPrice={handleRequestPrice}
                                         />
                                     ),
                                 )}
                             </div>
                         </div>
-                        {rfqQuotesDetails?.length > 0 ? (
+                        {rfqQuotes?.length > 0 ? (
                             <SellerChatHistory
                                 roomId={selectedRoom}
                                 selectedChatHistory={selectedChatHistory}
@@ -375,7 +429,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                         ) : ""}
 
                     </div>
-                    {rfqQuotesDetails?.length > 0 ? (
+                    {rfqQuotes?.length > 0 ? (
                         <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
                             <div className="flex w-full items-center">
                                 <div className="relative flex h-[32px] w-[32px] items-center">

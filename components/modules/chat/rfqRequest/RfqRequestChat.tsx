@@ -13,6 +13,7 @@ import RfqRequestChatHistory from "./RfqRequestChatHistory";
 import RfqRequestVendorCard from "./RfqRequestVendorCard";
 import { useSocket } from "@/context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
+import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
 
 interface RfqRequestChatProps {
     rfqQuoteId: any
@@ -42,7 +43,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
     const [message, setMessage] = useState<string>('');
     const [vendorList, setVendorList] = useState<any[]>([]);
-    const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage } = useSocket()
+    const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest } = useSocket()
     const { toast } = useToast();
 
     const allRfqQuotesQuery = useAllRfqQuotesUsersByBuyerId(
@@ -117,6 +118,14 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorMessage])
 
+    // if rfqRequest
+    useEffect(() => {
+        if (rfqRequest) {
+            handleRfqRequest(rfqRequest)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [rfqRequest])
+
     const handleNewMessage = (message: any) => {
         const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => message?.participants?.includes(vendor.sellerID));
         if (index !== -1) {
@@ -172,9 +181,9 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         try {
             if (message) {
                 if (selectedRoom) {
-                    sendNewMessage(selectedRoom)
+                    sendNewMessage(selectedRoom, message)
                 } else if (!selectedRoom && selectedVendor?.sellerID && selectedVendor?.buyerID) {
-                    handleCreateRoom();
+                    handleCreateRoom(message);
                 }
                 setMessage("")
             } else {
@@ -193,21 +202,27 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         }
     }
 
-    const sendNewMessage = (roomId: number) => {
+    const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, buyerId?: number, requestedPrice?: number) => {
         const msgPayload = {
             roomId: roomId,
-            content: message,
-            rfqId: parseInt(rfqQuoteId)
+            content,
+            rfqId: parseInt(rfqQuoteId),
+            rfqQuoteProductId,
+            buyerId,
+            requestedPrice
         }
         sendMessage(msgPayload)
     }
 
-    const handleCreateRoom = async () => {
+    const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, buyerId?: number, requestedPrice?: number) => {
         try {
             const payload = {
                 participants: [selectedVendor?.sellerID, selectedVendor?.buyerID],
-                content: message,
-                rfqId: parseInt(rfqQuoteId)
+                content,
+                rfqId: parseInt(rfqQuoteId),
+                rfqQuoteProductId,
+                buyerId,
+                requestedPrice
             }
             cratePrivateRoom(payload);
         } catch (error) {
@@ -241,6 +256,36 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             handleSendMessage();
         }
     };
+
+    const handleRequestPrice = (productId: number, requestedPrice: number) => {
+        if (selectedRoom && requestedPrice) {
+            sendNewMessage(selectedRoom, CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedVendor?.buyerID, requestedPrice)
+        } else if (!selectedRoom && requestedPrice && selectedVendor?.sellerID && selectedVendor?.buyerID) {
+            handleCreateRoom(CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedVendor?.buyerID, requestedPrice);
+        }
+    }
+
+    const handleRfqRequest = (rRequest: {
+        id: number;
+        messageId: number;
+        rfqQuoteProductId: number;
+        status: string;
+    }) => {
+        const chatHistory = [...selectedChatHistory]
+        const index = chatHistory.findIndex((chat) => chat.id === rRequest.messageId);
+        if (index !== -1) {
+            const currentMsg = chatHistory[index];
+            const updatedMessage = {
+                ...currentMsg,
+                rfqProductPriceRequest: {
+                    ...currentMsg.rfqProductPriceRequest,
+                    status: rRequest.status
+                }
+            }
+            chatHistory[index] = updatedMessage
+            setSelectedChatHistory(chatHistory)
+        }
+    }
 
     return (
         <div>
@@ -300,8 +345,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                         <span>
                             Offering Price{" "}
                             <b className="text-[#679A03]">
-                                {vendorList?.[0]?.offerPrice
-                                    ? `$${vendorList?.[0]?.offerPrice}`
+                                {selectedVendor?.offerPrice
+                                    ? `$${selectedVendor?.offerPrice}`
                                     : "-"}
                             </b>
                         </span>
@@ -368,6 +413,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                                     }) => (
                                         <OfferPriceCard
                                             key={item?.id}
+                                            productId={item?.id}
                                             offerPrice={item?.offerPrice}
                                             note={item?.note}
                                             quantity={item?.quantity}
@@ -383,6 +429,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                                                 item?.rfqProductDetails?.productImages[0]?.image
                                             }
                                             productName={item?.rfqProductDetails?.productName}
+                                            onRequestPrice={handleRequestPrice}
                                         />
                                     ),
                                 )}
