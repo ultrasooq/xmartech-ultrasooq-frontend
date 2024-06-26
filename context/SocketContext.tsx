@@ -4,7 +4,6 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 
-
 interface newMessageType {
   content: string;
   userId: number;
@@ -13,10 +12,25 @@ interface newMessageType {
   createdAt: string;
 }
 
+interface rfqRequestType {
+  id: number;
+  messageId: number;
+  rfqQuoteProductId: number;
+  status: string;
+}
+
 interface SocketContextType {
   socket: Socket | null;
   connected: boolean;
-  sendMessage: (message: { roomId: number; rfqId: number; content: string }) => void;
+  sendMessage: (message: {
+    roomId: number;
+    rfqId: number;
+    content: string;
+    rfqQuoteProductId?: number;
+    buyerId?: number;
+    sellerId?: number;
+    requestedPrice?: number;
+  }) => void;
   newMessage: newMessageType | null;
   errorMessage: string;
   clearErrorMessage: () => void;
@@ -24,11 +38,20 @@ interface SocketContextType {
   cratePrivateRoom: (newRoom: {
     participants: number[];
     content: string;
-    rfqId: number
+    rfqId: number;
+    rfqQuoteProductId?: number;
+    buyerId?: number;
+    sellerId?: number;
+    requestedPrice?: number;
   }) => void;
+  updateRfqRequestStatus: (rfqRequest: {
+    roomId: number | null;
+    id: number;
+    status: string;
+  }) => void;
+  rfqRequest: rfqRequestType | null;
   disconnectSocket: () => void;
 }
-
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
@@ -40,6 +63,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const [newMessage, setNewMessage] = useState<newMessageType | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [newRoom, setNewRoom] = useState<number | null>(null);
+  const [rfqRequest, setRfqRequest] = useState<rfqRequestType | null>(null);
+
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
@@ -59,21 +84,39 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       socketIo.on("receivedMessage", (message: newMessageType) => {
-        setNewMessage(message)
+        setNewMessage(message);
       });
 
       socketIo.on("newRoomCreated", (room: { roomId: number }) => {
-        setNewRoom(room.roomId)
+        setNewRoom(room.roomId);
       });
 
+      socketIo.on(
+        "updatedRfqPriceRequest",
+        (rfqRequest: {
+          id: number;
+          messageId: number;
+          rfqQuoteProductId: number;
+          status: string;
+        }) => {
+          setRfqRequest(rfqRequest);
+        },
+      );
+      // ERROR MESSAGES
       socketIo.on("createPrivateRoomError", (error: { message: string }) => {
-        setErrorMessage("Failed")
+        setErrorMessage("Failed");
       });
 
       socketIo.on("sendMessageError", (error: { message: string }) => {
-        setErrorMessage("Failed")
+        setErrorMessage("Failed");
       });
 
+      socketIo.on(
+        "updateRfqPriceRequestError",
+        (error: { message: string }) => {
+          setErrorMessage("Failed");
+        },
+      );
 
       setSocket(socketIo);
 
@@ -88,20 +131,90 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         setConnected(false);
         setNewRoom(null);
         setErrorMessage("");
-        setNewMessage(null)
+        setNewMessage(null);
+        setRfqRequest(null);
       }
     }
   }, [user]);
 
-  const sendMessage = ({ roomId, content, rfqId }: { roomId: number; rfqId: number; content: string; }) => {
+  const sendMessage = ({
+    roomId,
+    content,
+    rfqId,
+    rfqQuoteProductId,
+    requestedPrice,
+    buyerId,
+    sellerId,
+  }: {
+    roomId: number;
+    rfqId: number;
+    content: string;
+    rfqQuoteProductId?: number;
+    buyerId?: number;
+    sellerId?: number;
+    requestedPrice?: number;
+  }) => {
     if (socket) {
-      socket.emit("sendMessage", { roomId, rfqId, content, userId: user?.id });
+      socket.emit("sendMessage", {
+        roomId,
+        rfqId,
+        content,
+        userId: user?.id,
+        rfqQuoteProductId,
+        buyerId,
+        sellerId,
+        requestedPrice,
+      });
     }
   };
 
-  const cratePrivateRoom = ({ participants, content, rfqId }: { participants: number[]; content: string; rfqId: number }) => {
+  const cratePrivateRoom = ({
+    participants,
+    content,
+    rfqId,
+    rfqQuoteProductId,
+    buyerId,
+    sellerId,
+    requestedPrice,
+  }: {
+    participants: number[];
+    content: string;
+    rfqId: number;
+    rfqQuoteProductId?: number;
+    buyerId?: number;
+    sellerId?: number;
+    requestedPrice?: number;
+  }) => {
     if (socket) {
-      socket.emit("createPrivateRoom", { creatorId: user?.id, participants, content, rfqId });
+      socket.emit("createPrivateRoom", {
+        creatorId: user?.id,
+        participants,
+        content,
+        rfqId,
+        rfqQuoteProductId,
+        buyerId,
+        sellerId,
+        requestedPrice,
+      });
+    }
+  };
+
+  const updateRfqRequestStatus = ({
+    roomId,
+    id,
+    status,
+  }: {
+    roomId: number | null;
+    id: number;
+    status: string;
+  }) => {
+    if (socket) {
+      socket.emit("updateRfqPriceRequest", {
+        roomId,
+        id,
+        status,
+        userId: user?.id,
+      });
     }
   };
 
@@ -112,13 +225,14 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       setConnected(false);
       setNewRoom(null);
       setErrorMessage("");
-      setNewMessage(null)
+      setNewMessage(null);
+      setRfqRequest(null);
     }
   };
 
   const clearErrorMessage = () => {
-    setErrorMessage("")
-  }
+    setErrorMessage("");
+  };
 
   return (
     <SocketContext.Provider
@@ -131,7 +245,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         cratePrivateRoom,
         newRoom,
         errorMessage,
-        clearErrorMessage
+        clearErrorMessage,
+        updateRfqRequestStatus,
+        rfqRequest,
       }}
     >
       {children}

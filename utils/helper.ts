@@ -102,3 +102,8 @@ export const formatDate = (isoString: string): string => {
   };
   return date.toLocaleDateString("en-US", options);
 };
+
+export const capitalizeWord = (word: string): string => {
+  if (!word) return '';
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
