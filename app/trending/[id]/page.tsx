@@ -295,18 +295,10 @@ const ProductDetailsPage = () => {
               productReview={productDetails?.productReview}
               onAdd={handleAddToCart}
               isLoading={
-                !(
-                  productQueryById.isFetched ||
-                  productQueryByOtherSeller.isFetched
-                )
+                !otherSellerId && !otherProductId
+                  ? !productQueryById.isFetched
+                  : !productQueryByOtherSeller.isFetched
               }
-              // soldBy={
-              //   productDetails?.adminBy?.tradeRole === "COMPANY"
-              //     ? productDetails?.adminBy?.userProfile?.[0]?.companyName
-              //     : productDetails?.adminBy?.tradeRole === "FREELANCER"
-              //       ? `${productDetails?.adminBy?.firstName} ${productDetails?.adminBy?.lastName}`
-              //       : null
-              // }
               soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
                 ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
               soldByTradeRole={

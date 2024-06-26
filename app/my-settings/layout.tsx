@@ -55,15 +55,16 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
             <div className="card-item">
               <ul className="menu-lists">
                 <li>
-                  <a href="" className="menu-links">
+                  <Link href="/my-orders" className="menu-links">
                     <span className="icon-container">
                       <PackageIcon />
                     </span>
                     <span className="text-container">My Orders</span>
-                    <span className="arow">
+                    {/* TODO: commented for now */}
+                    {/* <span className="arow">
                       <ChevronDownIcon />
-                    </span>
-                  </a>
+                    </span> */}
+                  </Link>
                 </li>
                 <li>
                   <a href="" className="menu-links active">
