@@ -1,7 +1,7 @@
 import { APIResponseError } from "../../utils/types/common.types";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { CreatePrivateRoomRequest } from "../../utils/types/chat.types";
-import { createPrivateRoom, findRoomId } from "../requests/chat.requests";
+import { CreatePrivateRoomRequest, RfqPriceStatusUpdateRequest } from "../../utils/types/chat.types";
+import { createPrivateRoom, updateRfqRequestPriceStatus } from "../requests/chat.requests";
 
 export const useCreatePrivateRoom = () => {
     const queryClient = useQueryClient();
@@ -24,3 +24,19 @@ export const useCreatePrivateRoom = () => {
         },
     });
 };
+
+  export const useUpdateRfqPriceRequestStatus = () => {
+    return useMutation<
+      { data: any; message: string; status: boolean },
+      APIResponseError,
+      RfqPriceStatusUpdateRequest
+    >({
+      mutationFn: async (payload) => {
+        const res = await updateRfqRequestPriceStatus(payload);
+        return res.data;
+      },
+      onError: (err: APIResponseError) => {
+        console.log(err);
+      },
+    });
+  };

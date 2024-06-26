@@ -394,6 +394,6 @@ export const MONTHS: string[] = [
 
 export const CHAT_REQUEST_MESSAGE = {
   priceRequest: {
-    value: "Requested for Offer price ",
+    value: "Requested for Offer Price ",
   }
 };

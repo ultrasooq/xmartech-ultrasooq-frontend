@@ -43,7 +43,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
     const [message, setMessage] = useState<string>('');
     const [vendorList, setVendorList] = useState<any[]>([]);
-    const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage } = useSocket()
+    const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest } = useSocket()
     const { toast } = useToast();
 
     const allRfqQuotesQuery = useAllRfqQuotesUsersByBuyerId(
@@ -117,6 +117,13 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorMessage])
+
+    // if rfqRequest
+    useEffect(() => {
+        if (rfqRequest) {
+            handleRfqRequest(rfqRequest)
+        }
+    }, [rfqRequest])
 
     const handleNewMessage = (message: any) => {
         const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => message?.participants?.includes(vendor.sellerID));
@@ -254,6 +261,28 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             sendNewMessage(selectedRoom, CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedVendor?.buyerID, requestedPrice)
         } else if (!selectedRoom && requestedPrice && selectedVendor?.sellerID && selectedVendor?.buyerID) {
             handleCreateRoom(CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedVendor?.buyerID, requestedPrice);
+        }
+    }
+
+    const handleRfqRequest = (rRequest: {
+        id: number;
+        messageId: number;
+        rfqQuoteProductId: number;
+        status: string;
+    }) => {
+        const chatHistory = [...selectedChatHistory]
+        const index = chatHistory.findIndex((chat) => chat.id === rRequest.messageId);
+        if (index !== -1) {
+            const currentMsg = chatHistory[index];
+            const updatedMessage = {
+                ...currentMsg,
+                rfqProductPriceRequest: {
+                    ...currentMsg.rfqProductPriceRequest,
+                    status: rRequest.status
+                }
+            }
+            chatHistory[index] = updatedMessage
+            setSelectedChatHistory(chatHistory)
         }
     }
 

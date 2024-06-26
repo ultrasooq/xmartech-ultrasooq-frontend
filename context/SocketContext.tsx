@@ -12,6 +12,13 @@ interface newMessageType {
   createdAt: string;
 }
 
+interface rfqRequestType {
+  id: number;
+  messageId: number;
+  rfqQuoteProductId: number;
+  status: string;
+}
+
 interface SocketContextType {
   socket: Socket | null;
   connected: boolean;
@@ -37,6 +44,12 @@ interface SocketContextType {
     sellerId?: number;
     requestedPrice?: number;
   }) => void;
+  updateRfqRequestStatus: (rfqRequest: {
+    roomId: number | null;
+    id: number;
+    status: string;
+  }) => void;
+  rfqRequest: rfqRequestType | null;
   disconnectSocket: () => void;
 }
 
@@ -50,6 +63,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const [newMessage, setNewMessage] = useState<newMessageType | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [newRoom, setNewRoom] = useState<number | null>(null);
+  const [rfqRequest, setRfqRequest] = useState<rfqRequestType | null>(null);
+
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
@@ -76,6 +91,18 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         setNewRoom(room.roomId);
       });
 
+      socketIo.on(
+        "updatedRfqPriceRequest",
+        (rfqRequest: {
+          id: number;
+          messageId: number;
+          rfqQuoteProductId: number;
+          status: string;
+        }) => {
+          setRfqRequest(rfqRequest);
+        },
+      );
+      // ERROR MESSAGES
       socketIo.on("createPrivateRoomError", (error: { message: string }) => {
         setErrorMessage("Failed");
       });
@@ -83,6 +110,13 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       socketIo.on("sendMessageError", (error: { message: string }) => {
         setErrorMessage("Failed");
       });
+
+      socketIo.on(
+        "updateRfqPriceRequestError",
+        (error: { message: string }) => {
+          setErrorMessage("Failed");
+        },
+      );
 
       setSocket(socketIo);
 
@@ -98,6 +132,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         setNewRoom(null);
         setErrorMessage("");
         setNewMessage(null);
+        setRfqRequest(null);
       }
     }
   }, [user]);
@@ -109,7 +144,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     rfqQuoteProductId,
     requestedPrice,
     buyerId,
-    sellerId
+    sellerId,
   }: {
     roomId: number;
     rfqId: number;
@@ -147,7 +182,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     rfqId: number;
     rfqQuoteProductId?: number;
     buyerId?: number;
-    sellerId?: number
+    sellerId?: number;
     requestedPrice?: number;
   }) => {
     if (socket) {
@@ -164,6 +199,25 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const updateRfqRequestStatus = ({
+    roomId,
+    id,
+    status,
+  }: {
+    roomId: number | null;
+    id: number;
+    status: string;
+  }) => {
+    if (socket) {
+      socket.emit("updateRfqPriceRequest", {
+        roomId,
+        id,
+        status,
+        userId: user?.id,
+      });
+    }
+  };
+
   const disconnectSocket = () => {
     if (socket) {
       socket.disconnect();
@@ -172,6 +226,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       setNewRoom(null);
       setErrorMessage("");
       setNewMessage(null);
+      setRfqRequest(null);
     }
   };
 
@@ -191,6 +246,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         newRoom,
         errorMessage,
         clearErrorMessage,
+        updateRfqRequestStatus,
+        rfqRequest,
       }}
     >
       {children}

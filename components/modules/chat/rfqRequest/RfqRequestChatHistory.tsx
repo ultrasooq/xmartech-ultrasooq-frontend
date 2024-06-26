@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import moment from "moment";
 import { useAuth } from "@/context/AuthContext";
+import { useSocket } from "@/context/SocketContext";
+import { RfqProductPriceRequestStatus } from "@/utils/types/chat.types";
 
 interface RfqRequestChatHistoryProps {
     roomId: number | null;
@@ -11,6 +13,7 @@ interface RfqRequestChatHistoryProps {
 const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading }) => {
     const { user } = useAuth();
     const chatContainerRef = useRef<HTMLDivElement>(null);
+    const { updateRfqRequestStatus } = useSocket();
 
     useEffect(() => {
         if (chatContainerRef.current) {
@@ -18,6 +21,18 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
         }
     }, [selectedChatHistory]);
 
+
+    const handlePriceStatus = async (id: number, status: RfqProductPriceRequestStatus) => {
+        try {
+            const payload = {
+                id,
+                status,
+                roomId: roomId
+            }
+            updateRfqRequestStatus(payload)
+        } catch (error) {
+        }
+    }
 
     return (
         <div ref={chatContainerRef} className="h-[300px] w-full overflow-y-auto">
@@ -36,7 +51,13 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
                                                         <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>
-                                                        <p>status: {chat.rfqProductPriceRequest?.status}</p>
+                                                        <p>status:
+                                                            {chat.rfqProductPriceRequest?.status === "APPROVED" ?
+                                                                <span className="text-white bg-blue-700 p-0.5 rounded-sm">Approved</span>
+                                                                : chat.rfqProductPriceRequest?.status === "REJECTED" ?
+                                                                    <span className="text-white bg-red-600 p-0.5 rounded-sm">Rejected</span> : <span className="text-white bg-yellow-700 p-0.5 rounded-sm">Pending</span>
+                                                            }
+                                                        </p>
                                                     </div>
                                                 )}
                                             </div>
@@ -72,11 +93,19 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
                                                         <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>
-                                                        <p>status: {chat.rfqProductPriceRequest?.status}</p>
-                                                        <div>
-                                                            <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-2 py-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Accept</button>
-                                                            <button type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 rounded-lg px-2 py-2 me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Reject</button>
-                                                        </div>
+                                                        <p>status:
+                                                            {chat.rfqProductPriceRequest?.status === "APPROVED" ?
+                                                                <span className="text-white bg-blue-700 p-0.5 rounded-sm">Approved</span>
+                                                                : chat.rfqProductPriceRequest?.status === "REJECTED" ?
+                                                                    <span className="text-white bg-red-600 p-0.5 rounded-sm">Rejected</span> : <span className="text-white bg-yellow-700 p-0.5 rounded-sm">Pending</span>
+                                                            }
+                                                        </p>
+                                                        {chat.rfqProductPriceRequest?.status === "PENDING" && (
+                                                            <div className="mt-2">
+                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest.id, RfqProductPriceRequestStatus.APPROVED)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-2 py-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Accept</button>
+                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest.id, RfqProductPriceRequestStatus.REJECTED)} type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 rounded-lg px-2 py-2 me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Reject</button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
