@@ -57,14 +57,14 @@ const DescriptionAndSpecificationSection = () => {
                   <ControlledTextInput
                     key={field.id}
                     name={`productSpecificationList.${index}.label`}
-                    placeholder="Enter Specification"
+                    placeholder="Enter Label"
                     label="Label"
                   />
 
                   <ControlledTextInput
                     key={field.id}
                     name={`productSpecificationList.${index}.specification`}
-                    placeholder="Enter Specification"
+                    placeholder="Enter Value"
                     label="Value"
                   />
 
