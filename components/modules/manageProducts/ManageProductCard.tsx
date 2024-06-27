@@ -109,7 +109,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               </div> */}
               {productCondition === "OLD" ? (
                 <div className="absolute right-0 top-0 z-10">
-                  <Link href={`/product/${productId}`}>
+                  <Link href={`/product/${productId}?productPriceId=${id}`}>
                     <Image
                       src={EditIcon}
                       alt="review-dot-icon"
