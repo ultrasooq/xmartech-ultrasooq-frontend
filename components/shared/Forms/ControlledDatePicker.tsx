@@ -21,11 +21,13 @@ import { format } from "date-fns";
 interface ControlledDatePickerProps {
   label?: string;
   name: string;
+  isFuture?: boolean;
 }
 
 const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
   label,
   name,
+  isFuture,
 }) => {
   const formContext = useFormContext();
 
@@ -60,12 +62,22 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
                 mode="single"
                 selected={field.value}
                 onSelect={field.onChange}
-                disabled={(date) =>
-                  date > new Date() || date < new Date("1900-01-01")
-                }
+                disabled={(date) => {
+                  return isFuture
+                    ? date <= new Date()
+                    : date > new Date() || date < new Date("1900-01-01");
+                }}
                 initialFocus
-                toYear={new Date().getFullYear() - 18}
-                fromYear={new Date().getFullYear() - 100}
+                fromYear={
+                  isFuture
+                    ? new Date().getFullYear()
+                    : new Date().getFullYear() - 100
+                }
+                toYear={
+                  isFuture
+                    ? new Date().getFullYear() + 100
+                    : new Date().getFullYear() - 18
+                }
                 captionLayout="dropdown-buttons"
                 classNames={{
                   vhidden: "vhidden hidden",

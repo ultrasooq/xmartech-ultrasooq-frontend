@@ -181,7 +181,7 @@ const RfqCartPage = () => {
 
                     <div>
                       <Label>Date</Label>
-                      <ControlledDatePicker name="rfqDate" />
+                      <ControlledDatePicker name="rfqDate" isFuture />
                     </div>
                   </form>
                 </Form>

@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { FaCircleCheck } from "react-icons/fa6";
-import Link from "next/link";
+// import Link from "next/link";
 
 type RfqProductCardProps = {
   id: number;
@@ -76,6 +76,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-4">
                 <Button
+                  type="button"
                   variant="outline"
                   className="relative hover:shadow-sm"
                   onClick={() => {
@@ -95,8 +96,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-                <p className="!text-black">{quantity}</p>
+                <p className="!mb-0 !text-black">{quantity}</p>
                 <Button
+                  type="button"
                   variant="outline"
                   className="relative hover:shadow-sm"
                   onClick={() => {
@@ -115,7 +117,11 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-                <Button variant="ghost" onClick={() => onEdit(id)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => onEdit(id)}
+                >
                   <div className="relative h-6 w-6">
                     <Image
                       src="/images/edit-rfq.png"
