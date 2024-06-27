@@ -63,9 +63,15 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
                 selected={field.value}
                 onSelect={field.onChange}
                 disabled={(date) => {
-                  return isFuture
-                    ? date <= new Date()
-                    : date > new Date() || date < new Date("1900-01-01");
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  console.log(date, "=", new Date());
+                  if (isFuture) {
+                    return date < today; // Disable dates before today
+                  } else {
+                    const minDate = new Date("1900-01-01");
+                    return date < minDate || date > today; // Disable dates outside the range of Jan 1, 1900, to today
+                  }
                 }}
                 initialFocus
                 fromYear={

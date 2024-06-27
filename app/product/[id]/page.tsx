@@ -11,8 +11,10 @@ import ProductDetailsSection from "@/components/modules/createProduct/ProductDet
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
 import {
+  useOneProductByProductCondition,
   useProductById,
   useUpdateProduct,
+  useUpdateProductPriceByProductCondition,
 } from "@/apis/queries/product.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
@@ -175,129 +177,128 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
     }
   });
 
-const formSchema = z
-  .object({
-    productName: z
-      .string()
-      .trim()
-      .min(2, { message: "Product Name is required" })
-      .max(50, { message: "Product Name must be less than 50 characters" }),
-    categoryId: z.number().optional(),
-    categoryLocation: z.string().trim().optional(),
-    brandId: z.number().min(1, { message: "Brand is required" }),
-    productLocationId: z.number().optional(),
-    skuNo: z.string().trim().optional(),
-    productCondition: z.string().trim().optional(),
-    productTagList: z
-      .array(
-        z.object({
-          label: z.string().trim(),
-          value: z.number(),
+const formSchema = z.object({
+  productName: z
+    .string()
+    .trim()
+    .min(2, { message: "Product Name is required" })
+    .max(50, { message: "Product Name must be less than 50 characters" }),
+  // categoryId: z.number().optional(),
+  // categoryLocation: z.string().trim().optional(),
+  // brandId: z.number().min(1, { message: "Brand is required" }),
+  // productLocationId: z.number().optional(),
+  // skuNo: z.string().trim().optional(),
+  // productCondition: z.string().trim().optional(),
+  // productTagList: z
+  //   .array(
+  //     z.object({
+  //       label: z.string().trim(),
+  //       value: z.number(),
+  //     }),
+  //   )
+  //   .min(1, { message: "Tag is required" })
+  //   .transform((value) => {
+  //     let temp: any = [];
+  //     value.forEach((item) => {
+  //       temp.push({ tagId: item.value });
+  //     });
+  //     return temp;
+  //   }),
+  productImagesList: z.any().optional(),
+  // productPrice: z.coerce.number().optional(),
+  // offerPrice: z.coerce.number().optional(),
+  // placeOfOriginId: z
+  //   .number()
+  //   .min(1, { message: "Place of Origin is required" }),
+  productShortDescriptionList: z.array(
+    z.object({
+      shortDescription: z
+        .string()
+        .trim()
+        .min(2, {
+          message: "Short Description is required",
+        })
+        .max(20, {
+          message: "Short Description must be less than 20 characters",
         }),
-      )
-      .min(1, { message: "Tag is required" })
-      .transform((value) => {
-        let temp: any = [];
-        value.forEach((item) => {
-          temp.push({ tagId: item.value });
-        });
-        return temp;
-      }),
-    productImagesList: z.any().optional(),
-    productPrice: z.coerce.number().optional(),
-    offerPrice: z.coerce.number().optional(),
-    placeOfOriginId: z
-      .number()
-      .min(1, { message: "Place of Origin is required" }),
-    productShortDescriptionList: z.array(
-      z.object({
-        shortDescription: z
-          .string()
-          .trim()
-          .min(2, {
-            message: "Short Description is required",
-          })
-          .max(20, {
-            message: "Short Description must be less than 20 characters",
-          }),
-      }),
-    ),
-    productSpecificationList: z.array(
-      z.object({
-        label: z
-          .string()
-          .trim()
-          .min(2, { message: "Label is required" })
-          .max(20, {
-            message: "Label must be less than 20 characters",
-          }),
-        specification: z
-          .string()
-          .trim()
-          .min(2, { message: "Specification is required" })
-          .max(20, {
-            message: "Specification must be less than 20 characters",
-          }),
-      }),
-    ),
-    description: z.string().trim(),
-    specification: z.string().trim(),
-    productPriceList: z.array(baseProductPriceItemSchema).optional(),
-    setUpPrice: z.boolean().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.setUpPrice) {
-      const result = z
-        .array(productPriceItemSchemaWhenSetUpPriceTrue)
-        .safeParse(data.productPriceList);
+    }),
+  ),
+  productSpecificationList: z.array(
+    z.object({
+      label: z
+        .string()
+        .trim()
+        .min(2, { message: "Label is required" })
+        .max(20, {
+          message: "Label must be less than 20 characters",
+        }),
+      specification: z
+        .string()
+        .trim()
+        .min(2, { message: "Specification is required" })
+        .max(20, {
+          message: "Specification must be less than 20 characters",
+        }),
+    }),
+  ),
+  description: z.string().trim(),
+  // specification: z.string().trim().optional(),
+  productPriceList: z.array(baseProductPriceItemSchema).optional(),
+  setUpPrice: z.boolean().optional(),
+});
+// .superRefine((data, ctx) => {
+//   if (data.setUpPrice) {
+//     const result = z
+//       .array(productPriceItemSchemaWhenSetUpPriceTrue)
+//       .safeParse(data.productPriceList);
 
-      if (!result.success) {
-        result.error.issues.forEach((issue) => ctx.addIssue(issue));
-      }
+//     if (!result.success) {
+//       result.error.issues.forEach((issue) => ctx.addIssue(issue));
+//     }
 
-      if (data.productPrice === 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Product Price is required",
-          path: ["productPrice"],
-        });
-      }
-    } else {
-      data.productPrice = 0;
-      data.offerPrice = 0;
-      if (Array.isArray(data.productPriceList)) {
-        data.productPriceList = data.productPriceList.map((item) => ({
-          consumerType: "",
-          sellType: "",
-          consumerDiscount: 0,
-          vendorDiscount: 0,
-          minCustomer: 0,
-          maxCustomer: 0,
-          minQuantityPerCustomer: 0,
-          maxQuantityPerCustomer: 0,
-          minQuantity: 0,
-          maxQuantity: 0,
-          timeOpen: 0,
-          timeClose: 0,
-          deliveryAfter: 0,
-        }));
-      }
-    }
-  });
+//     if (data.productPrice === 0) {
+//       ctx.addIssue({
+//         code: "custom",
+//         message: "Product Price is required",
+//         path: ["productPrice"],
+//       });
+//     }
+//   } else {
+//     data.productPrice = 0;
+//     data.offerPrice = 0;
+//     if (Array.isArray(data.productPriceList)) {
+//       data.productPriceList = data.productPriceList.map((item) => ({
+//         consumerType: "",
+//         sellType: "",
+//         consumerDiscount: 0,
+//         vendorDiscount: 0,
+//         minCustomer: 0,
+//         maxCustomer: 0,
+//         minQuantityPerCustomer: 0,
+//         maxQuantityPerCustomer: 0,
+//         minQuantity: 0,
+//         maxQuantity: 0,
+//         timeOpen: 0,
+//         timeClose: 0,
+//         deliveryAfter: 0,
+//       }));
+//     }
+//   }
+// });
 
 const defaultValues = {
   productName: "",
-  categoryId: 0,
-  categoryLocation: "",
-  brandId: 0,
-  skuNo: "",
-  productCondition: "",
-  productTagList: undefined,
+  // categoryId: 0,
+  // categoryLocation: "",
+  // brandId: 0,
+  // skuNo: "",
+  // productCondition: "",
+  // productTagList: undefined,
   productImagesList: undefined,
-  productPrice: 0,
-  offerPrice: 0,
-  placeOfOriginId: 0,
-  productLocationId: 0,
+  // productPrice: 0,
+  // offerPrice: 0,
+  // placeOfOriginId: 0,
+  // productLocationId: 0,
   productShortDescriptionList: [
     {
       shortDescription: "",
@@ -310,26 +311,35 @@ const defaultValues = {
     },
   ],
   description: "",
-  specification: "",
+  // specification: "",
   productImages: [],
-  productPriceList: [
+  // productPriceList: [
+  //   {
+  //     consumerType: "",
+  //     sellType: "",
+  //     consumerDiscount: 0,
+  //     vendorDiscount: 0,
+  //     minCustomer: 0,
+  //     maxCustomer: 0,
+  //     minQuantityPerCustomer: 0,
+  //     maxQuantityPerCustomer: 0,
+  //     minQuantity: 0,
+  //     maxQuantity: 0,
+  //     timeOpen: 0,
+  //     timeClose: 0,
+  //     deliveryAfter: 0,
+  //   },
+  // ],
+  // setUpPrice: false,
+  productSellerImageList: [
     {
-      consumerType: "",
-      sellType: "",
-      consumerDiscount: 0,
-      vendorDiscount: 0,
-      minCustomer: 0,
-      maxCustomer: 0,
-      minQuantityPerCustomer: 0,
-      maxQuantityPerCustomer: 0,
-      minQuantity: 0,
-      maxQuantity: 0,
-      timeOpen: 0,
-      timeClose: 0,
-      deliveryAfter: 0,
+      productPriceId: "",
+      imageName: "",
+      image: "",
+      videoName: "",
+      video: "",
     },
   ],
-  setUpPrice: false,
 };
 
 const EditProductPage = () => {
@@ -342,15 +352,25 @@ const EditProductPage = () => {
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+  const productPriceId = searchQuery?.get("productPriceId");
 
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
-  const updateProduct = useUpdateProduct();
-  const productQueryById = useProductById(
+  // const updateProduct = useUpdateProduct();
+  // const productQueryById = useProductById(
+  //   {
+  //     productId: searchParams?.id ? (searchParams?.id as string) : "",
+  //   },
+  //   !!searchParams?.id,
+  // );
+  const updateProductPriceByProductCondition =
+    useUpdateProductPriceByProductCondition();
+  const productByConditionQuery = useOneProductByProductCondition(
     {
-      productId: searchParams?.id ? (searchParams?.id as string) : "",
+      productId: searchParams?.id ? Number(searchParams?.id) : 0,
+      productPriceId: productPriceId ? Number(productPriceId) : 0,
     },
-    !!searchParams?.id,
+    !!searchParams?.id && !!productPriceId,
   );
   const watchProductImages = form.watch("productImages");
 
@@ -379,10 +399,242 @@ const EditProductPage = () => {
 
   console.log(form.formState.errors);
 
+  // const onSubmit = async (formData: any) => {
+  //   const updatedFormData = {
+  //     ...formData,
+  //     productType: "P",
+  //   };
+  //   if (watchProductImages.length) {
+  //     const fileTypeArrays = watchProductImages.filter(
+  //       (item: any) => typeof item.path === "object",
+  //     );
+
+  //     const imageUrlArray: any = fileTypeArrays?.length
+  //       ? await handleUploadedFile(fileTypeArrays)
+  //       : [];
+
+  //     const stringTypeArrays = watchProductImages
+  //       .filter((item: any) => typeof item.path !== "object")
+  //       .map((item: any) => {
+  //         const extension = item.path.split(".").pop()?.toLowerCase();
+
+  //         if (extension) {
+  //           if (videoExtensions.includes(extension)) {
+  //             const videoName: string = item?.path.split("/").pop()!;
+  //             return {
+  //               video: item?.path,
+  //               videoName,
+  //             };
+  //           } else if (imageExtensions.includes(extension)) {
+  //             const imageName: string = item?.path.split("/").pop()!;
+  //             return {
+  //               image: item?.path,
+  //               imageName,
+  //             };
+  //           }
+  //         }
+  //       });
+
+  //     const formattedimageUrlArrays = imageUrlArray?.map((item: any) => {
+  //       const extension = item.split(".").pop()?.toLowerCase();
+
+  //       if (extension) {
+  //         if (videoExtensions.includes(extension)) {
+  //           const videoName: string = item.split("/").pop()!;
+  //           return {
+  //             video: item,
+  //             videoName,
+  //           };
+  //         } else if (imageExtensions.includes(extension)) {
+  //           const imageName: string = item.split("/").pop()!;
+  //           return {
+  //             image: item,
+  //             imageName,
+  //           };
+  //         }
+  //       }
+
+  //       return {
+  //         image: item,
+  //         imageName: item,
+  //       };
+  //     });
+  //     updatedFormData.productImages = [
+  //       ...stringTypeArrays,
+  //       ...formattedimageUrlArrays,
+  //     ];
+
+  //     if (updatedFormData.productImages.length) {
+  //       updatedFormData.productImagesList = updatedFormData.productImages;
+  //     }
+  //   }
+
+  //   delete updatedFormData.productImages;
+  //   updatedFormData.productId = Number(searchParams?.id);
+  //   updatedFormData.productPriceList = [
+  //     {
+  //       ...updatedFormData.productPriceList[0],
+  //       productPrice: updatedFormData.productPrice,
+  //       offerPrice: updatedFormData.productPrice,
+  //       productLocationId: updatedFormData.productLocationId,
+  //       productCondition: updatedFormData.productCondition,
+  //     },
+  //   ];
+  //   delete updatedFormData.productLocationId;
+  //   delete updatedFormData.setUpPrice;
+  //   delete updatedFormData.productCondition;
+
+  //   console.log("edit:", updatedFormData);
+  //   // return;
+  //   const response = await updateProduct.mutateAsync(updatedFormData);
+  //   if (response.status && response.data) {
+  //     toast({
+  //       title: "Product Update Successful",
+  //       description: response.message,
+  //       variant: "success",
+  //     });
+  //     form.reset();
+
+  //     queryClient.invalidateQueries({
+  //       queryKey: ["product-by-id", searchParams?.id],
+  //     });
+  //     productQueryById.refetch();
+
+  //     router.push("/manage-products");
+  //   } else {
+  //     toast({
+  //       title: "Product Update Failed",
+  //       description: response.message,
+  //       variant: "danger",
+  //     });
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (productQueryById?.data?.data) {
+  //     const product = productQueryById?.data?.data;
+
+  //     const productTagList = product?.productTags
+  //       ? product?.productTags?.map((item: any) => {
+  //           return {
+  //             label: item?.productTagsTag?.tagName,
+  //             value: item?.productTagsTag?.id,
+  //           };
+  //         })
+  //       : [];
+
+  //     const productImages = product?.productImages?.length
+  //       ? product?.productImages?.map((item: any) => {
+  //           if (item?.image) {
+  //             return {
+  //               path: item?.image,
+  //               id: uuidv4(),
+  //             };
+  //           } else if (item?.video) {
+  //             return {
+  //               path: item?.video,
+  //               id: uuidv4(),
+  //             };
+  //           }
+  //         })
+  //       : [];
+
+  //     const productImagesList = product?.productImages
+  //       ? product?.productImages?.map((item: any) => {
+  //           if (item?.video) {
+  //             return {
+  //               video: item?.video,
+  //               videoName: item?.videoName,
+  //             };
+  //           } else if (item?.image) {
+  //             return {
+  //               image: item?.image,
+  //               imageName: item?.imageName,
+  //             };
+  //           }
+  //         })
+  //       : undefined;
+
+  //     const productShortDescriptionList = product
+  //       ?.product_productShortDescription?.length
+  //       ? product?.product_productShortDescription.map((item: any) => ({
+  //           shortDescription: item?.shortDescription,
+  //         }))
+  //       : [
+  //           {
+  //             shortDescription: "",
+  //           },
+  //         ];
+
+  //     const productSpecificationList = product?.product_productSpecification
+  //       ?.length
+  //       ? product?.product_productSpecification.map((item: any) => ({
+  //           label: item?.label,
+  //           specification: item?.specification,
+  //         }))
+  //       : [
+  //           {
+  //             label: "",
+  //             specification: "",
+  //           },
+  //         ];
+
+  //     form.reset({
+  //       productName: product?.productName,
+  //       categoryId: product?.categoryId ? product?.categoryId : 0,
+  //       categoryLocation: product?.categoryLocation
+  //         ? product?.categoryLocation
+  //         : "",
+  //       brandId: product?.brandId ? product?.brandId : 0,
+  //       productCondition:
+  //         product?.product_productPrice?.[0]?.productCondition || "",
+  //       productLocationId: product?.product_productPrice?.[0]?.productLocationId
+  //         ? product?.product_productPrice?.[0]?.productLocationId
+  //         : 0,
+  //       skuNo: product?.skuNo,
+  //       productTagList: productTagList || undefined,
+  //       productImages: productImages || [],
+  //       productImagesList: productImagesList || undefined,
+  //       productPriceList: [
+  //         {
+  //           consumerType:
+  //             product?.product_productPrice?.[0]?.consumerType || "",
+  //           sellType: product?.product_productPrice?.[0]?.sellType || "",
+  //           consumerDiscount:
+  //             product?.product_productPrice?.[0]?.consumerDiscount || 0,
+  //           vendorDiscount:
+  //             product?.product_productPrice?.[0]?.vendorDiscount || 0,
+  //           minQuantity: product?.product_productPrice?.[0]?.minQuantity || 0,
+  //           maxQuantity: product?.product_productPrice?.[0]?.maxQuantity || 0,
+  //           minCustomer: product?.product_productPrice?.[0]?.minCustomer || 0,
+  //           maxCustomer: product?.product_productPrice?.[0]?.maxCustomer || 0,
+  //           minQuantityPerCustomer:
+  //             product?.product_productPrice?.[0]?.minQuantityPerCustomer || 0,
+  //           maxQuantityPerCustomer:
+  //             product?.product_productPrice?.[0]?.maxQuantityPerCustomer || 0,
+  //           timeOpen: product?.product_productPrice?.[0]?.timeOpen || 0,
+  //           timeClose: product?.product_productPrice?.[0]?.timeClose || 0,
+  //           deliveryAfter:
+  //             product?.product_productPrice?.[0]?.deliveryAfter || 0,
+  //         },
+  //       ],
+  //       productPrice: product?.productPrice ? Number(product.productPrice) : 0,
+  //       offerPrice: product?.productPrice ? Number(product.productPrice) : 0,
+  //       placeOfOriginId: product?.placeOfOriginId
+  //         ? product?.placeOfOriginId
+  //         : 0,
+  //       productShortDescriptionList: productShortDescriptionList,
+  //       productSpecificationList: productSpecificationList,
+  //       description: product?.description,
+  //       specification: product?.specification,
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [productQueryById?.data?.data, searchParams?.id]);
+
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
       ...formData,
-      productType: "P",
     };
     if (watchProductImages.length) {
       const fileTypeArrays = watchProductImages.filter(
@@ -449,24 +701,32 @@ const EditProductPage = () => {
       }
     }
 
+    delete updatedFormData.productName;
     delete updatedFormData.productImages;
-    updatedFormData.productId = Number(searchParams?.id);
-    updatedFormData.productPriceList = [
-      {
-        ...updatedFormData.productPriceList[0],
-        productPrice: updatedFormData.productPrice,
-        offerPrice: updatedFormData.productPrice,
-        productLocationId: updatedFormData.productLocationId,
-        productCondition: updatedFormData.productCondition,
-      },
-    ];
-    delete updatedFormData.productLocationId;
-    delete updatedFormData.setUpPrice;
-    delete updatedFormData.productCondition;
 
-    console.log("edit:", updatedFormData);
+    let productSellerImageList: any = [];
+    if (updatedFormData.productImagesList.length) {
+      productSellerImageList = updatedFormData.productImagesList.map(
+        (item: any) => ({
+          ...item,
+          productPriceId: Number(productPriceId),
+        }),
+      );
+    }
+
+    delete updatedFormData.productImagesList;
+
+    console.log("edit:", {
+      ...updatedFormData,
+      productSellerImageList,
+      productId: Number(searchParams?.id),
+    });
     // return;
-    const response = await updateProduct.mutateAsync(updatedFormData);
+    const response = await updateProductPriceByProductCondition.mutateAsync({
+      ...updatedFormData,
+      productSellerImageList,
+      productId: Number(searchParams?.id),
+    });
     if (response.status && response.data) {
       toast({
         title: "Product Update Successful",
@@ -476,9 +736,13 @@ const EditProductPage = () => {
       form.reset();
 
       queryClient.invalidateQueries({
-        queryKey: ["product-by-id", searchParams?.id],
+        queryKey: [
+          "product-condition-by-id",
+          Number(searchParams?.id),
+          Number(productPriceId),
+        ],
       });
-      productQueryById.refetch();
+      productByConditionQuery.refetch();
 
       router.push("/manage-products");
     } else {
@@ -491,49 +755,43 @@ const EditProductPage = () => {
   };
 
   useEffect(() => {
-    if (productQueryById?.data?.data) {
-      const product = productQueryById?.data?.data;
+    if (productByConditionQuery?.data?.data) {
+      const product = productByConditionQuery?.data?.data;
 
-      const productTagList = product?.productTags
-        ? product?.productTags?.map((item: any) => {
-            return {
-              label: item?.productTagsTag?.tagName,
-              value: item?.productTagsTag?.id,
-            };
-          })
-        : [];
+      const productSellerImages = product?.product_productPrice?.[0]
+        ?.productPrice_productSellerImage?.length
+        ? product?.product_productPrice?.[0]?.productPrice_productSellerImage
+        : product?.productImages?.length
+          ? product?.productImages
+          : [];
 
-      const productImages = product?.productImages?.length
-        ? product?.productImages?.map((item: any) => {
-            if (item?.image) {
-              return {
-                path: item?.image,
-                id: uuidv4(),
-              };
-            } else if (item?.video) {
-              return {
-                path: item?.video,
-                id: uuidv4(),
-              };
-            }
-          })
-        : [];
+      const productImages = productSellerImages?.map((item: any) => {
+        if (item?.image) {
+          return {
+            path: item?.image,
+            id: uuidv4(),
+          };
+        } else if (item?.video) {
+          return {
+            path: item?.video,
+            id: uuidv4(),
+          };
+        }
+      });
 
-      const productImagesList = product?.productImages
-        ? product?.productImages?.map((item: any) => {
-            if (item?.video) {
-              return {
-                video: item?.video,
-                videoName: item?.videoName,
-              };
-            } else if (item?.image) {
-              return {
-                image: item?.image,
-                imageName: item?.imageName,
-              };
-            }
-          })
-        : undefined;
+      const productImagesList = productImages?.map((item: any) => {
+        if (item?.video) {
+          return {
+            video: item?.video,
+            videoName: item?.videoName,
+          };
+        } else if (item?.image) {
+          return {
+            image: item?.image,
+            imageName: item?.imageName,
+          };
+        }
+      });
 
       const productShortDescriptionList = product
         ?.product_productShortDescription?.length
@@ -561,56 +819,15 @@ const EditProductPage = () => {
 
       form.reset({
         productName: product?.productName,
-        categoryId: product?.categoryId ? product?.categoryId : 0,
-        categoryLocation: product?.categoryLocation
-          ? product?.categoryLocation
-          : "",
-        brandId: product?.brandId ? product?.brandId : 0,
-        productCondition:
-          product?.product_productPrice?.[0]?.productCondition || "",
-        productLocationId: product?.product_productPrice?.[0]?.productLocationId
-          ? product?.product_productPrice?.[0]?.productLocationId
-          : 0,
-        skuNo: product?.skuNo,
-        productTagList: productTagList || undefined,
         productImages: productImages || [],
         productImagesList: productImagesList || undefined,
-        productPriceList: [
-          {
-            consumerType:
-              product?.product_productPrice?.[0]?.consumerType || "",
-            sellType: product?.product_productPrice?.[0]?.sellType || "",
-            consumerDiscount:
-              product?.product_productPrice?.[0]?.consumerDiscount || 0,
-            vendorDiscount:
-              product?.product_productPrice?.[0]?.vendorDiscount || 0,
-            minQuantity: product?.product_productPrice?.[0]?.minQuantity || 0,
-            maxQuantity: product?.product_productPrice?.[0]?.maxQuantity || 0,
-            minCustomer: product?.product_productPrice?.[0]?.minCustomer || 0,
-            maxCustomer: product?.product_productPrice?.[0]?.maxCustomer || 0,
-            minQuantityPerCustomer:
-              product?.product_productPrice?.[0]?.minQuantityPerCustomer || 0,
-            maxQuantityPerCustomer:
-              product?.product_productPrice?.[0]?.maxQuantityPerCustomer || 0,
-            timeOpen: product?.product_productPrice?.[0]?.timeOpen || 0,
-            timeClose: product?.product_productPrice?.[0]?.timeClose || 0,
-            deliveryAfter:
-              product?.product_productPrice?.[0]?.deliveryAfter || 0,
-          },
-        ],
-        productPrice: product?.productPrice ? Number(product.productPrice) : 0,
-        offerPrice: product?.productPrice ? Number(product.productPrice) : 0,
-        placeOfOriginId: product?.placeOfOriginId
-          ? product?.placeOfOriginId
-          : 0,
         productShortDescriptionList: productShortDescriptionList,
         productSpecificationList: productSpecificationList,
         description: product?.description,
-        specification: product?.specification,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productQueryById?.data?.data, searchParams?.id]);
+  }, [productByConditionQuery.data?.data, searchParams?.id]);
 
   return (
     <>
@@ -630,7 +847,8 @@ const EditProductPage = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                 <BasicInformationSection
                   tagsList={memoizedTags}
-                  isEditable={!!form.getValues("categoryLocation")}
+                  // isEditable={!!form.getValues("categoryLocation")}
+                  isEditable={false}
                   hasId={!!searchParams?.id}
                 />
 
@@ -648,12 +866,14 @@ const EditProductPage = () => {
 
                       <Button
                         disabled={
-                          updateProduct.isPending || uploadMultiple.isPending
+                          updateProductPriceByProductCondition.isPending ||
+                          uploadMultiple.isPending
                         }
                         type="submit"
                         className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                       >
-                        {updateProduct.isPending || uploadMultiple.isPending ? (
+                        {updateProductPriceByProductCondition.isPending ||
+                        uploadMultiple.isPending ? (
                           <>
                             <Image
                               src={LoaderIcon}
