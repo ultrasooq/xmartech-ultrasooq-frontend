@@ -185,14 +185,9 @@ const formSchema = z
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
     brandId: z.number().min(1, { message: "Brand is required" }),
-    productLocationId: z
-      .number()
-      .min(1, { message: "Product Location is required" }),
+    productLocationId: z.number().optional(),
     skuNo: z.string().trim().optional(),
-    productCondition: z
-      .string()
-      .trim()
-      .min(1, { message: "Product Condition is required" }),
+    productCondition: z.string().trim().optional(),
     productTagList: z
       .array(
         z.object({

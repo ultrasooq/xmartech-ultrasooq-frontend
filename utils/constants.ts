@@ -118,6 +118,8 @@ export const WEEKDAYS_LIST = [
 
 export const EMAIL_REGEX_LOWERCASE = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
 
+export const ALPHABETS_REGEX = /^[a-zA-Z\s]*$/;
+
 export const HOURS_24_FORMAT = [
   "00:00",
   "00:30",
@@ -395,5 +397,5 @@ export const MONTHS: string[] = [
 export const CHAT_REQUEST_MESSAGE = {
   priceRequest: {
     value: "Requested for Offer Price ",
-  }
+  },
 };
