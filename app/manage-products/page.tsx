@@ -398,6 +398,7 @@ const ManageProductsPage = () => {
                           maxCustomer: number | null;
                           minQuantityPerCustomer: number | null;
                           maxQuantityPerCustomer: number | null;
+                          productCondition: string;
                         }) => (
                           <ManageProductCard
                             selectedIds={selectedProductIds}
@@ -439,6 +440,7 @@ const ManageProductsPage = () => {
                             maxQuantityPerCustomer={
                               product?.maxQuantityPerCustomer
                             }
+                            productCondition={product?.productCondition}
                           />
                         ),
                       )}
