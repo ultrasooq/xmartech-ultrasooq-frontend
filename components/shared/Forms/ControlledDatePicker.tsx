@@ -65,7 +65,7 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
                 disabled={(date) => {
                   const today = new Date();
                   today.setHours(0, 0, 0, 0);
-                  console.log(date, "=", new Date());
+
                   if (isFuture) {
                     return date < today; // Disable dates before today
                   } else {
