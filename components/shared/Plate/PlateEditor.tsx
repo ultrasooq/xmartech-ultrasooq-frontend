@@ -387,13 +387,18 @@ const plugins = createPlugins(
 // ];
 
 type PlateEditorProps = {
-  onChange: (
+  onChange?: (
     value: { id: string; type: string; children: { text: string }[] }[] | Value,
   ) => void;
   description: string;
+  readOnly?: boolean;
 };
 
-const PlateEditor: React.FC<PlateEditorProps> = ({ onChange, description }) => {
+const PlateEditor: React.FC<PlateEditorProps> = ({
+  onChange,
+  description,
+  readOnly,
+}) => {
   const [value, setValue] = useState();
   // const editor = createPlateEditor({
   //   plugins,
@@ -428,9 +433,10 @@ const PlateEditor: React.FC<PlateEditorProps> = ({ onChange, description }) => {
     <CommentsProvider users={{}} myUserId="1"> */}
       <Plate
         plugins={plugins}
-        onChange={(e) => onChange(e)}
+        onChange={(e) => onChange?.(e)}
         value={value}
         // initialValue={value}
+        readOnly={readOnly}
       >
         <FixedToolbar>
           <FixedToolbarButtons />

@@ -64,9 +64,10 @@ export function FixedToolbarButtons() {
 
         <div className="grow" />
 
-        <ToolbarGroup noSeparator>
+        {/* TODO: hidden so that readonly content wont be editable */}
+        {/* <ToolbarGroup noSeparator>
           <ModeDropdownMenu />
-        </ToolbarGroup>
+        </ToolbarGroup> */}
       </div>
     </div>
   );
