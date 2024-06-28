@@ -32,6 +32,7 @@ import LogoIcon from "@/public/images/logo.png";
 import { useWishlistCount } from "@/apis/queries/wishlist.queries";
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/components/ui/use-toast";
 
 type ButtonLinkProps = {
   href: string;
@@ -66,6 +67,7 @@ const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuId, setMenuId] = useState();
@@ -158,6 +160,11 @@ const Header = () => {
     const data = await signOut({
       redirect: false,
       callbackUrl: "/home",
+    });
+    toast({
+      title: "Logout Successful",
+      description: "You have successfully logged out.",
+      variant: "success",
     });
 
     router.push(data?.url || "/home");

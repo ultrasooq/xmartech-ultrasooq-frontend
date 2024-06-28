@@ -42,6 +42,7 @@ import LoaderIcon from "@/public/images/load.png";
 // import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn } from "next-auth/react";
 import { getLoginType } from "@/utils/helper";
+import Link from "next/link";
 
 const formSchema = z
   .object({
@@ -421,12 +422,12 @@ export default function RegisterPage() {
               <div className="mb-4 w-full text-center">
                 <span className="text-sm font-medium leading-4 text-light-gray">
                   Do you already have an account?{" "}
-                  <a
-                    onClick={() => router.push("/login")}
+                  <Link
+                    href="/login"
                     className="cursor-pointer font-medium text-dark-orange"
                   >
                     Sign in
-                  </a>
+                  </Link>
                 </span>
               </div>
             </div>
