@@ -13,7 +13,8 @@ import { useMe } from "@/apis/queries/user.queries";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 
 const formSchema = z.object({
-  aboutUs: z.array(z.any()).optional(),
+  aboutUs: z.string().trim().optional(),
+  aboutUsJson: z.array(z.any()).optional(),
 });
 
 export default function EditProfilePage() {
@@ -22,7 +23,8 @@ export default function EditProfilePage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      aboutUs: [],
+      aboutUs: "",
+      aboutUsJson: undefined,
     },
   });
 
@@ -31,11 +33,15 @@ export default function EditProfilePage() {
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const data = {
-      aboutUs: formData.aboutUs ? JSON.stringify(formData.aboutUs) : undefined,
+      aboutUs: formData.aboutUsJson
+        ? JSON.stringify(formData.aboutUsJson)
+        : undefined,
       profileType: "FREELANCER",
       userProfileId: me.data?.data?.userProfile?.[0]?.id as number,
     };
 
+    console.log(data);
+    // return;
     const response = await updateFreelancerProfile.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -58,7 +64,10 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (me.data?.data) {
       form.reset({
-        aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || [],
+        aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
+        aboutUsJson: me.data?.data?.userProfile?.[0]?.aboutUs
+          ? JSON.parse(me.data?.data?.userProfile?.[0]?.aboutUs)
+          : undefined,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,7 +105,7 @@ export default function EditProfilePage() {
                   </div>
                 </div>
 
-                <ControlledRichTextEditor label="About Us" name="aboutUs" />
+                <ControlledRichTextEditor label="About Us" name="aboutUsJson" />
               </div>
 
               <Button
