@@ -241,8 +241,8 @@ const formSchema = z.object({
         }),
     }),
   ),
-  description: z.array(z.any()).optional(),
-  // specification: z.string().trim().optional(),
+  description: z.string().trim().optional(),
+  descriptionJson: z.array(z.any()).optional(),
   productPriceList: z.array(baseProductPriceItemSchema).optional(),
   setUpPrice: z.boolean().optional(),
 });
@@ -310,8 +310,8 @@ const defaultValues = {
       specification: "",
     },
   ],
-  description: [],
-  // specification: "",
+  description: "",
+  descriptionJson: undefined,
   productImages: [],
   // productPriceList: [
   //   {
@@ -720,19 +720,26 @@ const EditProductPage = () => {
       ...updatedFormData,
       productSellerImageList,
       productId: Number(searchParams?.id),
-      description: updatedFormData?.description
-        ? JSON.stringify(updatedFormData?.description)
+      description: updatedFormData?.descriptionJson
+        ? JSON.stringify(updatedFormData?.descriptionJson)
         : "",
     });
-    // return;
-    const response = await updateProductPriceByProductCondition.mutateAsync({
+
+    const finalData = {
       ...updatedFormData,
       productSellerImageList,
       productId: Number(searchParams?.id),
-      description: updatedFormData?.description
-        ? JSON.stringify(updatedFormData?.description)
+      description: updatedFormData?.descriptionJson
+        ? JSON.stringify(updatedFormData?.descriptionJson)
         : "",
-    });
+    };
+
+    delete finalData.descriptionJson;
+
+    console.log(finalData);
+    // return;
+    const response =
+      await updateProductPriceByProductCondition.mutateAsync(finalData);
     if (response.status && response.data) {
       toast({
         title: "Product Update Successful",
@@ -829,7 +836,10 @@ const EditProductPage = () => {
         productImagesList: productImagesList || undefined,
         productShortDescriptionList: productShortDescriptionList,
         productSpecificationList: productSpecificationList,
-        description: product?.description,
+        description: product?.description || "",
+        descriptionJson: product?.description
+          ? JSON.parse(product?.description)
+          : undefined,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

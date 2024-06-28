@@ -234,8 +234,8 @@ const formSchemaForTypeP = z
           }),
       }),
     ),
-    description: z.array(z.any()).optional(),
-    specification: z.string().trim(),
+    description: z.string().trim().optional(),
+    descriptionJson: z.array(z.any()).optional(),
     productPriceList: z.array(baseProductPriceItemSchema).optional(),
     setUpPrice: z.boolean(),
     isStockRequired: z.boolean().optional(),
@@ -350,8 +350,8 @@ const formSchemaForTypeR = z
           }),
       }),
     ),
-    description: z.array(z.any()).optional(),
-    specification: z.string().trim(),
+    description: z.string().trim().optional(),
+    descriptionJson: z.array(z.any()).optional(),
     setUpPrice: z.boolean(),
     isStockRequired: z.boolean().optional(),
     isOfferPriceRequired: z.boolean().optional(),
@@ -392,8 +392,8 @@ const defaultValues = {
       specification: "",
     },
   ],
-  description: [],
-  specification: "",
+  description: "",
+  descriptionJson: undefined,
   productImages: [],
   productPriceList: [
     {
@@ -605,10 +605,12 @@ const CreateProductPage = () => {
       return;
     }
 
-    (updatedFormData.description = updatedFormData?.description
-      ? JSON.stringify(updatedFormData?.description)
+    (updatedFormData.description = updatedFormData?.descriptionJson
+      ? JSON.stringify(updatedFormData?.descriptionJson)
       : ""),
-      console.log("add:", updatedFormData);
+      delete updatedFormData.descriptionJson;
+
+    console.log("add:", updatedFormData);
     // return;
     const response = await createProduct.mutateAsync(updatedFormData);
 
