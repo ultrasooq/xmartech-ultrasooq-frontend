@@ -1,6 +1,8 @@
 import React from "react";
-import QuillEditor from "../Quill/QuillEditor";
+// import Tiptap from "../Rte/Tiptap";
+// import QuillEditor from "../Quill/QuillEditor";
 import { Controller, useFormContext } from "react-hook-form";
+import PlateEditor from "../Plate/PlateEditor";
 
 interface ControlledRichTextEditorProps {
   label: string;
@@ -24,7 +26,8 @@ const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({
         defaultValue=""
         render={({ field }) => (
           // <Tiptap onChange={field.onChange} description={field.value} />
-          <QuillEditor onChange={field.onChange} description={field.value} />
+          // <QuillEditor onChange={field.onChange} description={field.value} />
+          <PlateEditor onChange={field.onChange} description={field.value} />
         )}
       />
     </div>

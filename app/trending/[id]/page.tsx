@@ -37,6 +37,7 @@ import Footer from "@/components/shared/Footer";
 // import EmailIcon from "@/public/images/email.svg";
 // import PhoneCallIcon from "@/public/images/phone-call.svg";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
+import PlateEditor from "@/components/shared/Plate/PlateEditor";
 
 const ProductDetailsPage = () => {
   const queryClient = useQueryClient();
@@ -369,14 +370,9 @@ const ProductDetailsPage = () => {
 
                   <TabsContent value="description" className="mt-0">
                     <div className="w-full bg-white">
-                      <ReactQuill
-                        theme="snow"
-                        value={
-                          productDetails?.description || "No Description found"
-                        }
+                      <PlateEditor
+                        description={productDetails?.description || undefined}
                         readOnly
-                        modules={{ toolbar: false }}
-                        className="readonly-quill"
                       />
                     </div>
                   </TabsContent>

@@ -1,5 +1,5 @@
 export interface IFreelancerRequest {
-  aboutUs: string;
+  aboutUs: string | undefined;
   branchList: {
     address: string;
     businessTypeList: {
@@ -91,7 +91,7 @@ export interface IBuyer {
 
 export interface IEditFreelancerProfileRequest {
   userProfileId: number;
-  aboutUs: string;
+  aboutUs: string | undefined;
   profileType: string;
 }
 

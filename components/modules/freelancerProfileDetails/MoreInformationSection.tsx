@@ -5,6 +5,7 @@ import { getAmPm, parsedDays } from "@/utils/helper";
 import dynamic from "next/dynamic";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
+import PlateEditor from "@/components/shared/Plate/PlateEditor";
 
 type MoreInformationSectionProps = {
   userDetails: any;
@@ -55,12 +56,9 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
             <label className="mb-3 text-lg font-semibold leading-5 text-color-dark">
               About Me
             </label>
-            <ReactQuill
-              theme="snow"
-              value={userDetails?.userProfile?.[0]?.aboutUs || "NA"}
+            <PlateEditor
+              description={userDetails?.userProfile?.[0]?.aboutUs || undefined}
               readOnly
-              modules={{ toolbar: false }}
-              className="readonly-quill w-full"
             />
           </div>
         </div>

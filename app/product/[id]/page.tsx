@@ -241,7 +241,7 @@ const formSchema = z.object({
         }),
     }),
   ),
-  description: z.string().trim(),
+  description: z.array(z.any()).optional(),
   // specification: z.string().trim().optional(),
   productPriceList: z.array(baseProductPriceItemSchema).optional(),
   setUpPrice: z.boolean().optional(),
@@ -310,7 +310,7 @@ const defaultValues = {
       specification: "",
     },
   ],
-  description: "",
+  description: [],
   // specification: "",
   productImages: [],
   // productPriceList: [
@@ -720,12 +720,18 @@ const EditProductPage = () => {
       ...updatedFormData,
       productSellerImageList,
       productId: Number(searchParams?.id),
+      description: updatedFormData?.description
+        ? JSON.stringify(updatedFormData?.description)
+        : "",
     });
     // return;
     const response = await updateProductPriceByProductCondition.mutateAsync({
       ...updatedFormData,
       productSellerImageList,
       productId: Number(searchParams?.id),
+      description: updatedFormData?.description
+        ? JSON.stringify(updatedFormData?.description)
+        : "",
     });
     if (response.status && response.data) {
       toast({

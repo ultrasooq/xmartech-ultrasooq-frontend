@@ -65,7 +65,7 @@ const formSchema = z.object({
     .string()
     .trim()
     .min(2, { message: "Total No Of Employee is required" }),
-  aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
+  aboutUs: z.array(z.any()).optional(),
 });
 
 export default function EditProfilePage() {
@@ -87,7 +87,7 @@ export default function EditProfilePage() {
       country: "",
       yearOfEstablishment: "",
       totalNoOfEmployee: "",
-      aboutUs: "",
+      aboutUs: [],
     },
   });
   const [imageFile, setImageFile] = useState<FileList | null>();
@@ -139,6 +139,7 @@ export default function EditProfilePage() {
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
+      aboutUs: formData.aboutUs ? JSON.stringify(formData.aboutUs) : undefined,
       profileType: "COMPANY",
       userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number,
     };
@@ -192,7 +193,7 @@ export default function EditProfilePage() {
         yearOfEstablishment: userProfile?.yearOfEstablishment?.toString() || "",
         totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
         annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
-        aboutUs: userProfile?.aboutUs || "",
+        aboutUs: userProfile?.aboutUs || [],
         companyName: userProfile?.companyName || "",
         businessTypeList:
           userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() ||
