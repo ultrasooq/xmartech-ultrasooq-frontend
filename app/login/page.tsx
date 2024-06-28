@@ -23,6 +23,7 @@ import LoaderIcon from "@/public/images/load.png";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z
@@ -50,7 +51,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
-  const { setUser } = useAuth()
+  const { setUser } = useAuth();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -75,7 +76,7 @@ export default function LoginPage() {
       // TODO: delete cart for trade role freelancer and company if logged in using device id
       // update cart
       await updateCart.mutateAsync({ deviceId });
-      setUser({id: response.data?.id})
+      setUser({ id: response.data?.id });
       toast({
         title: "Login Successful",
         description: "You have successfully logged in.",
@@ -213,12 +214,12 @@ export default function LoginPage() {
                         </label>
                       </div>
                       <div className="w-auto">
-                        <span
+                        <Link
                           className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
-                          onClick={() => router.push("/forget-password")}
+                          href="/forget-password"
                         >
                           Forgot Password?
-                        </span>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -249,12 +250,12 @@ export default function LoginPage() {
               <div className="mb-4 w-full text-center">
                 <span className="text-sm font-medium leading-4 text-light-gray">
                   Don&apos;t have an account?{" "}
-                  <a
-                    onClick={() => router.push("/register")}
+                  <Link
+                    href="/register"
                     className="cursor-pointer font-medium text-dark-orange"
                   >
                     Signup
-                  </a>
+                  </Link>
                 </span>
               </div>
             </div>

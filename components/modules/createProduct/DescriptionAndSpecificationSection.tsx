@@ -29,7 +29,10 @@ const DescriptionAndSpecificationSection = () => {
       <h3>Description & Specification</h3>
       <div className="mb-3.5 w-full">
         <div className="relative mb-4 w-full">
-          <ControlledRichTextEditor label="Description" name="description" />
+          <ControlledRichTextEditor
+            label="Description"
+            name="descriptionJson"
+          />
         </div>
         <div className="relative mb-4 w-full">
           <div className="grid w-full grid-cols-1">
@@ -55,14 +58,12 @@ const DescriptionAndSpecificationSection = () => {
                   className="relative grid w-full grid-cols-2 gap-5"
                 >
                   <ControlledTextInput
-                    key={field.id}
                     name={`productSpecificationList.${index}.label`}
                     placeholder="Enter Label"
                     label="Label"
                   />
 
                   <ControlledTextInput
-                    key={field.id}
                     name={`productSpecificationList.${index}.specification`}
                     placeholder="Enter Value"
                     label="Value"
