@@ -1,10 +1,6 @@
 import React, { useMemo } from "react";
 import Image from "next/image";
-import { DAYS_NAME_LIST } from "@/utils/constants";
 import { getAmPm, parsedDays } from "@/utils/helper";
-import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 
 type MoreInformationSectionProps = {
@@ -57,7 +53,11 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
               About Me
             </label>
             <PlateEditor
-              description={userDetails?.userProfile?.[0]?.aboutUs || undefined}
+              description={
+                userDetails?.userProfile?.[0]?.aboutUs
+                  ? JSON.parse(userDetails?.userProfile?.[0]?.aboutUs)
+                  : undefined
+              }
               readOnly
             />
           </div>

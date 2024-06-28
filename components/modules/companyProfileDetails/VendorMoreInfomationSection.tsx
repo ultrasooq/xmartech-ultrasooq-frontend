@@ -1,8 +1,4 @@
 import React from "react";
-import Image from "next/image";
-import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 
 type VendorMoreInformationSectionProps = {
@@ -60,7 +56,11 @@ const VendorMoreInformationSection: React.FC<
               </div>
               <div className="mr-1 flex w-10/12  items-center justify-start pl-7 sm:mr-0">
                 <PlateEditor
-                  description={vendor?.userProfile?.[0]?.aboutUs || undefined}
+                  description={
+                    vendor?.userProfile?.[0]?.aboutUs
+                      ? JSON.parse(vendor?.userProfile?.[0]?.aboutUs)
+                      : undefined
+                  }
                   readOnly
                 />
               </div>
