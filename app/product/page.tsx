@@ -234,7 +234,7 @@ const formSchemaForTypeP = z
           }),
       }),
     ),
-    description: z.string().trim(),
+    description: z.array(z.any()).optional(),
     specification: z.string().trim(),
     productPriceList: z.array(baseProductPriceItemSchema).optional(),
     setUpPrice: z.boolean(),
@@ -350,7 +350,7 @@ const formSchemaForTypeR = z
           }),
       }),
     ),
-    description: z.string().trim(),
+    description: z.array(z.any()).optional(),
     specification: z.string().trim(),
     setUpPrice: z.boolean(),
     isStockRequired: z.boolean().optional(),
@@ -392,7 +392,7 @@ const defaultValues = {
       specification: "",
     },
   ],
-  description: "",
+  description: [],
   specification: "",
   productImages: [],
   productPriceList: [
@@ -604,7 +604,11 @@ const CreateProductPage = () => {
       });
       return;
     }
-    console.log("add:", updatedFormData);
+
+    (updatedFormData.description = updatedFormData?.description
+      ? JSON.stringify(updatedFormData?.description)
+      : ""),
+      console.log("add:", updatedFormData);
     // return;
     const response = await createProduct.mutateAsync(updatedFormData);
 
