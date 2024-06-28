@@ -38,6 +38,7 @@ interface RfqRequestVendorDetailsProps {
 const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     const [activeSellerId, setActiveSellerId] = useState<number>();
     const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
+    const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
     const [selectedVendor, setSelectedVendor] = useState<any>(null);
     const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
@@ -67,8 +68,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
 
         if (rfqQuotesDetails) {
-            setVendorList(rfqQuotesDetails)
-            setSelectedVendor(rfqQuotesDetails[0])
+            setVendorList(rfqQuotesDetails);
+            handleRfqProducts(rfqQuotesDetails[0])
             setActiveSellerId(rfqQuotesDetails[0]?.sellerID);
         }
     }, [allRfqQuotesQuery.data?.data]);
@@ -147,6 +148,15 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                         unreadMsgCount: newItem.sellerIDDetail.unreadMsgCount + 1,
                     }
                 }
+
+                if (message?.rfqProductPriceRequest) {
+                    const rList = newItem.rfqProductPriceRequests;
+                    rList.push(message?.rfqProductPriceRequest);
+                    newItem = {
+                        ...newItem,
+                        rfqProductPriceRequests: rList
+                    }
+                }
             }
             vList.unshift(newItem);
             setVendorList(vList);
@@ -154,6 +164,9 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 const chatHistory = [...selectedChatHistory]
                 chatHistory.push(message);
                 setSelectedChatHistory(chatHistory)
+            }
+            if (message?.rfqProductPriceRequest) {
+                updateRFQProduct(message?.rfqProductPriceRequest)
             }
         }
     }
@@ -209,7 +222,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             rfqId: parseInt(rfqQuoteId),
             rfqQuoteProductId,
             buyerId,
-            requestedPrice
+            requestedPrice,
+            rfqQuotesUserId: activeSellerId
         }
         sendMessage(msgPayload)
     }
@@ -222,7 +236,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 rfqId: parseInt(rfqQuoteId),
                 rfqQuoteProductId,
                 buyerId,
-                requestedPrice
+                requestedPrice,
+                rfqQuotesUserId: activeSellerId
             }
             cratePrivateRoom(payload);
         } catch (error) {
@@ -268,8 +283,10 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     const handleRfqRequest = (rRequest: {
         id: number;
         messageId: number;
+        requestedPrice: number;
         rfqQuoteProductId: number;
         status: string;
+        requestedById: number;
     }) => {
         const chatHistory = [...selectedChatHistory]
         const index = chatHistory.findIndex((chat) => chat.id === rRequest.messageId);
@@ -285,18 +302,94 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             chatHistory[index] = updatedMessage
             setSelectedChatHistory(chatHistory)
         }
+
+        // UPDATE RFQ PRODUCT 
+        updateRFQProduct(rRequest);
+    }
+
+
+    const updateRFQProduct = (rRequest: {
+        id: number;
+        messageId: number;
+        requestedPrice: number;
+        rfqQuoteProductId: number;
+        requestedById: number;
+        status: string;
+    }) => {
+        // UPDATE RFQ PRODUCT 
+        if (activeSellerId === rRequest?.requestedById) {
+            let vDor = { ...selectedVendor }
+            if (vDor?.rfqQuotesProducts) {
+                const index = vDor?.rfqQuotesProducts.findIndex((product: any) => product.id === rRequest.rfqQuoteProductId);
+                if (index !== -1) {
+                    const pList = [...vDor?.rfqQuotesProducts];
+                    pList[index].offerPrice = rRequest?.requestedPrice;
+                    let priceRequest = pList[index]?.priceRequest || null;
+                    if (priceRequest) {
+                        priceRequest = {
+                            ...priceRequest,
+                            id: rRequest.id,
+                            requestedPrice: rRequest.requestedPrice,
+                            rfqQuoteProductId: rRequest.rfqQuoteProductId,
+                            status: rRequest?.status
+                        }
+                    } else if (priceRequest === null) {
+                        priceRequest = {
+                            ...rRequest
+                        }
+                    }
+                    pList[index]["priceRequest"] = priceRequest;
+
+                    vDor = {
+                        ...vDor,
+                        rfqQuotesProducts: pList
+                    }
+                    setSelectedVendor(vDor)
+                }
+            }
+        }
+    }
+
+    const handleRfqProducts = (item: any) => {
+        const newData = item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
+            (i: any) => {
+                let priceRequest = null
+                let offerPrice = item.offerPrice;
+                const pRequest = item?.rfqProductPriceRequests?.find((request: any) => request?.rfqQuoteProductId === i.id);
+                if (pRequest) priceRequest = pRequest;
+                if (priceRequest?.status === "APPROVED") {
+                    offerPrice = priceRequest?.requestedPrice
+                }
+                return {
+                    ...i,
+                    priceRequest,
+                    offerPrice,
+                    address:
+                        item?.rfqQuotesUser_rfqQuotes
+                            ?.rfqQuotes_rfqQuoteAddress?.address,
+                    deliveryDate:
+                        item?.rfqQuotesUser_rfqQuotes
+                            ?.rfqQuotes_rfqQuoteAddress?.rfqDate,
+                }
+            },
+        ) || []
+        const vendorDetails = {
+            ...item,
+            rfqQuotesProducts: newData
+        }
+        setSelectedVendor(vendorDetails)
     }
 
     return (
         <div>
             <div className="flex w-full rounded-sm border border-solid border-gray-300">
-                <div className="w-[20%] border-r border-solid border-gray-300">
+                <div className="w-[15%] border-r border-solid border-gray-300">
                     <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
                         <span>Request for RFQ</span>
                     </div>
                     <RequestProductCard
                         rfqId={rfqQuoteId}
-                        productImages={rfqQuoteDetailsById?.rfqQuotesProducts
+                        productImages={selectedVendor?.rfqQuotesProducts
                             ?.map((item: any) => item?.rfqProductDetails?.productImages)
                             ?.map((item: any) => item?.[0])}
                     />
@@ -331,7 +424,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                                     offerPrice={item?.offerPrice}
                                     onClick={() => {
                                         setActiveSellerId(item?.sellerID)
-                                        setSelectedVendor(item)
+                                        handleRfqProducts(item)
                                     }}
                                     seller={item.sellerIDDetail}
                                     isSelected={activeSellerId === item?.sellerID}
@@ -340,7 +433,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                         )}
                     </div>
                 </div>
-                <div className="w-[62%] border-r border-solid border-gray-300">
+                <div className="w-[67%] border-r border-solid border-gray-300">
                     <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
                         <span>
                             Offering Price{" "}
@@ -389,7 +482,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                                 ) : null}
 
                                 {!rfqQuotesUsersByBuyerIdQuery?.isLoading &&
-                                    !rfqQuoteDetailsById?.rfqQuotesProducts?.length ? (
+                                    !selectedVendor?.rfqQuotesProducts?.length ? (
                                     <div className="my-2 space-y-2 py-10">
                                         <p className="text-center text-sm font-normal text-gray-500">
                                             No data found
@@ -397,9 +490,10 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                                     </div>
                                 ) : null}
 
-                                {rfqQuoteDetailsById?.rfqQuotesProducts?.map(
+                                {selectedVendor?.rfqQuotesProducts?.map(
                                     (item: {
                                         id: number;
+                                        priceRequest: any;
                                         offerPrice: string;
                                         note: string;
                                         quantity: number;
@@ -430,6 +524,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                                             }
                                             productName={item?.rfqProductDetails?.productName}
                                             onRequestPrice={handleRequestPrice}
+                                            priceRequest={item?.priceRequest}
                                         />
                                     ),
                                 )}

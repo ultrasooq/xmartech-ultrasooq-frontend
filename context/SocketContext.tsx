@@ -17,6 +17,8 @@ interface rfqRequestType {
   messageId: number;
   rfqQuoteProductId: number;
   status: string;
+  requestedPrice: number;
+  requestedById: number;
 }
 
 interface SocketContextType {
@@ -30,6 +32,7 @@ interface SocketContextType {
     buyerId?: number;
     sellerId?: number;
     requestedPrice?: number;
+    rfqQuotesUserId?: number;
   }) => void;
   newMessage: newMessageType | null;
   errorMessage: string;
@@ -43,6 +46,7 @@ interface SocketContextType {
     buyerId?: number;
     sellerId?: number;
     requestedPrice?: number;
+    rfqQuotesUserId?: number;
   }) => void;
   updateRfqRequestStatus: (rfqRequest: {
     roomId: number | null;
@@ -98,6 +102,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
           messageId: number;
           rfqQuoteProductId: number;
           status: string;
+          requestedPrice: number;
+          requestedById: number;
         }) => {
           setRfqRequest(rfqRequest);
         },
@@ -145,6 +151,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     requestedPrice,
     buyerId,
     sellerId,
+    rfqQuotesUserId
   }: {
     roomId: number;
     rfqId: number;
@@ -153,6 +160,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     buyerId?: number;
     sellerId?: number;
     requestedPrice?: number;
+    rfqQuotesUserId?: number;
   }) => {
     if (socket) {
       socket.emit("sendMessage", {
@@ -164,6 +172,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         buyerId,
         sellerId,
         requestedPrice,
+        rfqQuotesUserId
       });
     }
   };
@@ -176,6 +185,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     buyerId,
     sellerId,
     requestedPrice,
+    rfqQuotesUserId
   }: {
     participants: number[];
     content: string;
@@ -184,6 +194,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     buyerId?: number;
     sellerId?: number;
     requestedPrice?: number;
+    rfqQuotesUserId?: number;
   }) => {
     if (socket) {
       socket.emit("createPrivateRoom", {
@@ -195,6 +206,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         buyerId,
         sellerId,
         requestedPrice,
+        rfqQuotesUserId
       });
     }
   };

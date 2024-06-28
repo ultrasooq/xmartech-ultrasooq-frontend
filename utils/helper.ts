@@ -107,3 +107,9 @@ export const capitalizeWord = (word: string): string => {
   if (!word) return '';
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
+
+export const formatPrice = (price: number): string => {
+  if (!price) return '';
+  const formattedTotal = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `$${formattedTotal}`;
+}
