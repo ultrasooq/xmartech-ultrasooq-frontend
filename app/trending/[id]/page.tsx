@@ -371,7 +371,11 @@ const ProductDetailsPage = () => {
                   <TabsContent value="description" className="mt-0">
                     <div className="w-full bg-white">
                       <PlateEditor
-                        description={productDetails?.description || undefined}
+                        description={
+                          productDetails?.description
+                            ? JSON.parse(productDetails?.description)
+                            : undefined
+                        }
                         readOnly
                       />
                     </div>
