@@ -73,7 +73,8 @@ const formSchema = z.object({
     .string()
     .trim()
     .min(2, { message: "Total No Of Employee is required" }),
-  aboutUs: z.array(z.any()).optional(),
+  aboutUs: z.string().trim().optional(),
+  aboutUsJson: z.array(z.any()).optional(),
   branchList: z.array(
     z
       .object({
@@ -201,7 +202,8 @@ export default function CompanyProfilePage() {
       country: "",
       yearOfEstablishment: "",
       totalNoOfEmployee: "",
-      aboutUs: [],
+      aboutUs: "",
+      aboutUsJson: undefined,
       branchList: [
         {
           profileType: "COMPANY",
@@ -306,10 +308,14 @@ export default function CompanyProfilePage() {
     }
   };
 
+  console.log(form.formState.errors);
+
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
-      aboutUs: formData.aboutUs ? JSON.stringify(formData.aboutUs) : undefined,
+      aboutUs: formData.aboutUsJson.length
+        ? JSON.stringify(formData.aboutUsJson)
+        : undefined,
       profileType: "COMPANY",
     };
 
@@ -350,7 +356,10 @@ export default function CompanyProfilePage() {
     if (getImageUrl) {
       data.logo = getImageUrl;
     }
-    // console.log(data);
+
+    delete data.aboutUsJson;
+
+    console.log(data);
     // return;
     const response = await createCompanyProfile.mutateAsync(data);
 
@@ -370,8 +379,6 @@ export default function CompanyProfilePage() {
       });
     }
   };
-
-  // console.log(form.formState.errors, form.getValues());
 
   return (
     <section className="relative w-full py-7">
@@ -580,7 +587,7 @@ export default function CompanyProfilePage() {
                   />
                 </div>
 
-                <ControlledRichTextEditor label="About Us" name="aboutUs" />
+                <ControlledRichTextEditor label="About Us" name="aboutUsJson" />
               </div>
             </div>
 

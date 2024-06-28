@@ -65,7 +65,8 @@ const formSchema = z.object({
     .string()
     .trim()
     .min(2, { message: "Total No Of Employee is required" }),
-  aboutUs: z.array(z.any()).optional(),
+  aboutUs: z.string().trim().optional(),
+  aboutUsJson: z.array(z.any()).optional(),
 });
 
 export default function EditProfilePage() {
@@ -87,7 +88,8 @@ export default function EditProfilePage() {
       country: "",
       yearOfEstablishment: "",
       totalNoOfEmployee: "",
-      aboutUs: [],
+      aboutUs: "",
+      aboutUsJson: undefined,
     },
   });
   const [imageFile, setImageFile] = useState<FileList | null>();
@@ -139,7 +141,9 @@ export default function EditProfilePage() {
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
-      aboutUs: formData.aboutUs ? JSON.stringify(formData.aboutUs) : undefined,
+      aboutUs: formData.aboutUsJson
+        ? JSON.stringify(formData.aboutUsJson)
+        : undefined,
       profileType: "COMPANY",
       userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number,
     };
@@ -153,7 +157,9 @@ export default function EditProfilePage() {
       data.logo = getImageUrl;
     }
     delete data.uploadImage;
-    // console.log(data);
+    delete data.aboutUsJson;
+
+    console.log(data);
     // return;
     const response = await updateCompanyProfile.mutateAsync(data);
 
@@ -193,7 +199,10 @@ export default function EditProfilePage() {
         yearOfEstablishment: userProfile?.yearOfEstablishment?.toString() || "",
         totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
         annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
-        aboutUs: userProfile?.aboutUs || [],
+        aboutUs: userProfile?.aboutUs || "",
+        aboutUsJson: userProfile?.aboutUs
+          ? JSON.parse(userProfile?.aboutUs)
+          : undefined,
         companyName: userProfile?.companyName || "",
         businessTypeList:
           userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() ||
@@ -419,7 +428,7 @@ export default function EditProfilePage() {
                   />
                 </div>
 
-                <ControlledRichTextEditor label="About Us" name="aboutUs" />
+                <ControlledRichTextEditor label="About Us" name="aboutUsJson" />
               </div>
             </div>
 
