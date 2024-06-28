@@ -390,7 +390,7 @@ type PlateEditorProps = {
   onChange?: (
     value: { id: string; type: string; children: { text: string }[] }[] | Value,
   ) => void;
-  description: string;
+  description: { id: string; type: string; children: { text: string }[] }[];
   readOnly?: boolean;
 };
 
@@ -399,7 +399,7 @@ const PlateEditor: React.FC<PlateEditorProps> = ({
   description,
   readOnly,
 }) => {
-  const [value, setValue] = useState();
+  const [value, setValue] = useState<Value>();
   // const editor = createPlateEditor({
   //   plugins,
   // });
@@ -408,10 +408,11 @@ const PlateEditor: React.FC<PlateEditorProps> = ({
   useEffect(() => {
     if (description) {
       try {
-        const json = JSON.parse(description);
-        setValue(json);
+        // const json = JSON.parse(description);
+        // setValue(json);
+        setValue(description);
       } catch (error) {
-        console.error("Error parsing JSON:", error, description);
+        console.error("Error parsing JSON:", error);
       }
     }
 
