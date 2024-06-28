@@ -13,7 +13,7 @@ import { useMe } from "@/apis/queries/user.queries";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 
 const formSchema = z.object({
-  aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
+  aboutUs: z.array(z.any()).optional(),
 });
 
 export default function EditProfilePage() {
@@ -22,7 +22,7 @@ export default function EditProfilePage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      aboutUs: "",
+      aboutUs: [],
     },
   });
 
@@ -31,7 +31,7 @@ export default function EditProfilePage() {
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const data = {
-      aboutUs: formData.aboutUs,
+      aboutUs: formData.aboutUs ? JSON.stringify(formData.aboutUs) : undefined,
       profileType: "FREELANCER",
       userProfileId: me.data?.data?.userProfile?.[0]?.id as number,
     };
@@ -58,7 +58,7 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (me.data?.data) {
       form.reset({
-        aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
+        aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || [],
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

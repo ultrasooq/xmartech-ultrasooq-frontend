@@ -73,7 +73,7 @@ const formSchema = z.object({
     .string()
     .trim()
     .min(2, { message: "Total No Of Employee is required" }),
-  aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
+  aboutUs: z.array(z.any()).optional(),
   branchList: z.array(
     z
       .object({
@@ -201,7 +201,7 @@ export default function CompanyProfilePage() {
       country: "",
       yearOfEstablishment: "",
       totalNoOfEmployee: "",
-      aboutUs: "",
+      aboutUs: [],
       branchList: [
         {
           profileType: "COMPANY",
@@ -309,6 +309,7 @@ export default function CompanyProfilePage() {
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
+      aboutUs: formData.aboutUs ? JSON.stringify(formData.aboutUs) : undefined,
       profileType: "COMPANY",
     };
 

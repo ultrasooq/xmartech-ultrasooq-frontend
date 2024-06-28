@@ -31,7 +31,7 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 
 const formSchema = z
   .object({
-    aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
+    aboutUs: z.array(z.any()).optional(),
     businessTypeList: z
       .array(
         z.object({
@@ -135,7 +135,7 @@ export default function FreelancerProfilePage() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      aboutUs: "",
+      aboutUs: [],
       businessTypeList: undefined,
       address: "",
       city: "",
@@ -183,7 +183,7 @@ export default function FreelancerProfilePage() {
 
   const onSubmit = async (formData: any) => {
     const data = {
-      aboutUs: formData.aboutUs,
+      aboutUs: formData.aboutUs ? JSON.stringify(formData.aboutUs) : undefined,
       profileType: "FREELANCER",
       branchList: [
         {
@@ -253,7 +253,7 @@ export default function FreelancerProfilePage() {
         : [];
 
       form.reset({
-        aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
+        aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || [],
         businessTypeList: businessTypeList || undefined,
         startTime: me.data?.data?.userBranch?.[0]?.startTime || "",
         endTime: me.data?.data?.userBranch?.[0]?.endTime || "",
