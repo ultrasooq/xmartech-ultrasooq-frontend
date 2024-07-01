@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
+import { handleDescriptionParse } from "@/utils/helper";
 
 const formSchema = z.object({
   aboutUs: z.string().trim().optional(),
@@ -66,7 +67,7 @@ export default function EditProfilePage() {
       form.reset({
         aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
         aboutUsJson: me.data?.data?.userProfile?.[0]?.aboutUs
-          ? JSON.parse(me.data?.data?.userProfile?.[0]?.aboutUs)
+          ? handleDescriptionParse(me.data?.data?.userProfile?.[0]?.aboutUs)
           : undefined,
       });
     }

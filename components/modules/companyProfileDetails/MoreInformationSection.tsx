@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
+import { handleDescriptionParse } from "@/utils/helper";
 
 type MoreInformationSectionProps = {
   userDetails: any;
@@ -80,7 +81,9 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
             <PlateEditor
               description={
                 userDetails?.userProfile?.[0]?.aboutUs
-                  ? JSON.parse(userDetails?.userProfile?.[0]?.aboutUs)
+                  ? handleDescriptionParse(
+                      userDetails?.userProfile?.[0]?.aboutUs,
+                    )
                   : undefined
               }
               readOnly

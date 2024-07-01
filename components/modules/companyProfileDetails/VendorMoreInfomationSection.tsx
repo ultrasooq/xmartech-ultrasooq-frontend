@@ -1,5 +1,6 @@
 import React from "react";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
+import { handleDescriptionParse } from "@/utils/helper";
 
 type VendorMoreInformationSectionProps = {
   vendor: any;
@@ -58,7 +59,9 @@ const VendorMoreInformationSection: React.FC<
                 <PlateEditor
                   description={
                     vendor?.userProfile?.[0]?.aboutUs
-                      ? JSON.parse(vendor?.userProfile?.[0]?.aboutUs)
+                      ? handleDescriptionParse(
+                          vendor?.userProfile?.[0]?.aboutUs,
+                        )
                       : undefined
                   }
                   readOnly

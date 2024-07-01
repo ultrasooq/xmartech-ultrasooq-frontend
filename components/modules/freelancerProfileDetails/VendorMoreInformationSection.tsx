@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { getAmPm, parsedDays } from "@/utils/helper";
+import { getAmPm, handleDescriptionParse, parsedDays } from "@/utils/helper";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 
 type VendorMoreInformationSectionProps = {
@@ -32,7 +32,7 @@ const VendorMoreInformationSection: React.FC<
             <PlateEditor
               description={
                 vendor?.userProfile?.[0]?.aboutUs
-                  ? JSON.parse(vendor?.userProfile?.[0]?.aboutUs)
+                  ? handleDescriptionParse(vendor?.userProfile?.[0]?.aboutUs)
                   : undefined
               }
               readOnly

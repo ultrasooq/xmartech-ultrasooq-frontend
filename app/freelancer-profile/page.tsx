@@ -21,7 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
-import { getAmPm } from "@/utils/helper";
+import { getAmPm, handleDescriptionParse } from "@/utils/helper";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
@@ -262,7 +262,7 @@ export default function FreelancerProfilePage() {
       form.reset({
         aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
         aboutUsJson: me.data?.data?.userProfile?.[0]?.aboutUs
-          ? JSON.parse(me.data?.data?.userProfile?.[0]?.aboutUs)
+          ? handleDescriptionParse(me.data?.data?.userProfile?.[0]?.aboutUs)
           : undefined,
         // aboutUsJson: me.data?.data?.userProfile?.[0]?.aboutUs || undefined,
         businessTypeList: businessTypeList || undefined,

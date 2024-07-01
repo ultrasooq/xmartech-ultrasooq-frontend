@@ -20,7 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useUniqueUser } from "@/apis/queries/user.queries";
 import { useUploadFile } from "@/apis/queries/upload.queries";
-import { getLastTwoHundredYears } from "@/utils/helper";
+import { getLastTwoHundredYears, handleDescriptionParse } from "@/utils/helper";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import { useCountries } from "@/apis/queries/masters.queries";
@@ -201,7 +201,7 @@ export default function EditProfilePage() {
         annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
         aboutUs: userProfile?.aboutUs || "",
         aboutUsJson: userProfile?.aboutUs
-          ? JSON.parse(userProfile?.aboutUs)
+          ? handleDescriptionParse(userProfile?.aboutUs)
           : undefined,
         companyName: userProfile?.companyName || "",
         businessTypeList:
