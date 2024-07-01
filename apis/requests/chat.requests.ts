@@ -2,7 +2,7 @@ import { PUREMOON_TOKEN_KEY } from '../../utils/constants';
 import axios from "axios";
 import urlcat from "urlcat";
 import { getCookie } from "cookies-next";
-import { CreatePrivateRoomRequest, FindRoomRequest, ChatHistoryRequest, RfqPriceStatusUpdateRequest } from "../../utils/types/chat.types";
+import { CreatePrivateRoomRequest, FindRoomRequest, ChatHistoryRequest, RfqPriceStatusUpdateRequest, UpdateMessageStatusRequest } from "../../utils/types/chat.types";
 
 export const sendMessage = (payload: CreatePrivateRoomRequest) => {
     return axios({
@@ -67,6 +67,19 @@ export const updateRfqRequestPriceStatus = (payload: RfqPriceStatusUpdateRequest
     return axios({
         method: "put",
         url: `${process.env.NEXT_PUBLIC_API_URL}/chat/update-rfq-price-request-status`,
+        data: payload,
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+        },
+    });
+};
+
+export const updateUnreadMessages = (payload: UpdateMessageStatusRequest) => {
+    return axios({
+        method: "patch",
+        url: `${process.env.NEXT_PUBLIC_API_URL}/chat/read-messages`,
         data: payload,
         headers: {
             "Content-Type": "application/json",

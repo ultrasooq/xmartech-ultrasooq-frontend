@@ -3,14 +3,18 @@ import moment from "moment";
 import { useAuth } from "@/context/AuthContext";
 import { useSocket } from "@/context/SocketContext";
 import { RfqProductPriceRequestStatus } from "@/utils/types/chat.types";
+import { updateUnreadMessages } from "@/apis/requests/chat.requests";
 
 interface RfqRequestChatHistoryProps {
     roomId: number | null;
     selectedChatHistory: any[];
-    chatHistoryLoading: boolean
+    chatHistoryLoading: boolean;
+    activeSellerId: number | undefined;
+    unreadMsgCount: number | 0;
+    updateVendorMessageCount: () => void;
 }
 
-const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading }) => {
+const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading, activeSellerId, unreadMsgCount, updateVendorMessageCount }) => {
     const { user } = useAuth();
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const { updateRfqRequestStatus } = useSocket();
@@ -21,6 +25,9 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
         }
     }, [selectedChatHistory]);
 
+    useEffect(() => {
+        if(unreadMsgCount) handleUnreadMessages()
+    }, [activeSellerId, roomId])
 
     const handlePriceStatus = async (id: number, status: RfqProductPriceRequestStatus) => {
         try {
@@ -30,6 +37,20 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                 roomId: roomId
             }
             updateRfqRequestStatus(payload)
+        } catch (error) {
+        }
+    }
+
+    const handleUnreadMessages = async () => {
+        try {
+            if (user?.id && roomId && activeSellerId) {
+                const payload = {
+                    userId: activeSellerId,
+                    roomId: roomId
+                }
+                await updateUnreadMessages(payload)
+                updateVendorMessageCount()
+            }
         } catch (error) {
         }
     }

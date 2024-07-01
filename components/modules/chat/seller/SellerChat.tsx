@@ -13,6 +13,7 @@ import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCa
 import SellerChatHistory from "./SellerChatHistory";
 import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
+import { useAuth } from "@/context/AuthContext";
 
 
 interface SellerChatProps {
@@ -30,6 +31,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     const [message, setMessage] = useState<string>('');
     const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest } = useSocket()
     const { toast } = useToast();
+    const { user } = useAuth();
 
     const allRfqQuotesQuery = useAllRfqQuotesUsersBySellerId({
         page: 1,
@@ -42,20 +44,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         if (rfqQuotesDetails?.length > 0) {
             setRfqQuotes(rfqQuotesDetails)
             setActiveSellerId(rfqQuotesDetails[0]?.id);
-            setSelectedProduct(rfqQuotesDetails[0])
-            setQuoteProducts(
-                rfqQuotesDetails[0]?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
-                    (i: any) => ({
-                        ...i,
-                        address:
-                            rfqQuotesDetails[0]?.rfqQuotesUser_rfqQuotes
-                                ?.rfqQuotes_rfqQuoteAddress?.address,
-                        deliveryDate:
-                            rfqQuotesDetails[0]?.rfqQuotesUser_rfqQuotes
-                                ?.rfqQuotes_rfqQuoteAddress?.rfqDate,
-                    }),
-                ) || [],
-            );
+            setSelectedProduct(rfqQuotesDetails[0]);
+            handleRfqProducts(rfqQuotesDetails[0]);
         }
     }, [allRfqQuotesQuery.data?.data]);
 
@@ -154,7 +144,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             rfqId: selectedProduct?.rfqQuotesId,
             requestedPrice,
             rfqQuoteProductId,
-            sellerId
+            sellerId,
+            rfqQuotesUserId: activeSellerId
         }
         sendMessage(msgPayload)
     }
@@ -167,9 +158,11 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 rfqId: selectedProduct?.rfqQuotesId,
                 requestedPrice,
                 rfqQuoteProductId,
-                sellerId
+                sellerId,
+                rfqQuotesUserId: activeSellerId
             }
             cratePrivateRoom(payload);
+
         } catch (error) {
             return ""
         }
@@ -248,10 +241,32 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         }
     }
 
+    const handleRfqProducts = (item: any) => {
+        const newData = item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
+            (i: any) => {
+                let priceRequest = null
+                const pRequest = item?.rfqProductPriceRequests.find((request: any) => request?.rfqQuoteProductId === i.id);
+                if (pRequest) priceRequest = pRequest;
+
+                return {
+                    ...i,
+                    priceRequest,
+                    address:
+                        item?.rfqQuotesUser_rfqQuotes
+                            ?.rfqQuotes_rfqQuoteAddress?.address,
+                    deliveryDate:
+                        item?.rfqQuotesUser_rfqQuotes
+                            ?.rfqQuotes_rfqQuoteAddress?.rfqDate,
+                }
+            },
+        ) || []
+        setQuoteProducts(newData);
+    }
+
     return (
         <div>
             <div className="flex w-full rounded-sm border border-solid border-gray-300">
-                <div className="w-[30%] border-r border-solid border-gray-300">
+                <div className="w-[20%] border-r border-solid border-gray-300">
                     <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
                         <span>Request for RFQ</span>
                     </div>
@@ -275,6 +290,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                         {rfqQuotes?.map(
                             (item: {
                                 id: number;
+                                rfqQuotesId: number;
                                 offerPrice: string;
                                 buyerIDDetail: {
                                     firstName: string;
@@ -298,26 +314,14 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                             }) => (
                                 <RequestProductCard
                                     key={item?.id}
-                                    rfqId={item?.id}
+                                    rfqId={item?.rfqQuotesId}
                                     // name={`${item?.buyerIDDetail?.firstName} ${item?.buyerIDDetail?.lastName}`}
                                     // profilePicture={item?.buyerIDDetail?.profilePicture}
                                     // offerPrice={item?.offerPrice}
                                     onClick={() => {
                                         setSelectedProduct(item)
                                         setActiveSellerId(item?.id);
-                                        setQuoteProducts(
-                                            item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
-                                                (i: any) => ({
-                                                    ...i,
-                                                    address:
-                                                        item?.rfqQuotesUser_rfqQuotes
-                                                            ?.rfqQuotes_rfqQuoteAddress?.address,
-                                                    deliveryDate:
-                                                        item?.rfqQuotesUser_rfqQuotes
-                                                            ?.rfqQuotes_rfqQuoteAddress?.rfqDate,
-                                                }),
-                                            ) || [],
-                                        );
+                                        handleRfqProducts(item)
                                     }}
                                     isSelected={activeSellerId === item?.id}
                                     productImages={item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts
@@ -330,7 +334,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                         )}
                     </div>
                 </div>
-                <div className="w-[70%] border-r border-solid border-gray-300">
+                <div className="w-[80%] border-r border-solid border-gray-300">
                     <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
                         <span>
                             Offering Price{" "}
@@ -390,6 +394,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                     (item: {
                                         id: number;
                                         offerPrice: string;
+                                        priceRequest: any;
                                         note: string;
                                         quantity: number;
                                         rfqProductDetails: {
@@ -415,6 +420,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                             }
                                             productName={item?.rfqProductDetails?.productName}
                                             onRequestPrice={handleRequestPrice}
+                                            priceRequest={item?.priceRequest}
                                         />
                                     ),
                                 )}

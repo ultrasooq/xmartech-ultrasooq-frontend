@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import moment from "moment";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
-import { formatDate } from "@/utils/helper";
+import { capitalizeWord, formatDate, formatPrice } from "@/utils/helper";
 
 type OfferPriceCardProps = {
   offerPrice: string;
@@ -13,6 +14,7 @@ type OfferPriceCardProps = {
   productName: string;
   productId: number;
   onRequestPrice: (productId: number, requestedPrice: number) => void;
+  priceRequest: any
 };
 
 const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
@@ -24,10 +26,15 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   productImage,
   productName,
   productId,
-  onRequestPrice
+  onRequestPrice,
+  priceRequest
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedOfferPrice, setEditedOfferPrice] = useState(offerPrice);
+  const [editedOfferPrice, setEditedOfferPrice] = useState("");
+
+  useEffect(() => {
+    setEditedOfferPrice(offerPrice)
+  }, [offerPrice])
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -40,6 +47,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
 
   const handleCancelClick = () => {
     setIsEditing(false);
+    setEditedOfferPrice(offerPrice)
   };
 
   return (
@@ -68,16 +76,16 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
         </div>
         <div className="w-[10%] p-4 text-xs font-normal text-black">
           {isEditing ? (
-            <div>
+            <div className="w-full">
               <input
-                type="text"
                 value={editedOfferPrice}
                 onChange={(e) => setEditedOfferPrice(e.target.value)}
-                className="border rounded p-1 w-10"
+                className="border rounded p-1 w-full"
+                type="number"
               />
-              <div className="flex w-full">
-                <button onClick={handleSaveClick} className="ml-2 text-blue-500">Save</button>
-                <button onClick={handleCancelClick} className="ml-2 text-red-500">Cancel</button>
+              <div className="flex gap-1 mt-1">
+                <button onClick={handleSaveClick} className="text-blue-500">Save</button>
+                <button onClick={handleCancelClick} className="text-red-500">Cancel</button>
               </div>
             </div>
           ) : (
@@ -91,11 +99,21 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
           {address || "-"}
         </div>
       </div>
+      {priceRequest?.status === "PENDING" && (
+        <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4">
+          <p className="mb-2 text-sm font-normal text-gray-500">
+            Requested for Offer Price change:
+            <span className="mx-7">Requested Price: {formatPrice(priceRequest?.requestedPrice)}</span>
+            <span className="mr-7">Status: {capitalizeWord(priceRequest?.status)}</span>
+            <span>Date: {moment(priceRequest?.updatedAt).format('YYYY-MM-DD HH:mm A')}</span>
+          </p>
+        </div>
+      )}
       <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4">
         <span className="mb-2 text-sm font-normal text-gray-500">
           Vendor Note:
         </span>
-        <p className="text-sm font-normal text-black">{note || "-"}</p>
+        <p className="text-sm font-normal text-black"> {note || "-"}</p>
       </div>
     </div>
   );

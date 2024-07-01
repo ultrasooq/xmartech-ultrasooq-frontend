@@ -14,9 +14,13 @@ type VendorCardProps = {
     firstName: string;
     lastName: string;
     profilePicture: string;
-    unreadMsgCount: number;
-    latestMessageContent: string;
-    latestMessageCreatedAt: string;
+  },
+  vendor: {
+    lastUnreadMessage: {
+      content: string;
+      createdAt: string
+    },
+    unreadMsgCount: number
   }
 };
 
@@ -26,7 +30,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
   profilePicture,
   onClick,
   isSelected,
-  seller
+  vendor
 }) => {
   return (
     <button
@@ -58,32 +62,31 @@ const VendorCard: React.FC<VendorCardProps> = ({
           </span>
         </div>
 
-        <div>
-          <div className="flex space-x-2 p-2">
-            <div className="flex items-center space-x-1">
-              <div className="text-xs font-normal text-gray-500">
-                {seller?.latestMessageContent}
-              </div>
-              {seller?.unreadMsgCount ? (
-                <div className="flex items-center justify-center h-5 w-5 text-xs font-semibold text-white bg-blue-500 rounded-full">
-                  {seller?.unreadMsgCount}
+        {vendor?.lastUnreadMessage?.createdAt && (
+          <div>
+            <div className="flex space-x-2 p-2">
+              <div className="flex items-center space-x-1">
+                <div className="text-xs font-normal text-gray-500">
+                  {vendor?.lastUnreadMessage.content}
                 </div>
-              ) : null}
+                {vendor?.unreadMsgCount ? (
+                  <div className="flex items-center justify-center h-5 w-5 text-xs font-semibold text-white bg-blue-500 rounded-full">
+                    {vendor?.unreadMsgCount}
+                  </div>
+                ): ""}
+              </div>
             </div>
-          </div>
-          {seller?.latestMessageCreatedAt && (
-            <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
-              <span>
-                {seller.latestMessageCreatedAt
-                  ? moment(seller.latestMessageCreatedAt)
+            {vendor?.lastUnreadMessage?.createdAt && (
+              <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
+                <span>
+                  {moment(vendor?.lastUnreadMessage?.createdAt)
                     .startOf("seconds")
-                    .fromNow()
-                  : ""}
-              </span>
-            </div>
-          )}
-        </div>
-
+                    .fromNow()}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* <div className="flex w-full">
           <Image src={RatingIcon} alt="rating-icon" />
