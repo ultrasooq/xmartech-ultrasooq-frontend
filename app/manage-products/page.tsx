@@ -379,6 +379,11 @@ const ManageProductsPage = () => {
                             }[];
                             productName: string;
                           };
+                          productPrice_productSellerImage: {
+                            id: number;
+                            image: string | null;
+                            video: string | null;
+                          }[];
                           productPrice: string;
                           offerPrice: string;
                           productPrice_productLocation: {
@@ -409,9 +414,16 @@ const ManageProductsPage = () => {
                             status={product?.status}
                             askForPrice={product?.askForPrice}
                             askForStock={product?.askForStock}
+                            // productImage={
+                            //   product?.productPrice_product?.productImages?.[0]
+                            //     ?.image
+                            // }
                             productImage={
-                              product?.productPrice_product?.productImages?.[0]
-                                ?.image
+                              product?.productPrice_productSellerImage?.length
+                                ? product?.productPrice_productSellerImage?.[0]
+                                    ?.image
+                                : product?.productPrice_product
+                                    ?.productImages?.[0]?.image
                             }
                             productName={
                               product?.productPrice_product?.productName

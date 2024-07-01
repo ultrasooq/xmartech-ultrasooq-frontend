@@ -59,6 +59,10 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     return (
       relatedProductsQuery?.data?.data?.map((item: any) => ({
         ...item,
+        productImages: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]?.productPrice_productSellerImage
+          : item?.productImages,
         shortDescription: item?.product_productShortDescription?.length
           ? item?.product_productShortDescription?.[0]?.shortDescription
           : "-",
