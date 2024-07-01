@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React, { useMemo } from "react";
+import EditIcon from "@/public/images/edit-icon.svg";
 
 type InformationSectionProps = {
   userDetails: any;
@@ -48,7 +49,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
           >
             <Image
-              src="/images/edit-icon.svg"
+              src={EditIcon}
               height={18}
               width={18}
               className="mr-1"

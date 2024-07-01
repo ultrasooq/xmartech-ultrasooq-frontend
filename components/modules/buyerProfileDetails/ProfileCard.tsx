@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/utils/helper";
+import EditIcon from "@/public/images/edit-icon.svg";
 
 type ProfileCardProps = {
   userDetails: any;
@@ -36,7 +37,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
               className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
             >
               <Image
-                src="/images/edit-icon.svg"
+                src={EditIcon}
                 height={18}
                 width={18}
                 className="mr-1"
