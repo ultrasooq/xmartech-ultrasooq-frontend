@@ -23,7 +23,7 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
-import { getOrCreateDeviceId } from "@/utils/helper";
+import { getOrCreateDeviceId, handleDescriptionParse } from "@/utils/helper";
 import ReviewSection from "@/components/shared/ReviewSection";
 import QuestionsAnswersSection from "@/components/modules/productDetails/QuestionsAnswersSection";
 import {
@@ -37,6 +37,7 @@ import Footer from "@/components/shared/Footer";
 // import EmailIcon from "@/public/images/email.svg";
 // import PhoneCallIcon from "@/public/images/phone-call.svg";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
+import PlateEditor from "@/components/shared/Plate/PlateEditor";
 
 const ProductDetailsPage = () => {
   const queryClient = useQueryClient();
@@ -369,14 +370,12 @@ const ProductDetailsPage = () => {
 
                   <TabsContent value="description" className="mt-0">
                     <div className="w-full bg-white">
-                      <ReactQuill
-                        theme="snow"
-                        value={
-                          productDetails?.description || "No Description found"
+                      <PlateEditor
+                        description={
+                          handleDescriptionParse(productDetails?.description) ||
+                          undefined
                         }
                         readOnly
-                        modules={{ toolbar: false }}
-                        className="readonly-quill"
                       />
                     </div>
                   </TabsContent>

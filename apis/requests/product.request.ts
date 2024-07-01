@@ -246,3 +246,50 @@ export const getVendorProducts = (payload: {
     },
   });
 };
+
+export const getOneProductByProductCondition = (payload: {
+  productId: number;
+  productPriceId: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getOneProductByProductCondition`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const updateProductPriceByProductCondition = (payload: {
+  description: string;
+  productShortDescriptionList: {
+    shortDescription: string;
+  }[];
+  productSpecificationList: {
+    label: string;
+    specification: string;
+  }[];
+  productSellerImageList: {
+    productPriceId: string;
+    imageName: string;
+    image: string;
+    videoName: string;
+    video: string;
+  }[];
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/editProductPriceByProductCondition`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

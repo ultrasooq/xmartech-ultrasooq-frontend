@@ -20,7 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useUniqueUser } from "@/apis/queries/user.queries";
 import { useUploadFile } from "@/apis/queries/upload.queries";
-import { getLastTwoHundredYears } from "@/utils/helper";
+import { getLastTwoHundredYears, handleDescriptionParse } from "@/utils/helper";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import { useCountries } from "@/apis/queries/masters.queries";
@@ -65,7 +65,8 @@ const formSchema = z.object({
     .string()
     .trim()
     .min(2, { message: "Total No Of Employee is required" }),
-  aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
+  aboutUs: z.string().trim().optional(),
+  aboutUsJson: z.array(z.any()).optional(),
 });
 
 export default function EditProfilePage() {
@@ -88,6 +89,7 @@ export default function EditProfilePage() {
       yearOfEstablishment: "",
       totalNoOfEmployee: "",
       aboutUs: "",
+      aboutUsJson: undefined,
     },
   });
   const [imageFile, setImageFile] = useState<FileList | null>();
@@ -139,6 +141,9 @@ export default function EditProfilePage() {
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
+      aboutUs: formData.aboutUsJson
+        ? JSON.stringify(formData.aboutUsJson)
+        : undefined,
       profileType: "COMPANY",
       userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number,
     };
@@ -152,7 +157,9 @@ export default function EditProfilePage() {
       data.logo = getImageUrl;
     }
     delete data.uploadImage;
-    // console.log(data);
+    delete data.aboutUsJson;
+
+    console.log(data);
     // return;
     const response = await updateCompanyProfile.mutateAsync(data);
 
@@ -193,6 +200,9 @@ export default function EditProfilePage() {
         totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
         annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
         aboutUs: userProfile?.aboutUs || "",
+        aboutUsJson: userProfile?.aboutUs
+          ? handleDescriptionParse(userProfile?.aboutUs)
+          : undefined,
         companyName: userProfile?.companyName || "",
         businessTypeList:
           userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() ||
@@ -418,7 +428,7 @@ export default function EditProfilePage() {
                   />
                 </div>
 
-                <ControlledRichTextEditor label="About Us" name="aboutUs" />
+                <ControlledRichTextEditor label="About Us" name="aboutUsJson" />
               </div>
             </div>
 

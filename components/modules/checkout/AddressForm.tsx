@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import { IoCloseSharp } from "react-icons/io5";
 import LoaderIcon from "@/public/images/load.png";
+import { ALPHABETS_REGEX } from "@/utils/constants";
 
 type AddressFormProps = {
   addressId?: number;
@@ -62,15 +63,25 @@ const formSchema = z.object({
     .max(50, {
       message: "Address must be less than 50 characters",
     }),
-  city: z.string().trim().min(2, { message: "City is required" }).max(50, {
-    message: "City must be less than 50 characters",
-  }),
+  city: z
+    .string()
+    .trim()
+    .min(2, { message: "City is required" })
+    .max(50, {
+      message: "City must be less than 50 characters",
+    })
+    .refine((val) => ALPHABETS_REGEX.test(val), {
+      message: "City must only contain letters",
+    }),
   province: z
     .string()
     .trim()
     .min(2, { message: "Province is required" })
     .max(50, {
       message: "Province must be less than 50 characters",
+    })
+    .refine((val) => ALPHABETS_REGEX.test(val), {
+      message: "Province must only contain letters",
     }),
   country: z
     .string()
@@ -78,6 +89,9 @@ const formSchema = z.object({
     .min(2, { message: "Country is required" })
     .max(50, {
       message: "Country must be less than 50 characters",
+    })
+    .refine((val) => ALPHABETS_REGEX.test(val), {
+      message: "Country must only contain letters",
     }),
   postCode: z
     .string()

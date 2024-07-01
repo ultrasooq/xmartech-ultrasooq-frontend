@@ -11,9 +11,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
+import { handleDescriptionParse } from "@/utils/helper";
 
 const formSchema = z.object({
-  aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
+  aboutUs: z.string().trim().optional(),
+  aboutUsJson: z.array(z.any()).optional(),
 });
 
 export default function EditProfilePage() {
@@ -23,6 +25,7 @@ export default function EditProfilePage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       aboutUs: "",
+      aboutUsJson: undefined,
     },
   });
 
@@ -31,11 +34,15 @@ export default function EditProfilePage() {
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const data = {
-      aboutUs: formData.aboutUs,
+      aboutUs: formData.aboutUsJson
+        ? JSON.stringify(formData.aboutUsJson)
+        : undefined,
       profileType: "FREELANCER",
       userProfileId: me.data?.data?.userProfile?.[0]?.id as number,
     };
 
+    console.log(data);
+    // return;
     const response = await updateFreelancerProfile.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -59,6 +66,9 @@ export default function EditProfilePage() {
     if (me.data?.data) {
       form.reset({
         aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
+        aboutUsJson: me.data?.data?.userProfile?.[0]?.aboutUs
+          ? handleDescriptionParse(me.data?.data?.userProfile?.[0]?.aboutUs)
+          : undefined,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,7 +106,7 @@ export default function EditProfilePage() {
                   </div>
                 </div>
 
-                <ControlledRichTextEditor label="About Us" name="aboutUs" />
+                <ControlledRichTextEditor label="About Us" name="aboutUsJson" />
               </div>
 
               <Button

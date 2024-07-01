@@ -21,7 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
-import { getAmPm } from "@/utils/helper";
+import { getAmPm, handleDescriptionParse } from "@/utils/helper";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
@@ -31,7 +31,8 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 
 const formSchema = z
   .object({
-    aboutUs: z.string().trim().min(2, { message: "About Us is required" }),
+    aboutUs: z.string().trim().optional(),
+    aboutUsJson: z.array(z.any()).optional(),
     businessTypeList: z
       .array(
         z.object({
@@ -136,6 +137,7 @@ export default function FreelancerProfilePage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       aboutUs: "",
+      aboutUsJson: undefined,
       businessTypeList: undefined,
       address: "",
       city: "",
@@ -181,9 +183,13 @@ export default function FreelancerProfilePage() {
     );
   }, [tagsQuery?.data]);
 
+  console.log(form.formState.errors);
+
   const onSubmit = async (formData: any) => {
     const data = {
-      aboutUs: formData.aboutUs,
+      aboutUs: formData.aboutUsJson.length
+        ? JSON.stringify(formData.aboutUsJson)
+        : undefined,
       profileType: "FREELANCER",
       branchList: [
         {
@@ -195,8 +201,9 @@ export default function FreelancerProfilePage() {
     };
 
     delete data.branchList[0].aboutUs;
+    delete data.branchList[0].aboutUsJson;
 
-    // console.log(data);
+    console.log(data);
     // return;
     const response = await createFreelancerProfile.mutateAsync(data);
 
@@ -254,6 +261,10 @@ export default function FreelancerProfilePage() {
 
       form.reset({
         aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
+        aboutUsJson: me.data?.data?.userProfile?.[0]?.aboutUs
+          ? handleDescriptionParse(me.data?.data?.userProfile?.[0]?.aboutUs)
+          : undefined,
+        // aboutUsJson: me.data?.data?.userProfile?.[0]?.aboutUs || undefined,
         businessTypeList: businessTypeList || undefined,
         startTime: me.data?.data?.userBranch?.[0]?.startTime || "",
         endTime: me.data?.data?.userBranch?.[0]?.endTime || "",
@@ -302,7 +313,10 @@ export default function FreelancerProfilePage() {
                   </div>
                 </div>
                 <div className="mb-3.5 w-full space-y-5">
-                  <ControlledRichTextEditor label="About Us" name="aboutUs" />
+                  <ControlledRichTextEditor
+                    label="About Us"
+                    name="aboutUsJson"
+                  />
 
                   <AccordionMultiSelectV2
                     label="Business Type"

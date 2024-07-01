@@ -11,11 +11,13 @@ import {
   fetchRfqProductById,
   fetchSameBrandProducts,
   getAllManagedProducts,
+  getOneProductByProductCondition,
   getOneWithProductPrice,
   getVendorDetails,
   getVendorProducts,
   updateMultipleProductPrice,
   updateProduct,
+  updateProductPriceByProductCondition,
 } from "../requests/product.request";
 import {
   ICreateProduct,
@@ -336,3 +338,63 @@ export const useVendorProducts = (
     // },
     enabled,
   });
+
+export const useOneProductByProductCondition = (
+  payload: {
+    productId: number;
+    productPriceId: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["product-condition-by-id", payload],
+    queryFn: async () => {
+      const res = await getOneProductByProductCondition(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
+
+export const useUpdateProductPriceByProductCondition = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    IUpdateProduct,
+    APIResponseError,
+    {
+      description: string;
+      productShortDescriptionList: {
+        shortDescription: string;
+      }[];
+      productSpecificationList: {
+        label: string;
+        specification: string;
+      }[];
+      productSellerImageList: {
+        productPriceId: string;
+        imageName: string;
+        image: string;
+        videoName: string;
+        video: string;
+      }[];
+    }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateProductPriceByProductCondition(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["managed-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["existing-products"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};

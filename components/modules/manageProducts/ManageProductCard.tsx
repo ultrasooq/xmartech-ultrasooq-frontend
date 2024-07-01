@@ -36,6 +36,7 @@ type ManageProductCardProps = {
   maxCustomer: number | null;
   minQuantityPerCustomer: number | null;
   maxQuantityPerCustomer: number | null;
+  productCondition: string;
 };
 
 const ManageProductCard: React.FC<ManageProductCardProps> = ({
@@ -65,6 +66,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   maxCustomer,
   minQuantityPerCustomer,
   maxQuantityPerCustomer,
+  productCondition,
 }) => {
   return (
     <div className="existing-product-add-item">
@@ -105,16 +107,18 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               >
                 <p className="text-xs font-semibold text-white">{status}</p>
               </div> */}
-              <div className="absolute right-0 top-0 z-10">
-                <Link href={`/product/${productId}`}>
-                  <Image
-                    src={EditIcon}
-                    alt="review-dot-icon"
-                    height={21}
-                    width={21}
-                  />
-                </Link>
-              </div>
+              {productCondition === "OLD" ? (
+                <div className="absolute right-0 top-0 z-10">
+                  <Link href={`/product/${productId}?productPriceId=${id}`}>
+                    <Image
+                      src={EditIcon}
+                      alt="review-dot-icon"
+                      height={21}
+                      width={21}
+                    />
+                  </Link>
+                </div>
+              ) : null}
             </div>
             <div className="text-container">
               <h3>{productName || "-"}</h3>
