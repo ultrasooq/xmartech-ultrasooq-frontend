@@ -13,6 +13,7 @@ import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCa
 import SellerChatHistory from "./SellerChatHistory";
 import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
+import { useAuth } from "@/context/AuthContext";
 
 
 interface SellerChatProps {
@@ -30,6 +31,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     const [message, setMessage] = useState<string>('');
     const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest } = useSocket()
     const { toast } = useToast();
+    const { user } = useAuth();
 
     const allRfqQuotesQuery = useAllRfqQuotesUsersBySellerId({
         page: 1,
@@ -160,6 +162,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 rfqQuotesUserId: activeSellerId
             }
             cratePrivateRoom(payload);
+
         } catch (error) {
             return ""
         }
@@ -243,7 +246,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             (i: any) => {
                 let priceRequest = null
                 const pRequest = item?.rfqProductPriceRequests.find((request: any) => request?.rfqQuoteProductId === i.id);
-                if(pRequest) priceRequest = pRequest;
+                if (pRequest) priceRequest = pRequest;
 
                 return {
                     ...i,

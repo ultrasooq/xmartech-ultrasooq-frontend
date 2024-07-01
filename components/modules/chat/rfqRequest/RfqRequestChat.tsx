@@ -8,12 +8,13 @@ import SendIcon from "@/public/images/send-button.png";
 import OfferPriceCard from "@/components/modules/rfqRequest/OfferPriceCard";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import { useAllRfqQuotesUsersByBuyerId, useFindOneRfqQuotesUsersByBuyerID } from "@/apis/queries/rfq.queries";
-import { findRoomId, getChatHistory } from "@/apis/requests/chat.requests";
+import { findRoomId, getChatHistory, updateUnreadMessages } from "@/apis/requests/chat.requests";
 import RfqRequestChatHistory from "./RfqRequestChatHistory";
 import RfqRequestVendorCard from "./RfqRequestVendorCard";
 import { useSocket } from "@/context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
+import { useAuth } from "@/context/AuthContext";
 
 interface RfqRequestChatProps {
     rfqQuoteId: any
@@ -29,16 +30,18 @@ interface RfqRequestVendorDetailsProps {
         firstName: string;
         lastName: string;
         profilePicture: string;
-        unreadMsgCount: number;
-        latestMessageContent: string;
-        latestMessageCreatedAt: string;
     };
+    lastUnreadMessage: {
+        content: string;
+        createdAt: string
+    },
+    unreadMsgCount: number
 }
 
 const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     const [activeSellerId, setActiveSellerId] = useState<number>();
     const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
-    const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
+    const [rfqQuotesUserId, setRfqQuotesUserId] = useState<number>();
     const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
     const [selectedVendor, setSelectedVendor] = useState<any>(null);
     const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
@@ -46,6 +49,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     const [vendorList, setVendorList] = useState<any[]>([]);
     const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest } = useSocket()
     const { toast } = useToast();
+    const { user } = useAuth();
 
     const allRfqQuotesQuery = useAllRfqQuotesUsersByBuyerId(
         {
@@ -71,6 +75,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             setVendorList(rfqQuotesDetails);
             handleRfqProducts(rfqQuotesDetails[0])
             setActiveSellerId(rfqQuotesDetails[0]?.sellerID);
+            setRfqQuotesUserId(rfqQuotesDetails[0]?.id)
         }
     }, [allRfqQuotesQuery.data?.data]);
 
@@ -87,6 +92,14 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     useEffect(() => {
         if (newMessage?.rfqId === parseInt(rfqQuoteId)) {
             handleNewMessage(newMessage)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [newMessage]);
+
+    // update the new message status
+    useEffect(() => {
+        if (newMessage?.rfqId === parseInt(rfqQuoteId)) {
+            handleUpdateNewMessageStatus(newMessage)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newMessage]);
@@ -127,6 +140,32 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rfqRequest])
 
+
+    const handleUpdateNewMessageStatus = async (message: any) => {
+        try {
+            if (rfqQuotesUserId === message?.rfqQuotesUserId && message?.userId !== user?.id) {
+                if (activeSellerId && selectedRoom) {
+                    const payload = {
+                        userId: activeSellerId,
+                        roomId: selectedRoom
+                    }
+                    await updateUnreadMessages(payload)
+                }
+            }
+        } catch (error) {
+
+        }
+    }
+
+    const updateVendorMessageCount = () => {
+        const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => vendor.sellerID === activeSellerId);
+        if(index !== -1) {
+            const vList = [...vendorList];
+            vList[index]["unreadMsgCount"] = 0;
+            setVendorList(vList)
+        }
+    }
+
     const handleNewMessage = (message: any) => {
         const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => message?.participants?.includes(vendor.sellerID));
         if (index !== -1) {
@@ -134,19 +173,16 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             const [item] = vList.splice(index, 1);
             let newItem = {
                 ...item,
-                sellerIDDetail: {
-                    ...item.sellerIDDetail,
-                    latestMessageContent: message.content,
-                    latestMessageCreatedAt: message.createdAt
+                lastUnreadMessage: {
+                    content: message.content,
+                    createdAt: message.createdAt
                 }
             }
-            if (activeSellerId !== message?.userId) {
+
+            if (rfqQuotesUserId !== message?.rfqQuotesUserId) {
                 newItem = {
                     ...newItem,
-                    sellerIDDetail: {
-                        ...newItem.sellerIDDetail,
-                        unreadMsgCount: newItem.sellerIDDetail.unreadMsgCount + 1,
-                    }
+                    unreadMsgCount: newItem.sellerIDDetail.unreadMsgCount + 1,
                 }
 
                 if (message?.rfqProductPriceRequest) {
@@ -216,6 +252,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     }
 
     const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, buyerId?: number, requestedPrice?: number) => {
+
         const msgPayload = {
             roomId: roomId,
             content,
@@ -223,7 +260,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             rfqQuoteProductId,
             buyerId,
             requestedPrice,
-            rfqQuotesUserId: activeSellerId
+            rfqQuotesUserId: selectedVendor?.id,
+            userId: activeSellerId
         }
         sendMessage(msgPayload)
     }
@@ -237,7 +275,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 rfqQuoteProductId,
                 buyerId,
                 requestedPrice,
-                rfqQuotesUserId: activeSellerId
+                rfqQuotesUserId: selectedVendor?.id
             }
             cratePrivateRoom(payload);
         } catch (error) {
@@ -423,11 +461,13 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                                     profilePicture={item?.sellerIDDetail?.profilePicture}
                                     offerPrice={item?.offerPrice}
                                     onClick={() => {
-                                        setActiveSellerId(item?.sellerID)
+                                        setActiveSellerId(item?.sellerID);
+                                        setRfqQuotesUserId(item.id)
                                         handleRfqProducts(item)
                                     }}
                                     seller={item.sellerIDDetail}
                                     isSelected={activeSellerId === item?.sellerID}
+                                    vendor={item}
                                 />
                             ),
                         )}
@@ -534,6 +574,9 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                             roomId={selectedRoom}
                             selectedChatHistory={selectedChatHistory}
                             chatHistoryLoading={chatHistoryLoading}
+                            activeSellerId={activeSellerId}
+                            unreadMsgCount={selectedVendor?.unreadMsgCount}
+                            updateVendorMessageCount={updateVendorMessageCount}
                         />
                     </div>
                     <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">

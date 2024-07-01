@@ -4,6 +4,12 @@ export enum RfqProductPriceRequestStatus {
     PENDING = "P",
 }
 
+export enum MessageStatus {
+    UNREAD,
+    READ,
+    DELETED
+}
+
 export interface CreatePrivateRoomRequest {
     creatorId: string;
     participants: number[];
@@ -29,4 +35,10 @@ export interface RfqPriceStatusUpdateRequest {
     id: number;
     status: RfqProductPriceRequestStatus;
     userId?: number;
+}
+
+
+export interface UpdateMessageStatusRequest {
+    userId: number;
+    roomId: number;
 }

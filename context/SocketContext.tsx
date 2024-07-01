@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
+import { MessageStatus } from "@/utils/types/chat.types";
 
 interface newMessageType {
   content: string;
@@ -206,7 +207,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         buyerId,
         sellerId,
         requestedPrice,
-        rfqQuotesUserId
+        rfqQuotesUserId,
+        messageStatus: MessageStatus.READ
       });
     }
   };
