@@ -253,6 +253,13 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
                 <CarouselNext className="bottom-0" />
               </Carousel>
             ) : null}
+
+            {sameBrandProductsQuery?.isFetched &&
+            !memoizedSameBrandProductList?.length ? (
+              <div className="text-center w-full">
+                <h3>No products found</h3>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
