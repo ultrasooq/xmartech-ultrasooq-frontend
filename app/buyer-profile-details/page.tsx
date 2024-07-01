@@ -11,6 +11,7 @@ import { Dialog } from "@/components/ui/dialog";
 import TradeRoleUpgradeContent from "@/components/modules/buyerProfileDetails/TradleRoleUpgradeContent";
 import ConfirmContent from "@/components/shared/ConfirmContent";
 import { useToast } from "@/components/ui/use-toast";
+import BackgroundImage from "@/public/images/before-login-bg.png";
 
 const BuyerProfileDetailsPage = () => {
   const router = useRouter();
@@ -70,7 +71,7 @@ const BuyerProfileDetailsPage = () => {
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
-            src="/images/before-login-bg.png"
+            src={BackgroundImage}
             className="h-full w-full object-cover object-center"
             alt="background"
             fill

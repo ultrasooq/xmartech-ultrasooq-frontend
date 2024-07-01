@@ -17,6 +17,7 @@ import VendorCard from "@/components/modules/companyProfileDetails/VendorCard";
 import VendorBranchSection from "@/components/modules/companyProfileDetails/VendorBranchSection";
 import VendorInformationSection from "@/components/modules/companyProfileDetails/VendorInformationSection";
 import VendorMoreInformationSection from "@/components/modules/companyProfileDetails/VendorMoreInfomationSection";
+import BackgroundImage from "@/public/images/before-login-bg.png";
 
 export default function CompanyProfileDetailsPage() {
   const router = useRouter();
@@ -65,7 +66,7 @@ export default function CompanyProfileDetailsPage() {
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
-            src="/images/before-login-bg.png"
+            src={BackgroundImage}
             className="h-full w-full object-cover object-center"
             alt="background"
             fill

@@ -15,6 +15,7 @@ import { useVendorDetails } from "@/apis/queries/product.queries";
 import VendorCard from "@/components/modules/companyProfileDetails/VendorCard";
 import VendorInformationSection from "@/components/modules/freelancerProfileDetails/VendorInformationSection";
 import VendorMoreInformationSection from "@/components/modules/freelancerProfileDetails/VendorMoreInformationSection";
+import BackgroundImage from "@/public/images/before-login-bg.png";
 
 export default function FreelancerProfileDetailsPage() {
   const router = useRouter();
@@ -56,7 +57,7 @@ export default function FreelancerProfileDetailsPage() {
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
-            src="/images/before-login-bg.png"
+            src={BackgroundImage}
             className="h-full w-full object-cover object-center"
             alt="background"
             fill

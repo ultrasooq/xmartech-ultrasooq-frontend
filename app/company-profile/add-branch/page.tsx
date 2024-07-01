@@ -31,6 +31,7 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
+import BackgroundImage from "@/public/images/before-login-bg.png";
 
 const formSchema = z.object({
   uploadBranchImage: z.any().optional(),
@@ -259,7 +260,7 @@ const AddBranchPage = () => {
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
-          src="/images/before-login-bg.png"
+          src={BackgroundImage}
           className="h-full w-full object-cover object-center"
           alt="background"
           fill

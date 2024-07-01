@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import { handleDescriptionParse } from "@/utils/helper";
+import BackgroundImage from "@/public/images/before-login-bg.png";
 
 const formSchema = z.object({
   aboutUs: z.string().trim().optional(),
@@ -78,7 +79,7 @@ export default function EditProfilePage() {
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
-          src="/images/before-login-bg.png"
+          src={BackgroundImage}
           className="h-full w-full object-cover object-center"
           alt="background"
           fill
