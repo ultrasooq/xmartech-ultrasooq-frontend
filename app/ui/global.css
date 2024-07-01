@@ -4033,27 +4033,6 @@ input::-ms-clear {
   line-height: 38px;
 }
 
-/* editor */
-.ql-editor {
-  min-height: 160px;
-}
-
-.quill>.ql-container>.ql-editor.ql-blank::before {
-  font-size: 1rem;
-  color: #7f818d;
-  font-style: normal;
-  font-family: 'Inter';
-}
-
-/* .readonly-quill .ql-editor {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.readonly-quill .ql-container.ql-snow {
-  border: none !important;
-} */
-
 .player-wrapper {
   position: relative;
   /* height: 50%; */
