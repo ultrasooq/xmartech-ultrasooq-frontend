@@ -23,7 +23,7 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
-import { getOrCreateDeviceId } from "@/utils/helper";
+import { getOrCreateDeviceId, handleDescriptionParse } from "@/utils/helper";
 import ReviewSection from "@/components/shared/ReviewSection";
 import QuestionsAnswersSection from "@/components/modules/productDetails/QuestionsAnswersSection";
 import {
@@ -370,14 +370,13 @@ const ProductDetailsPage = () => {
 
                   <TabsContent value="description" className="mt-0">
                     <div className="w-full bg-white">
-                      {/* <PlateEditor
+                      <PlateEditor
                         description={
-                          productDetails?.description
-                            ? JSON.parse(productDetails?.description)
-                            : undefined
+                          handleDescriptionParse(productDetails?.description) ||
+                          undefined
                         }
                         readOnly
-                      /> */}
+                      />
                     </div>
                   </TabsContent>
                   <TabsContent value="specification" className="mt-0">

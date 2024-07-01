@@ -72,11 +72,18 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
     }
   };
 
+  const productSellerImage =
+    productDetails?.product_productPrice?.[0]?.productPrice_productSellerImage;
+
   useEffect(() => {
-    if (!productDetails?.productImages?.length) return;
+    const tempImages = productSellerImage?.length
+      ? productSellerImage
+      : productDetails?.productImages;
+
+    if (!tempImages) return;
 
     setPreviewImages(
-      productDetails?.productImages?.map((item: any) =>
+      tempImages?.map((item: any) =>
         item?.image && validator.isURL(item.image)
           ? item.image
           : item?.video && validator.isURL(item.video)
@@ -85,7 +92,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
       ),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productDetails?.productImages?.length]);
+  }, [productSellerImage, productDetails?.productImages]);
 
   useEffect(() => {
     if (!api) {

@@ -143,7 +143,11 @@ const TrendingPage = () => {
         productName: item?.productName || "-",
         productPrice: item?.productPrice || 0,
         offerPrice: item?.offerPrice || 0,
-        productImage: item?.productImages?.[0]?.image,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
         brandName: item?.brand?.brandName || "-",

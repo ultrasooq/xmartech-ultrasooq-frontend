@@ -25,6 +25,7 @@ import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import LoaderIcon from "@/public/images/load.png";
+import { handleDescriptionParse } from "@/utils/helper";
 
 const baseProductPriceItemSchema = z.object({
   consumerType: z.string().trim().optional(),
@@ -838,7 +839,7 @@ const EditProductPage = () => {
         productSpecificationList: productSpecificationList,
         description: product?.description || "",
         descriptionJson: product?.description
-          ? JSON.parse(product?.description)
+          ? handleDescriptionParse(product?.description)
           : undefined,
       });
     }

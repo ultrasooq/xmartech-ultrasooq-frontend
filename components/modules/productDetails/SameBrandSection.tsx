@@ -60,6 +60,10 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
     return (
       sameBrandProductsQuery?.data?.data?.map((item: any) => ({
         ...item,
+        productImages: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]?.productPrice_productSellerImage
+          : item?.productImages,
         shortDescription: item?.product_productShortDescription?.length
           ? item?.product_productShortDescription?.[0]?.shortDescription
           : "-",
@@ -252,6 +256,13 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
                 <CarouselPrevious className="top-0" />
                 <CarouselNext className="bottom-0" />
               </Carousel>
+            ) : null}
+
+            {sameBrandProductsQuery?.isFetched &&
+            !memoizedSameBrandProductList?.length ? (
+              <div className="w-full text-center">
+                <h3>No products found</h3>
+              </div>
             ) : null}
           </div>
         </div>
