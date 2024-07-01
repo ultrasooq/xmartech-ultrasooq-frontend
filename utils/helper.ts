@@ -118,3 +118,9 @@ export const handleDescriptionParse = (description: string) => {
     }
   }
 };
+
+export const formatPrice = (price: number): string => {
+  if (!price) return '';
+  const formattedTotal = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `$${formattedTotal}`;
+}
