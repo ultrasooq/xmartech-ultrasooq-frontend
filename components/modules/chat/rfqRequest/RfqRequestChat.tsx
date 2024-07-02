@@ -182,7 +182,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             if (rfqQuotesUserId !== message?.rfqQuotesUserId) {
                 newItem = {
                     ...newItem,
-                    unreadMsgCount: newItem.sellerIDDetail.unreadMsgCount + 1,
+                    unreadMsgCount: newItem?.unreadMsgCount + 1,
                 }
 
                 if (message?.rfqProductPriceRequest) {
