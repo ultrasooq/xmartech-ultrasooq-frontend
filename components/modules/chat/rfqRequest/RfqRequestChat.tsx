@@ -159,7 +159,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
 
     const updateVendorMessageCount = () => {
         const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => vendor.sellerID === activeSellerId);
-        if(index !== -1) {
+        if (index !== -1) {
             const vList = [...vendorList];
             vList[index]["unreadMsgCount"] = 0;
             setVendorList(vList)
@@ -167,44 +167,47 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     }
 
     const handleNewMessage = (message: any) => {
-        const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => message?.participants?.includes(vendor.sellerID));
-        if (index !== -1) {
-            const vList = [...vendorList];
-            const [item] = vList.splice(index, 1);
-            let newItem = {
-                ...item,
-                lastUnreadMessage: {
-                    content: message.content,
-                    createdAt: message.createdAt
-                }
-            }
-
-            if (rfqQuotesUserId !== message?.rfqQuotesUserId) {
-                newItem = {
-                    ...newItem,
-                    unreadMsgCount: newItem?.unreadMsgCount + 1,
-                }
-
-                if (message?.rfqProductPriceRequest) {
-                    const rList = newItem.rfqProductPriceRequests;
-                    rList.push(message?.rfqProductPriceRequest);
-                    newItem = {
-                        ...newItem,
-                        rfqProductPriceRequests: rList
+        try {
+            const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => message?.participants?.includes(vendor.sellerID));
+            if (index !== -1) {
+                const vList = [...vendorList];
+                const [item] = vList.splice(index, 1);
+                let newItem = {
+                    ...item,
+                    lastUnreadMessage: {
+                        content: message.content,
+                        createdAt: message.createdAt
                     }
                 }
+
+                if (rfqQuotesUserId !== message?.rfqQuotesUserId) {
+                    newItem = {
+                        ...newItem,
+                        unreadMsgCount: newItem?.unreadMsgCount + 1,
+                    }
+
+                    if (message?.rfqProductPriceRequest) {
+                        const rList = newItem.rfqProductPriceRequests;
+                        rList.push(message?.rfqProductPriceRequest);
+                        newItem = {
+                            ...newItem,
+                            rfqProductPriceRequests: rList
+                        }
+                    }
+                }
+                vList.unshift(newItem);
+                setVendorList(vList);
+                if (message?.participants?.includes(activeSellerId)) {
+                    const chatHistory = [...selectedChatHistory]
+                    chatHistory.push(message);
+                    setSelectedChatHistory(chatHistory)
+                }
+                if (message?.rfqProductPriceRequest) {
+                    updateRFQProduct(message?.rfqProductPriceRequest)
+                }
             }
-            vList.unshift(newItem);
-            setVendorList(vList);
-            if (message?.participants?.includes(activeSellerId)) {
-                const chatHistory = [...selectedChatHistory]
-                chatHistory.push(message);
-                setSelectedChatHistory(chatHistory)
-            }
-            if (message?.rfqProductPriceRequest) {
-                updateRFQProduct(message?.rfqProductPriceRequest)
-            }
-        }
+        } catch (error) {}
+
     }
 
     const checkRoomId = async () => {
@@ -361,7 +364,9 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 const index = vDor?.rfqQuotesProducts.findIndex((product: any) => product.id === rRequest.rfqQuoteProductId);
                 if (index !== -1) {
                     const pList = [...vDor?.rfqQuotesProducts];
-                    pList[index].offerPrice = rRequest?.requestedPrice;
+                    if (rRequest.status === "APPROVED") {
+                        pList[index].offerPrice = rRequest?.requestedPrice;
+                    }
                     let priceRequest = pList[index]?.priceRequest || null;
                     if (priceRequest) {
                         priceRequest = {

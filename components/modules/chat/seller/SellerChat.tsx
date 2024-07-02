@@ -155,32 +155,38 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     }
 
     const handleNewMessage = (message: any) => {
-        const index = rfqQuotes.findIndex((rfq: any) => message?.rfqId === rfq.rfqQuotesId);
-        if (index !== -1) {
-            const rfqList = [...rfqQuotes];
-            const [item] = rfqList.splice(index, 1);
-            let newItem = {
-                ...item,
-                lastUnreadMessage: {
-                    content: message.content,
-                    createdAt: message.createdAt
+        try {
+            const index = rfqQuotes.findIndex((rfq: any) => message?.rfqId === rfq.rfqQuotesId);
+            if (index !== -1) {
+                const rfqList = [...rfqQuotes];
+                const [item] = rfqList.splice(index, 1);
+                let newItem = {
+                    ...item,
+                    lastUnreadMessage: {
+                        content: message.content,
+                        createdAt: message.createdAt
+                    }
                 }
-            }
 
-            if (selectedRfqQuote?.rfqQuotesId !== message?.rfqId) {
-                newItem = {
-                    ...newItem,
-                    unreadMsgCount: newItem?.unreadMsgCount + 1,
+                if (selectedRfqQuote?.rfqQuotesId !== message?.rfqId) {
+                    newItem = {
+                        ...newItem,
+                        unreadMsgCount: newItem?.unreadMsgCount + 1,
+                    }
+                }
+                rfqList.unshift(newItem);
+                setRfqQuotes(rfqList);
+                if (selectedRfqQuote?.rfqQuotesId === message.rfqId) {
+                    const chatHistory = [...selectedChatHistory]
+                    chatHistory.push(message);
+                    setSelectedChatHistory(chatHistory)
+                }
+
+                if (message?.rfqProductPriceRequest) {
+                    updateRFQProduct(message?.rfqProductPriceRequest)
                 }
             }
-            rfqList.unshift(newItem);
-            setRfqQuotes(rfqList);
-            if (selectedRfqQuote?.rfqQuotesId === message.rfqId) {
-                const chatHistory = [...selectedChatHistory]
-                chatHistory.push(message);
-                setSelectedChatHistory(chatHistory)
-            }
-        }
+        } catch (error) {}
     }
 
     const handleSendMessage = async () => {
@@ -289,11 +295,12 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         }
     }
 
-
     const handleRfqRequest = (rRequest: {
         id: number;
         messageId: number;
+        requestedPrice: number;
         rfqQuoteProductId: number;
+        requestedById: number;
         status: string;
     }) => {
         const chatHistory = [...selectedChatHistory]
@@ -310,18 +317,60 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             chatHistory[index] = updatedMessage
             setSelectedChatHistory(chatHistory)
         }
+
+        // UPDATE RFQ PRODUCT 
+        updateRFQProduct(rRequest);
     }
 
+    const updateRFQProduct = (rRequest: {
+        id: number;
+        messageId: number;
+        requestedPrice: number;
+        rfqQuoteProductId: number;
+        requestedById: number;
+        status: string;
+    }) => {
+        if (selectedRfqQuote?.buyerID === rRequest?.requestedById) {
+            const index = quoteProducts.findIndex((product: any) => product.id === rRequest.rfqQuoteProductId);
+            if (index !== -1) {
+                const pList = [...quoteProducts];
+                if (rRequest.status === "APPROVED") {
+                    pList[index].offerPrice = rRequest?.requestedPrice;
+                }
+                let priceRequest = pList[index]?.priceRequest || null;
+                if (priceRequest) {
+                    priceRequest = {
+                        ...priceRequest,
+                        id: rRequest.id,
+                        requestedPrice: rRequest.requestedPrice,
+                        rfqQuoteProductId: rRequest.rfqQuoteProductId,
+                        status: rRequest?.status
+                    }
+                } else if (priceRequest === null) {
+                    priceRequest = {
+                        ...rRequest
+                    }
+                }
+                pList[index]["priceRequest"] = priceRequest;
+                setQuoteProducts(pList)
+            }
+        }
+    }
+    
     const handleRfqProducts = (item: any) => {
         const newData = item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
             (i: any) => {
                 let priceRequest = null
                 const pRequest = item?.rfqProductPriceRequests.find((request: any) => request?.rfqQuoteProductId === i.id);
                 if (pRequest) priceRequest = pRequest;
-
+                let offerPrice = item.offerPrice;
+                if (priceRequest?.status === "APPROVED") {
+                    offerPrice = priceRequest?.requestedPrice
+                }
                 return {
                     ...i,
                     priceRequest,
+                    offerPrice,
                     address:
                         item?.rfqQuotesUser_rfqQuotes
                             ?.rfqQuotes_rfqQuoteAddress?.address,
