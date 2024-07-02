@@ -17,6 +17,7 @@ import {
 } from "@/apis/queries/auth.queries";
 import { useToast } from "@/components/ui/use-toast";
 import Image from "next/image";
+import BackgroundImage from "@/public/images/before-login-bg.png";
 
 export default function EmailChangeVerifyPage() {
   const router = useRouter();
@@ -191,7 +192,7 @@ export default function EmailChangeVerifyPage() {
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
-          src="/images/before-login-bg.png"
+          src={BackgroundImage}
           className="h-full w-full object-cover object-center"
           alt="background"
           fill

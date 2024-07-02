@@ -41,6 +41,7 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import AddImageContent from "@/components/modules/profile/AddImageContent";
 import ClostIcon from "@/public/images/close-white.svg";
+import BackgroundImage from "@/public/images/before-login-bg.png";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -340,7 +341,7 @@ export default function ProfilePage() {
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
-          src="/images/before-login-bg.png"
+          src={BackgroundImage}
           className="h-full w-full object-cover object-center"
           alt="background"
           fill

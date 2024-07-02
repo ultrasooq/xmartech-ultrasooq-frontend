@@ -2,15 +2,15 @@ import React from "react";
 import Image from "next/image";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 import { handleDescriptionParse } from "@/utils/helper";
+import EditIcon from "@/public/images/edit-icon.svg";
+import Link from "next/link";
 
 type MoreInformationSectionProps = {
   userDetails: any;
-  onEdit: () => void;
 };
 
 const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
   userDetails,
-  onEdit,
 }) => {
   return (
     <div className="w-full py-4">
@@ -21,20 +21,19 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
           </h2>
           {userDetails?.userBranch?.length ? (
             <div className="w-auto">
-              <button
-                type="button"
-                onClick={onEdit}
+              <Link
+                href={`/company-profile/edit-profile?userId=${userDetails?.id}`}
                 className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
                 <Image
-                  src="/images/edit-icon.svg"
+                  src={EditIcon}
                   height={18}
                   width={18}
                   className="mr-1"
                   alt="edit-icon"
                 />
                 edit
-              </button>
+              </Link>
             </div>
           ) : null}
         </div>

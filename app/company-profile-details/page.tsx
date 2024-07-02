@@ -17,15 +17,13 @@ import VendorCard from "@/components/modules/companyProfileDetails/VendorCard";
 import VendorBranchSection from "@/components/modules/companyProfileDetails/VendorBranchSection";
 import VendorInformationSection from "@/components/modules/companyProfileDetails/VendorInformationSection";
 import VendorMoreInformationSection from "@/components/modules/companyProfileDetails/VendorMoreInfomationSection";
+import BackgroundImage from "@/public/images/before-login-bg.png";
+import Link from "next/link";
 
 export default function CompanyProfileDetailsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile-info");
   const [activeSellerId, setActiveSellerId] = useState<string | null>();
-  const [activeProductPriceId, setActiveProductPriceId] = useState<
-    string | null
-  >();
-  const [activeProductId, setActiveProductId] = useState<string | null>();
 
   const me = useMe();
 
@@ -37,19 +35,6 @@ export default function CompanyProfileDetailsPage() {
   );
 
   const vendor = vendorQuery.data?.data;
-
-  const handleCompanyProfilePage = () => router.push("/profile");
-  const handleAddCompanyBranchPage = () => {
-    if (!me.data?.data?.userBranch?.length) {
-      router.push("/company-profile");
-    } else {
-      router.push("/company-profile/add-branch");
-    }
-  };
-  const handleEditCompanyPage = () =>
-    router.push(`/company-profile/edit-profile?userId=${me.data?.data.id}`);
-  const handleEditCompanyBranchPage = (branchId: number) =>
-    router.push(`/company-profile/edit-branch?branchId=${branchId}`);
 
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
@@ -65,7 +50,7 @@ export default function CompanyProfileDetailsPage() {
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
-            src="/images/before-login-bg.png"
+            src={BackgroundImage}
             className="h-full w-full object-cover object-center"
             alt="background"
             fill
@@ -82,10 +67,7 @@ export default function CompanyProfileDetailsPage() {
             </div>
 
             {!activeSellerId ? (
-              <ProfileCard
-                userDetails={me.data?.data}
-                onEdit={handleEditCompanyPage}
-              />
+              <ProfileCard userDetails={me.data?.data} />
             ) : null}
 
             {activeSellerId ? (
@@ -119,10 +101,7 @@ export default function CompanyProfileDetailsPage() {
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {!activeSellerId ? (
-                      <InformationSection
-                        userDetails={me.data?.data}
-                        onEdit={handleCompanyProfilePage}
-                      />
+                      <InformationSection userDetails={me.data?.data} />
                     ) : null}
 
                     {activeSellerId ? (
@@ -130,10 +109,7 @@ export default function CompanyProfileDetailsPage() {
                     ) : null}
 
                     {!activeSellerId && me.data?.data?.userBranch?.length ? (
-                      <MoreInformationSection
-                        userDetails={me.data?.data}
-                        onEdit={handleEditCompanyPage}
-                      />
+                      <MoreInformationSection userDetails={me.data?.data} />
                     ) : null}
 
                     {activeSellerId && vendor?.userBranch?.length ? (
@@ -149,14 +125,17 @@ export default function CompanyProfileDetailsPage() {
                     <div className="mb-4 w-full pt-4">
                       {!activeSellerId ? (
                         <div className="mb-5 flex w-full items-center justify-end">
-                          <button
-                            type="button"
-                            onClick={handleAddCompanyBranchPage}
+                          <Link
+                            href={
+                              !me.data?.data?.userBranch?.length
+                                ? "/company-profile"
+                                : "/company-profile/add-branch"
+                            }
                             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
                           >
                             <PlusIcon className="mr-1 h-5 w-5" />
                             Add
-                          </button>
+                          </Link>
                         </div>
                       ) : null}
                       {!activeSellerId &&
@@ -166,12 +145,7 @@ export default function CompanyProfileDetailsPage() {
                           )
                           .map((item: any) => (
                             <React.Fragment key={item.id}>
-                              <BranchSection
-                                branchDetails={item}
-                                onEditBranch={() =>
-                                  handleEditCompanyBranchPage(item.id)
-                                }
-                              />
+                              <BranchSection branchDetails={item} />
                             </React.Fragment>
                           ))}
 

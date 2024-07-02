@@ -27,6 +27,7 @@ import { useCountries } from "@/apis/queries/masters.queries";
 import { ICountries, OptionProps } from "@/utils/types/common.types";
 import { NO_OF_EMPLOYEES_LIST } from "@/utils/constants";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
+import BackgroundImage from "@/public/images/before-login-bg.png";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -221,7 +222,7 @@ export default function EditProfilePage() {
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
-          src="/images/before-login-bg.png"
+          src={BackgroundImage}
           className="h-full w-full object-cover object-center"
           alt="background"
           fill

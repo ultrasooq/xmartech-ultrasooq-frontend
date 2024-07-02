@@ -15,6 +15,8 @@ import { useVendorDetails } from "@/apis/queries/product.queries";
 import VendorCard from "@/components/modules/companyProfileDetails/VendorCard";
 import VendorInformationSection from "@/components/modules/freelancerProfileDetails/VendorInformationSection";
 import VendorMoreInformationSection from "@/components/modules/freelancerProfileDetails/VendorMoreInformationSection";
+import BackgroundImage from "@/public/images/before-login-bg.png";
+import Link from "next/link";
 
 export default function FreelancerProfileDetailsPage() {
   const router = useRouter();
@@ -32,16 +34,6 @@ export default function FreelancerProfileDetailsPage() {
 
   const vendor = vendorQuery.data?.data;
 
-  const handleFreelancerProfilePage = () => router.push("/profile");
-  const handleEditFreelancerProfilePage = () =>
-    router.push(`/freelancer-profile/edit-profile`);
-  const handleEditFreelancerBranchPage = () =>
-    router.push(
-      `/freelancer-profile/edit-branch?branchId=${me.data?.data?.userBranch?.[0]?.id}`,
-    );
-  const handleAddFreelancerBranchPage = () =>
-    router.push("/freelancer-profile");
-
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
     let sellerId = params.get("userId");
@@ -56,7 +48,7 @@ export default function FreelancerProfileDetailsPage() {
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
-            src="/images/before-login-bg.png"
+            src={BackgroundImage}
             className="h-full w-full object-cover object-center"
             alt="background"
             fill
@@ -72,10 +64,7 @@ export default function FreelancerProfileDetailsPage() {
             </div>
 
             {!activeSellerId ? (
-              <ProfileCard
-                userDetails={me.data?.data}
-                onEdit={handleFreelancerProfilePage}
-              />
+              <ProfileCard userDetails={me.data?.data} />
             ) : null}
 
             {/* importing from company module */}
@@ -110,10 +99,7 @@ export default function FreelancerProfileDetailsPage() {
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {!activeSellerId ? (
-                      <InformationSection
-                        userDetails={me.data?.data}
-                        onEdit={handleFreelancerProfilePage}
-                      />
+                      <InformationSection userDetails={me.data?.data} />
                     ) : null}
 
                     {activeSellerId ? (
@@ -127,25 +113,20 @@ export default function FreelancerProfileDetailsPage() {
                         </p>
                         {!activeSellerId ? (
                           <div className="mb-5 flex w-full items-center justify-end pt-4">
-                            <button
-                              type="button"
-                              onClick={handleAddFreelancerBranchPage}
+                            <Link
+                              href="/freelancer-profile"
                               className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
                             >
                               <PlusIcon className="mr-1 h-5 w-5" />
                               Add
-                            </button>
+                            </Link>
                           </div>
                         ) : null}
                       </>
                     ) : null}
 
                     {!activeSellerId && me?.data?.data?.userBranch?.length ? (
-                      <MoreInformationSection
-                        userDetails={me.data?.data}
-                        onEditProfile={handleEditFreelancerProfilePage}
-                        onEditBranch={handleEditFreelancerBranchPage}
-                      />
+                      <MoreInformationSection userDetails={me.data?.data} />
                     ) : null}
 
                     {activeSellerId && me?.data?.data?.userBranch?.length ? (
