@@ -79,7 +79,7 @@ import {
   createStrikethroughPlugin,
   MARK_STRIKETHROUGH,
   createCodePlugin,
-  // MARK_CODE,
+  MARK_CODE,
   createSubscriptPlugin,
   MARK_SUBSCRIPT,
   createSuperscriptPlugin,
@@ -125,7 +125,7 @@ import { createJuicePlugin } from "@udecode/plate-juice";
 // import { HTML5Backend } from "react-dnd-html5-backend";
 
 // import { BlockquoteElement } from "@/components/plate-ui/blockquote-element";
-// import { CodeBlockElement } from "@/components/plate-ui/code-block-element";
+import { CodeBlockElement } from "@/components/plate-ui/code-block-element";
 // import { CodeLineElement } from "@/components/plate-ui/code-line-element";
 // import { CodeSyntaxLeaf } from "@/components/plate-ui/code-syntax-leaf";
 // import { ExcalidrawElement } from "@/components/plate-ui/excalidraw-element";
@@ -148,7 +148,7 @@ import { createJuicePlugin } from "@udecode/plate-juice";
 //   TableCellHeaderElement,
 // } from "@/components/plate-ui/table-cell-element";
 // import { TodoListElement } from "@/components/plate-ui/todo-list-element";
-// import { CodeLeaf } from "@/components/plate-ui/code-leaf";
+import { CodeLeaf } from "@/components/plate-ui/code-leaf";
 // import { CommentLeaf } from "@/components/plate-ui/comment-leaf";
 // import { CommentsPopover } from "@/components/plate-ui/comments-popover";
 // import { HighlightLeaf } from "@/components/plate-ui/highlight-leaf";
@@ -338,7 +338,7 @@ const plugins = createPlugins(
       // withDraggables(
       withPlaceholders({
         // [ELEMENT_BLOCKQUOTE]: BlockquoteElement,
-        // [ELEMENT_CODE_BLOCK]: CodeBlockElement,
+        [ELEMENT_CODE_BLOCK]: CodeBlockElement,
         // [ELEMENT_CODE_LINE]: CodeLineElement,
         // [ELEMENT_CODE_SYNTAX]: CodeSyntaxLeaf,
         // [ELEMENT_EXCALIDRAW]: ExcalidrawElement,
@@ -364,7 +364,7 @@ const plugins = createPlugins(
         // [ELEMENT_TH]: TableCellHeaderElement,
         // [ELEMENT_TODO_LI]: TodoListElement,
         [MARK_BOLD]: withProps(PlateLeaf, { as: "strong" }),
-        // [MARK_CODE]: CodeLeaf,
+        [MARK_CODE]: CodeLeaf,
         // [MARK_COMMENT]: CommentLeaf,
         // [MARK_HIGHLIGHT]: HighlightLeaf,
         [MARK_ITALIC]: withProps(PlateLeaf, { as: "em" }),

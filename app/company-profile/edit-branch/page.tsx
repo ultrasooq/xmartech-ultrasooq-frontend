@@ -34,6 +34,7 @@ import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import { useQueryClient } from "@tanstack/react-query";
+import BackgroundImage from "@/public/images/before-login-bg.png";
 
 const formSchema = z
   .object({
@@ -343,7 +344,7 @@ export default function EditBranchPage() {
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
         <Image
-          src="/images/before-login-bg.png"
+          src={BackgroundImage}
           className="h-full w-full object-cover object-center"
           alt="background"
           fill

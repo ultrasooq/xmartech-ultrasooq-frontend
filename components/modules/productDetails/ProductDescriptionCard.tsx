@@ -1,6 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-// import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
@@ -13,7 +11,6 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  // DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import OtherSellerSection from "../trending/OtherSellerSection";
