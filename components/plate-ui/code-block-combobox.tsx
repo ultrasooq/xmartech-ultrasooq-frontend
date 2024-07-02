@@ -12,7 +12,7 @@ import {
 
 import { Icons } from "@/components/icons";
 
-import { Button } from "../ui/button";
+import { Button } from "./button";
 import {
   Command,
   CommandEmpty,
@@ -20,7 +20,7 @@ import {
   CommandItem,
   CommandList,
 } from "./command";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
 // import "prismjs/components/prism-antlr4.js";
 // import "prismjs/components/prism-bash.js";

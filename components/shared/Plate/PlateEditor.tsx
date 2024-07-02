@@ -130,7 +130,7 @@ import { CodeBlockElement } from "@/components/plate-ui/code-block-element";
 // import { CodeSyntaxLeaf } from "@/components/plate-ui/code-syntax-leaf";
 // import { ExcalidrawElement } from "@/components/plate-ui/excalidraw-element";
 // import { HrElement } from "@/components/plate-ui/hr-element";
-// import { ImageElement } from "@/components/plate-ui/image-element";
+import { ImageElement } from "@/components/plate-ui/image-element";
 // import { LinkElement } from "@/components/plate-ui/link-element";
 // import { LinkFloatingToolbar } from "@/components/plate-ui/link-floating-toolbar";
 // import { ToggleElement } from "@/components/plate-ui/toggle-element";
@@ -343,7 +343,7 @@ const plugins = createPlugins(
         // [ELEMENT_CODE_SYNTAX]: CodeSyntaxLeaf,
         // [ELEMENT_EXCALIDRAW]: ExcalidrawElement,
         // [ELEMENT_HR]: HrElement,
-        // [ELEMENT_IMAGE]: ImageElement,
+        [ELEMENT_IMAGE]: ImageElement,
         // [ELEMENT_LINK]: LinkElement,
         // [ELEMENT_TOGGLE]: ToggleElement,
         // [ELEMENT_COLUMN_GROUP]: ColumnGroupElement,
