@@ -10,13 +10,13 @@ import {
 import { COMPANY_UNIQUE_ID } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import EditIcon from "@/public/images/edit-icon.svg";
+import Link from "next/link";
 
 type ProfileCardProps = {
   userDetails: any;
-  onEdit: () => void;
 };
 
-const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
+const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
   const memoizedInitials = useMemo(
     () => getInitials(userDetails?.firstName, userDetails?.lastName),
     [userDetails?.firstName, userDetails?.lastName],
@@ -71,16 +71,15 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
           />
         </div>
       </div> */}
-      <div className="w-full p-3 md:w-[calc(100%_-_10rem)] md:pl-7">
+      <div className="w-full pl-3 md:w-[calc(100%_-_10rem)] md:pl-7">
         <div className="flex w-full flex-wrap items-center justify-between">
           <h2 className="left-8 text-3xl font-semibold text-color-dark">
             {userDetails?.firstName || "NA"} {userDetails?.lastName}
           </h2>
           {userDetails?.userBranch?.length ? (
             <div className="w-auto">
-              <button
-                type="button"
-                onClick={onEdit}
+              <Link
+                href={`/company-profile/edit-profile?userId=${userDetails?.id}`}
                 className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
                 <Image
@@ -91,7 +90,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails, onEdit }) => {
                   alt="edit-icon"
                 />
                 edit
-              </button>
+              </Link>
             </div>
           ) : null}
         </div>

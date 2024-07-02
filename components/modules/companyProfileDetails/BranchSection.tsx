@@ -10,16 +10,13 @@ import {
 import { cn } from "@/lib/utils";
 import TagInformationSection from "./TagInformationSection";
 import EditIcon from "@/public/images/edit-icon.svg";
+import Link from "next/link";
 
 type BranchSectionProps = {
   branchDetails: any;
-  onEditBranch: () => void;
 };
 
-const BranchSection: React.FC<BranchSectionProps> = ({
-  branchDetails,
-  onEditBranch,
-}) => {
+const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
   const memoizedParsedDays = useMemo(
     () => parsedDays(branchDetails?.workingDays),
     [branchDetails?.workingDays],
@@ -62,9 +59,8 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                 Branch Information
               </h2>
 
-              <button
-                type="button"
-                onClick={onEditBranch}
+              <Link
+                href={`/company-profile/edit-branch?branchId=${branchDetails?.id}`}
                 className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
                 <Image
@@ -75,7 +71,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({
                   alt="edit-icon"
                 />
                 edit
-              </button>
+              </Link>
             </div>
             <div className="flex w-full flex-wrap">
               <div className="w-7/12">

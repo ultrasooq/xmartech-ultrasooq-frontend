@@ -1,15 +1,14 @@
 import Image from "next/image";
 import React, { useMemo } from "react";
 import EditIcon from "@/public/images/edit-icon.svg";
+import Link from "next/link";
 
 type InformationSectionProps = {
   userDetails: any;
-  onEdit: () => void;
 };
 
 const InformationSection: React.FC<InformationSectionProps> = ({
   userDetails,
-  onEdit,
 }) => {
   const getSocialLinks = useMemo(() => {
     if (userDetails?.userSocialLink?.length > 0) {
@@ -43,9 +42,8 @@ const InformationSection: React.FC<InformationSectionProps> = ({
           Company Information
         </h2>
         <div className="w-auto">
-          <button
-            type="button"
-            onClick={onEdit}
+          <Link
+            href="/profile"
             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
           >
             <Image
@@ -56,7 +54,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
               alt="edit-icon"
             />
             edit
-          </button>
+          </Link>
         </div>
       </div>
       <div className="w-full">

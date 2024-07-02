@@ -26,7 +26,6 @@ const BuyerProfileDetailsPage = () => {
     setIsRoleModalOpen(false);
     setRole(undefined);
   };
-  const handleBuyerProfilePage = () => router.push("/profile");
 
   const me = useMe();
   const updateProfile = useUpdateProfile();
@@ -96,10 +95,7 @@ const BuyerProfileDetailsPage = () => {
                 Update
               </button>
             </div>
-            <ProfileCard
-              userDetails={me.data?.data}
-              onEdit={handleBuyerProfilePage}
-            />
+            <ProfileCard userDetails={me.data?.data} />
             <div className="mt-12 w-full">
               <Tabs defaultValue="profile-info">
                 <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
@@ -112,10 +108,7 @@ const BuyerProfileDetailsPage = () => {
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    <InformationSection
-                      userDetails={me.data?.data}
-                      onEdit={handleBuyerProfilePage}
-                    />
+                    <InformationSection userDetails={me.data?.data} />
                   </div>
                 </TabsContent>
               </Tabs>

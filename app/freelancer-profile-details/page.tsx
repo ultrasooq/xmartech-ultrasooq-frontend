@@ -34,13 +34,6 @@ export default function FreelancerProfileDetailsPage() {
 
   const vendor = vendorQuery.data?.data;
 
-  const handleEditFreelancerProfilePage = () =>
-    router.push(`/freelancer-profile/edit-profile`);
-  const handleEditFreelancerBranchPage = () =>
-    router.push(
-      `/freelancer-profile/edit-branch?branchId=${me.data?.data?.userBranch?.[0]?.id}`,
-    );
-
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
     let sellerId = params.get("userId");
@@ -133,11 +126,7 @@ export default function FreelancerProfileDetailsPage() {
                     ) : null}
 
                     {!activeSellerId && me?.data?.data?.userBranch?.length ? (
-                      <MoreInformationSection
-                        userDetails={me.data?.data}
-                        onEditProfile={handleEditFreelancerProfilePage}
-                        onEditBranch={handleEditFreelancerBranchPage}
-                      />
+                      <MoreInformationSection userDetails={me.data?.data} />
                     ) : null}
 
                     {activeSellerId && me?.data?.data?.userBranch?.length ? (

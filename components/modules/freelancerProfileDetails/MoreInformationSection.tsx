@@ -3,17 +3,14 @@ import Image from "next/image";
 import { getAmPm, handleDescriptionParse, parsedDays } from "@/utils/helper";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 import EditIcon from "@/public/images/edit-icon.svg";
+import Link from "next/link";
 
 type MoreInformationSectionProps = {
   userDetails: any;
-  onEditProfile: () => void;
-  onEditBranch: () => void;
 };
 
 const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
   userDetails,
-  onEditProfile,
-  onEditBranch,
 }) => {
   const workingDays = userDetails?.userBranch?.[0]?.workingDays;
   const memoizedParsedDays = useMemo(
@@ -30,9 +27,8 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
         </h2>
         {userDetails?.userBranch?.length ? (
           <div className="w-auto">
-            <button
-              type="button"
-              onClick={onEditProfile}
+            <Link
+              href="/freelancer-profile/edit-profile"
               className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
             >
               <Image
@@ -43,7 +39,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
                 alt="edit-icon"
               />
               edit
-            </button>
+            </Link>
           </div>
         ) : null}
       </div>
@@ -72,9 +68,8 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
             </label>
             {userDetails?.userBranch?.length ? (
               <div className="w-auto">
-                <button
-                  type="button"
-                  onClick={onEditBranch}
+                <Link
+                  href={`/freelancer-profile/edit-branch?branchId=${userDetails?.userBranch?.[0]?.id}`}
                   className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
                 >
                   <Image
@@ -85,7 +80,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
                     alt="edit-icon"
                   />
                   edit
-                </button>
+                </Link>
               </div>
             ) : null}
           </div>
