@@ -186,7 +186,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     updateRFQProduct(message?.rfqProductPriceRequest)
                 }
             }
-        } catch (error) {}
+        } catch (error) { }
     }
 
     const handleSendMessage = async () => {
@@ -249,7 +249,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         try {
             const payloadRoomFind = {
                 rfqId: selectedRfqQuote?.rfqQuotesId,
-                userId: selectedRfqQuote?.buyerID
+                userId: selectedRfqQuote?.sellerID
             }
             const room = await findRoomId(payloadRoomFind);
             if (room?.data?.roomId) {
@@ -330,17 +330,20 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         requestedById: number;
         status: string;
     }) => {
-        if (selectedRfqQuote?.buyerID === rRequest?.requestedById) {
+        if (selectedRfqQuote?.buyerID === rRequest?.requestedById || (rRequest?.requestedById === user?.id && rRequest?.status === "REJECTED")) {
             const index = quoteProducts.findIndex((product: any) => product.id === rRequest.rfqQuoteProductId);
             if (index !== -1) {
-                const pList = [...quoteProducts];
+                const pList = quoteProducts;
+                let offerPrice = pList[index].offerPrice;
                 if (rRequest.status === "APPROVED") {
-                    pList[index].offerPrice = rRequest?.requestedPrice;
+                    offerPrice = rRequest?.requestedPrice;
                 }
+
                 let priceRequest = pList[index]?.priceRequest || null;
                 if (priceRequest) {
                     priceRequest = {
                         ...priceRequest,
+                        offerPrice,
                         id: rRequest.id,
                         requestedPrice: rRequest.requestedPrice,
                         rfqQuoteProductId: rRequest.rfqQuoteProductId,
@@ -356,12 +359,12 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             }
         }
     }
-    
+
     const handleRfqProducts = (item: any) => {
         const newData = item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
             (i: any) => {
                 let priceRequest = null
-                const pRequest = item?.rfqProductPriceRequests.find((request: any) => request?.rfqQuoteProductId === i.id);
+                const pRequest = item?.rfqProductPriceRequests?.find((request: any) => request?.rfqQuoteProductId === i.id && request?.status === "APPROVED");
                 if (pRequest) priceRequest = pRequest;
                 let offerPrice = item.offerPrice;
                 if (priceRequest?.status === "APPROVED") {
