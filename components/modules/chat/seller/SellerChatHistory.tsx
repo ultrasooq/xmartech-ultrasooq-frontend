@@ -27,6 +27,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
 
     useEffect(() => {
         if(unreadMsgCount) handleUnreadMessages()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [buyerId, roomId])
 
     const handlePriceStatus = async (id: number, status: RfqProductPriceRequestStatus) => {
