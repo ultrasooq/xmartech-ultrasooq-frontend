@@ -164,7 +164,11 @@ export default function RegisterPage() {
       form.reset();
       router.push("/otp-verify");
     } else if (response?.status && response?.accessToken) {
-      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+      // setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+      setCookie(PUREMOON_TOKEN_KEY, response.accessToken, {
+        // 7 days
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      });
       toast({
         title: "Registration Successful",
         description: response.message,
