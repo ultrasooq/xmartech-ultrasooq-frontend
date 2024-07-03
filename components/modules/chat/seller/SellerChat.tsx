@@ -8,14 +8,43 @@ import SendIcon from "@/public/images/send-button.png";
 import OfferPriceCard from "@/components/modules/rfqRequest/OfferPriceCard";
 import { useAllRfqQuotesUsersBySellerId } from "@/apis/queries/rfq.queries";
 import { useSocket } from "@/context/SocketContext";
-import { findRoomId, getChatHistory } from "@/apis/requests/chat.requests";
+import { findRoomId, getChatHistory, updateUnreadMessages } from "@/apis/requests/chat.requests";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import SellerChatHistory from "./SellerChatHistory";
 import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
 import { useAuth } from "@/context/AuthContext";
 
-
+interface RfqQuoteType {
+    id: number;
+    rfqQuotesId: number;
+    offerPrice: string;
+    buyerID: number;
+    buyerIDDetail: {
+        firstName: string;
+        lastName: string;
+        profilePicture: string;
+    };
+    rfqQuotesUser_rfqQuotes: {
+        rfqQuotesProducts: {
+            rfqProductDetails: {
+                productImages: {
+                    id: number;
+                    image: string;
+                }[];
+            };
+        }[];
+        rfqQuotes_rfqQuoteAddress: {
+            address: string;
+            rfqDate: string;
+        };
+    };
+    lastUnreadMessage: {
+        content: string;
+        createdAt: string
+    },
+    unreadMsgCount: number
+}
 interface SellerChatProps {
 
 }
@@ -24,7 +53,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
     const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
     const [rfqQuotes, setRfqQuotes] = useState<any[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<any>("");
+    const [selectedRfqQuote, setSelectedRfqQuote] = useState<any>("");
     const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
     const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
     const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
@@ -44,18 +73,18 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         if (rfqQuotesDetails?.length > 0) {
             setRfqQuotes(rfqQuotesDetails)
             setActiveSellerId(rfqQuotesDetails[0]?.id);
-            setSelectedProduct(rfqQuotesDetails[0]);
+            setSelectedRfqQuote(rfqQuotesDetails[0]);
             handleRfqProducts(rfqQuotesDetails[0]);
         }
     }, [allRfqQuotesQuery.data?.data]);
 
     // check room id
     useEffect(() => {
-        if (selectedProduct?.sellerID && selectedProduct?.buyerID) {
+        if (selectedRfqQuote?.sellerID && selectedRfqQuote?.buyerID) {
             checkRoomId()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedProduct]);
+    }, [selectedRfqQuote]);
 
     // get chat history
     useEffect(() => {
@@ -69,6 +98,14 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     useEffect(() => {
         if (newMessage) {
             handleNewMessage(newMessage)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [newMessage]);
+
+    // update the new message status
+    useEffect(() => {
+        if (newMessage?.rfqId === selectedRfqQuote?.rfqQuotesId) {
+            handleUpdateNewMessageStatus(newMessage)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newMessage]);
@@ -101,15 +138,55 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errorMessage])
 
-    const handleNewMessage = (message: any) => {
-        const index = rfqQuotes.findIndex((rfq: any) => message?.rfqId === rfq.rfqQuotesId);
-        if (index !== -1) {
-            if (selectedProduct?.rfqQuotesId === message.rfqId) {
-                const chatHistory = [...selectedChatHistory]
-                chatHistory.push(message);
-                setSelectedChatHistory(chatHistory)
+    const handleUpdateNewMessageStatus = async (message: any) => {
+        try {
+            if (selectedRfqQuote?.rfqQuotesId === message?.rfqId && message?.userId !== user?.id) {
+                if (selectedRfqQuote?.buyerID && selectedRoom) {
+                    const payload = {
+                        userId: selectedRfqQuote?.buyerID,
+                        roomId: selectedRoom
+                    }
+                    await updateUnreadMessages(payload)
+                }
             }
+        } catch (error) {
+
         }
+    }
+
+    const handleNewMessage = (message: any) => {
+        try {
+            const index = rfqQuotes.findIndex((rfq: any) => message?.rfqId === rfq.rfqQuotesId);
+            if (index !== -1) {
+                const rfqList = [...rfqQuotes];
+                const [item] = rfqList.splice(index, 1);
+                let newItem = {
+                    ...item,
+                    lastUnreadMessage: {
+                        content: message.content,
+                        createdAt: message.createdAt
+                    }
+                }
+
+                if (selectedRfqQuote?.rfqQuotesId !== message?.rfqId) {
+                    newItem = {
+                        ...newItem,
+                        unreadMsgCount: newItem?.unreadMsgCount + 1,
+                    }
+                }
+                rfqList.unshift(newItem);
+                setRfqQuotes(rfqList);
+                if (selectedRfqQuote?.rfqQuotesId === message.rfqId) {
+                    const chatHistory = [...selectedChatHistory]
+                    chatHistory.push(message);
+                    setSelectedChatHistory(chatHistory)
+                }
+
+                if (message?.rfqProductPriceRequest) {
+                    updateRFQProduct(message?.rfqProductPriceRequest)
+                }
+            }
+        } catch (error) { }
     }
 
     const handleSendMessage = async () => {
@@ -117,7 +194,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             if (message) {
                 if (selectedRoom) {
                     sendNewMessage(selectedRoom, message)
-                } else if (!selectedRoom && selectedProduct?.sellerID && selectedProduct?.buyerID) {
+                } else if (!selectedRoom && selectedRfqQuote?.sellerID && selectedRfqQuote?.buyerID) {
                     handleCreateRoom(message);
                 }
                 setMessage("")
@@ -141,7 +218,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         const msgPayload = {
             roomId: roomId,
             content,
-            rfqId: selectedProduct?.rfqQuotesId,
+            rfqId: selectedRfqQuote?.rfqQuotesId,
             requestedPrice,
             rfqQuoteProductId,
             sellerId,
@@ -153,9 +230,9 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
         try {
             const payload = {
-                participants: [selectedProduct?.sellerID, selectedProduct?.buyerID],
+                participants: [selectedRfqQuote?.sellerID, selectedRfqQuote?.buyerID],
                 content,
-                rfqId: selectedProduct?.rfqQuotesId,
+                rfqId: selectedRfqQuote?.rfqQuotesId,
                 requestedPrice,
                 rfqQuoteProductId,
                 sellerId,
@@ -171,8 +248,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     const checkRoomId = async () => {
         try {
             const payloadRoomFind = {
-                rfqId: selectedProduct?.rfqQuotesId,
-                userId: selectedProduct?.buyerID
+                rfqId: selectedRfqQuote?.rfqQuotesId,
+                userId: selectedRfqQuote?.sellerID
             }
             const room = await findRoomId(payloadRoomFind);
             if (room?.data?.roomId) {
@@ -212,17 +289,18 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
     const handleRequestPrice = (productId: number, requestedPrice: number) => {
         if (selectedRoom && requestedPrice) {
-            sendNewMessage(selectedRoom, CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedProduct?.sellerID, requestedPrice)
-        } else if (!selectedRoom && requestedPrice && selectedProduct?.sellerID && selectedProduct?.buyerID) {
-            handleCreateRoom(CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedProduct?.sellerID, requestedPrice);
+            sendNewMessage(selectedRoom, CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedRfqQuote?.sellerID, requestedPrice)
+        } else if (!selectedRoom && requestedPrice && selectedRfqQuote?.sellerID && selectedRfqQuote?.buyerID) {
+            handleCreateRoom(CHAT_REQUEST_MESSAGE.priceRequest.value, productId, selectedRfqQuote?.sellerID, requestedPrice);
         }
     }
-
 
     const handleRfqRequest = (rRequest: {
         id: number;
         messageId: number;
+        requestedPrice: number;
         rfqQuoteProductId: number;
+        requestedById: number;
         status: string;
     }) => {
         const chatHistory = [...selectedChatHistory]
@@ -239,18 +317,63 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             chatHistory[index] = updatedMessage
             setSelectedChatHistory(chatHistory)
         }
+
+        // UPDATE RFQ PRODUCT 
+        updateRFQProduct(rRequest);
+    }
+
+    const updateRFQProduct = (rRequest: {
+        id: number;
+        messageId: number;
+        requestedPrice: number;
+        rfqQuoteProductId: number;
+        requestedById: number;
+        status: string;
+    }) => {
+        if (selectedRfqQuote?.buyerID === rRequest?.requestedById || (rRequest?.requestedById === user?.id && rRequest?.status === "REJECTED")) {
+            const index = quoteProducts.findIndex((product: any) => product.id === rRequest.rfqQuoteProductId);
+            if (index !== -1) {
+                const pList = quoteProducts;
+                let offerPrice = pList[index].offerPrice;
+                if (rRequest.status === "APPROVED") {
+                    offerPrice = rRequest?.requestedPrice;
+                }
+
+                let priceRequest = pList[index]?.priceRequest || null;
+                if (priceRequest) {
+                    priceRequest = {
+                        ...priceRequest,
+                        offerPrice,
+                        id: rRequest.id,
+                        requestedPrice: rRequest.requestedPrice,
+                        rfqQuoteProductId: rRequest.rfqQuoteProductId,
+                        status: rRequest?.status
+                    }
+                } else if (priceRequest === null) {
+                    priceRequest = {
+                        ...rRequest
+                    }
+                }
+                pList[index]["priceRequest"] = priceRequest;
+                setQuoteProducts(pList)
+            }
+        }
     }
 
     const handleRfqProducts = (item: any) => {
         const newData = item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
             (i: any) => {
                 let priceRequest = null
-                const pRequest = item?.rfqProductPriceRequests.find((request: any) => request?.rfqQuoteProductId === i.id);
+                const pRequest = item?.rfqProductPriceRequests?.find((request: any) => request?.rfqQuoteProductId === i.id && request?.status === "APPROVED");
                 if (pRequest) priceRequest = pRequest;
-
+                let offerPrice = item.offerPrice;
+                if (priceRequest?.status === "APPROVED") {
+                    offerPrice = priceRequest?.requestedPrice
+                }
                 return {
                     ...i,
                     priceRequest,
+                    offerPrice,
                     address:
                         item?.rfqQuotesUser_rfqQuotes
                             ?.rfqQuotes_rfqQuoteAddress?.address,
@@ -261,6 +384,15 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             },
         ) || []
         setQuoteProducts(newData);
+    }
+
+    const updateRfqMessageCount = () => {
+        const index = rfqQuotes.findIndex((rfq: RfqQuoteType) => rfq.rfqQuotesId === selectedRfqQuote?.rfqQuotesId);
+        if (index !== -1) {
+            const rfqList = [...rfqQuotes];
+            rfqList[index]["unreadMsgCount"] = 0;
+            setRfqQuotes(rfqList)
+        }
     }
 
     return (
@@ -288,30 +420,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                         ) : null}
 
                         {rfqQuotes?.map(
-                            (item: {
-                                id: number;
-                                rfqQuotesId: number;
-                                offerPrice: string;
-                                buyerIDDetail: {
-                                    firstName: string;
-                                    lastName: string;
-                                    profilePicture: string;
-                                };
-                                rfqQuotesUser_rfqQuotes: {
-                                    rfqQuotesProducts: {
-                                        rfqProductDetails: {
-                                            productImages: {
-                                                id: number;
-                                                image: string;
-                                            }[];
-                                        };
-                                    }[];
-                                    rfqQuotes_rfqQuoteAddress: {
-                                        address: string;
-                                        rfqDate: string;
-                                    };
-                                };
-                            }) => (
+                            (item: RfqQuoteType) => (
                                 <RequestProductCard
                                     key={item?.id}
                                     rfqId={item?.rfqQuotesId}
@@ -319,7 +428,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                     // profilePicture={item?.buyerIDDetail?.profilePicture}
                                     // offerPrice={item?.offerPrice}
                                     onClick={() => {
-                                        setSelectedProduct(item)
+                                        setSelectedRfqQuote(item)
                                         setActiveSellerId(item?.id);
                                         handleRfqProducts(item)
                                     }}
@@ -329,6 +438,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                             (item: any) => item?.rfqProductDetails?.productImages,
                                         )
                                         ?.map((item: any) => item?.[0])}
+                                    messageInfo={{ lastUnreadMessage: item?.lastUnreadMessage, unreadMsgCount: item?.unreadMsgCount }}
                                 />
                             ),
                         )}
@@ -339,8 +449,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                         <span>
                             Offering Price{" "}
                             <b className="text-[#679A03]">
-                                {selectedProduct?.offerPrice
-                                    ? `$${selectedProduct?.offerPrice}`
+                                {selectedRfqQuote?.offerPrice
+                                    ? `$${selectedRfqQuote?.offerPrice}`
                                     : "-"}
                             </b>
                         </span>
@@ -431,6 +541,9 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                 roomId={selectedRoom}
                                 selectedChatHistory={selectedChatHistory}
                                 chatHistoryLoading={chatHistoryLoading}
+                                buyerId={selectedRfqQuote?.buyerID}
+                                updateRfqMessageCount={updateRfqMessageCount}
+                                unreadMsgCount={selectedRfqQuote?.unreadMsgCount}
                             />
                         ) : ""}
 

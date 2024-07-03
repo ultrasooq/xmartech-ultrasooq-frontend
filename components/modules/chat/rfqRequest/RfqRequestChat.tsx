@@ -159,7 +159,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
 
     const updateVendorMessageCount = () => {
         const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => vendor.sellerID === activeSellerId);
-        if(index !== -1) {
+        if (index !== -1) {
             const vList = [...vendorList];
             vList[index]["unreadMsgCount"] = 0;
             setVendorList(vList)
@@ -167,44 +167,47 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     }
 
     const handleNewMessage = (message: any) => {
-        const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => message?.participants?.includes(vendor.sellerID));
-        if (index !== -1) {
-            const vList = [...vendorList];
-            const [item] = vList.splice(index, 1);
-            let newItem = {
-                ...item,
-                lastUnreadMessage: {
-                    content: message.content,
-                    createdAt: message.createdAt
-                }
-            }
-
-            if (rfqQuotesUserId !== message?.rfqQuotesUserId) {
-                newItem = {
-                    ...newItem,
-                    unreadMsgCount: newItem.sellerIDDetail.unreadMsgCount + 1,
-                }
-
-                if (message?.rfqProductPriceRequest) {
-                    const rList = newItem.rfqProductPriceRequests;
-                    rList.push(message?.rfqProductPriceRequest);
-                    newItem = {
-                        ...newItem,
-                        rfqProductPriceRequests: rList
+        try {
+            const index = vendorList.findIndex((vendor: RfqRequestVendorDetailsProps) => message?.participants?.includes(vendor.sellerID));
+            if (index !== -1) {
+                const vList = [...vendorList];
+                const [item] = vList.splice(index, 1);
+                let newItem = {
+                    ...item,
+                    lastUnreadMessage: {
+                        content: message.content,
+                        createdAt: message.createdAt
                     }
                 }
+
+                if (rfqQuotesUserId !== message?.rfqQuotesUserId) {
+                    newItem = {
+                        ...newItem,
+                        unreadMsgCount: newItem?.unreadMsgCount + 1,
+                    }
+
+                    if (message?.rfqProductPriceRequest) {
+                        const rList = newItem.rfqProductPriceRequests;
+                        rList.push(message?.rfqProductPriceRequest);
+                        newItem = {
+                            ...newItem,
+                            rfqProductPriceRequests: rList
+                        }
+                    }
+                }
+                vList.unshift(newItem);
+                setVendorList(vList);
+                if (message?.participants?.includes(activeSellerId)) {
+                    const chatHistory = [...selectedChatHistory]
+                    chatHistory.push(message);
+                    setSelectedChatHistory(chatHistory)
+                }
+                if (message?.rfqProductPriceRequest) {
+                    updateRFQProduct(message?.rfqProductPriceRequest)
+                }
             }
-            vList.unshift(newItem);
-            setVendorList(vList);
-            if (message?.participants?.includes(activeSellerId)) {
-                const chatHistory = [...selectedChatHistory]
-                chatHistory.push(message);
-                setSelectedChatHistory(chatHistory)
-            }
-            if (message?.rfqProductPriceRequest) {
-                updateRFQProduct(message?.rfqProductPriceRequest)
-            }
-        }
+        } catch (error) { }
+
     }
 
     const checkRoomId = async () => {
@@ -345,7 +348,6 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         updateRFQProduct(rRequest);
     }
 
-
     const updateRFQProduct = (rRequest: {
         id: number;
         messageId: number;
@@ -354,14 +356,18 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         requestedById: number;
         status: string;
     }) => {
-        // UPDATE RFQ PRODUCT 
-        if (activeSellerId === rRequest?.requestedById) {
-            let vDor = { ...selectedVendor }
+
+        if (rRequest.status === "APPROVED" || rRequest.status === "REJECTED") {
+            let vDor = selectedVendor
             if (vDor?.rfqQuotesProducts) {
                 const index = vDor?.rfqQuotesProducts.findIndex((product: any) => product.id === rRequest.rfqQuoteProductId);
                 if (index !== -1) {
-                    const pList = [...vDor?.rfqQuotesProducts];
-                    pList[index].offerPrice = rRequest?.requestedPrice;
+                    const pList = vDor?.rfqQuotesProducts;
+                    let offerPrice = pList[index].offerPrice;
+                    if (rRequest.status === "APPROVED") {
+                        offerPrice = rRequest?.requestedPrice;
+                    }
+
                     let priceRequest = pList[index]?.priceRequest || null;
                     if (priceRequest) {
                         priceRequest = {
@@ -377,12 +383,13 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                         }
                     }
                     pList[index]["priceRequest"] = priceRequest;
+                    pList[index]["offerPrice"] = offerPrice;
 
-                    vDor = {
+                    const newData = {
                         ...vDor,
                         rfqQuotesProducts: pList
                     }
-                    setSelectedVendor(vDor)
+                    setSelectedVendor(newData)
                 }
             }
         }
@@ -397,7 +404,10 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 if (pRequest) priceRequest = pRequest;
                 if (priceRequest?.status === "APPROVED") {
                     offerPrice = priceRequest?.requestedPrice
+                } else if (priceRequest?.status === "REJECTED") {
+                    offerPrice = item.offerPrice;
                 }
+
                 return {
                     ...i,
                     priceRequest,

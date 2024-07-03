@@ -1,20 +1,22 @@
 import React, { useEffect, useState, useRef } from "react";
 import moment from "moment";
 import { useAuth } from "@/context/AuthContext";
-import { useUpdateRfqPriceRequestStatus } from "@/apis/queries/chat.queries";
 import { RfqProductPriceRequestStatus } from "@/utils/types/chat.types";
 import { useSocket } from "@/context/SocketContext";
+import { updateUnreadMessages } from "@/apis/requests/chat.requests";
 
 interface SellerChatHistoryProps {
     roomId: number | null;
     selectedChatHistory: any[];
-    chatHistoryLoading: boolean
+    chatHistoryLoading: boolean;
+    updateRfqMessageCount: () => void;
+    buyerId: number | undefined;
+    unreadMsgCount: number | 0;
 }
 
-const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading }) => {
+const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading, updateRfqMessageCount, buyerId, unreadMsgCount }) => {
     const { user } = useAuth();
     const chatContainerRef = useRef<HTMLDivElement>(null);
-    const updatePriceStatus = useUpdateRfqPriceRequestStatus();
     const { updateRfqRequestStatus } = useSocket()
 
     useEffect(() => {
@@ -23,6 +25,9 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
         }
     }, [selectedChatHistory]);
 
+    useEffect(() => {
+        if(unreadMsgCount) handleUnreadMessages()
+    }, [buyerId, roomId])
 
     const handlePriceStatus = async (id: number, status: RfqProductPriceRequestStatus) => {
         try {
@@ -32,6 +37,20 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
                 roomId: roomId
             }
             updateRfqRequestStatus(payload)
+        } catch (error) {
+        }
+    }
+
+    const handleUnreadMessages = async () => {
+        try {
+            if (user?.id && roomId && buyerId) {
+                const payload = {
+                    userId: buyerId,
+                    roomId: roomId
+                }
+                await updateUnreadMessages(payload)
+                updateRfqMessageCount()
+            }
         } catch (error) {
         }
     }
