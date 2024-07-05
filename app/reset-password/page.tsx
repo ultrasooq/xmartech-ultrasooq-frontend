@@ -99,7 +99,11 @@ export default function ResetPasswordPage() {
     const params = new URLSearchParams(document.location.search);
     let accessToken = params.get("token");
     if (accessToken) {
-      setCookie(PUREMOON_TOKEN_KEY, accessToken);
+      // setCookie(PUREMOON_TOKEN_KEY, accessToken);
+      setCookie(PUREMOON_TOKEN_KEY, accessToken, {
+        // 3 days
+        expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      });
     }
   }, []);
 

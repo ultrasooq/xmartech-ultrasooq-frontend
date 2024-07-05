@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
@@ -24,6 +24,7 @@ import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
+import { CheckedState } from "@radix-ui/react-checkbox";
 
 const formSchema = z.object({
   email: z
@@ -52,6 +53,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   const { data: session } = useSession();
   const { setUser } = useAuth();
+  const [rememberMe, setRememberMe] = useState<CheckedState>(false);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -71,7 +73,18 @@ export default function LoginPage() {
 
     if (response?.status && response?.accessToken) {
       // store in cookie
-      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+      // setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+      if (rememberMe) {
+        setCookie(PUREMOON_TOKEN_KEY, response.accessToken, {
+          // 7 days
+          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        });
+      } else {
+        setCookie(PUREMOON_TOKEN_KEY, response.accessToken, {
+          // 1 days
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        });
+      }
 
       // TODO: delete cart for trade role freelancer and company if logged in using device id
       // update cart
@@ -158,8 +171,6 @@ export default function LoginPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
-  // console.log(session);
-
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -205,6 +216,7 @@ export default function LoginPage() {
                         <Checkbox
                           id="remember"
                           className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                          onCheckedChange={(val) => setRememberMe(val)}
                         />
                         <label
                           htmlFor="remember"

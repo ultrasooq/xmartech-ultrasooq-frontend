@@ -85,7 +85,11 @@ export default function PasswordResetVerifyPage() {
 
     if (response?.status && response?.accessToken) {
       // store in cookie
-      setCookie(PUREMOON_TEMP_TOKEN_KEY, response.accessToken);
+      // setCookie(PUREMOON_TEMP_TOKEN_KEY, response.accessToken);
+      setCookie(PUREMOON_TEMP_TOKEN_KEY, response.accessToken, {
+        // 3 days
+        expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      });
       toast({
         title: "Verification Successful",
         description: response.message,
