@@ -313,10 +313,6 @@ export const imageExtensions: string[] = [
 
 export const CONSUMER_TYPE_LIST = [
   {
-    label: "Everyone",
-    value: "EVERYONE",
-  },
-  {
     label: "Consumer",
     value: "CONSUMER",
   },
