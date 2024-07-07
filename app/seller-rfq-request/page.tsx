@@ -1,14 +1,24 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import TaskIcon from "@/public/images/task-icon.svg";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
 import SellerChat from "@/components/modules/chat/seller/SellerChat";
+import ProductChat from "@/components/modules/chat/productChat/ProductChat";
 
 const SellerRfqRequestPage = () => {
-  const pathname = usePathname();
+  const [currentTab, setCurrentTab] = useState<string>("RFQ");
+  const [productId, setProductId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(document.location.search);
+    let pId = params.get("product_id");
+    if (pId) {
+      setProductId(parseInt(pId))
+      setCurrentTab("MSG")
+    }
+  }, []);
 
   return (
     <section className="m-auto flex w-full max-w-[1400px] py-8">
@@ -29,16 +39,38 @@ const SellerRfqRequestPage = () => {
               </Link>
             </li>
             <li
+              onClick={() => setCurrentTab("RFQ")}
               className={cn(
-                pathname?.includes("seller-rfq-request")
-                  ? "bg-dark-orange"
-                  : "",
+                currentTab === "RFQ"
+                  ? "bg-dark-orange text-white"
+                  : "bg-gray-50 text-black",
                 "w-full py-1",
               )}
             >
-              <Link
-                href="/seller-rfq-request"
-                className="flex items-center justify-start rounded-xl p-2 text-white"
+              <button
+                className="flex items-center justify-start rounded-xl p-2"
+              >
+                <div className="flex h-[20px] w-[20px] items-center justify-center">
+                  <Image
+                    src={TaskIcon}
+                    alt="Task Icon"
+                    className="brightness-0 invert"
+                  />
+                </div>
+                <div className="pl-1 text-sm font-medium">RFQ</div>
+              </button>
+            </li>
+            <li
+              onClick={() => setCurrentTab("MSG")}
+              className={cn(
+                currentTab === "MSG"
+                  ? "bg-dark-orange text-white"
+                  : "bg-gray-50 text-black",
+                "w-full py-1",
+              )}
+            >
+              <button
+                className="flex items-center justify-start rounded-xl p-2"
               >
                 <div className="flex h-[20px] w-[20px] items-center justify-center ">
                   <Image
@@ -47,14 +79,21 @@ const SellerRfqRequestPage = () => {
                     className="brightness-0 invert"
                   />
                 </div>
-                <div className="pl-1 text-sm font-medium text-white">RFQ</div>
-              </Link>
+                <div className="pl-1 text-sm font-medium">Messages</div>
+              </button>
             </li>
           </ul>
         </div>
       </div>
       <div className="w-[85%] px-2">
-        <SellerChat />
+        {currentTab === "RFQ" ?
+          <SellerChat />
+          : productId ?
+            <ProductChat
+              productId={productId}
+            />
+            : null
+        }
       </div>
     </section>
   );

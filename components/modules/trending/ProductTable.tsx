@@ -71,12 +71,14 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
                   <TableCell th-name="Brand">{item?.brandName}</TableCell>
                   <TableCell th-name="Price">
                     {item?.askForPrice === "true" ? (
-                      <button
-                        type="button"
-                        className="inline-block rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
-                      >
-                        Ask vendor for price
-                      </button>
+                      <Link href={`/seller-rfq-request?product_id=${item?.id}`}>
+                        <button
+                          type="button"
+                          className="inline-block rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+                        >
+                          Ask vendor for price
+                        </button>
+                      </Link>
                     ) : (
                       `$${calculateDiscountedPrice({ item })}`
                     )}

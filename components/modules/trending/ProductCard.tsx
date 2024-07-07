@@ -188,12 +188,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Link>
         <div>
           {item?.askForPrice === "true" ? (
-            <button
-              type="button"
-              className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
-            >
-              Ask vendor for price
-            </button>
+            <Link href={`/seller-rfq-request?product_id=${item?.id}`}>
+              <button
+                type="button"
+                className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+              >
+                Ask vendor for price
+              </button>
+            </Link>
           ) : (
             <h5 className="py-1 text-[#1D77D1]">
               ${calculateDiscountedPrice()}{" "}
