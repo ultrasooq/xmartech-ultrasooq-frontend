@@ -19,13 +19,6 @@ import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import LoaderIcon from "@/public/images/load.png";
 
-const UPDATED_SELL_TYPE_LIST = [
-  {
-    label: "Everyone",
-    value: "EVERYONE",
-  },
-  ...SELL_TYPE_LIST,
-];
 interface Option {
   readonly label: string;
   readonly value: string;
@@ -467,8 +460,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                       onChange={(newValue) => {
                         field.onChange(newValue?.value);
                       }}
-                      options={UPDATED_SELL_TYPE_LIST}
-                      value={UPDATED_SELL_TYPE_LIST.find(
+                      options={SELL_TYPE_LIST}
+                      value={SELL_TYPE_LIST.find(
                         (item: Option) => item.value === field.value,
                       )}
                       styles={customStyles}
