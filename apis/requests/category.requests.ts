@@ -2,11 +2,12 @@ import { ADMIN_BEARER, PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import { isEmpty } from "lodash";
+import urlcat from "urlcat";
 
-export const fetchCategory = () => {
+export const fetchCategory = (payload: { categoryId: string }) => {
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/category/findOne?categoryId=1`,
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/category/findOne`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

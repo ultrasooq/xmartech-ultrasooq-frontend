@@ -5,15 +5,15 @@ import {
   fetchSubCategoriesById,
 } from "../requests/category.requests";
 
-export const useCategory = (enabled = true) =>
+export const useCategory = (categoryId: string, enabled = true) =>
   useQuery({
-    queryKey: ["category"],
+    queryKey: ["category", categoryId],
     queryFn: async () => {
       const data = {
         categoryId: 1,
         menuId: 1,
       };
-      const res = await fetchCategory();
+      const res = await fetchCategory({ categoryId });
       return res.data;
     },
     // onError: (err: APIResponseError) => {
