@@ -33,6 +33,8 @@ import { useWishlistCount } from "@/apis/queries/wishlist.queries";
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
+import { MdOutlineImageNotSupported } from "react-icons/md";
 
 type ButtonLinkProps = {
   href: string;
@@ -72,7 +74,10 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuId, setMenuId] = useState();
   const [categoryId, setCategoryId] = useState();
+  const [assignedToId, setAssignedToId] = useState();
   const [subCategoryId, setSubCategoryId] = useState();
+  const [subCategoryIndex, setSubCategoryIndex] = useState(0);
+  const [subSubCategoryIndex, setSubSubCategoryIndex] = useState(0);
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
   const { clearUser } = useAuth();
@@ -83,7 +88,11 @@ const Header = () => {
     !hasAccessToken,
   );
   const me = useMe(!!accessToken);
-  const categoryQuery = useCategory();
+  const categoryQuery = useCategory("187");
+  const subCategoryQuery = useCategory(
+    categoryId ? categoryId : "",
+    !!categoryId,
+  );
 
   const memoizedInitials = useMemo(
     () => getInitials(me.data?.data?.firstName, me.data?.data?.lastName),
@@ -119,25 +128,34 @@ const Header = () => {
 
   const memoizedSubCategory = useMemo(() => {
     let tempArr: any = [];
-    if (memoizedCategory.length) {
-      tempArr = memoizedCategory?.find(
-        (item: any) => item.id === categoryId,
-      )?.children;
+    if (subCategoryQuery.data?.data) {
+      tempArr = subCategoryQuery.data.data?.children;
     }
     return tempArr || [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryId, menuId]);
+  }, [subCategoryQuery.data?.data, categoryId]);
 
-  const memoizedSubSubCategory = useMemo(() => {
-    let tempArr: any = [];
-    if (memoizedSubCategory.length) {
-      tempArr = memoizedSubCategory?.find(
-        (item: any) => item.id === subCategoryId,
-      )?.children;
-    }
-    return tempArr || [];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subCategoryId, categoryId, menuId]);
+  // const memoizedSubCategory = useMemo(() => {
+  //   let tempArr: any = [];
+  //   if (memoizedCategory.length) {
+  //     tempArr = memoizedCategory?.find(
+  //       (item: any) => item.id === categoryId,
+  //     )?.children;
+  //   }
+  //   return tempArr || [];
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [categoryId, menuId]);
+
+  // const memoizedSubSubCategory = useMemo(() => {
+  //   let tempArr: any = [];
+  //   if (memoizedSubCategory.length) {
+  //     tempArr = memoizedSubCategory?.find(
+  //       (item: any) => item.id === subCategoryId,
+  //     )?.children;
+  //   }
+  //   return tempArr || [];
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [subCategoryId, categoryId, menuId]);
 
   const handleProfile = () => {
     switch (me?.data?.data?.tradeRole) {
@@ -185,6 +203,8 @@ const Header = () => {
     }
   }, [isClickedOutside]);
 
+  // console.log(memoizedCategory, categoryId);
+  // console.log(memoizedMenu);
   return (
     <header className="relative w-full">
       <div className="w-full bg-dark-cyan">
@@ -405,14 +425,14 @@ const Header = () => {
                       router.push("/trending");
                     }
 
-                    if (item.name.toLowerCase().includes("rfqs")) {
+                    if (item.name.toLowerCase().includes("rfq")) {
                       router.push("/rfq");
                     }
                   }}
                   href={
                     item.name.toLowerCase().includes("store")
                       ? "/trending"
-                      : item.name.toLowerCase().includes("rfqs")
+                      : item.name.toLowerCase().includes("rfq")
                         ? "/rfq"
                         : "/trending"
                   }
@@ -440,35 +460,96 @@ const Header = () => {
         <div className="container m-auto px-3">
           <div className="relative flex flex-row">
             <div className="flex flex-1 gap-x-5">
-              <div className="flex items-center py-3">
-                <div>
-                  <Image
-                    src={HamburgerIcon}
-                    alt="hamburger-icon"
-                    width={16}
-                    height={14}
-                  />
-                </div>
-                <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
-                  All Categories
-                </p>
-                <div>
-                  <Image
-                    src={HamburgerDownIcon}
-                    alt="hamburger-down-icon"
-                    width={13}
-                    height={8}
-                  />
-                </div>
+              <div className="dropdown">
+                <button className="dropbtn flex items-center">
+                  <div>
+                    <Image src={HamburgerIcon} alt="hamburger-icon" />
+                  </div>
+                  <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
+                    All Categories
+                  </p>
+                  <div>
+                    <Image src={HamburgerDownIcon} alt="hamburger-down-icon" />
+                  </div>
+                </button>
+
+                {memoizedSubCategory?.length ? (
+                  <div className="dropdown-content">
+                    {memoizedSubCategory?.map(
+                      (
+                        item: { id: number; name: string; children: any },
+                        index: number,
+                      ) => (
+                        <div
+                          key={item?.id}
+                          className="flex cursor-pointer items-center justify-start gap-x-2 p-3"
+                          onMouseEnter={() => setSubCategoryIndex(index)}
+                        >
+                          <MdOutlineImageNotSupported size={24} />
+                          <p className="text-center text-sm">{item?.name}</p>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                ) : null}
+
+                {memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
+                  <div className="dropdown-content-second">
+                    {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
+                      (item: { id: number; name: string }, index: number) => (
+                        <div
+                          key={item?.id}
+                          className="flex cursor-pointer items-center justify-start gap-x-2 p-3"
+                          onMouseEnter={() => setSubSubCategoryIndex(index)}
+                        >
+                          <MdOutlineImageNotSupported size={24} />
+                          <p className="text-center text-sm">{item?.name}</p>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                ) : null}
+
+                {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                  subSubCategoryIndex
+                ]?.children?.length ? (
+                  <div className="dropdown-content-third py-5">
+                    <div className="grid grid-cols-5">
+                      {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                        subSubCategoryIndex
+                      ]?.children?.map((item: { id: number; name: string }) => (
+                        <div
+                          key={item?.id}
+                          className="flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3"
+                        >
+                          <MdOutlineImageNotSupported size={30} />
+                          <p className="text-center text-sm">{item?.name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
+
               <div className="flex items-center gap-x-5">
                 {memoizedCategory.map((item: any) => (
                   <Button
                     type="button"
                     key={item.id}
-                    onClick={() => setCategoryId(item.id)}
+                    onClick={() => {
+                      if (item?.assignTo) {
+                        setCategoryId(item.assignTo);
+                        setAssignedToId(item.id);
+                      } else {
+                        setCategoryId(undefined);
+                        setAssignedToId(undefined);
+                      }
+                    }}
                     variant="link"
-                    className="py-3 text-sm font-semibold capitalize text-color-dark sm:text-base"
+                    className={cn(
+                      "py-3 text-sm font-semibold capitalize text-color-dark sm:text-base",
+                      item?.id === assignedToId ? "underline" : "no-underline",
+                    )}
                   >
                     <p>{item.name}</p>
                   </Button>
@@ -491,7 +572,7 @@ const Header = () => {
               </ul>
             </div>
           </div>
-          <div className="relative h-1" ref={wrapperRef}>
+          {/* <div className="relative h-1" ref={wrapperRef}>
             {categoryId ? (
               <div className="absolute top-2 z-50 h-60 w-full rounded-sm border border-solid border-gray-300 bg-white p-1 shadow-md">
                 <div className="flex flex-row gap-x-2">
@@ -529,7 +610,7 @@ const Header = () => {
                 </div>
               </div>
             ) : null}
-          </div>
+          </div> */}
         </div>
       </div>
     </header>
