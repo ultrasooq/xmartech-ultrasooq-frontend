@@ -356,7 +356,6 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         requestedById: number;
         status: string;
     }) => {
-
         if (rRequest.status === "APPROVED" || rRequest.status === "REJECTED") {
             let vDor = selectedVendor
             if (vDor?.rfqQuotesProducts) {

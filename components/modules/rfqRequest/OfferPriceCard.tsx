@@ -34,7 +34,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
 
   useEffect(() => {
     setEditedOfferPrice(offerPrice)
-  }, [offerPrice])
+  }, [offerPrice, priceRequest])
 
   const handleEditClick = () => {
     setIsEditing(true);

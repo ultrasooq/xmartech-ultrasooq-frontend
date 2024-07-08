@@ -88,3 +88,15 @@ export const updateUnreadMessages = (payload: UpdateMessageStatusRequest) => {
         },
     });
 };
+
+export const getProductDetails = (productId: number) => {
+    return axios({
+        method: "GET",
+        url: `${process.env.NEXT_PUBLIC_API_URL}/chat/product?productId=${productId}`,
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+        },
+    });
+};
