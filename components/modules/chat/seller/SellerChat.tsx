@@ -333,32 +333,37 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         if (selectedRfqQuote?.buyerID === rRequest?.requestedById || (rRequest?.requestedById === user?.id && rRequest?.status === "REJECTED")) {
             const index = quoteProducts.findIndex((product: any) => product.id === rRequest.rfqQuoteProductId);
             if (index !== -1) {
-                const pList = quoteProducts;
-                let offerPrice = pList[index].offerPrice;
+                const pList = [...quoteProducts];
+                const product = {...pList[index]};
+                let offerPrice = product.offerPrice;
                 if (rRequest.status === "APPROVED") {
                     offerPrice = rRequest?.requestedPrice;
                 }
 
-                let priceRequest = pList[index]?.priceRequest || null;
+                let priceRequest = product?.priceRequest ? { ...product.priceRequest } : null;
+
                 if (priceRequest) {
                     priceRequest = {
                         ...priceRequest,
-                        offerPrice,
                         id: rRequest.id,
                         requestedPrice: rRequest.requestedPrice,
                         rfqQuoteProductId: rRequest.rfqQuoteProductId,
                         status: rRequest?.status
-                    }
-                } else if (priceRequest === null) {
+                    };
+                } else {
                     priceRequest = {
                         ...rRequest
-                    }
+                    };
                 }
-                pList[index]["priceRequest"] = priceRequest;
-                setQuoteProducts(pList)
+
+                product.priceRequest = priceRequest;
+                product.offerPrice = offerPrice;
+                pList[index] = product;
+                setQuoteProducts(pList);
             }
         }
-    }
+    };
+
 
     const handleRfqProducts = (item: any) => {
         const newData = item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
