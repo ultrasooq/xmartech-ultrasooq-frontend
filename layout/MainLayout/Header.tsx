@@ -477,7 +477,12 @@ const Header = () => {
                   <div className="dropdown-content">
                     {memoizedSubCategory?.map(
                       (
-                        item: { id: number; name: string; children: any },
+                        item: {
+                          id: number;
+                          name: string;
+                          icon: string;
+                          children: any;
+                        },
                         index: number,
                       ) => (
                         <div
@@ -485,7 +490,16 @@ const Header = () => {
                           className="flex cursor-pointer items-center justify-start gap-x-2 p-3"
                           onMouseEnter={() => setSubCategoryIndex(index)}
                         >
-                          <MdOutlineImageNotSupported size={24} />
+                          {item?.icon ? (
+                            <Image
+                              src={item.icon}
+                              alt={item?.name}
+                              height={24}
+                              width={24}
+                            />
+                          ) : (
+                            <MdOutlineImageNotSupported size={24} />
+                          )}
                           <p className="text-center text-sm">{item?.name}</p>
                         </div>
                       ),
@@ -496,13 +510,25 @@ const Header = () => {
                 {memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                   <div className="dropdown-content-second">
                     {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
-                      (item: { id: number; name: string }, index: number) => (
+                      (
+                        item: { id: number; name: string; icon: string },
+                        index: number,
+                      ) => (
                         <div
                           key={item?.id}
                           className="flex cursor-pointer items-center justify-start gap-x-2 p-3"
                           onMouseEnter={() => setSubSubCategoryIndex(index)}
                         >
-                          <MdOutlineImageNotSupported size={24} />
+                          {item?.icon ? (
+                            <Image
+                              src={item.icon}
+                              alt={item?.name}
+                              height={24}
+                              width={24}
+                            />
+                          ) : (
+                            <MdOutlineImageNotSupported size={24} />
+                          )}
                           <p className="text-center text-sm">{item?.name}</p>
                         </div>
                       ),
@@ -517,15 +543,26 @@ const Header = () => {
                     <div className="grid grid-cols-5">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.[
                         subSubCategoryIndex
-                      ]?.children?.map((item: { id: number; name: string }) => (
-                        <div
-                          key={item?.id}
-                          className="flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3"
-                        >
-                          <MdOutlineImageNotSupported size={30} />
-                          <p className="text-center text-sm">{item?.name}</p>
-                        </div>
-                      ))}
+                      ]?.children?.map(
+                        (item: { id: number; name: string; icon: string }) => (
+                          <div
+                            key={item?.id}
+                            className="flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3"
+                          >
+                            {item?.icon ? (
+                              <Image
+                                src={item.icon}
+                                alt={item?.name}
+                                height={30}
+                                width={30}
+                              />
+                            ) : (
+                              <MdOutlineImageNotSupported size={30} />
+                            )}
+                            <p className="text-center text-sm">{item?.name}</p>
+                          </div>
+                        ),
+                      )}
                     </div>
                   </div>
                 ) : null}
