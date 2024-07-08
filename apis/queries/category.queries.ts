@@ -5,7 +5,7 @@ import {
   fetchSubCategoriesById,
 } from "../requests/category.requests";
 
-export const useCategory = (categoryId: string, enabled = true) =>
+export const useCategory = (categoryId?: string, enabled = true) =>
   useQuery({
     queryKey: ["category", categoryId],
     queryFn: async () => {

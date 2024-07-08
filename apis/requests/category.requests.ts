@@ -4,7 +4,7 @@ import { getCookie } from "cookies-next";
 import { isEmpty } from "lodash";
 import urlcat from "urlcat";
 
-export const fetchCategory = (payload: { categoryId: string }) => {
+export const fetchCategory = (payload: { categoryId?: string }) => {
   return axios({
     method: "GET",
     url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/category/findOne`, payload),
