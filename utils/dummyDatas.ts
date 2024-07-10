@@ -358,3 +358,160 @@ export const trendingList = [
     path: TrendingSixteen,
   },
 ];
+
+export const LINK_CATEGORY_ONE_LIST = [
+  {
+    label: "Category 1",
+    value: "CATEGORY_1",
+  },
+  {
+    label: "Category 2",
+    value: "CATEGORY_2",
+  },
+  {
+    label: "Category 3",
+    value: "CATEGORY_3",
+  },
+  {
+    label: "Category 4",
+    value: "CATEGORY_4",
+  },
+  {
+    label: "Category 5",
+    value: "CATEGORY_5",
+  },
+];
+
+export const LINK_CATEGORY_TWO_LIST: {
+  [key: string]: { label: string; value: string }[];
+} = {
+  CATEGORY_1: [
+    {
+      label: "Category A",
+      value: "CATEGORY_A",
+    },
+    {
+      label: "Category D",
+      value: "CATEGORY_D",
+    },
+    {
+      label: "Category E",
+      value: "CATEGORY_E",
+    },
+  ],
+  CATEGORY_2: [
+    {
+      label: "Category B",
+      value: "CATEGORY_B",
+    },
+    {
+      label: "Category C",
+      value: "CATEGORY_C",
+    },
+  ],
+  CATEGORY_3: [
+    {
+      label: "Category F",
+      value: "CATEGORY_F",
+    },
+    {
+      label: "Category G",
+      value: "CATEGORY_G",
+    },
+  ],
+  CATEGORY_4: [
+    {
+      label: "Category H",
+      value: "CATEGORY_H",
+    },
+    {
+      label: "Category I",
+      value: "CATEGORY_I",
+    },
+  ],
+  CATEGORY_5: [
+    {
+      label: "Category J",
+      value: "CATEGORY_J",
+    },
+    {
+      label: "Category K",
+      value: "CATEGORY_K",
+    },
+  ],
+};
+
+export const LINK_CATEGORY_THREE_LIST: {
+  [key: string]: { label: string; value: string }[];
+} = {
+  CATEGORY_A: [
+    {
+      label: "Sub Category 1",
+      value: "SUB_CATEGORY_1",
+    },
+    {
+      label: "Sub Category 2",
+      value: "SUB_CATEGORY_2",
+    },
+    {
+      label: "Sub Category 3",
+      value: "SUB_CATEGORY_3",
+    },
+  ],
+  CATEGORY_B: [
+    {
+      label: "Sub Category 4",
+      value: "SUB_CATEGORY_4",
+    },
+    {
+      label: "Sub Category 5",
+      value: "SUB_CATEGORY_5",
+    },
+    {
+      label: "Sub Category 6",
+      value: "SUB_CATEGORY_6",
+    },
+  ],
+  CATEGORY_C: [
+    {
+      label: "Sub Category 7",
+      value: "SUB_CATEGORY_7",
+    },
+    {
+      label: "Sub Category 8",
+      value: "SUB_CATEGORY_8",
+    },
+    {
+      label: "Sub Category 9",
+      value: "SUB_CATEGORY_9",
+    },
+  ],
+  CATEGORY_D: [
+    {
+      label: "Sub Category 10",
+      value: "SUB_CATEGORY_10",
+    },
+    {
+      label: "Sub Category 11",
+      value: "SUB_CATEGORY_11",
+    },
+    {
+      label: "Sub Category 12",
+      value: "SUB_CATEGORY_12",
+    },
+  ],
+  CATEGORY_E: [
+    {
+      label: "Sub Category 13",
+      value: "SUB_CATEGORY_13",
+    },
+    {
+      label: "Sub Category 14",
+      value: "SUB_CATEGORY_14",
+    },
+    {
+      label: "Sub Category 15",
+      value: "SUB_CATEGORY_15",
+    },
+  ],
+};
