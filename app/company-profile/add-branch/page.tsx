@@ -32,6 +32,7 @@ import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import ChainedCategoryDropdown from "@/components/shared/ChainedCategoryDropdown";
 
 const formSchema = z.object({
   uploadBranchImage: z.any().optional(),
@@ -632,6 +633,8 @@ const AddBranchPage = () => {
                     placeholder="Tag"
                     error={form.formState.errors.tagList?.message}
                   />
+
+                  {/* <ChainedCategoryDropdown /> */}
                 </div>
 
                 <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
