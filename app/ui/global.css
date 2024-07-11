@@ -4108,7 +4108,7 @@ input::-ms-clear {
   display: none;
   position: absolute;
   background-color: #FFF;
-  min-width: 520px;
+  min-width: 560px;
   box-shadow: 0px 8px 8px 0px rgba(0,0,0,0.2);
   z-index: 10;
   left: 560px;
