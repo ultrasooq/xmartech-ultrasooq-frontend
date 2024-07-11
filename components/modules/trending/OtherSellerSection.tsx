@@ -6,7 +6,7 @@ import {
 import { useMe } from "@/apis/queries/user.queries";
 import SellerCard from "@/components/modules/otherSellers/SellerCard";
 import Image from "next/image";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";

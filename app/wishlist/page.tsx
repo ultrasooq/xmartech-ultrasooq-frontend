@@ -21,7 +21,7 @@ const WishlistPage = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit] = useState(10);
   const wishlistQuery = useWishlist({ page, limit });
   const deleteFromWishlist = useDeleteFromWishList();
   const queryClient = useQueryClient();

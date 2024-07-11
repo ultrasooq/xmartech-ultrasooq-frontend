@@ -434,6 +434,7 @@ const Header = () => {
                     if (item.name.toLowerCase().includes("rfq")) {
                       router.push("/rfq");
                     }
+                    setAssignedToId(undefined);
                   }}
                   href={
                     item.name.toLowerCase().includes("home")

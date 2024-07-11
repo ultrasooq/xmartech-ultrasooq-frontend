@@ -54,29 +54,29 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   );
   const watchSellType = formContext.watch("productPriceList.[0].sellType");
   // TODO: validation remove when user types
-  const watchMinCustomer = formContext.watch(
-    "productPriceList.[0].minCustomer",
-  );
-  const watchMaxCustomer = formContext.watch(
-    "productPriceList.[0].maxCustomer",
-  );
-  const watchMinQuantityPerCustomer = formContext.watch(
-    "productPriceList.[0].minQuantityPerCustomer",
-  );
-  const watchMaxQuantityPerCustomer = formContext.watch(
-    "productPriceList.[0].maxQuantityPerCustomer",
-  );
-  const watchMinQuantity = formContext.watch(
-    "productPriceList.[0].minQuantity",
-  );
-  const watchMaxQuantity = formContext.watch(
-    "productPriceList.[0].maxQuantity",
-  );
-  const watchTimeOpen = formContext.watch("productPriceList.[0].timeOpen");
-  const watchTimeClose = formContext.watch("productPriceList.[0].timeClose");
-  const watchDeliveryAfter = formContext.watch(
-    "productPriceList.[0].deliveryAfter",
-  );
+  // const watchMinCustomer = formContext.watch(
+  //   "productPriceList.[0].minCustomer",
+  // );
+  // const watchMaxCustomer = formContext.watch(
+  //   "productPriceList.[0].maxCustomer",
+  // );
+  // const watchMinQuantityPerCustomer = formContext.watch(
+  //   "productPriceList.[0].minQuantityPerCustomer",
+  // );
+  // const watchMaxQuantityPerCustomer = formContext.watch(
+  //   "productPriceList.[0].maxQuantityPerCustomer",
+  // );
+  // const watchMinQuantity = formContext.watch(
+  //   "productPriceList.[0].minQuantity",
+  // );
+  // const watchMaxQuantity = formContext.watch(
+  //   "productPriceList.[0].maxQuantity",
+  // );
+  // const watchTimeOpen = formContext.watch("productPriceList.[0].timeOpen");
+  // const watchTimeClose = formContext.watch("productPriceList.[0].timeClose");
+  // const watchDeliveryAfter = formContext.watch(
+  //   "productPriceList.[0].deliveryAfter",
+  // );
 
   const memoizedCountries = useMemo(() => {
     return (

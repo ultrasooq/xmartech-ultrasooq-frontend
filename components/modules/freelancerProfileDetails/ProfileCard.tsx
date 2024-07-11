@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FREELANCER_UNIQUE_ID } from "@/utils/constants";
 import {
-  getAmPm,
   getCurrentDay,
   getCurrentTime,
   getInitials,

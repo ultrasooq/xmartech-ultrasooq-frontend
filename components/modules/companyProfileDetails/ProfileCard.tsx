@@ -1,12 +1,6 @@
 import React, { useMemo } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
-import {
-  getCurrentDay,
-  getCurrentTime,
-  getInitials,
-  parsedDays,
-} from "@/utils/helper";
+import { getCurrentDay, getCurrentTime, parsedDays } from "@/utils/helper";
 import { COMPANY_UNIQUE_ID } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import EditIcon from "@/public/images/edit-icon.svg";
@@ -17,11 +11,6 @@ type ProfileCardProps = {
 };
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
-  const memoizedInitials = useMemo(
-    () => getInitials(userDetails?.firstName, userDetails?.lastName),
-    [userDetails?.firstName, userDetails?.lastName],
-  );
-
   const isOnlineToday = useMemo(() => {
     const getActiveDays = userDetails?.userBranch
       ?.map((item: any) => {

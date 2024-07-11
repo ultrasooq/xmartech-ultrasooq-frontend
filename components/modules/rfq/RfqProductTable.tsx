@@ -11,7 +11,6 @@ import {
 import Image from "next/image";
 import validator from "validator";
 import { TrendingProduct } from "@/utils/types/common.types";
-import Link from "next/link";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 type ProducTableProps = {

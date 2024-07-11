@@ -15,9 +15,6 @@ import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
-import ShareIcon from "@/components/icons/ShareIcon";
-import { useToast } from "@/components/ui/use-toast";
-import { isBrowser } from "@/utils/helper";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -42,7 +39,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   selectedIds,
   onSelectedId,
 }) => {
-  const { toast } = useToast();
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
@@ -79,18 +75,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [item.productReview?.length],
   );
-
-  const copyToClipboard = () => {
-    if (!isBrowser()) return;
-    navigator.clipboard.writeText(
-      `https://dev.ultrasooq.com/trending/${item.id}`,
-    );
-    toast({
-      title: "Copied",
-      description: "Link copied to clipboard",
-      variant: "info",
-    });
-  };
 
   return (
     <div className="product-list-s1-col">

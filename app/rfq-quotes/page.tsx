@@ -39,7 +39,7 @@ import { useToast } from "@/components/ui/use-toast";
 const RfqQuotesPage = () => {
   const { toast } = useToast();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [limit] = useState(5);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<number>();
 

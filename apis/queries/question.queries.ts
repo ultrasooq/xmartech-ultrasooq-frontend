@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { APIResponseError } from "@/utils/types/common.types";
-import { addReview, fetchReviews } from "../requests/review.requests";
 import {
   addQuestion,
   fetchQuestions,

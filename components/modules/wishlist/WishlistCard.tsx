@@ -5,7 +5,6 @@ import validator from "validator";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
-import { stripHTML } from "@/utils/helper";
 import TrashIcon from "@/public/images/td-trash-icon.svg";
 import { Button } from "@/components/ui/button";
 

@@ -6,7 +6,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import ProductCard from "./ProductCard";
 
 const SimilarProductsSection = () => {
   return (

@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 // import { useCartStore } from "@/lib/rfqStore";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
@@ -41,7 +40,6 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   isAddedToCart,
   haveAccessToken,
 }) => {
-  const router = useRouter();
   // const cart = useCartStore();
   const [quantity, setQuantity] = useState(0);
 

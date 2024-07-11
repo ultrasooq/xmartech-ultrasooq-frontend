@@ -117,7 +117,7 @@ const ManageProductsPage = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(6);
+  const [limit] = useState(6);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");

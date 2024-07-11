@@ -12,8 +12,6 @@ import DescriptionAndSpecificationSection from "@/components/modules/createProdu
 import Footer from "@/components/shared/Footer";
 import {
   useOneProductByProductCondition,
-  useProductById,
-  useUpdateProduct,
   useUpdateProductPriceByProductCondition,
 } from "@/apis/queries/product.queries";
 import { useToast } from "@/components/ui/use-toast";
@@ -43,140 +41,140 @@ const baseProductPriceItemSchema = z.object({
   deliveryAfter: z.coerce.number().optional(),
 });
 
-const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
-  .extend({
-    consumerType: z
-      .string()
-      .trim()
-      .min(1, { message: "Consumer Type is required" }),
-    sellType: z.string().trim().min(1, { message: "Sell Type is required" }),
-    consumerDiscount: z.coerce
-      .number()
-      .max(100, { message: "Consumer Discount must be less than 100" }),
-    vendorDiscount: z.coerce
-      .number()
-      .max(100, { message: "Vendor Discount must be less than 100" }),
-    deliveryAfter: z.coerce
-      .number()
-      .min(1, { message: "Delivery After is required" }),
-  })
-  .refine(
-    ({ minQuantity, maxQuantity }) =>
-      (!minQuantity || minQuantity) <= (!maxQuantity || maxQuantity),
-    {
-      message: "Min Quantity must be less than or equal to Max Quantity",
-      path: ["minQuantity"],
-    },
-  )
-  .refine(
-    ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
-      (!minQuantityPerCustomer || minQuantityPerCustomer) <=
-      (!maxQuantityPerCustomer || maxQuantityPerCustomer),
-    {
-      message:
-        "Min Quantity Per Customer must be less than or equal to Max Quantity Per Customer",
-      path: ["minQuantityPerCustomer"],
-    },
-  )
-  .refine(
-    ({ minCustomer, maxCustomer }) =>
-      (!minCustomer || minCustomer) <= (!maxCustomer || maxCustomer),
-    {
-      message: "Min Customer must be less than or equal to Max Customer",
-      path: ["minCustomer"],
-    },
-  )
-  .refine(
-    ({ timeOpen, timeClose }) =>
-      (!timeOpen || timeOpen) <= (!timeClose || timeClose),
-    {
-      message: "Open Time must be less than or equal to Close Time",
-      path: ["timeOpen"],
-    },
-  )
-  .superRefine((schema, ctx) => {
-    const {
-      sellType,
-      minQuantityPerCustomer,
-      maxQuantityPerCustomer,
-      minQuantity,
-      maxQuantity,
-      minCustomer,
-      maxCustomer,
-      timeOpen,
-      timeClose,
-    } = schema;
-    if (sellType === "NORMALSELL" || sellType === "BUYGROUP") {
-      if (!minQuantityPerCustomer) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Quantity Per Customer is required",
-          path: ["minQuantityPerCustomer"],
-        });
-      }
-      if (!maxQuantityPerCustomer) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Quantity Per Customer is required",
-          path: ["maxQuantityPerCustomer"],
-        });
-      }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!minQuantity) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Min Quantity is required",
-          path: ["minQuantity"],
-        });
-      }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!maxQuantity) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Max Quantity is required",
-          path: ["maxQuantity"],
-        });
-      }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!minCustomer) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Min Customer is required",
-          path: ["minCustomer"],
-        });
-      }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!maxCustomer) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Max Customer is required",
-          path: ["maxCustomer"],
-        });
-      }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!timeOpen) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Time Open is required",
-          path: ["timeOpen"],
-        });
-      }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!timeClose) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Time Close is required",
-          path: ["timeClose"],
-        });
-      }
-    }
-  });
+// const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
+//   .extend({
+//     consumerType: z
+//       .string()
+//       .trim()
+//       .min(1, { message: "Consumer Type is required" }),
+//     sellType: z.string().trim().min(1, { message: "Sell Type is required" }),
+//     consumerDiscount: z.coerce
+//       .number()
+//       .max(100, { message: "Consumer Discount must be less than 100" }),
+//     vendorDiscount: z.coerce
+//       .number()
+//       .max(100, { message: "Vendor Discount must be less than 100" }),
+//     deliveryAfter: z.coerce
+//       .number()
+//       .min(1, { message: "Delivery After is required" }),
+//   })
+//   .refine(
+//     ({ minQuantity, maxQuantity }) =>
+//       (!minQuantity || minQuantity) <= (!maxQuantity || maxQuantity),
+//     {
+//       message: "Min Quantity must be less than or equal to Max Quantity",
+//       path: ["minQuantity"],
+//     },
+//   )
+//   .refine(
+//     ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
+//       (!minQuantityPerCustomer || minQuantityPerCustomer) <=
+//       (!maxQuantityPerCustomer || maxQuantityPerCustomer),
+//     {
+//       message:
+//         "Min Quantity Per Customer must be less than or equal to Max Quantity Per Customer",
+//       path: ["minQuantityPerCustomer"],
+//     },
+//   )
+//   .refine(
+//     ({ minCustomer, maxCustomer }) =>
+//       (!minCustomer || minCustomer) <= (!maxCustomer || maxCustomer),
+//     {
+//       message: "Min Customer must be less than or equal to Max Customer",
+//       path: ["minCustomer"],
+//     },
+//   )
+//   .refine(
+//     ({ timeOpen, timeClose }) =>
+//       (!timeOpen || timeOpen) <= (!timeClose || timeClose),
+//     {
+//       message: "Open Time must be less than or equal to Close Time",
+//       path: ["timeOpen"],
+//     },
+//   )
+//   .superRefine((schema, ctx) => {
+//     const {
+//       sellType,
+//       minQuantityPerCustomer,
+//       maxQuantityPerCustomer,
+//       minQuantity,
+//       maxQuantity,
+//       minCustomer,
+//       maxCustomer,
+//       timeOpen,
+//       timeClose,
+//     } = schema;
+//     if (sellType === "NORMALSELL" || sellType === "BUYGROUP") {
+//       if (!minQuantityPerCustomer) {
+//         ctx.addIssue({
+//           code: "custom",
+//           message: "Quantity Per Customer is required",
+//           path: ["minQuantityPerCustomer"],
+//         });
+//       }
+//       if (!maxQuantityPerCustomer) {
+//         ctx.addIssue({
+//           code: "custom",
+//           message: "Quantity Per Customer is required",
+//           path: ["maxQuantityPerCustomer"],
+//         });
+//       }
+//     }
+//     if (sellType === "BUYGROUP") {
+//       if (!minQuantity) {
+//         ctx.addIssue({
+//           code: "custom",
+//           message: "Min Quantity is required",
+//           path: ["minQuantity"],
+//         });
+//       }
+//     }
+//     if (sellType === "BUYGROUP") {
+//       if (!maxQuantity) {
+//         ctx.addIssue({
+//           code: "custom",
+//           message: "Max Quantity is required",
+//           path: ["maxQuantity"],
+//         });
+//       }
+//     }
+//     if (sellType === "BUYGROUP") {
+//       if (!minCustomer) {
+//         ctx.addIssue({
+//           code: "custom",
+//           message: "Min Customer is required",
+//           path: ["minCustomer"],
+//         });
+//       }
+//     }
+//     if (sellType === "BUYGROUP") {
+//       if (!maxCustomer) {
+//         ctx.addIssue({
+//           code: "custom",
+//           message: "Max Customer is required",
+//           path: ["maxCustomer"],
+//         });
+//       }
+//     }
+//     if (sellType === "BUYGROUP") {
+//       if (!timeOpen) {
+//         ctx.addIssue({
+//           code: "custom",
+//           message: "Time Open is required",
+//           path: ["timeOpen"],
+//         });
+//       }
+//     }
+//     if (sellType === "BUYGROUP") {
+//       if (!timeClose) {
+//         ctx.addIssue({
+//           code: "custom",
+//           message: "Time Close is required",
+//           path: ["timeClose"],
+//         });
+//       }
+//     }
+//   });
 
 const formSchema = z.object({
   productName: z

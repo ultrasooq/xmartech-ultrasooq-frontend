@@ -68,7 +68,7 @@ const TrendingPage = () => {
   const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(8);
+  const [limit] = useState(8);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
 
@@ -422,10 +422,11 @@ const TrendingPage = () => {
             <div className="right-products">
               <div className="products-header-filter">
                 <div className="le-info">
-                  <h3>Phones & Accessories</h3>
+                  {/* TODO: need name here */}
+                  {/* <h3></h3> */}
                 </div>
                 <div className="rg-filter">
-                  <p>{memoizedProductList.length} Products found</p>
+                  <p>{allProductsQuery.data?.totalCount} Products found</p>
                   <ul>
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>

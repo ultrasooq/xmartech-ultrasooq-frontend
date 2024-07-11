@@ -1,7 +1,6 @@
 import React from "react";
 import Image from "next/image";
 import StarIcon from "@/public/images/star.png";
-import { cn } from "@/lib/utils";
 
 type DealsCardProps = {
   item: any;

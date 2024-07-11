@@ -28,22 +28,20 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 
 const ExistingProductsPage = () => {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [searchProductTerm, setSearchProductTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
-  const [sortBy, setSortBy] = useState("desc");
+  const [sortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(8);
+  const [limit] = useState(8);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
