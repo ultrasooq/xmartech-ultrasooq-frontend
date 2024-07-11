@@ -78,6 +78,7 @@ const Header = () => {
   const [subCategoryId, setSubCategoryId] = useState();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
   const [subSubCategoryIndex, setSubSubCategoryIndex] = useState(0);
+  const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
   const { clearUser } = useAuth();
@@ -487,7 +488,14 @@ const Header = () => {
                       ) => (
                         <div
                           key={item?.id}
-                          className="flex cursor-pointer items-center justify-start gap-x-2 p-3"
+                          className={cn(
+                            "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
+                            memoizedSubCategory?.length
+                              ? index === subCategoryIndex
+                                ? "dropdown-active-child"
+                                : null
+                              : null,
+                          )}
                           onMouseEnter={() => setSubCategoryIndex(index)}
                         >
                           {item?.icon ? (
@@ -516,7 +524,15 @@ const Header = () => {
                       ) => (
                         <div
                           key={item?.id}
-                          className="flex cursor-pointer items-center justify-start gap-x-2 p-3"
+                          className={cn(
+                            "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
+                            memoizedSubCategory?.[subCategoryIndex]?.children
+                              ?.length
+                              ? index === subSubCategoryIndex
+                                ? "dropdown-active-child"
+                                : null
+                              : null,
+                          )}
                           onMouseEnter={() => setSubSubCategoryIndex(index)}
                         >
                           {item?.icon ? (
@@ -539,15 +555,30 @@ const Header = () => {
                 {memoizedSubCategory?.[subCategoryIndex]?.children?.[
                   subSubCategoryIndex
                 ]?.children?.length ? (
-                  <div className="dropdown-content-third py-5">
+                  <div className="dropdown-content-third p-3">
                     <div className="grid grid-cols-5">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.[
                         subSubCategoryIndex
                       ]?.children?.map(
-                        (item: { id: number; name: string; icon: string }) => (
+                        (
+                          item: { id: number; name: string; icon: string },
+                          index: number,
+                        ) => (
                           <div
                             key={item?.id}
-                            className="flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3"
+                            className={cn(
+                              "dropdown-content-child flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3",
+                              memoizedSubCategory?.[subCategoryIndex]
+                                ?.children?.[subSubCategoryIndex]?.children
+                                ?.length
+                                ? index === subSubSubCategoryIndex
+                                  ? "dropdown-active-child"
+                                  : null
+                                : null,
+                            )}
+                            onMouseEnter={() =>
+                              setSubSubSubCategoryIndex(index)
+                            }
                           >
                             {item?.icon ? (
                               <Image
