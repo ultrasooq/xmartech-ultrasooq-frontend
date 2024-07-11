@@ -12,14 +12,45 @@ import PolicyContent from "./PolicyContent";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import AllCardsImage from "@/public/images/all-card.png";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
+import ControlledTextInput from "./Forms/ControlledTextInput";
+import { Form } from "../ui/form";
+
+const formSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(5, { message: "Email is required" })
+    .email({
+      message: "Invalid Email Address",
+    })
+    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+      message: "Email must be in lower case",
+    }),
+});
+
+const defaultValues = {
+  email: "",
+};
 
 const Footer = () => {
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues,
+  });
 
   const handleToggleTermsModal = () => setIsTermsModalOpen(!isTermsModalOpen);
   const handleTogglePrivacyModal = () =>
     setIsPrivacyModalOpen(!isPrivacyModalOpen);
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    console.log(data);
+  };
 
   return (
     <footer className="w-full pt-16">
@@ -123,20 +154,25 @@ const Footer = () => {
             <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5">
               Newsletter
             </h3>
-            <div className="mt-3 inline-block w-full">
-              <input
-                type="email"
-                name=""
-                placeholder="Email Address"
-                className="h-12 w-3/4 rounded-l border border-solid border-gray-200 px-3 py-2.5 text-sm font-normal capitalize focus:outline-none md:px-5 md:py-3.5"
-              />
-              <button
-                type="button"
-                className="h-12 w-1/4 rounded-r border border-solid border-dark-orange bg-dark-orange text-xs font-medium text-white md:text-sm"
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="mt-3 flex w-full"
               >
-                Subscribe
-              </button>
-            </div>
+                <div className="w-3/4">
+                  <ControlledTextInput
+                    name="email"
+                    placeholder="Email Address"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="mt-2 h-12 w-1/4 rounded-r border border-solid border-dark-orange bg-dark-orange text-xs font-medium text-white md:text-sm"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </Form>
           </div>
         </div>
         <div className="flex flex-wrap">

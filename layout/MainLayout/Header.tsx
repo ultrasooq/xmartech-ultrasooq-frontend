@@ -55,7 +55,7 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
       <a onClick={onClick} {...props}>
         <button
           type="button"
-          className="flex cursor-pointer px-10 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
+          className="flex cursor-pointer px-8 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
           onClick={onClick}
         >
           {children}
@@ -75,7 +75,7 @@ const Header = () => {
   const [menuId, setMenuId] = useState();
   const [categoryId, setCategoryId] = useState();
   const [assignedToId, setAssignedToId] = useState();
-  const [subCategoryId, setSubCategoryId] = useState();
+  // const [subCategoryId, setSubCategoryId] = useState();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
   const [subSubCategoryIndex, setSubSubCategoryIndex] = useState(0);
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
@@ -108,11 +108,16 @@ const Header = () => {
           return {
             name: item.name,
             id: item.id,
-            icon: menuBarIconList[index],
+            icon: menuBarIconList[index + 1],
           };
         },
       );
     }
+    tempArr.unshift({
+      name: "Home",
+      id: 0,
+      icon: menuBarIconList[0],
+    });
 
     return tempArr || [];
   }, [categoryQuery.data?.data]);
@@ -204,8 +209,6 @@ const Header = () => {
     }
   }, [isClickedOutside]);
 
-  // console.log(memoizedCategory, categoryId);
-  // console.log(memoizedMenu);
   return (
     <header className="relative w-full">
       <div className="w-full bg-dark-cyan">
@@ -421,6 +424,9 @@ const Header = () => {
                   onClick={() => {
                     setMenuId(item.id);
                     setCategoryId(undefined);
+                    if (item.name.toLowerCase().includes("home")) {
+                      router.push("/home");
+                    }
 
                     if (item.name.toLowerCase().includes("store")) {
                       router.push("/trending");
@@ -431,11 +437,13 @@ const Header = () => {
                     }
                   }}
                   href={
-                    item.name.toLowerCase().includes("store")
-                      ? "/trending"
-                      : item.name.toLowerCase().includes("rfq")
-                        ? "/rfq"
-                        : "/trending"
+                    item.name.toLowerCase().includes("home")
+                      ? "/home"
+                      : item.name.toLowerCase().includes("store")
+                        ? "/trending"
+                        : item.name.toLowerCase().includes("rfq")
+                          ? "/rfq"
+                          : "/trending"
                   }
                   // variant="link"
                   // className="flex cursor-pointer px-10 py-3 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
