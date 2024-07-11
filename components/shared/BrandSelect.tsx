@@ -17,7 +17,7 @@ const customStyles = {
 const ReactSelectInput = () => {
   const formContext = useFormContext();
   const { toast } = useToast();
-  const [value, setValue] = useState<IOption | null>();
+  const [, setValue] = useState<IOption | null>();
 
   const brandsQuery = useBrands({});
   const createBrand = useCreateBrand();

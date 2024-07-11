@@ -3,7 +3,6 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
   DialogContent,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -21,11 +20,9 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
   isLoading,
 }) => {
   return (
-    <DialogContent  className="custom-ui-alert-popup danger-alert-popup">
+    <DialogContent className="custom-ui-alert-popup danger-alert-popup">
       <DialogHeader className="alert-popup-headerpart">
-        <h1>
-          Delete
-        </h1>
+        <h1>Delete</h1>
       </DialogHeader>
       <DialogDescription className="alert-popup-bodypart">
         <h4>Are you sure you want to delete?</h4>

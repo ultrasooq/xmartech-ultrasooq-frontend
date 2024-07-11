@@ -28,7 +28,7 @@ type DynamicFormProps = {
 };
 
 const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
-  const [formData, setFormData] = useState<any>(
+  const [formData] = useState<any>(
     form?.formIdDetail?.formData
       ? JSON.parse(form?.formIdDetail?.formData)
       : {},
