@@ -209,11 +209,6 @@ const Header = () => {
     }
   }, [isClickedOutside]);
 
-  console.log(
-    memoizedSubCategory?.[subCategoryIndex]?.children?.[subSubCategoryIndex]
-      ?.name,
-  );
-
   return (
     <header className="relative w-full">
       <div className="w-full bg-dark-cyan">
