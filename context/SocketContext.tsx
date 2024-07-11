@@ -20,6 +20,7 @@ interface rfqRequestType {
   status: string;
   requestedPrice: number;
   requestedById: number;
+  newTotalOfferPrice: number;
 }
 
 interface SocketContextType {
@@ -53,6 +54,9 @@ interface SocketContextType {
     roomId: number | null;
     id: number;
     status: string;
+    rfqUserId: number;
+    requestedPrice: number;
+    rfqQuoteProductId: number
   }) => void;
   rfqRequest: rfqRequestType | null;
   disconnectSocket: () => void;
@@ -105,6 +109,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
           status: string;
           requestedPrice: number;
           requestedById: number;
+          newTotalOfferPrice: number;
         }) => {
           setRfqRequest(rfqRequest);
         },
@@ -217,10 +222,16 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     roomId,
     id,
     status,
+    rfqUserId,
+    requestedPrice,
+    rfqQuoteProductId
   }: {
     roomId: number | null;
     id: number;
     status: string;
+    rfqUserId: number;
+    requestedPrice: number;
+    rfqQuoteProductId: number
   }) => {
     if (socket) {
       socket.emit("updateRfqPriceRequest", {
@@ -228,6 +239,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         id,
         status,
         userId: user?.id,
+        rfqUserId,
+        requestedPrice,
+        rfqQuoteProductId
       });
     }
   };
