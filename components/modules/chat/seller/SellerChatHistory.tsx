@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import moment from "moment";
 import { useAuth } from "@/context/AuthContext";
 import { RfqProductPriceRequestStatus } from "@/utils/types/chat.types";
@@ -11,6 +11,7 @@ interface SellerChatHistoryProps {
   chatHistoryLoading: boolean;
   updateRfqMessageCount: () => void;
   buyerId: number | undefined;
+  rfqUserId: number;
   unreadMsgCount: number | 0;
 }
 
@@ -21,6 +22,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
   updateRfqMessageCount,
   buyerId,
   unreadMsgCount,
+  rfqUserId,
 }) => {
   const { user } = useAuth();
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -39,14 +41,17 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
   }, [buyerId, roomId]);
 
   const handlePriceStatus = async (
-    id: number,
+    chat: { id: number; requestedPrice: number; rfqQuoteProductId: number },
     status: RfqProductPriceRequestStatus,
   ) => {
     try {
       const payload = {
-        id,
+        id: chat.id,
         status,
         roomId: roomId,
+        rfqUserId,
+        requestedPrice: chat.requestedPrice,
+        rfqQuoteProductId: chat.rfqQuoteProductId,
       };
       updateRfqRequestStatus(payload);
     } catch (error) {}
@@ -163,7 +168,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                 <button
                                   onClick={() =>
                                     handlePriceStatus(
-                                      chat.rfqProductPriceRequest.id,
+                                      chat.rfqProductPriceRequest,
                                       RfqProductPriceRequestStatus.APPROVED,
                                     )
                                   }
@@ -175,7 +180,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                 <button
                                   onClick={() =>
                                     handlePriceStatus(
-                                      chat.rfqProductPriceRequest.id,
+                                      chat.rfqProductPriceRequest,
                                       RfqProductPriceRequestStatus.REJECTED,
                                     )
                                   }
