@@ -302,6 +302,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         rfqQuoteProductId: number;
         requestedById: number;
         status: string;
+        newTotalOfferPrice: number;
     }) => {
         const chatHistory = [...selectedChatHistory]
         const index = chatHistory.findIndex((chat) => chat.id === rRequest.messageId);
@@ -318,6 +319,14 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             setSelectedChatHistory(chatHistory)
         }
 
+        // UPDATE TOTAL PRICE
+        if (rRequest.status === "APPROVED") {
+            setSelectedRfqQuote((prevSelectedRfqQuote: any) => ({
+                ...prevSelectedRfqQuote,
+                offerPrice: rRequest.newTotalOfferPrice,
+            }));
+        }
+
         // UPDATE RFQ PRODUCT 
         updateRFQProduct(rRequest);
     }
@@ -329,12 +338,13 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         rfqQuoteProductId: number;
         requestedById: number;
         status: string;
+        newTotalOfferPrice: number;
     }) => {
         if (selectedRfqQuote?.buyerID === rRequest?.requestedById || (rRequest?.requestedById === user?.id && rRequest?.status === "REJECTED")) {
             const index = quoteProducts.findIndex((product: any) => product.id === rRequest.rfqQuoteProductId);
             if (index !== -1) {
                 const pList = [...quoteProducts];
-                const product = {...pList[index]};
+                const product = { ...pList[index] };
                 let offerPrice = product.offerPrice;
                 if (rRequest.status === "APPROVED") {
                     offerPrice = rRequest?.requestedPrice;
@@ -364,14 +374,13 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         }
     };
 
-
     const handleRfqProducts = (item: any) => {
         const newData = item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
             (i: any) => {
                 let priceRequest = null
                 const pRequest = item?.rfqProductPriceRequests?.find((request: any) => request?.rfqQuoteProductId === i.id && request?.status === "APPROVED");
                 if (pRequest) priceRequest = pRequest;
-                let offerPrice = item.offerPrice;
+                let offerPrice = i.offerPrice;
                 if (priceRequest?.status === "APPROVED") {
                     offerPrice = priceRequest?.requestedPrice
                 }
@@ -547,6 +556,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                 selectedChatHistory={selectedChatHistory}
                                 chatHistoryLoading={chatHistoryLoading}
                                 buyerId={selectedRfqQuote?.buyerID}
+                                rfqUserId={selectedRfqQuote?.id}
                                 updateRfqMessageCount={updateRfqMessageCount}
                                 unreadMsgCount={selectedRfqQuote?.unreadMsgCount}
                             />

@@ -328,6 +328,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         rfqQuoteProductId: number;
         status: string;
         requestedById: number;
+        newTotalOfferPrice: number;
     }) => {
         const chatHistory = [...selectedChatHistory]
         const index = chatHistory.findIndex((chat) => chat.id === rRequest.messageId);
@@ -355,6 +356,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         rfqQuoteProductId: number;
         requestedById: number;
         status: string;
+        newTotalOfferPrice: number;
     }) => {
         if (rRequest.status === "APPROVED" || rRequest.status === "REJECTED") {
             let vDor = selectedVendor
@@ -384,9 +386,13 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                     pList[index]["priceRequest"] = priceRequest;
                     pList[index]["offerPrice"] = offerPrice;
 
-                    const newData = {
+                    let newData = {
                         ...vDor,
+                        offerPrice: vDor.offerPrice,
                         rfqQuotesProducts: pList
+                    }
+                    if (rRequest.newTotalOfferPrice) {
+                        newData.offerPrice = rRequest.newTotalOfferPrice
                     }
                     setSelectedVendor(newData)
                 }
@@ -398,13 +404,13 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         const newData = item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map(
             (i: any) => {
                 let priceRequest = null
-                let offerPrice = item.offerPrice;
+                let offerPrice = i.offerPrice;
                 const pRequest = item?.rfqProductPriceRequests?.find((request: any) => request?.rfqQuoteProductId === i.id);
                 if (pRequest) priceRequest = pRequest;
                 if (priceRequest?.status === "APPROVED") {
                     offerPrice = priceRequest?.requestedPrice
                 } else if (priceRequest?.status === "REJECTED") {
-                    offerPrice = item.offerPrice;
+                    offerPrice = i.offerPrice;
                 }
 
                 return {
@@ -585,6 +591,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                             chatHistoryLoading={chatHistoryLoading}
                             activeSellerId={activeSellerId}
                             unreadMsgCount={selectedVendor?.unreadMsgCount}
+                            rfqUserId={selectedVendor?.id}
                             updateVendorMessageCount={updateVendorMessageCount}
                         />
                     </div>

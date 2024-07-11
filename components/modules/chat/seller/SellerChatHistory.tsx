@@ -11,10 +11,11 @@ interface SellerChatHistoryProps {
     chatHistoryLoading: boolean;
     updateRfqMessageCount: () => void;
     buyerId: number | undefined;
+    rfqUserId: number;
     unreadMsgCount: number | 0;
 }
 
-const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading, updateRfqMessageCount, buyerId, unreadMsgCount }) => {
+const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading, updateRfqMessageCount, buyerId, unreadMsgCount, rfqUserId }) => {
     const { user } = useAuth();
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const { updateRfqRequestStatus } = useSocket()
@@ -30,12 +31,15 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [buyerId, roomId])
 
-    const handlePriceStatus = async (id: number, status: RfqProductPriceRequestStatus) => {
+    const handlePriceStatus = async (chat: {id: number; requestedPrice: number; rfqQuoteProductId: number}, status: RfqProductPriceRequestStatus) => {
         try {
             const payload = {
-                id,
+                id: chat.id,
                 status,
-                roomId: roomId
+                roomId: roomId,
+                rfqUserId,
+                requestedPrice: chat.requestedPrice,
+                rfqQuoteProductId: chat.rfqQuoteProductId
             }
             updateRfqRequestStatus(payload)
         } catch (error) {
@@ -126,8 +130,8 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({ roomId, selectedC
                                                         </p>
                                                         {chat.rfqProductPriceRequest?.status === "PENDING" && (
                                                             <div className="mt-2">
-                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest.id, RfqProductPriceRequestStatus.APPROVED)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-2 py-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Accept</button>
-                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest.id, RfqProductPriceRequestStatus.REJECTED)} type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 rounded-lg px-2 py-2 me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Reject</button>
+                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest, RfqProductPriceRequestStatus.APPROVED)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-2 py-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Accept</button>
+                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest, RfqProductPriceRequestStatus.REJECTED)} type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 rounded-lg px-2 py-2 me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Reject</button>
                                                             </div>
                                                         )}
                                                     </div>
