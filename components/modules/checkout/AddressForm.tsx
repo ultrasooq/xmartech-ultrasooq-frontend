@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,6 @@ import { DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import { useCountries } from "@/apis/queries/masters.queries";
-import { ICountries } from "@/utils/types/common.types";
 import { useToast } from "@/components/ui/use-toast";
 import {
   useAddAddress,
@@ -126,15 +125,6 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
     !!addressId,
   );
   const countriesQuery = useCountries();
-
-  const memoizedCountries = useMemo(() => {
-    return (
-      countriesQuery?.data?.data.map((item: ICountries) => {
-        return { label: item.countryName, value: item.countryName };
-      }) || []
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countriesQuery?.data?.data?.length]);
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (addressId) {

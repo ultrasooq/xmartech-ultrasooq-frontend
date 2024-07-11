@@ -7,7 +7,6 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
-import { useToast } from "@/components/ui/use-toast";
 
 type GuestAddressFormProps = {
   onClose: () => void;
@@ -89,7 +88,6 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
   guestShippingAddress,
   guestBillingAddress,
 }) => {
-  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {

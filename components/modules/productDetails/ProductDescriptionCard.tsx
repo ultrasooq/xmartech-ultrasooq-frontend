@@ -65,7 +65,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   askForPrice,
   otherSellerDetails,
 }) => {
-  const [quantity, setQuantity] = useState(1);
+  const [, setQuantity] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const calculateDiscountedPrice = () => {

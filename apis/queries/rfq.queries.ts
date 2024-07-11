@@ -286,7 +286,6 @@ export const useAddRfqQuotes = () => {
 };
 
 export const useAddProductDuplicateRfq = () => {
-  const queryClient = useQueryClient();
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,

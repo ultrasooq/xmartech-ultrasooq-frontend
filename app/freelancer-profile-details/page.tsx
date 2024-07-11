@@ -6,7 +6,6 @@ import ProfileCard from "@/components/modules/freelancerProfileDetails/ProfileCa
 import InformationSection from "@/components/modules/freelancerProfileDetails/InformationSection";
 import ReviewSection from "@/components/modules/freelancerProfileDetails/ReviewSection";
 import MoreInformationSection from "@/components/modules/freelancerProfileDetails/MoreInformationSection";
-import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
 import { PlusIcon } from "@radix-ui/react-icons";
@@ -19,7 +18,6 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import Link from "next/link";
 
 export default function FreelancerProfileDetailsPage() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile-info");
 
   const me = useMe();

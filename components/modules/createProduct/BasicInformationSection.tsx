@@ -27,7 +27,6 @@ import {
 import ReactSelect from "react-select";
 import PriceSection from "./PriceSection";
 import DescriptionSection from "./DescriptionSection";
-import DynamicFormViewSection from "./DynamicFormViewSection";
 
 const customStyles = {
   control: (base: any) => ({

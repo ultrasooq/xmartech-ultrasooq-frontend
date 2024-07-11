@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import ProductCard from "./ProductCard";
 import { useMe } from "@/apis/queries/user.queries";
 import { useProducts, useVendorProducts } from "@/apis/queries/product.queries";
-import { stripHTML } from "@/utils/helper";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";

@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
@@ -14,9 +14,9 @@ import Footer from "@/components/shared/Footer";
 import Link from "next/link";
 import { MONTHS, formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import ReviewForm from "@/components/shared/ReviewForm";
-import { useMe } from "@/apis/queries/user.queries";
+// import { Dialog, DialogContent } from "@/components/ui/dialog";
+// import ReviewForm from "@/components/shared/ReviewForm";
+// import { useMe } from "@/apis/queries/user.queries";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 
 const MyOrderDetailsPage = ({}) => {

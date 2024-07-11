@@ -5,7 +5,6 @@ import { AddressItem } from "@/utils/types/address.types";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AddressForm from "@/components/modules/checkout/AddressForm";
 import { useClickOutside } from "use-events";
-import { useMe } from "@/apis/queries/user.queries";
 import {
   useAllUserAddress,
   useDeleteAddress,
@@ -29,7 +28,6 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const me = useMe();
   const allUserAddressQuery = useAllUserAddress({
     page: 1,
     limit: 10,

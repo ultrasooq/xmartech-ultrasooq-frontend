@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useFormContext } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -30,7 +29,6 @@ type Field = {
 };
 
 const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
-  const formContext = useFormContext();
   const [selectOption, setSelectOption] = useState<string>();
   const [isCustomFieldModalOpen, setIsCustomFieldModalOpen] = useState(false);
   const [customfields, setCustomFields] = useState<Field[]>([]);
@@ -197,80 +195,78 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
   };
 
   return (
-    <div className="grid w-full  max-w-[950px] mx-auto grid-cols-4 gap-x-5">
+    <div className="mx-auto grid  w-full max-w-[950px] grid-cols-4 gap-x-5">
       <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
         <div className="flex w-full flex-wrap">
-        <div className="form-groups-common-sec-s1">
-          <h3>
-            Product Details
-          </h3>
+          <div className="form-groups-common-sec-s1">
+            <h3>Product Details</h3>
 
-          <div className="mb-3.5 w-full">
-            <div className="flex flex-wrap">
-              {customfields.map((item) => (
-                <div
-                  key={uuidv4()}
-                  className={cn(
-                    "relative my-2 flex w-full items-start px-2",
-                    item.size === "small" ? "w-1/2" : "",
-                    customFieldType?.key === item.key ? "bg-[#F9F9F9]" : "",
-                  )}
-                >
-                  <div className="w-full flex-1 py-2 text-left">
-                    {item.field}
+            <div className="mb-3.5 w-full">
+              <div className="flex flex-wrap">
+                {customfields.map((item) => (
+                  <div
+                    key={uuidv4()}
+                    className={cn(
+                      "relative my-2 flex w-full items-start px-2",
+                      item.size === "small" ? "w-1/2" : "",
+                      customFieldType?.key === item.key ? "bg-[#F9F9F9]" : "",
+                    )}
+                  >
+                    <div className="w-full flex-1 py-2 text-left">
+                      {item.field}
+                    </div>
+
+                    <div className="absolute right-0 flex gap-x-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setCustomFieldType({ type: item.type, key: item.key })
+                        }
+                        className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                      >
+                        <Image
+                          src="/images/edit-pencil.png"
+                          height={24}
+                          width={24}
+                          alt="edit-icon"
+                        />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => deleteCustomField(item.key)}
+                        className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                      >
+                        <Image
+                          src="/images/remove-pencil.png"
+                          height={23}
+                          width={23}
+                          alt="remove-icon"
+                        />
+                      </button>
+                    </div>
                   </div>
+                ))}
 
-                  <div className="absolute right-0 flex gap-x-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setCustomFieldType({ type: item.type, key: item.key })
-                      }
-                      className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                    >
-                      <Image
-                        src="/images/edit-pencil.png"
-                        height={24}
-                        width={24}
-                        alt="edit-icon"
-                      />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => deleteCustomField(item.key)}
-                      className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                    >
-                      <Image
-                        src="/images/remove-pencil.png"
-                        height={23}
-                        width={23}
-                        alt="remove-icon"
-                      />
-                    </button>
-                  </div>
+                <div className="relative w-full">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={handleToggleCustomFieldModal}
+                    className="border-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:text-dark-orange"
+                  >
+                    <Image
+                      src="/images/plus-orange.png"
+                      className="mr-2"
+                      alt="plus-orange-icon"
+                      height={14}
+                      width={14}
+                    />
+                    Add Custom Field
+                  </Button>
                 </div>
-              ))}
-
-              <div className="relative w-full">
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={handleToggleCustomFieldModal}
-                  className="border-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:text-dark-orange"
-                >
-                  <Image
-                    src="/images/plus-orange.png"
-                    className="mr-2"
-                    alt="plus-orange-icon"
-                    height={14}
-                    width={14}
-                  />
-                  Add Custom Field
-                </Button>
               </div>
             </div>
-          </div>
           </div>
 
           <Dialog

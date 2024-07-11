@@ -32,7 +32,7 @@ import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
-import ChainedCategoryDropdown from "@/components/shared/ChainedCategoryDropdown";
+// import ChainedCategoryDropdown from "@/components/shared/ChainedCategoryDropdown";
 
 const formSchema = z.object({
   uploadBranchImage: z.any().optional(),

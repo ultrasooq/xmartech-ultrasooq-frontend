@@ -2,7 +2,6 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 import urlcat from "urlcat";
-import { isEmpty } from "lodash";
 import {
   ICreateProductRequest,
   IDeleteProductRequest,

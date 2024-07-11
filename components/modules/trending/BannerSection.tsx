@@ -3,6 +3,7 @@ import Image from "next/image";
 import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";
 import ChevronRightIcon from "@/public/images/nextarow.svg";
 import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
+import Link from "next/link";
 
 const BannerSection = () => {
   return (
@@ -18,7 +19,7 @@ const BannerSection = () => {
           <div className="text-container">
             <ul className="page-indicator">
               <li>
-                <a href="#">Home</a>
+                <Link href="/home">Home</Link>
                 <Image
                   src={ChevronRightIcon}
                   alt="next-icon"
@@ -27,7 +28,7 @@ const BannerSection = () => {
                 />
               </li>
               <li>
-                <a href="#">Shop</a>
+                <Link href="/trending">Shop</Link>
                 <Image
                   src={ChevronRightIcon}
                   alt="next-icon"

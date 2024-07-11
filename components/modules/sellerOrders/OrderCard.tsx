@@ -4,7 +4,6 @@ import React from "react";
 import { SELLER_DELIVERY_STATUS, formattedDate } from "@/utils/constants";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
-import { PiStarFill } from "react-icons/pi";
 
 type OrderCardProps = {
   id: number;

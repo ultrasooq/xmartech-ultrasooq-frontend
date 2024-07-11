@@ -6,7 +6,6 @@ import MoreInformationSection from "@/components/modules/companyProfileDetails/M
 import ProfileCard from "@/components/modules/companyProfileDetails/ProfileCard";
 import ReviewSection from "@/components/modules/freelancerProfileDetails/ReviewSection";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusIcon } from "@radix-ui/react-icons";
@@ -21,7 +20,6 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import Link from "next/link";
 
 export default function CompanyProfileDetailsPage() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile-info");
   const [activeSellerId, setActiveSellerId] = useState<string | null>();
 

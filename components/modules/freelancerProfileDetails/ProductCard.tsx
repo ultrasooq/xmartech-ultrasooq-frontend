@@ -15,7 +15,6 @@ import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
-import ShareIcon from "@/components/icons/ShareIcon";
 
 type ProductCardProps = {
   item: TrendingProduct;

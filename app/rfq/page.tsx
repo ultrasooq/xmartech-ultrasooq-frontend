@@ -50,7 +50,7 @@ const RfqPage = () => {
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(8);
+  const [limit] = useState(8);
   // const cart = useCartStore();
   const [quantity, setQuantity] = useState<number | undefined>();
 

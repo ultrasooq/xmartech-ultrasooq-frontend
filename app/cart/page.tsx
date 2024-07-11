@@ -15,7 +15,6 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { CartItem } from "@/utils/types/cart.types";
 import { getCookie } from "cookies-next";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 

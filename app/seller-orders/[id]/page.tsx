@@ -15,14 +15,12 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import OtherItemCard from "@/components/modules/sellerOrderDetails/OtherItemCard";
 import UpdateProductStatusForm from "@/components/modules/myOrderDetails/UpdateProductStatusForm";
-import { useMe } from "@/apis/queries/user.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Footer from "@/components/shared/Footer";
 import Link from "next/link";
 import { MONTHS, formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
-import { PiStarFill } from "react-icons/pi";
 // import SellerReviewForm from "@/components/shared/SellerReviewForm";
 
 const MyOrderDetailsPage = ({}) => {
@@ -34,7 +32,6 @@ const MyOrderDetailsPage = ({}) => {
   const handleToggleStatusModal = () =>
     setIsStatusModalOpen(!isStatusModalOpen);
 
-  const me = useMe();
   const orderByIdQuery = useOrderBySellerId(
     {
       orderProductId: searchParams?.id ? (searchParams.id as string) : "",

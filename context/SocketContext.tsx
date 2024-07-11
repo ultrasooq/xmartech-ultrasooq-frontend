@@ -142,6 +142,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         setRfqRequest(null);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const sendMessage = ({
@@ -152,7 +153,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     requestedPrice,
     buyerId,
     sellerId,
-    rfqQuotesUserId
+    rfqQuotesUserId,
   }: {
     roomId: number;
     rfqId: number;
@@ -173,7 +174,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         buyerId,
         sellerId,
         requestedPrice,
-        rfqQuotesUserId
+        rfqQuotesUserId,
       });
     }
   };
@@ -186,7 +187,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     buyerId,
     sellerId,
     requestedPrice,
-    rfqQuotesUserId
+    rfqQuotesUserId,
   }: {
     participants: number[];
     content: string;
@@ -208,7 +209,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         sellerId,
         requestedPrice,
         rfqQuotesUserId,
-        messageStatus: MessageStatus.READ
+        messageStatus: MessageStatus.READ,
       });
     }
   };

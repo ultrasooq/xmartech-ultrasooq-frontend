@@ -8,13 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import validator from "validator";
 import { TrendingProduct } from "@/utils/types/common.types";
 import Link from "next/link";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
-import { Item } from "@radix-ui/react-accordion";
 
 type ProducTableProps = {
   list: TrendingProduct[];

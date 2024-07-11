@@ -13,9 +13,6 @@ import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
-import ShareIcon from "@/components/icons/ShareIcon";
-import { isBrowser } from "@/utils/helper";
-import { useToast } from "@/components/ui/use-toast";
 
 type ProductCardProps = {
   id: number;
@@ -50,8 +47,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   consumerDiscount,
   askForPrice,
 }) => {
-  const { toast } = useToast();
-
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
     const discount = consumerDiscount || 0;
@@ -87,15 +82,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
     [productReview?.length],
   );
 
-  const copyToClipboard = () => {
-    if (!isBrowser()) return;
-    navigator.clipboard.writeText(`https://dev.ultrasooq.com/trending/${id}`);
-    toast({
-      title: "Copied",
-      description: "Link copied to clipboard",
-      variant: "info",
-    });
-  };
+  // const copyToClipboard = () => {
+  //   if (!isBrowser()) return;
+  //   navigator.clipboard.writeText(`https://dev.ultrasooq.com/trending/${id}`);
+  //   toast({
+  //     title: "Copied",
+  //     description: "Link copied to clipboard",
+  //     variant: "info",
+  //   });
+  // };
 
   return (
     <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">

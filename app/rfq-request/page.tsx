@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useSearchParams } from 'next/navigation'
 import TaskIcon from "@/public/images/task-icon.svg";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -9,7 +8,7 @@ import { usePathname } from "next/navigation";
 import RfqRequestChat from "@/components/modules/chat/rfqRequest/RfqRequestChat";
 
 const RfqRequestPage = () => {
-  const [rfqQuotesId, setRfqQuotesId] = useState<string | null>()
+  const [rfqQuotesId, setRfqQuotesId] = useState<string | null>();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -60,9 +59,7 @@ const RfqRequestPage = () => {
         </div>
       </div>
       <div className="w-[85%] px-2">
-        <RfqRequestChat
-          rfqQuoteId={rfqQuotesId}
-        />
+        <RfqRequestChat rfqQuoteId={rfqQuotesId} />
       </div>
     </section>
   );
