@@ -1,11 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  prefix: "",
   theme: {
+    // container: {
+    //   center: true,
+    //   padding: "2rem",
+    //   screens: {
+    //     xl: "1140px",
+    //     "2xl": "1400px",
+    //   },
+    // },
     extend: {
       colors: {
         "dark-orange": "#DB2302",
@@ -52,7 +63,6 @@ module.exports = {
       },
       screens: {
         xl: "1140px",
-
         "2xl": "1140px",
       },
       fontFamily: {
