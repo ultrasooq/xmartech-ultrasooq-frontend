@@ -209,6 +209,11 @@ const Header = () => {
     }
   }, [isClickedOutside]);
 
+  console.log(
+    memoizedSubCategory?.[subCategoryIndex]?.children?.[subSubCategoryIndex]
+      ?.name,
+  );
+
   return (
     <header className="relative w-full">
       <div className="w-full bg-dark-cyan">
@@ -419,7 +424,6 @@ const Header = () => {
             <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-start">
               {memoizedMenu.map((item: any) => (
                 <ButtonLink
-                  // type="button"
                   key={item.id}
                   onClick={() => {
                     setMenuId(item.id);
@@ -564,6 +568,11 @@ const Header = () => {
                   subSubCategoryIndex
                 ]?.children?.length ? (
                   <div className="dropdown-content-third p-3">
+                    <h4 className="mb-2 text-sm">
+                      {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                        subSubCategoryIndex
+                      ]?.name || ""}
+                    </h4>
                     <div className="grid grid-cols-5">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.[
                         subSubCategoryIndex
