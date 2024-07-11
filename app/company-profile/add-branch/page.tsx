@@ -634,7 +634,7 @@ const AddBranchPage = () => {
                     error={form.formState.errors.tagList?.message}
                   />
 
-                  <ChainedCategoryDropdown />
+                  {/* <ChainedCategoryDropdown /> */}
                 </div>
 
                 <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
