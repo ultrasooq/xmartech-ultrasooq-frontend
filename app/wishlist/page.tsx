@@ -11,7 +11,6 @@ import {
   useDeleteFromWishList,
   useWishlist,
 } from "@/apis/queries/wishlist.queries";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import Pagination from "@/components/shared/Pagination";
 import { useQueryClient } from "@tanstack/react-query";
@@ -56,6 +55,7 @@ const WishlistPage = () => {
 
   return (
     <>
+      <title>Wishlist | Puremoon</title>
       <section className="w-full py-[50px]">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image src={BannerImage} alt="background-banner" fill />

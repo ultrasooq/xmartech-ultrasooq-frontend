@@ -14,7 +14,6 @@ import ListIcon from "@/components/icons/ListIcon";
 import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
 import ProductTable from "@/components/modules/trending/ProductTable";
 import { debounce } from "lodash";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -300,6 +299,7 @@ const TrendingPage = () => {
 
   return (
     <>
+      <title>Store | Puremoon</title>
       <div className="body-content-s1">
         <BannerSection />
 

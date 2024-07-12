@@ -198,262 +198,268 @@ export default function RegisterPage() {
   // console.log(session);
 
   return (
-    <section className="relative w-full py-7">
-      <div className="absolute left-0 top-0 -z-10 h-full w-full">
-        <Image
-          src={BackgroundImage}
-          className="h-full w-full object-cover object-center"
-          alt="background"
-          fill
-          priority
-        />
-      </div>
-      <div className="container relative z-10 m-auto">
-        <div className="flex">
-          <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
-            <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Registration
-              </h2>
-              <p>Create Your account</p>
-            </div>
-            <div className="w-full">
-              <ul className="flex w-full flex-wrap items-center justify-between">
-                <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
-                  <Button
-                    variant="outline"
-                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
-                    onClick={() => {
-                      localStorage.setItem("loginType", "FACEBOOK");
-                      signIn("facebook");
-                    }}
-                  >
-                    <Image
-                      src={FacebookIcon}
-                      className="mr-1.5"
-                      alt="google-icon"
-                      height={26}
-                      width={26}
-                    />
-                    <span>Sign up with Facebook</span>
-                  </Button>
-                </li>
-                <li className="w-full p-0 sm:w-6/12 sm:pl-3">
-                  <Button
-                    variant="outline"
-                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
-                    onClick={() => {
-                      localStorage.setItem("loginType", "GOOGLE");
-                      signIn("google");
-                    }}
-                  >
-                    <Image
-                      src={GoogleIcon}
-                      className="mr-1.5"
-                      alt="google-icon"
-                      height={26}
-                      width={26}
-                    />
-                    <span>Sign up with Google</span>
-                  </Button>
-                </li>
-              </ul>
-            </div>
-            <div className="relative w-full py-5 text-center before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-px before:w-full before:bg-gray-200 before:content-['']">
-              <span className="relative z-10 bg-white p-2.5 text-sm font-normal leading-8 text-gray-400">
-                Or
-              </span>
-            </div>
-            <div className="w-full">
-              <Form {...form}>
-                <form
-                  className="flex flex-wrap"
-                  onSubmit={form.handleSubmit(onSubmit)}
-                >
-                  <FormField
-                    control={form.control}
-                    name="tradeRole"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row md:items-start">
-                        <FormLabel className="mb-3 mr-6 capitalize md:mb-0">
-                          Please select trade role:
-                        </FormLabel>
-                        <div className="!mt-0">
-                          <FormControl className="mb-2">
-                            <RadioGroup
-                              className="!mt-0 flex items-center gap-4"
-                              onValueChange={field.onChange}
-                            >
-                              {TRADE_ROLE_LIST.map((role) => (
-                                <FormItem
-                                  key={role.value}
-                                  className="flex items-center space-x-3 space-y-0"
-                                >
-                                  <FormControl>
-                                    <div
-                                      key={role.value}
-                                      className="flex items-center space-x-2"
-                                    >
-                                      <RadioGroupItem
-                                        value={role.value}
-                                        id={role.value}
-                                      />
-                                      <FormLabel htmlFor={role.value}>
-                                        {role.label}
-                                      </FormLabel>
-                                    </div>
-                                  </FormControl>
-                                </FormItem>
-                              ))}
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  <ControlledTextInput
-                    label="First Name"
-                    name="firstName"
-                    placeholder="Enter Your First Name"
-                  />
-
-                  <ControlledTextInput
-                    label="Last Name"
-                    name="lastName"
-                    placeholder="Enter Your Last Name"
-                  />
-
-                  <ControlledTextInput
-                    label="Email Address"
-                    name="email"
-                    placeholder="Enter Your Email Address"
-                    disabled={
-                      getLoginType() === "FACEBOOK" ||
-                      getLoginType() === "GOOGLE"
-                        ? !!session?.user?.email
-                        : false
-                    }
-                  />
-
-                  <ControlledTextInput
-                    label="Login Password"
-                    name="initialPassword"
-                    placeholder="Enter Your Login Password"
-                    type="password"
-                  />
-
-                  <ControlledTextInput
-                    label="Confirm Password"
-                    name="password"
-                    placeholder="Enter Your Login Password Again"
-                    type="password"
-                  />
-
-                  <ControlledPhoneInput
-                    label="Phone Number"
-                    name="phoneNumber"
-                    countryName="cc"
-                    placeholder="Enter Your Phone Number"
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="acceptTerms"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 flex flex-row items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                          />
-                        </FormControl>
-                        <div className="flex flex-col leading-none">
-                          <div className="agreeText text-sm text-light-gray">
-                            <span>I Agree the </span>
-                            <Button
-                              onClick={handleToggleTermsModal}
-                              type="button"
-                              className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
-                            >
-                              <span className="text-light-gray underline">
-                                Terms Of Use
-                              </span>
-                            </Button>
-                            <span className="mx-1 text-light-gray">&</span>
-                            <Button
-                              onClick={handleTogglePrivacyModal}
-                              type="button"
-                              className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
-                            >
-                              <span className="text-light-gray underline">
-                                Privacy Policy
-                              </span>
-                            </Button>
-                          </div>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <div className="mb-4 w-full">
+    <>
+      <title>Register | Puremoon</title>
+      <section className="relative w-full py-7">
+        <div className="absolute left-0 top-0 -z-10 h-full w-full">
+          <Image
+            src={BackgroundImage}
+            className="h-full w-full object-cover object-center"
+            alt="background"
+            fill
+            priority
+          />
+        </div>
+        <div className="container relative z-10 m-auto">
+          <div className="flex">
+            <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
+              <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
+                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                  Registration
+                </h2>
+                <p>Create Your account</p>
+              </div>
+              <div className="w-full">
+                <ul className="flex w-full flex-wrap items-center justify-between">
+                  <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
                     <Button
-                      disabled={register.isPending}
-                      type="submit"
-                      className="theme-primary-btn h-12 w-full rounded text-center text-lg font-bold leading-6"
+                      variant="outline"
+                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                      onClick={() => {
+                        localStorage.setItem("loginType", "FACEBOOK");
+                        signIn("facebook");
+                      }}
                     >
-                      {register.isPending ? (
-                        <LoaderWithMessage message="Please wait" />
-                      ) : (
-                        "Agree & Register"
-                      )}
+                      <Image
+                        src={FacebookIcon}
+                        className="mr-1.5"
+                        alt="google-icon"
+                        height={26}
+                        width={26}
+                      />
+                      <span>Sign up with Facebook</span>
                     </Button>
-                  </div>
-                </form>
-              </Form>
-              <div className="mb-4 w-full text-center">
-                <span className="text-sm font-medium leading-4 text-light-gray">
-                  Do you already have an account?{" "}
-                  <Link
-                    href="/login"
-                    className="cursor-pointer font-medium text-dark-orange"
-                  >
-                    Sign in
-                  </Link>
+                  </li>
+                  <li className="w-full p-0 sm:w-6/12 sm:pl-3">
+                    <Button
+                      variant="outline"
+                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                      onClick={() => {
+                        localStorage.setItem("loginType", "GOOGLE");
+                        signIn("google");
+                      }}
+                    >
+                      <Image
+                        src={GoogleIcon}
+                        className="mr-1.5"
+                        alt="google-icon"
+                        height={26}
+                        width={26}
+                      />
+                      <span>Sign up with Google</span>
+                    </Button>
+                  </li>
+                </ul>
+              </div>
+              <div className="relative w-full py-5 text-center before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-px before:w-full before:bg-gray-200 before:content-['']">
+                <span className="relative z-10 bg-white p-2.5 text-sm font-normal leading-8 text-gray-400">
+                  Or
                 </span>
+              </div>
+              <div className="w-full">
+                <Form {...form}>
+                  <form
+                    className="flex flex-wrap"
+                    onSubmit={form.handleSubmit(onSubmit)}
+                  >
+                    <FormField
+                      control={form.control}
+                      name="tradeRole"
+                      render={({ field }) => (
+                        <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row md:items-start">
+                          <FormLabel className="mb-3 mr-6 capitalize md:mb-0">
+                            Please select trade role:
+                          </FormLabel>
+                          <div className="!mt-0">
+                            <FormControl className="mb-2">
+                              <RadioGroup
+                                className="!mt-0 flex items-center gap-4"
+                                onValueChange={field.onChange}
+                              >
+                                {TRADE_ROLE_LIST.map((role) => (
+                                  <FormItem
+                                    key={role.value}
+                                    className="flex items-center space-x-3 space-y-0"
+                                  >
+                                    <FormControl>
+                                      <div
+                                        key={role.value}
+                                        className="flex items-center space-x-2"
+                                      >
+                                        <RadioGroupItem
+                                          value={role.value}
+                                          id={role.value}
+                                        />
+                                        <FormLabel htmlFor={role.value}>
+                                          {role.label}
+                                        </FormLabel>
+                                      </div>
+                                    </FormControl>
+                                  </FormItem>
+                                ))}
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    <ControlledTextInput
+                      label="First Name"
+                      name="firstName"
+                      placeholder="Enter Your First Name"
+                    />
+
+                    <ControlledTextInput
+                      label="Last Name"
+                      name="lastName"
+                      placeholder="Enter Your Last Name"
+                    />
+
+                    <ControlledTextInput
+                      label="Email Address"
+                      name="email"
+                      placeholder="Enter Your Email Address"
+                      disabled={
+                        getLoginType() === "FACEBOOK" ||
+                        getLoginType() === "GOOGLE"
+                          ? !!session?.user?.email
+                          : false
+                      }
+                    />
+
+                    <ControlledTextInput
+                      label="Login Password"
+                      name="initialPassword"
+                      placeholder="Enter Your Login Password"
+                      type="password"
+                    />
+
+                    <ControlledTextInput
+                      label="Confirm Password"
+                      name="password"
+                      placeholder="Enter Your Login Password Again"
+                      type="password"
+                    />
+
+                    <ControlledPhoneInput
+                      label="Phone Number"
+                      name="phoneNumber"
+                      countryName="cc"
+                      placeholder="Enter Your Phone Number"
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="acceptTerms"
+                      render={({ field }) => (
+                        <FormItem className="mb-4 flex flex-row items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                            />
+                          </FormControl>
+                          <div className="flex flex-col leading-none">
+                            <div className="agreeText text-sm text-light-gray">
+                              <span>I Agree the </span>
+                              <Button
+                                onClick={handleToggleTermsModal}
+                                type="button"
+                                className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
+                              >
+                                <span className="text-light-gray underline">
+                                  Terms Of Use
+                                </span>
+                              </Button>
+                              <span className="mx-1 text-light-gray">&</span>
+                              <Button
+                                onClick={handleTogglePrivacyModal}
+                                type="button"
+                                className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
+                              >
+                                <span className="text-light-gray underline">
+                                  Privacy Policy
+                                </span>
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    <div className="mb-4 w-full">
+                      <Button
+                        disabled={register.isPending}
+                        type="submit"
+                        className="theme-primary-btn h-12 w-full rounded text-center text-lg font-bold leading-6"
+                      >
+                        {register.isPending ? (
+                          <LoaderWithMessage message="Please wait" />
+                        ) : (
+                          "Agree & Register"
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+                <div className="mb-4 w-full text-center">
+                  <span className="text-sm font-medium leading-4 text-light-gray">
+                    Do you already have an account?{" "}
+                    <Link
+                      href="/login"
+                      className="cursor-pointer font-medium text-dark-orange"
+                    >
+                      Sign in
+                    </Link>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
-        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
-          <DialogHeader className="border-b border-light-gray py-4">
-            <DialogTitle className="text-center text-xl font-bold">
-              Terms Of Use
-            </DialogTitle>
-          </DialogHeader>
-          <DialogDescription className="term-policy-modal-content max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
-            <TermsContent />
-          </DialogDescription>
-        </DialogContent>
-      </Dialog>
+        <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
+          <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
+            <DialogHeader className="border-b border-light-gray py-4">
+              <DialogTitle className="text-center text-xl font-bold">
+                Terms Of Use
+              </DialogTitle>
+            </DialogHeader>
+            <DialogDescription className="term-policy-modal-content max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
+              <TermsContent />
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
 
-      <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
-        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
-          <DialogHeader className="border-b border-light-gray py-4">
-            <DialogTitle className="text-center text-xl font-bold">
-              Privacy Policy
-            </DialogTitle>
-          </DialogHeader>
-          <DialogDescription className="term-policy-modal-content max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
-            <PolicyContent />
-          </DialogDescription>
-        </DialogContent>
-      </Dialog>
-    </section>
+        <Dialog
+          open={isPrivacyModalOpen}
+          onOpenChange={handleTogglePrivacyModal}
+        >
+          <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
+            <DialogHeader className="border-b border-light-gray py-4">
+              <DialogTitle className="text-center text-xl font-bold">
+                Privacy Policy
+              </DialogTitle>
+            </DialogHeader>
+            <DialogDescription className="term-policy-modal-content max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
+              <PolicyContent />
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
+      </section>
+    </>
   );
 }

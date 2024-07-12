@@ -7,7 +7,6 @@ import {
 } from "@/apis/queries/rfq.queries";
 import RfqProductCard from "@/components/modules/rfq/RfqProductCard";
 import Pagination from "@/components/shared/Pagination";
-import { Skeleton } from "@/components/ui/skeleton";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
 import RfqProductTable from "@/components/modules/rfq/RfqProductTable";
@@ -154,6 +153,7 @@ const RfqPage = () => {
 
   return (
     <>
+      <title>RFQ | Puremoon</title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
