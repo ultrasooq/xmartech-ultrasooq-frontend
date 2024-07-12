@@ -17,8 +17,8 @@ import { useRouter } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
-import LoaderIcon from "@/public/images/load.png";
 import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 const baseProductPriceItemSchema = z.object({
   consumerType: z.string().trim().optional(),
@@ -711,16 +711,7 @@ const CreateProductPage = () => {
                         >
                           {createProduct.isPending ||
                           uploadMultiple.isPending ? (
-                            <>
-                              <Image
-                                src={LoaderIcon}
-                                alt="loader-icon"
-                                width={20}
-                                height={20}
-                                className="mr-2 animate-spin"
-                              />
-                              Please wait
-                            </>
+                            <LoaderWithMessage message="Please wait" />
                           ) : (
                             "Continue"
                           )}

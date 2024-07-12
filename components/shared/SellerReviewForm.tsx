@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { DialogHeader, DialogTitle } from "../ui/dialog";
 import { Form } from "../ui/form";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
-import Image from "next/image";
 import ControlledTextInput from "./Forms/ControlledTextInput";
 import {
   useAddSellerReview,
@@ -17,7 +16,7 @@ import Ratings from "./Ratings";
 import { useToast } from "../ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import LoaderIcon from "@/public/images/load.png";
+import LoaderWithMessage from "./LoaderWithMessage";
 
 type ReviewFormProps = {
   onClose: () => void;
@@ -208,14 +207,7 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
             {addReview.isPending ? (
-              <>
-                <Image
-                  src={LoaderIcon}
-                  alt="loader-icon"
-                  className="mr-2 animate-spin"
-                />
-                Please wait
-              </>
+              <LoaderWithMessage message="Please wait" />
             ) : (
               "Submit"
             )}

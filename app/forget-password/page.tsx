@@ -12,7 +12,7 @@ import Image from "next/image";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
-import LoaderIcon from "@/public/images/load.png";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 const formSchema = z.object({
   email: z
@@ -99,16 +99,7 @@ export default function ForgetPasswordPage() {
                       className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold  leading-6"
                     >
                       {forgotPassword.isPending ? (
-                        <>
-                          <Image
-                            src={LoaderIcon}
-                            alt="loader-icon"
-                            width={20}
-                            height={20}
-                            className="mr-2 animate-spin"
-                          />
-                          Please wait
-                        </>
+                        <LoaderWithMessage message="Please wait" />
                       ) : (
                         "Reset Password"
                       )}

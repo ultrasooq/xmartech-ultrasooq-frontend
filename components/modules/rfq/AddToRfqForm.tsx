@@ -32,7 +32,7 @@ import {
   isImage,
   isVideo,
 } from "@/utils/helper";
-import LoaderIcon from "@/public/images/load.png";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 type AddToRfqFormProps = {
   onClose: () => void;
@@ -719,16 +719,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             createProduct.isPending ||
             addDuplicateProduct.isPending ||
             updateRfqCartWithLogin.isPending ? (
-              <>
-                <Image
-                  src={LoaderIcon}
-                  alt="loader-icon"
-                  width={20}
-                  height={20}
-                  className="mr-2 animate-spin"
-                />
-                Please wait
-              </>
+              <LoaderWithMessage message="Please wait" />
             ) : (
               `${selectedQuantity ? "Add to Cart" : "Edit"}`
             )}

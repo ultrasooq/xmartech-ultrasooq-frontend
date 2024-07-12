@@ -102,7 +102,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               setApi={setApi}
             >
               <CarouselContent className="-ml-1">
-                {previewImages?.map((item, index) => (
+                {previewImages?.map((item, index: number) => (
                   <CarouselItem key={index} className="basis pl-1">
                     <div className="p-1">
                       <div className="relative min-h-[500px] w-full">
@@ -129,8 +129,12 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-0" />
-              <CarouselNext className="right-0" />
+              {previewImages?.length > 1 ? (
+                <CarouselPrevious className="left-0" />
+              ) : null}
+              {previewImages?.length > 1 ? (
+                <CarouselNext className="right-0" />
+              ) : null}
             </Carousel>
           ) : null}
 
