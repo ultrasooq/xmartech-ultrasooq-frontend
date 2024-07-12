@@ -14,7 +14,6 @@ import ListIcon from "@/components/icons/ListIcon";
 import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
 import ProductTable from "@/components/modules/trending/ProductTable";
 import { debounce } from "lodash";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -54,6 +53,7 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import BannerSection from "@/components/modules/trending/BannerSection";
+import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 
 const TrendingPage = () => {
   const queryClient = useQueryClient();
@@ -299,6 +299,7 @@ const TrendingPage = () => {
 
   return (
     <>
+      <title>Store | Puremoon</title>
       <div className="body-content-s1">
         <BannerSection />
 
@@ -475,8 +476,8 @@ const TrendingPage = () => {
 
               {allProductsQuery.isLoading && viewType === "grid" ? (
                 <div className="grid grid-cols-4 gap-5">
-                  {Array.from({ length: 8 }).map((_, index) => (
-                    <Skeleton key={index} className="h-80 w-full" />
+                  {Array.from({ length: 8 }).map((_, index: number) => (
+                    <SkeletonProductCardLoader key={index} />
                   ))}
                 </div>
               ) : null}

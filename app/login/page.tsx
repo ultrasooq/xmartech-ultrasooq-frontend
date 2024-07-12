@@ -172,178 +172,182 @@ export default function LoginPage() {
   }, [session]);
 
   return (
-    <section className="relative w-full py-7">
-      <div className="absolute left-0 top-0 -z-10 h-full w-full">
-        <Image
-          src={BackgroundImage}
-          className="h-full w-full object-cover object-center"
-          alt="background"
-          fill
-          priority
-        />
-      </div>
-      <div className="container relative z-10 m-auto">
-        <div className="flex">
-          <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
-            <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Login
-              </h2>
-              <p>Login to your account</p>
-            </div>
-            <div className="w-full">
-              <Form {...form}>
-                <form
-                  className="flex flex-wrap"
-                  onSubmit={form.handleSubmit(onSubmit)}
-                >
-                  <ControlledTextInput
-                    label="Email or Phone number or ID"
-                    name="email"
-                    placeholder="Enter Your Email or Phone number or ID"
-                  />
+    <>
+      <title>Login | Puremoon</title>
+      <section className="relative w-full py-7">
+        <div className="absolute left-0 top-0 -z-10 h-full w-full">
+          <Image
+            src={BackgroundImage}
+            className="h-full w-full object-cover object-center"
+            alt="background"
+            fill
+            priority
+          />
+        </div>
+        <div className="container relative z-10 m-auto">
+          <div className="flex">
+            <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
+              <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
+                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                  Login
+                </h2>
+                <p>Login to your account</p>
+              </div>
+              <div className="w-full">
+                <Form {...form}>
+                  <form
+                    className="flex flex-wrap"
+                    onSubmit={form.handleSubmit(onSubmit)}
+                  >
+                    <ControlledTextInput
+                      label="Email or Phone number or ID"
+                      name="email"
+                      placeholder="Enter Your Email or Phone number or ID"
+                    />
 
-                  <ControlledTextInput
-                    label="Password"
-                    name="password"
-                    placeholder="**********"
-                    type="password"
-                  />
+                    <ControlledTextInput
+                      label="Password"
+                      name="password"
+                      placeholder="**********"
+                      type="password"
+                    />
 
-                  <div className="mb-4 w-full">
-                    <div className="flex w-auto items-center justify-between p-0 lg:w-full">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="remember"
-                          className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                          onCheckedChange={(val) => setRememberMe(val)}
-                        />
-                        <label
-                          htmlFor="remember"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Remember me
-                        </label>
-                      </div>
-                      <div className="w-auto">
-                        <Link
-                          className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
-                          href="/forget-password"
-                        >
-                          Forgot Password?
-                        </Link>
+                    <div className="mb-4 w-full">
+                      <div className="flex w-auto items-center justify-between p-0 lg:w-full">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="remember"
+                            className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                            onCheckedChange={(val) => setRememberMe(val)}
+                          />
+                          <label
+                            htmlFor="remember"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Remember me
+                          </label>
+                        </div>
+                        <div className="w-auto">
+                          <Link
+                            className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
+                            href="/forget-password"
+                          >
+                            Forgot Password?
+                          </Link>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="mb-4 w-full">
-                    <Button
-                      disabled={login.isPending}
-                      type="submit"
-                      className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                    <div className="mb-4 w-full">
+                      <Button
+                        disabled={login.isPending}
+                        type="submit"
+                        className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                      >
+                        {login.isPending ? (
+                          <LoaderWithMessage message="Please wait" />
+                        ) : (
+                          "Login"
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+                <div className="mb-4 w-full text-center">
+                  <span className="text-sm font-medium leading-4 text-light-gray">
+                    Don&apos;t have an account?{" "}
+                    <Link
+                      href="/register"
+                      className="cursor-pointer font-medium text-dark-orange"
                     >
-                      {login.isPending ? (
-                        <LoaderWithMessage message="Please wait" />
-                      ) : (
-                        "Login"
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-              <div className="mb-4 w-full text-center">
-                <span className="text-sm font-medium leading-4 text-light-gray">
-                  Don&apos;t have an account?{" "}
-                  <Link
-                    href="/register"
-                    className="cursor-pointer font-medium text-dark-orange"
-                  >
-                    Signup
-                  </Link>
+                      Signup
+                    </Link>
+                  </span>
+                </div>
+              </div>
+              <div className="relative w-full py-5 text-center before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-px before:w-full before:bg-gray-200 before:content-['']">
+                <span className="relative z-10 bg-white p-2.5 text-sm font-normal leading-8 text-gray-400">
+                  Or
                 </span>
               </div>
-            </div>
-            <div className="relative w-full py-5 text-center before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-px before:w-full before:bg-gray-200 before:content-['']">
-              <span className="relative z-10 bg-white p-2.5 text-sm font-normal leading-8 text-gray-400">
-                Or
-              </span>
-            </div>
-            <div className="w-full">
-              <ul className="flex w-full flex-wrap items-center justify-between">
-                <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
-                  <Button
-                    variant="outline"
-                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
-                    onClick={() => {
-                      localStorage.setItem("loginType", "FACEBOOK");
-                      signIn("facebook");
-                    }}
-                    disabled={socialLogin.isPending}
-                  >
-                    {socialLogin.isPending && getLoginType() === "FACEBOOK" ? (
-                      <>
-                        <Image
-                          src={LoaderPrimaryIcon}
-                          alt="fb-icon"
-                          width={20}
-                          height={20}
-                          className="mr-2 animate-spin"
-                        />
-                        <span>Please wait</span>
-                      </>
-                    ) : (
-                      <>
-                        <Image
-                          src={FacebookIcon}
-                          className="mr-1.5"
-                          alt="fb-icon"
-                          height={26}
-                          width={26}
-                        />
-                        <span>Sign In with Facebook</span>
-                      </>
-                    )}
-                  </Button>
-                </li>
-                <li className="w-full p-0 sm:w-6/12 sm:pl-3">
-                  <Button
-                    variant="outline"
-                    className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
-                    onClick={() => {
-                      localStorage.setItem("loginType", "GOOGLE");
-                      signIn("google");
-                    }}
-                    disabled={socialLogin.isPending}
-                  >
-                    {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
-                      <>
-                        <Image
-                          src={LoaderPrimaryIcon}
-                          alt="google-icon"
-                          width={20}
-                          height={20}
-                          className="mr-2 animate-spin"
-                        />
-                        <span>Please wait</span>
-                      </>
-                    ) : (
-                      <>
-                        <Image
-                          src={GoogleIcon}
-                          className="mr-1.5"
-                          alt="google-icon"
-                          height={26}
-                          width={26}
-                        />
-                        <span>Sign In with Google</span>
-                      </>
-                    )}
-                  </Button>
-                </li>
-              </ul>
+              <div className="w-full">
+                <ul className="flex w-full flex-wrap items-center justify-between">
+                  <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
+                    <Button
+                      variant="outline"
+                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                      onClick={() => {
+                        localStorage.setItem("loginType", "FACEBOOK");
+                        signIn("facebook");
+                      }}
+                      disabled={socialLogin.isPending}
+                    >
+                      {socialLogin.isPending &&
+                      getLoginType() === "FACEBOOK" ? (
+                        <>
+                          <Image
+                            src={LoaderPrimaryIcon}
+                            alt="fb-icon"
+                            width={20}
+                            height={20}
+                            className="mr-2 animate-spin"
+                          />
+                          <span>Please wait</span>
+                        </>
+                      ) : (
+                        <>
+                          <Image
+                            src={FacebookIcon}
+                            className="mr-1.5"
+                            alt="fb-icon"
+                            height={26}
+                            width={26}
+                          />
+                          <span>Sign In with Facebook</span>
+                        </>
+                      )}
+                    </Button>
+                  </li>
+                  <li className="w-full p-0 sm:w-6/12 sm:pl-3">
+                    <Button
+                      variant="outline"
+                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                      onClick={() => {
+                        localStorage.setItem("loginType", "GOOGLE");
+                        signIn("google");
+                      }}
+                      disabled={socialLogin.isPending}
+                    >
+                      {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
+                        <>
+                          <Image
+                            src={LoaderPrimaryIcon}
+                            alt="google-icon"
+                            width={20}
+                            height={20}
+                            className="mr-2 animate-spin"
+                          />
+                          <span>Please wait</span>
+                        </>
+                      ) : (
+                        <>
+                          <Image
+                            src={GoogleIcon}
+                            className="mr-1.5"
+                            alt="google-icon"
+                            height={26}
+                            width={26}
+                          />
+                          <span>Sign In with Google</span>
+                        </>
+                      )}
+                    </Button>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

@@ -253,6 +253,7 @@ const ProductDetailsPage = () => {
 
   return (
     <>
+      <title>Store | Puremoon</title>
       <div className="body-content-s1">
         <div className="product-view-s1-left-right type2">
           <div className="container m-auto px-3">

@@ -18,8 +18,13 @@ import HeadphoneImage from "@/public/images/big-headphone.png";
 import AdBannerOne from "@/public/images/hs-1.png";
 import AdBannerTwo from "@/public/images/hs-2.png";
 import AdBannerThree from "@/public/images/hs-3.png";
+import { Metadata } from "next";
 
-export default function HomePage() {
+export const metadata: Metadata = {
+  title: "Home",
+};
+
+function HomePage() {
   return (
     <>
       <section className="w-full py-8">
@@ -435,3 +440,5 @@ export default function HomePage() {
     </>
   );
 }
+
+export default HomePage;

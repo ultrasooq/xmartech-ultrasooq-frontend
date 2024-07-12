@@ -7,21 +7,23 @@ import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { Toaster } from "@/components/ui/toaster";
 import NextTopLoader from "nextjs-toploader";
 import SessionWrapper from "@/components/SessionWrapper";
-import { cookies } from 'next/headers'
+import { cookies } from "next/headers";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
 import { AuthProvider } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketContext";
 
 export const metadata: Metadata = {
-  title: "Puremoon",
-  // description: "Welcome to Next.js",
+  title: {
+    template: "%s | Puremoon",
+    default: "Puremoon",
+  },
 };
 
 async function authorizeUser() {
   try {
-    const cookieStore = cookies()
-    const token = cookieStore.get(PUREMOON_TOKEN_KEY)
+    const cookieStore = cookies();
+    const token = cookieStore.get(PUREMOON_TOKEN_KEY);
     if (token?.value) {
       const res = await axios({
         method: "POST",
@@ -54,11 +56,10 @@ export default async function RootLayout({
 
   return (
     <SessionWrapper>
-      
       <html lang="en">
         <body className={`${inter.className}`}>
           <ReactQueryProvider>
-            <AuthProvider user={{id: userData?.data?.id}}>
+            <AuthProvider user={{ id: userData?.data?.id }}>
               <SocketProvider>
                 <main className="overflow-x-visible">
                   <Sidebar />
