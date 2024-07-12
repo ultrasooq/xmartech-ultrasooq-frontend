@@ -37,6 +37,7 @@ import BannerImage from "@/public/images/rfq-sec-bg.png";
 import SearchIcon from "@/public/images/search-icon-rfq.png";
 import Footer from "@/components/shared/Footer";
 import { FaPlus } from "react-icons/fa";
+import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 
 const RfqPage = () => {
   const { toast } = useToast();
@@ -248,7 +249,7 @@ const RfqPage = () => {
                       {rfqProductsQuery.isLoading && viewType === "grid" ? (
                         <div className="mt-5 grid grid-cols-4 gap-5">
                           {Array.from({ length: 8 }).map((_, index) => (
-                            <Skeleton key={index} className="h-80 w-full" />
+                            <SkeletonProductCardLoader key={index} />
                           ))}
                         </div>
                       ) : null}

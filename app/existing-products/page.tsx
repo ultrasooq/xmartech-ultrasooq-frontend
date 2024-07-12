@@ -31,6 +31,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
+import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 
 const ExistingProductsPage = () => {
   const router = useRouter();
@@ -257,7 +258,7 @@ const ExistingProductsPage = () => {
               {allProductsQuery.isLoading ? (
                 <div className="grid grid-cols-4 gap-5">
                   {Array.from({ length: 8 }).map((_, index) => (
-                    <Skeleton key={index} className="h-80 w-full" />
+                    <SkeletonProductCardLoader key={index} />
                   ))}
                 </div>
               ) : null}

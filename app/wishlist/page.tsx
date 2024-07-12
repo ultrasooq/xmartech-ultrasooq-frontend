@@ -16,6 +16,7 @@ import { useToast } from "@/components/ui/use-toast";
 import Pagination from "@/components/shared/Pagination";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
+import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 
 const WishlistPage = () => {
   const router = useRouter();
@@ -87,7 +88,7 @@ const WishlistPage = () => {
               {wishlistQuery.isLoading ? (
                 <div className="grid gap-5 p-5 md:grid-cols-5">
                   {Array.from({ length: 5 }).map((_, index) => (
-                    <Skeleton key={index} className="h-80 w-full" />
+                    <SkeletonProductCardLoader key={index} />
                   ))}
                 </div>
               ) : null}
