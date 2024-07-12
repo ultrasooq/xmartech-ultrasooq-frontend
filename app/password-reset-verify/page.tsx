@@ -21,7 +21,7 @@ import { setCookie } from "cookies-next";
 import Image from "next/image";
 import { PUREMOON_TEMP_TOKEN_KEY } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
-import LoaderIcon from "@/public/images/load.png";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 export default function PasswordResetVerifyPage() {
   const router = useRouter();
@@ -252,16 +252,7 @@ export default function PasswordResetVerifyPage() {
                       className="theme-primary-btn m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6"
                     >
                       {passwordResetVerify.isPending ? (
-                        <>
-                          <Image
-                            src={LoaderIcon}
-                            alt="loader-icon"
-                            width={20}
-                            height={20}
-                            className="mr-2 animate-spin"
-                          />
-                          Please wait
-                        </>
+                        <LoaderWithMessage message="Please wait" />
                       ) : (
                         "Verify"
                       )}

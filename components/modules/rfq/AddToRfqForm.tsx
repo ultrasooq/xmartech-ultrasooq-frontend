@@ -26,8 +26,13 @@ import {
 import { imageExtensions, videoExtensions } from "@/utils/constants";
 import ReactPlayer from "react-player/lazy";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import { generateRandomSkuNoWithTimeStamp, isBrowser } from "@/utils/helper";
-import LoaderIcon from "@/public/images/load.png";
+import {
+  generateRandomSkuNoWithTimeStamp,
+  isBrowser,
+  isImage,
+  isVideo,
+} from "@/utils/helper";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 type AddToRfqFormProps = {
   onClose: () => void;
@@ -396,34 +401,6 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       });
   };
 
-  const isVideo = (path: string) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (videoExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    } else if (typeof path === "object") {
-      return true;
-    }
-  };
-
-  const isImage = (path: any) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (imageExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    } else if (typeof path === "object" && path?.type?.includes("image")) {
-      return true;
-    }
-  };
-
   useEffect(() => {
     if (productQueryById?.data?.data) {
       const product = productQueryById?.data?.data;
@@ -742,16 +719,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             createProduct.isPending ||
             addDuplicateProduct.isPending ||
             updateRfqCartWithLogin.isPending ? (
-              <>
-                <Image
-                  src={LoaderIcon}
-                  alt="loader-icon"
-                  width={20}
-                  height={20}
-                  className="mr-2 animate-spin"
-                />
-                Please wait
-              </>
+              <LoaderWithMessage message="Please wait" />
             ) : (
               `${selectedQuantity ? "Add to Cart" : "Edit"}`
             )}

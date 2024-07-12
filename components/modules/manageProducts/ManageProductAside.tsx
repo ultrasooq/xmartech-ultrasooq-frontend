@@ -16,8 +16,7 @@ import { FiEyeOff } from "react-icons/fi";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import Image from "next/image";
-import LoaderIcon from "@/public/images/load.png";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 interface Option {
   readonly label: string;
@@ -696,20 +695,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             disabled={isLoading}
             className="w-full !bg-[#DF2100]"
           >
-            {isLoading ? (
-              <>
-                <Image
-                  src={LoaderIcon}
-                  alt="loader-icon"
-                  width={20}
-                  height={20}
-                  className="mr-2 animate-spin"
-                />
-                Updating
-              </>
-            ) : (
-              "Update"
-            )}
+            {isLoading ? <LoaderWithMessage message="Please wait" /> : "Update"}
           </Button>
         </div>
       </div>

@@ -38,11 +38,10 @@ import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
-import LoaderIcon from "@/public/images/load.png";
-// import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn } from "next-auth/react";
 import { getLoginType } from "@/utils/helper";
 import Link from "next/link";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 const formSchema = z
   .object({
@@ -406,16 +405,7 @@ export default function RegisterPage() {
                       className="theme-primary-btn h-12 w-full rounded text-center text-lg font-bold leading-6"
                     >
                       {register.isPending ? (
-                        <>
-                          <Image
-                            src={LoaderIcon}
-                            alt="loader-icon"
-                            width={20}
-                            height={20}
-                            className="mr-2 animate-spin"
-                          />
-                          Please wait
-                        </>
+                        <LoaderWithMessage message="Please wait" />
                       ) : (
                         "Agree & Register"
                       )}

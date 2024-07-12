@@ -17,7 +17,7 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import ReactPlayer from "react-player/lazy";
-import { imageExtensions, videoExtensions } from "@/utils/constants";
+import { isImage, isVideo } from "@/utils/helper";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -47,30 +47,6 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const isVideo = (path: string) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (videoExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    }
-  };
-
-  const isImage = (path: any) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (imageExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    }
-  };
 
   const productSellerImage =
     productDetails?.product_productPrice?.[0]?.productPrice_productSellerImage;
@@ -126,7 +102,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               setApi={setApi}
             >
               <CarouselContent className="-ml-1">
-                {previewImages?.map((item, index) => (
+                {previewImages?.map((item, index: number) => (
                   <CarouselItem key={index} className="basis pl-1">
                     <div className="p-1">
                       <div className="relative min-h-[500px] w-full">
@@ -153,8 +129,12 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-0" />
-              <CarouselNext className="right-0" />
+              {previewImages?.length > 1 ? (
+                <CarouselPrevious className="left-0" />
+              ) : null}
+              {previewImages?.length > 1 ? (
+                <CarouselNext className="right-0" />
+              ) : null}
             </Carousel>
           ) : null}
 

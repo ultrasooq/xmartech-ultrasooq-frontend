@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import BackgroundImage from "@/public/images/before-login-bg.png";
-import LoaderIcon from "@/public/images/load.png";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 const formSchema = z
   .object({
@@ -157,16 +157,7 @@ export default function ResetPasswordPage() {
                           className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                         >
                           {resetPassword.isPending ? (
-                            <>
-                              <Image
-                                src={LoaderIcon}
-                                alt="loader-icon"
-                                width={20}
-                                height={20}
-                                className="mr-2 animate-spin"
-                              />
-                              Please wait
-                            </>
+                            <LoaderWithMessage message="Please wait" />
                           ) : (
                             "Change Password"
                           )}

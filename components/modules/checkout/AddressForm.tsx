@@ -15,10 +15,9 @@ import {
   useAddressById,
   useUpdateAddress,
 } from "@/apis/queries/address.queries";
-import Image from "next/image";
 import { IoCloseSharp } from "react-icons/io5";
-import LoaderIcon from "@/public/images/load.png";
 import { ALPHABETS_REGEX } from "@/utils/constants";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 type AddressFormProps = {
   addressId?: number;
@@ -279,16 +278,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
             {createAddress.isPending || updateAddress.isPending ? (
-              <>
-                <Image
-                  src={LoaderIcon}
-                  alt="loader-icon"
-                  width={20}
-                  height={20}
-                  className="mr-2 animate-spin"
-                />
-                Please wait
-              </>
+              <LoaderWithMessage message="Please wait" />
             ) : addressId ? (
               "Edit Address"
             ) : (

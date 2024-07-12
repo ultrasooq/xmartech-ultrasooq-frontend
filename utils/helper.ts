@@ -1,4 +1,9 @@
-import { DAYS_NAME_LIST, WEEKDAYS_LIST } from "./constants";
+import {
+  DAYS_NAME_LIST,
+  imageExtensions,
+  videoExtensions,
+  WEEKDAYS_LIST,
+} from "./constants";
 import countryCodes, { CountryProperty } from "country-codes-list";
 
 export const parsedDays = (data: string) => {
@@ -120,7 +125,38 @@ export const handleDescriptionParse = (description: string) => {
 };
 
 export const formatPrice = (price: number): string => {
-  if (!price) return '';
-  const formattedTotal = price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (!price) return "";
+  const formattedTotal = price.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
   return `$${formattedTotal}`;
-}
+};
+
+export const isVideo = (path: string) => {
+  if (typeof path === "string") {
+    const extension = path.split(".").pop()?.toLowerCase();
+    if (extension) {
+      if (videoExtensions.includes(extension)) {
+        return true;
+      }
+    }
+    return false;
+  } else if (typeof path === "object") {
+    return true;
+  }
+};
+
+export const isImage = (path: any) => {
+  if (typeof path === "string") {
+    const extension = path.split(".").pop()?.toLowerCase();
+    if (extension) {
+      if (imageExtensions.includes(extension)) {
+        return true;
+      }
+    }
+    return false;
+  } else if (typeof path === "object" && path?.type?.includes("image")) {
+    return true;
+  }
+};

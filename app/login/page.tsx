@@ -19,12 +19,12 @@ import { getLoginType, getOrCreateDeviceId } from "@/utils/helper";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
-import LoaderIcon from "@/public/images/load.png";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { CheckedState } from "@radix-ui/react-checkbox";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 const formSchema = z.object({
   email: z
@@ -242,16 +242,7 @@ export default function LoginPage() {
                       className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                     >
                       {login.isPending ? (
-                        <>
-                          <Image
-                            src={LoaderIcon}
-                            alt="loader-icon"
-                            width={20}
-                            height={20}
-                            className="mr-2 animate-spin"
-                          />
-                          Please wait
-                        </>
+                        <LoaderWithMessage message="Please wait" />
                       ) : (
                         "Login"
                       )}
