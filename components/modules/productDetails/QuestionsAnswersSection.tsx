@@ -85,7 +85,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
       <div className="flex w-full border-t-2 border-dashed border-gray-300 py-5">
         <div className="w-full space-y-3">
           {!questionQuery?.data?.data?.length ? (
-            <div className="w-full text-center text-sm font-bold">
+            <div className="w-full text-center text-sm font-bold text-dark-orange">
               No questions found
             </div>
           ) : null}

@@ -19,14 +19,11 @@ import AddImageContent from "../profile/AddImageContent";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import ReactPlayer from "react-player/lazy";
 import BrandSelect from "@/components/shared/BrandSelect";
-import {
-  PRODUCT_CONDITION_LIST,
-  imageExtensions,
-  videoExtensions,
-} from "@/utils/constants";
+import { PRODUCT_CONDITION_LIST } from "@/utils/constants";
 import ReactSelect from "react-select";
 import PriceSection from "./PriceSection";
 import DescriptionSection from "./DescriptionSection";
+import { isImage, isVideo } from "@/utils/helper";
 
 const customStyles = {
   control: (base: any) => ({
@@ -94,34 +91,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         (item: ProductImageProps) => item.id !== id,
       ),
     ]);
-  };
-
-  const isVideo = (path: string) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (videoExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    } else if (typeof path === "object") {
-      return true;
-    }
-  };
-
-  const isImage = (path: any) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (imageExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    } else if (typeof path === "object" && path?.type?.includes("image")) {
-      return true;
-    }
   };
 
   useEffect(() => {

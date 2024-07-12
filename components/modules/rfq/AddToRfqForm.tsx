@@ -26,7 +26,12 @@ import {
 import { imageExtensions, videoExtensions } from "@/utils/constants";
 import ReactPlayer from "react-player/lazy";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import { generateRandomSkuNoWithTimeStamp, isBrowser } from "@/utils/helper";
+import {
+  generateRandomSkuNoWithTimeStamp,
+  isBrowser,
+  isImage,
+  isVideo,
+} from "@/utils/helper";
 import LoaderIcon from "@/public/images/load.png";
 
 type AddToRfqFormProps = {
@@ -394,34 +399,6 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         top: 0,
         behavior: "smooth",
       });
-  };
-
-  const isVideo = (path: string) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (videoExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    } else if (typeof path === "object") {
-      return true;
-    }
-  };
-
-  const isImage = (path: any) => {
-    if (typeof path === "string") {
-      const extension = path.split(".").pop()?.toLowerCase();
-      if (extension) {
-        if (imageExtensions.includes(extension)) {
-          return true;
-        }
-      }
-      return false;
-    } else if (typeof path === "object" && path?.type?.includes("image")) {
-      return true;
-    }
   };
 
   useEffect(() => {
