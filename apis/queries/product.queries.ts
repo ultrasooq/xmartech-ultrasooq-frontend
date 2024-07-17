@@ -161,6 +161,7 @@ export const useAllProducts = (
     priceMin?: number;
     priceMax?: number;
     userId?: number;
+    categoryIds?: string;
   },
   enabled = true,
 ) =>

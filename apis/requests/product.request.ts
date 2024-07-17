@@ -107,6 +107,7 @@ export const fetchAllProducts = (payload: {
   priceMin?: number;
   priceMax?: number;
   userId?: number;
+  categoryIds?: string;
 }) => {
   return axios({
     method: "GET",
