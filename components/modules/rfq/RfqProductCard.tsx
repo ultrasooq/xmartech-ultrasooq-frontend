@@ -51,9 +51,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
     <div className="product_list_part">
       {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
       {/* <Link href={`/trending/${id}`}> */}
-      <div className="product_list_image relative border border-gray-300">
+      <div className="product_list_image relative">
         <Image
           alt="pro-5"
+          className="p-3"
           src={
             productImages?.[0]?.image &&
             validator.isURL(productImages?.[0]?.image)
