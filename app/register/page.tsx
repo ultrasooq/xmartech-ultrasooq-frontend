@@ -373,22 +373,24 @@ export default function RegisterPage() {
                             />
                           </FormControl>
                           <div className="flex flex-col leading-none">
-                            <div className="agreeText text-sm text-light-gray">
+                            <div className="agreeText text-xs text-light-gray md:text-sm">
                               <span>I Agree the </span>
                               <Button
                                 onClick={handleToggleTermsModal}
                                 type="button"
                                 className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
                               >
-                                <span className="text-light-gray underline">
+                                <span className="text-xs text-light-gray underline md:text-sm">
                                   Terms Of Use
                                 </span>
                               </Button>
-                              <span className="mx-1 text-light-gray">&</span>
+                              <span className="mx-1 text-xs text-light-gray md:text-sm">
+                                &
+                              </span>
                               <Button
                                 onClick={handleTogglePrivacyModal}
                                 type="button"
-                                className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
+                                className="ml-1 bg-transparent p-0 text-xs shadow-none hover:bg-transparent md:text-sm"
                               >
                                 <span className="text-light-gray underline">
                                   Privacy Policy

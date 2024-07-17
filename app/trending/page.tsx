@@ -54,6 +54,10 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import BannerSection from "@/components/modules/trending/BannerSection";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
+import TrendingOptionCard from "@/components/modules/home/TrendingOptionCard";
+import TrendingCard from "@/components/modules/home/TrendingCard";
+import { v4 as uuidv4 } from "uuid";
+import { useCategoryStore } from "@/lib/categoryStore";
 
 const TrendingPage = () => {
   const queryClient = useQueryClient();
@@ -71,6 +75,7 @@ const TrendingPage = () => {
   const [limit] = useState(8);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  const category = useCategoryStore();
 
   const me = useMe();
   const updateCartWithLogin = useUpdateCartWithLogin();
@@ -301,6 +306,40 @@ const TrendingPage = () => {
     <>
       <title>Store | Puremoon</title>
       <div className="body-content-s1">
+        <div className="container m-auto mb-4 px-3">
+          <div className="flex flex-wrap">
+            <div className="mb-5 w-full">
+              <h3 className="text-2xl font-normal capitalize text-color-dark">
+                Search Trending
+              </h3>
+            </div>
+            <div className="w-full">
+              <div className="bg-neutral-100 p-4 lg:p-8">
+                <div className="block w-full">
+                  <ul className="flex flex-wrap items-end justify-start gap-x-3 border-b border-solid border-gray-300">
+                    {category.subCategories.map((item: any) => (
+                      <TrendingOptionCard
+                        key={uuidv4()}
+                        item={{ name: item?.name, path: item?.icon }}
+                      />
+                    ))}
+                  </ul>
+                </div>
+                <div className="block w-full py-5">
+                  <div className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
+                    {category.subSubCategories.map((item) => (
+                      <TrendingCard
+                        key={uuidv4()}
+                        item={{ name: item?.name, path: item?.icon }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <BannerSection />
 
         <div className="trending-search-sec">
