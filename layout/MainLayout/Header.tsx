@@ -526,6 +526,7 @@ const Header = () => {
                               memoizedSubCategory?.[subCategoryIndex]?.children,
                             );
                             category.setSubSubCategories([]);
+                            category.setCategoryId(item?.id.toString());
                           }}
                         >
                           {item?.icon ? (
@@ -570,6 +571,7 @@ const Header = () => {
                               memoizedSubCategory?.[subCategoryIndex]
                                 ?.children?.[subSubCategoryIndex]?.children,
                             );
+                            category.setCategoryId(item?.id.toString());
                           }}
                         >
                           {item?.icon ? (
@@ -621,6 +623,10 @@ const Header = () => {
                             onMouseEnter={() =>
                               setSubSubSubCategoryIndex(index)
                             }
+                            onClick={() => {
+                              setSubSubSubCategoryIndex(index);
+                              category.setCategoryId(item?.id.toString());
+                            }}
                           >
                             {item?.icon ? (
                               <Image

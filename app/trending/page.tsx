@@ -94,6 +94,7 @@ const TrendingPage = () => {
     brandIds:
       selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
     userId: me.data?.data?.id,
+    categoryIds: category.categoryId ? category.categoryId : undefined,
   });
   const brandsQuery = useBrands({
     term: searchTerm,
@@ -306,39 +307,44 @@ const TrendingPage = () => {
     <>
       <title>Store | Puremoon</title>
       <div className="body-content-s1">
-        <div className="container m-auto mb-4 px-3">
-          <div className="flex flex-wrap">
-            <div className="mb-5 w-full">
-              <h3 className="text-2xl font-normal capitalize text-color-dark">
-                Search Trending
-              </h3>
-            </div>
-            <div className="w-full">
-              <div className="bg-neutral-100 p-4 lg:p-8">
-                <div className="block w-full">
-                  <ul className="flex flex-wrap items-end justify-start gap-x-3 border-b border-solid border-gray-300">
-                    {category.subCategories.map((item: any) => (
-                      <TrendingOptionCard
-                        key={uuidv4()}
-                        item={{ name: item?.name, path: item?.icon }}
-                      />
-                    ))}
-                  </ul>
-                </div>
-                <div className="block w-full py-5">
-                  <div className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
-                    {category.subSubCategories.map((item) => (
-                      <TrendingCard
-                        key={uuidv4()}
-                        item={{ name: item?.name, path: item?.icon }}
-                      />
-                    ))}
+        {category.subCategories.length ? (
+          <div className="container m-auto mb-4 px-3">
+            <div className="flex flex-wrap">
+              <div className="mb-5 w-full">
+                <h3 className="text-2xl font-normal capitalize text-color-dark">
+                  Search Trending
+                </h3>
+              </div>
+              <div className="w-full">
+                <div className="bg-neutral-100 p-4 lg:p-8">
+                  <div className="block w-full">
+                    <ul className="flex flex-wrap items-end justify-start gap-x-3 border-b border-solid border-gray-300">
+                      {category.subCategories.map((item: any) => (
+                        <TrendingOptionCard
+                          key={uuidv4()}
+                          item={{ name: item?.name, path: item?.icon }}
+                        />
+                      ))}
+                    </ul>
                   </div>
+
+                  {category.subSubCategories.length ? (
+                    <div className="block w-full py-5">
+                      <div className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
+                        {category.subSubCategories.map((item) => (
+                          <TrendingCard
+                            key={uuidv4()}
+                            item={{ name: item?.name, path: item?.icon }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : null}
 
         <BannerSection />
 
