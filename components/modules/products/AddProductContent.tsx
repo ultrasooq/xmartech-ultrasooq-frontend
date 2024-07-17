@@ -1,5 +1,5 @@
 import React from "react";
-import { DialogContent } from "@/components/ui/dialog";
+import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import Image from "next/image";
 import Link from "next/link";
 import AddProductIcon from "@/public/images/add-product.svg";
@@ -11,7 +11,7 @@ const AddProductContent: React.FC<AddProductContentProps> = () => {
   return (
     <DialogContent className="custom-action-type-chose-picker">
       <div className="modal-headerpart">
-        <h5>Chose Add Product Type</h5>
+        <DialogTitle>Choose Add Product Type</DialogTitle>
       </div>
       <div className="modal-bodypart">
         <div className="import-pickup-type-selector-lists">
