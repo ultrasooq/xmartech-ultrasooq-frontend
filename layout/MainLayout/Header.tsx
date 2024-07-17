@@ -35,6 +35,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { MdOutlineImageNotSupported } from "react-icons/md";
+import { useCategoryStore } from "@/lib/categoryStore";
 
 type ButtonLinkProps = {
   href: string;
@@ -88,6 +89,7 @@ const Header = () => {
     { deviceId },
     !hasAccessToken,
   );
+  const category = useCategoryStore();
   const me = useMe(!!accessToken);
   const categoryQuery = useCategory("187");
   const subCategoryQuery = useCategory(
@@ -204,6 +206,19 @@ const Header = () => {
   }, [pathname, accessToken]);
 
   useEffect(() => {
+    if (memoizedMenu.length) {
+      setMenuId(memoizedMenu?.[1]?.id);
+    }
+  }, [memoizedMenu]);
+
+  useEffect(() => {
+    if (memoizedCategory.length) {
+      setCategoryId(memoizedCategory?.[0]?.assignTo);
+      setAssignedToId(memoizedCategory?.[0]?.id);
+    }
+  }, [memoizedCategory]);
+
+  useEffect(() => {
     if (isClickedOutside) {
       setCategoryId(undefined);
     }
@@ -215,7 +230,7 @@ const Header = () => {
         <div className="container m-auto px-3">
           <div className="hidden sm:hidden md:flex md:gap-x-2.5">
             <div className="py-4 text-sm font-normal text-white md:w-5/12 lg:w-4/12">
-              <p>Welcome to Martfury Online Shopping Store !</p>
+              <p>Welcome to Martfury Online Shopping Store!</p>
             </div>
             <div className="flex justify-end py-4 text-sm font-normal text-white md:w-7/12 lg:w-8/12">
               <ul className="flex justify-end">
@@ -505,6 +520,13 @@ const Header = () => {
                               : null,
                           )}
                           onMouseEnter={() => setSubCategoryIndex(index)}
+                          onClick={() => {
+                            setSubCategoryIndex(index);
+                            category.setSubCategories(
+                              memoizedSubCategory?.[subCategoryIndex]?.children,
+                            );
+                            category.setSubSubCategories([]);
+                          }}
                         >
                           {item?.icon ? (
                             <Image
@@ -542,6 +564,13 @@ const Header = () => {
                               : null,
                           )}
                           onMouseEnter={() => setSubSubCategoryIndex(index)}
+                          onClick={() => {
+                            setSubSubCategoryIndex(index);
+                            category.setSubSubCategories(
+                              memoizedSubCategory?.[subCategoryIndex]
+                                ?.children?.[subSubCategoryIndex]?.children,
+                            );
+                          }}
                         >
                           {item?.icon ? (
                             <Image
