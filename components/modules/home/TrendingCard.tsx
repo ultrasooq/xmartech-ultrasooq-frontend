@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { MdOutlineImageNotSupported } from "react-icons/md";
 
 type TrendingCardProps = {
   item: any;
@@ -12,13 +13,17 @@ const TrendingCard: React.FC<TrendingCardProps> = ({ item }) => {
         href="#"
         className="max-w-full text-xs font-normal capitalize text-light-gray lg:text-base"
       >
-        <div className="mb-3">
+        {item?.path ? (
           <Image
             src={item?.path}
-            className="h-[70px] w-[100px] object-contain"
+            className="mb-3 object-contain"
+            height={70}
+            width={100}
             alt={item?.name}
           />
-        </div>
+        ) : (
+          <MdOutlineImageNotSupported size={100} className="mb-3" />
+        )}
         <span>#{item?.name}</span>
       </a>
     </div>
