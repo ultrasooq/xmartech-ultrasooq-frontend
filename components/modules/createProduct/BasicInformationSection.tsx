@@ -60,7 +60,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   // const upload = useUploadFile();
-  const categoryQuery = useCategory();
+  const categoryQuery = useCategory("1");
   const subCategoryById = useSubCategoryById(currentId, !!currentId);
 
   const watchProductImages = formContext.watch("productImages");
