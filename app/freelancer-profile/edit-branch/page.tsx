@@ -516,7 +516,10 @@ export default function EditBranchPage() {
                 /> */}
               </div>
 
-              <MultiSelectCategory name="categoryList" />
+              <MultiSelectCategory
+                name="categoryList"
+                branchId={activeBranchId}
+              />
 
               <Button
                 disabled={updateFreelancerBranch.isPending}
