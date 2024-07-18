@@ -34,7 +34,7 @@ interface SocketContextType {
     buyerId?: number;
     sellerId?: number;
     requestedPrice?: number;
-    rfqQuotesUserId?: number;
+    rfqQuotesUserId?: number | null;
   }) => void;
   newMessage: newMessageType | null;
   errorMessage: string;
@@ -48,7 +48,7 @@ interface SocketContextType {
     buyerId?: number;
     sellerId?: number;
     requestedPrice?: number;
-    rfqQuotesUserId?: number;
+    rfqQuotesUserId?: number | null;
   }) => void;
   updateRfqRequestStatus: (rfqRequest: {
     roomId: number | null;
@@ -167,7 +167,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     buyerId?: number;
     sellerId?: number;
     requestedPrice?: number;
-    rfqQuotesUserId?: number;
+    rfqQuotesUserId?: number | null;
   }) => {
     if (socket) {
       socket.emit("sendMessage", {
@@ -201,7 +201,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     buyerId?: number;
     sellerId?: number;
     requestedPrice?: number;
-    rfqQuotesUserId?: number;
+    rfqQuotesUserId?: number | null;
   }) => {
     if (socket) {
       socket.emit("createPrivateRoom", {

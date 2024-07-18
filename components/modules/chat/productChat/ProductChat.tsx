@@ -1,19 +1,162 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useGetProductDetails } from "@/apis/queries/chat.queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import AttachIcon from "@/public/images/attach.svg";
+import { useToast } from "@/components/ui/use-toast";
 import SmileIcon from "@/public/images/smile.svg";
 import SendIcon from "@/public/images/send-button.png";
 import ProductChatHistory from "./ProductChatHistory";
+import { useSocket } from "@/context/SocketContext";
+import { findRoomId, getChatHistory } from "@/apis/requests/chat.requests";
+import { useAuth } from "@/context/AuthContext";
 
 interface ProductChatProps {
   productId: number;
 }
 
 const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
+  const [message, setMessage] = useState<string>('');
+  const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
+  const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
+  const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
+  const { sendMessage, cratePrivateRoom, newMessage } = useSocket()
+  const { toast } = useToast();
+  const { user } = useAuth();
+
   const product = useGetProductDetails(productId);
   const productDetails = product?.data?.data;
+
+  // check room id
+  useEffect(() => {
+    if (productDetails?.adminId) {
+      checkRoomId()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productDetails]);
+
+
+  useEffect(() => {
+    if (selectedRoom) {
+      handleChatHistory()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRoom]);
+
+  // receive a messaage
+  useEffect(() => {
+    if (newMessage) {
+      handleNewMessage(newMessage)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newMessage]);
+
+  const checkRoomId = async () => {
+    try {
+      const payloadRoomFind = {
+        userId: productDetails?.adminId,
+        rfqId: productDetails?.id
+      }
+      const room = await findRoomId(payloadRoomFind);
+      if (room?.data?.roomId) {
+        setSelectedRoom(room?.data?.roomId)
+      } else {
+        setSelectedRoom(null)
+        setChatHistoryLoading(false)
+        setSelectedChatHistory([])
+      }
+    } catch (error) {
+      setChatHistoryLoading(false)
+    }
+  }
+
+  const handleChatHistory = async () => {
+    try {
+      setChatHistoryLoading(true)
+      const payload = {
+        roomId: selectedRoom
+      }
+      const res = await getChatHistory(payload);
+      if (res?.data?.status === 200) {
+        setSelectedChatHistory(res.data.data)
+      }
+      setChatHistoryLoading(false)
+    } catch (error) {
+      setChatHistoryLoading(false)
+    }
+  }
+
+  const handleSendMessage = async () => {
+    try {
+      if (message) {
+        if (selectedRoom) {
+          sendNewMessage(selectedRoom, message)
+        } else {
+          handleCreateRoom(message);
+        }
+        setMessage("")
+      } else {
+        toast({
+          title: "Chat",
+          description: "Please type your message",
+          variant: "danger",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Chat",
+        description: "Failed!",
+        variant: "danger",
+      });
+    }
+  }
+
+  const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
+    const msgPayload = {
+      roomId: roomId,
+      content,
+      rfqId: productDetails?.id,
+      requestedPrice,
+      rfqQuoteProductId,
+      sellerId,
+      rfqQuotesUserId: null
+    }
+    sendMessage(msgPayload)
+  }
+
+  const handleNewMessage = (message: any) => {
+    try {
+      const chatHistory = [...selectedChatHistory]
+      chatHistory.push(message);
+      setSelectedChatHistory(chatHistory)
+    } catch (error) { }
+  }
+
+  const handleSendMessageKeyDown = (e: any) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+
+  const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
+    try {
+      const payload = {
+        participants: [user?.id, productDetails?.adminId],
+        content,
+        rfqId: productDetails?.id,
+        requestedPrice,
+        rfqQuoteProductId,
+        sellerId,
+        rfqQuotesUserId: null
+      }
+      cratePrivateRoom(payload);
+
+    } catch (error) {
+      return ""
+    }
+  }
 
   return (
     <div>
@@ -77,7 +220,9 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         </div>
         <div className="w-[75%] border-r border-solid border-gray-300">
           <div className="flex w-full flex-wrap p-[20px]">
-            <ProductChatHistory selectedChatHistory={[]} />
+            <ProductChatHistory
+              selectedChatHistory={selectedChatHistory}
+            />
           </div>
           {productDetails ? (
             <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
@@ -92,6 +237,9 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                   <textarea
                     placeholder="Type your message...."
                     className="h-[32px] w-full resize-none text-sm focus:outline-none"
+                    onChange={(e) => setMessage(e.target.value)}
+                    value={message}
+                    onKeyDown={handleSendMessageKeyDown}
                   ></textarea>
                 </div>
                 <div className="flex w-[72px] items-center justify-between">
@@ -100,7 +248,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                   </div>
                   <div className="flex w-auto">
                     <button type="button" className="">
-                      <Image src={SendIcon} alt="send-icon" />
+                      <Image src={SendIcon} alt="send-icon" onClick={handleSendMessage} />
                     </button>
                   </div>
                 </div>
