@@ -29,6 +29,7 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 import { useFetchCompanyBranchById } from "@/apis/queries/company.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 
 const formSchema = z
   .object({
@@ -101,23 +102,24 @@ const formSchema = z
           value.sat !== 0
         );
       }),
-    tagList: z
-      .array(
-        z.object({
-          label: z.string().trim(),
-          value: z.number(),
-        }),
-      )
-      .min(1, {
-        message: "Tag is required",
-      })
-      .transform((value) => {
-        let temp: any = [];
-        value.forEach((item) => {
-          temp.push({ tagId: item.value });
-        });
-        return temp;
-      }),
+    // tagList: z
+    //   .array(
+    //     z.object({
+    //       label: z.string().trim(),
+    //       value: z.number(),
+    //     }),
+    //   )
+    //   .min(1, {
+    //     message: "Tag is required",
+    //   })
+    //   .transform((value) => {
+    //     let temp: any = [];
+    //     value.forEach((item) => {
+    //       temp.push({ tagId: item.value });
+    //     });
+    //     return temp;
+    //   }),
+    categoryList: z.any().optional(),
   })
   .superRefine(({ startTime, endTime }, ctx) => {
     if (startTime && endTime && startTime > endTime) {
@@ -155,7 +157,8 @@ export default function EditBranchPage() {
         fri: 0,
         sat: 0,
       },
-      tagList: undefined,
+      // tagList: [],
+      categoryList: undefined,
     },
   });
   const [activeBranchId, setActiveBranchId] = useState<string | null>();
@@ -194,6 +197,8 @@ export default function EditBranchPage() {
       branchId: Number(activeBranchId),
     };
 
+    console.log(data);
+    // return;
     const response = await updateFreelancerBranch.mutateAsync(data);
 
     if (response.status && response.data) {
@@ -247,14 +252,23 @@ export default function EditBranchPage() {
             sat: 0,
           };
 
-      const tagList = branch?.userBranchTags
-        ? branch?.userBranchTags?.map((item: any) => {
+      // const tagList = branch?.userBranchTags
+      //   ? branch?.userBranchTags?.map((item: any) => {
+      //       return {
+      //         label: item?.userBranchTagsTag?.tagName,
+      //         value: item?.userBranchTagsTag?.id,
+      //       };
+      //     })
+      //   : [];
+
+      const categoryList = branch?.userBranch_userBranchCategory
+        ? branch?.userBranch_userBranchCategory?.map((item: any) => {
             return {
-              label: item?.userBranchTagsTag?.tagName,
-              value: item?.userBranchTagsTag?.id,
+              categoryId: item?.categoryId,
+              categoryLocation: item?.categoryLocation,
             };
           })
-        : [];
+        : undefined;
 
       form.reset({
         businessTypeList: businessTypeList || undefined,
@@ -268,7 +282,8 @@ export default function EditBranchPage() {
         contactNumber: branch?.contactNumber || "",
         contactName: branch?.contactName || "",
         workingDays,
-        tagList: tagList || undefined,
+        // tagList: tagList || undefined,
+        categoryList: categoryList || undefined,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -492,14 +507,16 @@ export default function EditBranchPage() {
                   ) : null}
                 </div>
 
-                <AccordionMultiSelectV2
+                {/* <AccordionMultiSelectV2
                   label="Tag"
                   name="tagList"
                   options={memoizedTags || []}
                   placeholder="Tag"
                   error={form.formState.errors.tagList?.message}
-                />
+                /> */}
               </div>
+
+              <MultiSelectCategory name="categoryList" />
 
               <Button
                 disabled={updateFreelancerBranch.isPending}
