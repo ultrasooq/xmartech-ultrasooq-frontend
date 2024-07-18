@@ -32,7 +32,7 @@ import { ICountries } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
-// import ChainedCategoryDropdown from "@/components/shared/ChainedCategoryDropdown";
+import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 
 const formSchema = z.object({
   uploadBranchImage: z.any().optional(),
@@ -108,23 +108,24 @@ const formSchema = z.object({
         value.sat !== 0
       );
     }),
-  tagList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
-      }),
-    )
-    .min(1, {
-      message: "Tag is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ tagId: item.value });
-      });
-      return temp;
-    }),
+  // tagList: z
+  //   .array(
+  //     z.object({
+  //       label: z.string().trim(),
+  //       value: z.number(),
+  //     }),
+  //   )
+  //   .min(1, {
+  //     message: "Tag is required",
+  //   })
+  //   .transform((value) => {
+  //     let temp: any = [];
+  //     value.forEach((item) => {
+  //       temp.push({ tagId: item.value });
+  //     });
+  //     return temp;
+  //   }),
+  categoryList: z.any().optional(),
   mainOffice: z
     .boolean()
     .transform((value) => (value ? 1 : 0))
@@ -161,7 +162,8 @@ const AddBranchPage = () => {
         fri: 0,
         sat: 0,
       },
-      tagList: undefined,
+      // tagList: undefined,
+      categoryList: undefined,
       mainOffice: false,
     },
   });
@@ -236,7 +238,7 @@ const AddBranchPage = () => {
       data.proofOfAddress = getProofOfAddressImageUrl;
     }
 
-    // console.log(data);
+    console.log(data);
     // return;
     const response = await createCompanyBranch.mutateAsync(data);
 
@@ -626,16 +628,16 @@ const AddBranchPage = () => {
                     ) : null}
                   </div>
 
-                  <AccordionMultiSelectV2
+                  {/* <AccordionMultiSelectV2
                     label="Tag"
                     name="tagList"
                     options={memoizedTags || []}
                     placeholder="Tag"
                     error={form.formState.errors.tagList?.message}
-                  />
-
-                  {/* <ChainedCategoryDropdown /> */}
+                  /> */}
                 </div>
+
+                <MultiSelectCategory name="categoryList" />
 
                 <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
                   <FormField
