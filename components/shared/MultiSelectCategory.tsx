@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { MdOutlineImageNotSupported } from "react-icons/md";
@@ -23,12 +23,16 @@ type FormCategoryProps = {
 
 type MultiSelectCategoryProps = {
   name: string;
+  branchId?: string | undefined | null;
 };
 
-const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
+const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
+  name,
+  branchId,
+}) => {
   const formContext = useFormContext();
-  const [menuId, setMenuId] = useState();
-  const [categoryId, setCategoryId] = useState();
+  const [menuId, setMenuId] = useState<number | undefined>();
+  const [categoryId, setCategoryId] = useState<number | undefined>();
   const [assignedToId, setAssignedToId] = useState();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
   const [subSubCategoryIndex, setSubSubCategoryIndex] = useState(0);
@@ -43,7 +47,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
 
   const categoryQuery = useCategory("187");
   const subCategoryQuery = useCategory(
-    categoryId ? categoryId : "",
+    categoryId ? String(categoryId) : "",
     !!categoryId,
   );
 
@@ -83,10 +87,91 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subCategoryQuery.data?.data, categoryId]);
 
+  useEffect(() => {
+    if (branchId && (watcher ?? []).length) {
+      const id = watcher[0]?.categoryLocation?.split(",")[0];
+      if (id) setMenuId(Number(id));
+    }
+  }, [branchId, watcher]);
+
+  useEffect(() => {
+    if (branchId && (watcher ?? []).length && menuId) {
+      const id = watcher[0]?.categoryLocation?.split(",")[1];
+      if (id) setCategoryId(Number(id));
+    }
+  }, [branchId, watcher, menuId]);
+
+  useEffect(() => {
+    if (branchId && (watcher ?? []).length && menuId && categoryId) {
+      const tempArr: any = [];
+      memoizedSubCategory.forEach((item: any) => {
+        if (watcher.find((ele: any) => ele.categoryId === item.id))
+          tempArr.push(item);
+      });
+
+      setMultiSubCategoryList(tempArr);
+    }
+  }, [branchId, watcher, menuId, categoryId, memoizedSubCategory]);
+
+  useEffect(() => {
+    if (
+      branchId &&
+      (watcher ?? []).length &&
+      menuId &&
+      categoryId &&
+      multiSubCategoryList.length
+    ) {
+      const tempArr: any = [];
+      const tempArr2: any = multiSubCategoryList
+        .map((item: any) => item.children)
+        .flat();
+      tempArr2.forEach((item: any) => {
+        if (watcher.find((ele: any) => ele.categoryId === item.id))
+          tempArr.push(item);
+      });
+
+      setMultiSubSubCategoryList(tempArr);
+    }
+  }, [branchId, watcher, menuId, categoryId, multiSubCategoryList]);
+
+  useEffect(() => {
+    if (
+      branchId &&
+      (watcher ?? []).length &&
+      menuId &&
+      categoryId &&
+      multiSubCategoryList.length &&
+      multiSubSubCategoryList.length
+    ) {
+      const tempArr: any = [];
+      const tempArr2: any = multiSubSubCategoryList
+        .map((item: any) => item.children)
+        .flat();
+      tempArr2.forEach((item: any) => {
+        if (watcher.find((ele: any) => ele.categoryId === item.id))
+          tempArr.push(item);
+      });
+
+      setMultiSubSubSubCategoryList(tempArr);
+    }
+  }, [
+    branchId,
+    watcher,
+    menuId,
+    categoryId,
+    multiSubCategoryList,
+    multiSubSubCategoryList,
+  ]);
+
   // console.log(multiSubCategoryList);
   // console.log(multiSubSubCategoryList);
   // console.log(multiSubSubSubCategoryList);
   // console.log(watcher);
+  // console.log(memoizedMenu);
+  // console.log(menuId);
+  // console.log(memoizedCategory);
+  // console.log(categoryId);
+  // console.log(memoizedSubCategory);
 
   return (
     <div>
@@ -175,6 +260,11 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
               >
                 <Checkbox
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  checked={
+                    multiSubCategoryList?.filter(
+                      (ele: any) => ele.id === item.id,
+                    ).length > 0
+                  }
                   onCheckedChange={(checked) => {
                     let tempArr: any = multiSubCategoryList || [];
                     // if true and does not exist in array then push
@@ -198,7 +288,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
                       name,
                       tempArr.map((ele: any) => ({
                         categoryId: ele.id,
-                        categoryLocation: `${ele.id.toString()}`,
+                        categoryLocation: `${menuId},${categoryId},${ele.id.toString()}`,
                       })),
                     );
 
@@ -249,6 +339,11 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
                 >
                   <Checkbox
                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={
+                      multiSubSubCategoryList?.filter(
+                        (ele: any) => ele.id === item.id,
+                      ).length > 0
+                    }
                     onCheckedChange={(checked) => {
                       let tempArr: any = multiSubSubCategoryList || [];
                       // if true and does not exist in array then push
@@ -264,7 +359,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
                           ...(watcher ?? []),
                           {
                             categoryId: item.id,
-                            categoryLocation: `${item.parentId.toString()},${item.id.toString()}`,
+                            categoryLocation: `${menuId},${categoryId},${item.parentId.toString()},${item.id.toString()}`,
                           },
                         ]);
                       }
@@ -339,6 +434,11 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
                   >
                     <Checkbox
                       className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                      checked={
+                        multiSubSubSubCategoryList?.filter(
+                          (ele: any) => ele.id === item.id,
+                        ).length > 0
+                      }
                       onCheckedChange={(checked) => {
                         let tempArr: any = multiSubSubSubCategoryList || [];
                         // if true and does not exist in array then push
@@ -354,7 +454,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
                           watcher?.map((ele: FormCategoryProps) => {
                             if (ele.categoryId === item.parentId) {
                               const tempId =
-                                ele.categoryLocation.split(",")?.[0];
+                                ele.categoryLocation.split(",")?.[2];
 
                               grandParentId = tempId;
                             }
@@ -364,7 +464,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name }) => {
                             ...(watcher ?? []),
                             {
                               categoryId: item.id,
-                              categoryLocation: `${grandParentId},${item.parentId.toString()},${item.id.toString()}`,
+                              categoryLocation: `${menuId},${categoryId},${grandParentId},${item.parentId.toString()},${item.id.toString()}`,
                             },
                           ]);
                         }
