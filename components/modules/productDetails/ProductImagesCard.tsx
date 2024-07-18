@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import {
@@ -152,12 +153,14 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {isLoading ? <Skeleton className="min-h-[500px] w-full" /> : null}
 
           {!isLoading && askForPrice === "true" ? (
-            <Button
-              type="button"
-              className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
-            >
-              Ask vendor for price
-            </Button>
+            <Link href={`/seller-rfq-request?product_id=${productDetails?.id}`}>
+              <Button
+                type="button"
+                className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
+              >
+                Ask vendor for price
+              </Button>
+            </Link>
           ) : null}
           {!isLoading && askForPrice !== "true" ? (
             <div className="flex w-full gap-x-3 self-end">
