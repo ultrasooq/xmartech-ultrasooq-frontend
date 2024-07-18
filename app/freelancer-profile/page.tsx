@@ -29,6 +29,7 @@ import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 
 const formSchema = z
   .object({
@@ -103,23 +104,24 @@ const formSchema = z
           value.sat !== 0
         );
       }),
-    tagList: z
-      .array(
-        z.object({
-          label: z.string().trim(),
-          value: z.number(),
-        }),
-      )
-      .min(1, {
-        message: "Tag is required",
-      })
-      .transform((value) => {
-        let temp: any = [];
-        value.forEach((item) => {
-          temp.push({ tagId: item.value });
-        });
-        return temp;
-      }),
+    // tagList: z
+    //   .array(
+    //     z.object({
+    //       label: z.string().trim(),
+    //       value: z.number(),
+    //     }),
+    //   )
+    //   .min(1, {
+    //     message: "Tag is required",
+    //   })
+    //   .transform((value) => {
+    //     let temp: any = [];
+    //     value.forEach((item) => {
+    //       temp.push({ tagId: item.value });
+    //     });
+    //     return temp;
+    //   }),
+    categoryList: z.any().optional(),
   })
   .superRefine(({ startTime, endTime }, ctx) => {
     if (startTime && endTime && startTime >= endTime) {
@@ -158,7 +160,8 @@ export default function FreelancerProfilePage() {
         fri: 0,
         sat: 0,
       },
-      tagList: undefined,
+      // tagList: undefined,
+      categoryList: undefined,
     },
   });
 
@@ -251,14 +254,26 @@ export default function FreelancerProfilePage() {
             sat: 0,
           };
 
-      const tagList = me.data?.data?.userBranch?.[0]?.userBranchTags
-        ? me.data?.data?.userBranch?.[0]?.userBranchTags?.map((item: any) => {
-            return {
-              label: item?.userBranchTagsTag?.tagName,
-              value: item?.userBranchTagsTag?.id,
-            };
-          })
-        : [];
+      // const tagList = me.data?.data?.userBranch?.[0]?.userBranchTags
+      //   ? me.data?.data?.userBranch?.[0]?.userBranchTags?.map((item: any) => {
+      //       return {
+      //         label: item?.userBranchTagsTag?.tagName,
+      //         value: item?.userBranchTagsTag?.id,
+      //       };
+      //     })
+      //   : [];
+
+      const categoryList = me.data?.data?.userBranch?.[0]
+        ?.userBranch_userBranchCategory
+        ? me.data?.data?.userBranch?.[0]?.userBranch_userBranchCategory?.map(
+            (item: any) => {
+              return {
+                categoryId: item?.categoryId,
+                categoryLocation: item?.categoryLocation,
+              };
+            },
+          )
+        : undefined;
 
       form.reset({
         aboutUs: me.data?.data?.userProfile?.[0]?.aboutUs || "",
@@ -276,7 +291,8 @@ export default function FreelancerProfilePage() {
         contactNumber: me.data?.data?.userBranch?.[0]?.contactNumber || "",
         contactName: me.data?.data?.userBranch?.[0]?.contactName || "",
         workingDays,
-        tagList: tagList || undefined,
+        // tagList: tagList || undefined,
+        categoryList: categoryList || undefined,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -499,14 +515,16 @@ export default function FreelancerProfilePage() {
                   ) : null}
                 </div>
 
-                <AccordionMultiSelectV2
+                {/* <AccordionMultiSelectV2
                   label="Tag"
                   name="tagList"
                   options={memoizedTags || []}
                   placeholder="Tag"
                   error={form.formState.errors.tagList?.message}
-                />
+                /> */}
               </div>
+
+              <MultiSelectCategory name="categoryList" />
 
               <Button
                 disabled={createFreelancerProfile.isPending}

@@ -147,7 +147,7 @@ const VendorMoreInformationSection: React.FC<
           </div>
         </div>
 
-        <div className="mt-6 w-full">
+        {/* <div className="mt-6 w-full">
           <label className="mb-3 block text-lg font-semibold leading-5 text-color-dark">
             Tag
           </label>
@@ -161,7 +161,7 @@ const VendorMoreInformationSection: React.FC<
               </span>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
