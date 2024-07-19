@@ -3,10 +3,9 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import { useCategory } from "@/apis/queries/category.queries";
-import { Button } from "../ui/button";
-import { menuBarIconList } from "@/utils/constants";
 import { Checkbox } from "../ui/checkbox";
 import { useFormContext } from "react-hook-form";
+import { Label } from "../ui/label";
 
 type CategoryProps = {
   id: number;
@@ -31,9 +30,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
   branchId,
 }) => {
   const formContext = useFormContext();
-  const [menuId, setMenuId] = useState<number | undefined>();
   const [categoryId, setCategoryId] = useState<number | undefined>();
-  const [assignedToId, setAssignedToId] = useState();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
   const [subSubCategoryIndex, setSubSubCategoryIndex] = useState(0);
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
@@ -45,79 +42,47 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
 
   const watcher = formContext.watch(name);
 
-  const categoryQuery = useCategory("187");
+  const categoryQuery = useCategory("186");
   const subCategoryQuery = useCategory(
     categoryId ? String(categoryId) : "",
     !!categoryId,
   );
 
   const memoizedMenu = useMemo(() => {
-    let tempArr: any = [];
     if (categoryQuery.data?.data) {
-      tempArr = categoryQuery.data.data?.children?.map(
-        (item: any, index: number) => {
-          return {
-            name: item.name,
-            id: item.id,
-            icon: menuBarIconList[index + 1],
-          };
-        },
-      );
+      return categoryQuery.data.data?.children || [];
     }
-
-    return tempArr || [];
   }, [categoryQuery.data?.data]);
 
-  const memoizedCategory = useMemo(() => {
-    let tempArr: any = [];
-    if (categoryQuery.data?.data) {
-      tempArr = categoryQuery.data.data?.children?.find(
-        (item: { id: number }) => item.id === menuId,
-      )?.children;
-    }
-    return tempArr || [];
-  }, [categoryQuery.data?.data, menuId]);
-
   const memoizedSubCategory = useMemo(() => {
-    let tempArr: any = [];
     if (subCategoryQuery.data?.data) {
-      tempArr = subCategoryQuery.data.data?.children;
+      return subCategoryQuery.data.data?.children || [];
     }
-    return tempArr || [];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subCategoryQuery.data?.data, categoryId]);
+  }, [subCategoryQuery.data?.data]);
 
   useEffect(() => {
     if (branchId && (watcher ?? []).length) {
       const id = watcher[0]?.categoryLocation?.split(",")[0];
-      if (id) setMenuId(Number(id));
+      if (id) setCategoryId(Number(id));
     }
   }, [branchId, watcher]);
 
   useEffect(() => {
-    if (branchId && (watcher ?? []).length && menuId) {
-      const id = watcher[0]?.categoryLocation?.split(",")[1];
-      if (id) setCategoryId(Number(id));
-    }
-  }, [branchId, watcher, menuId]);
-
-  useEffect(() => {
-    if (branchId && (watcher ?? []).length && menuId && categoryId) {
+    if (branchId && (watcher ?? []).length && categoryId) {
       const tempArr: any = [];
-      memoizedSubCategory.forEach((item: any) => {
+      memoizedMenu?.forEach((item: any) => {
         if (watcher.find((ele: any) => ele.categoryId === item.id))
           tempArr.push(item);
       });
 
       setMultiSubCategoryList(tempArr);
     }
-  }, [branchId, watcher, menuId, categoryId, memoizedSubCategory]);
+  }, [branchId, watcher, categoryId, memoizedMenu]);
 
   useEffect(() => {
     if (
       branchId &&
       (watcher ?? []).length &&
-      menuId &&
       categoryId &&
       multiSubCategoryList.length
     ) {
@@ -132,13 +97,12 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
 
       setMultiSubSubCategoryList(tempArr);
     }
-  }, [branchId, watcher, menuId, categoryId, multiSubCategoryList]);
+  }, [branchId, watcher, categoryId, multiSubCategoryList]);
 
   useEffect(() => {
     if (
       branchId &&
       (watcher ?? []).length &&
-      menuId &&
       categoryId &&
       multiSubCategoryList.length &&
       multiSubSubCategoryList.length
@@ -157,7 +121,6 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
   }, [
     branchId,
     watcher,
-    menuId,
     categoryId,
     multiSubCategoryList,
     multiSubSubCategoryList,
@@ -168,86 +131,22 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
   // console.log(multiSubSubSubCategoryList);
   // console.log(watcher);
   // console.log(memoizedMenu);
-  // console.log(menuId);
-  // console.log(memoizedCategory);
   // console.log(categoryId);
   // console.log(memoizedSubCategory);
 
   return (
-    <div>
-      <div className="space-x-2">
-        {memoizedMenu.map((item: any) => (
-          <Button
-            type="button"
-            key={item.id}
-            onClick={() => {
-              setMenuId(item.id);
-              setCategoryId(undefined);
-              setAssignedToId(undefined);
-            }}
-          >
-            <div className="flex items-center gap-x-3">
-              <Image
-                src={item.icon}
-                alt={item?.name}
-                height={0}
-                width={0}
-                className="h-7 w-7"
-              />{" "}
-              <p>{item?.name}</p>
-            </div>
-          </Button>
-        ))}
-      </div>
+    <div className="my-3 space-y-2">
+      <Label>Tags</Label>
 
-      {memoizedMenu.length ? (
-        <div className="my-2 border border-solid border-gray-300" />
-      ) : null}
-
-      <div className="flex items-center gap-x-2">
-        {memoizedCategory.map((item: any) => (
-          <Button
-            type="button"
-            key={item.id}
-            onClick={() => {
-              if (item?.assignTo) {
-                setCategoryId(item.assignTo);
-                setAssignedToId(item.id);
-              } else {
-                setCategoryId(undefined);
-                setAssignedToId(undefined);
-              }
-            }}
-            variant="secondary"
-            className={cn(
-              "py-3 text-sm font-semibold capitalize text-color-dark sm:text-base",
-              item?.id === assignedToId ? "underline" : "no-underline",
-            )}
-          >
-            <p>{item.name}</p>
-          </Button>
-        ))}
-      </div>
-
-      {menuId ? (
-        <div className="my-2 border border-solid border-gray-300" />
-      ) : null}
-
-      <div className="dropdown">
-        {memoizedSubCategory?.length ? (
-          <Button type="button" variant="destructive" className="dropbtn">
-            <p className="font-normal capitalize ">All Categories</p>
-          </Button>
-        ) : null}
-
-        {memoizedSubCategory?.length ? (
-          <div className="dropdown-content">
-            {memoizedSubCategory?.map((item: CategoryProps, index: number) => (
+      <div className="grid grid-cols-3">
+        {memoizedMenu?.length ? (
+          <div className="max-h-[300px] overflow-y-auto">
+            {memoizedMenu?.map((item: CategoryProps, index: number) => (
               <div
                 key={item?.id}
                 className={cn(
-                  "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
-                  memoizedSubCategory?.length
+                  "flex cursor-pointer items-center justify-start gap-x-2 p-3",
+                  memoizedMenu?.length
                     ? index === subCategoryIndex
                       ? "dropdown-active-child"
                       : null
@@ -273,6 +172,14 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                       !tempArr.find((ele: CategoryProps) => ele.id === item.id)
                     ) {
                       tempArr = [...tempArr, item];
+
+                      formContext.setValue(name, [
+                        ...(watcher ?? []),
+                        {
+                          categoryId: item.id,
+                          categoryLocation: `${item.id.toString()}`,
+                        },
+                      ]);
                     }
 
                     // if false and exist in array then remove
@@ -283,15 +190,23 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                       tempArr = tempArr.filter(
                         (ele: any) => ele.id !== item.id,
                       );
-                    }
-                    formContext.setValue(
-                      name,
-                      tempArr.map((ele: any) => ({
-                        categoryId: ele.id,
-                        categoryLocation: `${menuId},${categoryId},${ele.id.toString()}`,
-                      })),
-                    );
 
+                      formContext.setValue(
+                        name,
+                        watcher?.filter((ele: FormCategoryProps) => {
+                          if (ele.categoryId !== item.id) {
+                            return ele;
+                          }
+                        }),
+                      );
+                    }
+                    // formContext.setValue(
+                    //   name,
+                    //   tempArr.map((ele: any) => ({
+                    //     categoryId: ele.id,
+                    //     categoryLocation: `${ele.id.toString()}`,
+                    //   })),
+                    // );
                     setMultiSubCategoryList(tempArr);
                   }}
                 />
@@ -305,7 +220,9 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                 ) : (
                   <MdOutlineImageNotSupported size={24} />
                 )}
-                <p className="text-center text-sm">{item?.name}</p>
+                <p title={item?.name} className="text-beat text-start text-sm">
+                  {item?.name}
+                </p>
               </div>
             ))}
           </div>
@@ -317,7 +234,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
               item?.children,
           )
           ?.flat()?.length ? (
-          <div className="dropdown-content-second">
+          <div className="max-h-[300px] overflow-y-auto">
             {multiSubCategoryList
               ?.map((item: CategoryProps) => item?.children)
               ?.flat()
@@ -359,7 +276,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                           ...(watcher ?? []),
                           {
                             categoryId: item.id,
-                            categoryLocation: `${menuId},${categoryId},${item.parentId.toString()},${item.id.toString()}`,
+                            categoryLocation: `${item.parentId.toString()},${item.id.toString()}`,
                           },
                         ]);
                       }
@@ -397,7 +314,12 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                   ) : (
                     <MdOutlineImageNotSupported size={24} />
                   )}
-                  <p className="text-center text-sm">{item?.name}</p>
+                  <p
+                    title={item?.name}
+                    className="text-beat text-start text-sm"
+                  >
+                    {item?.name}
+                  </p>
                 </div>
               ))}
           </div>
@@ -409,8 +331,8 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
               item?.children,
           )
           ?.flat()?.length ? (
-          <div className="dropdown-content-third p-3">
-            <div className="grid grid-cols-5">
+          <div className="max-h-[300px] overflow-y-auto p-3">
+            <div className="grid grid-cols-2 grid-rows-3">
               {multiSubSubCategoryList
                 ?.map((item: CategoryProps) => item?.children)
                 ?.flat()
@@ -454,7 +376,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                           watcher?.map((ele: FormCategoryProps) => {
                             if (ele.categoryId === item.parentId) {
                               const tempId =
-                                ele.categoryLocation.split(",")?.[2];
+                                ele.categoryLocation.split(",")?.[0];
 
                               grandParentId = tempId;
                             }
@@ -464,7 +386,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                             ...(watcher ?? []),
                             {
                               categoryId: item.id,
-                              categoryLocation: `${menuId},${categoryId},${grandParentId},${item.parentId.toString()},${item.id.toString()}`,
+                              categoryLocation: `${grandParentId},${item.parentId.toString()},${item.id.toString()}`,
                             },
                           ]);
                         }
@@ -494,17 +416,23 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                       }}
                     />
                     <div className="flex cursor-pointer flex-col items-center justify-start">
-                      {item?.icon ? (
-                        <Image
-                          src={item.icon}
-                          alt={item?.name}
-                          height={30}
-                          width={30}
-                        />
-                      ) : (
-                        <MdOutlineImageNotSupported size={30} />
-                      )}
-                      <p className="text-center text-sm">{item?.name}</p>
+                      <div className="relative h-8 w-8">
+                        {item?.icon ? (
+                          <Image
+                            src={item.icon}
+                            alt={item?.name}
+                            className="object-contain"
+                          />
+                        ) : (
+                          <MdOutlineImageNotSupported size={30} />
+                        )}
+                      </div>
+                      <p
+                        title={item?.name}
+                        className="text-beat text-start text-sm"
+                      >
+                        {item?.name}
+                      </p>
                     </div>
                   </div>
                 ))}
