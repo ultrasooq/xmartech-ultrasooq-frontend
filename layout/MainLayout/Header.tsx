@@ -232,6 +232,7 @@ const Header = () => {
     }
   }, [isClickedOutside]);
 
+  console.log(subCategoryIndex);
   return (
     <header className="relative w-full">
       <div className="w-full bg-dark-cyan">
@@ -519,6 +520,8 @@ const Header = () => {
                             );
                             category.setSubSubCategories([]);
                             category.setCategoryId(item?.id.toString());
+                            // save index to check for child categories part of parent or not
+                            category.setSubCategoryIndex(index);
                           }}
                         >
                           {item?.icon ? (
@@ -561,6 +564,12 @@ const Header = () => {
                                 ?.children?.[subSubCategoryIndex]?.children,
                             );
                             category.setCategoryId(item?.id.toString());
+                            //FIXME: need condition
+                            if (
+                              category.subCategoryIndex !== subCategoryIndex
+                            ) {
+                              category.setSubCategories([]);
+                            }
                           }}
                         >
                           {item?.icon ? (
