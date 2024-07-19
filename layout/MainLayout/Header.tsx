@@ -28,7 +28,7 @@ import WishlistIcon from "@/public/images/wishlist.svg";
 import CartIcon from "@/public/images/cart.svg";
 import HamburgerIcon from "@/public/images/humberger-icon.svg";
 import HamburgerDownIcon from "@/public/images/humberger-down-icon.svg";
-import LogoIcon from "@/public/images/logo.png";
+import LogoIcon from "@/public/images/logo-v2.png";
 import { useWishlistCount } from "@/apis/queries/wishlist.queries";
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";

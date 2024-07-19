@@ -153,7 +153,7 @@ const RfqPage = () => {
 
   return (
     <>
-      <title>RFQ | Puremoon</title>
+      <title>RFQ | Ultrasooq</title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
