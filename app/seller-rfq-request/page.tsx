@@ -58,26 +58,28 @@ const SellerRfqRequestPage = () => {
                 <div className="pl-1 text-sm font-medium">RFQ</div>
               </button>
             </li>
-            <li
-              onClick={() => setCurrentTab("MSG")}
-              className={cn(
-                currentTab === "MSG"
-                  ? "bg-dark-orange text-white"
-                  : "bg-gray-50 text-black",
-                "w-full py-1",
-              )}
-            >
-              <button className="flex items-center justify-start rounded-xl p-2">
-                <div className="flex h-[20px] w-[20px] items-center justify-center ">
-                  <Image
-                    src={TaskIcon}
-                    alt="Task Icon"
-                    className="brightness-0 invert"
-                  />
-                </div>
-                <div className="pl-1 text-sm font-medium">Messages</div>
-              </button>
-            </li>
+            {productId && (
+              <li
+                onClick={() => setCurrentTab("MSG")}
+                className={cn(
+                  currentTab === "MSG"
+                    ? "bg-dark-orange text-white"
+                    : "bg-gray-50 text-black",
+                  "w-full py-1",
+                )}
+              >
+                <button className="flex items-center justify-start rounded-xl p-2">
+                  <div className="flex h-[20px] w-[20px] items-center justify-center ">
+                    <Image
+                      src={TaskIcon}
+                      alt="Task Icon"
+                      className="brightness-0 invert"
+                    />
+                  </div>
+                  <div className="pl-1 text-sm font-medium">Messages</div>
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       </div>
