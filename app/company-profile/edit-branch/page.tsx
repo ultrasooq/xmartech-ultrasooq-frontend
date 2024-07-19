@@ -36,6 +36,19 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 import { useQueryClient } from "@tanstack/react-query";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
+import ReactSelect from "react-select";
+
+const customStyles = {
+  control: (base: any) => ({
+    ...base,
+    height: 48,
+    minHeight: 48,
+  }),
+  menu: (base: any) => ({
+    ...base,
+    zIndex: 20,
+  }),
+};
 
 const formSchema = z
   .object({
@@ -588,11 +601,33 @@ export default function EditBranchPage() {
                     placeholder="Province"
                   />
 
-                  <ControlledSelectInput
+                  {/* <ControlledSelectInput
                     label="Country"
                     name="country"
                     options={memoizedCountries}
-                  />
+                  /> */}
+
+                  <div className="mt-2 flex flex-col gap-y-3">
+                    <Label>Country</Label>
+                    <Controller
+                      name="country"
+                      control={form.control}
+                      render={({ field }) => (
+                        <ReactSelect
+                          {...field}
+                          onChange={(newValue) => {
+                            field.onChange(newValue?.value);
+                          }}
+                          options={memoizedCountries}
+                          value={memoizedCountries.find(
+                            (item: any) => item.value === field.value,
+                          )}
+                          styles={customStyles}
+                          instanceId="country"
+                        />
+                      )}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
