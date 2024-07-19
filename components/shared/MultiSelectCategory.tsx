@@ -331,119 +331,109 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
               item?.children,
           )
           ?.flat()?.length ? (
-          <div className="max-h-[300px] overflow-y-auto p-3">
-            <div className="grid grid-cols-2 grid-rows-3">
-              {multiSubSubCategoryList
-                ?.map((item: CategoryProps) => item?.children)
-                ?.flat()
-                ?.map((item: CategoryProps, index: number) => (
-                  <div
-                    key={item?.id}
-                    className={cn(
-                      "dropdown-content-child flex cursor-pointer items-start justify-start gap-y-2 p-3",
-                      memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                        subSubCategoryIndex
-                      ]?.children?.length
-                        ? index === subSubSubCategoryIndex
-                          ? "dropdown-active-child"
-                          : null
-                        : null,
-                    )}
-                    onMouseEnter={() => setSubSubSubCategoryIndex(index)}
-                    onClick={() => {
-                      setSubSubSubCategoryIndex(index);
-                    }}
-                  >
-                    <Checkbox
-                      className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                      checked={
-                        multiSubSubSubCategoryList?.filter(
-                          (ele: any) => ele.id === item.id,
-                        ).length > 0
+          <div className="max-h-[300px] overflow-y-auto">
+            {multiSubSubCategoryList
+              ?.map((item: CategoryProps) => item?.children)
+              ?.flat()
+              ?.map((item: CategoryProps, index: number) => (
+                <div
+                  key={item?.id}
+                  className={cn(
+                    "dropdown-content-child flex cursor-pointer items-start justify-start gap-x-2 p-3",
+                    memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                      subSubCategoryIndex
+                    ]?.children?.length
+                      ? index === subSubSubCategoryIndex
+                        ? "dropdown-active-child"
+                        : null
+                      : null,
+                  )}
+                  onMouseEnter={() => setSubSubSubCategoryIndex(index)}
+                  onClick={() => {
+                    setSubSubSubCategoryIndex(index);
+                  }}
+                >
+                  <Checkbox
+                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    checked={
+                      multiSubSubSubCategoryList?.filter(
+                        (ele: any) => ele.id === item.id,
+                      ).length > 0
+                    }
+                    onCheckedChange={(checked) => {
+                      let tempArr: any = multiSubSubSubCategoryList || [];
+                      // if true and does not exist in array then push
+                      if (
+                        checked &&
+                        !tempArr.find(
+                          (ele: CategoryProps) => ele.id === item.id,
+                        )
+                      ) {
+                        tempArr = [...tempArr, item];
+
+                        let grandParentId;
+                        watcher?.map((ele: FormCategoryProps) => {
+                          if (ele.categoryId === item.parentId) {
+                            const tempId = ele.categoryLocation.split(",")?.[0];
+
+                            grandParentId = tempId;
+                          }
+                        });
+
+                        formContext.setValue(name, [
+                          ...(watcher ?? []),
+                          {
+                            categoryId: item.id,
+                            categoryLocation: `${grandParentId},${item.parentId.toString()},${item.id.toString()}`,
+                          },
+                        ]);
                       }
-                      onCheckedChange={(checked) => {
-                        let tempArr: any = multiSubSubSubCategoryList || [];
-                        // if true and does not exist in array then push
-                        if (
-                          checked &&
-                          !tempArr.find(
-                            (ele: CategoryProps) => ele.id === item.id,
-                          )
-                        ) {
-                          tempArr = [...tempArr, item];
 
-                          let grandParentId;
-                          watcher?.map((ele: FormCategoryProps) => {
-                            if (ele.categoryId === item.parentId) {
-                              const tempId =
-                                ele.categoryLocation.split(",")?.[0];
+                      // if false and exist in array then remove
+                      if (
+                        !checked &&
+                        tempArr.find((ele: CategoryProps) => ele.id === item.id)
+                      ) {
+                        tempArr = tempArr.filter(
+                          (ele: any) => ele.id !== item.id,
+                        );
 
-                              grandParentId = tempId;
+                        formContext.setValue(
+                          name,
+                          watcher?.filter((ele: FormCategoryProps) => {
+                            if (ele.categoryId !== item.id) {
+                              return ele;
                             }
-                          });
+                          }),
+                        );
+                      }
 
-                          formContext.setValue(name, [
-                            ...(watcher ?? []),
-                            {
-                              categoryId: item.id,
-                              categoryLocation: `${grandParentId},${item.parentId.toString()},${item.id.toString()}`,
-                            },
-                          ]);
-                        }
+                      setMultiSubSubSubCategoryList(tempArr);
+                    }}
+                  />
 
-                        // if false and exist in array then remove
-                        if (
-                          !checked &&
-                          tempArr.find(
-                            (ele: CategoryProps) => ele.id === item.id,
-                          )
-                        ) {
-                          tempArr = tempArr.filter(
-                            (ele: any) => ele.id !== item.id,
-                          );
-
-                          formContext.setValue(
-                            name,
-                            watcher?.filter((ele: FormCategoryProps) => {
-                              if (ele.categoryId !== item.id) {
-                                return ele;
-                              }
-                            }),
-                          );
-                        }
-
-                        setMultiSubSubSubCategoryList(tempArr);
-                      }}
+                  {item?.icon ? (
+                    <Image
+                      src={item.icon}
+                      alt={item?.name}
+                      height={24}
+                      width={24}
                     />
-                    <div className="flex cursor-pointer flex-col items-center justify-start">
-                      <div className="relative h-8 w-8">
-                        {item?.icon ? (
-                          <Image
-                            src={item.icon}
-                            alt={item?.name}
-                            className="object-contain"
-                          />
-                        ) : (
-                          <MdOutlineImageNotSupported size={30} />
-                        )}
-                      </div>
-                      <p
-                        title={item?.name}
-                        className="text-beat text-start text-sm"
-                      >
-                        {item?.name}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-            </div>
+                  ) : (
+                    <MdOutlineImageNotSupported size={24} />
+                  )}
+
+                  <p
+                    title={item?.name}
+                    className="text-beat text-start text-sm"
+                  >
+                    {item?.name}
+                  </p>
+                </div>
+              ))}
           </div>
         ) : null}
       </div>
-
-      {memoizedSubCategory?.length ? (
-        <div className="my-2 border border-solid border-gray-300" />
-      ) : null}
     </div>
   );
 };

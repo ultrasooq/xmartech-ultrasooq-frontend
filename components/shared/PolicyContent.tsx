@@ -5,7 +5,7 @@ const PolicyContent = () => {
     <>
       <p className="mb-4">Last Modified: March 22, 2024</p>
       <p className="mb-3 text-base font-bold capitalize text-color-dark">
-        Welcome to Puremoon!
+        Welcome to Ultrasooq!
       </p>
       Your privacy is important to us. It is [Website/Service]&apos;s policy to
       respect your privacy regarding any information we may collect from you

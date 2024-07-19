@@ -31,7 +31,7 @@ const RfqRequestPage = () => {
                   <Image src={TaskIcon} alt="Task Icon" />
                 </div>
                 <div className="pl-1 text-sm font-medium text-[#828593]">
-                  Puremoon
+                  Ultrasooq
                 </div>
               </Link>
             </li>

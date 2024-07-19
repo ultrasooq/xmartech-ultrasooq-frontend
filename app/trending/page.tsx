@@ -307,7 +307,7 @@ const TrendingPage = () => {
   console.log(category.subSubCategories);
   return (
     <>
-      <title>Store | Puremoon</title>
+      <title>Store | Ultrasooq</title>
       <div className="body-content-s1">
         {category.subCategories.length || category.subSubCategories.length ? (
           <div className="container m-auto mb-4 px-3">
