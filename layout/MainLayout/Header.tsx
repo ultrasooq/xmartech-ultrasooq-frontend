@@ -37,6 +37,14 @@ import { cn } from "@/lib/utils";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import { useCategoryStore } from "@/lib/categoryStore";
 
+type CategoryProps = {
+  id: number;
+  parentId: number;
+  name: string;
+  icon: string;
+  children: any;
+};
+
 type ButtonLinkProps = {
   href: string;
   onClick?: () => void;
@@ -224,6 +232,7 @@ const Header = () => {
     }
   }, [isClickedOutside]);
 
+  console.log(subCategoryIndex);
   return (
     <header className="relative w-full">
       <div className="w-full bg-dark-cyan">
@@ -420,14 +429,6 @@ const Header = () => {
                 </li>
               </ul>
             </div>
-            {/* <div className="order-4 flex w-2/12 items-center justify-end py-4 md:!hidden">
-              <Image
-                src={HamburgerWhiteIcon}
-                alt="hamburger-icon"
-                height={28}
-                width={28}
-              />
-            </div> */}
           </div>
 
           <div className="hidden h-[44px] w-full px-3 md:flex md:px-0">
@@ -500,15 +501,7 @@ const Header = () => {
                 {memoizedSubCategory?.length ? (
                   <div className="dropdown-content">
                     {memoizedSubCategory?.map(
-                      (
-                        item: {
-                          id: number;
-                          name: string;
-                          icon: string;
-                          children: any;
-                        },
-                        index: number,
-                      ) => (
+                      (item: CategoryProps, index: number) => (
                         <div
                           key={item?.id}
                           className={cn(
@@ -527,6 +520,8 @@ const Header = () => {
                             );
                             category.setSubSubCategories([]);
                             category.setCategoryId(item?.id.toString());
+                            // save index to check for child categories part of parent or not
+                            category.setSubCategoryIndex(index);
                           }}
                         >
                           {item?.icon ? (
@@ -549,10 +544,7 @@ const Header = () => {
                 {memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                   <div className="dropdown-content-second">
                     {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
-                      (
-                        item: { id: number; name: string; icon: string },
-                        index: number,
-                      ) => (
+                      (item: CategoryProps, index: number) => (
                         <div
                           key={item?.id}
                           className={cn(
@@ -572,6 +564,12 @@ const Header = () => {
                                 ?.children?.[subSubCategoryIndex]?.children,
                             );
                             category.setCategoryId(item?.id.toString());
+                            //FIXME: need condition
+                            if (
+                              category.subCategoryIndex !== subCategoryIndex
+                            ) {
+                              category.setSubCategories([]);
+                            }
                           }}
                         >
                           {item?.icon ? (
@@ -603,45 +601,42 @@ const Header = () => {
                     <div className="grid grid-cols-5">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.[
                         subSubCategoryIndex
-                      ]?.children?.map(
-                        (
-                          item: { id: number; name: string; icon: string },
-                          index: number,
-                        ) => (
-                          <div
-                            key={item?.id}
-                            className={cn(
-                              "dropdown-content-child flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3",
-                              memoizedSubCategory?.[subCategoryIndex]
-                                ?.children?.[subSubCategoryIndex]?.children
-                                ?.length
-                                ? index === subSubSubCategoryIndex
-                                  ? "dropdown-active-child"
-                                  : null
-                                : null,
-                            )}
-                            onMouseEnter={() =>
-                              setSubSubSubCategoryIndex(index)
-                            }
-                            onClick={() => {
-                              setSubSubSubCategoryIndex(index);
-                              category.setCategoryId(item?.id.toString());
-                            }}
-                          >
+                      ]?.children?.map((item: CategoryProps, index: number) => (
+                        <div
+                          key={item?.id}
+                          className={cn(
+                            "dropdown-content-child flex cursor-pointer flex-col items-center justify-between gap-y-2 p-3",
+                            memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                              subSubCategoryIndex
+                            ]?.children?.length
+                              ? index === subSubSubCategoryIndex
+                                ? "dropdown-active-child"
+                                : null
+                              : null,
+                          )}
+                          onMouseEnter={() => setSubSubSubCategoryIndex(index)}
+                          onClick={() => {
+                            setSubSubSubCategoryIndex(index);
+                            category.setCategoryId(item?.id.toString());
+                          }}
+                        >
+                          <div className="relative h-8 w-8">
                             {item?.icon ? (
                               <Image
                                 src={item.icon}
                                 alt={item?.name}
-                                height={30}
-                                width={30}
+                                // height={30}
+                                // width={30}
+                                fill
+                                className="object-contain"
                               />
                             ) : (
                               <MdOutlineImageNotSupported size={30} />
                             )}
-                            <p className="text-center text-sm">{item?.name}</p>
                           </div>
-                        ),
-                      )}
+                          <p className="text-center text-sm">{item?.name}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ) : null}
@@ -688,45 +683,6 @@ const Header = () => {
               </ul>
             </div>
           </div>
-          {/* <div className="relative h-1" ref={wrapperRef}>
-            {categoryId ? (
-              <div className="absolute top-2 z-50 h-60 w-full rounded-sm border border-solid border-gray-300 bg-white p-1 shadow-md">
-                <div className="flex flex-row gap-x-2">
-                  {memoizedSubCategory.length ? (
-                    <div className="flex w-1/2 flex-col items-start border border-solid border-gray-300 p-3">
-                      {memoizedSubCategory.map((item: any) => (
-                        <Button
-                          key={item.id}
-                          variant="link"
-                          className="py-3 text-sm font-semibold capitalize text-color-dark sm:text-base"
-                          onClick={() => setSubCategoryId(item.id)}
-                        >
-                          <p>{item.name}</p>
-                        </Button>
-                      ))}
-                    </div>
-                  ) : null}
-
-                  {memoizedSubSubCategory.length ? (
-                    <div className="flex w-1/2 flex-col items-start border border-solid border-gray-300 p-3">
-                      {memoizedSubSubCategory.map((item: any) => (
-                        <Button
-                          key={item.id}
-                          variant="link"
-                          className="py-3 text-sm font-semibold capitalize text-color-dark sm:text-base"
-                        >
-                          <p>{item.name}</p>
-                        </Button>
-                      ))}
-                    </div>
-                  ) : null}
-
-                  <div className="w-1/2"></div>
-                  <div className="w-1/2"></div>
-                </div>
-              </div>
-            ) : null}
-          </div> */}
         </div>
       </div>
     </header>
