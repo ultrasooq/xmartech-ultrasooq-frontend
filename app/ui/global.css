@@ -4071,7 +4071,7 @@ input::-ms-clear {
   background-color: #FFF;
   min-width: 280px;
   box-shadow: 0px 8px 8px 0px rgba(0,0,0,0.2);
-  z-index: 10;
+  z-index: 100;
   height: 432px;
   overflow-y: auto;
 }
@@ -4094,7 +4094,7 @@ input::-ms-clear {
   background-color: #FFF;
   min-width: 280px;
   box-shadow: 0px 8px 8px 0px rgba(0,0,0,0.2);
-  z-index: 10;
+  z-index: 100;
   left: 280px;
   height: 432px;
   overflow-y: auto;
@@ -4110,7 +4110,7 @@ input::-ms-clear {
   background-color: #FFF;
   min-width: 560px;
   box-shadow: 0px 8px 8px 0px rgba(0,0,0,0.2);
-  z-index: 10;
+  z-index: 100;
   left: 560px;
   height: 380px;
   overflow-y: auto;
@@ -4118,4 +4118,11 @@ input::-ms-clear {
 
 .dropdown:hover .dropdown-content-third {
   display: block;
+}
+
+.text-beat {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }

@@ -232,7 +232,6 @@ const Header = () => {
     }
   }, [isClickedOutside]);
 
-  console.log(subCategoryIndex);
   return (
     <header className="relative w-full">
       <div className="w-full bg-dark-cyan">
@@ -534,7 +533,12 @@ const Header = () => {
                           ) : (
                             <MdOutlineImageNotSupported size={24} />
                           )}
-                          <p className="text-center text-sm">{item?.name}</p>
+                          <p
+                            title={item?.name}
+                            className="text-beat text-start text-sm"
+                          >
+                            {item?.name}
+                          </p>
                         </div>
                       ),
                     )}
@@ -582,7 +586,12 @@ const Header = () => {
                           ) : (
                             <MdOutlineImageNotSupported size={24} />
                           )}
-                          <p className="text-center text-sm">{item?.name}</p>
+                          <p
+                            title={item?.name}
+                            className="text-beat text-start text-sm"
+                          >
+                            {item?.name}
+                          </p>
                         </div>
                       ),
                     )}
@@ -605,7 +614,7 @@ const Header = () => {
                         <div
                           key={item?.id}
                           className={cn(
-                            "dropdown-content-child flex cursor-pointer flex-col items-center justify-between gap-y-2 p-3",
+                            "dropdown-content-child flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3",
                             memoizedSubCategory?.[subCategoryIndex]?.children?.[
                               subSubCategoryIndex
                             ]?.children?.length
@@ -634,7 +643,12 @@ const Header = () => {
                               <MdOutlineImageNotSupported size={30} />
                             )}
                           </div>
-                          <p className="text-center text-sm">{item?.name}</p>
+                          <p
+                            title={item?.name}
+                            className="text-beat text-center text-sm"
+                          >
+                            {item?.name}
+                          </p>
                         </div>
                       ))}
                     </div>
