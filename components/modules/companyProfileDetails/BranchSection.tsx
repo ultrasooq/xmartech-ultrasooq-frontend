@@ -249,7 +249,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                 </div>
               </div>
 
-              <TagInformationSection tagDetails={branchDetails} />
+              {/* <TagInformationSection tagDetails={branchDetails} /> */}
             </div>
           </div>
         </AccordionContent>

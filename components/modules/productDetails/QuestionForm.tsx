@@ -80,8 +80,8 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
               posting your question.
             </li>
             <li>
-              Reach out to Puremoon customer care for queries related to offers,
-              orders, delivery etc.
+              Reach out to Ultrasooq customer care for queries related to
+              offers, orders, delivery etc.
             </li>
           </ul>
         </div>

@@ -36,6 +36,7 @@ import { ICountries, OptionProps } from "@/utils/types/common.types";
 import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -150,23 +151,24 @@ const formSchema = z.object({
               value.sat !== 0
             );
           }),
-        tagList: z
-          .array(
-            z.object({
-              label: z.string().trim(),
-              value: z.number(),
-            }),
-          )
-          .min(1, {
-            message: "Tag is required",
-          })
-          .transform((value) => {
-            let temp: any = [];
-            value.forEach((item) => {
-              temp.push({ tagId: item.value });
-            });
-            return temp;
-          }),
+        // tagList: z
+        //   .array(
+        //     z.object({
+        //       label: z.string().trim(),
+        //       value: z.number(),
+        //     }),
+        //   )
+        //   .min(1, {
+        //     message: "Tag is required",
+        //   })
+        //   .transform((value) => {
+        //     let temp: any = [];
+        //     value.forEach((item) => {
+        //       temp.push({ tagId: item.value });
+        //     });
+        //     return temp;
+        //   }),
+        categoryList: z.any().optional(),
         mainOffice: z
           .boolean()
           .transform((value) => (value ? 1 : 0))
@@ -229,7 +231,8 @@ export default function CompanyProfilePage() {
             fri: 0,
             sat: 0,
           },
-          tagList: undefined,
+          // tagList: undefined,
+          categoryList: undefined,
           mainOffice: false,
         },
       ],
@@ -270,7 +273,8 @@ export default function CompanyProfilePage() {
         fri: 0,
         sat: 0,
       },
-      tagList: undefined,
+      // tagList: undefined,
+      categoryList: undefined,
       mainOffice: false,
     });
 
@@ -968,7 +972,7 @@ export default function CompanyProfilePage() {
                     ) : null}
                   </div>
 
-                  <AccordionMultiSelectV2
+                  {/* <AccordionMultiSelectV2
                     label="Tag"
                     name={`branchList.${index}.tagList`}
                     options={memoizedTags || []}
@@ -977,8 +981,12 @@ export default function CompanyProfilePage() {
                       form.formState.errors.branchList?.[index]?.tagList
                         ?.message
                     }
-                  />
+                  /> */}
                 </div>
+
+                <MultiSelectCategory
+                  name={`branchList.${index}.categoryList`}
+                />
 
                 <div className="mb-3.5 flex w-full justify-end border-b-2 border-dashed border-gray-300 pb-4">
                   <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">

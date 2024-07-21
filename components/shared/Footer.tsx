@@ -178,7 +178,7 @@ const Footer = () => {
         <div className="flex flex-wrap">
           <div className="flex w-full flex-wrap items-center justify-center border-t border-solid border-gray-200 py-5 lg:justify-between">
             <div className="mb-3 flex w-auto items-center justify-start text-base font-normal capitalize text-light-gray lg:mb-0">
-              <p>©2021 Puremoon All Rights Reserved</p>
+              <p>©2021 Ultrasooq All Rights Reserved</p>
             </div>
             <div className="flex w-auto flex-wrap items-center justify-center text-base font-normal capitalize text-light-gray lg:justify-end">
               <p className="w-full text-center sm:w-auto">

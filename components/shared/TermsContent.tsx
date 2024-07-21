@@ -6,17 +6,17 @@ const TermsContent = () => {
       <p className="mb-4">Last Modified: March 22, 2024</p>
 
       <p className="mb-4 text-base font-bold capitalize text-color-dark">
-        Welcome to Puremoon!
+        Welcome to Ultrasooq!
       </p>
 
       <p className="mb-4">
         These terms and conditions outline the rules and regulations for the use
-        of Puremoon Website, located at www.Puremoon.com.
+        of Ultrasooq Website, located at www.ultrasooq.com.
       </p>
 
       <p className="mb-4">
         By accessing this website we assume you accept these terms and
-        conditions. Do not continue to use Puremoon if you do not agree to take
+        conditions. Do not continue to use Ultrasooq if you do not agree to take
         all of the terms and conditions stated on this page.
       </p>
 
@@ -62,10 +62,10 @@ const TermsContent = () => {
       </h4>
 
       <p className="mb-4">
-        Unless otherwise stated, Puremoon and/or its licensors own the
-        intellectual property rights for all material on Puremoon. All
+        Unless otherwise stated, Ultrasooq and/or its licensors own the
+        intellectual property rights for all material on Ultrasooq. All
         intellectual property rights are reserved. You may access this from
-        Puremoon for your own personal use subjected to restrictions set in
+        Ultrasooq for your own personal use subjected to restrictions set in
         these terms and conditions.
       </p>
 
@@ -161,7 +161,7 @@ const TermsContent = () => {
         that: (a) the link would not make us look unfavorably to ourselves or to
         our accredited businesses; (b) the organization does not have any
         negative records with us; (c) the benefit to us from the visibility of
-        the hyperlink compensates the absence of Puremoon; and (d) the link is
+        the hyperlink compensates the absence of Ultrasooq; and (d) the link is
         in the context of general resource information.
       </p>
 

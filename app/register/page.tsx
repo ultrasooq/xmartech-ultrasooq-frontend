@@ -199,7 +199,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <title>Register | Puremoon</title>
+      <title>Register | Ultrasooq</title>
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image

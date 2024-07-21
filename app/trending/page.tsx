@@ -303,11 +303,13 @@ const TrendingPage = () => {
     }
   }, [accessToken]);
 
+  console.log(category.subCategories);
+  console.log(category.subSubCategories);
   return (
     <>
-      <title>Store | Puremoon</title>
+      <title>Store | Ultrasooq</title>
       <div className="body-content-s1">
-        {category.subCategories.length ? (
+        {category.subCategories.length || category.subSubCategories.length ? (
           <div className="container m-auto mb-4 px-3">
             <div className="flex flex-wrap">
               <div className="mb-5 w-full">
@@ -318,7 +320,7 @@ const TrendingPage = () => {
               <div className="w-full">
                 <div className="bg-neutral-100 p-4 lg:p-8">
                   <div className="block w-full">
-                    <ul className="flex flex-wrap items-end justify-start gap-x-3 border-b border-solid border-gray-300">
+                    <ul className="mb-2 grid grid-cols-8 gap-3 border-b border-solid border-gray-300">
                       {category.subCategories.map((item: any) => (
                         <TrendingOptionCard
                           key={uuidv4()}
@@ -329,8 +331,8 @@ const TrendingPage = () => {
                   </div>
 
                   {category.subSubCategories.length ? (
-                    <div className="block w-full py-5">
-                      <div className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
+                    <div className="block w-full pt-3">
+                      <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
                         {category.subSubCategories.map((item) => (
                           <TrendingCard
                             key={uuidv4()}

@@ -15,8 +15,8 @@ import { SocketProvider } from "@/context/SocketContext";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Puremoon",
-    default: "Puremoon",
+    template: "%s | Ultrasooq",
+    default: "Ultrasooq",
   },
 };
 

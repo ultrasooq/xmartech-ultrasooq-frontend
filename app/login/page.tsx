@@ -173,7 +173,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <title>Login | Puremoon</title>
+      <title>Login | Ultrasooq</title>
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image

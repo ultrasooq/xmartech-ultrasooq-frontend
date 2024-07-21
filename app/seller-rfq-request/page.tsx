@@ -15,8 +15,8 @@ const SellerRfqRequestPage = () => {
     const params = new URLSearchParams(document.location.search);
     let pId = params.get("product_id");
     if (pId) {
-      setProductId(parseInt(pId))
-      setCurrentTab("MSG")
+      setProductId(parseInt(pId));
+      setCurrentTab("MSG");
     }
   }, []);
 
@@ -34,7 +34,7 @@ const SellerRfqRequestPage = () => {
                   <Image src={TaskIcon} alt="Task Icon" />
                 </div>
                 <div className="pl-1 text-sm font-medium text-[#828593]">
-                  Puremoon
+                  Ultrasooq
                 </div>
               </Link>
             </li>
@@ -47,9 +47,7 @@ const SellerRfqRequestPage = () => {
                 "w-full py-1",
               )}
             >
-              <button
-                className="flex items-center justify-start rounded-xl p-2"
-              >
+              <button className="flex items-center justify-start rounded-xl p-2">
                 <div className="flex h-[20px] w-[20px] items-center justify-center">
                   <Image
                     src={TaskIcon}
@@ -70,9 +68,7 @@ const SellerRfqRequestPage = () => {
                   "w-full py-1",
                 )}
               >
-                <button
-                  className="flex items-center justify-start rounded-xl p-2"
-                >
+                <button className="flex items-center justify-start rounded-xl p-2">
                   <div className="flex h-[20px] w-[20px] items-center justify-center ">
                     <Image
                       src={TaskIcon}
@@ -84,19 +80,15 @@ const SellerRfqRequestPage = () => {
                 </button>
               </li>
             )}
-
           </ul>
         </div>
       </div>
       <div className="w-[85%] px-2">
-        {currentTab === "RFQ" ?
+        {currentTab === "RFQ" ? (
           <SellerChat />
-          : productId ?
-            <ProductChat
-              productId={productId}
-            />
-            : null
-        }
+        ) : productId ? (
+          <ProductChat productId={productId} />
+        ) : null}
       </div>
     </section>
   );
