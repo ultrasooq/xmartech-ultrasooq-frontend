@@ -117,6 +117,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         if (newRoom?.roomId && (newRoom?.creatorId === activeSellerId || newRoom?.creatorId === user?.id)) {
             setSelectedRoom(newRoom?.roomId)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newRoom])
 
     // if any error exception

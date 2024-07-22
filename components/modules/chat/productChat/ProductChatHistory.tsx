@@ -9,7 +9,7 @@ interface ProductChatHistoryProps {
   chatHistoryLoading?: boolean;
   buyerId?: number | undefined;
   unreadMsgCount?: number | 0;
-  updateMessageCount: () => void
+  updateMessageCount?: () => void
 }
 
 const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
@@ -43,7 +43,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
           roomId: roomId,
         };
         await updateUnreadMessages(payload);
-        updateMessageCount()
+        if(updateMessageCount) updateMessageCount()
       }
     } catch (error) { }
   };

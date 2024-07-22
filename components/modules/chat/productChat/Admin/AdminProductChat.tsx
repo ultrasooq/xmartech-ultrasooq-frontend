@@ -46,12 +46,14 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
 
   useEffect(() => {
     if (productId && sellerId) handleGetProductMessages()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (selectedRoomId) {
       handleChatHistory()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRoomId]);
 
   // receive a message
