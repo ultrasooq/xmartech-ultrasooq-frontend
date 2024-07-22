@@ -114,8 +114,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
 
     // if new room crated
     useEffect(() => {
-        if (newRoom) {
-            setSelectedRoom(newRoom)
+        if (newRoom?.roomId && (newRoom?.creatorId === activeSellerId || newRoom?.creatorId === user?.id)) {
+            setSelectedRoom(newRoom?.roomId)
         }
     }, [newRoom])
 
@@ -197,7 +197,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 }
                 vList.unshift(newItem);
                 setVendorList(vList);
-                if (message?.participants?.includes(activeSellerId)) {
+                if (selectedRoom === message?.roomId) {
                     const chatHistory = [...selectedChatHistory]
                     chatHistory.push(message);
                     setSelectedChatHistory(chatHistory)

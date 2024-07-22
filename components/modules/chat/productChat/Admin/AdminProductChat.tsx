@@ -7,7 +7,7 @@ import SmileIcon from "@/public/images/smile.svg";
 import SendIcon from "@/public/images/send-button.png";
 import ProductChatHistory from "../ProductChatHistory";
 import { useSocket } from "@/context/SocketContext";
-import { findRoomId, getChatHistory, getProductMessages } from "@/apis/requests/chat.requests";
+import { getChatHistory, getProductMessages, updateUnreadMessages } from "@/apis/requests/chat.requests";
 import { useAuth } from "@/context/AuthContext";
 import ProductMessage from "./ProductMessage";
 
@@ -38,13 +38,15 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   const [productMessages, setProductMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
+  const [selectedProductMessage, setSelectedProductMessage] = useState<any>(null);
+
   const { sendMessage, cratePrivateRoom, newMessage } = useSocket()
   const { toast } = useToast();
   const { user } = useAuth();
 
   useEffect(() => {
     if (productId && sellerId) handleGetProductMessages()
-  }, [productId]);
+  }, []);
 
   useEffect(() => {
     if (selectedRoomId) {
@@ -68,6 +70,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         if (res?.data?.data?.length > 0) {
           const roomId: number = res?.data?.data[0]?.room?.id
           setSelectedRoomId(roomId)
+          setSelectedProductMessage(res?.data?.data[0]);
         }
         setProductMessages(res.data.data)
       } else {
@@ -153,6 +156,12 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
           content: message.content,
           createdAt: message.createdAt
         }
+        if (selectedRoomId !== message?.roomId) {
+          newItem = {
+            ...newItem,
+            unreadMsgCount: newItem?.unreadMsgCount ? newItem?.unreadMsgCount + 1 : 1,
+          }
+        }
         pList.unshift(newItem);
         setProductMessages(pList);
       } else {
@@ -163,9 +172,13 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
             id: message.roomId
           },
           userId: message.userId,
+          unreadMsgCount: 1
         }
         pList.unshift(newUser);
         setProductMessages(pList);
+        if (!selectedProductMessage) {
+          setSelectedProductMessage(newUser)
+        }
       }
 
       if (selectedRoomId === message?.roomId || !selectedRoomId) {
@@ -175,7 +188,32 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
       } if (!selectedRoomId) {
         setSelectedRoomId(message.roomId)
       }
+      // UPDATE UNREAD MESSAGE
+      handleUpdateNewMessageStatus(message)
     } catch (error) { }
+  }
+
+  const handleUpdateNewMessageStatus = async (message: any) => {
+    try {
+      if (selectedRoomId !== null && message?.userId === selectedProductMessage?.user.id) {
+        const payload = {
+          userId: selectedProductMessage?.user?.id,
+          roomId: selectedRoomId
+        }
+        await updateUnreadMessages(payload)
+      }
+    } catch (error) {
+
+    }
+  }
+
+  const updateMessageCount = () => {
+    const index = productMessages.findIndex((pMessage) => pMessage.userId === selectedProductMessage?.userId);
+    if (index !== -1) {
+      const pList = [...productMessages];
+      pList[index]["unreadMsgCount"] = 0;
+      setProductMessages(pList)
+    }
   }
 
   const handleSendMessageKeyDown = (e: any) => {
@@ -233,7 +271,10 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
                 key={index}
                 message={item}
                 isSelected={selectedRoomId === item?.room?.id}
-                onClick={() => setSelectedRoomId(item?.room?.id)}
+                onClick={() => {
+                  setSelectedRoomId(item?.room?.id)
+                  setSelectedProductMessage(item)
+                }}
               />
             )
           )}
@@ -244,6 +285,10 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
           <ProductChatHistory
             selectedChatHistory={selectedChatHistory}
             chatHistoryLoading={chatHistoryLoading}
+            buyerId={selectedProductMessage?.user?.id}
+            roomId={selectedRoomId}
+            unreadMsgCount={selectedProductMessage?.unreadMsgCount}
+            updateMessageCount={updateMessageCount}
           />
         </div>
         {productDetails ? (

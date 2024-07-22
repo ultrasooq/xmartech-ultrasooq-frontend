@@ -112,8 +112,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
     // if new room crated
     useEffect(() => {
-        if (newRoom) {
-            setSelectedRoom(newRoom)
+        if (newRoom?.roomId) {
+            setSelectedRoom(newRoom?.roomId)
         }
     }, [newRoom])
 
