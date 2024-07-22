@@ -13,18 +13,21 @@ const TrendingOptionCard: React.FC<TrendingOptionCardProps> = ({ item }) => {
       href="#"
       className="flex flex-col items-center justify-start border-b border-solid border-transparent p-2 text-xs font-normal capitalize text-light-gray lg:text-sm"
     >
-      {item?.path ? (
-        <Image
-          src={item?.path}
-          className="mb-3 object-contain"
-          height={36}
-          width={36}
-          alt={item?.name}
-        />
-      ) : (
-        <MdOutlineImageNotSupported size={36} className="mb-3" />
-      )}
-      <span className="text-center">{item?.name}</span>
+      <div className="relative mb-3 h-9 w-9">
+        {item?.path ? (
+          <Image
+            src={item?.path}
+            className="mb-3 object-contain"
+            // height={36}
+            // width={36}
+            fill
+            alt={item?.name}
+          />
+        ) : (
+          <MdOutlineImageNotSupported size={36} className="mb-3" />
+        )}
+      </div>
+      <span className="text-beat text-center">{item?.name}</span>
     </Link>
   );
 };

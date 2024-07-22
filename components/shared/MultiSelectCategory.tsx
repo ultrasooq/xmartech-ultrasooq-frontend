@@ -144,14 +144,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
             {memoizedMenu?.map((item: CategoryProps, index: number) => (
               <div
                 key={item?.id}
-                className={cn(
-                  "flex cursor-pointer items-center justify-start gap-x-2 p-3",
-                  memoizedMenu?.length
-                    ? index === subCategoryIndex
-                      ? "dropdown-active-child"
-                      : null
-                    : null,
-                )}
+                className="dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3"
                 onMouseEnter={() => setSubCategoryIndex(index)}
                 onClick={() => {
                   setSubCategoryIndex(index);
@@ -241,14 +234,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
               ?.map((item: CategoryProps, index: number) => (
                 <div
                   key={item?.id}
-                  className={cn(
-                    "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
-                    memoizedSubCategory?.[subCategoryIndex]?.children?.length
-                      ? index === subSubCategoryIndex
-                        ? "dropdown-active-child"
-                        : null
-                      : null,
-                  )}
+                  className="dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3"
                   onMouseEnter={() => setSubSubCategoryIndex(index)}
                   onClick={() => {
                     setSubSubCategoryIndex(index);
@@ -338,16 +324,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
               ?.map((item: CategoryProps, index: number) => (
                 <div
                   key={item?.id}
-                  className={cn(
-                    "dropdown-content-child flex cursor-pointer items-start justify-start gap-x-2 p-3",
-                    memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                      subSubCategoryIndex
-                    ]?.children?.length
-                      ? index === subSubSubCategoryIndex
-                        ? "dropdown-active-child"
-                        : null
-                      : null,
-                  )}
+                  className="dropdown-content-child flex cursor-pointer items-start justify-start gap-x-2 p-3"
                   onMouseEnter={() => setSubSubSubCategoryIndex(index)}
                   onClick={() => {
                     setSubSubSubCategoryIndex(index);

@@ -517,10 +517,19 @@ const Header = () => {
                             category.setSubCategories(
                               memoizedSubCategory?.[subCategoryIndex]?.children,
                             );
-                            category.setSubSubCategories([]);
+                            // category.setSubSubCategories([]);
                             category.setCategoryId(item?.id.toString());
                             // save index to check for child categories part of parent or not
                             category.setSubCategoryIndex(index);
+                            category.setSubCategoryParentName(item?.name);
+                            category.setSubSubCategoryParentName(
+                              memoizedSubCategory?.[subCategoryIndex]
+                                ?.children?.[0]?.name,
+                            );
+                            category.setSubSubCategories(
+                              memoizedSubCategory?.[subCategoryIndex]
+                                ?.children?.[0]?.children,
+                            );
                           }}
                         >
                           {item?.icon ? (
@@ -568,11 +577,13 @@ const Header = () => {
                                 ?.children?.[subSubCategoryIndex]?.children,
                             );
                             category.setCategoryId(item?.id.toString());
+                            category.setSubSubCategoryParentName(item?.name);
                             //FIXME: need condition
                             if (
                               category.subCategoryIndex !== subCategoryIndex
                             ) {
                               category.setSubCategories([]);
+                              category.setSubCategoryParentName("");
                             }
                           }}
                         >
