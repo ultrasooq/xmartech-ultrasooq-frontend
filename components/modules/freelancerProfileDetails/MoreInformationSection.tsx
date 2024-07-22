@@ -4,6 +4,7 @@ import { getAmPm, handleDescriptionParse, parsedDays } from "@/utils/helper";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
+import ViewMultiTagSection from "../companyProfileDetails/ViewMultiTagSection";
 
 type MoreInformationSectionProps = {
   userDetails: any;
@@ -203,6 +204,11 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
             ))}
           </div>
         </div> */}
+        <ViewMultiTagSection
+          categoryDetails={
+            userDetails?.userBranch?.[0]?.userBranch_userBranchCategory
+          }
+        />
       </div>
     </div>
   );

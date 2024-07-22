@@ -1,34 +1,47 @@
 import React from "react";
 import Image from "next/image";
 import { MdOutlineImageNotSupported } from "react-icons/md";
-import Link from "next/link";
+// import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 type TrendingCardProps = {
   item: any;
+  isActiveIndex?: boolean;
+  onActiveCategory?: () => void;
 };
 
-const TrendingCard: React.FC<TrendingCardProps> = ({ item }) => {
+const TrendingCard: React.FC<TrendingCardProps> = ({
+  item,
+  isActiveIndex,
+  onActiveCategory,
+}) => {
   return (
-    <Link
-      href="#"
+    <button
+      type="button"
       className="flex flex-col items-center justify-start p-2 text-xs font-normal capitalize text-light-gray lg:text-base"
+      onClick={onActiveCategory}
     >
-      <div className="relative mb-3 h-24 w-24">
+      <div className="relative mb-3 h-20 w-20">
         {item?.path ? (
           <Image
             src={item?.path}
             className="object-contain"
-            // height={70}
-            // width={100}
             fill
             alt={item?.name}
           />
         ) : (
-          <MdOutlineImageNotSupported size={100} className="mb-3" />
+          <MdOutlineImageNotSupported size={80} className="mb-3" />
         )}
       </div>
-      <span className="text-center">{item?.name}</span>
-    </Link>
+      <span
+        className={cn(
+          "text-beat text-center",
+          isActiveIndex ? "text-dark-orange" : "",
+        )}
+      >
+        {item?.name}
+      </span>
+    </button>
   );
 };
 
