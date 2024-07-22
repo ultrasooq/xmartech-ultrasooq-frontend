@@ -100,3 +100,15 @@ export const getProductDetails = (productId: number) => {
         },
     });
 };
+
+export const getProductMessages = (productId: number, sellerId: number) => {
+    return axios({
+        method: "GET",
+        url: `${process.env.NEXT_PUBLIC_API_URL}/chat/product/messages?productId=${productId}&sellerId=${sellerId}`,
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+        },
+    });
+};

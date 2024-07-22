@@ -1,7 +1,7 @@
 import { APIResponseError } from "../../utils/types/common.types";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { CreatePrivateRoomRequest, RfqPriceStatusUpdateRequest } from "../../utils/types/chat.types";
-import { createPrivateRoom, getProductDetails, updateRfqRequestPriceStatus } from "../requests/chat.requests";
+import { createPrivateRoom, getProductDetails, updateRfqRequestPriceStatus, getProductMessages } from "../requests/chat.requests";
 
 export const useCreatePrivateRoom = () => {
   const queryClient = useQueryClient();
@@ -52,8 +52,5 @@ export const useGetProductDetails = (
       const res = await getProductDetails(productId);
       return res.data;
     },
-    // onError: (err: APIResponseError) => {
-    //   console.log(err);
-    // },
     enabled,
   });

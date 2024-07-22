@@ -9,6 +9,7 @@ interface ProductChatHistoryProps {
   chatHistoryLoading?: boolean;
   buyerId?: number | undefined;
   unreadMsgCount?: number | 0;
+  updateMessageCount?: () => void
 }
 
 const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
@@ -17,6 +18,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
   chatHistoryLoading,
   buyerId,
   unreadMsgCount,
+  updateMessageCount
 }) => {
   const { user } = useAuth();
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -41,8 +43,9 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
           roomId: roomId,
         };
         await updateUnreadMessages(payload);
+        if(updateMessageCount) updateMessageCount()
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return (
@@ -63,8 +66,8 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                         <span>
                           {chat.createdAt
                             ? moment(chat.createdAt)
-                                .startOf("seconds")
-                                .fromNow()
+                              .startOf("seconds")
+                              .fromNow()
                             : ""}
                         </span>
                       </div>
@@ -91,8 +94,8 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                         <span>
                           {chat.createdAt
                             ? moment(chat.createdAt)
-                                .startOf("seconds")
-                                .fromNow()
+                              .startOf("seconds")
+                              .fromNow()
                             : ""}
                         </span>
                       </div>

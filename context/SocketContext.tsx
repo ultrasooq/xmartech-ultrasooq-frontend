@@ -39,7 +39,10 @@ interface SocketContextType {
   newMessage: newMessageType | null;
   errorMessage: string;
   clearErrorMessage: () => void;
-  newRoom: number | null;
+  newRoom: {
+    roomId: number,
+    creatorId: number,
+  };
   cratePrivateRoom: (newRoom: {
     participants: number[];
     content: string;
@@ -71,7 +74,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const [socket, setSocket] = useState<Socket | null>(null);
   const [newMessage, setNewMessage] = useState<newMessageType | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [newRoom, setNewRoom] = useState<number | null>(null);
+  const [newRoom, setNewRoom] = useState<any | null>(null);
   const [rfqRequest, setRfqRequest] = useState<rfqRequestType | null>(null);
 
   const [connected, setConnected] = useState(false);
@@ -96,8 +99,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         setNewMessage(message);
       });
 
-      socketIo.on("newRoomCreated", (room: { roomId: number }) => {
-        setNewRoom(room.roomId);
+      socketIo.on("newRoomCreated", (room: { roomId: number, creatorId: number }) => {
+        setNewRoom(room);
       });
 
       socketIo.on(

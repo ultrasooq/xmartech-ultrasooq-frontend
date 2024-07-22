@@ -10,6 +10,7 @@ import ProductChatHistory from "./ProductChatHistory";
 import { useSocket } from "@/context/SocketContext";
 import { findRoomId, getChatHistory } from "@/apis/requests/chat.requests";
 import { useAuth } from "@/context/AuthContext";
+import AdminProductChat from "./Admin/AdminProductChat";
 
 interface ProductChatProps {
   productId: number;
@@ -26,18 +27,19 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
 
   const product = useGetProductDetails(productId);
   const productDetails = product?.data?.data;
+  const sellerId = productDetails?.product_productPrice?.length > 0 ?
+    productDetails?.product_productPrice[0].adminDetail?.id : null;
 
   // check room id
   useEffect(() => {
-    if (productDetails?.adminId) {
+    if (sellerId && user?.id !== sellerId) {
       checkRoomId()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productDetails]);
-
+  }, [sellerId]);
 
   useEffect(() => {
-    if (selectedRoom) {
+    if (selectedRoom && user?.id !== sellerId) {
       handleChatHistory()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,17 +55,19 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
 
   const checkRoomId = async () => {
     try {
-      const payloadRoomFind = {
-        userId: productDetails?.adminId,
-        rfqId: productDetails?.id
-      }
-      const room = await findRoomId(payloadRoomFind);
-      if (room?.data?.roomId) {
-        setSelectedRoom(room?.data?.roomId)
-      } else {
-        setSelectedRoom(null)
-        setChatHistoryLoading(false)
-        setSelectedChatHistory([])
+      if (user?.id) {
+        const payloadRoomFind = {
+          userId: user?.id,
+          rfqId: productDetails?.id
+        }
+        const room = await findRoomId(payloadRoomFind);
+        if (room?.data?.roomId) {
+          setSelectedRoom(room?.data?.roomId)
+        } else {
+          setSelectedRoom(null)
+          setChatHistoryLoading(false)
+          setSelectedChatHistory([])
+        }
       }
     } catch (error) {
       setChatHistoryLoading(false)
@@ -111,14 +115,14 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
     }
   }
 
-  const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
+  const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerUserId?: number, requestedPrice?: number) => {
     const msgPayload = {
       roomId: roomId,
       content,
       rfqId: productDetails?.id,
       requestedPrice,
       rfqQuoteProductId,
-      sellerId,
+      sellerId: sellerUserId,
       rfqQuotesUserId: null
     }
     sendMessage(msgPayload)
@@ -129,6 +133,9 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
       const chatHistory = [...selectedChatHistory]
       chatHistory.push(message);
       setSelectedChatHistory(chatHistory)
+      if(!selectedRoom) {
+        setSelectedRoom(message?.roomId)
+      }
     } catch (error) { }
   }
 
@@ -140,19 +147,20 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
   };
 
 
-  const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
+  const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerUserId?: number, requestedPrice?: number) => {
     try {
-      const payload = {
-        participants: [user?.id, productDetails?.adminId],
-        content,
-        rfqId: productDetails?.id,
-        requestedPrice,
-        rfqQuoteProductId,
-        sellerId,
-        rfqQuotesUserId: null
+      if (sellerId) {
+        const payload = {
+          participants: [user?.id, sellerId],
+          content,
+          rfqId: productDetails?.id,
+          requestedPrice,
+          rfqQuoteProductId,
+          sellerId: sellerUserId,
+          rfqQuotesUserId: null
+        }
+        cratePrivateRoom(payload);
       }
-      cratePrivateRoom(payload);
-
     } catch (error) {
       return ""
     }
@@ -161,7 +169,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
   return (
     <div>
       <div className="flex w-full rounded-sm border border-solid border-gray-300">
-        <div className="w-[25%] border-r border-solid border-gray-300">
+        <div className="w-[15%] border-r border-solid border-gray-300">
           <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
             <span>Product</span>
           </div>
@@ -218,48 +226,57 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
             ) : null}
           </div>
         </div>
-        <div className="w-[75%] border-r border-solid border-gray-300">
-          <div className="flex w-full flex-wrap p-[20px]">
-            <ProductChatHistory
-              selectedChatHistory={selectedChatHistory}
-            />
-          </div>
-          {productDetails ? (
-            <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
-              <div className="flex w-full items-center">
-                <div className="relative flex h-[32px] w-[32px] items-center">
-                  <input type="file" className="z-10 hidden opacity-0" />
-                  <div className="absolute left-0 top-0 w-auto">
-                    <Image src={AttachIcon} alt="attach-icon" />
+        {user?.id === sellerId ? (
+          <AdminProductChat
+            productId={productId}
+            productDetails={productDetails}
+            sellerId={sellerId}
+          />
+        ) : (
+          <div className="w-[65%] border-r border-solid border-gray-300">
+            <div className="flex w-full flex-wrap p-[20px]">
+              <div className="mb-5 max-h-[300px] w-full overflow-y-auto">
+              </div>
+              <ProductChatHistory
+                selectedChatHistory={selectedChatHistory}
+              />
+            </div>
+            {productDetails && (
+              <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
+                <div className="flex w-full items-center">
+                  <div className="relative flex h-[32px] w-[32px] items-center">
+                    <input type="file" className="z-10 hidden opacity-0" />
+                    <div className="absolute left-0 top-0 w-auto">
+                      <Image src={AttachIcon} alt="attach-icon" />
+                    </div>
                   </div>
-                </div>
-                <div className="flex w-[calc(100%-6.5rem)] items-center">
-                  <textarea
-                    placeholder="Type your message...."
-                    className="h-[32px] w-full resize-none text-sm focus:outline-none"
-                    onChange={(e) => setMessage(e.target.value)}
-                    value={message}
-                    onKeyDown={handleSendMessageKeyDown}
-                  ></textarea>
-                </div>
-                <div className="flex w-[72px] items-center justify-between">
-                  <div className="w-auto">
-                    <Image src={SmileIcon} alt="smile-icon" />
+                  <div className="flex w-[calc(100%-6.5rem)] items-center">
+                    <textarea
+                      placeholder="Type your message...."
+                      className="h-[32px] w-full resize-none text-sm focus:outline-none"
+                      onChange={(e) => setMessage(e.target.value)}
+                      value={message}
+                      onKeyDown={handleSendMessageKeyDown}
+                    ></textarea>
                   </div>
-                  <div className="flex w-auto">
-                    <button type="button" className="">
-                      <Image src={SendIcon} alt="send-icon" onClick={handleSendMessage} />
-                    </button>
+                  <div className="flex w-[72px] items-center justify-between">
+                    <div className="w-auto">
+                      <Image src={SmileIcon} alt="smile-icon" />
+                    </div>
+                    <div className="flex w-auto">
+                      <button type="button" className="">
+                        <Image src={SendIcon} alt="send-icon" onClick={handleSendMessage} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
-      </div>
-    </div>
+            )}
+          </div >
+        )}
+
+      </div >
+    </div >
   );
 };
 
