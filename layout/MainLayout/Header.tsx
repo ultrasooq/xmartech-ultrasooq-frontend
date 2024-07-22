@@ -437,7 +437,6 @@ const Header = () => {
                   key={item.id}
                   onClick={() => {
                     setMenuId(item.id);
-                    setCategoryId(undefined);
                     if (item.name.toLowerCase().includes("home")) {
                       router.push("/home");
                     }
@@ -449,7 +448,6 @@ const Header = () => {
                     if (item.name.toLowerCase().includes("rfq")) {
                       router.push("/rfq");
                     }
-                    setAssignedToId(undefined);
                   }}
                   href={
                     item.name.toLowerCase().includes("home")
@@ -460,8 +458,6 @@ const Header = () => {
                           ? "/rfq"
                           : "/trending"
                   }
-                  // variant="link"
-                  // className="flex cursor-pointer px-10 py-3 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
                 >
                   <div className="flex gap-x-3">
                     <Image
@@ -530,6 +526,9 @@ const Header = () => {
                               memoizedSubCategory?.[subCategoryIndex]
                                 ?.children?.[0]?.children,
                             );
+
+                            //reset for second level category active index
+                            category.setSecondLevelCategoryIndex(0);
                           }}
                         >
                           {item?.icon ? (
