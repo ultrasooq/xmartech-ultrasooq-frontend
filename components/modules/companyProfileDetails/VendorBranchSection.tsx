@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import TagInformationSection from "./TagInformationSection";
+import ViewMultiTagSection from "./ViewMultiTagSection";
 
 type VendorBranchSectionProps = {
   branchDetails: any;
@@ -236,6 +237,9 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               </div>
 
               {/* <TagInformationSection tagDetails={branchDetails} /> */}
+              <ViewMultiTagSection
+                categoryDetails={branchDetails?.userBranch_userBranchCategory}
+              />
             </div>
           </div>
         </AccordionContent>

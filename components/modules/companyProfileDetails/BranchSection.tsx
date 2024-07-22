@@ -8,9 +8,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
-import TagInformationSection from "./TagInformationSection";
+// import TagInformationSection from "./TagInformationSection";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
+import ViewMultiTagSection from "./ViewMultiTagSection";
 
 type BranchSectionProps = {
   branchDetails: any;
@@ -250,6 +251,9 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
               </div>
 
               {/* <TagInformationSection tagDetails={branchDetails} /> */}
+              <ViewMultiTagSection
+                categoryDetails={branchDetails?.userBranch_userBranchCategory}
+              />
             </div>
           </div>
         </AccordionContent>

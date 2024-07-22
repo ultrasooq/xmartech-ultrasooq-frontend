@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { getAmPm, handleDescriptionParse, parsedDays } from "@/utils/helper";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
+import ViewMultiTagSection from "../companyProfileDetails/ViewMultiTagSection";
 
 type VendorMoreInformationSectionProps = {
   vendor: any;
@@ -162,6 +163,12 @@ const VendorMoreInformationSection: React.FC<
             ))}
           </div>
         </div> */}
+
+        <ViewMultiTagSection
+          categoryDetails={
+            vendor?.userBranch?.[0]?.userBranch_userBranchCategory
+          }
+        />
       </div>
     </div>
   );
