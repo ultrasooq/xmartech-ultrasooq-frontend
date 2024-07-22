@@ -10,14 +10,14 @@ const TrendingCategories = () => {
   const [activeThirdLevelCategoryIndex, setActiveThirdLevelCategoryIndex] =
     useState(0);
 
-  //   console.log(category.subCategories);
-  //   console.log(category.subSubCategories);
-  // console.log(category.secondLevelCategoryIndex);
-  //   console.log(activeSecondLevelCategoryIndex);
-
   useEffect(() => {
     setActiveSecondLevelCategoryIndex(category.secondLevelCategoryIndex || 0);
   }, [category.secondLevelCategoryIndex]);
+
+  // console.log(category.subCategories?.[activeSecondLevelCategoryIndex]?.name);
+  // console.log(category.subSubCategories);
+  // console.log(category.secondLevelCategoryIndex);
+  // console.log(activeSecondLevelCategoryIndex);
 
   return category.subCategories?.length || category.subSubCategories?.length ? (
     <div className="container m-auto mb-4 px-3">
@@ -54,7 +54,8 @@ const TrendingCategories = () => {
               <div className="block w-full pt-3">
                 {category.subSubCategoryParentName ? (
                   <h3 className="mb-3 text-base font-semibold text-dark-orange">
-                    {category.subSubCategoryParentName}
+                    {category.subCategories?.[activeSecondLevelCategoryIndex]
+                      ?.name || category.subSubCategoryParentName}
                   </h3>
                 ) : null}
                 <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
