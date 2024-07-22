@@ -54,10 +54,8 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import BannerSection from "@/components/modules/trending/BannerSection";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
-import TrendingOptionCard from "@/components/modules/home/TrendingOptionCard";
-import TrendingCard from "@/components/modules/home/TrendingCard";
-import { v4 as uuidv4 } from "uuid";
 import { useCategoryStore } from "@/lib/categoryStore";
+import TrendingCategories from "@/components/modules/trending/TrendingCategories";
 
 const TrendingPage = () => {
   const queryClient = useQueryClient();
@@ -303,61 +301,11 @@ const TrendingPage = () => {
     }
   }, [accessToken]);
 
-  console.log(category.subCategories);
-  console.log(category.subSubCategories);
-
   return (
     <>
       <title>Store | Ultrasooq</title>
       <div className="body-content-s1">
-        {category.subCategories?.length || category.subSubCategories?.length ? (
-          <div className="container m-auto mb-4 px-3">
-            <div className="flex flex-wrap">
-              <div className="mb-5 w-full">
-                <h3 className="text-2xl font-normal capitalize text-color-dark">
-                  Search Trending
-                </h3>
-              </div>
-              <div className="w-full">
-                <div className="bg-neutral-100 p-4 lg:p-8">
-                  <div className="block w-full">
-                    {category.subCategoryParentName ? (
-                      <h3 className="mb-3 text-base font-semibold text-dark-orange">
-                        By {category.subCategoryParentName}
-                      </h3>
-                    ) : null}
-                    <ul className="mb-2 grid grid-cols-8 gap-3 border-b border-solid border-gray-300">
-                      {category.subCategories.map((item: any) => (
-                        <TrendingOptionCard
-                          key={uuidv4()}
-                          item={{ name: item?.name, path: item?.icon }}
-                        />
-                      ))}
-                    </ul>
-                  </div>
-
-                  {category.subSubCategories.length ? (
-                    <div className="block w-full pt-3">
-                      {category.subSubCategoryParentName ? (
-                        <h3 className="mb-3 text-base font-semibold text-dark-orange">
-                          By {category.subSubCategoryParentName}
-                        </h3>
-                      ) : null}
-                      <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
-                        {category.subSubCategories.map((item) => (
-                          <TrendingCard
-                            key={uuidv4()}
-                            item={{ name: item?.name, path: item?.icon }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : null}
+        <TrendingCategories />
 
         <BannerSection />
 

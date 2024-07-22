@@ -577,6 +577,7 @@ const Header = () => {
                                 ?.children?.[subSubCategoryIndex]?.children,
                             );
                             category.setCategoryId(item?.id.toString());
+                            category.setSecondLevelCategoryIndex(index);
                             category.setSubSubCategoryParentName(item?.name);
                             //FIXME: need condition
                             if (
