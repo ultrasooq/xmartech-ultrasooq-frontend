@@ -293,7 +293,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
             updateMessageCount={updateMessageCount}
           />
         </div>
-        {productDetails ? (
+        {productDetails && productMessages?.length > 0 ? (
           <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
             <div className="flex w-full items-center">
               <div className="relative flex h-[32px] w-[32px] items-center">
