@@ -12,18 +12,12 @@ const TrendingCategories = () => {
 
   //   console.log(category.subCategories);
   //   console.log(category.subSubCategories);
-  //   console.log(category.secondLevelCategoryIndex);
+  // console.log(category.secondLevelCategoryIndex);
   //   console.log(activeSecondLevelCategoryIndex);
 
   useEffect(() => {
     setActiveSecondLevelCategoryIndex(category.secondLevelCategoryIndex || 0);
-
-    return () => {
-      setActiveSecondLevelCategoryIndex(0);
-      category.setSecondLevelCategoryIndex(0);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category.secondLevelCategoryIndex, category.setSecondLevelCategoryIndex]);
+  }, [category.secondLevelCategoryIndex]);
 
   return category.subCategories?.length || category.subSubCategories?.length ? (
     <div className="container m-auto mb-4 px-3">
@@ -38,7 +32,7 @@ const TrendingCategories = () => {
             <div className="block w-full">
               {category.subCategoryParentName ? (
                 <h3 className="mb-3 text-base font-semibold text-dark-orange">
-                  By {category.subCategoryParentName}
+                  {category.subCategoryParentName}
                 </h3>
               ) : null}
               <ul className="mb-2 grid grid-cols-8 gap-3 border-b border-solid border-gray-300">
@@ -60,7 +54,7 @@ const TrendingCategories = () => {
               <div className="block w-full pt-3">
                 {category.subSubCategoryParentName ? (
                   <h3 className="mb-3 text-base font-semibold text-dark-orange">
-                    By {category.subSubCategoryParentName}
+                    {category.subSubCategoryParentName}
                   </h3>
                 ) : null}
                 <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
