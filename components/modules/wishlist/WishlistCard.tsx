@@ -22,26 +22,26 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   id,
 }) => {
   const calculateDiscountedPrice = () => {
-    const price = wishlistData.product_productPrice?.[0]?.productProductPrice
+    const price = wishlistData?.product_productPrice?.[0]?.productProductPrice
       ? Number(wishlistData.product_productPrice?.[0]?.productProductPrice)
       : 0;
     const discount =
-      wishlistData.product_productPrice?.[0]?.consumerDiscount || 0;
+      wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
     return price - (price * discount) / 100;
   };
 
   const calculateAvgRating = useMemo(() => {
-    const totalRating = wishlistData.productReview?.reduce(
+    const totalRating = wishlistData?.productReview?.reduce(
       (acc: number, wishlistData: { rating: number }) => {
         return acc + wishlistData.rating;
       },
       0,
     );
 
-    const result = totalRating / wishlistData.productReview?.length;
+    const result = totalRating / wishlistData?.productReview?.length;
     return !isNaN(result) ? Math.floor(result) : 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wishlistData.productReview?.length]);
+  }, [wishlistData?.productReview?.length]);
 
   const calculateRatings = useMemo(
     () => (rating: number) => {
@@ -56,7 +56,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
       return stars;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [wishlistData.productReview?.length],
+    [wishlistData?.productReview?.length],
   );
 
   return (
@@ -74,11 +74,11 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
             className=""
           />
         </Button>
-        <Link href={`/trending/${wishlistData.id}`}>
+        <Link href={`/trending/${wishlistData?.id}`}>
           <div className="relative mx-auto mb-4 h-36 w-36">
             <Image
               src={
-                wishlistData.productImages?.[0]?.image &&
+                wishlistData?.productImages?.[0]?.image &&
                 validator.isURL(wishlistData.productImages[0].image)
                   ? wishlistData.productImages[0].image
                   : PlaceholderImage
@@ -96,7 +96,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
           <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
             <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-              {wishlistData.productName}
+              {wishlistData?.productName}
             </h4>
             <p
               title={
@@ -114,13 +114,17 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
             </p>
             <div className="my-1 flex">
               {calculateRatings(calculateAvgRating)}
-              <span className="ml-2">{wishlistData.productReview?.length}</span>
+              <span className="ml-2">
+                {wishlistData?.productReview?.length}
+              </span>
             </div>
           </div>
         </Link>
         <div>
           {wishlistData?.product_productPrice?.[0]?.askForPrice === "true" ? (
-            <Link href={`/seller-rfq-request?product_id=${wishlistData?.product_productPrice?.[0]?.id}`}>
+            <Link
+              href={`/seller-rfq-request?product_id=${wishlistData?.product_productPrice?.[0]?.id}`}
+            >
               <button
                 type="button"
                 className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
@@ -132,7 +136,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
             <h5 className="py-1 text-[#1D77D1]">
               ${calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
-                ${wishlistData.product_productPrice?.[0]?.offerPrice}
+                ${wishlistData?.product_productPrice?.[0]?.offerPrice}
               </span>
             </h5>
           )}
