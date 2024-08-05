@@ -11,6 +11,7 @@ import { useSocket } from "@/context/SocketContext";
 import { findRoomId, getChatHistory } from "@/apis/requests/chat.requests";
 import { useAuth } from "@/context/AuthContext";
 import AdminProductChat from "./Admin/AdminProductChat";
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 interface ProductChatProps {
   productId: number;
@@ -19,7 +20,9 @@ interface ProductChatProps {
 const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
   const [message, setMessage] = useState<string>('');
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
-  const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
+  const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false);
+  const [showEmoji, setShowEmoji] = useState<boolean>(false)
+
   const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
   const { sendMessage, cratePrivateRoom, newMessage } = useSocket()
   const { toast } = useToast();
@@ -98,7 +101,8 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         } else {
           handleCreateRoom(message);
         }
-        setMessage("")
+        setMessage("");
+        setShowEmoji(false);
       } else {
         toast({
           title: "Chat",
@@ -133,7 +137,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
       const chatHistory = [...selectedChatHistory]
       chatHistory.push(message);
       setSelectedChatHistory(chatHistory)
-      if(!selectedRoom) {
+      if (!selectedRoom) {
         setSelectedRoom(message?.roomId)
       }
     } catch (error) { }
@@ -164,6 +168,10 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
     } catch (error) {
       return ""
     }
+  }
+
+  const onEmojiClick = (emojiObject: EmojiClickData) => {
+    setMessage(prevMessage => prevMessage + emojiObject.emoji);
   }
 
   return (
@@ -233,7 +241,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
             sellerId={sellerId}
           />
         ) : (
-          <div className="w-[65%] border-r border-solid border-gray-300">
+          <div className="w-[85%] border-r border-solid border-gray-300">
             <div className="flex w-full flex-wrap p-[20px]">
               <div className="mb-5 max-h-[300px] w-full overflow-y-auto">
               </div>
@@ -261,7 +269,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                   </div>
                   <div className="flex w-[72px] items-center justify-between">
                     <div className="w-auto">
-                      <Image src={SmileIcon} alt="smile-icon" />
+                      <Image src={SmileIcon} alt="smile-icon" onClick={() => setShowEmoji(!showEmoji)} />
                     </div>
                     <div className="flex w-auto">
                       <button type="button" className="">
@@ -270,6 +278,12 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                     </div>
                   </div>
                 </div>
+                
+                {showEmoji && (
+                  <div className="w-full mt-2 border-t border-solid">
+                    <EmojiPicker onEmojiClick={onEmojiClick} className="mt-2"/>
+                  </div>
+                )}
               </div>
             )}
           </div >

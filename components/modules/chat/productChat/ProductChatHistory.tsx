@@ -43,7 +43,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
           roomId: roomId,
         };
         await updateUnreadMessages(payload);
-        if(updateMessageCount) updateMessageCount()
+        if (updateMessageCount) updateMessageCount()
       }
     } catch (error) { }
   };
@@ -59,7 +59,11 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                   <div className="mt-5 flex w-full flex-wrap items-end">
                     <div className="w-[calc(100%-2rem)] pr-2 text-right">
                       <div className="mb-1 inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
-                        <p>{chat.content}</p>
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: chat?.content,
+                          }}
+                        />
                       </div>
 
                       <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
@@ -88,7 +92,11 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                     </div>
                     <div className="w-[calc(100%-2rem)] pl-2">
                       <div className="mb-1 w-full rounded-xl bg-[#F1F2F6] p-3 text-sm">
-                        <p>{chat.content}</p>
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: chat?.content,
+                          }}
+                        />
                       </div>
                       <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
                         <span>
