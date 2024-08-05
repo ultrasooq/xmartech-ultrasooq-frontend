@@ -15,6 +15,7 @@ import { useSocket } from "@/context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
 import { useAuth } from "@/context/AuthContext";
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 interface RfqRequestChatProps {
     rfqQuoteId: any
@@ -47,6 +48,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
     const [message, setMessage] = useState<string>('');
     const [vendorList, setVendorList] = useState<any[]>([]);
+    const [showEmoji, setShowEmoji] = useState<boolean>(false)
     const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest } = useSocket()
     const { toast } = useToast();
     const { user } = useAuth();
@@ -238,7 +240,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 } else if (!selectedRoom && selectedVendor?.sellerID && selectedVendor?.buyerID) {
                     handleCreateRoom(message);
                 }
-                setMessage("")
+                setMessage("");
+                setShowEmoji(false);
             } else {
                 toast({
                     title: "Chat",
@@ -434,6 +437,10 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         setSelectedVendor(vendorDetails)
     }
 
+    const onEmojiClick = (emojiObject: EmojiClickData) => {
+        setMessage(prevMessage => prevMessage + emojiObject.emoji);
+    }
+
     return (
         <div>
             <div className="flex w-full rounded-sm border border-solid border-gray-300">
@@ -615,7 +622,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                             </div>
                             <div className="flex w-[72px] items-center justify-between">
                                 <div className="w-auto">
-                                    <Image src={SmileIcon} alt="smile-icon" />
+                                    <Image src={SmileIcon} alt="smile-icon" onClick={() => setShowEmoji(!showEmoji)}/>
                                 </div>
                                 <div className="flex w-auto">
                                     <button onClick={handleSendMessage} type="button" className="">
@@ -624,6 +631,12 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                                 </div>
                             </div>
                         </div>
+
+                        {showEmoji && (
+                            <div className="w-full mt-2 border-t border-solid">
+                                <EmojiPicker onEmojiClick={onEmojiClick} className="mt-2" />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

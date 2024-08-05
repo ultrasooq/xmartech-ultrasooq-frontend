@@ -54,7 +54,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
         rfqQuoteProductId: chat.rfqQuoteProductId,
       };
       updateRfqRequestStatus(payload);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleUnreadMessages = async () => {
@@ -67,7 +67,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
         await updateUnreadMessages(payload);
         updateRfqMessageCount();
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return (
@@ -81,7 +81,11 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                   <div className="mt-5 flex w-full flex-wrap items-end">
                     <div className="w-[calc(100%-2rem)] pr-2 text-right">
                       <div className="mb-1 inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
-                        <p>{chat.content}</p>
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: chat?.content,
+                          }}
+                        />
 
                         {chat?.rfqProductPriceRequest && (
                           <div>
@@ -92,7 +96,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                             <p>
                               status:
                               {chat.rfqProductPriceRequest?.status ===
-                              "APPROVED" ? (
+                                "APPROVED" ? (
                                 <span className="rounded-sm bg-blue-700 p-0.5 text-white">
                                   Approved
                                 </span>
@@ -115,8 +119,8 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                         <span>
                           {chat.createdAt
                             ? moment(chat.createdAt)
-                                .startOf("seconds")
-                                .fromNow()
+                              .startOf("seconds")
+                              .fromNow()
                             : ""}
                         </span>
                       </div>
@@ -137,7 +141,11 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                     </div>
                     <div className="w-[calc(100%-2rem)] pl-2">
                       <div className="mb-1 w-full rounded-xl bg-[#F1F2F6] p-3 text-sm">
-                        <p>{chat.content}</p>
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: chat?.content,
+                          }}
+                        />
                         {chat?.rfqProductPriceRequest && (
                           <div>
                             <p>
@@ -147,7 +155,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                             <p>
                               status:
                               {chat.rfqProductPriceRequest?.status ===
-                              "APPROVED" ? (
+                                "APPROVED" ? (
                                 <span className="rounded-sm bg-blue-700 p-0.5 text-white">
                                   Approved
                                 </span>
@@ -164,33 +172,33 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                             </p>
                             {chat.rfqProductPriceRequest?.status ===
                               "PENDING" && (
-                              <div className="mt-2">
-                                <button
-                                  onClick={() =>
-                                    handlePriceStatus(
-                                      chat.rfqProductPriceRequest,
-                                      RfqProductPriceRequestStatus.APPROVED,
-                                    )
-                                  }
-                                  type="button"
-                                  className="me-2 rounded-lg bg-blue-700 px-2 py-2 text-white hover:bg-blue-800 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                >
-                                  Accept
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handlePriceStatus(
-                                      chat.rfqProductPriceRequest,
-                                      RfqProductPriceRequestStatus.REJECTED,
-                                    )
-                                  }
-                                  type="button"
-                                  className="me-2 rounded-lg bg-red-700 px-2 py-2 text-white hover:bg-red-800 focus:outline-none dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                                >
-                                  Reject
-                                </button>
-                              </div>
-                            )}
+                                <div className="mt-2">
+                                  <button
+                                    onClick={() =>
+                                      handlePriceStatus(
+                                        chat.rfqProductPriceRequest,
+                                        RfqProductPriceRequestStatus.APPROVED,
+                                      )
+                                    }
+                                    type="button"
+                                    className="me-2 rounded-lg bg-blue-700 px-2 py-2 text-white hover:bg-blue-800 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                  >
+                                    Accept
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handlePriceStatus(
+                                        chat.rfqProductPriceRequest,
+                                        RfqProductPriceRequestStatus.REJECTED,
+                                      )
+                                    }
+                                    type="button"
+                                    className="me-2 rounded-lg bg-red-700 px-2 py-2 text-white hover:bg-red-800 focus:outline-none dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              )}
                           </div>
                         )}
                       </div>
@@ -198,8 +206,8 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                         <span>
                           {chat.createdAt
                             ? moment(chat.createdAt)
-                                .startOf("seconds")
-                                .fromNow()
+                              .startOf("seconds")
+                              .fromNow()
                             : ""}
                         </span>
                       </div>

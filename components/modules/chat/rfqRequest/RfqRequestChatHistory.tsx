@@ -27,11 +27,11 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
     }, [selectedChatHistory]);
 
     useEffect(() => {
-        if(unreadMsgCount) handleUnreadMessages()
+        if (unreadMsgCount) handleUnreadMessages()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeSellerId, roomId])
 
-    const handlePriceStatus = async (chat: {id: number; requestedPrice: number; rfqQuoteProductId: number}, status: RfqProductPriceRequestStatus) => {
+    const handlePriceStatus = async (chat: { id: number; requestedPrice: number; rfqQuoteProductId: number }, status: RfqProductPriceRequestStatus) => {
         try {
             const payload = {
                 id: chat.id,
@@ -71,9 +71,11 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                     <div className="mt-5 flex w-full flex-wrap items-end">
                                         <div className="w-[calc(100%-2rem)] pr-2 text-right">
                                             <div className="mb-1 inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
-                                                <p>
-                                                    {chat.content}
-                                                </p>
+                                                <p
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: chat?.content,
+                                                    }}
+                                                />
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
                                                         <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>
@@ -113,9 +115,11 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                         </div>
                                         <div className="w-[calc(100%-2rem)] pl-2">
                                             <div className="mb-1 w-full rounded-xl bg-[#F1F2F6] p-3 text-sm">
-                                                <p>
-                                                    {chat.content}
-                                                </p>
+                                                <p
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: chat?.content,
+                                                    }}
+                                                />
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
                                                         <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>

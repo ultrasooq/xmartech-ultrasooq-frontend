@@ -10,6 +10,7 @@ import { useSocket } from "@/context/SocketContext";
 import { getChatHistory, getProductMessages, updateUnreadMessages } from "@/apis/requests/chat.requests";
 import { useAuth } from "@/context/AuthContext";
 import ProductMessage from "./ProductMessage";
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 interface ProductMessageProps {
   user: {
@@ -39,6 +40,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   const [loading, setLoading] = useState(false);
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
   const [selectedProductMessage, setSelectedProductMessage] = useState<any>(null);
+  const [showEmoji, setShowEmoji] = useState<boolean>(false)
 
   const { sendMessage, cratePrivateRoom, newMessage } = useSocket()
   const { toast } = useToast();
@@ -117,7 +119,8 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         } else {
           handleCreateRoom(message);
         }
-        setMessage("")
+        setMessage("");
+        setShowEmoji(false);
       } else {
         toast({
           title: "Chat",
@@ -244,6 +247,10 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
     }
   }
 
+  const onEmojiClick = (emojiObject: EmojiClickData) => {
+    setMessage(prevMessage => prevMessage + emojiObject.emoji);
+  }
+
   return (
     <>
       <div className="w-[20%] border-r border-solid border-gray-300">
@@ -313,7 +320,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
               </div>
               <div className="flex w-[72px] items-center justify-between">
                 <div className="w-auto">
-                  <Image src={SmileIcon} alt="smile-icon" />
+                  <Image src={SmileIcon} alt="smile-icon" onClick={() => setShowEmoji(!showEmoji)} />
                 </div>
                 <div className="flex w-auto">
                   <button type="button" className="">
@@ -322,6 +329,11 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
                 </div>
               </div>
             </div>
+            {showEmoji && (
+              <div className="w-full mt-2 border-t border-solid">
+                <EmojiPicker onEmojiClick={onEmojiClick} className="mt-2" />
+              </div>
+            )}
           </div>
         ) : (
           ""
