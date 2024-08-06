@@ -16,6 +16,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
 import { useAuth } from "@/context/AuthContext";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import { generateUniqueNumber } from "@/utils/helper";
 
 interface RfqRequestChatProps {
     rfqQuoteId: any
@@ -268,7 +269,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             buyerId,
             requestedPrice,
             rfqQuotesUserId: selectedVendor?.id,
-            userId: activeSellerId
+            userId: activeSellerId,
+            uniqueId: generateUniqueNumber()
         }
         sendMessage(msgPayload)
     }
@@ -282,7 +284,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 rfqQuoteProductId,
                 buyerId,
                 requestedPrice,
-                rfqQuotesUserId: selectedVendor?.id
+                rfqQuotesUserId: selectedVendor?.id,
+                uniqueId: generateUniqueNumber()
             }
             cratePrivateRoom(payload);
         } catch (error) {

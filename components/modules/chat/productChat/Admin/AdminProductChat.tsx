@@ -11,6 +11,7 @@ import { getChatHistory, getProductMessages, updateUnreadMessages } from "@/apis
 import { useAuth } from "@/context/AuthContext";
 import ProductMessage from "./ProductMessage";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import { generateUniqueNumber } from "@/utils/helper";
 
 interface ProductMessageProps {
   user: {
@@ -145,7 +146,8 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
       requestedPrice,
       rfqQuoteProductId,
       sellerId: sellerUserId,
-      rfqQuotesUserId: null
+      rfqQuotesUserId: null,
+      uniqueId: generateUniqueNumber()
     }
     sendMessage(msgPayload)
   }
@@ -238,7 +240,8 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
           requestedPrice,
           rfqQuoteProductId,
           sellerId: sellerUserId,
-          rfqQuotesUserId: null
+          rfqQuotesUserId: null,
+          uniqueId: generateUniqueNumber()
         }
         cratePrivateRoom(payload);
       }

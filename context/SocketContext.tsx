@@ -35,6 +35,8 @@ interface SocketContextType {
     sellerId?: number;
     requestedPrice?: number;
     rfqQuotesUserId?: number | null;
+    attachments?: any[],
+    uniqueId: number
   }) => void;
   newMessage: newMessageType | null;
   errorMessage: string;
@@ -52,6 +54,8 @@ interface SocketContextType {
     sellerId?: number;
     requestedPrice?: number;
     rfqQuotesUserId?: number | null;
+    attachments?: any[],
+    uniqueId: number
   }) => void;
   updateRfqRequestStatus: (rfqRequest: {
     roomId: number | null;
@@ -162,6 +166,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     buyerId,
     sellerId,
     rfqQuotesUserId,
+    attachments,
+    uniqueId
   }: {
     roomId: number;
     rfqId: number;
@@ -171,6 +177,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     sellerId?: number;
     requestedPrice?: number;
     rfqQuotesUserId?: number | null;
+    attachments?: any[],
+    uniqueId: number
   }) => {
     if (socket) {
       socket.emit("sendMessage", {
@@ -183,6 +191,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         sellerId,
         requestedPrice,
         rfqQuotesUserId,
+        attachments,
+        uniqueId
       });
     }
   };
@@ -196,6 +206,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     sellerId,
     requestedPrice,
     rfqQuotesUserId,
+    attachments,
+    uniqueId
   }: {
     participants: number[];
     content: string;
@@ -205,6 +217,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     sellerId?: number;
     requestedPrice?: number;
     rfqQuotesUserId?: number | null;
+    attachments?: any[],
+    uniqueId: number
   }) => {
     if (socket) {
       socket.emit("createPrivateRoom", {
@@ -218,6 +232,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         requestedPrice,
         rfqQuotesUserId,
         messageStatus: MessageStatus.READ,
+        attachments,
+        uniqueId
       });
     }
   };
