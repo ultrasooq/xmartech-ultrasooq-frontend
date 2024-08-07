@@ -139,6 +139,26 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   }
 
   const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerUserId?: number, requestedPrice?: number) => {
+    const uniqueId = generateUniqueNumber();
+    const newMessage = {
+      roomId: "",
+      rfqId: "",
+      content: message,
+      userId: user?.id,
+      user: {
+        firstName: user?.firstName,
+        lastName: user?.lastName
+      },
+      rfqQuotesUserId: null,
+      attachments: [],
+      uniqueId,
+      status: "SD",
+      createdAt: new Date()
+    }
+    const chatHistory = [...selectedChatHistory]
+    chatHistory.push(newMessage);
+    setSelectedChatHistory(chatHistory)
+
     const msgPayload = {
       roomId: roomId,
       content,
@@ -147,7 +167,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
       rfqQuoteProductId,
       sellerId: sellerUserId,
       rfqQuotesUserId: null,
-      uniqueId: generateUniqueNumber()
+      uniqueId
     }
     sendMessage(msgPayload)
   }
@@ -190,8 +210,15 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
 
       if (selectedRoomId === message?.roomId || !selectedRoomId) {
         const chatHistory = [...selectedChatHistory]
-        chatHistory.push(message);
-        setSelectedChatHistory(chatHistory)
+        const index = chatHistory.findIndex((chat) => chat?.uniqueId === message?.uniqueId);
+        if(index !== -1) {
+          const newMessage = {
+            ...message,
+            status: "sent"
+          }
+          chatHistory[index] = newMessage;
+          setSelectedChatHistory(chatHistory)
+        }
       } if (!selectedRoomId) {
         setSelectedRoomId(message.roomId)
       }

@@ -181,8 +181,15 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 setRfqQuotes(rfqList);
                 if (selectedRfqQuote?.rfqQuotesId === message.rfqId) {
                     const chatHistory = [...selectedChatHistory]
-                    chatHistory.push(message);
-                    setSelectedChatHistory(chatHistory)
+                    const index = chatHistory.findIndex((chat) => chat?.uniqueId === message?.uniqueId);
+                    if(index !== -1) {
+                      const newMessage = {
+                        ...message,
+                        status: "sent"
+                      }
+                      chatHistory[index] = newMessage;
+                      setSelectedChatHistory(chatHistory)
+                    }
                 }
 
                 if (message?.rfqProductPriceRequest) {
@@ -219,6 +226,26 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     }
 
     const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
+        const uniqueId = generateUniqueNumber();
+        const newMessage = {
+          roomId: "",
+          rfqId: "",
+          content: message,
+          userId: user?.id,
+          user: {
+            firstName: user?.firstName,
+            lastName: user?.lastName
+          },
+          rfqQuotesUserId: null,
+          attachments: [],
+          uniqueId,
+          status: "SD",
+          createdAt: new Date()
+        }
+        const chatHistory = [...selectedChatHistory]
+        chatHistory.push(newMessage);
+        setSelectedChatHistory(chatHistory)
+
         const msgPayload = {
             roomId: roomId,
             content,
@@ -227,7 +254,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             rfqQuoteProductId,
             sellerId,
             rfqQuotesUserId: activeSellerId,
-            uniqueId: generateUniqueNumber()
+            uniqueId: uniqueId
         }
         sendMessage(msgPayload)
     }

@@ -116,13 +116,17 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                       </div>
 
                       <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
-                        <span>
-                          {chat.createdAt
-                            ? moment(chat.createdAt)
-                              .startOf("seconds")
-                              .fromNow()
-                            : ""}
-                        </span>
+                        {chat?.status === "SD" ?
+                          <span>Sending...</span> :
+                          <span>
+                            {chat.createdAt
+                              ? moment(chat.createdAt)
+                                .startOf("seconds")
+                                .fromNow()
+                              : ""
+                            }
+                          </span>
+                        }
                       </div>
                     </div>
                     <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
@@ -203,13 +207,17 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                         )}
                       </div>
                       <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
-                        <span>
-                          {chat.createdAt
-                            ? moment(chat.createdAt)
-                              .startOf("seconds")
-                              .fromNow()
-                            : ""}
-                        </span>
+                        {chat?.status === "SD" ?
+                          <span>Sending...</span> :
+                          <span>
+                            {chat.createdAt
+                              ? moment(chat.createdAt)
+                                .startOf("seconds")
+                                .fromNow()
+                              : ""
+                            }
+                          </span>
+                        }
                       </div>
                     </div>
                   </div>

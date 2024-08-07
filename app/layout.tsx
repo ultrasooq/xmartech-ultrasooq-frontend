@@ -59,7 +59,7 @@ export default async function RootLayout({
       <html lang="en">
         <body className={`${inter.className}`}>
           <ReactQueryProvider>
-            <AuthProvider user={{ id: userData?.data?.id }}>
+            <AuthProvider user={{ id: userData?.data?.id, firstName: userData?.data?.firstName, lastName: userData?.data?.lastName}}>
               <SocketProvider>
                 <main className="overflow-x-visible">
                   <Sidebar />
