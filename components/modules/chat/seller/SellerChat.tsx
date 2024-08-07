@@ -15,6 +15,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
 import { useAuth } from "@/context/AuthContext";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import { generateUniqueNumber } from "@/utils/helper";
 
 interface RfqQuoteType {
     id: number;
@@ -180,8 +181,15 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 setRfqQuotes(rfqList);
                 if (selectedRfqQuote?.rfqQuotesId === message.rfqId) {
                     const chatHistory = [...selectedChatHistory]
-                    chatHistory.push(message);
-                    setSelectedChatHistory(chatHistory)
+                    const index = chatHistory.findIndex((chat) => chat?.uniqueId === message?.uniqueId);
+                    if(index !== -1) {
+                      const newMessage = {
+                        ...message,
+                        status: "sent"
+                      }
+                      chatHistory[index] = newMessage;
+                      setSelectedChatHistory(chatHistory)
+                    }
                 }
 
                 if (message?.rfqProductPriceRequest) {
@@ -218,6 +226,26 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     }
 
     const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
+        const uniqueId = generateUniqueNumber();
+        const newMessage = {
+          roomId: "",
+          rfqId: "",
+          content: message,
+          userId: user?.id,
+          user: {
+            firstName: user?.firstName,
+            lastName: user?.lastName
+          },
+          rfqQuotesUserId: null,
+          attachments: [],
+          uniqueId,
+          status: "SD",
+          createdAt: new Date()
+        }
+        const chatHistory = [...selectedChatHistory]
+        chatHistory.push(newMessage);
+        setSelectedChatHistory(chatHistory)
+
         const msgPayload = {
             roomId: roomId,
             content,
@@ -225,13 +253,34 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             requestedPrice,
             rfqQuoteProductId,
             sellerId,
-            rfqQuotesUserId: activeSellerId
+            rfqQuotesUserId: activeSellerId,
+            uniqueId: uniqueId
         }
         sendMessage(msgPayload)
     }
 
     const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
         try {
+            const uniqueId = generateUniqueNumber();
+            const newMessage = {
+              roomId: "",
+              rfqId: "",
+              content: message,
+              userId: user?.id,
+              user: {
+                firstName: user?.firstName,
+                lastName: user?.lastName
+              },
+              rfqQuotesUserId: null,
+              attachments: [],
+              uniqueId,
+              status: "SD",
+              createdAt: new Date()
+            }
+            const chatHistory = [...selectedChatHistory]
+            chatHistory.push(newMessage);
+            setSelectedChatHistory(chatHistory)
+
             const payload = {
                 participants: [selectedRfqQuote?.sellerID, selectedRfqQuote?.buyerID],
                 content,
@@ -239,7 +288,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 requestedPrice,
                 rfqQuoteProductId,
                 sellerId,
-                rfqQuotesUserId: activeSellerId
+                rfqQuotesUserId: activeSellerId,
+                uniqueId
             }
             cratePrivateRoom(payload);
 

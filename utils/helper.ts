@@ -160,3 +160,10 @@ export const isImage = (path: any) => {
     return true;
   }
 };
+
+
+export const generateUniqueNumber = () => {
+  const timestamp = Date.now();
+  const randomNum = Math.floor(Math.random() * 10000);
+  return timestamp + randomNum;
+}

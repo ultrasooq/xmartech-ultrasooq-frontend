@@ -89,7 +89,7 @@ export default function LoginPage() {
       // TODO: delete cart for trade role freelancer and company if logged in using device id
       // update cart
       await updateCart.mutateAsync({ deviceId });
-      setUser({ id: response.data?.id });
+      setUser({ id: response.data?.id, firstName: response?.data?.firstName, lastName: response?.data?.lastName });
       toast({
         title: "Login Successful",
         description: "You have successfully logged in.",
