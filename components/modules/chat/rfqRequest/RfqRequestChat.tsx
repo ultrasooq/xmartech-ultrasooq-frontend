@@ -303,6 +303,26 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
 
     const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, buyerId?: number, requestedPrice?: number) => {
         try {
+            const uniqueId = generateUniqueNumber();
+            const newMessage = {
+              roomId: "",
+              rfqId: "",
+              content: message,
+              userId: user?.id,
+              user: {
+                firstName: user?.firstName,
+                lastName: user?.lastName
+              },
+              rfqQuotesUserId: null,
+              attachments: [],
+              uniqueId,
+              status: "SD",
+              createdAt: new Date()
+            }
+            const chatHistory = [...selectedChatHistory]
+            chatHistory.push(newMessage);
+            setSelectedChatHistory(chatHistory)
+
             const payload = {
                 participants: [selectedVendor?.sellerID, selectedVendor?.buyerID],
                 content,
@@ -311,7 +331,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 buyerId,
                 requestedPrice,
                 rfqQuotesUserId: selectedVendor?.id,
-                uniqueId: generateUniqueNumber()
+                uniqueId
             }
             cratePrivateRoom(payload);
         } catch (error) {

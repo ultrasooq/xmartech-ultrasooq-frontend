@@ -260,6 +260,26 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerUserId?: number, requestedPrice?: number) => {
     try {
       if (sellerId && user) {
+        const uniqueId = generateUniqueNumber();
+        const newMessage = {
+          roomId: "",
+          rfqId: "",
+          content: message,
+          userId: user?.id,
+          user: {
+            firstName: user?.firstName,
+            lastName: user?.lastName
+          },
+          rfqQuotesUserId: null,
+          attachments: [],
+          uniqueId,
+          status: "SD",
+          createdAt: new Date()
+        }
+        const chatHistory = [...selectedChatHistory]
+        chatHistory.push(newMessage);
+        setSelectedChatHistory(chatHistory)
+
         const payload = {
           participants: [user?.id, sellerId],
           content,
@@ -268,7 +288,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
           rfqQuoteProductId,
           sellerId: sellerUserId,
           rfqQuotesUserId: null,
-          uniqueId: generateUniqueNumber()
+          uniqueId
         }
         cratePrivateRoom(payload);
       }

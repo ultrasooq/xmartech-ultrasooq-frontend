@@ -261,6 +261,26 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
     const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
         try {
+            const uniqueId = generateUniqueNumber();
+            const newMessage = {
+              roomId: "",
+              rfqId: "",
+              content: message,
+              userId: user?.id,
+              user: {
+                firstName: user?.firstName,
+                lastName: user?.lastName
+              },
+              rfqQuotesUserId: null,
+              attachments: [],
+              uniqueId,
+              status: "SD",
+              createdAt: new Date()
+            }
+            const chatHistory = [...selectedChatHistory]
+            chatHistory.push(newMessage);
+            setSelectedChatHistory(chatHistory)
+
             const payload = {
                 participants: [selectedRfqQuote?.sellerID, selectedRfqQuote?.buyerID],
                 content,
@@ -269,7 +289,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 rfqQuoteProductId,
                 sellerId,
                 rfqQuotesUserId: activeSellerId,
-                uniqueId: generateUniqueNumber()
+                uniqueId
             }
             cratePrivateRoom(payload);
 
