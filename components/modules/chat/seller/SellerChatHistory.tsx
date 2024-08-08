@@ -13,6 +13,7 @@ interface SellerChatHistoryProps {
   buyerId: number | undefined;
   rfqUserId: number;
   unreadMsgCount: number | 0;
+  isUploadingCompleted?: boolean | null
 }
 
 const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
@@ -23,6 +24,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
   buyerId,
   unreadMsgCount,
   rfqUserId,
+  isUploadingCompleted
 }) => {
   const { user } = useAuth();
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -80,39 +82,56 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                 {chat?.userId === user?.id ? (
                   <div className="mt-5 flex w-full flex-wrap items-end">
                     <div className="w-[calc(100%-2rem)] pr-2 text-right">
-                      <div className="mb-1 inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: chat?.content,
-                          }}
-                        />
-
-                        {chat?.rfqProductPriceRequest && (
-                          <div>
-                            <p>
-                              Requested Price: $
-                              {chat.rfqProductPriceRequest?.requestedPrice}
-                            </p>
-                            <p>
-                              status:
-                              {chat.rfqProductPriceRequest?.status ===
-                                "APPROVED" ? (
-                                <span className="rounded-sm bg-blue-700 p-0.5 text-white">
-                                  Approved
-                                </span>
-                              ) : chat.rfqProductPriceRequest?.status ===
-                                "REJECTED" ? (
-                                <span className="rounded-sm bg-red-600 p-0.5 text-white">
-                                  Rejected
-                                </span>
-                              ) : (
-                                <span className="rounded-sm bg-yellow-600 p-0.5 text-white">
-                                  Pending
-                                </span>
-                              )}
-                            </p>
+                      <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
+                        {chat?.attachments?.length > 0 && (
+                          <div className="mb-2 w-full">
+                            {chat?.attachments.map((file: any, index: any) => (
+                              <div key={index} className="border mb-2 border-gray-300 p-2 rounded-md">
+                                <p className="mr-2 truncate">{file.fileName}</p>
+                                <p className="mr-2 truncate text-xs italic">{file?.status === "UPLOADING" ? "Uploading..." : file?.status}</p>
+                              </div>
+                            ))}
                           </div>
                         )}
+                        {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
+                        {chat?.content && (
+                          <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: chat?.content,
+                              }}
+                            />
+
+                            {chat?.rfqProductPriceRequest && (
+                              <div>
+                                <p>
+                                  Requested Price: $
+                                  {chat.rfqProductPriceRequest?.requestedPrice}
+                                </p>
+                                <p>
+                                  status:
+                                  {chat.rfqProductPriceRequest?.status ===
+                                    "APPROVED" ? (
+                                    <span className="rounded-sm bg-blue-700 p-0.5 text-white">
+                                      Approved
+                                    </span>
+                                  ) : chat.rfqProductPriceRequest?.status ===
+                                    "REJECTED" ? (
+                                    <span className="rounded-sm bg-red-600 p-0.5 text-white">
+                                      Rejected
+                                    </span>
+                                  ) : (
+                                    <span className="rounded-sm bg-yellow-600 p-0.5 text-white">
+                                      Pending
+                                    </span>
+                                  )}
+                                </p>
+                              </div>
+                            )}
+
+                          </div>
+                        )}
+
                       </div>
 
                       <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
@@ -144,68 +163,85 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                       </span>
                     </div>
                     <div className="w-[calc(100%-2rem)] pl-2">
-                      <div className="mb-1 w-full rounded-xl bg-[#F1F2F6] p-3 text-sm">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: chat?.content,
-                          }}
-                        />
-                        {chat?.rfqProductPriceRequest && (
-                          <div>
-                            <p>
-                              Requested Price: $
-                              {chat.rfqProductPriceRequest?.requestedPrice}
-                            </p>
-                            <p>
-                              status:
-                              {chat.rfqProductPriceRequest?.status ===
-                                "APPROVED" ? (
-                                <span className="rounded-sm bg-blue-700 p-0.5 text-white">
-                                  Approved
-                                </span>
-                              ) : chat.rfqProductPriceRequest?.status ===
-                                "REJECTED" ? (
-                                <span className="rounded-sm bg-red-600 p-0.5 text-white">
-                                  Rejected
-                                </span>
-                              ) : (
-                                <span className="rounded-sm bg-yellow-700 p-0.5 text-white">
-                                  Pending
-                                </span>
-                              )}
-                            </p>
-                            {chat.rfqProductPriceRequest?.status ===
-                              "PENDING" && (
-                                <div className="mt-2">
-                                  <button
-                                    onClick={() =>
-                                      handlePriceStatus(
-                                        chat.rfqProductPriceRequest,
-                                        RfqProductPriceRequestStatus.APPROVED,
-                                      )
-                                    }
-                                    type="button"
-                                    className="me-2 rounded-lg bg-blue-700 px-2 py-2 text-white hover:bg-blue-800 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                  >
-                                    Accept
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handlePriceStatus(
-                                        chat.rfqProductPriceRequest,
-                                        RfqProductPriceRequestStatus.REJECTED,
-                                      )
-                                    }
-                                    type="button"
-                                    className="me-2 rounded-lg bg-red-700 px-2 py-2 text-white hover:bg-red-800 focus:outline-none dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                                  >
-                                    Reject
-                                  </button>
-                                </div>
-                              )}
+                      <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
+                        {chat?.attachments?.length > 0 && (
+                          <div className="mb-2 w-full">
+                            {chat?.attachments.map((file: any, index: any) => (
+                              <div key={index} className="border mb-2 border-gray-300 p-2 rounded-md">
+                                <p className="mr-2 truncate">{file.fileName}</p>
+                                <p className="mr-2 truncate text-xs italic">{file?.status === "UPLOADING" ? "Uploading..." : file?.status}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
+                        {chat?.content && (
+                          <div className="inline-block w-auto rounded-xl bg-[#F1F2F6] p-3 text-right text-sm text-white">
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: chat?.content,
+                              }}
+                            />
+
+                            {chat?.rfqProductPriceRequest && (
+                              <div>
+                                <p>
+                                  Requested Price: $
+                                  {chat.rfqProductPriceRequest?.requestedPrice}
+                                </p>
+                                <p>
+                                  status:
+                                  {chat.rfqProductPriceRequest?.status ===
+                                    "APPROVED" ? (
+                                    <span className="rounded-sm bg-blue-700 p-0.5 text-white">
+                                      Approved
+                                    </span>
+                                  ) : chat.rfqProductPriceRequest?.status ===
+                                    "REJECTED" ? (
+                                    <span className="rounded-sm bg-red-600 p-0.5 text-white">
+                                      Rejected
+                                    </span>
+                                  ) : (
+                                    <span className="rounded-sm bg-yellow-700 p-0.5 text-white">
+                                      Pending
+                                    </span>
+                                  )}
+                                </p>
+                                {chat.rfqProductPriceRequest?.status ===
+                                  "PENDING" && (
+                                    <div className="mt-2">
+                                      <button
+                                        onClick={() =>
+                                          handlePriceStatus(
+                                            chat.rfqProductPriceRequest,
+                                            RfqProductPriceRequestStatus.APPROVED,
+                                          )
+                                        }
+                                        type="button"
+                                        className="me-2 rounded-lg bg-blue-700 px-2 py-2 text-white hover:bg-blue-800 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                      >
+                                        Accept
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          handlePriceStatus(
+                                            chat.rfqProductPriceRequest,
+                                            RfqProductPriceRequestStatus.REJECTED,
+                                          )
+                                        }
+                                        type="button"
+                                        className="me-2 rounded-lg bg-red-700 px-2 py-2 text-white hover:bg-red-800 focus:outline-none dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                      >
+                                        Reject
+                                      </button>
+                                    </div>
+                                  )}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
+
                       <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
                         {chat?.status === "SD" ?
                           <span>Sending...</span> :

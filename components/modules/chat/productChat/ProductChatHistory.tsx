@@ -9,7 +9,8 @@ interface ProductChatHistoryProps {
   chatHistoryLoading?: boolean;
   buyerId?: number | undefined;
   unreadMsgCount?: number | 0;
-  updateMessageCount?: () => void
+  updateMessageCount?: () => void,
+  isUploadingCompleted?: boolean | null
 }
 
 const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
@@ -18,6 +19,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
   chatHistoryLoading,
   buyerId,
   unreadMsgCount,
+  isUploadingCompleted,
   updateMessageCount
 }) => {
   const { user } = useAuth();
@@ -58,12 +60,28 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                 {chat?.userId === user?.id ? (
                   <div className="mt-5 flex w-full flex-wrap items-end">
                     <div className="w-[calc(100%-2rem)] pr-2 text-right">
-                      <div className="mb-1 inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: chat?.content,
-                          }}
-                        />
+                      <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
+                        {chat?.attachments?.length > 0 && (
+                          <div className="mb-2 w-full">
+                            {chat?.attachments.map((file: any, index: any) => (
+                              <div key={index} className="border mb-2 border-gray-300 p-2 rounded-md">
+                                <p className="mr-2 truncate">{file.fileName}</p>
+                                <p className="mr-2 truncate text-xs italic">{file?.status === "UPLOADING" ? "Uploading..." : file?.status}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
+                        {chat?.content && (
+                          <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: chat?.content,
+                              }}
+                            />
+                          </div>
+                        )}
+
                       </div>
 
                       <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
@@ -96,13 +114,29 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                       </span>
                     </div>
                     <div className="w-[calc(100%-2rem)] pl-2">
-                      <div className="mb-1 w-full rounded-xl bg-[#F1F2F6] p-3 text-sm">
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: chat?.content,
-                          }}
-                        />
-                        {chat?.status === "SD" && "Sending..."}
+                      <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
+                        {isUploadingCompleted ? "Uploading..." : ""}
+
+                        {chat?.attachments?.length > 0 && (
+                          <div className="mb-2 w-full">
+                            {chat?.attachments.map((file: any, index: any) => (
+                              <div key={index} className="border mb-2 border-gray-300 p-2 rounded-md">
+                                <p className="mr-2 truncate">{file.fileName}</p>
+                                <p className="mr-2 truncate text-xs italic">{file?.status === "UPLOADING" ? "Uploading..." : file?.status}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {chat?.content && (
+                          <div className="inline-block w-auto rounded-xl bg-[#F1F2F6] p-3 text-right text-sm">
+                            <p
+                              dangerouslySetInnerHTML={{
+                                __html: chat?.content,
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
                         {chat?.status === "SD" ?

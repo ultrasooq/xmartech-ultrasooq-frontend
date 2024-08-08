@@ -42,8 +42,9 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
   const [selectedProductMessage, setSelectedProductMessage] = useState<any>(null);
   const [showEmoji, setShowEmoji] = useState<boolean>(false)
+  const [attachments, setAttachments] = useState<any>([]);
 
-  const { sendMessage, cratePrivateRoom, newMessage } = useSocket()
+  const { sendMessage, cratePrivateRoom, newMessage, errorMessage, clearErrorMessage } = useSocket()
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -66,6 +67,18 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newMessage]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      toast({
+        title: "Chat",
+        description: errorMessage,
+        variant: "danger",
+      });
+      clearErrorMessage()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errorMessage])
 
   const handleGetProductMessages = async () => {
     try {
@@ -114,7 +127,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
 
   const handleSendMessage = async () => {
     try {
-      if (message) {
+      if (message || attachments.length) {
         if (selectedRoomId) {
           sendNewMessage(selectedRoomId, message)
         } else {
@@ -122,6 +135,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         }
         setMessage("");
         setShowEmoji(false);
+        setAttachments([])
       } else {
         toast({
           title: "Chat",
@@ -140,6 +154,18 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
 
   const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerUserId?: number, requestedPrice?: number) => {
     const uniqueId = generateUniqueNumber();
+    const attach = attachments.map((att: any) => {
+      const extension = att?.name.split('.').pop();
+      return {
+        fileType: att?.type,
+        fileName: att?.name,
+        fileSize: att?.size,
+        filePath: "",
+        fileExtension: extension,
+        status: "UPLOADING"
+      }
+    });
+
     const newMessage = {
       roomId: "",
       rfqId: "",
@@ -150,7 +176,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         lastName: user?.lastName
       },
       rfqQuotesUserId: null,
-      attachments: [],
+      attachments: attach,
       uniqueId,
       status: "SD",
       createdAt: new Date()
@@ -167,7 +193,8 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
       rfqQuoteProductId,
       sellerId: sellerUserId,
       rfqQuotesUserId: null,
-      uniqueId
+      uniqueId,
+      attachments: attach,
     }
     sendMessage(msgPayload)
   }
@@ -211,14 +238,16 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
       if (selectedRoomId === message?.roomId || !selectedRoomId) {
         const chatHistory = [...selectedChatHistory]
         const index = chatHistory.findIndex((chat) => chat?.uniqueId === message?.uniqueId);
-        if(index !== -1) {
+        if (index !== -1) {
           const newMessage = {
             ...message,
             status: "sent"
           }
           chatHistory[index] = newMessage;
-          setSelectedChatHistory(chatHistory)
+        } else {
+          chatHistory.push(newMessage)
         }
+        setSelectedChatHistory(chatHistory)
       } if (!selectedRoomId) {
         setSelectedRoomId(message.roomId)
       }
@@ -261,6 +290,18 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
     try {
       if (sellerId && user) {
         const uniqueId = generateUniqueNumber();
+        const attach = attachments.map((att: any) => {
+          const extension = att?.name.split('.').pop();
+          return {
+            fileType: att?.type,
+            fileName: att?.name,
+            fileSize: att?.size,
+            filePath: "",
+            fileExtension: extension,
+            status: "UPLOADING"
+          }
+        });
+
         const newMessage = {
           roomId: "",
           rfqId: "",
@@ -271,7 +312,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
             lastName: user?.lastName
           },
           rfqQuotesUserId: null,
-          attachments: [],
+          attachments: attach,
           uniqueId,
           status: "SD",
           createdAt: new Date()
@@ -288,7 +329,8 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
           rfqQuoteProductId,
           sellerId: sellerUserId,
           rfqQuotesUserId: null,
-          uniqueId
+          uniqueId,
+          attachments: attach,
         }
         cratePrivateRoom(payload);
       }
@@ -300,6 +342,14 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   const onEmojiClick = (emojiObject: EmojiClickData) => {
     setMessage(prevMessage => prevMessage + emojiObject.emoji);
   }
+
+  const handleFileChange = (e: any) => {
+    setAttachments(Array.from(e.target.files));
+  };
+
+  const removeFile = (index: number) => {
+    setAttachments((prevFiles: any) => prevFiles.filter((_: any, i: any) => i !== index));
+  };
 
   return (
     <>
@@ -354,11 +404,17 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
           <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
             <div className="flex w-full items-center">
               <div className="relative flex h-[32px] w-[32px] items-center">
-                <input type="file" className="z-10 hidden opacity-0" />
+                <input
+                  type="file"
+                  className="z-10 absolute inset-0 opacity-0"
+                  multiple
+                  onChange={handleFileChange}
+                />
                 <div className="absolute left-0 top-0 w-auto">
                   <Image src={AttachIcon} alt="attach-icon" />
                 </div>
               </div>
+
               <div className="flex w-[calc(100%-6.5rem)] items-center">
                 <textarea
                   placeholder="Type your message...."
@@ -382,6 +438,17 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
             {showEmoji && (
               <div className="w-full mt-2 border-t border-solid">
                 <EmojiPicker onEmojiClick={onEmojiClick} className="mt-2" />
+              </div>
+            )}
+
+            {attachments.length > 0 && (
+              <div className="mt-2 w-full flex flex-wrap gap-2">
+                {attachments.map((file: any, index: any) => (
+                  <div key={index} className="flex items-center border border-gray-300 p-2 rounded-md">
+                    <span className="mr-2">{file.name}</span>
+                    <button onClick={() => removeFile(index)} className="text-red-500">X</button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
