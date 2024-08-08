@@ -60,7 +60,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
     const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
     const [message, setMessage] = useState<string>('');
-    const [showEmoji, setShowEmoji] = useState<boolean>(false)
+    const [showEmoji, setShowEmoji] = useState<boolean>(false);
+    const [attachments, setAttachments] = useState<any>([]);
     const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest } = useSocket()
     const { toast } = useToast();
     const { user } = useAuth();
@@ -182,14 +183,16 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 if (selectedRfqQuote?.rfqQuotesId === message.rfqId) {
                     const chatHistory = [...selectedChatHistory]
                     const index = chatHistory.findIndex((chat) => chat?.uniqueId === message?.uniqueId);
-                    if(index !== -1) {
-                      const newMessage = {
-                        ...message,
-                        status: "sent"
-                      }
-                      chatHistory[index] = newMessage;
-                      setSelectedChatHistory(chatHistory)
+                    if (index !== -1) {
+                        const newMessage = {
+                            ...message,
+                            status: "sent"
+                        }
+                        chatHistory[index] = newMessage;
+                    } else {
+                        chatHistory.push(newMessage)
                     }
+                    setSelectedChatHistory(chatHistory)
                 }
 
                 if (message?.rfqProductPriceRequest) {
@@ -201,14 +204,15 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
     const handleSendMessage = async () => {
         try {
-            if (message) {
+            if (message || attachments.length) {
                 if (selectedRoom) {
                     sendNewMessage(selectedRoom, message)
                 } else if (!selectedRoom && selectedRfqQuote?.sellerID && selectedRfqQuote?.buyerID) {
                     handleCreateRoom(message);
                 }
                 setMessage("");
-                setShowEmoji(false)
+                setShowEmoji(false);
+                setAttachments([])
             } else {
                 toast({
                     title: "Chat",
@@ -227,20 +231,32 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
     const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
         const uniqueId = generateUniqueNumber();
+        const attach = attachments.map((att: any) => {
+            const extension = att?.name.split('.').pop();
+            return {
+                fileType: att?.type,
+                fileName: att?.name,
+                fileSize: att?.size,
+                filePath: "",
+                fileExtension: extension,
+                status: "UPLOADING"
+            }
+        });
+
         const newMessage = {
-          roomId: "",
-          rfqId: "",
-          content: message,
-          userId: user?.id,
-          user: {
-            firstName: user?.firstName,
-            lastName: user?.lastName
-          },
-          rfqQuotesUserId: null,
-          attachments: [],
-          uniqueId,
-          status: "SD",
-          createdAt: new Date()
+            roomId: "",
+            rfqId: "",
+            content: message,
+            userId: user?.id,
+            user: {
+                firstName: user?.firstName,
+                lastName: user?.lastName
+            },
+            rfqQuotesUserId: null,
+            attachments: attach,
+            uniqueId,
+            status: "SD",
+            createdAt: new Date()
         }
         const chatHistory = [...selectedChatHistory]
         chatHistory.push(newMessage);
@@ -254,7 +270,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             rfqQuoteProductId,
             sellerId,
             rfqQuotesUserId: activeSellerId,
-            uniqueId: uniqueId
+            uniqueId: uniqueId,
+            attachments: attach,
         }
         sendMessage(msgPayload)
     }
@@ -262,20 +279,32 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerId?: number, requestedPrice?: number) => {
         try {
             const uniqueId = generateUniqueNumber();
+            const attach = attachments.map((att: any) => {
+                const extension = att?.name.split('.').pop();
+                return {
+                    fileType: att?.type,
+                    fileName: att?.name,
+                    fileSize: att?.size,
+                    filePath: "",
+                    fileExtension: extension,
+                    status: "UPLOADING"
+                }
+            });
+
             const newMessage = {
-              roomId: "",
-              rfqId: "",
-              content: message,
-              userId: user?.id,
-              user: {
-                firstName: user?.firstName,
-                lastName: user?.lastName
-              },
-              rfqQuotesUserId: null,
-              attachments: [],
-              uniqueId,
-              status: "SD",
-              createdAt: new Date()
+                roomId: "",
+                rfqId: "",
+                content: message,
+                userId: user?.id,
+                user: {
+                    firstName: user?.firstName,
+                    lastName: user?.lastName
+                },
+                rfqQuotesUserId: null,
+                attachments: attach,
+                uniqueId,
+                status: "SD",
+                createdAt: new Date()
             }
             const chatHistory = [...selectedChatHistory]
             chatHistory.push(newMessage);
@@ -289,7 +318,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 rfqQuoteProductId,
                 sellerId,
                 rfqQuotesUserId: activeSellerId,
-                uniqueId
+                uniqueId,
+                attachments: attach,
             }
             cratePrivateRoom(payload);
 
@@ -466,6 +496,15 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         setMessage(prevMessage => prevMessage + emojiObject.emoji);
     }
 
+    const handleFileChange = (e: any) => {
+        setAttachments(Array.from(e.target.files));
+    };
+
+    const removeFile = (index: number) => {
+        setAttachments((prevFiles: any) => prevFiles.filter((_: any, i: any) => i !== index));
+    };
+
+
     return (
         <div>
             <div className="flex w-full rounded-sm border border-solid border-gray-300">
@@ -624,7 +663,12 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                         <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
                             <div className="flex w-full items-center">
                                 <div className="relative flex h-[32px] w-[32px] items-center">
-                                    <input type="file" className="z-10 hidden opacity-0" />
+                                    <input
+                                        type="file"
+                                        className="z-10 absolute inset-0 opacity-0"
+                                        multiple
+                                        onChange={handleFileChange}
+                                    />
                                     <div className="absolute left-0 top-0 w-auto">
                                         <Image src={AttachIcon} alt="attach-icon" />
                                     </div>
@@ -640,7 +684,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                 </div>
                                 <div className="flex w-[72px] items-center justify-between">
                                     <div className="w-auto">
-                                        <Image src={SmileIcon} alt="smile-icon" onClick={() => setShowEmoji(!showEmoji)}/>
+                                        <Image src={SmileIcon} alt="smile-icon" onClick={() => setShowEmoji(!showEmoji)} />
                                     </div>
                                     <div className="flex w-auto">
                                         <button onClick={handleSendMessage} type="button" className="">
@@ -652,6 +696,17 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                             {showEmoji && (
                                 <div className="w-full mt-2 border-t border-solid">
                                     <EmojiPicker lazyLoadEmojis={true} onEmojiClick={onEmojiClick} className="mt-2" />
+                                </div>
+                            )}
+
+                            {attachments.length > 0 && (
+                                <div className="mt-2 w-full flex flex-wrap gap-2">
+                                    {attachments.map((file: any, index: any) => (
+                                        <div key={index} className="flex items-center border border-gray-300 p-2 rounded-md">
+                                            <span className="mr-2">{file.name}</span>
+                                            <button onClick={() => removeFile(index)} className="text-red-500">X</button>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>

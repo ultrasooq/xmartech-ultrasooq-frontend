@@ -13,9 +13,10 @@ interface RfqRequestChatHistoryProps {
     unreadMsgCount: number | 0;
     rfqUserId: number;
     updateVendorMessageCount: () => void;
+    isUploadingCompleted?: boolean | null
 }
 
-const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading, activeSellerId, unreadMsgCount, updateVendorMessageCount, rfqUserId }) => {
+const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading, activeSellerId, unreadMsgCount, updateVendorMessageCount, rfqUserId, isUploadingCompleted }) => {
     const { user } = useAuth();
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const { updateRfqRequestStatus } = useSocket();
@@ -70,12 +71,28 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                 {chat?.userId === user?.id ? (
                                     <div className="mt-5 flex w-full flex-wrap items-end">
                                         <div className="w-[calc(100%-2rem)] pr-2 text-right">
-                                            <div className="mb-1 inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
-                                                <p
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: chat?.content,
-                                                    }}
-                                                />
+                                            <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
+                                                {chat?.attachments?.length > 0 && (
+                                                    <div className="mb-2 w-full">
+                                                        {chat?.attachments.map((file: any, index: any) => (
+                                                            <div key={index} className="border mb-2 border-gray-300 p-2 rounded-md">
+                                                                <p className="mr-2 truncate">{file.fileName}</p>
+                                                                <p className="mr-2 truncate text-xs italic">{file?.status === "UPLOADING" ? "Uploading..." : file?.status}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
+                                                {chat?.content && (
+                                                    <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
+                                                        <p
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: chat?.content,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
                                                         <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>
@@ -118,12 +135,28 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                             </span>
                                         </div>
                                         <div className="w-[calc(100%-2rem)] pl-2">
-                                            <div className="mb-1 w-full rounded-xl bg-[#F1F2F6] p-3 text-sm">
-                                                <p
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: chat?.content,
-                                                    }}
-                                                />
+                                            <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
+                                                {chat?.attachments?.length > 0 && (
+                                                    <div className="mb-2 w-full">
+                                                        {chat?.attachments.map((file: any, index: any) => (
+                                                            <div key={index} className="border mb-2 border-gray-300 p-2 rounded-md">
+                                                                <p className="mr-2 truncate">{file.fileName}</p>
+                                                                <p className="mr-2 truncate text-xs italic">{file?.status === "UPLOADING" ? "Uploading..." : file?.status}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
+                                                {chat?.content && (
+                                                    <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
+                                                        <p
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: chat?.content,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
                                                         <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>
