@@ -8,10 +8,10 @@ import SendIcon from "@/public/images/send-button.png";
 import OfferPriceCard from "@/components/modules/rfqRequest/OfferPriceCard";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import { useAllRfqQuotesUsersByBuyerId, useFindOneRfqQuotesUsersByBuyerID } from "@/apis/queries/rfq.queries";
-import { findRoomId, getChatHistory, updateUnreadMessages } from "@/apis/requests/chat.requests";
+import { findRoomId, getChatHistory, updateUnreadMessages, uploadAttachment } from "@/apis/requests/chat.requests";
 import RfqRequestChatHistory from "./RfqRequestChatHistory";
 import RfqRequestVendorCard from "./RfqRequestVendorCard";
-import { useSocket } from "@/context/SocketContext";
+import { newAttachmentType, useSocket } from "@/context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
 import { useAuth } from "@/context/AuthContext";
@@ -51,7 +51,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     const [vendorList, setVendorList] = useState<any[]>([]);
     const [showEmoji, setShowEmoji] = useState<boolean>(false)
     const [attachments, setAttachments] = useState<any>([]);
-    const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest } = useSocket()
+    const [isAttachmentUploading, setIsAttachmentUploading] = useState<boolean>(false)
+    const { sendMessage, cratePrivateRoom, newMessage, newRoom, errorMessage, clearErrorMessage, rfqRequest, newAttachment } = useSocket()
     const { toast } = useToast();
     const { user } = useAuth();
 
@@ -145,6 +146,34 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rfqRequest])
 
+    // Update attachment status
+    useEffect(() => {
+        if (newAttachment) {
+            handleUpdateAttachmentStatus(newAttachment);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [newAttachment])
+
+    const handleUpdateAttachmentStatus = (attach: newAttachmentType) => {
+        try {
+            setSelectedChatHistory((prevChatHistory: any[]) =>
+                prevChatHistory.map((item1: any) => ({
+                    ...item1,
+                    attachments: item1?.attachments?.map((item2: any) =>
+                        item2.uniqueId === attach.uniqueId
+                            ? { ...item2, status: attach.status }
+                            : item2
+                    )
+                }))
+            );
+        } catch (error) {
+            toast({
+                title: "Chat",
+                description: "Failed to update the attachment status",
+                variant: "danger",
+            });
+        }
+    }
 
     const handleUpdateNewMessageStatus = async (message: any) => {
         try {
@@ -206,13 +235,22 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                     const chatHistory = [...selectedChatHistory]
                     const index = chatHistory.findIndex((chat) => chat?.uniqueId === message?.uniqueId);
                     if (index !== -1) {
-                        const newMessage = {
+                        // upload attachment once the message saved in draft mode, if attachments are selected
+                        if (chatHistory[index]?.attachments?.length) handleUploadedFile();
+
+                        const nMessage = {
                             ...message,
+                            attachments: chatHistory[index]?.attachments || [],
                             status: "sent"
                         }
-                        chatHistory[index] = newMessage;
+                        chatHistory[index] = nMessage;
                     } else {
-                        chatHistory.push(newMessage)
+                        const nMessage = {
+                            ...message,
+                            attachments: [],
+                            status: "sent"
+                        }
+                        chatHistory.push(nMessage)
                     }
                     setSelectedChatHistory(chatHistory)
                 }
@@ -253,7 +291,6 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 }
                 setMessage("");
                 setShowEmoji(false);
-                setAttachments([]);
             } else {
                 toast({
                     title: "Chat",
@@ -280,6 +317,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 fileSize: att?.size,
                 filePath: "",
                 fileExtension: extension,
+                uniqueId: att.uniqueId,
                 status: "UPLOADING"
             }
         });
@@ -520,8 +558,34 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         setMessage(prevMessage => prevMessage + emojiObject.emoji);
     }
 
+    const handleUploadedFile = async () => {
+        if (attachments?.length) {
+            setIsAttachmentUploading(true);
+            const uploadPromises = attachments.map(async (file: any) => {
+                const formData = new FormData();
+                formData.append("content", file);
+                formData.append("uniqueId", file.uniqueId);
+
+                try {
+                    await uploadAttachment(formData);
+                } catch (error) {
+                    console.error("File upload failed:", error);
+                }
+            });
+            await Promise.all(uploadPromises);
+            setAttachments([]);
+            setIsAttachmentUploading(false);
+        }
+    };
+
     const handleFileChange = (e: any) => {
-        setAttachments(Array.from(e.target.files));
+        const files = Array.from(e.target.files);
+        const newData = files.map((file: any) => {
+            const uniqueId = generateUniqueNumber();
+            file.uniqueId = `${user?.id}-${uniqueId}`;
+            return file;
+        });
+        setAttachments(newData);
     };
 
     const removeFile = (index: number) => {
@@ -730,7 +794,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                             </div>
                         )}
 
-                        {attachments.length > 0 && (
+                        {!isAttachmentUploading && attachments.length > 0 && (
                             <div className="mt-2 w-full flex flex-wrap gap-2">
                                 {attachments.map((file: any, index: any) => (
                                     <div key={index} className="flex items-center border border-gray-300 p-2 rounded-md">

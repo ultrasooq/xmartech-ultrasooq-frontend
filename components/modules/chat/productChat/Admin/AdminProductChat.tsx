@@ -6,8 +6,8 @@ import { useToast } from "@/components/ui/use-toast";
 import SmileIcon from "@/public/images/smile.svg";
 import SendIcon from "@/public/images/send-button.png";
 import ProductChatHistory from "../ProductChatHistory";
-import { useSocket } from "@/context/SocketContext";
-import { getChatHistory, getProductMessages, updateUnreadMessages } from "@/apis/requests/chat.requests";
+import { newAttachmentType, useSocket } from "@/context/SocketContext";
+import { getChatHistory, getProductMessages, updateUnreadMessages, uploadAttachment } from "@/apis/requests/chat.requests";
 import { useAuth } from "@/context/AuthContext";
 import ProductMessage from "./ProductMessage";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
@@ -43,8 +43,9 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   const [selectedProductMessage, setSelectedProductMessage] = useState<any>(null);
   const [showEmoji, setShowEmoji] = useState<boolean>(false)
   const [attachments, setAttachments] = useState<any>([]);
+  const [isAttachmentUploading, setIsAttachmentUploading] = useState<boolean>(false)
 
-  const { sendMessage, cratePrivateRoom, newMessage, errorMessage, clearErrorMessage } = useSocket()
+  const { sendMessage, cratePrivateRoom, newMessage, errorMessage, clearErrorMessage, newAttachment } = useSocket()
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -79,6 +80,34 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [errorMessage])
+
+  // Update attachment status
+  useEffect(() => {
+    if (newAttachment) {
+      handleUpdateAttachmentStatus(newAttachment);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newAttachment])
+  const handleUpdateAttachmentStatus = (attach: newAttachmentType) => {
+    try {
+      setSelectedChatHistory((prevChatHistory: any[]) =>
+        prevChatHistory.map((item1: any) => ({
+          ...item1,
+          attachments: item1?.attachments?.map((item2: any) =>
+            item2.uniqueId === attach.uniqueId
+              ? { ...item2, status: attach.status }
+              : item2
+          )
+        }))
+      );
+    } catch (error) {
+      toast({
+        title: "Chat",
+        description: "Failed to update the attachment status",
+        variant: "danger",
+      });
+    }
+  }
 
   const handleGetProductMessages = async () => {
     try {
@@ -135,7 +164,6 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         }
         setMessage("");
         setShowEmoji(false);
-        setAttachments([])
       } else {
         toast({
           title: "Chat",
@@ -152,6 +180,26 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
     }
   }
 
+  const handleUploadedFile = async () => {
+    if (attachments?.length) {
+      setIsAttachmentUploading(true);
+      const uploadPromises = attachments.map(async (file: any) => {
+        const formData = new FormData();
+        formData.append("content", file);
+        formData.append("uniqueId", file.uniqueId);
+
+        try {
+          await uploadAttachment(formData);
+        } catch (error) {
+          console.error("File upload failed:", error);
+        }
+      });
+      await Promise.all(uploadPromises);
+      setAttachments([]);
+      setIsAttachmentUploading(false);
+    }
+  };
+
   const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerUserId?: number, requestedPrice?: number) => {
     const uniqueId = generateUniqueNumber();
     const attach = attachments.map((att: any) => {
@@ -162,6 +210,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         fileSize: att?.size,
         filePath: "",
         fileExtension: extension,
+        uniqueId: att.uniqueId,
         status: "UPLOADING"
       }
     });
@@ -239,13 +288,21 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         const chatHistory = [...selectedChatHistory]
         const index = chatHistory.findIndex((chat) => chat?.uniqueId === message?.uniqueId);
         if (index !== -1) {
-          const newMessage = {
+          // upload attachment once the message saved in draft mode, if attachments are selected
+          if (chatHistory[index]?.attachments?.length) handleUploadedFile();
+
+          const nMessage = {
             ...message,
+            attachments: chatHistory[index]?.attachments || [],
             status: "sent"
           }
-          chatHistory[index] = newMessage;
+          chatHistory[index] = nMessage;
         } else {
-          chatHistory.push(newMessage)
+          const nMessage = {
+            ...message,
+            attachments: [],
+          }
+          chatHistory.push(nMessage)
         }
         setSelectedChatHistory(chatHistory)
       } if (!selectedRoomId) {
@@ -344,7 +401,13 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   }
 
   const handleFileChange = (e: any) => {
-    setAttachments(Array.from(e.target.files));
+    const files = Array.from(e.target.files);
+    const newData = files.map((file: any) => {
+      const uniqueId = generateUniqueNumber();
+      file.uniqueId = `${user?.id}-${uniqueId}`;
+      return file;
+    });
+    setAttachments(newData);
   };
 
   const removeFile = (index: number) => {
@@ -441,7 +504,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
               </div>
             )}
 
-            {attachments.length > 0 && (
+            {!isAttachmentUploading && attachments.length > 0 && (
               <div className="mt-2 w-full flex flex-wrap gap-2">
                 {attachments.map((file: any, index: any) => (
                   <div key={index} className="flex items-center border border-gray-300 p-2 rounded-md">
