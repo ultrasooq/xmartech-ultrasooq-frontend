@@ -9,8 +9,7 @@ interface ProductChatHistoryProps {
   chatHistoryLoading?: boolean;
   buyerId?: number | undefined;
   unreadMsgCount?: number | 0;
-  updateMessageCount?: () => void,
-  isUploadingCompleted?: boolean | null
+  updateMessageCount?: () => void
 }
 
 const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
@@ -19,7 +18,6 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
   chatHistoryLoading,
   buyerId,
   unreadMsgCount,
-  isUploadingCompleted,
   updateMessageCount
 }) => {
   const { user } = useAuth();
@@ -71,7 +69,6 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                             ))}
                           </div>
                         )}
-                        {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
                         {chat?.content && (
                           <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
                             <p
@@ -115,7 +112,6 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                     </div>
                     <div className="w-[calc(100%-2rem)] pl-2">
                       <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
-                        {isUploadingCompleted ? "Uploading..." : ""}
 
                         {chat?.attachments?.length > 0 && (
                           <div className="mb-2 w-full">

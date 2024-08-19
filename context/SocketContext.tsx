@@ -12,7 +12,11 @@ interface newMessageType {
   rfqId: number;
   createdAt: string;
 }
-
+export interface newAttachmentType {
+  uniqueId: string;
+  status: string;
+  messageId: number;
+}
 interface rfqRequestType {
   id: number;
   messageId: number;
@@ -45,6 +49,7 @@ interface SocketContextType {
     roomId: number,
     creatorId: number,
   };
+  newAttachment: newAttachmentType | null;
   cratePrivateRoom: (newRoom: {
     participants: number[];
     content: string;
@@ -77,6 +82,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const { user } = useAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [newMessage, setNewMessage] = useState<newMessageType | null>(null);
+  const [newAttachment, setNewAttachment] = useState<newAttachmentType | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [newRoom, setNewRoom] = useState<any | null>(null);
   const [rfqRequest, setRfqRequest] = useState<rfqRequestType | null>(null);
@@ -105,6 +111,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
       socketIo.on("newRoomCreated", (room: { roomId: number, creatorId: number }) => {
         setNewRoom(room);
+      });
+
+      socketIo.on("newAttachment", (attachment: newAttachmentType) => {
+        setNewAttachment(attachment);
       });
 
       socketIo.on(
@@ -152,6 +162,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         setErrorMessage("");
         setNewMessage(null);
         setRfqRequest(null);
+        setNewAttachment(null);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -275,6 +286,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       setErrorMessage("");
       setNewMessage(null);
       setRfqRequest(null);
+      setNewAttachment(null);
     }
   };
 
@@ -296,6 +308,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         clearErrorMessage,
         updateRfqRequestStatus,
         rfqRequest,
+        newAttachment
       }}
     >
       {children}
