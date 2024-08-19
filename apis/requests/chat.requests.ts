@@ -125,3 +125,13 @@ export const uploadAttachment = (payload: any) => {
         },
     });
 };
+
+export const downloadAttachment = (filePath: string) => {
+    return axios({
+        method: "GET",
+        url: `${process.env.NEXT_PUBLIC_API_URL}/chat/download-attachment?file-path=${filePath}`,
+        headers: {
+            Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+        },
+    });
+};
