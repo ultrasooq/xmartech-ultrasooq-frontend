@@ -96,7 +96,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
             ...item1,
             attachments: item1?.attachments?.map((item2: any) =>
               item2.uniqueId === attach.uniqueId
-                ? { ...item2, status: attach.status }
+                ? { ...item2, status: attach.status, filePath: attach.filePath }
                 : item2
             )
           }))

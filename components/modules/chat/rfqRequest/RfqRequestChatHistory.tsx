@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useSocket } from "@/context/SocketContext";
 import { RfqProductPriceRequestStatus } from "@/utils/types/chat.types";
 import { updateUnreadMessages } from "@/apis/requests/chat.requests";
+import DownloadIconButton from "../DownloadIconButton";
 
 interface RfqRequestChatHistoryProps {
     roomId: number | null;
@@ -75,9 +76,20 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                                 {chat?.attachments?.length > 0 && (
                                                     <div className="mb-2 w-full">
                                                         {chat?.attachments.map((file: any, index: any) => (
-                                                            <div key={index} className="border mb-2 border-gray-300 p-2 rounded-md">
-                                                                <p className="mr-2 truncate">{file.fileName}</p>
-                                                                <p className="mr-2 truncate text-xs italic">{file?.status === "UPLOADING" ? "Uploading..." : file?.status}</p>
+                                                            <div
+                                                                key={index}
+                                                                className="border mb-2 border-gray-300 p-2 rounded-md flex justify-between items-center"
+                                                            >
+                                                                <div className="flex-1">
+                                                                    <p className="mr-2 truncate">{file.fileName}</p>
+                                                                    <p className="mr-2 truncate text-xs italic">
+                                                                        {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
+                                                                    </p>
+                                                                </div>
+                                                                <DownloadIconButton
+                                                                    attachmentId={file?.id}
+                                                                    filePath={file?.filePath}
+                                                                />
                                                             </div>
                                                         ))}
                                                     </div>
@@ -135,13 +147,24 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                             </span>
                                         </div>
                                         <div className="w-[calc(100%-2rem)] pl-2">
-                                            <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
+                                            <div className="mb-1 inline-block w-auto rounded-xl p-3 text-left text-sm">
                                                 {chat?.attachments?.length > 0 && (
                                                     <div className="mb-2 w-full">
                                                         {chat?.attachments.map((file: any, index: any) => (
-                                                            <div key={index} className="border mb-2 border-gray-300 p-2 rounded-md">
-                                                                <p className="mr-2 truncate">{file.fileName}</p>
-                                                                <p className="mr-2 truncate text-xs italic">{file?.status === "UPLOADING" ? "Uploading..." : file?.status}</p>
+                                                            <div
+                                                                key={index}
+                                                                className="border mb-2 border-gray-300 p-2 rounded-md flex justify-between items-center"
+                                                            >
+                                                                <div className="flex-1">
+                                                                    <p className="mr-2 truncate">{file.fileName}</p>
+                                                                    <p className="mr-2 truncate text-xs italic">
+                                                                        {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
+                                                                    </p>
+                                                                </div>
+                                                                <DownloadIconButton
+                                                                    attachmentId={file?.id}
+                                                                    filePath={file?.filePath}
+                                                                />
                                                             </div>
                                                         ))}
                                                     </div>
