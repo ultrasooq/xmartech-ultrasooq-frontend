@@ -20,6 +20,8 @@ export interface newAttachmentType {
   senderId: number;
   fileName: string;
   filePath: string;
+  fileType: string;
+  presignedUrl: string;
 }
 interface rfqRequestType {
   id: number;

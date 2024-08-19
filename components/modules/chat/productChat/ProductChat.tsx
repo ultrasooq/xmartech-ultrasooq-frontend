@@ -91,7 +91,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
             ...item1,
             attachments: item1.attachments.map((item2: any) =>
               item2.uniqueId === attach.uniqueId
-                ? { ...item2, status: attach.status, filePath: attach.filePath }
+                ? { ...item2, status: attach.status, filePath: attach.filePath, presignedUrl: attach.presignedUrl, fileType: attach?.fileType }
                 : item2
             )
           }))
@@ -425,6 +425,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
               </div>
               <ProductChatHistory
                 selectedChatHistory={selectedChatHistory}
+                chatHistoryLoading={chatHistoryLoading}
               />
             </div>
             {productDetails && (

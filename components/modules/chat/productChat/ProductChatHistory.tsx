@@ -68,6 +68,11 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                                 className="border mb-2 border-gray-300 p-2 rounded-md flex justify-between items-center"
                               >
                                 <div className="flex-1">
+                                  {file?.fileType.includes("imag") && file?.presignedUrl ? (
+                                    <img src={file?.presignedUrl} className="w-full max-w-sm h-auto" />
+                                  ) : file?.fileType.includes("video") && file?.presignedUrl && (
+                                    <video src={file?.presignedUrl} className="w-full max-w-sm h-auto" controls />
+                                  )}
                                   <p className="mr-2 truncate">{file.fileName}</p>
                                   <p className="mr-2 truncate text-xs italic">
                                     {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
@@ -133,6 +138,11 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                                 className="border mb-2 border-gray-300 p-2 rounded-md flex justify-between items-center"
                               >
                                 <div className="flex-1">
+                                  {file?.fileType.includes("imag") && file?.presignedUrl ? (
+                                    <img src={file?.presignedUrl} className="w-full max-w-sm h-auto" />
+                                  ) : file?.fileType.includes("video") && file?.presignedUrl && (
+                                    <video src={file?.presignedUrl} className="w-full max-w-sm h-auto" controls />
+                                  )}
                                   <p className="mr-2 truncate">{file.fileName}</p>
                                   <p className="mr-2 truncate text-xs italic">
                                     {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
