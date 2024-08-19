@@ -90,16 +90,25 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   }, [newAttachment])
   const handleUpdateAttachmentStatus = (attach: newAttachmentType) => {
     try {
-      setSelectedChatHistory((prevChatHistory: any[]) =>
-        prevChatHistory.map((item1: any) => ({
-          ...item1,
-          attachments: item1?.attachments?.map((item2: any) =>
-            item2.uniqueId === attach.uniqueId
-              ? { ...item2, status: attach.status }
-              : item2
-          )
-        }))
-      );
+      if (attach?.senderId === user?.id) {
+        setSelectedChatHistory((prevChatHistory: any[]) =>
+          prevChatHistory.map((item1: any) => ({
+            ...item1,
+            attachments: item1?.attachments?.map((item2: any) =>
+              item2.uniqueId === attach.uniqueId
+                ? { ...item2, status: attach.status }
+                : item2
+            )
+          }))
+        );
+      } else {
+        const chatHistory = [...selectedChatHistory];
+        const index = chatHistory.findIndex((message: any) => message.id === attach.messageId);
+        if (index !== -1) {
+          chatHistory[index]['attachments'].push(attach);
+          setSelectedChatHistory(chatHistory);
+        }
+      }
     } catch (error) {
       toast({
         title: "Chat",

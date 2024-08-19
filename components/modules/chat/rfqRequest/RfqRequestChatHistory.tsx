@@ -127,7 +127,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                             </span>
                                         </div>
                                     </div>
-                                ) : (
+                                ) : (chat?.attachments?.length > 0 || chat?.content) && (
                                     <div className="mt-5 flex w-full flex-wrap items-end">
                                         <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
                                             <span className="flex items-center justify-center h-full w-full">

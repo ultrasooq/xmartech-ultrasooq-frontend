@@ -16,6 +16,9 @@ export interface newAttachmentType {
   uniqueId: string;
   status: string;
   messageId: number;
+  roomId: number;
+  senderId: number;
+  fileName: string;
 }
 interface rfqRequestType {
   id: number;
