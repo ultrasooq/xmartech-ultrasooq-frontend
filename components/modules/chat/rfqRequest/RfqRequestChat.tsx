@@ -162,7 +162,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                         ...item1,
                         attachments: item1?.attachments?.map((item2: any) =>
                             item2.uniqueId === attach.uniqueId
-                                ? { ...item2, status: attach.status, filePath: attach.filePath }
+                                ? { ...item2, status: attach.status, filePath: attach.filePath, presignedUrl: attach.presignedUrl, fileType: attach?.fileType }
                                 : item2
                         )
                     }))
