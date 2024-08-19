@@ -9,8 +9,7 @@ interface ProductChatHistoryProps {
   chatHistoryLoading?: boolean;
   buyerId?: number | undefined;
   unreadMsgCount?: number | 0;
-  updateMessageCount?: () => void,
-  isUploadingCompleted?: boolean | null
+  updateMessageCount?: () => void
 }
 
 const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
@@ -19,7 +18,6 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
   chatHistoryLoading,
   buyerId,
   unreadMsgCount,
-  isUploadingCompleted,
   updateMessageCount
 }) => {
   const { user } = useAuth();
@@ -71,7 +69,6 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                             ))}
                           </div>
                         )}
-                        {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
                         {chat?.content && (
                           <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
                             <p
@@ -106,7 +103,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                       {/* <Image src={UserChatIcon} alt="user-chat-icon" /> */}
                     </div>
                   </div>
-                ) : (
+                ) : (chat?.attachments?.length > 0 || chat?.content) && (
                   <div className="mt-5 flex w-full flex-wrap items-end">
                     <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
                       <span className="flex h-full w-full items-center justify-center">
@@ -115,7 +112,6 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                     </div>
                     <div className="w-[calc(100%-2rem)] pl-2">
                       <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
-                        {isUploadingCompleted ? "Uploading..." : ""}
 
                         {chat?.attachments?.length > 0 && (
                           <div className="mb-2 w-full">
@@ -139,17 +135,14 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                         )}
                       </div>
                       <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
-                        {chat?.status === "SD" ?
-                          <span>Sending...</span> :
-                          <span>
-                            {chat.createdAt
-                              ? moment(chat.createdAt)
-                                .startOf("seconds")
-                                .fromNow()
-                              : ""
-                            }
-                          </span>
-                        }
+                        <span>
+                          {chat.createdAt
+                            ? moment(chat.createdAt)
+                              .startOf("seconds")
+                              .fromNow()
+                            : ""
+                          }
+                        </span>
                       </div>
                     </div>
                   </div>

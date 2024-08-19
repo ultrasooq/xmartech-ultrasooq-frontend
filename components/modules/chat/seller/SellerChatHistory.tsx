@@ -155,7 +155,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                       {/* <Image src={UserChatIcon} alt="user-chat-icon" /> */}
                     </div>
                   </div>
-                ) : (
+                ) : (chat?.attachments?.length > 0 || chat?.content) && (
                   <div className="mt-5 flex w-full flex-wrap items-end">
                     <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
                       <span className="flex h-full w-full items-center justify-center">
