@@ -318,7 +318,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             rfqQuoteProductId,
             sellerId,
             rfqQuotesUserId: activeSellerId,
-            uniqueId: uniqueId,
+            uniqueId,
             attachments: attach,
         }
         sendMessage(msgPayload)
@@ -334,6 +334,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     fileName: att?.name,
                     fileSize: att?.size,
                     filePath: "",
+                    uniqueId: att.uniqueId,
                     fileExtension: extension,
                     status: "UPLOADING"
                 }

@@ -375,6 +375,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                     fileName: att?.name,
                     fileSize: att?.size,
                     filePath: "",
+                    uniqueId: att.uniqueId,
                     fileExtension: extension,
                     status: "UPLOADING"
                 }

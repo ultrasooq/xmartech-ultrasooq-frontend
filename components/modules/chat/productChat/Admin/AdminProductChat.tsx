@@ -363,6 +363,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
             fileName: att?.name,
             fileSize: att?.size,
             filePath: "",
+            uniqueId: att.uniqueId,
             fileExtension: extension,
             status: "UPLOADING"
           }
