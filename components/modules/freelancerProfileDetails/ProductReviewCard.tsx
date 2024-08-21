@@ -30,7 +30,7 @@ const ProductReviewCard: React.FC<ProductReviewCardProps> = ({
 }) => {
   const calculateRatings = useMemo(
     () => (rating: number) => {
-      const stars = [];
+      const stars: Array<React.ReactNode> = [];
       for (let i = 1; i <= 5; i++) {
         if (i <= rating) {
           stars.push(<FaStar key={i} color="#FFC107" size={20} />);

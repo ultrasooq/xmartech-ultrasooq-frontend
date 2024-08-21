@@ -513,8 +513,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 const pRequest = item?.rfqProductPriceRequests?.find((request: any) => request?.rfqQuoteProductId === i.id && request?.status === "APPROVED");
                 if (pRequest) priceRequest = pRequest;
                 let offerPrice = i.offerPrice;
-                if (priceRequest?.status === "APPROVED") {
-                    offerPrice = priceRequest?.requestedPrice
+                if (pRequest && pRequest.status && (typeof pRequest.status == 'string') && (pRequest?.status === "APPROVED")) {
+                    offerPrice = pRequest?.requestedPrice
                 }
                 return {
                     ...i,
