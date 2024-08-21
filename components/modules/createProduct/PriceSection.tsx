@@ -120,15 +120,15 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   const minQuantityPerCustomerMessage =
     errors &&
-    typeof errors["0"] === "object" &&
-    "minQuantityPerCustomer" in errors["0"]
+      typeof errors["0"] === "object" &&
+      "minQuantityPerCustomer" in errors["0"]
       ? errors["0"].minQuantityPerCustomer?.message
       : undefined;
 
   const maxQuantityPerCustomerMessage =
     errors &&
-    typeof errors["0"] === "object" &&
-    "maxQuantityPerCustomer" in errors["0"]
+      typeof errors["0"] === "object" &&
+      "maxQuantityPerCustomer" in errors["0"]
       ? errors["0"].maxQuantityPerCustomer?.message
       : undefined;
 
@@ -249,7 +249,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
             <div className="col-span-2 grid w-full grid-cols-2 gap-x-5 gap-y-4">
               {watchConsumerType === "EVERYONE" ||
-              watchConsumerType === "CONSUMER" ? (
+                watchConsumerType === "CONSUMER" ? (
                 <CounterTextInputField
                   label="Consumer Discount"
                   name="productPriceList.[0].consumerDiscount"
@@ -258,7 +258,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               ) : null}
 
               {watchConsumerType === "EVERYONE" ||
-              watchConsumerType === "VENDORS" ? (
+                watchConsumerType === "VENDORS" ? (
                 <CounterTextInputField
                   label="Vendor Discount"
                   name="productPriceList.[0].vendorDiscount"
@@ -386,6 +386,17 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           {activeProductType !== "R" && watchSetUpPrice ? (
             <div className="mb-4 flex w-full flex-row items-center gap-x-5">
               <>
+                <div className="flex flex-row items-center gap-x-3">
+                  <Controller
+                    name="isCustomProduct"
+                    control={formContext.control}
+                    render={({ field }) => (
+                      <Switch checked={!!field.value} onCheckedChange={field.onChange} className="data-[state=checked]:!bg-dark-orange" />
+                    )}
+                  />
+                  <Label>Customize Product</Label>
+                </div>
+
                 <div className="flex flex-row items-center gap-x-3">
                   <Controller
                     name="isOfferPriceRequired"
