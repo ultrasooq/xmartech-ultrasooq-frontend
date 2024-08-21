@@ -9,10 +9,7 @@ interface ControlledRichTextEditorProps {
   name: string;
 }
 
-const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({
-  label,
-  name,
-}) => {
+const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({ label, name, }) => {
   const formContext = useFormContext();
 
   return (
