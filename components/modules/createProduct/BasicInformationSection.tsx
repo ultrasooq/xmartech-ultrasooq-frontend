@@ -172,7 +172,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
                       catList.length > 0 && catList.map((item, index) => (
                         <div key={item?.id} className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3">
                           <div className="flex w-full flex-col justify-between gap-y-2">
-                            <Label>Sub Category</Label>
+                            <Label>{'Sub '.repeat(index + 1 )} Category</Label>
                             <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0" onChange={(e) => {
                               if (e.target.value === "") {
                                 return;
