@@ -55,7 +55,7 @@ const CartListPage = () => {
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const calculateDiscountedPrice = (
-    offerPrice: string,
+    offerPrice: string | number,
     consumerDiscount: number,
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;

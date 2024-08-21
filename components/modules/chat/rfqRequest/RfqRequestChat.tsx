@@ -538,10 +538,13 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 let offerPrice = i.offerPrice;
                 const pRequest = item?.rfqProductPriceRequests?.find((request: any) => request?.rfqQuoteProductId === i.id);
                 if (pRequest) priceRequest = pRequest;
-                if (priceRequest?.status === "APPROVED") {
-                    offerPrice = priceRequest?.requestedPrice
-                } else if (priceRequest?.status === "REJECTED") {
-                    offerPrice = i.offerPrice;
+
+                if (pRequest && pRequest?.status && (typeof pRequest?.status == 'string')) {
+                    if (pRequest?.status === "APPROVED") {
+                        offerPrice = pRequest?.requestedPrice
+                    } else if (pRequest?.status === "REJECTED") {
+                        offerPrice = i.offerPrice;
+                    }
                 }
 
                 return {

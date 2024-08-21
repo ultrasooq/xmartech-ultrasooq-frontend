@@ -579,9 +579,9 @@ export default function CompanyProfilePage() {
                   <ControlledSelectInput
                     label="Year Of Establishment"
                     name="yearOfEstablishment"
-                    options={memoizedLastTwoHundredYears?.map((item) => ({
-                      label: item.toString(),
-                      value: item.toString(),
+                    options={memoizedLastTwoHundredYears?.map((item: any) => ({
+                      label: item?.toString(),
+                      value: item?.toString(),
                     }))}
                   />
 

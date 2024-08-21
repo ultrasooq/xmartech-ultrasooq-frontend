@@ -559,14 +559,10 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   type="button"
                   className="rounded-none bg-dark-orange"
                   onClick={() => {
-                    const tempList = [];
+                    const tempList: { label?: string, value?: string }[] = [];
                     tempList.push({ label: selectOption, value: uuidv4() });
 
-                    const fieldIndex = customfields.findIndex(
-                      (item) =>
-                        item.key === customFieldType?.key &&
-                        item.type === "dropdown",
-                    );
+                    const fieldIndex = customfields.findIndex((item) => item.key === customFieldType?.key && item.type === "dropdown",);
 
                     if (fieldIndex !== -1) {
                       const tempFields = [...customfields];
@@ -731,7 +727,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   type="button"
                   className="rounded-none bg-dark-orange"
                   onClick={() => {
-                    const tempList = [];
+                    const tempList: { label?: string, value?: string }[] = [];
                     tempList.push({ label: selectOption, value: uuidv4() });
 
                     const fieldIndex = customfields.findIndex(
@@ -827,7 +823,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   type="button"
                   className="rounded-none bg-dark-orange"
                   onClick={() => {
-                    const tempList = [];
+                    const tempList: { label?: string, value?: string }[] = [];
                     tempList.push({ label: selectOption, value: uuidv4() });
 
                     const fieldIndex = customfields.findIndex(
