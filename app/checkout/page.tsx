@@ -54,30 +54,30 @@ const CheckoutPage = () => {
   const [addressType, setAddressType] = useState<"shipping" | "billing">();
   const [guestShippingAddress, setGuestShippingAddress] = useState<
     | {
-        firstName: string;
-        lastName: string;
-        cc: string;
-        phoneNumber: string;
-        address: string;
-        city: string;
-        country: string;
-        province: string;
-        postCode: string;
-      }
+      firstName: string;
+      lastName: string;
+      cc: string;
+      phoneNumber: string;
+      address: string;
+      city: string;
+      country: string;
+      province: string;
+      postCode: string;
+    }
     | undefined
   >();
   const [guestBillingAddress, setGuestBillingAddress] = useState<
     | {
-        firstName: string;
-        lastName: string;
-        cc: string;
-        phoneNumber: string;
-        address: string;
-        city: string;
-        country: string;
-        province: string;
-        postCode: string;
-      }
+      firstName: string;
+      lastName: string;
+      cc: string;
+      phoneNumber: string;
+      address: string;
+      city: string;
+      country: string;
+      province: string;
+      postCode: string;
+    }
     | undefined
   >();
   const [guestEmail, setGuestEmail] = useState("");
@@ -85,7 +85,7 @@ const CheckoutPage = () => {
   const deviceId = getOrCreateDeviceId() || "";
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const orders = useOrderStore();
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
 
   const me = useMe(haveAccessToken);
   const cartListByDeviceQuery = useCartListByDevice(
@@ -128,7 +128,7 @@ const CheckoutPage = () => {
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const calculateDiscountedPrice = (
-    offerPrice: string,
+    offerPrice: string | number,
     consumerDiscount: number,
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
@@ -155,7 +155,7 @@ const CheckoutPage = () => {
               curr.productPriceDetails?.offerPrice ?? 0,
               curr?.productPriceDetails?.consumerDiscount,
             ) *
-              curr.quantity
+            curr.quantity
           );
         },
         0,

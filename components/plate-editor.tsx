@@ -24,7 +24,7 @@ import { TooltipProvider } from "@/components/plate-ui/tooltip";
 
 type PlateEditorProps = {
   onChange?: (value: { id: string; type: string; children: { text: string }[] }[] | Value,) => void;
-  value: { id: string; type: string; children: { text: string }[] }[];
+  value?: Value | undefined
   readOnly?: boolean;
 };
 

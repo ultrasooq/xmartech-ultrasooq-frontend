@@ -626,10 +626,7 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.businessTypeList`}
                     options={memoizedTags || []}
                     placeholder="Business Type"
-                    error={
-                      form.formState.errors?.branchList?.[index]
-                        ?.businessTypeList?.message
-                    }
+                    error={String(form.formState.errors?.branchList?.[index]?.businessTypeList?.message)}
                   />
 
                   <FormField
@@ -948,7 +945,7 @@ export default function CompanyProfilePage() {
                                   }}
                                   checked={
                                     !!field.value[
-                                      item.value as keyof typeof field.value
+                                    item.value as keyof typeof field.value
                                     ]
                                   }
                                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"

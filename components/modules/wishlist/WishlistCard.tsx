@@ -45,7 +45,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 
   const calculateRatings = useMemo(
     () => (rating: number) => {
-      const stars = [];
+      const stars: Array<React.ReactNode> = [];
       for (let i = 1; i <= 5; i++) {
         if (i <= rating) {
           stars.push(<FaStar key={i} color="#FFC107" size={20} />);
@@ -79,7 +79,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
             <Image
               src={
                 wishlistData?.productImages?.[0]?.image &&
-                validator.isURL(wishlistData.productImages[0].image)
+                  validator.isURL(wishlistData.productImages[0].image)
                   ? wishlistData.productImages[0].image
                   : PlaceholderImage
               }
@@ -102,14 +102,14 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
               title={
                 wishlistData?.product_productShortDescription?.length
                   ? wishlistData?.product_productShortDescription?.[0]
-                      ?.shortDescription
+                    ?.shortDescription
                   : "-"
               }
               className="truncate"
             >
               {wishlistData?.product_productShortDescription?.length
                 ? wishlistData?.product_productShortDescription?.[0]
-                    ?.shortDescription
+                  ?.shortDescription
                 : "-"}
             </p>
             <div className="my-1 flex">
