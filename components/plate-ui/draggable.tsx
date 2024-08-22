@@ -88,13 +88,7 @@ export const Draggable = withRef<'div', DraggableProps>(
 
     const state = useDraggableState({ element, onDropHandler });
     const { dropLine, isDragging, isHovered } = state;
-    const {
-      groupProps,
-      droplineProps,
-      gutterLeftProps,
-      previewRef,
-      handleRef,
-    } = useDraggable(state);
+    const { groupProps, droplineProps, gutterLeftProps, previewRef, handleRef, } = useDraggable(state);
 
     return (
       <div
@@ -121,7 +115,7 @@ export const Draggable = withRef<'div', DraggableProps>(
                 classNames.blockToolbar
               )}
             >
-              <div ref={handleRef} className="size-4">
+              <div className="size-4">
                 {isHovered && dragHandle}
               </div>
             </div>

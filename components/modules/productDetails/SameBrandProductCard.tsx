@@ -69,7 +69,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
 
   const calculateRatings = useMemo(
     () => (rating: number) => {
-      const stars = [];
+      const stars: Array<React.ReactNode> = [];
       for (let i = 1; i <= 5; i++) {
         if (i <= rating) {
           stars.push(<FaStar key={i} color="#FFC107" size={20} />);
@@ -96,7 +96,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
             <Image
               src={
                 productImages?.[0]?.image &&
-                validator.isURL(productImages[0].image)
+                  validator.isURL(productImages[0].image)
                   ? productImages[0].image
                   : PlaceholderImage
               }

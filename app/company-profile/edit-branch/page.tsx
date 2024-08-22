@@ -404,7 +404,7 @@ export default function EditBranchPage() {
                   name="businessTypeList"
                   options={memoizedTags || []}
                   placeholder="Business Type"
-                  error={form.formState.errors?.businessTypeList?.message}
+                  error={String(form.formState.errors?.businessTypeList?.message)}
                 />
 
                 <FormField
