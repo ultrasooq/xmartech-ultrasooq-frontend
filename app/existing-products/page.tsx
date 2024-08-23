@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   useAddMultiplePriceForProduct,
   useAllProducts,
+  useExistingProduct,
 } from "@/apis/queries/product.queries";
 import ProductCard from "@/components/modules/trending/ProductCard";
 import { debounce } from "lodash";
@@ -48,18 +49,18 @@ const ExistingProductsPage = () => {
 
   const me = useMe();
 
-  const allProductsQuery = useAllProducts({
+  const allProductsQuery = useExistingProduct({
     page,
     limit,
     sort: sortBy,
-    brandIds:
-      selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    brandIds: selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
     term: searchProductTerm !== "" ? searchProductTerm : undefined,
-    userId: me.data?.data?.id,
+    // userId: me.data?.data?.id,
+    brandAddedBy: me.data?.data?.id
   });
-  const brandsQuery = useBrands({
-    term: searchTerm,
-  });
+
+  const brandsQuery = useBrands({ term: searchTerm, addedBy: me.data?.data?.id, type: 'BRAND' });
+
   const addMultiplePriceForProductIds = useAddMultiplePriceForProduct();
 
   const memoizedBrands = useMemo(() => {
@@ -271,8 +272,8 @@ const ExistingProductsPage = () => {
                   <ProductCard
                     key={item.id}
                     item={item}
-                    onAdd={() => {}}
-                    onWishlist={() => {}}
+                    onAdd={() => { }}
+                    onWishlist={() => { }}
                     inWishlist={item?.inWishlist}
                     haveAccessToken={haveAccessToken}
                     isSelectable

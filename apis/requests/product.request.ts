@@ -98,23 +98,18 @@ export const updateProduct = (payload: IUpdateProductRequest) => {
   });
 };
 
-export const fetchAllProducts = (payload: {
-  page: number;
-  limit: number;
-  term?: string;
-  sort?: string;
-  brandIds?: string;
-  priceMin?: number;
-  priceMax?: number;
-  userId?: number;
-  categoryIds?: string;
-}) => {
+export const fetchExistingProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; brandAddedBy?: number; categoryIds?: string; }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProduct`,
-      payload,
-    ),
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/existingAllProduct`, payload,),
+  });
+};
+
+
+export const fetchAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; }) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/getAllProduct`, payload,),
   });
 };
 
