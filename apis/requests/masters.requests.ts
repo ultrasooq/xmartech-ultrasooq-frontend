@@ -10,11 +10,12 @@ export const fetchCountries = () => {
   });
 };
 
-export const fetchBrands = (payload: { term?: string }) => {
+export const fetchBrands = (payload: { term?: string, addedBy?: number, type?: string }) => {
   const query = new URLSearchParams();
-  if (!isEmpty(payload.term)) {
-    query.append("term", String(payload.term));
-  }
+  query.append("addedBy", String(payload.addedBy))
+
+  if (payload.term) query.append("term", String(payload.term));
+  if (payload.type) query.append("type", String(payload.type));
 
   return axios({
     method: "GET",
