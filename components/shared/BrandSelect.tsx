@@ -1,11 +1,13 @@
 import { useBrands, useCreateBrand } from "@/apis/queries/masters.queries";
 import { IBrands, IOption } from "@/utils/types/common.types";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { useToast } from "../ui/use-toast";
 import { Controller, useFormContext } from "react-hook-form";
 import { Label } from "../ui/label";
 import { useAuth } from "@/context/AuthContext";
+import Select from "react-select/dist/declarations/src/Select";
+import { GroupBase } from "react-select";
 
 const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48, }),
@@ -41,6 +43,8 @@ const ReactSelectInput = () => {
 
   const brandType = [{ label: 'Brand', value: 'BRAND' }, { label: 'Spare part', value: 'SPAREPART' }, { label: 'Own brand', value: 'OWNBRAND' }]
 
+  const brandSelect = useRef<Select<any, false, GroupBase<any>>>(null);
+
   return (
     <>
       <div className="mt-2 flex flex-col gap-y-3">
@@ -51,6 +55,9 @@ const ReactSelectInput = () => {
               field.onChange(newValue?.value);
               if (newValue?.value) {
                 setProductType(newValue?.value)
+                if (brandSelect.current) {
+                  brandSelect?.current?.clearValue()
+                }
               }
             }}
           />
@@ -63,7 +70,9 @@ const ReactSelectInput = () => {
         <Label>Brand</Label>
         <Controller name="brandId" control={formContext.control} render={({ field }) => (
           <CreatableSelect
-            {...field}
+            // {...field}
+            name={field.name}
+            ref={brandSelect}
             isClearable
             isDisabled={createBrand.isPending}
             isLoading={createBrand.isPending}
