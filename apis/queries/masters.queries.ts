@@ -20,7 +20,7 @@ export const useCountries = (enabled = true) =>
     enabled,
   });
 
-export const useBrands = (payload: { term?: string }, enabled = true) =>
+export const useBrands = (payload: { term?: string, addedBy?: number, type?: string }, enabled = true) =>
   useQuery({
     queryKey: ["brands", payload],
     queryFn: async () => {

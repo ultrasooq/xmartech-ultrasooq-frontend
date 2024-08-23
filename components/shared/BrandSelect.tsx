@@ -1,10 +1,11 @@
 import { useBrands, useCreateBrand } from "@/apis/queries/masters.queries";
 import { IBrands, IOption } from "@/utils/types/common.types";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { useToast } from "../ui/use-toast";
 import { Controller, useFormContext } from "react-hook-form";
 import { Label } from "../ui/label";
+import { useAuth } from "@/context/AuthContext";
 
 const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48, }),
@@ -15,13 +16,16 @@ const ReactSelectInput = () => {
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
 
-  const brandsQuery = useBrands({});
+  const [productType, setProductType] = useState<string | undefined>()
+
+  const { user } = useAuth();
+
+  const brandsQuery = useBrands({ addedBy: user?.id, type: productType });
   const createBrand = useCreateBrand();
 
   const memoizedBrands = useMemo(() => {
-    return brandsQuery?.data?.data.map((item: IBrands) => ({ label: item.brandName, value: item.id })) || [];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [brandsQuery?.data?.data?.length]);
+    return productType ? brandsQuery?.data?.data.map((item: IBrands) => ({ label: item.brandName, value: item.id })) || [] : [];
+  }, [brandsQuery?.data?.data, productType]);
 
   const handleCreate = async (inputValue: string) => {
     const response = await createBrand.mutateAsync({ brandName: inputValue });
@@ -40,17 +44,19 @@ const ReactSelectInput = () => {
   return (
     <>
       <div className="mt-2 flex flex-col gap-y-3">
-        <Label>Brand Type</Label>
-        <Controller name="brandType" control={formContext.control} render={({ field }) => (
-          <CreatableSelect {...field} isClearable isDisabled={createBrand.isPending} isLoading={createBrand.isPending} onCreateOption={handleCreate} options={brandType} styles={customStyles} instanceId="brandId"
+        <Label>Product Type</Label>
+        <Controller name="typeOfProduct" control={formContext.control} render={({ field }) => (
+          <CreatableSelect {...field} isClearable options={brandType} styles={customStyles} instanceId="typeOfProduct" value={brandType.find((item: IOption) => item.value === field.value,)}
             onChange={(newValue) => {
               field.onChange(newValue?.value);
-              setValue(newValue);
+              if (newValue?.value) {
+                setProductType(newValue?.value)
+              }
             }}
-            value={brandType.find((item: IOption) => item.value === field.value,)} />
+          />
         )} />
         <p className="text-[13px] text-red-500">
-          {formContext.formState.errors["brandType"]?.message as string}
+          {formContext.formState.errors["typeOfProduct"]?.message as string}
         </p>
       </div>
       <div className="mt-2 flex flex-col gap-y-3">

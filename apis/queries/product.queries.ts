@@ -5,6 +5,7 @@ import {
   createProduct,
   deleteProduct,
   fetchAllProducts,
+  fetchExistingProducts,
   fetchProductById,
   fetchProducts,
   fetchRelatedProducts,
@@ -151,31 +152,30 @@ export const useUpdateProduct = () => {
   });
 };
 
-export const useAllProducts = (
-  payload: {
-    page: number;
-    limit: number;
-    term?: string;
-    sort?: string;
-    brandIds?: string;
-    priceMin?: number;
-    priceMax?: number;
-    userId?: number;
-    categoryIds?: string;
+export const useExistingProduct = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; brandAddedBy?: number; categoryIds?: string; }, enabled = true,) => useQuery({
+  queryKey: ["existing-products", payload],
+  queryFn: async () => {
+    const res = await fetchExistingProducts(payload);
+    return res.data;
   },
-  enabled = true,
-) =>
-  useQuery({
-    queryKey: ["existing-products", payload],
-    queryFn: async () => {
-      const res = await fetchAllProducts(payload);
-      return res.data;
-    },
-    // onError: (err: APIResponseError) => {
-    //   console.log(err);
-    // },
-    enabled,
-  });
+  // onError: (err: APIResponseError) => {
+  //   console.log(err);
+  // },
+  enabled,
+});
+
+
+export const useAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; }, enabled = true,) => useQuery({
+  queryKey: ["existing-products", payload],
+  queryFn: async () => {
+    const res = await fetchAllProducts(payload);
+    return res.data;
+  },
+  // onError: (err: APIResponseError) => {
+  //   console.log(err);
+  // },
+  enabled,
+});
 
 export const useSameBrandProducts = (
   payload: {
