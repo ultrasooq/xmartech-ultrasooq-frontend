@@ -238,7 +238,7 @@ const Header = () => {
         <div className="container m-auto px-3">
           <div className="hidden sm:hidden md:flex md:gap-x-2.5">
             <div className="py-4 text-sm font-normal text-white md:w-5/12 lg:w-4/12">
-              <p>Welcome to Martfury Online Shopping Store!</p>
+              <p>Welcome to UltraSooq!</p>
             </div>
             <div className="flex justify-end py-4 text-sm font-normal text-white md:w-7/12 lg:w-8/12">
               <ul className="flex justify-end">

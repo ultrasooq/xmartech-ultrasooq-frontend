@@ -61,6 +61,7 @@ const formSchema = z.object({
     .min(2, { message: "Last Name is required" })
     .max(50, { message: "Last Name must be less than 50 characters" }),
   gender: z.string().trim().min(2, { message: "Gender is required" }),
+  userName: z.string().trim().min(5, { message: "Username is required" }),
   email: z
     .string()
     .trim()
@@ -115,6 +116,7 @@ export default function ProfilePage() {
       lastName: "",
       gender: "",
       email: "",
+      userName: "",
       phoneNumberList: [
         {
           cc: "",
@@ -280,44 +282,31 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (me.data) {
-      const {
-        profilePicture,
-        identityProof,
-        identityProofBack,
-        firstName,
-        lastName,
-        gender,
-        email,
-        cc,
-        phoneNumber,
-        dateOfBirth,
-        userPhone,
-        userSocialLink,
-      } = me.data?.data;
+      const { profilePicture, identityProof, identityProofBack, firstName, lastName, gender, email, cc, phoneNumber, dateOfBirth, userPhone, userSocialLink, userName } = me.data?.data;
 
       const phoneNumberList = userPhone.length
         ? userPhone.map((item: any) => ({
-            cc: item?.cc,
-            phoneNumber: item?.phoneNumber,
-          }))
+          cc: item?.cc,
+          phoneNumber: item?.phoneNumber,
+        }))
         : [
-            {
-              cc: cc || "",
-              phoneNumber: phoneNumber || "",
-            },
-          ];
+          {
+            cc: cc || "",
+            phoneNumber: phoneNumber || "",
+          },
+        ];
 
       const socialLinkList = userSocialLink.length
         ? userSocialLink.map((item: any) => ({
-            linkType: item?.linkType,
-            link: item?.link,
-          }))
+          linkType: item?.linkType,
+          link: item?.link,
+        }))
         : [
-            {
-              linkType: "",
-              link: "",
-            },
-          ];
+          {
+            linkType: "",
+            link: "",
+          },
+        ];
 
       form.reset({
         profilePicture: profilePicture || "",
@@ -327,6 +316,7 @@ export default function ProfilePage() {
         lastName,
         gender,
         email,
+        userName,
         phoneNumberList: phoneNumberList,
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
         socialLinkList: socialLinkList,
@@ -359,87 +349,81 @@ export default function ProfilePage() {
             </div>
             <div className="w-full">
               <Form {...form}>
-                <form
-                  className="flex flex-wrap"
-                  onSubmit={form.handleSubmit(onSubmit)}
-                >
-                  <FormField
-                    control={form.control}
-                    name="uploadImage"
-                    render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormControl>
-                          <div className="relative m-auto h-44 w-44 rounded-full border-2 border-dashed border-gray-300">
-                            <div className="relative h-full w-full">
-                              {imageFile || me.data?.data?.profilePicture ? (
-                                <>
-                                  <Image
-                                    src={
-                                      imageFile
-                                        ? URL.createObjectURL(imageFile[0])
-                                        : me.data?.data?.profilePicture
-                                          ? me.data?.data?.profilePicture
-                                          : "/images/company-logo.png"
-                                    }
-                                    alt="profile"
-                                    fill
-                                    className="rounded-full object-contain"
-                                    priority
-                                  />
-                                  <div className="absolute bottom-3 right-4 rounded-full bg-white p-1 shadow-md">
-                                    <Image
-                                      src="/images/camera.png"
-                                      width={29}
-                                      height={29}
-                                      alt="camera"
-                                      className=""
-                                    />
-                                  </div>
-                                </>
-                              ) : (
-                                <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                  <div className="flex h-full flex-col items-center justify-center">
-                                    <Image
-                                      src="/images/camera.png"
-                                      className="mb-3"
-                                      width={29}
-                                      height={29}
-                                      alt="camera"
-                                    />
-                                    <span>Upload Image</span>
-                                  </div>
-                                </div>
-                              )}
-
-                              <Input
-                                type="file"
-                                accept="image/*"
-                                multiple={false}
-                                className="!bottom-0 h-44 !w-full opacity-0"
-                                {...field}
-                                onChange={(event) => {
-                                  if (event.target.files?.[0]) {
-                                    if (
-                                      event.target.files[0].size > 524288000
-                                    ) {
-                                      toast({
-                                        title:
-                                          "Image size should be less than 500MB",
-                                        variant: "danger",
-                                      });
-                                      return;
-                                    }
-                                    setImageFile(event.target.files);
+                <form className="flex flex-wrap" onSubmit={form.handleSubmit(onSubmit)}>
+                  <FormField control={form.control} name="uploadImage" render={({ field }) => (
+                    <FormItem className="mb-4 w-full">
+                      <FormControl>
+                        <div className="relative m-auto h-44 w-44 rounded-full border-2 border-dashed border-gray-300">
+                          <div className="relative h-full w-full">
+                            {imageFile || me.data?.data?.profilePicture ? (
+                              <>
+                                <Image
+                                  src={
+                                    imageFile
+                                      ? URL.createObjectURL(imageFile[0])
+                                      : me.data?.data?.profilePicture
+                                        ? me.data?.data?.profilePicture
+                                        : "/images/company-logo.png"
                                   }
-                                }}
-                                id="uploadImage"
-                              />
-                            </div>
+                                  alt="profile"
+                                  fill
+                                  className="rounded-full object-contain"
+                                  priority
+                                />
+                                <div className="absolute bottom-3 right-4 rounded-full bg-white p-1 shadow-md">
+                                  <Image
+                                    src="/images/camera.png"
+                                    width={29}
+                                    height={29}
+                                    alt="camera"
+                                    className=""
+                                  />
+                                </div>
+                              </>
+                            ) : (
+                              <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                <div className="flex h-full flex-col items-center justify-center">
+                                  <Image
+                                    src="/images/camera.png"
+                                    className="mb-3"
+                                    width={29}
+                                    height={29}
+                                    alt="camera"
+                                  />
+                                  <span>Upload Image</span>
+                                </div>
+                              </div>
+                            )}
+
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              multiple={false}
+                              className="!bottom-0 h-44 !w-full opacity-0"
+                              {...field}
+                              onChange={(event) => {
+                                if (event.target.files?.[0]) {
+                                  if (
+                                    event.target.files[0].size > 524288000
+                                  ) {
+                                    toast({
+                                      title:
+                                        "Image size should be less than 500MB",
+                                      variant: "danger",
+                                    });
+                                    return;
+                                  }
+                                  setImageFile(event.target.files);
+                                }
+                              }}
+                              id="uploadImage"
+                            />
                           </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                   />
 
                   <ControlledTextInput
@@ -500,10 +484,23 @@ export default function ProfilePage() {
                   />
 
                   <ControlledTextInput
+                    label="User Name"
+                    name="userName"
+                    placeholder="Enter Your User Name"
+                  />
+
+                  <ControlledTextInput
                     label="Email"
                     name="email"
                     placeholder="Enter Your Email"
                     disabled
+                  />
+
+                  <ControlledTextInput
+                    label="New Password"
+                    name="newPassword"
+                    placeholder="**********"
+                    type="password"
                   />
 
                   <div className="w-full">
@@ -600,7 +597,7 @@ export default function ProfilePage() {
                                 <Image
                                   src={
                                     SOCIAL_MEDIA_ICON[
-                                      watchSocialMedia[index]?.linkType
+                                    watchSocialMedia[index]?.linkType
                                     ]
                                   }
                                   className="mr-1.5"
@@ -708,11 +705,11 @@ export default function ProfilePage() {
                                       <Image
                                         src={
                                           identityFrontImageFile &&
-                                          typeof identityFrontImageFile ===
+                                            typeof identityFrontImageFile ===
                                             "object"
                                             ? URL.createObjectURL(
-                                                identityFrontImageFile[0],
-                                              )
+                                              identityFrontImageFile[0],
+                                            )
                                             : me.data?.data?.identityProof
                                               ? me.data?.data?.identityProof
                                               : "/images/company-logo.png"
@@ -792,11 +789,11 @@ export default function ProfilePage() {
                                       <Image
                                         src={
                                           identityBackImageFile &&
-                                          typeof identityBackImageFile ===
+                                            typeof identityBackImageFile ===
                                             "object"
                                             ? URL.createObjectURL(
-                                                identityBackImageFile[0],
-                                              )
+                                              identityBackImageFile[0],
+                                            )
                                             : me.data?.data?.identityProofBack
                                               ? me.data?.data?.identityProofBack
                                               : "/images/company-logo.png"
