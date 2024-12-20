@@ -25,10 +25,7 @@ type MultiSelectCategoryProps = {
   branchId?: string | undefined | null;
 };
 
-const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
-  name,
-  branchId,
-}) => {
+const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name, branchId, }) => {
   const formContext = useFormContext();
   const [categoryId, setCategoryId] = useState<number | undefined>();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);

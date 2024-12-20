@@ -3,14 +3,7 @@ import { Button } from "@/components/ui/button";
 import React, { useEffect, useMemo, useState } from "react";
 import { useUpdateCompanyProfile } from "@/apis/queries/company.queries";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
@@ -28,54 +21,37 @@ import { ICountries, OptionProps } from "@/utils/types/common.types";
 import { NO_OF_EMPLOYEES_LIST } from "@/utils/constants";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
+import QuillEditor from "@/components/shared/Quill/QuillEditor";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
   logo: z.string().trim().optional(),
-  companyName: z
-    .string()
-    .trim()
-    .min(2, { message: "Company Name is required" })
-    .max(50, { message: "Company Name must be less than 50 characters" }),
-  businessTypeList: z
-    .string()
-    .transform((value) => [{ businessTypeId: Number(value) }]),
-  annualPurchasingVolume: z
-    .string()
-    .trim()
-    .min(2, { message: "Annual Purchasing Volume is required" })
-    .max(50, {
-      message: "Annual Purchasing Volume must be less than 20 characters",
-    }),
-  address: z
-    .string()
-    .trim()
-    .min(2, { message: "Address is required" })
-    .max(50, {
-      message: "Address must be less than 50 characters",
-    }),
+  companyName: z.string().trim().min(2, { message: "Company Name is required" }).max(50, { message: "Company Name must be less than 50 characters" }),
+  businessTypeList: z.string().transform((value) => [{ businessTypeId: Number(value) }]),
+  annualPurchasingVolume: z.string().trim().min(2, { message: "Annual Purchasing Volume is required" }).max(50, { message: "Annual Purchasing Volume must be less than 20 characters", }),
+  address: z.string().trim().min(2, { message: "Address is required" }).max(50, { message: "Address must be less than 50 characters", }),
   city: z.string().trim().min(2, { message: "City is required" }),
   province: z.string().trim().min(2, { message: "Province is required" }),
   country: z.string().trim().min(2, { message: "Country is required" }),
-  yearOfEstablishment: z
-    .string()
-    .trim()
-    .min(2, { message: "Year Of Establishment is required" })
-    .transform((value) => Number(value)),
-  totalNoOfEmployee: z
-    .string()
-    .trim()
-    .min(2, { message: "Total No Of Employee is required" }),
+  yearOfEstablishment: z.string().trim().min(2, { message: "Year Of Establishment is required" }).transform((value) => Number(value)),
+  totalNoOfEmployee: z.string().trim().min(2, { message: "Total No Of Employee is required" }),
   aboutUs: z.string().trim().optional(),
-  aboutUsJson: z.array(z.any()).optional(),
+  aboutUsJson: z.string().optional(),
+  cc: z.string().trim(),
+  phoneNumber: z.string().trim().min(2, { message: "Phone Number is required", }).min(8, { message: "Phone Number must be minimum of 8 digits", }).max(20, { message: "Phone Number cannot be more than 20 digits", }),
 });
 
 export default function EditProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
+
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      cc: "",
+      phoneNumber: "",
       uploadImage: undefined,
       logo: "",
       profileType: "COMPANY", // dont remove value
@@ -90,9 +66,11 @@ export default function EditProfilePage() {
       yearOfEstablishment: "",
       totalNoOfEmployee: "",
       aboutUs: "",
-      aboutUsJson: undefined,
+      aboutUsJson: "",
     },
   });
+
+
   const [imageFile, setImageFile] = useState<FileList | null>();
   const [activeUserId, setActiveUserId] = useState<string | null>();
 
@@ -140,14 +118,7 @@ export default function EditProfilePage() {
   };
 
   const onSubmit = async (formData: any) => {
-    let data = {
-      ...formData,
-      aboutUs: formData.aboutUsJson
-        ? JSON.stringify(formData.aboutUsJson)
-        : undefined,
-      profileType: "COMPANY",
-      userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number,
-    };
+    let data = { ...formData, aboutUs: formData.aboutUsJson, profileType: "COMPANY", userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number, };
 
     formData.uploadImage = imageFile;
     let getImageUrl;
@@ -160,24 +131,13 @@ export default function EditProfilePage() {
     delete data.uploadImage;
     delete data.aboutUsJson;
 
-    console.log(data);
-    // return;
     const response = await updateCompanyProfile.mutateAsync(data);
-
     if (response.status && response.data) {
-      toast({
-        title: "Profile Edit Successful",
-        description: response.message,
-        variant: "success",
-      });
+      toast({ title: "Profile Edit Successful", description: response.message, variant: "success", });
       form.reset();
       router.push("/company-profile-details");
     } else {
-      toast({
-        title: "Profile Edit Failed",
-        description: response.message,
-        variant: "danger",
-      });
+      toast({ title: "Profile Edit Failed", description: response.message, variant: "danger", });
     }
   };
 
@@ -190,7 +150,6 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (uniqueUser.data?.data) {
       const userProfile = uniqueUser.data?.data?.userProfile?.[0];
-
       form.reset({
         logo: userProfile?.logo || "",
         address: userProfile?.address || "",
@@ -201,22 +160,15 @@ export default function EditProfilePage() {
         totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
         annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
         aboutUs: userProfile?.aboutUs || "",
-        aboutUsJson: userProfile?.aboutUs
-          ? handleDescriptionParse(userProfile?.aboutUs)
-          : undefined,
+        aboutUsJson: userProfile?.aboutUs,
         companyName: userProfile?.companyName || "",
-        businessTypeList:
-          userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() ||
-          undefined,
+        businessTypeList: userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() || undefined,
+        cc: userProfile?.cc,
+        phoneNumber: userProfile?.phoneNumber,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    uniqueUser.data?.data?.userProfile?.length,
-    memoizedTags?.length,
-    memoizedCountries?.length,
-    memoizedLastTwoHundredYears?.length,
-  ]);
+  }, [uniqueUser.data?.data?.userProfile?.length, memoizedTags?.length, memoizedCountries?.length, memoizedLastTwoHundredYears?.length,]);
 
   return (
     <section className="relative w-full py-7">
@@ -260,15 +212,15 @@ export default function EditProfilePage() {
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
                               {imageFile ||
-                              uniqueUser.data?.data?.userProfile?.[0]?.logo ? (
+                                uniqueUser.data?.data?.userProfile?.[0]?.logo ? (
                                 <Image
                                   src={
                                     imageFile
                                       ? URL.createObjectURL(imageFile[0])
                                       : uniqueUser.data?.data?.userProfile?.[0]
-                                            ?.logo
+                                        ?.logo
                                         ? uniqueUser.data?.data
-                                            ?.userProfile?.[0]?.logo
+                                          ?.userProfile?.[0]?.logo
                                         : "/images/company-logo.png"
                                   }
                                   alt="profile"
@@ -396,12 +348,11 @@ export default function EditProfilePage() {
                     placeholder="Province"
                   />
 
-                  <ControlledSelectInput
-                    label="Country"
-                    name="country"
-                    options={memoizedCountries}
-                  />
+                  <ControlledSelectInput label="Country" name="country" options={memoizedCountries} />
                 </div>
+
+                <ControlledPhoneInput name={"phoneNumber"} countryName={"cc"} placeholder="Enter Your Phone Number" />
+
               </div>
 
               <div className="mb-5 w-full">
@@ -413,45 +364,25 @@ export default function EditProfilePage() {
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                   {/* TODO: fix submit value type */}
-                  <ControlledSelectInput
-                    label="Year Of Establishment"
-                    name="yearOfEstablishment"
-                    options={memoizedLastTwoHundredYears?.map((item: any) => ({
-                      label: item?.toString(),
-                      value: item?.toString(),
-                    }))}
-                  />
-
-                  <ControlledSelectInput
-                    label="Total Number of Employees"
-                    name="totalNoOfEmployee"
-                    options={NO_OF_EMPLOYEES_LIST}
-                  />
+                  <ControlledSelectInput label="Year Of Establishment" name="yearOfEstablishment" options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))} />
+                  <ControlledSelectInput label="Total Number of Employees" name="totalNoOfEmployee" options={NO_OF_EMPLOYEES_LIST} />
                 </div>
 
-                <ControlledRichTextEditor label="About Us" name="aboutUsJson" />
+                <QuillEditor label="About Us" name="aboutUsJson" />
               </div>
             </div>
 
-            <Button
-              disabled={updateCompanyProfile.isPending || upload.isPending}
-              type="submit"
-              className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
-            >
-              {updateCompanyProfile.isPending || upload.isPending ? (
-                <>
-                  <Image
-                    src="/images/load.png"
-                    alt="loader-icon"
-                    width={20}
-                    height={20}
-                    className="mr-2 animate-spin"
-                  />
-                  Please wait
-                </>
-              ) : (
-                "Edit changes"
-              )}
+            <Button disabled={updateCompanyProfile.isPending || upload.isPending} type="submit" className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90">
+              {
+                updateCompanyProfile.isPending || upload.isPending ? (
+                  <>
+                    <Image src="/images/load.png" alt="loader-icon" width={20} height={20} className="mr-2 animate-spin" />
+                    Please wait
+                  </>
+                ) : (
+                  "Edit changes"
+                )
+              }
             </Button>
           </form>
         </Form>

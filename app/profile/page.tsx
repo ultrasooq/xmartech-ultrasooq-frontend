@@ -182,11 +182,8 @@ export default function ProfilePage() {
   };
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    const data = {
-      ...formData,
-      phoneNumber: formData.phoneNumberList[0].phoneNumber,
-      dateOfBirth: formData.dateOfBirth.toISOString(),
-    };
+    const data = { ...formData, phoneNumber: formData.phoneNumberList[0].phoneNumber, dateOfBirth: formData.dateOfBirth.toISOString(), };
+
     formData.uploadImage = imageFile;
     formData.uploadIdentityFrontImage = identityFrontImageFile;
     formData.uploadIdentityBackImage = identityBackImageFile;
@@ -198,21 +195,11 @@ export default function ProfilePage() {
     if (formData.uploadImage) {
       getImageUrl = await handleUploadedFile(formData.uploadImage);
     }
-    if (
-      formData.uploadIdentityFrontImage &&
-      typeof formData.uploadIdentityFrontImage === "object"
-    ) {
-      getIdentityImageUrl = await handleUploadedFile(
-        formData.uploadIdentityFrontImage,
-      );
+    if (formData.uploadIdentityFrontImage && typeof formData.uploadIdentityFrontImage === "object") {
+      getIdentityImageUrl = await handleUploadedFile(formData.uploadIdentityFrontImage,);
     }
-    if (
-      formData.uploadIdentityBackImage &&
-      typeof formData.uploadIdentityBackImage === "object"
-    ) {
-      getIdentityBackImageUrl = await handleUploadedFile(
-        formData.uploadIdentityBackImage,
-      );
+    if (formData.uploadIdentityBackImage && typeof formData.uploadIdentityBackImage === "object") {
+      getIdentityBackImageUrl = await handleUploadedFile(formData.uploadIdentityBackImage,);
     }
 
     //TODO: identity image upload
@@ -229,29 +216,17 @@ export default function ProfilePage() {
       data.identityProofBack = getIdentityBackImageUrl;
     }
 
-    data.socialLinkList = data.socialLinkList.filter(
-      (link) => link.link.trim() !== "" && link.linkType.trim() !== "",
-    );
+    data.socialLinkList = data.socialLinkList.filter((link) => link.link.trim() !== "" && link.linkType.trim() !== "",);
 
-    if (
-      data.socialLinkList.length &&
-      data.socialLinkList.some((link) => !validator.isURL(link.link))
-    ) {
-      form.setError("socialLinkList", {
-        type: "custom",
-        message: "Invalid URL",
-      });
+    if (data.socialLinkList.length && data.socialLinkList.some((link) => !validator.isURL(link.link))) {
+      form.setError("socialLinkList", { type: "custom", message: "Invalid URL", });
       return;
     }
     // console.log(data);
     // return;
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
-      toast({
-        title: "Profile Updated",
-        description: "Your profile has been updated successfully",
-        variant: "success",
-      });
+      toast({ title: "Profile Updated", description: "Your profile has been updated successfully", variant: "success", });
       form.reset();
       const tradeRole = response.data?.tradeRole;
       if (tradeRole === "BUYER") {
@@ -270,11 +245,7 @@ export default function ProfilePage() {
         }
       }
     } else {
-      toast({
-        title: "Profile Update Failed",
-        description: response.message,
-        variant: "danger",
-      });
+      toast({ title: "Profile Update Failed", description: response.message, variant: "danger", });
     }
   };
 
@@ -483,25 +454,9 @@ export default function ProfilePage() {
                     name="dateOfBirth"
                   />
 
-                  <ControlledTextInput
-                    label="User Name"
-                    name="userName"
-                    placeholder="Enter Your User Name"
-                  />
-
-                  <ControlledTextInput
-                    label="Email"
-                    name="email"
-                    placeholder="Enter Your Email"
-                    disabled
-                  />
-
-                  <ControlledTextInput
-                    label="New Password"
-                    name="newPassword"
-                    placeholder="**********"
-                    type="password"
-                  />
+                  <ControlledTextInput label="User Name" name="userName" placeholder="Enter Your User Name" />
+                  <ControlledTextInput label="Email" name="email" placeholder="Enter Your Email" disabled />
+                  <ControlledTextInput label="New Password" name="newPassword" placeholder="**********" type="password" />
 
                   <div className="w-full">
                     <div className="flex w-full items-center justify-between">
@@ -535,11 +490,7 @@ export default function ProfilePage() {
 
                   {fieldArrayForPhoneNumber.fields.map((field, index) => (
                     <div key={field.id} className="relative w-full">
-                      <ControlledPhoneInput
-                        name={`phoneNumberList.${index}.phoneNumber`}
-                        countryName={`phoneNumberList.${index}.cc`}
-                        placeholder="Enter Your Phone Number"
-                      />
+                      <ControlledPhoneInput name={`phoneNumberList.${index}.phoneNumber`} countryName={`phoneNumberList.${index}.cc`} placeholder="Enter Your Phone Number" />
 
                       {index !== 0 ? (
                         <Button
