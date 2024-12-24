@@ -213,7 +213,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>
-                      {vendorDiscount ? `${vendorDiscount}%` : "-" || "-"}
+                      {vendorDiscount ? `${vendorDiscount}%` : "-"}
                     </span>
                   </div>
                 </div>
@@ -223,7 +223,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>
-                      {consumerDiscount ? `${consumerDiscount}%` : "-" || "-"}
+                      {consumerDiscount ? `${consumerDiscount}%` : "-"}
                     </span>
                   </div>
                 </div>

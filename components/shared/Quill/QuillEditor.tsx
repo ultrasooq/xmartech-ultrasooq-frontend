@@ -1,7 +1,8 @@
-import React from 'react'
+import dynamic from 'next/dynamic';
 import { Controller, useFormContext } from 'react-hook-form';
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 export default function QuillEditor({ label, name, }: { label: string; name: string; }) {
     const formContext = useFormContext();

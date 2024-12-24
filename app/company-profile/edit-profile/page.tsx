@@ -23,7 +23,6 @@ import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTe
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import QuillEditor from "@/components/shared/Quill/QuillEditor";
-import { useSearchParams } from "next/navigation";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -80,7 +79,6 @@ export default function EditProfilePage() {
     !!activeUserId,
   );
 
-  const searchParams = useSearchParams();
   const countriesQuery = useCountries();
   const tagsQuery = useTags();
   const upload = useUploadFile();
@@ -144,12 +142,10 @@ export default function EditProfilePage() {
   };
 
   useEffect(() => {
-    if (searchParams && searchParams.has("userId")) {
-      const params = new URLSearchParams(searchParams.toString());
-      let userId = params.get("userId");
-      setActiveUserId(userId);
-    }
-  }, [searchParams]);
+    const params = new URLSearchParams(document.location.search);
+    let userId = params.get("userId");
+    setActiveUserId(userId);
+  }, []);
 
   useEffect(() => {
     if (uniqueUser.data?.data) {
