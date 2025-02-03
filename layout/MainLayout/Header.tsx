@@ -201,7 +201,8 @@ const Header = () => {
       variant: "success",
     });
 
-    router.push(data?.url || "/home");
+    // router.push(data?.url || "/home");
+    router.push("/home");
   };
 
   const wrapperRef = useRef(null);
