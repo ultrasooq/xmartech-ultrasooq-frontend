@@ -171,7 +171,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           <div className="select_type !items-start gap-x-4">
             <div className="select_type_checkbox">
-              <Controller
+              {/* <Controller
                 name="isProductConditionRequired"
                 control={formContext.control}
                 render={({ field }) => (
@@ -181,7 +181,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     className="data-[state=checked]:!bg-dark-orange"
                   />
                 )}
-              />
+              /> */}
+              <input type="checkbox" className="h-[20px] w-[20px]" />
             </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Product Condition</Label>

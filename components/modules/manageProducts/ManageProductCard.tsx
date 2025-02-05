@@ -125,7 +125,46 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
             </div>
             <div className="form-container">
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="space-y-1 rounded bg-[#f1f1f1] p-1">
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <input type="checkbox" className="h-[20px] w-[20px]" />
+                    <div className="text-[14px] font-semibold">Stock</div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <input type="checkbox" className="h-[20px] w-[20px]" />
+                    <div className="text-[14px] font-semibold">Price</div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                {/* <div className="space-y-1 rounded bg-[#f1f1f1] p-1">
                   <div className="text-with-checkagree">
                     <label className="text-col" htmlFor="setUpPriceCheck">
                       Stock
@@ -141,7 +180,6 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </span>
                   </div>
                 </div>
-
                 <div className="space-y-1 rounded bg-[#f1f1f1] p-1">
                   <div className="text-with-checkagree">
                     <label className="text-col" htmlFor="setUpPriceCheck">
@@ -155,10 +193,40 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         : offerPrice || "-"}
                     </span>
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">Brand</div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <select className="m-0 w-[100%] text-center focus:border-none focus:outline-none">
+                      <option>New</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Deliver After
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+                {/* <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <Label>Deliver After</Label>
                   <span>
                     {deliveryAfter
@@ -169,14 +237,51 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <Label>Product Location</Label>
                   <span>{productLocation || "-"}</span>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
           <div className="rightdiv">
             <div className="form-container">
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">Time Open</div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">Time Close</div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                {/* <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label>Time Open</label>
                   <div className="theme-inputValue-picker-upDown">
                     <span>{timeOpen || "-"}</span>
@@ -188,11 +293,24 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="theme-inputValue-picker-upDown">
                     <span>{timeClose || "-"}</span>
                   </div>
-                </div>
+                </div> */}
               </div>
 
-              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex w-[40%] items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Customer Type
+                    </div>
+                  </div>
+                  <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <select className="m-0 w-[100%] text-center focus:border-none focus:outline-none">
+                      <option>Everyone</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Consumer Type
                   </label>
@@ -203,18 +321,201 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     Sell Type
                   </label>
                   <span>{sellType || "-"}</span>
+                </div> */}
+              </div>
+
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex w-[40%] items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">Sell Type</div>
+                  </div>
+                  <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <select className="m-0 w-[100%] text-center focus:border-none focus:outline-none">
+                      <option>Normal Sell</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Vendor Discount
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Consumer Discount
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Min Quantity
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Max Quantity
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Min Consumer
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Max Consumer
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Min Qty Consumer
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap space-y-1">
+                  <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="text-[14px] font-semibold">
+                      Max Qty Consumer
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                      -
+                    </button>
+                    <input
+                      type="text"
+                      value={1}
+                      className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                    />
+                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                 <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
                   <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Vendor Discount
                   </label>
                   <div className="theme-inputValue-picker-upDown">
-                    <span>
-                      {vendorDiscount ? `${vendorDiscount}%` : "-"}
-                    </span>
+                    <span>{vendorDiscount ? `${vendorDiscount}%` : "-"}</span>
                   </div>
                 </div>
                 <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
@@ -278,7 +579,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     <span>{maxQuantityPerCustomer || "-"}</span>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
