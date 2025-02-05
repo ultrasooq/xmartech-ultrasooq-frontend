@@ -517,7 +517,7 @@ const CreateProductPage = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                 <BasicInformationSection tagsList={memoizedTags} activeProductType={activeProductType} />
 
-                <ProductDetailsSection />
+                {/* <ProductDetailsSection /> */}
 
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">

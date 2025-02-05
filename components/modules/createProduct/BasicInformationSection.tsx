@@ -53,7 +53,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
   const photosRef = useRef<HTMLInputElement>(null);
   const [listIds, setListIds] = useState<string[]>([]);
   const [catList, setCatList] = useState<any[]>([]);
-  const [currentId, setCurrentId] = useState<string>("");
+  const [currentId, setCurrentId] = useState<string>('184');
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   // const upload = useUploadFile();
@@ -147,6 +147,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
                               setListIds([...listIds, e.target.value]);
                             }}
                             value={catList[0]?.id || ""}
+                            disabled={true} // This makes the select field disabled
                           >
                             <option value="">Select Category</option>
                             {memoizedCategories.map((item: ISelectOptions) => (
