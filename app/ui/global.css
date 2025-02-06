@@ -3586,7 +3586,7 @@
   .existing-product-add-lists .existing-product-add-item {
     padding: 10px;
     width: 100%;
-    max-width: 33.33%;
+    max-width: 50%;
     display: flex;
   }
 
@@ -3597,7 +3597,7 @@
 
   .existing-product-add-lists .existing-product-add-box-row {
     display: flex;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
   }
 
   .existing-product-add-lists .existing-product-add-box .leftdiv {
@@ -3609,7 +3609,7 @@
 
   .existing-product-add-lists .existing-product-add-box .rightdiv {
     width: 100%;
-    padding: 0 10px 10px;
+    padding: 10px 10px 0;
     max-width: 100%;
   }
 
@@ -3617,7 +3617,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100px;
+    height: 160px;
     padding-bottom: 10px;
     position: relative;
   }
@@ -4169,7 +4169,7 @@
   }
 
   .existing-product-add-layout {
-    padding-right: calc(232px + 24px);
+    padding-right: calc(282px + 24px);
     padding-left: calc(232px + 24px);
   }
 
@@ -4182,17 +4182,17 @@
   }
 
   .existing-product-add-body .manage_product_list {
-    width: 232px !important;
+    width: 282px !important;
     max-width: unset !important;
     margin: 0 !important;
   }
   .existing-product-add-wrapper {
     display: flex;
     column-gap: 24px;
-    width: calc(100% + calc(232px + 24px));
+    width: calc(100% + calc(282px + 24px));
   }
   .existing-product-add-wrapper .left-content {
-    width: calc(100% - calc(232px + 24px));
+    width: calc(100% - calc(282px + 24px));
   }
 
   /* start: responsive */
