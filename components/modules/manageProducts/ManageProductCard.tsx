@@ -8,6 +8,7 @@ import validator from "validator";
 import EditIcon from "@/public/images/edit-rfq.png";
 // import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { IoIosEyeOff } from "react-icons/io";
 
 type ManageProductCardProps = {
   selectedIds?: number[];
@@ -81,6 +82,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   onCheckedChange={(checked) => onSelectedId?.(checked, id)}
                 />
               </div>
+              <div className="existing_product_checkbox left-[30px] z-10 text-[20px] text-gray-500">
+                <IoIosEyeOff />
+              </div>
               <div className="relative mx-auto h-[100%] w-[100%]">
                 <Image
                   src={
@@ -128,7 +132,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
                     <input type="checkbox" className="h-[20px] w-[20px]" />
-                    <div className="text-[14px] font-semibold">Stock</div>
+                    <div className="text-[12px] font-semibold">Stock</div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                     <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
@@ -147,7 +151,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
                     <input type="checkbox" className="h-[20px] w-[20px]" />
-                    <div className="text-[14px] font-semibold">Price</div>
+                    <div className="text-[12px] font-semibold">Price</div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                     <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
@@ -198,7 +202,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">Brand</div>
+                    <div className="text-[12px] font-semibold">Brand</div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                     <select className="m-0 w-[100%] text-center focus:border-none focus:outline-none">
@@ -208,7 +212,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Deliver After
                     </div>
                   </div>
@@ -239,6 +243,43 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <span>{productLocation || "-"}</span>
                 </div> */}
               </div>
+
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-1">
+                  <button
+                    type="button"
+                    className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
+                  >
+                    Update
+                  </button>
+                </div>
+                <div className="flex flex-wrap space-y-1">
+                  <button
+                    type="button"
+                    className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
+                  >
+                    Add New
+                  </button>
+                </div>
+              </div>
+              <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                <div className="flex flex-wrap space-y-1">
+                  <button
+                    type="button"
+                    className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
+                  >
+                    reset
+                  </button>
+                </div>
+                <div className="flex flex-wrap space-y-1">
+                  <button
+                    type="button"
+                    className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
+                  >
+                    remove
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <div className="rightdiv">
@@ -246,7 +287,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">Time Open</div>
+                    <div className="text-[12px] font-semibold">Time Open</div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                     <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
@@ -264,7 +305,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">Time Close</div>
+                    <div className="text-[12px] font-semibold">Time Close</div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                     <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
@@ -299,12 +340,12 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex w-[40%] items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Customer Type
                     </div>
                   </div>
                   <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <select className="m-0 w-[100%] text-center focus:border-none focus:outline-none">
+                    <select className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none">
                       <option>Everyone</option>
                     </select>
                   </div>
@@ -327,10 +368,10 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex w-[40%] items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">Sell Type</div>
+                    <div className="text-[12px] font-semibold">Sell Type</div>
                   </div>
                   <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <select className="m-0 w-[100%] text-center focus:border-none focus:outline-none">
+                    <select className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none">
                       <option>Normal Sell</option>
                     </select>
                   </div>
@@ -340,7 +381,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Vendor Discount
                     </div>
                   </div>
@@ -360,7 +401,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Consumer Discount
                     </div>
                   </div>
@@ -383,7 +424,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Min Quantity
                     </div>
                   </div>
@@ -403,7 +444,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Max Quantity
                     </div>
                   </div>
@@ -426,7 +467,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Min Consumer
                     </div>
                   </div>
@@ -446,7 +487,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Max Consumer
                     </div>
                   </div>
@@ -469,7 +510,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Min Qty Consumer
                     </div>
                   </div>
@@ -489,7 +530,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[14px] font-semibold">
+                    <div className="text-[12px] font-semibold">
                       Max Qty Consumer
                     </div>
                   </div>
