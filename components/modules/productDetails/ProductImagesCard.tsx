@@ -31,6 +31,7 @@ type ProductImagesCardProps = {
   haveAccessToken: boolean;
   inWishlist?: boolean;
   askForPrice?: string;
+  openCartCard: () => void;
 };
 
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
@@ -44,6 +45,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   haveAccessToken,
   inWishlist,
   askForPrice,
+  openCartCard
 }) => {
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
@@ -166,14 +168,16 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             <div className="flex w-full gap-x-3 self-end">
               <Button
                 type="button"
-                onClick={hasItem ? onToCart : onAdd}
+                // onClick={hasItem ? onToCart : onAdd}
+                onClick={hasItem ? openCartCard : onAdd}
                 className="h-14 flex-1 rounded-none bg-color-yellow text-base"
               >
                 {hasItem ? "Send To Cart" : "Add To Cart"}
               </Button>
               <Button
                 type="button"
-                onClick={onToCheckout}
+                // onClick={onToCheckout}
+                onClick={onToCart}
                 className="h-14 flex-1 rounded-none bg-dark-orange text-base"
               >
                 Buy Now

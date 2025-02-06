@@ -184,6 +184,11 @@ const ProductDetailsPage = () => {
     }
   };
 
+  const handelOpenCartLayout = async () => {
+    alert('Hiii')
+    
+  }
+
   const handleDeleteFromWishlist = async () => {
     const response = await deleteFromWishlist.mutateAsync({
       productId: Number(searchParams?.id),
@@ -262,6 +267,7 @@ const ProductDetailsPage = () => {
               onAdd={() => handleAddToCart(1, "add")}
               onToCart={handleCartPage}
               onToCheckout={handleCheckoutPage}
+              openCartCard={handelOpenCartLayout}
               hasItem={hasItemByUser || hasItemByDevice}
               isLoading={
                 !(
