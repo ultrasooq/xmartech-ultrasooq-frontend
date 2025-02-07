@@ -259,8 +259,8 @@ const Header = () => {
                     <option className="bg-dark-cyan">AUD</option>
                   </select>
                 </li>
-                <li className="px-2 pr-0 text-sm font-normal text-white">
-                <GoogleTranslate />
+                <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
+                  <GoogleTranslate />
                   {/* <select className="border-0 bg-transparent text-white focus:outline-none">
                     <option className="bg-dark-cyan">English</option>
                     <option className="bg-dark-cyan">Arabic</option>

@@ -15,6 +15,7 @@ import {
   useCartListByUserId,
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
+  useDeleteCartItem,
 } from "@/apis/queries/cart.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
@@ -35,6 +36,9 @@ import Footer from "@/components/shared/Footer";
 // import PhoneCallIcon from "@/public/images/phone-call.svg";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
+import ProductCard from "@/components/modules/cartList/ProductCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CartItem } from "@/utils/types/cart.types";
 
 const ProductDetailsPage = () => {
   const queryClient = useQueryClient();
@@ -84,6 +88,33 @@ const ProductDetailsPage = () => {
     },
     !!otherProductId && !!otherSellerId,
   );
+  const deleteCartItem = useDeleteCartItem();
+
+  const memoizedCartList = useMemo(() => {
+    if (cartListByUser.data?.data) {
+      return cartListByUser.data?.data || [];
+    } else if (cartListByDeviceQuery.data?.data) {
+      return cartListByDeviceQuery.data?.data || [];
+    }
+    return [];
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
+
+  const handleRemoveItemFromCart = async (cartId: number) => {
+    const response = await deleteCartItem.mutateAsync({ cartId });
+    if (response.status) {
+      toast({
+        title: "Item removed from cart",
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: "Item not removed from cart",
+        description: "Check your cart for more details",
+        variant: "danger",
+      });
+    }
+  };
 
   const productDetails = !otherSellerId
     ? productQueryById.data?.data
@@ -185,9 +216,8 @@ const ProductDetailsPage = () => {
   };
 
   const handelOpenCartLayout = async () => {
-    alert('Hiii')
-    
-  }
+    alert("Hiii");
+  };
 
   const handleDeleteFromWishlist = async () => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -259,7 +289,7 @@ const ProductDetailsPage = () => {
   return (
     <>
       <title>Store | Ultrasooq</title>
-      <div className="body-content-s1">
+      <div className="body-content-s1 relative">
         <div className="product-view-s1-left-right type2">
           <div className="container m-auto px-3">
             <ProductImagesCard
@@ -465,6 +495,76 @@ const ProductDetailsPage = () => {
                   productId={searchParams?.id as string}
                 />
               </div>
+            </div>
+          </div>
+        </div>
+        <div className="product_cart_modal absolute right-[20px] top-[20px] w-[300px]">
+          <div className="card-item cart-items">
+            <div className="inline-flex w-full items-center justify-center pt-5 text-center">
+              <a
+                href="#"
+                className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
+              >
+                go to cart page
+              </a>
+            </div>
+            <div className="cart-item-lists">
+              {haveAccessToken &&
+              !cartListByUser.data?.data?.length &&
+              !cartListByUser.isLoading ? (
+                <div className="px-3 py-6">
+                  <p className="my-3 text-center">No items in cart</p>
+                </div>
+              ) : null}
+
+              {!haveAccessToken &&
+              !cartListByDeviceQuery.data?.data?.length &&
+              !cartListByDeviceQuery.isLoading ? (
+                <div className="px-3 py-6">
+                  <p className="my-3 text-center">No items in cart</p>
+                </div>
+              ) : null}
+
+              <div className="px-3">
+                {cartListByUser.isLoading ? (
+                  <div className="my-3 space-y-3">
+                    {Array.from({ length: 2 }).map((_, i) => (
+                      <Skeleton key={i} className="h-28 w-full" />
+                    ))}
+                  </div>
+                ) : null}
+
+                {!haveAccessToken && cartListByDeviceQuery.isLoading ? (
+                  <div className="my-3 space-y-3">
+                    {Array.from({ length: 2 }).map((_, i) => (
+                      <Skeleton key={i} className="h-28 w-full" />
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+
+              {memoizedCartList?.map((item: CartItem) => (
+                <ProductCard
+                  key={item.id}
+                  cartId={item.id}
+                  productId={item.productId}
+                  productPriceId={item.productPriceId}
+                  productName={
+                    item.productPriceDetails?.productPrice_product?.productName
+                  }
+                  offerPrice={item.productPriceDetails?.offerPrice}
+                  productQuantity={item.quantity}
+                  productImages={
+                    item.productPriceDetails?.productPrice_product
+                      ?.productImages
+                  }
+                  consumerDiscount={item.productPriceDetails?.consumerDiscount}
+                  onAdd={handleAddToCart}
+                  onRemove={handleRemoveItemFromCart}
+                  onWishlist={handleAddToWishlist}
+                  haveAccessToken={haveAccessToken}
+                />
+              ))}
             </div>
           </div>
         </div>
