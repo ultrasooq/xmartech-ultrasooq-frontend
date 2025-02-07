@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { IoIosEyeOff } from "react-icons/io";
 
 interface Option {
   readonly label: string;
@@ -97,9 +98,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
   return (
     <aside className="manage_product_list h-fit">
-      <div className="manage_product_list_wrap">
+      <div className="manage_product_list_wrap text-center">
         <h2>Manage the product</h2>
-        <div className="all_select_button">
+        <div className="all_select_button flex w-full items-center justify-center">
           <button
             type="button"
             onClick={() => {
@@ -148,7 +149,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
         <div className="select_main_wrap">
           <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Person Location</Label>
+            {/* <Label>Person Location</Label> */}
             <Controller
               name="productLocationId"
               control={formContext.control}
@@ -169,9 +170,318 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             />
           </div>
 
-          <div className="select_type !items-start gap-x-4">
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <label>Brand</label>
+            <div className="w-[170px] border-[1px] border-[#ccc] border-[solid]">
+              <select className="h-[40px] w-full text-red-600">
+                <option>New</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+              <IoIosEyeOff className="text-[20px] text-[#ccc]" />
+              <label>Hide all Selected</label>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Ask for the Stock</label>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Ask for the Price</label>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Delivery after</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Time Open</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Time Close</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <label>Customer Type</label>
+            <div className="w-[170px] border-[1px] border-[#ccc] border-[solid]">
+              <select className="h-[40px] w-full text-red-600">
+                <option>Everyone</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <label>Sell Type</label>
+            <div className="w-[170px] border-[1px] border-[#ccc] border-[solid]">
+              <select className="h-[40px] w-full text-[#ccc]">
+                <option>Everyone</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Vendor discount</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Customer discount</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Min Quantity</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Max Quantity</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Min customer</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Max customer</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Min. Quity customer</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <input type="checkbox" className="h-[30px] w-[30px]" />
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <label>Max. Quity customer</label>
+              <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]">
+                <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={1}
+                  className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                />
+                <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+            <div className="flex flex-wrap space-y-1">
+              <button
+                type="button"
+                className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
+              >
+                Update
+              </button>
+            </div>
+            <div className="flex flex-wrap space-y-1">
+              <button
+                type="button"
+                className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
+              >
+                Add New
+              </button>
+            </div>
+          </div>
+          <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+            <div className="flex flex-wrap space-y-1">
+              <button
+                type="button"
+                className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
+              >
+                reset
+              </button>
+            </div>
+            <div className="flex flex-wrap space-y-1">
+              <button
+                type="button"
+                className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
+              >
+                remove
+              </button>
+            </div>
+          </div>
+
+          {/* <div className="select_type !items-start gap-x-4">
             <div className="select_type_checkbox">
-              {/* <Controller
+              <Controller
                 name="isProductConditionRequired"
                 control={formContext.control}
                 render={({ field }) => (
@@ -181,8 +491,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     className="data-[state=checked]:!bg-dark-orange"
                   />
                 )}
-              /> */}
-              <input type="checkbox" className="h-[20px] w-[20px]" />
+              />
             </div>
             <div className="flex w-full flex-col gap-y-3">
               <Label>Product Condition</Label>
@@ -213,9 +522,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 </p>
               ) : null}
             </div>
-          </div>
+          </div> */}
 
-          <div className="select_type mb-2 !items-start gap-x-4">
+          {/* <div className="select_type mb-2 flex items-center gap-x-4">
             <div className="select_type_checkbox">
               <Controller
                 name="isHiddenRequired"
@@ -230,7 +539,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               />
             </div>
 
-            <div className="flex w-full flex-col gap-y-3">
+            <div className="flex w-full items-center gap-1 border-[1px] border-[solid] border-gray-500 px-1 py-2">
+              <IoIosEyeOff className="text-[20px] text-[#ccc]" />
               <Label>Hide all Selected</Label>
               {watchIsHiddenRequired ? (
                 <div className="select_type_field !flex h-[48px] !flex-row !items-center text-gray-500">
@@ -244,9 +554,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 </div>
               ) : null}
             </div>
-          </div>
+          </div> */}
 
-          <div className="select_type mb-2 !items-start !gap-x-4">
+          {/* <div className="select_type mb-2 items-center !gap-x-4">
             <div className="select_type_checkbox">
               <Controller
                 name="isStockRequired"
@@ -260,7 +570,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 )}
               />
             </div>
-            <div className="flex w-full flex-col gap-y-3">
+            <div className="flex w-full items-center gap-1 border-[1px] border-[solid] border-gray-500 px-1 py-2">
               <Label>Ask for the Stock</Label>
               {!watchIsStockRequired ? (
                 <Controller
@@ -270,7 +580,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     <div className="space-y-2">
                       <Input
                         type="number"
-                        className="theme-form-control-s1"
+                        className="h-auto border-none text-black"
                         placeholder="Ask for the Stock"
                         {...field}
                         onWheel={(e) => e.currentTarget.blur()}
@@ -286,9 +596,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 </p>
               ) : null}
             </div>
-          </div>
+          </div> */}
 
-          <div className="select_type mb-2 !items-start !gap-x-4">
+          {/* <div className="select_type mb-2 items-center !gap-x-4">
             <div className="select_type_checkbox">
               <Controller
                 name="isOfferPriceRequired"
@@ -303,7 +613,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               />
             </div>
 
-            <div className="flex w-full flex-col gap-y-3">
+            <div className="flex w-full items-center gap-1 border-[1px] border-[solid] border-gray-500 px-1 py-2">
               <Label>Ask for the Price</Label>
               {!watchIsOfferPriceRequired ? (
                 <Controller
@@ -313,7 +623,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     <div className="space-y-2">
                       <Input
                         type="number"
-                        className="theme-form-control-s1"
+                        className="h-auto border-none text-black"
                         placeholder="Ask for the Price"
                         {...field}
                         onWheel={(e) => e.currentTarget.blur()}
@@ -329,34 +639,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 </p>
               ) : null}
             </div>
-          </div>
+          </div> */}
 
-          <div className="select_type !items-start gap-x-4">
-            <div className="select_type_checkbox">
-              <Controller
-                name="isDeliveryAfterRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
-                )}
-              />
-            </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <Label>Deliver After</Label>
-              {watchIsDeliveryAfterRequired ? (
-                <CounterTextInputField
-                  name="deliveryAfter"
-                  placeholder="After"
-                />
-              ) : null}
-            </div>
-          </div>
-
-          {watchSellType === "BUYGROUP" ? (
+          {/* {watchSellType === "BUYGROUP" ? (
             <div className="select_type !items-start gap-x-2">
               <div className="select_type_checkbox">
                 <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
@@ -479,7 +764,52 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          {watchConsumerType === "EVERYONE" ||
+          <div className="select_type !items-start gap-x-4">
+            <div className="select_type_checkbox">
+              <Controller
+                name="isSellTypeRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <Switch
+                    checked={!!field.value}
+                    onCheckedChange={field.onChange}
+                    className="data-[state=checked]:!bg-dark-orange"
+                  />
+                )}
+              />
+            </div>
+            <div className="flex w-full flex-col gap-y-3">
+              <Label>Sell Type</Label>
+              {watchIsSellTypeRequired ? (
+                <Controller
+                  name="sellType"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      {...field}
+                      onChange={(newValue) => {
+                        field.onChange(newValue?.value);
+                      }}
+                      options={SELL_TYPE_LIST}
+                      value={SELL_TYPE_LIST.find(
+                        (item: Option) => item.value === field.value,
+                      )}
+                      styles={customStyles}
+                      instanceId="sellType"
+                      // isDisabled={!watchIsSellTypeRequired}
+                    />
+                  )}
+                />
+              ) : null}
+              {sellTypeMessage ? (
+                <p className="text-[13px] text-red-500">
+                  {sellTypeMessage.toString()}
+                </p>
+              ) : null}
+            </div>
+          </div> */}
+
+          {/* {watchConsumerType === "EVERYONE" ||
           watchConsumerType === "CONSUMER" ? (
             <div className="select_type !items-start gap-x-4">
               <div className="select_type_checkbox">
@@ -687,10 +1017,10 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 ) : null}
               </div>
             </div>
-          ) : null}
+          ) : null} */}
         </div>
 
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <Button
             type="submit"
             disabled={isLoading}
@@ -698,7 +1028,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           >
             {isLoading ? <LoaderWithMessage message="Please wait" /> : "Update"}
           </Button>
-        </div>
+        </div> */}
       </div>
     </aside>
   );
