@@ -1519,6 +1519,26 @@
     @apply hidden;
   }
 
+  .google_translate {
+
+  }
+
+  .google_translate .m-2 {
+    @apply m-0;
+  }
+
+  .google_translate .m-2 .goog-te-gadget-simple {
+    @apply flex flex-wrap bg-transparent border-none;
+  }
+
+  .google_translate .m-2 .goog-te-gadget-simple a {
+    @apply flex;
+  }
+
+  .google_translate .m-2 .goog-te-gadget-simple a span {
+    @apply text-white
+  }
+
   .qty-up-down-s1 {
     @apply relative w-[113px];
   }
