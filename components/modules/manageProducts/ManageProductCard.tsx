@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
@@ -8,7 +8,12 @@ import validator from "validator";
 import EditIcon from "@/public/images/edit-rfq.png";
 // import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { IoIosEyeOff } from "react-icons/io";
+import { IoIosEyeOff, IoIosEye } from "react-icons/io";
+import { useRemoveProduct, useUpdateProductStatus, useUpdateSingleProduct } from "@/apis/queries/product.queries";
+import CounterTextInputField from "../createProduct/CounterTextInputField";
+import { useToast } from "@/components/ui/use-toast";
+import { Dialog } from "@/components/ui/dialog";
+import AddProductContent from "../products/AddProductContent";
 
 type ManageProductCardProps = {
   selectedIds?: number[];
@@ -45,31 +50,314 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   onSelectedId,
   id,
   productId,
-  status,
+  status: initialStatus,
   askForPrice,
   askForStock,
   productImage,
   productName,
   productPrice,
-  offerPrice,
-  deliveryAfter,
+  offerPrice: initialPrice,
+  deliveryAfter: initialDelivery,
   productLocation,
-  stock,
-  consumerType,
-  sellType,
-  timeOpen,
-  timeClose,
-  vendorDiscount,
-  consumerDiscount,
-  minQuantity,
-  maxQuantity,
-  minCustomer,
-  maxCustomer,
-  minQuantityPerCustomer,
-  maxQuantityPerCustomer,
-  productCondition,
+  stock: initialStock,
+  consumerType: initialConsumerType,
+  sellType: initialSellType,
+  timeOpen: initialTimeOpen,
+  timeClose: initialTimeClose,
+  vendorDiscount: initialVendorDiscount,
+  consumerDiscount: initialConsumerDiscount,
+  minQuantity: initialMinQuantity,
+  maxQuantity: initialMaxQuantity,
+  minCustomer: initialMinCustomer,
+  maxCustomer: initialMaxCustomer,
+  minQuantityPerCustomer: initialMinQuantityPerCustomer,
+  maxQuantityPerCustomer: initialMaxQuantityPerCustomer,
+  productCondition: initialCondition,
 }) => {
+
+  const { toast } = useToast();
+
+  // Status update part
+
+  const [status, setStatus] = useState(initialStatus); // Local state for status
+  const statusUpdate = useUpdateProductStatus(); // Get the mutation function
+
+  const updateStatus = async (status: string) => {
+    try {
+      const newStatus = status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      const response = await statusUpdate.mutateAsync({
+        productPriceId: id,
+        status: newStatus,
+      });
+
+      if (response.status) {
+        setStatus(newStatus); // Update local state to reflect the new status
+        toast({
+          title: "Status Update",
+          description: "Status updated successfully",
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: "Status Update",
+          description: "Oops! Something went wrong",
+          variant: "danger",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update status",
+        variant: "danger",
+      });
+    }
+  };
+
+  // Stock manage part
+
+  const [stock, setStock] = useState(initialStock);
+  const decreaseStock = () => {
+    setStock((prevStock) => Math.max(prevStock - 1, 0)); // Prevent going below 0
+  };
+
+  const increaseStock = () => {
+    setStock((prevStock) => Math.min(prevStock + 1, 1000)); // Prevent exceeding 200
+  };
+
+  // Price  part
+
+ const [offerPrice, setPrice] = useState<number>(Number(initialPrice)); // Ensure it's a number
+  const decreasePrice = () => {
+    setPrice((prevPrice) => Math.max(Number(prevPrice) - 1, 0)); // Convert prevPrice to number before subtracting
+  };
+
+  const increasePrice = () => {
+    setPrice((prevPrice) => Math.min(prevPrice + 1, 1000000)); // Prevent exceeding 200
+  };
+
+  // Product condition part && customer type && sell type
+
+  const [productCondition, setCondition] = useState<string>(initialCondition); 
+  const [consumerType, setConsumer] = useState<string>(initialConsumerType); 
+  const [sellType, setSell] = useState<string>(initialSellType); 
+
+   // set Deliver After
+
+ const [deliveryAfter, setDelivery] = useState<number>(Number(initialDelivery)); // Ensure it's a number
+ const decreaseDeliveryDay = () => {
+  setDelivery((prevDay) => Math.max(Number(prevDay) - 1, 0)); // Convert prevPrice to number before subtracting
+ };
+
+ const increaseDeliveryDay = () => {
+  setDelivery((prevDay) => Math.min(prevDay + 1, 50)); // Prevent exceeding 200
+ };
+
+ // set Time open & close
+
+ const [timeOpen, setTimeOpen] = useState<number>(Number(initialTimeOpen)); 
+ const decreaseTimeOpen = () => {
+  setTimeOpen((prevDay) => Math.max(Number(prevDay) - 1, 0)); 
+ };
+
+ const increaseTimeOpen = () => {
+  setTimeOpen((prevDay) => Math.min(prevDay + 1, 50)); 
+ };
+
+ const [timeClose, setTimeClose] = useState<number>(Number(initialTimeClose)); 
+ const decreaseTimeClose = () => {
+  setTimeClose((prevDay) => Math.max(Number(prevDay) - 1, 0)); 
+ };
+
+ const increaseTimeClose = () => {
+  setTimeClose((prevDay) => Math.min(prevDay + 1, 50)); 
+ };
+
+//  Remaining part 
+
+const [vendorDiscount, setVendor] = useState<number>(Number(initialVendorDiscount)); 
+ const decreaseVendorDiscount = () => {
+  setVendor((prevDayDiscount) => Math.max(Number(prevDayDiscount) - 1, 0)); 
+ };
+
+ const increaseVendorDiscount = () => {
+  setVendor((prevDayDiscount) => Math.min(prevDayDiscount + 1, 50)); 
+ };
+
+ const [consumerDiscount, setConsumerDiscount] = useState<number>(Number(initialConsumerDiscount)); 
+ const decreaseConsumerDiscount = () => {
+  setConsumerDiscount((prevDayDiscount) => Math.max(Number(prevDayDiscount) - 1, 0)); 
+ };
+
+ const increaseConsumerDiscount = () => {
+  setConsumerDiscount((prevDayDiscount) => Math.min(prevDayDiscount + 1, 50)); 
+ };
+
+ const [minQuantity, setMinQuantity] = useState<number>(Number(initialMinQuantity)); 
+ const decreaseMinQuantity = () => {
+  setMinQuantity((prevDayQuantity) => Math.max(Number(prevDayQuantity) - 1, 0)); 
+ };
+
+ const increaseMinQuantity = () => {
+  setMinQuantity((prevDayQuantity) => Math.min(prevDayQuantity + 1, 50)); 
+ };
+
+ const [maxQuantity, setMaxQuantity] = useState<number>(Number(initialMaxQuantity)); 
+ const decreaseMaxQuantity = () => {
+  setMaxQuantity((prevDayQuantity) => Math.max(Number(prevDayQuantity) - 1, 0)); 
+ };
+
+ const increaseMaxsQuantity = () => {
+  setMaxQuantity((prevDayQuantity) => Math.min(prevDayQuantity + 1, 50)); 
+ };
+
+ const [minCustomer, setMinCustomer] = useState<number>(Number(initialMinCustomer)); 
+ const decreaseMinCustomer = () => {
+  setMinCustomer((prevCustomer) => Math.max(Number(prevCustomer) - 1, 0)); 
+ };
+
+ const increaseMinsCustomer = () => {
+  setMinCustomer((prevCustomer) => Math.min(prevCustomer + 1, 50)); 
+ };
+
+ const [maxCustomer, setMaxCustomer] = useState<number>(Number(initialMaxCustomer)); 
+ const decreaseMaxCustomer = () => {
+  setMaxCustomer((prevCustomer) => Math.max(Number(prevCustomer) - 1, 0)); 
+ };
+
+ const increaseMaxsCustomer = () => {
+  setMaxCustomer((prevCustomer) => Math.min(prevCustomer + 1, 50)); 
+ };
+
+ const [minQuantityPerCustomer, setMinQuantityCustomer] = useState<number>(Number(initialMinQuantityPerCustomer)); 
+ const decreaseMinQuantityCustomer = () => {
+  setMinQuantityCustomer((prevDayQuantity) => Math.max(Number(prevDayQuantity) - 1, 0)); 
+ };
+
+ const increaseMinQuantityCustomer = () => {
+  setMinQuantityCustomer((prevDayQuantity) => Math.min(prevDayQuantity + 1, 50)); 
+ };
+
+ const [maxQuantityPerCustomer, setMaxQuantityCustomer] = useState<number>(Number(initialMaxQuantityPerCustomer)); 
+ const decreaseMaxQuantityCustomer = () => {
+  setMaxQuantityCustomer((prevDayQuantity) => Math.max(Number(prevDayQuantity) - 1, 0)); 
+ };
+
+ const increaseMaxQuantityCustomer = () => {
+  setMaxQuantityCustomer((prevDayQuantity) => Math.min(prevDayQuantity + 1, 50)); 
+ };
+
+
+  // call update single product
+
+  const productUpdate = useUpdateSingleProduct(); // Get the mutation function
+
+  const handleUpdate = async () => {
+   
+    try {
+      const response = await productUpdate.mutateAsync({
+        productPriceId: id,
+        stock,
+        askForPrice,
+        askForStock,
+        offerPrice,
+        status,
+        productCondition,
+        consumerType,
+        sellType,
+        deliveryAfter,
+        timeOpen,
+        timeClose,
+        vendorDiscount,
+        consumerDiscount,
+        minQuantity,
+        maxQuantity,
+        minCustomer,
+        maxCustomer,
+        minQuantityPerCustomer,
+        maxQuantityPerCustomer
+      });
+
+      if (response.status) {
+        toast({
+          title: "Product Update",
+          description: "The product has been successfully updated.",
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: "Product Update",
+          description: "Oops! Something went wrong",
+          variant: "danger",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update product",
+        variant: "danger",
+      });
+    }
+  };
+
+  // For Add new product
+  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+
+  const handleAddProductModal = () =>
+    setIsAddProductModalOpen(!isAddProductModalOpen);
+
+  // For remove product
+  const productRemove = useRemoveProduct(); // Get the mutation function
+  const handleRemoveProduct = async() => {
+    try {
+      const response = await productRemove.mutateAsync({
+        productId
+      });
+
+      if (response.status) {
+        toast({
+          title: "Product Remove",
+          description: "The product has been successfully removed.",
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: "Product Remove",
+          description: "Oops! Something went wrong",
+          variant: "danger",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove product",
+        variant: "danger",
+      });
+    }
+  }
+
+  // Function to reset all values to initial state
+const handleReset = () => {
+  setStock(initialStock);
+  setPrice(Number(initialPrice));
+  setDelivery(Number(initialDelivery));
+  setConsumer(initialConsumerType);
+  setSell(initialSellType);
+  setCondition(initialCondition);
+  setTimeOpen(Number(initialTimeOpen));
+  setTimeClose(Number(initialTimeClose));
+  setVendor(Number(initialVendorDiscount));
+  setConsumerDiscount(Number(initialConsumerDiscount));
+  setMinQuantity(Number(initialMinQuantity));
+  setMaxQuantity(Number(initialMaxQuantity));
+  setMinCustomer(Number(initialMinCustomer));
+  setMaxCustomer(Number(initialMaxCustomer));
+  setMinQuantityCustomer(Number(initialMinQuantityPerCustomer));
+  setMaxQuantityCustomer(Number(initialMaxQuantityPerCustomer));
+};
+
+
   return (
+    <>
     <div className="existing-product-add-item">
       <div className="existing-product-add-box">
         <div className="existing-product-add-box-row">
@@ -82,8 +370,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   onCheckedChange={(checked) => onSelectedId?.(checked, id)}
                 />
               </div>
-              <div className="existing_product_checkbox left-[30px] z-10 text-[20px] text-gray-500">
-                <IoIosEyeOff />
+              <div className="existing_product_checkbox left-[30px] z-10 text-[20px] text-gray-500"
+              onClick={() => updateStatus(status)} // Pass function reference correctly
+              >
+               {status === "ACTIVE" ? <IoIosEye /> : <IoIosEyeOff />}
+                 
               </div>
               <div className="relative mx-auto h-[100%] w-[100%]">
                 <Image
@@ -129,43 +420,67 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
             </div>
             <div className="form-container">
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
+                {/* For Stock */}
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <input type="checkbox" className="h-[20px] w-[20px]" />
+                    <input type="checkbox" className="h-[20px] w-[20px]"
+                     checked={askForStock === 'false'} // Checkbox is checked when askForStock is false
+                      />
                     <div className="text-[12px] font-semibold">Stock</div>
                   </div>
+                  {askForStock === "false" ? (
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc] disabled:text-[#999]"
+                    onClick={decreaseStock}
+                    >
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={stock || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                      readOnly // Prevent manual editing
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                     onClick={increaseStock}
+                     >
                       +
-                    </button>
+                    </a>
                   </div>
+                  ) : (
+                    <div className="text-center text-[16px] font-semibold text-gray-500">
+                      Ask for Stock
+                    </div>
+                  )}
                 </div>
+
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <input type="checkbox" className="h-[20px] w-[20px]" />
+                    <input type="checkbox" className="h-[20px] w-[20px]"
+                    checked={askForPrice === 'false'} // Checkbox is checked when askForStock is false
+                     />
                     <div className="text-[12px] font-semibold">Price</div>
                   </div>
+                  {askForStock === "false" ? (
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
+                    onClick={decreasePrice} >
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={offerPrice || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]" onClick={increasePrice}>
                       +
-                    </button>
+                    </a>
                   </div>
+                   ) : (
+                    <div className="text-center text-[16px] font-semibold text-gray-500">
+                      Ask for Price
+                    </div>
+                  )}
                 </div>
 
                 {/* <div className="space-y-1 rounded bg-[#f1f1f1] p-1">
@@ -202,11 +517,15 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
-                    <div className="text-[12px] font-semibold">Brand</div>
+                    <div className="text-[12px] font-semibold">Product Condition</div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <select className="m-0 w-[100%] text-center focus:border-none focus:outline-none">
-                      <option>New</option>
+                    <select className="m-0 w-[100%] text-center focus:border-none focus:outline-none"
+                    value={productCondition} // Bind the selected value to the state
+                    onChange={(e) => setCondition(e.target.value)} // Update the state when the value changes
+                    >
+                      <option value={'NEW'}>New</option>
+                      <option value={'OLD'}>Old</option>
                     </select>
                   </div>
                 </div>
@@ -217,17 +536,18 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
+                     onClick={decreaseDeliveryDay}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={deliveryAfter || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]" onClick={increaseDeliveryDay}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
                 {/* <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
@@ -249,6 +569,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <button
                     type="button"
                     className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
+                    onClick={handleUpdate} // Attach the handleUpdate function here
                   >
                     Update
                   </button>
@@ -257,6 +578,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <button
                     type="button"
                     className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
+                    onClick={handleAddProductModal}
                   >
                     Add New
                   </button>
@@ -267,16 +589,18 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <button
                     type="button"
                     className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
+                    onClick={handleReset}
                   >
-                    reset
+                    Reset
                   </button>
                 </div>
                 <div className="flex flex-wrap space-y-1">
                   <button
                     type="button"
                     className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
+                    onClick={handleRemoveProduct}
                   >
-                    remove
+                    Remove
                   </button>
                 </div>
               </div>
@@ -290,17 +614,18 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     <div className="text-[12px] font-semibold">Time Open</div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]" onClick={decreaseTimeOpen}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={timeOpen || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                    onClick={increaseTimeOpen}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
                 <div className="flex flex-wrap space-y-1">
@@ -308,17 +633,19 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     <div className="text-[12px] font-semibold">Time Close</div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
+                    onClick={decreaseTimeClose}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={timeClose || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                    onClick={increaseTimeClose}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
 
@@ -345,8 +672,13 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </div>
                   </div>
                   <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <select className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none">
-                      <option>Everyone</option>
+                    <select className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
+                     value={consumerType} // Bind the selected value to the state
+                     onChange={(e) => setConsumer(e.target.value)} // Update the state when the value changes
+                     >
+                      <option value={'CONSUMER'}>Consumer</option>
+                      <option value={'VENDORS'}>Vendors</option>
+                      <option value={'EVERYONE'}>Everyone</option>
                     </select>
                   </div>
                 </div>
@@ -371,8 +703,15 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     <div className="text-[12px] font-semibold">Sell Type</div>
                   </div>
                   <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <select className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none">
-                      <option>Normal Sell</option>
+                    <select className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
+                     value={sellType} // Bind the selected value to the state
+                     onChange={(e) => setSell(e.target.value)} // Update the state when the value changes
+                     >
+                      <option value={'NORMALSELL'}>Normal Sell</option>
+                      <option value={'BUYGROUP'}>By Group</option>
+                      <option value={'OTHERS'}>Others</option>
+                      <option value={'EVERYONE'}>Every One</option>
+                      
                     </select>
                   </div>
                 </div>
@@ -386,17 +725,19 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
+                    onClick={decreaseVendorDiscount}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={vendorDiscount || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                    onClick={increaseVendorDiscount}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
                 <div className="flex flex-wrap space-y-1">
@@ -406,17 +747,19 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
+                    onClick={decreaseConsumerDiscount}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={consumerDiscount || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                    onClick={increaseConsumerDiscount}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -429,17 +772,19 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
+                    onClick={decreaseMinQuantity}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={minQuantity || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                    onClick={increaseMinQuantity}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
                 <div className="flex flex-wrap space-y-1">
@@ -449,17 +794,19 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
+                    onClick={decreaseMaxQuantity}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={maxQuantity || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                    onClick={increaseMaxsQuantity}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -468,41 +815,45 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
                     <div className="text-[12px] font-semibold">
-                      Min Consumer
+                      Min Customer
                     </div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
+                    onClick={decreaseMinCustomer}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={minCustomer || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                    onClick={increaseMinsCustomer}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
                 <div className="flex flex-wrap space-y-1">
                   <div className="flex items-center justify-start gap-2 text-black">
                     <div className="text-[12px] font-semibold">
-                      Max Consumer
+                      Max Customer
                     </div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
+                    onClick={decreaseMaxCustomer}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={maxCustomer || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                    onClick={increaseMaxsCustomer}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -515,17 +866,19 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]" 
+                    onClick={decreaseMinQuantityCustomer}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={minQuantityPerCustomer || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
+                    onClick={increaseMinQuantityCustomer}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
                 <div className="flex flex-wrap space-y-1">
@@ -535,17 +888,19 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </div>
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                    <button className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]" 
+                    onClick={decreaseMaxQuantityCustomer}>
                       -
-                    </button>
+                    </a>
                     <input
                       type="text"
-                      value={1}
+                      value={maxQuantityPerCustomer || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
-                    <button className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]">
+                    <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]" 
+                    onClick={increaseMaxQuantityCustomer}>
                       +
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -626,7 +981,13 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
         </div>
       </div>
     </div>
+
+    <Dialog open={isAddProductModalOpen} onOpenChange={handleAddProductModal}>
+    <AddProductContent />
+    </Dialog>
+    </>
   );
+  
 };
 
 export default ManageProductCard;

@@ -16,9 +16,12 @@ import {
   getOneWithProductPrice,
   getVendorDetails,
   getVendorProducts,
+  removeProduct,
   updateMultipleProductPrice,
   updateProduct,
   updateProductPriceByProductCondition,
+  updateProductStatus,
+  updateSingleProducts
 } from "../requests/product.request";
 import {
   ICreateProduct,
@@ -399,3 +402,106 @@ export const useUpdateProductPriceByProductCondition = () => {
     },
   });
 };
+
+export const useUpdateProductStatus = () => {
+  return useMutation<
+    any, // Replace with the actual API response type
+    APIResponseError,
+    { productPriceId: number; status: string }
+  >({
+    mutationFn: async ({ productPriceId, status }) => {
+      const res = await updateProductStatus({ productPriceId, status });
+      return res.data;
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};  
+
+export const useUpdateSingleProduct = () => {  
+  return useMutation<
+    any, // Replace with the actual API response type
+    APIResponseError,
+    { productPriceId: number;
+      stock: number,
+      askForPrice: string,
+      askForStock: string,
+      offerPrice: number
+      status: string,
+      productCondition: string,
+      consumerType: string,
+      sellType: string,
+      deliveryAfter: number,
+      timeOpen: number,
+      timeClose: number,
+      vendorDiscount: number,
+      consumerDiscount: number,
+      minQuantity: number,
+      maxQuantity: number,
+      minCustomer: number,
+      maxCustomer: number,
+      minQuantityPerCustomer: number,
+      maxQuantityPerCustomer: number }
+  >({
+    mutationFn: async ({  productPriceId,  stock,
+      askForPrice,
+      askForStock,
+      offerPrice,
+      status,
+      productCondition,
+      consumerType,
+      sellType,
+      deliveryAfter,
+      timeOpen,
+      timeClose,
+      vendorDiscount,
+      consumerDiscount,
+      minQuantity,
+      maxQuantity,
+      minCustomer,
+      maxCustomer,
+      minQuantityPerCustomer,
+      maxQuantityPerCustomer }) => {
+      const res = await updateSingleProducts({productPriceId,  stock,
+        askForPrice,
+        askForStock,
+        offerPrice,
+        status,
+        productCondition,
+        consumerType,
+        sellType,
+        deliveryAfter,
+        timeOpen,
+        timeClose,
+        vendorDiscount,
+        consumerDiscount,
+        minQuantity,
+        maxQuantity,
+        minCustomer,
+        maxCustomer,
+        minQuantityPerCustomer,
+        maxQuantityPerCustomer});
+      return res.data;
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useRemoveProduct = () => {
+  return useMutation<
+    any, // Replace with the actual API response type
+    APIResponseError,
+    { productId: number }
+  >({
+    mutationFn: async ({ productId }) => {
+      const res = await removeProduct({ productId });
+      return res.data;
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+}

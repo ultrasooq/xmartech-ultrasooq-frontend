@@ -288,3 +288,68 @@ export const updateProductPriceByProductCondition = (payload: {
     },
   });
 };
+
+export const updateProductStatus = (payload: {
+  productPriceId: number;
+  status: string;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/updateProductPrice`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+}; 
+
+export const updateSingleProducts = (payload: {
+  productPriceId: number;
+  stock: number,
+      askForPrice: string,
+      askForStock: string,
+      offerPrice: number
+      status: string,
+      productCondition: string,
+      consumerType: string,
+      sellType: string,
+      deliveryAfter: number,
+      timeOpen: number,
+      timeClose: number,
+      vendorDiscount: number,
+      consumerDiscount: number,
+      minQuantity: number,
+      maxQuantity: number,
+      minCustomer: number,
+      maxCustomer: number,
+      minQuantityPerCustomer: number,
+      maxQuantityPerCustomer: number
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/updateProductPrice`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const removeProduct = (payload: {
+  productId: number
+}) => {
+  return axios({
+    method: "DELETE",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/delete/${payload.productId}`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+}; 
