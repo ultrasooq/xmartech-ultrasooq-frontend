@@ -1536,7 +1536,7 @@
   }
 
   .google_translate .m-2 .goog-te-gadget-simple a span {
-    @apply text-white
+    @apply text-white;
   }
 
   .qty-up-down-s1 {
