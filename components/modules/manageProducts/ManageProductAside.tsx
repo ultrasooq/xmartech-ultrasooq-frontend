@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { IoIosEyeOff } from "react-icons/io";
 
 interface Option {
   readonly label: string;
@@ -112,6 +113,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               formContext.setValue("isDeliveryAfterRequired", true);
               formContext.setValue("isVendorDiscountRequired", true);
               formContext.setValue("isConsumerDiscountRequired", true);
+              formContext.setValue("isTimeOpen", true);
+              formContext.setValue("IsTimeClose", true);
               formContext.setValue("isMinQuantityRequired", true);
               formContext.setValue("isMaxQuantityRequired", true);
               formContext.setValue("isMinCustomerRequired", true);
@@ -134,6 +137,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               formContext.setValue("isDeliveryAfterRequired", false);
               formContext.setValue("isVendorDiscountRequired", false);
               formContext.setValue("isConsumerDiscountRequired", false);
+              formContext.setValue("isTimeOpen", false);
+              formContext.setValue("IsTimeClose", false);
               formContext.setValue("isMinQuantityRequired", false);
               formContext.setValue("isMaxQuantityRequired", false);
               formContext.setValue("isMinCustomerRequired", false);
@@ -147,8 +152,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
         </div>
 
         <div className="select_main_wrap">
-          <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Person Location</Label>
+
+        <div className="mt-2 flex flex-col gap-y-3">
+            <Label>Product Location</Label>
             <Controller
               name="productLocationId"
               control={formContext.control}
@@ -169,24 +175,17 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             />
           </div>
 
-          <div className="select_type !items-start gap-x-4">
-            <div className="select_type_checkbox">
-              <Controller
+          <div className="flex items-center justify-start gap-[10px] py-2">
+          <Controller
                 name="isProductConditionRequired"
                 control={formContext.control}
                 render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
+                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                 )}
               />
-            </div>
-            <div className="flex w-full flex-col gap-y-3">
-              <Label>Product Condition</Label>
-              {watchIsProductConditionRequired ? (
-                <Controller
+            <Label>Product Condition</Label>
+            <div className="w-[170px] border-[1px] border-[#ccc] border-[solid]">
+            <Controller
                   name="productCondition"
                   control={formContext.control}
                   render={({ field }) => (
@@ -205,63 +204,34 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     />
                   )}
                 />
-              ) : null}
-              {productConditionMessage ? (
-                <p className="text-[13px] text-red-500">
-                  {productConditionMessage.toString()}
-                </p>
-              ) : null}
             </div>
           </div>
 
-          <div className="select_type mb-2 !items-start gap-x-4">
-            <div className="select_type_checkbox">
-              <Controller
+          <div className="flex items-center justify-start gap-[10px] py-2">
+          <Controller
                 name="isHiddenRequired"
                 control={formContext.control}
                 render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
+                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                 )}
               />
-            </div>
-
-            <div className="flex w-full flex-col gap-y-3">
+            <div className="flex w-[222px] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+              <IoIosEyeOff className="text-[20px] text-[#ccc]" />
               <Label>Hide all Selected</Label>
-              {watchIsHiddenRequired ? (
-                <div className="select_type_field !flex h-[48px] !flex-row !items-center text-gray-500">
-                  <button
-                    type="button"
-                    className="flex !w-[40px] items-center justify-center"
-                  >
-                    <FiEyeOff size={24} />
-                  </button>
-                  <Label>Hide all Selected</Label>
-                </div>
-              ) : null}
             </div>
           </div>
 
-          <div className="select_type mb-2 !items-start !gap-x-4">
-            <div className="select_type_checkbox">
-              <Controller
+          <div className="flex items-center justify-start gap-[10px] py-2">
+          <Controller
                 name="isStockRequired"
                 control={formContext.control}
                 render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
+                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                 )}
               />
-            </div>
-            <div className="flex w-full flex-col gap-y-3">
-              <Label>Ask for the Stock</Label>
-              {!watchIsStockRequired ? (
+            <div className="flex w-[222px] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+            <Label>Ask for the Stock</Label>
+            {!watchIsStockRequired ? (
                 <Controller
                   name="stock"
                   control={formContext.control}
@@ -287,23 +257,17 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type mb-2 !items-start !gap-x-4">
-            <div className="select_type_checkbox">
-              <Controller
+
+         <div className="flex items-center justify-start gap-[10px] py-2">
+         <Controller
                 name="isOfferPriceRequired"
                 control={formContext.control}
                 render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
+                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                 )}
               />
-            </div>
-
-            <div className="flex w-full flex-col gap-y-3">
-              <Label>Ask for the Price</Label>
+            <div className="flex w-[222px] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+            <Label>Ask for the Price</Label>
               {!watchIsOfferPriceRequired ? (
                 <Controller
                   name="offerPrice"
@@ -330,40 +294,40 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type !items-start gap-x-4">
-            <div className="select_type_checkbox">
-              <Controller
+          <div className="flex items-center justify-start gap-[10px] py-2">
+          <Controller
                 name="isDeliveryAfterRequired"
                 control={formContext.control}
                 render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
+                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                 )}
               />
-            </div>
-            <div className="grid w-full grid-cols-1 gap-x-5">
-              <Label>Deliver After</Label>
-              {watchIsDeliveryAfterRequired ? (
-                <CounterTextInputField
+            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+            <Label>Deliver After</Label>
+              {/* <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]"> */}
+              <CounterTextInputField
                   name="deliveryAfter"
                   placeholder="After"
                 />
-              ) : null}
+              {/* </div> */}
             </div>
           </div>
 
+
+
           {watchSellType === "BUYGROUP" ? (
-            <div className="select_type !items-start gap-x-2">
-              <div className="select_type_checkbox">
-                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+            <div className="flex items-center justify-start gap-[10px] py-2">
+                 <Controller
+                  name="isTimeOpen"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
+                  )}
+                />
+                <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Time Open</Label>
                 <CounterTextInputField
-                  label="Time Open"
+                  label=""
                   name="timeOpen"
                   placeholder="Open"
                 />
@@ -372,14 +336,18 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           ) : null}
 
           {watchSellType === "BUYGROUP" ? (
-            <div className="select_type !items-start gap-x-2">
-              <div className="select_type_checkbox">
-                <Checkbox className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange" />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+            <div className="flex items-center justify-start gap-[10px] py-2">
+                <Controller
+                  name="IsTimeClose"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
+                  )}
+                />
+               <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Time Close</Label>
                 <CounterTextInputField
-                  label="Time Close"
+                  label=""
                   name="timeClose"
                   placeholder="Close"
                 />
@@ -387,24 +355,18 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           ) : null}
 
-          <div className="select_type !items-start gap-x-4">
-            <div className="select_type_checkbox">
-              <Controller
+
+        <div className="flex items-center justify-start gap-[10px] py-2">
+            <Controller
                 name="isConsumerTypeRequired"
                 control={formContext.control}
                 render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
+                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                 )}
               />
-            </div>
-            <div className="flex w-full flex-col gap-y-3">
-              <Label>Consumer Type</Label>
-              {watchIsConsumerTypeRequired ? (
-                <Controller
+            <Label>Consumer Type</Label>
+            <div className="w-[170px] border-[1px] border-[#ccc] border-[solid]">
+            <Controller
                   name="consumerType"
                   control={formContext.control}
                   render={({ field }) => (
@@ -423,9 +385,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     />
                   )}
                 />
-              ) : null}
-
-              {consumerTypeMessage ? (
+                  {consumerTypeMessage ? (
                 <p className="text-[13px] text-red-500">
                   {consumerTypeMessage.toString()}
                 </p>
@@ -433,24 +393,17 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
-          <div className="select_type !items-start gap-x-4">
-            <div className="select_type_checkbox">
-              <Controller
+          <div className="flex items-center justify-start gap-[10px] py-2">
+          <Controller
                 name="isSellTypeRequired"
                 control={formContext.control}
                 render={({ field }) => (
-                  <Switch
-                    checked={!!field.value}
-                    onCheckedChange={field.onChange}
-                    className="data-[state=checked]:!bg-dark-orange"
-                  />
+                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                 )}
               />
-            </div>
-            <div className="flex w-full flex-col gap-y-3">
-              <Label>Sell Type</Label>
-              {watchIsSellTypeRequired ? (
-                <Controller
+            <Label>Sell Type</Label>
+            <div className="w-[170px] border-[1px] border-[#ccc] border-[solid]">
+            <Controller
                   name="sellType"
                   control={formContext.control}
                   render={({ field }) => (
@@ -469,8 +422,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     />
                   )}
                 />
-              ) : null}
-              {sellTypeMessage ? (
+                {sellTypeMessage ? (
                 <p className="text-[13px] text-red-500">
                   {sellTypeMessage.toString()}
                 </p>
@@ -478,51 +430,42 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           </div>
 
+
           {watchConsumerType === "EVERYONE" ||
           watchConsumerType === "CONSUMER" ? (
-            <div className="select_type !items-start gap-x-4">
-              <div className="select_type_checkbox">
+            <div className="flex items-center justify-start gap-[10px] py-2">
+              {/* <div className="select_type_checkbox"> */}
                 <Controller
                   name="isVendorDiscountRequired"
                   control={formContext.control}
                   render={({ field }) => (
-                    <Switch
-                      checked={!!field.value}
-                      onCheckedChange={field.onChange}
-                      className="data-[state=checked]:!bg-dark-orange"
-                    />
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                   )}
                 />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+              {/* </div> */}
+              <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Vendor Discount</Label>
-                {watchIsVendorDiscountRequired ? (
                   <CounterTextInputField
                     name="vendorDiscount"
                     placeholder="Discount"
                   />
-                ) : null}
               </div>
             </div>
           ) : null}
 
           {watchConsumerType === "EVERYONE" ||
           watchConsumerType === "VENDORS" ? (
-            <div className="select_type !items-start gap-x-4">
-              <div className="select_type_checkbox">
+            <div className="flex items-center justify-start gap-[10px] py-2">
+              {/* <div className="select_type_checkbox"> */}
                 <Controller
                   name="isConsumerDiscountRequired"
                   control={formContext.control}
                   render={({ field }) => (
-                    <Switch
-                      checked={!!field.value}
-                      onCheckedChange={field.onChange}
-                      className="data-[state=checked]:!bg-dark-orange"
-                    />
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                   )}
                 />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+              {/* </div> */}
+              <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Consumer Discount</Label>
                 {watchIsConsumerDiscountRequired ? (
                   <CounterTextInputField
@@ -535,126 +478,91 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           ) : null}
 
           {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
-            <div className="select_type !items-start gap-x-4">
-              <div className="select_type_checkbox">
+            <div className="flex items-center justify-start gap-[10px] py-2">
+              {/* <div className="select_type_checkbox"> */}
                 <Controller
                   name="isMinQuantityRequired"
                   control={formContext.control}
                   render={({ field }) => (
-                    <Switch
-                      checked={!!field.value}
-                      onCheckedChange={field.onChange}
-                      className="data-[state=checked]:!bg-dark-orange"
-                    />
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                   )}
                 />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+              {/* </div> */}
+              <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Min Quantity</Label>
-                {watchIsMinQuantityRequired ? (
                   <CounterTextInputField name="minQuantity" placeholder="Min" />
-                ) : null}
+               
               </div>
             </div>
           ) : null}
 
           {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
-            <div className="select_type !items-start gap-x-4">
-              <div className="select_type_checkbox">
+            <div className="flex items-center justify-start gap-[10px] py-2">
                 <Controller
                   name="isMaxQuantityRequired"
                   control={formContext.control}
                   render={({ field }) => (
-                    <Switch
-                      checked={!!field.value}
-                      onCheckedChange={field.onChange}
-                      className="data-[state=checked]:!bg-dark-orange"
-                    />
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                   )}
                 />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+             
+             <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Max Quantity</Label>
-                {watchIsMaxQuantityRequired ? (
+               
                   <CounterTextInputField name="maxQuantity" placeholder="Max" />
-                ) : null}
               </div>
             </div>
           ) : null}
 
           {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
-            <div className="select_type !items-start gap-x-4">
-              <div className="select_type_checkbox">
+             <div className="flex items-center justify-start gap-[10px] py-2">
                 <Controller
                   name="isMinCustomerRequired"
                   control={formContext.control}
                   render={({ field }) => (
-                    <Switch
-                      checked={!!field.value}
-                      onCheckedChange={field.onChange}
-                      className="data-[state=checked]:!bg-dark-orange"
-                    />
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                   )}
                 />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+             <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Min Customer</Label>
-                {watchIsMinCustomerRequired ? (
                   <CounterTextInputField name="minCustomer" placeholder="Min" />
-                ) : null}
               </div>
             </div>
           ) : null}
 
           {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
-            <div className="select_type !items-start gap-x-4">
-              <div className="select_type_checkbox">
+            <div className="flex items-center justify-start gap-[10px] py-2">
                 <Controller
                   name="isMaxCustomerRequired"
                   control={formContext.control}
                   render={({ field }) => (
-                    <Switch
-                      checked={!!field.value}
-                      onCheckedChange={field.onChange}
-                      className="data-[state=checked]:!bg-dark-orange"
-                    />
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                   )}
                 />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+             <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Max Customer</Label>
-                {watchIsMaxCustomerRequired ? (
-                  <CounterTextInputField name="maxCustomer" placeholder="Max" />
-                ) : null}
-              </div>
+                     <CounterTextInputField name="maxCustomer" placeholder="Max" />
+                  </div>
             </div>
           ) : null}
 
           {watchSellType === "EVERYONE" ||
           watchSellType === "NORMALSELL" ||
           watchSellType === "BUYGROUP" ? (
-            <div className="select_type !items-start gap-x-4">
-              <div className="select_type_checkbox">
+            <div className="flex items-center justify-start gap-[10px] py-2">
                 <Controller
                   name="isMinQuantityPerCustomerRequired"
                   control={formContext.control}
                   render={({ field }) => (
-                    <Switch
-                      checked={!!field.value}
-                      onCheckedChange={field.onChange}
-                      className="data-[state=checked]:!bg-dark-orange"
-                    />
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                   )}
                 />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+              <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Min Quantity Per Customer</Label>
-                {watchIsMinQuantityPerCustomerRequired ? (
                   <CounterTextInputField
                     name="minQuantityPerCustomer"
                     placeholder="Min"
                   />
-                ) : null}
               </div>
             </div>
           ) : null}
@@ -662,28 +570,20 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           {watchSellType === "EVERYONE" ||
           watchSellType === "NORMALSELL" ||
           watchSellType === "BUYGROUP" ? (
-            <div className="select_type !items-start gap-x-4">
-              <div className="select_type_checkbox">
+            <div className="flex items-center justify-start gap-[10px] py-2">
                 <Controller
                   name="isMaxQuantityPerCustomerRequired"
                   control={formContext.control}
                   render={({ field }) => (
-                    <Switch
-                      checked={!!field.value}
-                      onCheckedChange={field.onChange}
-                      className="data-[state=checked]:!bg-dark-orange"
-                    />
+                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
                   )}
                 />
-              </div>
-              <div className="grid w-full grid-cols-1 gap-x-5">
+             <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>Max Quantity Per Customer</Label>
-                {watchIsMaxQuantityPerCustomerRequired ? (
                   <CounterTextInputField
                     name="maxQuantityPerCustomer"
                     placeholder="Max"
                   />
-                ) : null}
               </div>
             </div>
           ) : null}
