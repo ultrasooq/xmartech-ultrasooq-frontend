@@ -55,7 +55,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   askForStock,
   productImage,
   productName,
-  productPrice,
+  productPrice: initialProductPrice,
   offerPrice: initialPrice,
   deliveryAfter: initialDelivery,
   productLocation,
@@ -127,12 +127,15 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   // Price  part
 
  const [offerPrice, setPrice] = useState<number>(Number(initialPrice)); // Ensure it's a number
+ const [productPrice, setProductPrice] = useState<number>(Number(initialProductPrice)); // Ensure it's a number
   const decreasePrice = () => {
     setPrice((prevPrice) => Math.max(Number(prevPrice) - 1, 0)); // Convert prevPrice to number before subtracting
+    setProductPrice((prevPrice) => Math.max(Number(prevPrice) - 1, 0)); // Convert prevPrice to number before subtracting
   };
 
   const increasePrice = () => {
     setPrice((prevPrice) => Math.min(prevPrice + 1, 1000000)); // Prevent exceeding 200
+    setProductPrice((prevPrice) => Math.min(prevPrice + 1, 1000000)); // Prevent exceeding 200
   };
 
   // Product condition part && customer type && sell type
@@ -260,6 +263,7 @@ const [vendorDiscount, setVendor] = useState<number>(Number(initialVendorDiscoun
         askForPrice,
         askForStock,
         offerPrice,
+        productPrice,
         status,
         productCondition,
         consumerType,
@@ -310,7 +314,7 @@ const [vendorDiscount, setVendor] = useState<number>(Number(initialVendorDiscoun
   const handleRemoveProduct = async() => {
     try {
       const response = await productRemove.mutateAsync({
-        productId
+        productPriceId: id,
       });
 
       if (response.status) {

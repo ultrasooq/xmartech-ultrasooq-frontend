@@ -272,7 +272,7 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="!flex !flex-wrap">
+          <div className="flex flex-wrap items-center">
             <div className="!order-1 !flex !w-5/12 flex-1 !items-center !py-4 md:!w-2/12 lg:!w-1/6">
               <Link href="/home">
                 <Image src={LogoIcon} alt="logo" />

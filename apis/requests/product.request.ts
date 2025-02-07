@@ -310,7 +310,8 @@ export const updateSingleProducts = (payload: {
   stock: number,
       askForPrice: string,
       askForStock: string,
-      offerPrice: number
+      offerPrice: number,
+      productPrice: number
       status: string,
       productCondition: string,
       consumerType: string,
@@ -340,12 +341,14 @@ export const updateSingleProducts = (payload: {
 };
 
 export const removeProduct = (payload: {
-  productId: number
+  productPriceId: number
 }) => {
   return axios({
     method: "DELETE",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/delete/${payload.productId}`,
-    data: payload,
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/deleteOneProductPrice`,
+      payload,
+    ),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

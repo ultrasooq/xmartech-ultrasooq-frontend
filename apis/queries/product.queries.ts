@@ -427,7 +427,8 @@ export const useUpdateSingleProduct = () => {
       stock: number,
       askForPrice: string,
       askForStock: string,
-      offerPrice: number
+      offerPrice: number,
+      productPrice: number,
       status: string,
       productCondition: string,
       consumerType: string,
@@ -448,6 +449,7 @@ export const useUpdateSingleProduct = () => {
       askForPrice,
       askForStock,
       offerPrice,
+      productPrice,
       status,
       productCondition,
       consumerType,
@@ -467,6 +469,7 @@ export const useUpdateSingleProduct = () => {
         askForPrice,
         askForStock,
         offerPrice,
+        productPrice,
         status,
         productCondition,
         consumerType,
@@ -494,10 +497,10 @@ export const useRemoveProduct = () => {
   return useMutation<
     any, // Replace with the actual API response type
     APIResponseError,
-    { productId: number }
+    { productPriceId: number }
   >({
-    mutationFn: async ({ productId }) => {
-      const res = await removeProduct({ productId });
+    mutationFn: async ({ productPriceId }) => {
+      const res = await removeProduct({ productPriceId });
       return res.data;
     },
     onError: (err: APIResponseError) => {

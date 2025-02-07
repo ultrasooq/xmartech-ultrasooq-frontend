@@ -215,8 +215,10 @@ const ProductDetailsPage = () => {
     }
   };
 
-  const handelOpenCartLayout = async () => {
-    alert("Hiii");
+  const [isVisible, setIsVisible] = useState(false); // Initially hidden
+
+  const handelOpenCartLayout =  () => {
+    setIsVisible(true); // Show the div when the button is clicked
   };
 
   const handleDeleteFromWishlist = async () => {
@@ -498,12 +500,15 @@ const ProductDetailsPage = () => {
             </div>
           </div>
         </div>
+
+        {isVisible && (
         <div className="product_cart_modal absolute right-[20px] top-[20px] w-[300px]">
           <div className="card-item cart-items">
             <div className="inline-flex w-full items-center justify-center pt-5 text-center">
               <a
-                href="#"
+                href="javascript:void(0)"
                 className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
+                onClick={handleCartPage}
               >
                 go to cart page
               </a>
@@ -568,6 +573,7 @@ const ProductDetailsPage = () => {
             </div>
           </div>
         </div>
+        )}
 
         <div className="product-view-s1-details-more-suggestion-sliders">
           <RelatedProductsSection

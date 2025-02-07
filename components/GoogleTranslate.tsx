@@ -3,35 +3,39 @@ import { useEffect } from "react";
 
 declare global {
   interface Window {
-    googleTranslateElementInit: () => void;
-    google: any; // Add this line to fix the error
+    googleTranslateElementInit?: () => void;
+    google?: any;
   }
 }
 
 const GoogleTranslate = () => {
   useEffect(() => {
-    // Define the function before script loads
-    window.googleTranslateElementInit = function () {
-      new window.google.translate.TranslateElement(
-        {
-          pageLanguage: "en",
-          includedLanguages: "en,ar",
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-        },
-        "google_translate_element"
-      );
-    };
+    if (!document.querySelector("script[src*='translate.google.com']")) {
+      // Define the function before script loads
+      (window as any).googleTranslateElementInit = function () {
+        new (window as any).google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,ar",
+            layout: (window as any).google.translate.TranslateElement.InlineLayout.SIMPLE,
+          },
+          "google_translate_element"
+        );
+      };
 
-    // Create the script element dynamically
-    const script = document.createElement("script");
-    script.src =
-      "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    script.async = true;
-    document.body.appendChild(script);
+      // Create the script element dynamically
+      const script = document.createElement("script");
+      script.src =
+        "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.async = true;
+      document.body.appendChild(script);
+    }
 
     return () => {
-      // Cleanup: Remove script on component unmount
-      document.body.removeChild(script);
+      const translateContainer = document.getElementById("google_translate_element");
+      if (translateContainer) {
+        translateContainer.innerHTML = "";
+      }
     };
   }, []);
 
