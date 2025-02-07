@@ -5,6 +5,7 @@ import Image from "next/image";
 import AddIcon from "@/public/images/add-icon.svg";
 import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useFieldArray, useFormContext } from "react-hook-form";
+import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 
 const DescriptionSection = () => {
   const formContext = useFormContext();
@@ -49,6 +50,12 @@ const DescriptionSection = () => {
                 name={`productShortDescriptionList.${index}.shortDescription`}
                 placeholder="Enter Short Description"
               />
+
+             {/* <ControlledRichTextEditor
+              key={field.id}
+              label=""
+              name={`productShortDescriptionList.${index}.shortDescription`}
+              /> */}
 
               {index !== 0 ? (
                 <Button
