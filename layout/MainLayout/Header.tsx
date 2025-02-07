@@ -36,6 +36,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import { useCategoryStore } from "@/lib/categoryStore";
+import GoogleTranslate from "@/components/GoogleTranslate";
 
 type CategoryProps = {
   id: number;
@@ -259,11 +260,13 @@ const Header = () => {
                   </select>
                 </li>
                 <li className="px-2 pr-0 text-sm font-normal text-white">
-                  <select className="border-0 bg-transparent text-white focus:outline-none">
+                <GoogleTranslate />
+                  {/* <select className="border-0 bg-transparent text-white focus:outline-none">
                     <option className="bg-dark-cyan">English</option>
+                    <option className="bg-dark-cyan">Arabic</option>
                     <option className="bg-dark-cyan">German</option>
                     <option className="bg-dark-cyan">French</option>
-                  </select>
+                  </select> */}
                 </li>
               </ul>
             </div>
