@@ -43,6 +43,7 @@ type ManageProductCardProps = {
   minQuantityPerCustomer: number | null;
   maxQuantityPerCustomer: number | null;
   productCondition: string;
+  onRemove: (id: number) => void; // Ensure onRemove function is typed properly
 };
 
 const ManageProductCard: React.FC<ManageProductCardProps> = ({
@@ -73,6 +74,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   minQuantityPerCustomer: initialMinQuantityPerCustomer,
   maxQuantityPerCustomer: initialMaxQuantityPerCustomer,
   productCondition: initialCondition,
+  onRemove 
 }) => {
 
   const { toast } = useToast();
@@ -323,6 +325,9 @@ const [vendorDiscount, setVendor] = useState<number>(Number(initialVendorDiscoun
           description: "The product has been successfully removed.",
           variant: "success",
         });
+         // Call the function to remove the product from the UI
+         onRemove(id);
+
       } else {
         toast({
           title: "Product Remove",

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useAllManagedProducts,
   useUpdateMultipleProductPrice,
@@ -132,6 +132,33 @@ const ManageProductsPage = () => {
     limit,
     term: searchTerm !== "" ? searchTerm : undefined,
   });
+
+  const { data, refetch  } = allManagedProductsQuery;
+  const [products, setProducts] = useState(data?.data || []);
+  const [totalCount, setTotalCount] = useState(data?.totalCount || 0);
+
+  // Update state when new data is available
+  useEffect(() => {
+    if (data?.data) {
+      setProducts(data.data);
+      setTotalCount(data.totalCount);
+    }
+  }, [data]);
+
+  // Function to remove a product from the state
+  const handleRemoveFromList = (removedProductId: number) => {
+    setProducts((prevProducts: any[]) =>
+      prevProducts.filter((product) => product.id !== removedProductId)
+    );
+    setTotalCount((prevCount: number) => prevCount - 1);
+    // If the last product on the page is removed, adjust pagination
+    if (products.length === 1 && page > 1) {
+      setPage(page - 1); // Move to previous page
+    } else {
+      refetch(); // Otherwise, just refresh the data
+    }
+  };
+
   const updateMultipleProductPrice = useUpdateMultipleProductPrice();
 
   const handleDebounce = debounce((event: any) => {
@@ -364,7 +391,7 @@ const ManageProductsPage = () => {
                         </p>
                       ) : null}
 
-                      {allManagedProductsQuery.data?.data?.map(
+                      {products.map(
                         (product: {
                           id: number;
                           productId: number;
@@ -453,15 +480,24 @@ const ManageProductsPage = () => {
                               product?.maxQuantityPerCustomer
                             }
                             productCondition={product?.productCondition}
+                            onRemove={handleRemoveFromList} // Pass function to remove product
                           />
                         ),
                       )}
 
-                      {allManagedProductsQuery.data?.totalCount > 6 ? (
+                      {/* {allManagedProductsQuery.data?.totalCount > 6 ? (
                         <Pagination
                           page={page}
                           setPage={setPage}
                           totalCount={allManagedProductsQuery.data?.totalCount}
+                          limit={limit}
+                        />
+                      ) : null} */}
+                        {totalCount > limit ? (
+                        <Pagination
+                          page={page}
+                          setPage={setPage}
+                          totalCount={totalCount} // Use updated count
                           limit={limit}
                         />
                       ) : null}
