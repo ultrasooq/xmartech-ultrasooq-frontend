@@ -446,7 +446,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={stock || 0}
+                      value={initialStock || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                       readOnly // Prevent manual editing
                     />
@@ -478,7 +478,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={offerPrice || 0}
+                      value={initialPrice || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]" onClick={increasePrice}>
@@ -530,7 +530,7 @@ const handleReset = () => {
                   </div>
                   <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                     <select className="m-0 w-[100%] text-center focus:border-none focus:outline-none"
-                    value={productCondition} // Bind the selected value to the state
+                    value={initialCondition} // Bind the selected value to the state
                     onChange={(e) => setCondition(e.target.value)} // Update the state when the value changes
                     >
                       <option value={'NEW'}>New</option>
@@ -551,7 +551,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={deliveryAfter || 0}
+                      value={initialDelivery || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]" onClick={increaseDeliveryDay}>
@@ -628,7 +628,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={timeOpen || 0}
+                      value={initialTimeOpen || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
@@ -648,7 +648,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={timeClose || 0}
+                      value={initialTimeClose || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
@@ -682,7 +682,7 @@ const handleReset = () => {
                   </div>
                   <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                     <select className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
-                     value={consumerType} // Bind the selected value to the state
+                     value={initialConsumerType} // Bind the selected value to the state
                      onChange={(e) => setConsumer(e.target.value)} // Update the state when the value changes
                      >
                       <option value={'CONSUMER'}>Consumer</option>
@@ -713,7 +713,7 @@ const handleReset = () => {
                   </div>
                   <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                     <select className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
-                     value={sellType} // Bind the selected value to the state
+                     value={initialSellType} // Bind the selected value to the state
                      onChange={(e) => setSell(e.target.value)} // Update the state when the value changes
                      >
                       <option value={'NORMALSELL'}>Normal Sell</option>
@@ -740,7 +740,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={vendorDiscount || 0}
+                      value={initialVendorDiscount || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
@@ -762,7 +762,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={consumerDiscount || 0}
+                      value={initialConsumerDiscount || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
@@ -787,7 +787,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={minQuantity || 0}
+                      value={initialMinQuantity || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
@@ -809,7 +809,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={maxQuantity || 0}
+                      value={initialMaxQuantity || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
@@ -834,7 +834,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={minCustomer || 0}
+                      value={initialMinCustomer || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
@@ -856,7 +856,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={maxCustomer || 0}
+                      value={initialMaxCustomer || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
@@ -881,7 +881,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={minQuantityPerCustomer || 0}
+                      value={initialMinQuantityPerCustomer || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
@@ -903,7 +903,7 @@ const handleReset = () => {
                     </a>
                     <input
                       type="text"
-                      value={maxQuantityPerCustomer || 0}
+                      value={initialMaxQuantityPerCustomer || 0}
                       className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
                     />
                     <a href="javascript:void(0)" className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]" 

@@ -64,7 +64,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
 
   const memoizedCategories = useMemo(() => {
     return (
-      categoryQuery?.data?.data?.children.map((item: any) => {
+      categoryQuery?.data?.data?.children[0]?.children.map((item: any) => {
         return { label: item.name, value: item.id };
       }) || []
     );

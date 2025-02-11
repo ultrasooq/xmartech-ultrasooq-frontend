@@ -369,6 +369,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             <Controller
                   name="consumerType"
                   control={formContext.control}
+                  defaultValue="CONSUMER" // ✅ Set default inside Controller
                   render={({ field }) => (
                     <ReactSelect
                       {...field}

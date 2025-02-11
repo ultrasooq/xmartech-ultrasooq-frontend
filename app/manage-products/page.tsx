@@ -94,7 +94,7 @@ const defaultValues = {
   deliveryAfter: 0,
   timeOpen: 0,
   timeClose: 0,
-  consumerType: "NORMALSELL",
+  consumerType: "CONSUMER",
   sellType: "NORMALSELL",
   vendorDiscount: 0,
   consumerDiscount: 0,
@@ -140,7 +140,7 @@ const ManageProductsPage = () => {
   // Update state when new data is available
   useEffect(() => {
     if (data?.data) {
-      setProducts(data.data);
+      setProducts([...data.data]); // ✅ Spread to force state change
       setTotalCount(data.totalCount);
     }
   }, [data]);
@@ -323,6 +323,9 @@ const ManageProductsPage = () => {
         description: "Products updated successfully",
         variant: "success",
       });
+      // **Trigger refetch to update the product list**
+      await refetch();
+
       form.reset();
       setSelectedProductIds([]);
       router.push("/manage-products");
@@ -505,6 +508,7 @@ const ManageProductsPage = () => {
                   </div>
                   <ManageProductAside
                     isLoading={updateMultipleProductPrice.isPending}
+                    // onUpdateProductPrice={handleUpdateProductPrice}
                   />
                 </form>
               </FormProvider>
