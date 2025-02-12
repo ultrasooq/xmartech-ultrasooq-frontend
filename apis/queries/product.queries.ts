@@ -17,6 +17,7 @@ import {
   getVendorDetails,
   getVendorProducts,
   removeProduct,
+  updateForCustomize,
   updateMultipleProductPrice,
   updateProduct,
   updateProductPriceByProductCondition,
@@ -148,6 +149,27 @@ export const useUpdateProduct = () => {
       queryClient.invalidateQueries({
         queryKey: ["existing-products"],
       });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useUpdateForCustomize = () => {
+  const queryClient = useQueryClient();
+  return useMutation<IUpdateProduct, APIResponseError, IUpdateProductRequest>({
+    mutationFn: async (payload) => {
+      const res = await updateForCustomize(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["existing-products"],
+      // });
     },
     onError: (err: APIResponseError) => {
       console.log(err);

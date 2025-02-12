@@ -34,7 +34,7 @@ const AddProductContent: React.FC<AddProductContentProps> = () => {
             </Link>
           </div>
 
-          <div className="import-pickup-type-selector-item">
+          {/* <div className="import-pickup-type-selector-item">
             <Link
               href="/existing-products"
               className="import-pickup-type-selector-box hover:!bg-gray-100"
@@ -51,7 +51,7 @@ const AddProductContent: React.FC<AddProductContentProps> = () => {
                 </p>
               </div>
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </DialogContent>

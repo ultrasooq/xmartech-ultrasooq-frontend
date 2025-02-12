@@ -62,6 +62,13 @@ const ProductDetailsPage = () => {
     },
     !!searchParams?.id && !otherSellerId && !otherProductId,
   );
+
+  const handleProductUpdateSuccess = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["product-by-id"],
+    });  // Refetch product details
+  };
+
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
@@ -296,6 +303,7 @@ const ProductDetailsPage = () => {
           <div className="container m-auto px-3">
             <ProductImagesCard
               productDetails={productDetails}
+              onProductUpdateSuccess={handleProductUpdateSuccess} // Pass to child
               onAdd={() => handleAddToCart(1, "add")}
               onToCart={handleCartPage}
               onToCheckout={handleCheckoutPage}

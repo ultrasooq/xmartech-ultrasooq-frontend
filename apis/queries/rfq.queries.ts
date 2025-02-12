@@ -1,6 +1,7 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  addFactoriesProductApi,
   addProductDuplicateRfq,
   addRfqProduct,
   addRfqQuotes,
@@ -9,6 +10,7 @@ import {
   fetchAllRfqQuotesByBuyerId,
   fetchAllRfqQuotesUsersByBuyerId,
   fetchAllRfqQuotesUsersBySellerId,
+  fetchFactoriesProducts,
   fetchOneRfqQuotesUsersByBuyerID,
   fetchRfqCartByUserId,
   fetchRfqProductById,
@@ -39,6 +41,28 @@ export const useRfqProducts = (
     // },
     enabled,
   });
+
+  export const useFactoriesProducts = (
+    payload: {
+      page: number;
+      limit: number;
+      term?: string;
+      adminId?: string;
+      sortType?: "newest" | "oldest";
+    },
+    enabled = true,
+  ) =>
+    useQuery({
+      queryKey: ["factoriesProducts", payload],
+      queryFn: async () => {
+        const res = await fetchFactoriesProducts(payload);
+        return res.data;
+      },
+      // onError: (err: APIResponseError) => {
+      //   console.log(err);
+      // },
+      enabled,
+    });
 
 export const useRfqProductById = (id: string, enabled = true) =>
   useQuery({
@@ -147,6 +171,23 @@ export const useUpdateRfqCartWithLogin = () => {
       //   queryKey: ["rfq-cart-count-with-login"],
       // });
     },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useAddFactoriesProduct = () => {
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { productId: number }
+  >({
+    mutationFn: async (payload) => {
+      const res = await addFactoriesProductApi(payload);
+      return res.data;
+    },
+    onSuccess: () => {},
     onError: (err: APIResponseError) => {
       console.log(err);
     },

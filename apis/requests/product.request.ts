@@ -98,6 +98,19 @@ export const updateProduct = (payload: IUpdateProductRequest) => {
   });
 };
 
+export const updateForCustomize = (payload: IUpdateProductRequest) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/updateForCustomize`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const fetchExistingProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; brandAddedBy?: number; categoryIds?: string; }) => {
   return axios({
     method: "GET",

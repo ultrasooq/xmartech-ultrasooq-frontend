@@ -20,6 +20,22 @@ export const fetchRfqProducts = (payload: {
   });
 };
 
+export const fetchFactoriesProducts = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  adminId?: string;
+  sortType?: "newest" | "oldest";
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllFactoriesProduct`,
+      payload,
+    ),
+  });
+};
+
 export const addRfqProduct = (payload: {
   productNote: string;
   rfqProductName: string;
@@ -94,6 +110,21 @@ export const updateRfqCartWithLogin = (payload: {
   return axios({
     method: "PATCH",
     url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateRfqCart`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const addFactoriesProductApi = (payload: {
+  productId: number;
+}) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addProductDuplicateFactories`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

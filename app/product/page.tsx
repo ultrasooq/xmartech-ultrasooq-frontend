@@ -317,7 +317,7 @@ const CreateProductPage = () => {
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
       ...formData,
-      productType: activeProductType === "R" ? "R" : "P",
+      productType: activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
       status: activeProductType === "R" ? "ACTIVE" : "INACTIVE",
     };
 

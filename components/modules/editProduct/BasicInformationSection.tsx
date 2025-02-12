@@ -261,7 +261,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     label="Product Name"
                     name="productName"
                     placeholder="Product Name"
-                    disabled={hasId}
+                    // disabled={hasId}
                   />
 
                   {!hasId ? (
