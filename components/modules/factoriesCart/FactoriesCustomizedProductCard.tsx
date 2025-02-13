@@ -6,7 +6,7 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 // import { useCartStore } from "@/lib/rfqStore";
 
 type FactoriesProductCardProps = {
-//   id: number;
+  factoriesCartId: number;
   productId: number;
   customizeProductId: number;
   productName: string;
@@ -28,7 +28,7 @@ type FactoriesProductCardProps = {
 };
 
 const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
-//   id,
+  factoriesCartId,
   productId,
   customizeProductId,
   productName,
@@ -129,7 +129,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
               variant="link"
               className="relative hover:shadow-sm"
               onClick={() => {
-                onRemove(customizeProductId);
+                onRemove(factoriesCartId);
                 // cart.deleteCartItem(rfqProductId);
               }}
             >

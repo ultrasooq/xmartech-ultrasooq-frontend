@@ -273,6 +273,7 @@ const RfqPage = () => {
                               productStatus={item?.status}
                               productImages={item?.productImages}
                               productQuantity={item?.quantity || 0}
+                              productPrice={item?.product_productPrice}
                               onAdd={handleRFQCart}
                               onToCart={handleCartPage}
                               onEdit={() => {

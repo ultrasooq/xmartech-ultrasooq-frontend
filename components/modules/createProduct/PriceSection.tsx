@@ -17,6 +17,8 @@ import { ICountries, ILocations, IOption } from "@/utils/types/common.types";
 import { useCountries, useLocation } from "@/apis/queries/masters.queries";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
+import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
 
 interface Option {
   readonly label: string;
@@ -48,6 +50,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   const watchSetUpPrice = formContext.watch("setUpPrice");
   const watchIsOfferPriceRequired = formContext.watch("isOfferPriceRequired");
   const watchIsStockRequired = formContext.watch("isStockRequired");
+
+  const watchDateOpen = formContext.watch("productPriceList.[0].dateOpen"); // Watch the Time Open value
+
 
   const watchConsumerType = formContext.watch(
     "productPriceList.[0].consumerType",
@@ -347,23 +352,45 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
             {watchSellType === "BUYGROUP" ? (
               <>
-                <CounterTextInputField
+                {/* <CounterTextInputField
                   label="Time Open"
                   name="productPriceList.[0].timeOpen"
                   placeholder="Open"
                   errorMessage={
                     timeOpenMessage ? timeOpenMessage.toString() : undefined
                   }
+                /> */}
+
+                <ControlledDatePicker
+                label="Date Open"
+                name="productPriceList.[0].dateOpen"
+                isFuture />
+
+                <ControlledTimePicker
+                  label="Time Open"
+                  name="productPriceList.[0].startTime                       "
                 />
 
-                <CounterTextInputField
+                <ControlledDatePicker
+                label="Date Close"
+                name="productPriceList.[0].dateClose"
+                isFuture
+                minDate={watchDateOpen} // Pass timeOpen as minDate to disable past dates
+                 />
+
+                <ControlledTimePicker
+                  label="Time Close"
+                  name="productPriceList.[0].endTime                         "
+                />
+
+                {/* <CounterTextInputField
                   label="Time Close"
                   name="productPriceList.[0].timeClose"
                   placeholder="Close"
                   errorMessage={
                     timeCloseMessage ? timeCloseMessage.toString() : undefined
                   }
-                />
+                /> */}
               </>
             ) : null}
           </div>

@@ -106,8 +106,8 @@ const FactoriesCartPage = () => {
     }
   };
 
-  const handleRemoveItemFromFactoriesCart = async (customizeProductId: number) => {
-    const response = await deleteFactoriesCartItem.mutateAsync({ customizeProductId });
+  const handleRemoveItemFromFactoriesCart = async (factoriesCartId: number) => {
+    const response = await deleteFactoriesCartItem.mutateAsync({ factoriesCartId });
     if (response.status) {
       toast({
         title: "Item removed from cart",
@@ -136,7 +136,7 @@ const FactoriesCartPage = () => {
       factoriesCartIds: memoizedFactoriseCartList.map((item: any) => item.id),
       factoriesDate: formData.factoriesDate,
     };
-    console.log(updatedFormData);
+    // console.log(updatedFormData);
     // return;
     const response = await addFactoriesRequestQuotes.mutateAsync(updatedFormData);
     if (response.status) {
@@ -149,7 +149,7 @@ const FactoriesCartPage = () => {
         queryKey: ["rfq-cart-by-user", { page: 1, limit: 20 }],
       });
       form.reset();
-      router.push("/rfq-quotes");
+      // router.push("/rfq-quotes");
     } else {
       toast({
         title: "Something went wrong",
@@ -202,6 +202,7 @@ const FactoriesCartPage = () => {
                   {memoizedFactoriseCartList.map((item: any) => (
                     <FactoriesCustomizedProductCard
                       key={item?.id}
+                      factoriesCartId={item?.id}
                       customizeProductId={item?.customizeProductId}
                       productId={item?.productId}
                       productName={item?.productDetails?.productName}

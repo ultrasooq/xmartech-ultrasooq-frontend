@@ -43,8 +43,8 @@ import FactoriesCartMenuCard from "./FactoriesCartMenuCard";
       return [];
     }, [factoriesCartListByUser.data?.data]);
   
-    const handleRemoveItemFromFactoriesCart = async (customizeProductId: number) => {
-      const response = await deleteFactoriesCartItem.mutateAsync({ customizeProductId });
+    const handleRemoveItemFromFactoriesCart = async (factoriesCartId: number) => {
+      const response = await deleteFactoriesCartItem.mutateAsync({ factoriesCartId });
       if (response.status) {
         toast({
           title: "Item removed from cart",
@@ -85,6 +85,7 @@ import FactoriesCartMenuCard from "./FactoriesCartMenuCard";
           {memoizedFactoriseCartList.map((item: any) => (
             <FactoriesCartMenuCard
               key={item?.id}
+              factoriesCartId={item?.id}
               customizeProductId={item?.customizeProductId}
               productId={item?.productId}
               productName={item?.productDetails?.productName}

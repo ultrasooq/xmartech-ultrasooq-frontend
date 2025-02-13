@@ -23,6 +23,7 @@ type RfqProductCardProps = {
   isCreatedByMe: boolean;
   isAddedToCart: boolean;
   haveAccessToken: boolean;
+  productPrice: any
 };
 
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
@@ -39,6 +40,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   isCreatedByMe,
   isAddedToCart,
   haveAccessToken,
+  productPrice
 }) => {
   // const cart = useCartStore();
   const [quantity, setQuantity] = useState(0);
@@ -68,6 +70,13 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       <div className="product_list_content">
         {/* <Link href={`/trending/${id}`}> */}
         <p>{productName}</p>
+         {/* price For P type product */}
+         {productType === 'P' ? 
+         <>
+         <label>Price:</label>
+         <p>${productPrice[0].offerPrice}</p>
+         </>
+          : null}
         {/* </Link> */}
         {haveAccessToken ? (
           <div className="quantity_wrap mb-2">

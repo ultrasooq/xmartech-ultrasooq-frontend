@@ -181,11 +181,11 @@ export const deleteRfqCartItem = (payload: { rfqCartId: number }) => {
   });
 };
 
-export const deleteFactoriesCartItem = (payload: { customizeProductId: number }) => {
+export const deleteFactoriesCartItem = (payload: { factoriesCartId: number }) => {
   return axios({
     method: "DELETE",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/cart/factoriesCartDelete`,
+      `${process.env.NEXT_PUBLIC_API_URL}/cart/deleteFactoriesCart`,
       payload,
     ),
     headers: {
@@ -284,7 +284,7 @@ export const addRfqQuotes = (payload: AddRfqQuotesRequest) => {
 export const addFactoriesQuotes = (payload: AddFactoriesQuotesRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addFactoriesQuotes`,
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/createFactoriesRequest`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

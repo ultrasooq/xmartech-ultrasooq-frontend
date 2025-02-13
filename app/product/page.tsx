@@ -31,6 +31,10 @@ const baseProductPriceItemSchema = z.object({
   maxQuantityPerCustomer: z.coerce.number().optional(),
   minQuantity: z.coerce.number().optional(),
   maxQuantity: z.coerce.number().optional(),
+  dateOpen: z.coerce.date().optional(),
+  dateClose: z.coerce.date().optional(),
+  startTime: z.coerce.string().optional(),
+  endTime: z.coerce.string().optional(),
   timeOpen: z.coerce.number().optional(),
   timeClose: z.coerce.number().optional(),
   deliveryAfter: z.coerce.number().optional(),
@@ -53,11 +57,13 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema.exte
 },).refine(({ minCustomer, maxCustomer }) => (!minCustomer || minCustomer) <= (!maxCustomer || maxCustomer), {
   message: "Min Customer must be less than or equal to Max Customer",
   path: ["minCustomer"],
-},).refine(({ timeOpen, timeClose }) => (!timeOpen || timeOpen) <= (!timeClose || timeClose), {
-  message: "Open Time must be less than or equal to Close Time",
-  path: ["timeOpen"],
-},).superRefine((schema, ctx) => {
-  const { sellType, minQuantityPerCustomer, maxQuantityPerCustomer, minQuantity, maxQuantity, minCustomer, maxCustomer, timeOpen, timeClose, } = schema;
+},)
+// .refine(({ timeOpen, timeClose }) => (!timeOpen || timeOpen) <= (!timeClose || timeClose), {
+//   message: "Open Time must be less than or equal to Close Time",
+//   path: ["timeOpen"],
+// },)
+.superRefine((schema, ctx) => {
+  const { sellType, minQuantityPerCustomer, maxQuantityPerCustomer, minQuantity, maxQuantity, minCustomer, maxCustomer, startTime, endTime, } = schema;
   if (sellType === "NORMALSELL" || sellType === "BUYGROUP") {
     if (!minQuantityPerCustomer) {
       ctx.addIssue({ code: "custom", message: "Quantity Per Customer is required", path: ["minQuantityPerCustomer"], });
@@ -87,13 +93,13 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema.exte
     }
   }
   if (sellType === "BUYGROUP") {
-    if (!timeOpen) {
-      ctx.addIssue({ code: "custom", message: "Time Open is required", path: ["timeOpen"], });
+    if (!startTime) {
+      ctx.addIssue({ code: "custom", message: "Time Open is required", path: ["startTime"], });
     }
   }
   if (sellType === "BUYGROUP") {
-    if (!timeClose) {
-      ctx.addIssue({ code: "custom", message: "Time Close is required", path: ["timeClose"], });
+    if (!endTime) {
+      ctx.addIssue({ code: "custom", message: "Time Close is required", path: ["endTime"], });
     }
   }
 });
@@ -164,8 +170,12 @@ const formSchemaForTypeP = z.object({
         maxQuantityPerCustomer: 0,
         minQuantity: 0,
         maxQuantity: 0,
+        dateOpen: undefined,
+        dateClose: undefined,
         timeOpen: 0,
         timeClose: 0,
+        startTime: "",
+        endTime: "",
         deliveryAfter: 0,
         stock: 0,
       }));
@@ -264,8 +274,12 @@ const defaultValues = {
       maxQuantityPerCustomer: 0,
       minQuantity: 0,
       maxQuantity: 0,
+      dateOpen: "",
+      dateClose: "",
       timeOpen: 0,
       timeClose: 0,
+      startTime: "",
+      endTime: "",
       deliveryAfter: 0,
       stock: 0,
     },
@@ -315,6 +329,8 @@ const CreateProductPage = () => {
 
 
   const onSubmit = async (formData: any) => {
+    // console.log(formData)
+    // return
     const updatedFormData = {
       ...formData,
       productType: activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
@@ -486,8 +502,12 @@ const CreateProductPage = () => {
           maxQuantityPerCustomer: 0,
           minQuantity: 0,
           maxQuantity: 0,
+          dateOpen: "",
+          dateClose: "",
           timeOpen: 0,
           timeClose: 0,
+          startTime: "",
+          endTime: "",
           deliveryAfter: 0,
           stock: 0,
         },

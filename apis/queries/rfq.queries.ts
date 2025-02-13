@@ -285,7 +285,7 @@ export const useDeleteFactoriesCartItem = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { customizeProductId: number }
+    { factoriesCartId: number }
   >({
     mutationFn: async (payload) => {
       const res = await deleteFactoriesCartItem(payload);
@@ -416,6 +416,9 @@ export const useAddFactoriesRequestQuotes = () => {
       return res.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["factories-cart-by-user"],
+      });
       queryClient.invalidateQueries({
         queryKey: ["factories-quotes-request"],
       });

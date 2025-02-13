@@ -8,7 +8,7 @@ import { useUpdateFactoriesCartWithLogin } from "@/apis/queries/rfq.queries";
 import { useToast } from "@/components/ui/use-toast";
 
 type FactoriesCartMenuCardProps = {
-  // id: number;
+  factoriesCartId: number;
   customizeProductId: number;
   productId: number;
   productName: string;
@@ -32,7 +32,7 @@ type FactoriesCartMenuCardProps = {
 };
 
 const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
-  // id,
+  factoriesCartId,
   customizeProductId,
   productId,
   productName,
@@ -164,7 +164,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
             variant="link"
             className="relative hover:shadow-sm"
             onClick={() => {
-              onRemove(customizeProductId);
+              onRemove(factoriesCartId);
               // cart.deleteCartItem(rfqProductId);
             }}
           >

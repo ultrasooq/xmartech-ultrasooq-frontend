@@ -22,12 +22,14 @@ interface ControlledDatePickerProps {
   label?: string;
   name: string;
   isFuture?: boolean;
+  minDate?: Date;
 }
 
 const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
   label,
   name,
   isFuture,
+  minDate
 }) => {
   const formContext = useFormContext();
 
@@ -67,10 +69,17 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
                   today.setHours(0, 0, 0, 0);
 
                   if (isFuture) {
-                    return date < today; // Disable dates before today
+                    // return date < today; // Disable dates before today
+                    return date < today || (minDate ? date < minDate : false);
                   } else {
-                    const minDate = new Date("1900-01-01");
-                    return date < minDate || date > today; // Disable dates outside the range of Jan 1, 1900, to today
+                    // const minDate = new Date("1900-01-01");
+                    const minSelectableDate = new Date("1900-01-01");
+                    // return date < minDate || date > today; // Disable dates outside the range of Jan 1, 1900, to today
+                    return (
+                      date < minSelectableDate ||
+                      date > today ||
+                      (minDate ? date < minDate : false)
+                    );
                   }
                 }}
                 initialFocus
