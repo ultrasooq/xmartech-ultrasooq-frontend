@@ -35,4 +35,6 @@ export interface IUpdateProductRequest extends ICreateProductRequest {
   productId: number;
 }
 
-export interface IUpdateProduct extends ICreateProduct {}
+export interface IUpdateProduct extends ICreateProduct {
+  customizeProductId: number;
+}

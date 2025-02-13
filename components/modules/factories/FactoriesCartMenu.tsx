@@ -1,5 +1,7 @@
 import {
+  useDeleteFactoriesCartItem,
     useDeleteRfqCartItem,
+    useFactoriesCartListByUserId,
     useRfqCartListByUserId,
   } from "@/apis/queries/rfq.queries";
   import React, { useMemo } from "react";
@@ -24,7 +26,7 @@ import FactoriesCartMenuCard from "./FactoriesCartMenuCard";
     haveAccessToken,
   }) => {
     const { toast } = useToast();
-    const rfqCartListByUser = useRfqCartListByUserId(
+    const factoriesCartListByUser = useFactoriesCartListByUserId(
       {
         page: 1,
         limit: 20,
@@ -32,17 +34,17 @@ import FactoriesCartMenuCard from "./FactoriesCartMenuCard";
       haveAccessToken,
     );
   
-    const deleteRfqCartItem = useDeleteRfqCartItem();
+    const deleteFactoriesCartItem = useDeleteFactoriesCartItem();
   
-    const memoizedRfqCartList = useMemo(() => {
-      if (rfqCartListByUser.data?.data) {
-        return rfqCartListByUser.data?.data || [];
+    const memoizedFactoriseCartList = useMemo(() => {
+      if (factoriesCartListByUser.data?.data) {
+        return factoriesCartListByUser.data?.data || [];
       }
       return [];
-    }, [rfqCartListByUser.data?.data]);
+    }, [factoriesCartListByUser.data?.data]);
   
-    const handleRemoveItemFromRfqCart = async (rfqCartId: number) => {
-      const response = await deleteRfqCartItem.mutateAsync({ rfqCartId });
+    const handleRemoveItemFromFactoriesCart = async (customizeProductId: number) => {
+      const response = await deleteFactoriesCartItem.mutateAsync({ customizeProductId });
       if (response.status) {
         toast({
           title: "Item removed from cart",
@@ -59,7 +61,7 @@ import FactoriesCartMenuCard from "./FactoriesCartMenuCard";
     return (
       <div className="rfq_right">
         <div className="rfq_right_bottom">
-          {memoizedRfqCartList.length ? (
+          {memoizedFactoriseCartList.length ? (
             <div className="mb-4 w-full text-center">
               <Link
                 href="/factories-cart"
@@ -71,25 +73,28 @@ import FactoriesCartMenuCard from "./FactoriesCartMenuCard";
           ) : null}
   
           <h4 className="text-center">
-            Your Factories Cart ({memoizedRfqCartList.length} items)
+            Your Factories Cart ({memoizedFactoriseCartList.length} items)
           </h4>
   
-          {!memoizedRfqCartList.length && (
+          {!memoizedFactoriseCartList.length && (
             <div className="my-10 text-center">
               <h4>No items in cart</h4>
             </div>
           )}
   
-          {memoizedRfqCartList.map((item: any) => (
+          {memoizedFactoriseCartList.map((item: any) => (
             <FactoriesCartMenuCard
               key={item?.id}
-              id={item?.id}
-              rfqProductId={item?.productId}
-              productName={item?.rfqCart_productDetails?.productName}
+              customizeProductId={item?.customizeProductId}
+              productId={item?.productId}
+              productName={item?.productDetails?.productName}
               productQuantity={item.quantity}
-              productImages={item?.rfqCart_productDetails?.productImages}
+              productImages={item?.productDetails?.productImages}
+              customizeProductImages={
+                item?.customizeProductDetail?.customizeProductImageDetail
+              }
             //   onAdd={onAdd}
-              onRemove={handleRemoveItemFromRfqCart}
+              onRemove={handleRemoveItemFromFactoriesCart}
               offerPrice={item?.offerPrice}
               note={item?.note}
             />

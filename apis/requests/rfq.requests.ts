@@ -2,7 +2,7 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 import urlcat from "urlcat";
-import { AddRfqQuotesRequest } from "@/utils/types/rfq.types";
+import { AddRfqQuotesRequest, AddFactoriesQuotesRequest } from "@/utils/types/rfq.types";
 
 export const fetchRfqProducts = (payload: {
   page: number;
@@ -101,6 +101,21 @@ export const fetchRfqCartByUserId = (payload: {
   });
 };
 
+export const fetchFactoriesCartByUserId = (payload: {
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/getAllFactoriesCart`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const updateRfqCartWithLogin = (payload: {
   productId: number;
   quantity: number;
@@ -110,6 +125,23 @@ export const updateRfqCartWithLogin = (payload: {
   return axios({
     method: "PATCH",
     url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateRfqCart`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const updateFactoriesCartWithLogin = (payload: {
+  productId: number;
+  quantity: number;
+  customizeProductId: number;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateFactoriesCart`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -139,6 +171,21 @@ export const deleteRfqCartItem = (payload: { rfqCartId: number }) => {
     method: "DELETE",
     url: urlcat(
       `${process.env.NEXT_PUBLIC_API_URL}/cart/rfqCartDelete`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const deleteFactoriesCartItem = (payload: { customizeProductId: number }) => {
+  return axios({
+    method: "DELETE",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/cart/factoriesCartDelete`,
       payload,
     ),
     headers: {
@@ -225,6 +272,19 @@ export const addRfqQuotes = (payload: AddRfqQuotesRequest) => {
   return axios({
     method: "POST",
     url: `${process.env.NEXT_PUBLIC_API_URL}/product/addRfqQuotes`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const addFactoriesQuotes = (payload: AddFactoriesQuotesRequest) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addFactoriesQuotes`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

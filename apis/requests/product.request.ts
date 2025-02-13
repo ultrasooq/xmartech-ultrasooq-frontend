@@ -101,7 +101,7 @@ export const updateProduct = (payload: IUpdateProductRequest) => {
 export const updateForCustomize = (payload: IUpdateProductRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/updateForCustomize`,
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addCustomizeProduct`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

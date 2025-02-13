@@ -4,14 +4,20 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useUpdateFactoriesCartWithLogin } from "@/apis/queries/rfq.queries";
+import { useToast } from "@/components/ui/use-toast";
 
 type FactoriesCartMenuCardProps = {
-  id: number;
-  rfqProductId: number;
+  // id: number;
+  customizeProductId: number;
+  productId: number;
   productName: string;
   productQuantity: number;
   productImages: {
     image: string;
+  }[];
+  customizeProductImages: {
+    link: string;
   }[];
 //   onAdd: (
 //     args0: number,
@@ -26,36 +32,85 @@ type FactoriesCartMenuCardProps = {
 };
 
 const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
-  id,
-  rfqProductId,
+  // id,
+  customizeProductId,
+  productId,
   productName,
   productQuantity,
   productImages,
+  customizeProductImages,
 //   onAdd,
   onRemove,
   offerPrice,
   note,
 }) => {
+  const { toast } = useToast();
   // const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
+
+   const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
 
   useEffect(() => {
     setQuantity(productQuantity);
   }, [productQuantity]);
 
+  const handleAddToCart = async (
+    quantity: number,
+    productId: number,
+    customizeProductId: number,
+    // offerPrice: number,
+    // note: string,
+  ) => {
+    const response = await updateFactoriesCartWithLogin.mutateAsync({
+      productId,
+      quantity,
+      customizeProductId
+      // offerPrice,
+      // note,
+    });
+
+    if (response.status) {
+      toast({
+        title: "Item added to cart",
+        description: "Check your cart for more details",
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: "Oops! Something went wrong",
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  };
+
   return (
     <div className="rfq_cart_wrap !pb-0">
       <div className="rfq_cart_wrap_image relative">
-        <Image
-          src={
-            productImages?.[0]?.image &&
-            validator.isURL(productImages?.[0]?.image)
-              ? productImages[0].image
-              : PlaceholderImage
-          }
-          alt="pro-6"
-          fill
-        />
+      {customizeProductImages?.[0]?.link
+             ? 
+             <Image
+             src={
+                customizeProductImages?.[0]?.link &&
+               validator.isURL(customizeProductImages?.[0]?.link)
+                 ? customizeProductImages[0].link
+                 : PlaceholderImage
+             }
+             alt="pro-6"
+             fill
+           /> 
+            : 
+            <Image
+            src={
+              productImages?.[0]?.image &&
+              validator.isURL(productImages?.[0]?.image)
+                ? productImages[0].image
+                : PlaceholderImage
+            }
+            alt="pro-6"
+            fill
+          />
+            }
       </div>
       <div className="rfq_cart_wrap_content">
         <div className="rfq_cart_wrap_content_top">
@@ -71,17 +126,13 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
                 variant="outline"
                 className="relative hover:shadow-sm"
                 onClick={() => {
-                  setQuantity(quantity - 1);
-                //   onAdd(
-                //     quantity - 1,
-                //     rfqProductId,
-                //     "remove",
-                //     offerPrice ? Number(offerPrice) : 0,
-                //     note,
-                //   );
-                  // cart.updateCart({ quantity: quantity - 1, rfqProductId });
+                  if (quantity > 0) {
+                    const newQuantity = quantity - 1;
+                    setQuantity(newQuantity);
+                    handleAddToCart(newQuantity, productId, customizeProductId);
+                  }
                 }}
-                disabled={quantity === 0}
+                disabled={quantity === 1}
               >
                 <Image
                   src="/images/upDownBtn-minus.svg"
@@ -95,15 +146,9 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
                 variant="outline"
                 className="relative hover:shadow-sm"
                 onClick={() => {
-                  setQuantity(quantity + 1);
-                //   onAdd(
-                //     quantity + 1,
-                //     rfqProductId,
-                //     "add",
-                //     offerPrice ? Number(offerPrice) : 0,
-                //     note,
-                //   );
-                  // cart.updateCart({ quantity: quantity + 1, rfqProductId });
+                  const newQuantity = quantity + 1;
+                  setQuantity(newQuantity);
+                  handleAddToCart(newQuantity, productId, customizeProductId);
                 }}
               >
                 <Image
@@ -119,7 +164,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
             variant="link"
             className="relative hover:shadow-sm"
             onClick={() => {
-              onRemove(id);
+              onRemove(customizeProductId);
               // cart.deleteCartItem(rfqProductId);
             }}
           >

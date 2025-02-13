@@ -1,9 +1,13 @@
 "use client";
 import { useAllUserAddress } from "@/apis/queries/address.queries";
 import {
+  useAddFactoriesRequestQuotes,
   useAddRfqQuotes,
+  useDeleteFactoriesCartItem,
   useDeleteRfqCartItem,
+  useFactoriesCartListByUserId,
   useRfqCartListByUserId,
+  useUpdateFactoriesCartWithLogin,
   useUpdateRfqCartWithLogin,
 } from "@/apis/queries/rfq.queries";
 import { useMe } from "@/apis/queries/user.queries";
@@ -25,10 +29,11 @@ import { MdOutlineChevronLeft } from "react-icons/md";
 import { z } from "zod";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
 import Footer from "@/components/shared/Footer";
+import FactoriesCustomizedProductCard from "@/components/modules/factoriesCart/FactoriesCustomizedProductCard";
 
 const formSchema = z.object({
   address: z.string().trim().min(1, { message: "Address is required" }),
-  rfqDate: z
+  factoriesDate: z
     .date({ required_error: "Delivery Date is required" })
     .transform((val) => val.toISOString()),
 });
@@ -41,7 +46,7 @@ const FactoriesCartPage = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       address: "",
-      rfqDate: undefined as unknown as string,
+      factoriesDate: undefined as unknown as string,
     },
   });
 
@@ -50,13 +55,14 @@ const FactoriesCartPage = () => {
     page: 1,
     limit: 10,
   });
-  const rfqCartListByUser = useRfqCartListByUserId({
+  const factoriesCartListByUser = useFactoriesCartListByUserId({
     page: 1,
     limit: 20,
   });
-  const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
-  const deleteRfqCartItem = useDeleteRfqCartItem();
+  const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
+  const deleteFactoriesCartItem = useDeleteFactoriesCartItem();
   const addQuotes = useAddRfqQuotes();
+  const addFactoriesRequestQuotes = useAddFactoriesRequestQuotes();
 
   const memoziedAddressList = useMemo(() => {
     return (
@@ -67,38 +73,41 @@ const FactoriesCartPage = () => {
     );
   }, [allUserAddressQuery.data?.data]);
 
-  const memoizedRfqCartList = useMemo(() => {
-    if (rfqCartListByUser.data?.data) {
-      return rfqCartListByUser.data?.data || [];
+  const memoizedFactoriseCartList = useMemo(() => {
+    if (factoriesCartListByUser.data?.data) {
+      return factoriesCartListByUser.data?.data || [];
     }
     return [];
-  }, [rfqCartListByUser.data?.data]);
+  }, [factoriesCartListByUser.data?.data]);
 
   const handleAddToCart = async (
     quantity: number,
+    customizeProductId: number,
     productId: number,
-    actionType: "add" | "remove",
-    offerPrice: number,
-    note: string,
   ) => {
-    const response = await updateRfqCartWithLogin.mutateAsync({
+    const response = await updateFactoriesCartWithLogin.mutateAsync({
       productId,
       quantity,
-      offerPrice,
-      note,
+      customizeProductId,
     });
 
     if (response.status) {
       toast({
-        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+        title: `Item added to cart`,
         description: "Check your cart for more details",
         variant: "success",
+      });
+    }else {
+      toast({
+        title: "Oops! Something went wrong",
+        description: response.message,
+        variant: "danger",
       });
     }
   };
 
-  const handleRemoveItemFromRfqCart = async (rfqCartId: number) => {
-    const response = await deleteRfqCartItem.mutateAsync({ rfqCartId });
+  const handleRemoveItemFromFactoriesCart = async (customizeProductId: number) => {
+    const response = await deleteFactoriesCartItem.mutateAsync({ customizeProductId });
     if (response.status) {
       toast({
         title: "Item removed from cart",
@@ -124,12 +133,12 @@ const FactoriesCartPage = () => {
       lastName: me.data?.data?.lastName,
       phoneNumber: me.data?.data?.phoneNumber,
       cc: me.data?.data?.cc,
-      rfqCartIds: memoizedRfqCartList.map((item: any) => item.id),
-      rfqDate: formData.rfqDate,
+      factoriesCartIds: memoizedFactoriseCartList.map((item: any) => item.id),
+      factoriesDate: formData.factoriesDate,
     };
     console.log(updatedFormData);
     // return;
-    const response = await addQuotes.mutateAsync(updatedFormData);
+    const response = await addFactoriesRequestQuotes.mutateAsync(updatedFormData);
     if (response.status) {
       toast({
         title: "Quotes added successfully",
@@ -166,7 +175,7 @@ const FactoriesCartPage = () => {
               >
                 <MdOutlineChevronLeft />
               </button>
-              <h3>Factories Cart Items</h3>
+              <h3>Customize Cart Items</h3>
             </div>
             <div className="bodyPart">
               <div className="add-delivery-card">
@@ -181,33 +190,36 @@ const FactoriesCartPage = () => {
 
                     <div>
                       <Label>Date</Label>
-                      <ControlledDatePicker name="rfqDate" isFuture />
+                      <ControlledDatePicker name="factoriesDate" isFuture />
                     </div>
                   </form>
                 </Form>
               </div>
 
               <div className="rfq-cart-item-lists">
-                <h4>Factories Cart Items</h4>
+                <h4>Customize Cart Items</h4>
                 <div className="rfq-cart-item-ul">
-                  {memoizedRfqCartList.map((item: any) => (
-                    <RfqProductCard
+                  {memoizedFactoriseCartList.map((item: any) => (
+                    <FactoriesCustomizedProductCard
                       key={item?.id}
-                      id={item?.id}
-                      rfqProductId={item?.productId}
-                      productName={item?.rfqCart_productDetails?.productName}
+                      customizeProductId={item?.customizeProductId}
+                      productId={item?.productId}
+                      productName={item?.productDetails?.productName}
                       productQuantity={item.quantity}
                       productImages={
-                        item?.rfqCart_productDetails?.productImages
+                        item?.productDetails?.productImages
                       }
-                      offerPrice={item?.rfqCart_productDetails?.offerPrice}
+                      customizeProductImages={
+                        item?.customizeProductDetail?.customizeProductImageDetail
+                      }
+                      offerPrice={item?.customizeProductDetail?.price}
                       onAdd={handleAddToCart}
-                      onRemove={handleRemoveItemFromRfqCart}
-                      note={item?.note}
+                      onRemove={handleRemoveItemFromFactoriesCart}
+                      note={item?.customizeProductDetail?.note}
                     />
                   ))}
 
-                  {!memoizedRfqCartList.length ? (
+                  {!memoizedFactoriseCartList.length ? (
                     <div className="my-10 text-center">
                       <h4>No items in cart</h4>
                     </div>
@@ -216,11 +228,11 @@ const FactoriesCartPage = () => {
               </div>
               <div className="submit-action">
                 <Button
-                  disabled={!memoizedRfqCartList.length || addQuotes.isPending}
+                  disabled={!memoizedFactoriseCartList.length || addFactoriesRequestQuotes.isPending}
                   className="theme-primary-btn submit-btn"
                   onClick={form.handleSubmit(onSubmit)}
                 >
-                  {addQuotes.isPending ? (
+                  {addFactoriesRequestQuotes.isPending ? (
                     <>
                       <Image
                         src="/images/load.png"
@@ -232,7 +244,7 @@ const FactoriesCartPage = () => {
                       Please wait
                     </>
                   ) : (
-                    "Request For RFQ"
+                    "Request For Customize "
                   )}
                 </Button>
               </div>

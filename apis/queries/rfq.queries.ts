@@ -2,23 +2,27 @@ import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addFactoriesProductApi,
+  addFactoriesQuotes,
   addProductDuplicateRfq,
   addRfqProduct,
   addRfqQuotes,
+  deleteFactoriesCartItem,
   deleteRfqCartItem,
   deleteRfqQuote,
   fetchAllRfqQuotesByBuyerId,
   fetchAllRfqQuotesUsersByBuyerId,
   fetchAllRfqQuotesUsersBySellerId,
+  fetchFactoriesCartByUserId,
   fetchFactoriesProducts,
   fetchOneRfqQuotesUsersByBuyerID,
   fetchRfqCartByUserId,
   fetchRfqProductById,
   fetchRfqProducts,
+  updateFactoriesCartWithLogin,
   updateRfqCartWithLogin,
   updateRfqProduct,
 } from "../requests/rfq.requests";
-import { AddRfqQuotesRequest } from "@/utils/types/rfq.types";
+import { AddRfqQuotesRequest, AddFactoriesQuotesRequest } from "@/utils/types/rfq.types";
 
 export const useRfqProducts = (
   payload: {
@@ -149,6 +153,25 @@ export const useRfqCartListByUserId = (
     enabled,
   });
 
+  export const useFactoriesCartListByUserId = (
+    payload: {
+      page: number;
+      limit: number;
+    },
+    enabled = true,
+  ) =>
+    useQuery({
+      queryKey: ["factories-cart-by-user", payload],
+      queryFn: async () => {
+        const res = await fetchFactoriesCartByUserId(payload);
+        return res.data;
+      },
+      // onError: (err: APIResponseError) => {
+      //   console.log(err);
+      // },
+      enabled,
+    });
+
 export const useUpdateRfqCartWithLogin = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -176,6 +199,35 @@ export const useUpdateRfqCartWithLogin = () => {
     },
   });
 };
+
+export const useUpdateFactoriesCartWithLogin = () => 
+  {
+    const queryClient = useQueryClient();
+    return useMutation<
+      { data: any; message: string; status: boolean },
+      APIResponseError,
+      { productId: number; quantity: number; customizeProductId: number }
+    >({
+      mutationFn: async (payload) => {
+        const res = await updateFactoriesCartWithLogin(payload);
+        return res.data;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["factories-cart-by-user"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["factories-products"],
+        });
+        // queryClient.invalidateQueries({
+        //   queryKey: ["rfq-cart-count-with-login"],
+        // });
+      },
+      onError: (err: APIResponseError) => {
+        console.log(err);
+      },
+    });
+  };
 
 export const useAddFactoriesProduct = () => {
   return useMutation<
@@ -227,6 +279,32 @@ export const useDeleteRfqCartItem = () => {
     },
   });
 };
+
+export const useDeleteFactoriesCartItem = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { customizeProductId: number }
+  >({
+    mutationFn: async (payload) => {
+      const res = await deleteFactoriesCartItem(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["factories-cart-by-user"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["factories-products"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
 
 export const useAllRfqQuotesByBuyerId = (
   payload: {
@@ -318,6 +396,28 @@ export const useAddRfqQuotes = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["rfq-quotes-request"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useAddFactoriesRequestQuotes = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    AddFactoriesQuotesRequest
+  >({
+    mutationFn: async (payload) => {
+      const res = await addFactoriesQuotes(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["factories-quotes-request"],
       });
     },
     onError: (err: APIResponseError) => {

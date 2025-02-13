@@ -22,6 +22,7 @@ import {
 } from "@/apis/queries/product.queries";
 import {
   useAddProductDuplicateRfq,
+  useUpdateFactoriesCartWithLogin,
   useUpdateRfqCartWithLogin,
 } from "@/apis/queries/rfq.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
@@ -43,7 +44,7 @@ type AddToCustomizeFormProps = {
 };
 
 const addFormSchema = z.object({
-  offerPrice: z.coerce
+  price: z.coerce
     .number()
     .max(1000000, {
       message: "Offer price must be less than 1000000",
@@ -56,7 +57,7 @@ const addFormSchema = z.object({
       message: "Description must be less than 100 characters",
     })
     .optional(),
-  productImagesList: z.any().optional(),
+    customizeproductImageList: z.any().optional(),
 });
 
 const editFormSchema = z.object({
@@ -67,19 +68,19 @@ const editFormSchema = z.object({
       message: "Description must be less than 100 characters",
     })
     .optional(),
-  productImagesList: z.any().optional(),
+    customizeproductImageList: z.any().optional(),
 });
 
 const addDefaultValues = {
-  offerPrice: 0,
+  price: 0,
   note: "",
-  productImagesList: undefined,
+  customizeproductImageList: undefined,
   productImages: [] as { path: File; id: string }[],
 };
 
 const editDefaultValues = {
   note: "",
-  productImagesList: undefined,
+  customizeproductImageList: undefined,
   productImages: [] as { path: File; id: string }[],
 };
 
@@ -114,6 +115,8 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
   );
   const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
 
+  const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
+
   const handleEditPreviewImage = (id: string, item: FileList) => {
     const tempArr = watchProductImages || [];
     const filteredFormItem = tempArr.filter((item: any) => item?.id === id);
@@ -147,14 +150,16 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
   const handleAddToCart = async (
     quantity: number,
     productId: number,
-    offerPrice: number,
-    note: string,
+    customizeProductId: number,
+    // offerPrice: number,
+    // note: string,
   ) => {
-    const response = await updateRfqCartWithLogin.mutateAsync({
+    const response = await updateFactoriesCartWithLogin.mutateAsync({
       productId,
       quantity,
-      offerPrice,
-      note,
+      customizeProductId
+      // offerPrice,
+      // note,
     });
 
     if (response.status) {
@@ -163,12 +168,13 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
         description: "Check your cart for more details",
         variant: "success",
       });
-      form.reset();
-      productQueryById.refetch();
-      queryClient.invalidateQueries({
-        queryKey: ["rfq-products"],
-      });
-      onClose();
+      // form.reset();
+      // productQueryById.refetch();
+      // queryClient.invalidateQueries({
+      //   queryKey: ["rfq-products"],
+      // });
+        router.push(`/factories-cart`);
+        onClose();
     } else {
       toast({
         title: "Oops! Something went wrong",
@@ -198,13 +204,15 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
             if (videoExtensions.includes(extension)) {
               const videoName: string = item?.path.split("/").pop()!;
               return {
-                video: item?.path,
+                link: item?.path,
+                linkType: 'video',
                 videoName,
               };
             } else if (imageExtensions.includes(extension)) {
               const imageName: string = item?.path.split("/").pop()!;
               return {
-                image: item?.path,
+                link: item?.path,
+                linktype: 'image',
                 imageName,
               };
             }
@@ -218,31 +226,34 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
           if (videoExtensions.includes(extension)) {
             const videoName: string = item.split("/").pop()!;
             return {
-              video: item,
+              link: item,
+              linkType: 'video',
               videoName,
             };
           } else if (imageExtensions.includes(extension)) {
             const imageName: string = item.split("/").pop()!;
             return {
-              image: item,
+              link: item,
+              linkType: 'image',
               imageName,
             };
           }
         }
 
         return {
-          image: item,
+          link: item,
+          linkType: '',
           imageName: item,
         };
       });
 
       updatedFormData.productImages = [
-        ...stringTypeArrays,
+        // ...stringTypeArrays,
         ...formattedimageUrlArrays,
       ];
 
       if (updatedFormData.productImages.length) {
-        updatedFormData.productImagesList = updatedFormData.productImages;
+        updatedFormData.customizeproductImageList = updatedFormData.productImages;
       }
     }
 
@@ -255,6 +266,8 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
       productQueryById?.data?.data?.productType === "F"
     ) {
       // F type product
+
+      console.log(updatedFormData); 
 
       // return;
       const response = await updateForCustomize.mutateAsync({
@@ -269,23 +282,12 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
           variant: "success",
         });
 
-        // if (selectedQuantity) {
-          // handleAddToCart(
-          //   1,
-          //   selectedProductId,
-          //   formData?.offerPrice,
-          //   formData?.note,
-          // );
-        // } else {
-          // form.reset();
-          // productQueryById.refetch();
-          // queryClient.invalidateQueries({
-          //   queryKey: ["products"],
-          // });
-
-          router.push(`/factories-cart`);
-          onClose();
-        // }
+         await handleAddToCart(
+            1,
+            selectedProductId,
+            response?.data.id,
+          );
+        
       } else {
         toast({
           title: "Customize Product Update Failed",
@@ -322,16 +324,18 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
           })
         : [];
 
-      const productImagesList = product?.productImages
+      const customizeproductImageList = product?.productImages
         ? product?.productImages?.map((item: any) => {
             if (item?.video) {
               return {
-                video: item?.video,
+                link: item?.video,
+                linkType: 'video',
                 videoName: item?.videoName,
               };
             } else if (item?.image) {
               return {
-                image: item?.image,
+                link: item?.image,
+                linkType: 'video',
                 imageName: item?.imageName,
               };
             }
@@ -341,7 +345,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
       form.reset({
         note: productQueryById?.data?.data?.note,
         productImages: productImages || [],
-        productImagesList: productImagesList || undefined,
+        customizeproductImageList: customizeproductImageList || undefined,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -351,7 +355,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          {`Add Customize cart`}
+          {`Add Customize Cart`}
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -598,20 +602,20 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
           {/* {selectedQuantity ? ( */}
             <ControlledTextInput
               label="Offer Price"
-              name="offerPrice"
+              name="price"
               placeholder="Offer Price"
               type="number"
             />
           {/* ) : null} */}
 
           <Button
-            // disabled={
+            disabled={
             //   uploadMultiple.isPending ||
             //   updateProduct.isPending ||
             //   createProduct.isPending ||
             //   addDuplicateProduct.isPending ||
-            //   updateRfqCartWithLogin.isPending
-            // }
+            updateFactoriesCartWithLogin.isPending
+            }
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
