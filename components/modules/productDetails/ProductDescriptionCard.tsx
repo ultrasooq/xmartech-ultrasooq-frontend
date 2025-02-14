@@ -39,6 +39,7 @@ type ProductDescriptionCardProps = {
   consumerDiscount?: number;
   askForPrice?: string;
   otherSellerDetails?: any[];
+  productPriceArr: any[];
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -64,6 +65,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   consumerDiscount,
   askForPrice,
   otherSellerDetails,
+  productPriceArr
 }) => {
   const [, setQuantity] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -106,6 +108,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   useEffect(() => {
     setQuantity(productQuantity || 1);
   }, [productQuantity]);
+
+  console.log(productPriceArr);
 
   return (
     <div className="product-view-s1-right">
@@ -178,6 +182,55 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           </div>
         </div>
       )}
+
+    {isLoading ? (
+        <Skeleton className="h-44 w-full" />
+      ) : (
+        productPriceArr[0]?.sellType === "BUYGROUP" ?
+        <div className="info-col">
+        <div className="row">
+          <div className="col-12 col-md-12">
+            <div className="form-group mb-0">
+              {/* <label>Report Abuse</label> */}
+              <p>
+                <span className="color-text">Time Left:</span> {}
+              </p>
+              <p>
+                <span className="color-text">Group Buy deal ends :</span> {}
+              </p>
+              <p>
+                <span className="color-text">Timezone:</span>{" "}
+                
+              </p>
+
+              <p>
+                <span className="color-text">Minimum Quantity:</span> <b>{productPriceArr[0]?.minQuantity}</b>
+                
+              </p>
+              <p>
+                <span className="color-text">Maximum Quantity:</span> <b>{productPriceArr[0]?.maxQuantity}</b>
+                
+              </p>
+              <p>
+                <span className="color-text">Deals sold:</span>{0}
+               </p>
+               <p>
+                <span className="color-text">Minimum Quantity Per Customer:</span> <b>{productPriceArr[0]?.minQuantityPerCustomer}</b>
+                
+              </p>
+              <p>
+                <span className="color-text">Maximum Quantity Per Customer:</span> <b>{productPriceArr[0]?.maxQuantityPerCustomer}</b>
+                
+              </p>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+         : null
+      )}
+
+
       <div className="info-col top-btm-border">
         <div className="form-group mb-0">
           <div className="quantity-with-right-payment-info">

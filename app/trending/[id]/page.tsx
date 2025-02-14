@@ -365,6 +365,7 @@ const ProductDetailsPage = () => {
                 productDetails?.product_productPrice?.[0]?.askForPrice
               }
               otherSellerDetails={otherSellerDetails}
+              productPriceArr={productDetails?.product_productPrice}
             />
           </div>
         </div>

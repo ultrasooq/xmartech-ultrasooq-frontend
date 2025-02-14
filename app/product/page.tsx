@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTags } from "@/apis/queries/tags.queries";
@@ -92,16 +92,16 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema.exte
       ctx.addIssue({ code: "custom", message: "Max Customer is required", path: ["maxCustomer"], });
     }
   }
-  if (sellType === "BUYGROUP") {
-    if (!startTime) {
-      ctx.addIssue({ code: "custom", message: "Time Open is required", path: ["startTime"], });
-    }
-  }
-  if (sellType === "BUYGROUP") {
-    if (!endTime) {
-      ctx.addIssue({ code: "custom", message: "Time Close is required", path: ["endTime"], });
-    }
-  }
+  // if (sellType === "BUYGROUP") {
+  //   if (!startTime) {
+  //     ctx.addIssue({ code: "custom", message: "Time Open is required", path: ["startTime"], });
+  //   }
+  // }
+  // if (sellType === "BUYGROUP") {
+  //   if (!endTime) {
+  //     ctx.addIssue({ code: "custom", message: "Time Close is required", path: ["endTime"], });
+  //   }
+  // }
 });
 
 const formSchemaForTypeP = z.object({
@@ -328,13 +328,13 @@ const CreateProductPage = () => {
   };
 
 
-  const onSubmit = async (formData: any) => {
-    // console.log(formData)
+  const onSubmit = async (formData: any) => {   
+    console.log(formData) 
     // return
     const updatedFormData = {
       ...formData,
       productType: activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
-      status: activeProductType === "R" ? "ACTIVE" : "INACTIVE",
+      status: activeProductType === "R" || activeProductType === "F" ? "ACTIVE" : "INACTIVE",
     };
 
     if (watchProductImages.length) {
@@ -474,7 +474,10 @@ const CreateProductPage = () => {
       form.reset();
       if (activeProductType === "R") {
         router.push("/rfq");
-      } else {
+      } else if(activeProductType === "F"){
+        router.push("/factories");
+      }
+      else {
         router.push("/manage-products");
       }
     } else {
@@ -524,6 +527,8 @@ const CreateProductPage = () => {
       setActiveProductType(activeProductType);
     }
   }, []);
+
+  
 
   return (
     <>

@@ -6,7 +6,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import ReactSelect from "react-select";
 import { Label } from "@/components/ui/label";
 import CounterTextInputField from "./CounterTextInputField";
@@ -52,6 +52,15 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   const watchIsStockRequired = formContext.watch("isStockRequired");
 
   const watchDateOpen = formContext.watch("productPriceList.[0].dateOpen"); // Watch the Time Open value
+
+//   const watchStartTime = formContext.watch("productPriceList.[0].startTime");
+// const watchEndTime = formContext.watch("productPriceList.[0].endTime");
+
+
+
+// console.log("Start Time:", watchStartTime); // ✅ This should update dynamically
+
+// console.log("Form Values price:", formContext.getValues());
 
 
   const watchConsumerType = formContext.watch(
@@ -368,7 +377,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
                 <ControlledTimePicker
                   label="Time Open"
-                  name="productPriceList.[0].startTime                       "
+                  name="productPriceList.[0].startTime"
                 />
 
                 <ControlledDatePicker
@@ -380,7 +389,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
                 <ControlledTimePicker
                   label="Time Close"
-                  name="productPriceList.[0].endTime                         "
+                  name="productPriceList.[0].endTime"
                 />
 
                 {/* <CounterTextInputField

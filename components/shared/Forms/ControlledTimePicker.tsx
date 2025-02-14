@@ -1,5 +1,5 @@
 import React from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, Controller } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -30,12 +30,12 @@ const generateTimeOptions = () => {
 const timeOptions = generateTimeOptions();
 
 const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name }) => {
-  const formContext = useFormContext();
+  const { control, setValue, watch } = useFormContext();
 
   return (
-    <FormField
-      control={formContext.control}
+    <Controller
       name={name}
+      control={control}
       render={({ field }) => (
         <FormItem className="mb-4 flex w-full flex-col">
           <FormLabel>{label}</FormLabel>
@@ -57,7 +57,12 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name
               <select
                 className="w-full border border-gray-300 rounded-lg p-2 text-lg cursor-pointer"
                 value={field.value || ""}
-                onChange={(e) => field.onChange(e.target.value)}
+                onChange={(e) => {
+                  const selectedTime = e.target.value;
+                  setValue(name, selectedTime); // ✅ Update form state
+                  field.onChange(selectedTime); // ✅ Call field.onChange
+                  // console.log(`Updated ${name}:`, selectedTime); // ✅ Debugging log
+                }}
               >
                 <option value="" disabled>
                   Select Time
