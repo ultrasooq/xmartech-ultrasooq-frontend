@@ -109,7 +109,44 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
     setQuantity(productQuantity || 1);
   }, [productQuantity]);
 
-  console.log(productPriceArr);
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
+    // Get UTC offset
+    const getUTCOffset = () => {
+      const now = new Date();
+      const offsetMinutes = now.getTimezoneOffset();
+      const offsetHours = Math.abs(offsetMinutes) / 60;
+      const sign = offsetMinutes > 0 ? "-" : "+";
+      return `UTC${sign}${String(offsetHours).padStart(2, "0")}:00`;
+    };
+
+    // get end date and time with own timezone
+    const formatDateTimeWithTimezone = (isoDate: string, time24: string) => {
+      if (!isoDate || !time24) return "Invalid date"; // Handle empty values safely
+    
+      // Parse the dateClose string to get the correct date
+      const date = new Date(isoDate);
+      
+      // Extract hours and minutes from `endTime` (which is in 24-hour format)
+      const [hours, minutes] = time24.split(":").map(Number);
+      
+      // Set the correct local time (adjusting for timezone shifts)
+      date.setHours(hours, minutes, 0, 0); // Set the correct time in local time
+    
+      // Get the user's local timezone
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+      // Format the date-time in the user's local timezone
+      return date.toLocaleString("en-US", {
+        timeZone: userTimeZone,
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true, // Ensures AM/PM format
+      });
+    };
 
   return (
     <div className="product-view-s1-right">
@@ -193,13 +230,13 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             <div className="form-group mb-0">
               {/* <label>Report Abuse</label> */}
               <p>
-                <span className="color-text">Time Left:</span> {}
+                <span className="color-text">Time Left:</span> {formatDateTimeWithTimezone(productPriceArr[0]?.dateOpen, productPriceArr[0]?.startTime)}
               </p>
               <p>
-                <span className="color-text">Group Buy deal ends :</span> {}
+                <span className="color-text">Group Buy deal ends :</span> {formatDateTimeWithTimezone(productPriceArr[0]?.dateClose, productPriceArr[0]?.endTime)}
               </p>
               <p>
-                <span className="color-text">Timezone:</span>{" "}
+                <span className="color-text">Timezone:</span> {getUTCOffset()} ({userTimezone})
                 
               </p>
 

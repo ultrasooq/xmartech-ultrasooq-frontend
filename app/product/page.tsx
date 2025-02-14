@@ -31,8 +31,8 @@ const baseProductPriceItemSchema = z.object({
   maxQuantityPerCustomer: z.coerce.number().optional(),
   minQuantity: z.coerce.number().optional(),
   maxQuantity: z.coerce.number().optional(),
-  dateOpen: z.coerce.date().optional(),
-  dateClose: z.coerce.date().optional(),
+  dateOpen: z.coerce.string().optional(),
+  dateClose: z.coerce.string().optional(),
   startTime: z.coerce.string().optional(),
   endTime: z.coerce.string().optional(),
   timeOpen: z.coerce.number().optional(),
@@ -170,8 +170,8 @@ const formSchemaForTypeP = z.object({
         maxQuantityPerCustomer: 0,
         minQuantity: 0,
         maxQuantity: 0,
-        dateOpen: undefined,
-        dateClose: undefined,
+        dateOpen: "",
+        dateClose: "",
         timeOpen: 0,
         timeClose: 0,
         startTime: "",
@@ -329,7 +329,7 @@ const CreateProductPage = () => {
 
 
   const onSubmit = async (formData: any) => {   
-    console.log(formData) 
+    // console.log(formData) 
     // return
     const updatedFormData = {
       ...formData,
