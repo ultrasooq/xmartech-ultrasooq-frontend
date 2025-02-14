@@ -422,7 +422,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           {activeProductType !== "R" && watchSetUpPrice ? (
             <div className="mb-4 flex w-full flex-row items-center gap-x-5">
               <>
-                <div className="flex flex-row items-center gap-x-3">
+                {/* <div className="flex flex-row items-center gap-x-3">
                   <Controller
                     name="isCustomProduct"
                     control={formContext.control}
@@ -431,7 +431,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     )}
                   />
                   <Label>Customize Product</Label>
-                </div>
+                </div> */}
 
                 <div className="flex flex-row items-center gap-x-3">
                   <Controller
