@@ -39,7 +39,7 @@ type ProductImagesCardProps = {
   inWishlist?: boolean;
   askForPrice?: string;
   openCartCard: () => void;
-  onProductUpdateSuccess : () => void;
+  onProductUpdateSuccess: () => void;
 };
 
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
@@ -54,7 +54,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   inWishlist,
   askForPrice,
   openCartCard,
-  onProductUpdateSuccess
+  onProductUpdateSuccess,
 }) => {
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
@@ -96,22 +96,21 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
   // For Edit Modal
   const wrapperRef = useRef(null);
- const [isEditModalOpen, setIsEditModalOpen] = useState(false);
- const handleToggleEditModal = () =>
-  setIsEditModalOpen(!isEditModalOpen);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const handleToggleEditModal = () => setIsEditModalOpen(!isEditModalOpen);
 
- const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
- const me = useMe();
+  const me = useMe();
 
- const loginUserId = me?.data?.data?.id;
+  const loginUserId = me?.data?.data?.id;
 
-//  For Customize Modal
+  //  For Customize Modal
 
-const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
+  const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
 
-const handleToCustomizeModal = () =>
-  setIsCustomizeModalOpen(!isCustomizeModalOpen);
+  const handleToCustomizeModal = () =>
+    setIsCustomizeModalOpen(!isCustomizeModalOpen);
 
   return (
     <div className="product-view-s1-left">
@@ -193,7 +192,7 @@ const handleToCustomizeModal = () =>
             </Link>
           ) : null}
           {!isLoading && askForPrice !== "true" ? (
-            <div className="flex w-full gap-x-3 self-end">
+            <div className="flex w-full flex-wrap gap-3 self-end">
               <Button
                 type="button"
                 // onClick={hasItem ? onToCart : onAdd}
@@ -214,13 +213,13 @@ const handleToCustomizeModal = () =>
           ) : null}
           {/* For factories type */}
           {!isLoading && productDetails?.productType === "F" ? (
-            <div className="flex w-full gap-x-3 self-end">
+            <div className="flex w-full flex-wrap gap-3 self-end">
               <Button
                 type="button"
                 onClick={handleToCustomizeModal}
                 className="h-14 flex-1 rounded-none bg-color-blue text-base"
               >
-               Send to Customize
+                Send to Customize
               </Button>
               <Button
                 type="button"
@@ -231,16 +230,15 @@ const handleToCustomizeModal = () =>
                 Message Vendor
               </Button>
               {productDetails?.adminId == loginUserId ? (
-                 <Button
-                 type="button"
-                 // onClick={onToCheckout}
-                 onClick={handleToggleEditModal}
-                 className="h-14 flex-1 rounded-none bg-color-yellow text-base"
-               >
-                 Edit Product
-               </Button>
+                <Button
+                  type="button"
+                  // onClick={onToCheckout}
+                  onClick={handleToggleEditModal}
+                  className="h-14 flex-1 rounded-none bg-color-yellow text-base"
+                >
+                  Edit Product
+                </Button>
               ) : null}
-             
             </div>
           ) : null}
         </div>
@@ -283,39 +281,38 @@ const handleToCustomizeModal = () =>
       {/* For Edit Dialog */}
 
       <Dialog open={isEditModalOpen} onOpenChange={handleToggleEditModal}>
-          <DialogContent
-            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl h-screen overflow-y-scroll"
-            ref={wrapperRef}
-          >
-            <ProductEditForm
-              onClose={() => {
-                setIsEditModalOpen(false);
-              }}
-              selectedProductId={productDetails?.id}
-              onProductUpdateSuccess={onProductUpdateSuccess} // Pass to form
-            />
-          </DialogContent>
-        </Dialog>
+        <DialogContent
+          className="add-new-address-modal h-screen gap-0 overflow-y-scroll p-0 md:!max-w-2xl"
+          ref={wrapperRef}
+        >
+          <ProductEditForm
+            onClose={() => {
+              setIsEditModalOpen(false);
+            }}
+            selectedProductId={productDetails?.id}
+            onProductUpdateSuccess={onProductUpdateSuccess} // Pass to form
+          />
+        </DialogContent>
+      </Dialog>
 
-        {/* For Customize Dialog */}
+      {/* For Customize Dialog */}
 
-        <Dialog open={isCustomizeModalOpen} onOpenChange={handleToCustomizeModal}>
-          <DialogContent
-            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
-            ref={wrapperRef}
-          >
-            <AddToCustomizeForm
-              onClose={() => {
-                setIsCustomizeModalOpen(false);
-                // setSelectedProductId(undefined);
-                // setQuantity(undefined);
-              }}
-              selectedProductId={productDetails?.id}
-              // selectedQuantity={quantity}
-            />
-          </DialogContent>
-        </Dialog>
-
+      <Dialog open={isCustomizeModalOpen} onOpenChange={handleToCustomizeModal}>
+        <DialogContent
+          className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+          ref={wrapperRef}
+        >
+          <AddToCustomizeForm
+            onClose={() => {
+              setIsCustomizeModalOpen(false);
+              // setSelectedProductId(undefined);
+              // setQuantity(undefined);
+            }}
+            selectedProductId={productDetails?.id}
+            // selectedQuantity={quantity}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
