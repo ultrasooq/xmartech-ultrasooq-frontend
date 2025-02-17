@@ -215,21 +215,22 @@ const handleToCustomizeModal = () =>
           {/* For factories type */}
           {!isLoading && productDetails?.productType === "F" ? (
             <div className="flex w-full gap-x-3 self-end">
-              <Button
-                type="button"
-                onClick={handleToCustomizeModal}
-                className="h-14 flex-1 rounded-none bg-color-blue text-base"
-              >
-               Send to Customize
-              </Button>
-              <Button
-                type="button"
-                // onClick={onToCheckout}
-                onClick={onToCart}
-                className="h-14 flex-1 rounded-none bg-color-blue text-base"
-              >
-                Message Vendor
-              </Button>
+              {productDetails?.adminId !== loginUserId ? (
+              <><Button
+                  type="button"
+                  onClick={handleToCustomizeModal}
+                  className="h-14 flex-1 rounded-none bg-color-blue text-base"
+                >
+                  Send to Customize
+                </Button><Button
+                  type="button"
+                  // onClick={onToCheckout}
+                  onClick={onToCart}
+                  className="h-14 flex-1 rounded-none bg-color-blue text-base"
+                >
+                    Message Vendor
+                  </Button></>
+              ) : null}
               {productDetails?.adminId == loginUserId ? (
                  <Button
                  type="button"

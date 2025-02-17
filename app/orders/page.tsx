@@ -137,7 +137,7 @@ const OrdersPage = () => {
       <div className="container m-auto px-3">
         <div className="headerPart">
           <div className="lediv">
-            <h3>Make payment</h3>
+            <h3>Make payment ===</h3>
           </div>
         </div>
         <div className="cart-page-wrapper">

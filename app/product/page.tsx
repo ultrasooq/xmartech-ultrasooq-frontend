@@ -140,6 +140,7 @@ const formSchemaForTypeP = z.object({
   setUpPrice: z.boolean(),
   isStockRequired: z.boolean().optional(),
   isOfferPriceRequired: z.boolean().optional(),
+  isCustomProduct: z.boolean().optional(),
 }).superRefine((data, ctx) => {
   if (data.setUpPrice) {
     const result = z.array(productPriceItemSchemaWhenSetUpPriceTrue).safeParse(data.productPriceList);
@@ -222,6 +223,7 @@ const formSchemaForTypeR = z.object({
   setUpPrice: z.boolean(),
   isStockRequired: z.boolean().optional(),
   isOfferPriceRequired: z.boolean().optional(),
+  isCustomProduct: z.boolean().optional(),
 }).superRefine((data, ctx) => {
   if (data.setUpPrice) {
     // if (data.offerPrice === 0) {
@@ -287,6 +289,7 @@ const defaultValues = {
   setUpPrice: true,
   isStockRequired: false,
   isOfferPriceRequired: false,
+  isCustomProduct: false,
 };
 
 const CreateProductPage = () => {
@@ -371,6 +374,7 @@ const CreateProductPage = () => {
         ...(activeProductType !== "R" && updatedFormData.productPriceList[0]),
         askForStock: updatedFormData.isStockRequired ? "true" : "false",
         askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
+        isCustomProduct: updatedFormData.isCustomProduct ? "true" : "false",
         productPrice: updatedFormData.isOfferPriceRequired
           ? 0
           : activeProductType === "R"

@@ -60,7 +60,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
 // console.log("Start Time:", watchStartTime); // ✅ This should update dynamically
 
-// console.log("Form Values price:", formContext.getValues());
+console.log("Form Values price:", formContext.getValues());
 
 
   const watchConsumerType = formContext.watch(

@@ -150,54 +150,116 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
     };
 
     // For CountDown
+
+
     useEffect(() => {
-      if (!productPriceArr?.length) return;
+      if (!productPriceArr?.length || productPriceArr[0]?.sellType !== "BUYGROUP") return;
+  
+      const product = productPriceArr[0];
+  
+      const startTimestamp = getLocalTimestamp(product.dateOpen, product.startTime);
+      const endTimestamp = getLocalTimestamp(product.dateClose, product.endTime);
   
       const updateCountdown = () => {
-        const product = productPriceArr[0];
-        if (!product) return;
+        const now = Date.now();
   
-        const timeRemaining = calculateTimeLeft(product);
-        setTimeLeft(timeRemaining);
+        if (now < startTimestamp) {
+          setTimeLeft("NotStarted");
+          return;
+        }
+  
+        let ms = endTimestamp - now;
+        if (ms <= 0) {
+          setTimeLeft("Expired");
+          return;
+        }
+  
+        setTimeLeft(formatTime(ms));
       };
   
-      updateCountdown(); // Initial update
-      const interval = setInterval(updateCountdown, 1000); // Update every second
+      updateCountdown(); // Initial call
+      const interval = setInterval(updateCountdown, 1000);
   
       return () => clearInterval(interval); // Cleanup on unmount
     }, [productPriceArr]);
   
-    const calculateTimeLeft = (product: any): string => {
-      const { startTime, dateOpen, dateClose, endTime } = product;
+    // ✅ Fixing getLocalTimestamp to correctly combine Date + Time
+      const getLocalTimestamp = (dateStr: any, timeStr: any) => {
+        const date = new Date(dateStr); // Parse date part only
+        const [hours, minutes] = timeStr.split(":").map(Number); // Extract hours/minutes
+
+        date.setHours(hours, minutes || 0, 0, 0); // Set correct time in local timezone
+
+        return date.getTime(); // Return timestamp in milliseconds
+      };
+
+     
+        // ✅ Corrected formatTime function to display (Days, Hours, Minutes, Seconds)
+        const formatTime = (ms: number) => {
+          const totalSeconds = Math.floor(ms / 1000);
+          const days = Math.floor(totalSeconds / 86400);
+          const hours = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(2, "0");
+          const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+          const seconds = String(totalSeconds % 60).padStart(2, "0");
+          console.log(days, hours, minutes, seconds)
+          return `${days} Days, ${hours}:${minutes}:${seconds}`;
+        };
+
+
+    
+   
+    // useEffect(() => {
+    //   if (!productPriceArr?.length || productPriceArr[0]?.sellType !== "BUYGROUP") return;
+
+    //   const product = productPriceArr[0];
+    //   if (!product) return;
   
-      if (!startTime || !dateOpen || !dateClose || !endTime) return "N/A";
+    //   const startTimestamp = getLocalTimestamp(product.dateOpen, product.startTime);
+    //   const endTimestamp = getLocalTimestamp(product.dateClose, product.endTime);
   
-      // Convert to timestamps
-      const startTimestamp = getLocalTimestamp(dateOpen, startTime);
-      const endTimestamp = getLocalTimestamp(dateClose, endTime);
+      
+    // const updateCountdown = () => {
+    //   const now = Date.now();
+
+    //   // If current time is before start date, show "Not started yet"
+    //   if (now < startTimestamp) {
+    //     setTimeLeft("Not started yet");
+    //     return;
+    //   }
+
+    //   // If current time is past end date, show "Expired"
+    //   let ms = endTimestamp - now;
+    //   if (ms <= 0) {
+    //     setTimeLeft("Expired");
+    //     return;
+    //   }
+
+    //   setTimeLeft(formatTime(ms));
+    // };
   
-      // Get current time
-      const now = Date.now();
+    //   updateCountdown(); // Initial update
+    //   const interval = setInterval(updateCountdown, 1000); // Update every second
   
-      // Ensure countdown starts from `startTimestamp`
-      let ms = endTimestamp - Math.max(now, startTimestamp);
-      if (ms <= 0) return "Expired";
+    //   return () => clearInterval(interval); // Cleanup on unmount
+    // }, [productPriceArr]);
   
-      const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+    // const formatTime = (ms: number): string => {
+    //   const totalSeconds = Math.floor(ms / 1000);
+    //   const days = Math.floor(totalSeconds / (3600 * 24));
+    //   const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+    //   const minutes = Math.floor((totalSeconds % 3600) / 60);
+    //   const seconds = totalSeconds % 60;
+
+    //   console.log(seconds, minutes, hours)
   
-      return `${String(days).padStart(2, "0")}d : ${String(hours).padStart(2, "0")}h : ${String(minutes).padStart(2, "0")}m : ${String(seconds).padStart(2, "0")}s`;
-    };
-  
-    const getLocalTimestamp = (isoDate: string, timeStr: string): number => {
-      const [hours, minutes] = timeStr.split(":").map(Number);
-      const date = new Date(isoDate); // Parses in UTC
-      date.setHours(hours, minutes, 0, 0); // Adjust time
-      return date.getTime();
-    };
-  
+    //   return `${String(days).padStart(2, "0")}d : ${String(hours).padStart(2, "0")}h : ${String(minutes).padStart(2, "0")}m : ${String(seconds).padStart(2, "0")}s`;
+    // };
+    // const getLocalTimestamp = (isoDate: string, timeStr: string): number => {
+    //   const [hours, minutes] = timeStr.split(":").map(Number);
+    //   const date = new Date(isoDate);
+    //   date.setHours(hours, minutes, 0, 0);
+    //   return date.getTime();
+    // };
 
   return (
     <div className="product-view-s1-right">
@@ -281,7 +343,11 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             <div className="form-group mb-0">
               {/* <label>Report Abuse</label> */}
               <p>
-                <span className="color-text">Time Left:</span> {timeLeft}
+              {(timeLeft !== 'NotStarted' && timeLeft !== 'Expired') && (
+                  <span className="color-text">Time Left: <b>{timeLeft}</b></span>
+                )}
+                
+                {/* {timeLeft} */}
                 {/* {formatTime(
                   // timeLeft, 
                   productPriceArr[0]?.startTime, 

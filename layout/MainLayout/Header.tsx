@@ -450,6 +450,10 @@ const Header = () => {
                       router.push("/trending");
                     }
 
+                    if(item.name.toLowerCase().includes("buy group")){
+                        router.push("/buygroup");
+                    }
+
                     if (item.name.toLowerCase().includes("rfq")) {
                       router.push("/rfq");
                     }
@@ -465,7 +469,10 @@ const Header = () => {
                         ? "/rfq"
                         : item.name.toLowerCase().includes("factories")
                         ? "/factories"
-                        : "/trending"}
+                         : item.name.toLowerCase().includes("buy group")
+                         ? "/buygroup"
+                        : "/trending"
+                        }
                 >
                   <div className="flex gap-x-3">
                     <Image

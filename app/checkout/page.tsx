@@ -298,8 +298,37 @@ const CheckoutPage = () => {
     }
   };
 
+  const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(
+    memoziedAddressList?.length > 0 ? String(memoziedAddressList[0].id) : null
+  );
+  
+  const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(
+    memoziedAddressList?.length > 0 ? String(memoziedAddressList[0].id) : null
+  );
+
+  useEffect(() => {
+    if (memoziedAddressList?.length > 0) {
+      handleOrderDetails(memoziedAddressList[0], "shipping");
+      handleOrderDetails(memoziedAddressList[0], "billing");
+    }
+  }, [memoziedAddressList]);
+
   const onSaveOrder = () => {
     if (haveAccessToken) {
+
+
+      // console.log("Selected Order Details:", selectedOrderDetails);
+
+      const payload = {
+        shippingAddress: selectedOrderDetails?.shippingAddress,
+        billingAddress: sameAsShipping
+          ? selectedOrderDetails?.shippingAddress
+          : selectedOrderDetails?.billingAddress,
+      };
+    
+      // console.log("Final Payload:", payload);
+
+
       if (!selectedOrderDetails?.shippingAddress) {
         toast({
           title: "Please select a shipping address",
@@ -321,6 +350,9 @@ const CheckoutPage = () => {
         data.billingCountry = data.shippingCountry;
         data.billingPostCode = data.shippingPostCode;
       }
+
+      // console.log(data);
+      // return
 
       if (!data.billingAddress) {
         toast({
@@ -554,7 +586,9 @@ const CheckoutPage = () => {
                   </div> */}
 
                   <RadioGroup
-                    defaultValue={selectedAddressId?.toString()}
+                    // defaultValue={selectedAddressId?.toString()}
+                    value={selectedShippingAddressId?.toString()}
+                    onValueChange={(value) => setSelectedShippingAddressId(value)}
                     className=""
                   >
                     {memoziedAddressList?.map((item: AddressItem) => (
@@ -684,7 +718,11 @@ const CheckoutPage = () => {
                   </div> */}
 
                   {!sameAsShipping ? (
-                    <RadioGroup defaultValue="comfortable" className="">
+                    <RadioGroup 
+                    value={selectedBillingAddressId?.toString()}
+                    onValueChange={(value) => setSelectedBillingAddressId(value)}
+                    // defaultValue="comfortable" 
+                    className="">
                       {memoziedAddressList?.map((item: AddressItem) => (
                         <AddressCard
                           key={item.id}
