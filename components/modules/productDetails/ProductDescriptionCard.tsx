@@ -69,6 +69,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 }) => {
   const [, setQuantity] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
 
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
@@ -147,6 +148,56 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         hour12: true, // Ensures AM/PM format
       });
     };
+
+    // For CountDown
+    useEffect(() => {
+      if (!productPriceArr?.length) return;
+  
+      const updateCountdown = () => {
+        const product = productPriceArr[0];
+        if (!product) return;
+  
+        const timeRemaining = calculateTimeLeft(product);
+        setTimeLeft(timeRemaining);
+      };
+  
+      updateCountdown(); // Initial update
+      const interval = setInterval(updateCountdown, 1000); // Update every second
+  
+      return () => clearInterval(interval); // Cleanup on unmount
+    }, [productPriceArr]);
+  
+    const calculateTimeLeft = (product: any): string => {
+      const { startTime, dateOpen, dateClose, endTime } = product;
+  
+      if (!startTime || !dateOpen || !dateClose || !endTime) return "N/A";
+  
+      // Convert to timestamps
+      const startTimestamp = getLocalTimestamp(dateOpen, startTime);
+      const endTimestamp = getLocalTimestamp(dateClose, endTime);
+  
+      // Get current time
+      const now = Date.now();
+  
+      // Ensure countdown starts from `startTimestamp`
+      let ms = endTimestamp - Math.max(now, startTimestamp);
+      if (ms <= 0) return "Expired";
+  
+      const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+  
+      return `${String(days).padStart(2, "0")}d : ${String(hours).padStart(2, "0")}h : ${String(minutes).padStart(2, "0")}m : ${String(seconds).padStart(2, "0")}s`;
+    };
+  
+    const getLocalTimestamp = (isoDate: string, timeStr: string): number => {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      const date = new Date(isoDate); // Parses in UTC
+      date.setHours(hours, minutes, 0, 0); // Adjust time
+      return date.getTime();
+    };
+  
 
   return (
     <div className="product-view-s1-right">
@@ -230,7 +281,15 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             <div className="form-group mb-0">
               {/* <label>Report Abuse</label> */}
               <p>
-                <span className="color-text">Time Left:</span> {formatDateTimeWithTimezone(productPriceArr[0]?.dateOpen, productPriceArr[0]?.startTime)}
+                <span className="color-text">Time Left:</span> {timeLeft}
+                {/* {formatTime(
+                  // timeLeft, 
+                  productPriceArr[0]?.startTime, 
+                  productPriceArr[0]?.dateOpen, 
+                  productPriceArr[0]?.dateClose, 
+                  productPriceArr[0]?.endTime)
+                  } <br /> */}
+                 {/* {formatDateTimeWithTimezone(productPriceArr[0]?.dateOpen, productPriceArr[0]?.startTime)} */}
               </p>
               <p>
                 <span className="color-text">Group Buy deal ends :</span> {formatDateTimeWithTimezone(productPriceArr[0]?.dateClose, productPriceArr[0]?.endTime)}
