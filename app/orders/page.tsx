@@ -16,6 +16,8 @@ import {
 } from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 const OrdersPage = () => {
   const router = useRouter();
   const { toast } = useToast();
@@ -141,6 +143,44 @@ const OrdersPage = () => {
           </div>
         </div>
         <div className="cart-page-wrapper">
+          {/* <Tabs className="flex w-full">
+            <TabsList className="flex w-[50%] flex-col">
+              <TabsTrigger value="cash">cash</TabsTrigger>
+              <TabsTrigger value="diract-payment">diract payment</TabsTrigger>
+              <TabsTrigger value="advance-payment">
+                advance % payment
+              </TabsTrigger>
+              <TabsTrigger value="pay-me">pay it for me</TabsTrigger>
+              <TabsTrigger value="installments">Installments</TabsTrigger>
+            </TabsList>
+            <div className="w-[50%]">
+              <TabsContent value="cash" className="mt-0">
+                <div className="w-full bg-white">
+                  <h2>cash</h2>
+                </div>
+              </TabsContent>
+              <TabsContent value="diract-payment" className="mt-0">
+                <div className="w-full bg-white">
+                  <h2>diract payment</h2>
+                </div>
+              </TabsContent>
+              <TabsContent value="advance-payment" className="mt-0">
+                <div className="w-full bg-white">
+                  <h2>advance % payment</h2>
+                </div>
+              </TabsContent>
+              <TabsContent value="pay-me" className="mt-0">
+                <div className="w-full bg-white">
+                  <h2>pay it for me</h2>
+                </div>
+              </TabsContent>
+              <TabsContent value="installments" className="mt-0">
+                <div className="w-full bg-white">
+                  <h2>cash</h2>
+                </div>
+              </TabsContent>
+            </div>
+          </Tabs> */}
           <PaymentForm
             onCreateOrder={handleCreateOrder}
             isLoading={createOrder.isPending}
