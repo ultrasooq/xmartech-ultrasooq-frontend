@@ -126,6 +126,13 @@ export const fetchAllProducts = (payload: { page: number; limit: number; term?: 
   });
 };
 
+export const fetchAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; }) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/getAllBuyGroupProduct`, payload,),
+  });
+};
+
 export const fetchSameBrandProducts = (payload: {
   page: number;
   limit: number;
