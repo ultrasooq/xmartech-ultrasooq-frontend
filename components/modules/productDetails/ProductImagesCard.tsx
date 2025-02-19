@@ -112,6 +112,8 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   const handleToCustomizeModal = () =>
     setIsCustomizeModalOpen(!isCustomizeModalOpen);
 
+  // console.log(productDetails, "====>115")
+
   return (
     <div className="product-view-s1-left">
       <div className="grid grid-cols-4 gap-4">
@@ -212,9 +214,9 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             </div>
           ) : null}
           {/* For factories type */}
-          {!isLoading && productDetails?.productType === "F" ? (
+          {!isLoading && productDetails?.product_productPrice[0]?.isCustomProduct === "true" ? (
             <div className="flex w-full gap-x-3 self-end">
-              {productDetails?.adminId !== loginUserId ? (
+              {productDetails?.adminId === loginUserId ? (
               <><Button
                   type="button"
                   onClick={handleToCustomizeModal}

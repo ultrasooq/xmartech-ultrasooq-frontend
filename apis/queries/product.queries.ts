@@ -159,7 +159,7 @@ export const useUpdateProduct = () => {
 
 export const useUpdateForCustomize = () => {
   const queryClient = useQueryClient();
-  return useMutation<IUpdateProduct, APIResponseError, IUpdateProductRequest>({
+  return useMutation<APIResponseError>({
     mutationFn: async (payload) => {
       const res = await updateForCustomize(payload);
       return res.data;
@@ -172,9 +172,9 @@ export const useUpdateForCustomize = () => {
       //   queryKey: ["existing-products"],
       // });
     },
-    onError: (err: APIResponseError) => {
-      console.log(err);
-    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
   });
 };
 

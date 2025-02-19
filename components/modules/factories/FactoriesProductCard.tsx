@@ -115,7 +115,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           </div>
         ) : null} */}
 
-        {haveAccessToken ? (
+        {/* {haveAccessToken ? (
           <div className="cart_button">
             {productType === 'F' ? (
               <button
@@ -142,7 +142,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
               </button>
             )}
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     </div>
   );

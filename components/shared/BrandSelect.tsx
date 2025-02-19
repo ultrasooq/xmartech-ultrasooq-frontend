@@ -1,6 +1,6 @@
 import { useBrands, useCreateBrand } from "@/apis/queries/masters.queries";
 import { IBrands, IOption } from "@/utils/types/common.types";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { useToast } from "../ui/use-toast";
 import { Controller, useFormContext } from "react-hook-form";
@@ -8,6 +8,8 @@ import { Label } from "../ui/label";
 import { useAuth } from "@/context/AuthContext";
 import Select from "react-select/dist/declarations/src/Select";
 import { GroupBase } from "react-select";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { Info } from "lucide-react"; // Using Lucide React icons
 
 const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48, }),
@@ -18,7 +20,8 @@ const ReactSelectInput = () => {
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
 
-  const [productType, setProductType] = useState<string | undefined>()
+  // Set default product type as "OWNBRAND"
+  const [productType, setProductType] = useState<string>("OWNBRAND");
 
   const { user } = useAuth();
 
@@ -28,6 +31,12 @@ const ReactSelectInput = () => {
   const memoizedBrands = useMemo(() => {
     return productType ? brandsQuery?.data?.data.map((item: IBrands) => ({ label: item.brandName, value: item.id })) || [] : [];
   }, [brandsQuery?.data?.data, productType]);
+
+    // Set default product type in the form
+    useEffect(() => {
+      formContext.setValue("typeOfProduct", "OWNBRAND");
+    }, [formContext]);
+  
 
   const handleCreate = async (inputValue: string) => {
     const response = await createBrand.mutateAsync({ brandName: inputValue });
@@ -68,6 +77,17 @@ const ReactSelectInput = () => {
       </div>
       <div className="mt-2 flex flex-col gap-y-3">
         <Label>Brand</Label>
+          <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="w-4 h-4 text-gray-500 cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              Type a brand name in the select box and press <strong>Enter</strong> to create a new Brand.
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
         <Controller name="brandId" control={formContext.control} render={({ field }) => (
           <CreatableSelect
             // {...field}

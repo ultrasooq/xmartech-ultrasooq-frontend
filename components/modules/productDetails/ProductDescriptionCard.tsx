@@ -15,6 +15,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import OtherSellerSection from "../trending/OtherSellerSection";
 import Link from "next/link";
+import MinusIcon from "@/public/images/upDownBtn-minus.svg";
+import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -40,6 +42,7 @@ type ProductDescriptionCardProps = {
   askForPrice?: string;
   otherSellerDetails?: any[];
   productPriceArr: any[];
+  onQuantityChange?: (newQuantity: number) => void;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -52,7 +55,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   productTags,
   category,
   productShortDescription,
-  productQuantity,
+  productQuantity = 1, // Default to 1 if undefined
   productReview,
   onAdd,
   isLoading,
@@ -65,9 +68,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   consumerDiscount,
   askForPrice,
   otherSellerDetails,
-  productPriceArr
+  productPriceArr,
+  onQuantityChange, // Callback to update productQuantity outside
 }) => {
-  const [, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(productQuantity);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
 
@@ -109,6 +113,12 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   useEffect(() => {
     setQuantity(productQuantity || 1);
   }, [productQuantity]);
+
+  const updateQuantity = (newQuantity: number) => {
+    setQuantity(newQuantity);
+    onQuantityChange?.(newQuantity); // Notify parent if function exists
+    return newQuantity;
+  }
 
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   
@@ -201,65 +211,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           const hours = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(2, "0");
           const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
           const seconds = String(totalSeconds % 60).padStart(2, "0");
-          console.log(days, hours, minutes, seconds)
+          // console.log(days, hours, minutes, seconds)
           return `${days} Days, ${hours}:${minutes}:${seconds}`;
         };
 
-
-    
-   
-    // useEffect(() => {
-    //   if (!productPriceArr?.length || productPriceArr[0]?.sellType !== "BUYGROUP") return;
-
-    //   const product = productPriceArr[0];
-    //   if (!product) return;
-  
-    //   const startTimestamp = getLocalTimestamp(product.dateOpen, product.startTime);
-    //   const endTimestamp = getLocalTimestamp(product.dateClose, product.endTime);
-  
-      
-    // const updateCountdown = () => {
-    //   const now = Date.now();
-
-    //   // If current time is before start date, show "Not started yet"
-    //   if (now < startTimestamp) {
-    //     setTimeLeft("Not started yet");
-    //     return;
-    //   }
-
-    //   // If current time is past end date, show "Expired"
-    //   let ms = endTimestamp - now;
-    //   if (ms <= 0) {
-    //     setTimeLeft("Expired");
-    //     return;
-    //   }
-
-    //   setTimeLeft(formatTime(ms));
-    // };
-  
-    //   updateCountdown(); // Initial update
-    //   const interval = setInterval(updateCountdown, 1000); // Update every second
-  
-    //   return () => clearInterval(interval); // Cleanup on unmount
-    // }, [productPriceArr]);
-  
-    // const formatTime = (ms: number): string => {
-    //   const totalSeconds = Math.floor(ms / 1000);
-    //   const days = Math.floor(totalSeconds / (3600 * 24));
-    //   const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-    //   const minutes = Math.floor((totalSeconds % 3600) / 60);
-    //   const seconds = totalSeconds % 60;
-
-    //   console.log(seconds, minutes, hours)
-  
-    //   return `${String(days).padStart(2, "0")}d : ${String(hours).padStart(2, "0")}h : ${String(minutes).padStart(2, "0")}m : ${String(seconds).padStart(2, "0")}s`;
-    // };
-    // const getLocalTimestamp = (isoDate: string, timeStr: string): number => {
-    //   const [hours, minutes] = timeStr.split(":").map(Number);
-    //   const date = new Date(isoDate);
-    //   date.setHours(hours, minutes, 0, 0);
-    //   return date.getTime();
-    // };
 
   return (
     <div className="product-view-s1-right">
@@ -303,7 +258,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             </h3>
           ) : (
             <h3>
-              ${calculateDiscountedPrice()} <span>${productProductPrice}</span>
+              ${calculateDiscountedPrice() * quantity} <span>${Number(productProductPrice) * quantity}</span>
             </h3>
           )}
         </div>
@@ -333,6 +288,30 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         </div>
       )}
 
+             <div className="flex items-center gap-x-4">
+                <Button
+                  variant="outline"
+                  className="relative hover:shadow-sm"
+                  onClick={() => updateQuantity(Math.max(1, quantity - 1))}
+                  disabled={quantity === 1}
+                >
+                  <Image
+                    src={MinusIcon}
+                    alt="minus-icon"
+                    fill
+                    className="p-3"
+                  />
+                </Button>
+                <p>{quantity}</p>
+                <Button
+                  variant="outline"
+                  className="relative hover:shadow-sm"
+                  onClick={() => updateQuantity(quantity + 1)}
+                >
+                  <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
+                </Button>
+              </div>
+
     {isLoading ? (
         <Skeleton className="h-44 w-full" />
       ) : (
@@ -346,16 +325,6 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
               {(timeLeft !== 'NotStarted' && timeLeft !== 'Expired') && (
                   <span className="color-text">Time Left: <b>{timeLeft}</b></span>
                 )}
-                
-                {/* {timeLeft} */}
-                {/* {formatTime(
-                  // timeLeft, 
-                  productPriceArr[0]?.startTime, 
-                  productPriceArr[0]?.dateOpen, 
-                  productPriceArr[0]?.dateClose, 
-                  productPriceArr[0]?.endTime)
-                  } <br /> */}
-                 {/* {formatDateTimeWithTimezone(productPriceArr[0]?.dateOpen, productPriceArr[0]?.startTime)} */}
               </p>
               <p>
                 <span className="color-text">Group Buy deal ends :</span> {formatDateTimeWithTimezone(productPriceArr[0]?.dateClose, productPriceArr[0]?.endTime)}

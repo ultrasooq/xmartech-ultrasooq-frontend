@@ -44,10 +44,16 @@ type AddToCustomizeFormProps = {
 };
 
 const addFormSchema = z.object({
-  price: z.coerce
+  fromPrice: z.coerce
     .number()
     .max(1000000, {
-      message: "Offer price must be less than 1000000",
+      message: "Offer From price must be less than 1000000",
+    })
+    .optional(),
+    toPrice: z.coerce
+    .number()
+    .max(1000000, {
+      message: "Offer To price must be less than 1000000",
     })
     .optional(),
   note: z
@@ -72,7 +78,8 @@ const editFormSchema = z.object({
 });
 
 const addDefaultValues = {
-  price: 0,
+  fromPrice: 0,
+  toPrice: 0,
   note: "",
   customizeproductImageList: undefined,
   productImages: [] as { path: File; id: string }[],
@@ -185,6 +192,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
   };
 
   const onSubmit = async (formData: any) => {
+    // console.log(formData); return
     const updatedFormData = { ...formData };
     if (watchProductImages.length) {
       const fileTypeArrays = watchProductImages.filter(
@@ -259,11 +267,10 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
 
     delete updatedFormData.productImages;
 
-    console.log(productQueryById, selectedProductId)
+    // console.log(productQueryById, selectedProductId)
 
     if (
-      selectedProductId &&
-      productQueryById?.data?.data?.productType === "F"
+      selectedProductId
     ) {
       // F type product
 
@@ -272,7 +279,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
       // return;
       const response = await updateForCustomize.mutateAsync({
         productId: selectedProductId,
-        productType: "F",
+        // productType: "F",
         ...updatedFormData,
       });
       if (response.status) {
@@ -284,7 +291,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
 
          await handleAddToCart(
             1,
-            selectedProductId,
+            Number(selectedProductId),
             response?.data.id,
           );
         
@@ -335,7 +342,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
             } else if (item?.image) {
               return {
                 link: item?.image,
-                linkType: 'video',
+                linkType: 'image',
                 imageName: item?.imageName,
               };
             }
@@ -601,9 +608,16 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
 
           {/* {selectedQuantity ? ( */}
             <ControlledTextInput
-              label="Offer Price"
-              name="price"
-              placeholder="Offer Price"
+              label="Offer Price From"
+              name="fromPrice"
+              placeholder="From Price"
+              type="number"
+            />
+
+            <ControlledTextInput
+              label="Offer Price To"
+              name="toPrice"
+              placeholder="To Price"
               type="number"
             />
           {/* ) : null} */}

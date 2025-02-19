@@ -190,7 +190,7 @@ const FactoriesPage = () => {
                       />
                     </button>
                   </div>
-                  {haveAccessToken ? (
+                  {/* {haveAccessToken ? (
                     <div className="rfq_add_new_product">
                       <Link
                         href="/product?productType=F"
@@ -200,7 +200,7 @@ const FactoriesPage = () => {
                         Add new product in FACTORIES
                       </Link>
                     </div>
-                  ) : null}
+                  ) : null} */}
                 </div>
                 <div className="product_section product_gray_n_box">
                   <div className="row">
