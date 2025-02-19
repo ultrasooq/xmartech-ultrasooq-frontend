@@ -17,7 +17,8 @@ type FactoriesProductCardProps = {
   customizeProductImages: {
     link: string;
   }[];
-  offerPrice: string;
+  offerFromPrice: string;
+  offerToPrice: string;
   onAdd: (
     args0: number,
     args1: number,
@@ -35,7 +36,8 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
   productQuantity,
   productImages,
   customizeProductImages,
-  offerPrice,
+  offerFromPrice,
+  offerToPrice,
   onAdd,
   onRemove,
   note,
@@ -143,7 +145,8 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
       </p>
       <div className="price-info">
         <h5>Price</h5>
-        <p>${offerPrice ? Number(offerPrice) * quantity : 0}</p>
+        {/* <p>${offerFromPrice ? Number(offerFromPrice) * quantity : 0}</p> */}
+        <p> ${offerFromPrice ? `${Number(offerFromPrice)} - ${Number(offerToPrice)}` : '0'}</p>
       </div>
     </div>
   );

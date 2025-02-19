@@ -213,7 +213,8 @@ const FactoriesCartPage = () => {
                       customizeProductImages={
                         item?.customizeProductDetail?.customizeProductImageDetail
                       }
-                      offerPrice={item?.customizeProductDetail?.price}
+                      offerFromPrice={item?.customizeProductDetail?.fromPrice}
+                      offerToPrice={item?.customizeProductDetail?.toPrice}
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromFactoriesCart}
                       note={item?.customizeProductDetail?.note}

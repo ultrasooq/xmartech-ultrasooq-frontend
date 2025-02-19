@@ -139,6 +139,13 @@ const ProductDetailsPage = () => {
     [productDetails?.productTags?.length],
   );
 
+  const [globalQuantity, setGlobalQuantity] = useState(1); // Global state
+
+  const handleQuantity = async ( quantity: number,) => {
+    // console.log(quantity, "===>143")
+    setGlobalQuantity(quantity); // Update global state
+  }
+
   const handleAddToCart = async (
     quantity: number,
     actionType: "add" | "remove",
@@ -214,7 +221,7 @@ const ProductDetailsPage = () => {
       return;
     }
 
-    const response = await handleAddToCart(1, "add");
+    const response = await handleAddToCart(globalQuantity, "add");
     if (response) {
       setTimeout(() => {
         router.push("/checkout");
@@ -304,7 +311,7 @@ const ProductDetailsPage = () => {
             <ProductImagesCard
               productDetails={productDetails}
               onProductUpdateSuccess={handleProductUpdateSuccess} // Pass to child
-              onAdd={() => handleAddToCart(1, "add")}
+              onAdd={() => handleAddToCart(globalQuantity, "add")}
               onToCart={handleCartPage}
               onToCheckout={handleCheckoutPage}
               openCartCard={handelOpenCartLayout}
@@ -337,6 +344,7 @@ const ProductDetailsPage = () => {
               productQuantity={
                 getProductQuantityByUser || getProductQuantityByDevice
               }
+              onQuantityChange={handleQuantity}
               productReview={productDetails?.productReview}
               onAdd={handleAddToCart}
               isLoading={

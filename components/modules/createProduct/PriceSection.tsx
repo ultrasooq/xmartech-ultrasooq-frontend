@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   FormControl,
   FormField,
@@ -19,6 +19,8 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
 import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import { format } from "date-fns";
 
 interface Option {
   readonly label: string;
@@ -60,7 +62,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
 // console.log("Start Time:", watchStartTime); // ✅ This should update dynamically
 
-console.log("Form Values price:", formContext.getValues());
+// console.log("Form Values price:", formContext.getValues());
 
 
   const watchConsumerType = formContext.watch(
@@ -170,6 +172,25 @@ console.log("Form Values price:", formContext.getValues());
     errors && typeof errors["0"] === "object" && "deliveryAfter" in errors["0"]
       ? errors["0"].deliveryAfter?.message
       : undefined;
+
+
+      const { setValue } = formContext;
+
+    useEffect(() => {
+      if (watchSellType === "BUYGROUP") {
+        setValue("isCustomProduct", false);
+        setValue("isOfferPriceRequired", false);
+        setValue("isStockRequired", false);
+      }
+    }, [watchSellType, setValue]);
+
+    const [localTime, setLocalTime] = useState<string>("");
+
+      // Set the local time on component mount
+  useEffect(() => {
+    const currentLocalTime = format(new Date(), "MMMM dd, yyyy hh:mm a"); // Desired format
+    setLocalTime(currentLocalTime); // Update local time state
+  }, []);
 
   return (
     <div className="form-groups-common-sec-s1">
@@ -283,6 +304,15 @@ console.log("Form Values price:", formContext.getValues());
 
             {watchSellType === "BUYGROUP" ? (
               <>
+               <div className="mb-4 w-full">
+                <label>Add Time</label>
+                <Input
+                  value={localTime} // Show the local time
+                  readOnly // Make it read-only
+                  className="theme-form-control-s1"
+                />
+              </div>
+
                 <CounterTextInputField
                   label="Min Customer"
                   name="productPriceList.[0].minCustomer"
@@ -419,7 +449,7 @@ console.log("Form Values price:", formContext.getValues());
             </div>
           ) : null}
 
-          {activeProductType !== "R" && watchSetUpPrice ? (
+          {activeProductType !== "R" && watchSetUpPrice && watchSellType !== "BUYGROUP" ? (
             <div className="mb-4 flex w-full flex-row items-center gap-x-5">
               <>
                 <div className="flex flex-row items-center gap-x-3">

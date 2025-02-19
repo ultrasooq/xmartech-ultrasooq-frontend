@@ -98,7 +98,7 @@ export const updateProduct = (payload: IUpdateProductRequest) => {
   });
 };
 
-export const updateForCustomize = (payload: IUpdateProductRequest) => {
+export const updateForCustomize = (payload:any) => {
   return axios({
     method: "POST",
     url: `${process.env.NEXT_PUBLIC_API_URL}/product/addCustomizeProduct`,

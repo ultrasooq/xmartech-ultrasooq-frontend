@@ -37,4 +37,6 @@ export interface IUpdateProductRequest extends ICreateProductRequest {
 
 export interface IUpdateProduct extends ICreateProduct {
   customizeProductId: number;
+  fromPrice: number;
+  toPrice: number;
 }
