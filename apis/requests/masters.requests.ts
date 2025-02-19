@@ -42,3 +42,24 @@ export const fetchLocation = () => {
     url: `${process.env.NEXT_PUBLIC_API_URL}/product/locationList`,
   });
 };
+
+export const fetchAllCountry = () => {
+  return axios({
+    method: "GET",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/admin/getAllCountry?page=1&limit=1000&sort=desc`,
+  });
+};
+
+export const fetchStatesByCountry = (payload: { countryId: number }) => {
+  return axios({
+    method: "GET",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/admin/getAllStates?countryId=${payload.countryId}&page=1&limit=5000&sort=desc`,
+  });
+};
+
+export const fetchCitiesByState = (payload: { stateId: number }) => {
+  return axios({
+    method: "GET",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/admin/getAllCities?stateId=${payload.stateId}&page=1&limit=50000&sort=desc`,
+  });
+};

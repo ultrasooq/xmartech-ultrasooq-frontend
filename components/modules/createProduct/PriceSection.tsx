@@ -13,8 +13,8 @@ import CounterTextInputField from "./CounterTextInputField";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CONSUMER_TYPE_LIST, SELL_TYPE_LIST } from "@/utils/constants";
-import { ICountries, ILocations, IOption } from "@/utils/types/common.types";
-import { useCountries, useLocation } from "@/apis/queries/masters.queries";
+import { IAllCountries, ICity, ICountries, ILocations, IOption, IState } from "@/utils/types/common.types";
+import { useCountries, useLocation, useAllCountries, useFetchStatesByCountry, useFetchCitiesByState } from "@/apis/queries/masters.queries";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
@@ -48,6 +48,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   const countriesQuery = useCountries();
   const locationsQuery = useLocation();
+  const countriesNewQuery = useAllCountries();
 
   const watchSetUpPrice = formContext.watch("setUpPrice");
   const watchIsOfferPriceRequired = formContext.watch("isOfferPriceRequired");
@@ -94,6 +95,13 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   //   "productPriceList.[0].deliveryAfter",
   // );
 
+  const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
+  const [selectedState, setSelectedState] = useState<any | null>(null);
+  const [states, setStates] = useState<IOption[]>([]);
+  const [cities, setCities] = useState<IOption[]>([]);
+  const fetchStatesByCountry = useFetchStatesByCountry();
+  const fetchCitiesByState = useFetchCitiesByState();
+
   const memoizedCountries = useMemo(() => {
     return (
       countriesQuery?.data?.data.map((item: ICountries) => {
@@ -111,6 +119,79 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationsQuery?.data?.data?.length]);
+
+  const memoizedAllCountries = useMemo(() => {
+    return (
+      countriesNewQuery?.data?.data.map((item: IAllCountries) => {
+        return { label: item.name, value: item.id };
+      }) || []
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countriesNewQuery?.data?.data?.length]);
+
+  // Fetch States When Country is Selected
+
+  useEffect(() => {
+    if (selectedCountry) {
+      fetchStates(selectedCountry);
+    } else {
+      setStates([]);
+      setSelectedState(null);
+    }
+  }, [selectedCountry]);
+
+  
+  
+  const fetchStates = async (countryId: number) => {
+    try {
+      const response = await fetchStatesByCountry.mutateAsync({ countryId }); // Call your API
+      setStates(response.data.map((state: IState) => ({ label: state.name, value: state.id })));
+    } catch (error) {
+      console.error("Error fetching states:", error);
+    }
+  };
+
+  // Fetch Cities When State is Selected
+
+  useEffect(() => {
+    if (selectedState) {
+      fetchCities(selectedState);
+    } else {
+      setCities([]);
+    }
+  }, [selectedState]);
+  
+  const fetchCities = async (stateId: number) => {
+    try {
+      const response = await fetchCitiesByState.mutateAsync({ stateId }); // ✅ Pass as an object
+      setCities(response.data.map((city: ICity) => ({ label: city.name, value: city.id })));
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
+
+  // {/* For latitude and longitude */}
+
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const latLng = `${latitude}, ${longitude}`;
+
+          // console.log(latLng); // Logs correct lat/lng values
+
+          setValue("productLatLng", latLng); // ✅ Update form state
+        },
+        (error) => {
+          console.error("Error fetching location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  }); // ✅ Add setValue as dependency
 
   const errors = formContext.formState.errors;
 
@@ -580,33 +661,141 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
       <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
         {activeProductType !== "R" ? (
+          // <div className="mt-2 flex flex-col gap-y-3">
+          //   <Label>Product Location</Label>
+          //   <Controller
+          //     name="productLocationId"
+          //     control={formContext.control}
+          //     render={({ field }) => (
+          //       <ReactSelect
+          //         {...field}
+          //         onChange={(newValue) => {
+          //           field.onChange(newValue?.value);
+          //         }}
+          //         options={memoizedLocations}
+          //         value={memoizedLocations.find(
+          //           (item: IOption) => item.value === field.value,
+          //         )}
+          //         styles={customStyles}
+          //         instanceId="productLocationId"
+          //       />
+          //     )}
+          //   />
+
+          //   <p className="text-[13px] text-red-500">
+          //     {
+          //       formContext.formState.errors["productLocationId"]
+          //         ?.message as string
+          //     }
+          //   </p>
+          // </div>
+
           <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Product Location</Label>
+            <Label>Select Country</Label>
             <Controller
-              name="productLocationId"
+              name="productCountryId"
               control={formContext.control}
               render={({ field }) => (
                 <ReactSelect
                   {...field}
                   onChange={(newValue) => {
+                    setSelectedCountry(newValue?.value || null);
+                    setSelectedState(null); // Reset state when country changes
+                    setCities([]); // Clear cities when country changes
                     field.onChange(newValue?.value);
                   }}
-                  options={memoizedLocations}
-                  value={memoizedLocations.find(
-                    (item: IOption) => item.value === field.value,
-                  )}
+                  options={memoizedAllCountries}
+                  value={memoizedAllCountries.find((item:any) => item.value === field.value)}
                   styles={customStyles}
-                  instanceId="productLocationId"
+                  instanceId="productCountryId"
                 />
               )}
             />
 
             <p className="text-[13px] text-red-500">
               {
-                formContext.formState.errors["productLocationId"]
+                formContext.formState.errors["productCountryId"]
                   ?.message as string
               }
             </p>
+
+            {/* State Dropdown - Visible only if country is selected */}
+            {selectedCountry && (
+              <>
+                <Label>Select State</Label>
+                <Controller
+                  name="productStateId"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      {...field}
+                      onChange={(newValue) => {
+                        setSelectedState(newValue?.value || null);
+                        setCities([]); // Clear cities when state changes
+                        field.onChange(newValue?.value);
+                      }}
+                      options={states}
+                      value={states.find((item) => item.value === field.value)}
+                      styles={customStyles}
+                      instanceId="productStateId"
+                    />
+                  )}
+                />
+                 <p className="text-[13px] text-red-500">
+              {
+                formContext.formState.errors["productStateId"]
+                  ?.message as string
+              }
+            </p>
+              </>
+              
+            )}
+           
+            
+             {/* City Dropdown - Visible only if state is selected */}
+              {selectedState && (
+                <>
+                <div className="mt-2 flex flex-col gap-y-3">
+                <Label>Select City</Label>
+                <Controller
+                  name="productCityId"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      {...field}
+                      onChange={(newValue) => {
+                        field.onChange(newValue?.value);
+                      } }
+                      options={cities}
+                      value={cities.find((item) => item.value === field.value)}
+                      styles={customStyles}
+                      instanceId="productCityId" />
+                  )} />
+                <p className="text-[13px] text-red-500">
+                  {formContext.formState.errors["productCityId"]
+                    ?.message as string}
+                </p>
+              </div>
+              <div className="mt-2 flex flex-col gap-y-3">
+                 {/* For Location */}
+                 <ControlledTextInput
+                    name= "productTown"
+                    placeholder="Enter Location"
+                  />
+                   {/* For latitude and longitude */}
+                  
+                  <Controller
+                  name="productLatLng"
+                  render={({ field }) => (
+                    <ControlledTextInput {...field} placeholder="Enter Lat, Long" readOnly />
+                  )}
+    />
+                  </div>
+                </>
+
+                
+                
+              )}
           </div>
         ) : null}
 

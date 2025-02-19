@@ -110,7 +110,12 @@ const formSchemaForTypeP = z.object({
   categoryLocation: z.string().trim().optional(),
   typeOfProduct: z.string({ required_error: 'Provide you product type', message: 'Provide you product type' }).trim(),
   brandId: z.number().min(1, { message: "Brand is required" }),
-  productLocationId: z.number().min(1, { message: "Product Location is required" }),
+  // productLocationId: z.number().min(1, { message: "Product Location is required" }),
+  productCountryId: z.number().min(1, { message: "Product Country is required" }),
+  productStateId: z.number().min(1, { message: "Product State is required" }),
+  productCityId: z.number().min(1, { message: "Product City is required" }),
+  productTown:  z.string().trim().optional(),
+  productLatLng:  z.string().trim().optional(),
   skuNo: z.string().trim().optional(),
   productCondition: z.string().trim().min(1, { message: "Product Condition is required" }),
   productTagList: z.array(
@@ -249,7 +254,12 @@ const defaultValues = {
   productPrice: 0,
   offerPrice: 0,
   placeOfOriginId: 0,
-  productLocationId: 0,
+  // productLocationId: 0,
+  productCountryId: 0,
+  productStateId: 0,
+  productCityId: 0,
+  productTown: "",
+  productLatLng: "",
   productShortDescriptionList: [
     {
       shortDescription: "",
@@ -390,8 +400,13 @@ const CreateProductPage = () => {
           : updatedFormData.productPriceList?.[0]?.stock
             ? updatedFormData.productPriceList[0].stock
             : 0,
-        productLocationId: updatedFormData.productLocationId,
+        // productLocationId: updatedFormData.productLocationId,
+        productCountryId: updatedFormData.productCountryId,
+        productStateId: updatedFormData.productStateId,
+        productCityId: updatedFormData.productCityId,
         productCondition: updatedFormData.productCondition,
+        productTown: updatedFormData.productTown,
+        productLatLng: updatedFormData.productLatLng,
         // status:
         //   activeProductType !== "R" && updatedFormData.productPrice !== 0
         //     ? "ACTIVE"
@@ -437,9 +452,20 @@ const CreateProductPage = () => {
           ...updatedFormData.productPriceList[0],
         },
       ];
-      delete updatedFormData.productPriceList[0].productLocationId;
+      // delete updatedFormData.productPriceList[0].productLocationId;
+      delete updatedFormData.productPriceList[0].productCountryId;
+      delete updatedFormData.productPriceList[0].productStateId;
+      delete updatedFormData.productPriceList[0].productCityId;
+      delete updatedFormData.productPriceList[0].productTown;
+      delete updatedFormData.productPriceList[0].productLatLng;
     }
-    delete updatedFormData.productLocationId;
+    // delete updatedFormData.productLocationId;
+    delete updatedFormData.productCountryId;
+    delete updatedFormData.productStateId;
+    delete updatedFormData.productCityId;
+    delete updatedFormData.productTown;
+    delete updatedFormData.productLatLng;
+
     delete updatedFormData.setUpPrice;
     delete updatedFormData.productCondition;
 
@@ -465,7 +491,7 @@ const CreateProductPage = () => {
       : ""),
       delete updatedFormData.descriptionJson;
 
-    console.log("add:", updatedFormData);
+    // console.log("add:", updatedFormData);
     // return;
     const response = await createProduct.mutateAsync(updatedFormData);
 
