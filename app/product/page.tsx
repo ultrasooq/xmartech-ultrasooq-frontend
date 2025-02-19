@@ -116,6 +116,9 @@ const formSchemaForTypeP = z.object({
   productCityId: z.number().min(1, { message: "Product City is required" }),
   productTown:  z.string().trim().optional(),
   productLatLng:  z.string().trim().optional(),
+  sellCountryIds:  z.any().optional(),
+  sellStateIds:  z.any().optional(),
+  sellCityIds: z.any().optional(),
   skuNo: z.string().trim().optional(),
   productCondition: z.string().trim().min(1, { message: "Product Condition is required" }),
   productTagList: z.array(
@@ -258,6 +261,9 @@ const defaultValues = {
   productCountryId: 0,
   productStateId: 0,
   productCityId: 0,
+  sellCountryIds: [],
+  sellStateIds: [],
+  sellCityIds: [],
   productTown: "",
   productLatLng: "",
   productShortDescriptionList: [
@@ -407,6 +413,9 @@ const CreateProductPage = () => {
         productCondition: updatedFormData.productCondition,
         productTown: updatedFormData.productTown,
         productLatLng: updatedFormData.productLatLng,
+        sellCountryIds: updatedFormData.sellCountryIds,
+        sellStateIds: updatedFormData.sellStateIds,
+        sellCityIds: updatedFormData.sellCityIds,
         // status:
         //   activeProductType !== "R" && updatedFormData.productPrice !== 0
         //     ? "ACTIVE"
@@ -458,6 +467,9 @@ const CreateProductPage = () => {
       delete updatedFormData.productPriceList[0].productCityId;
       delete updatedFormData.productPriceList[0].productTown;
       delete updatedFormData.productPriceList[0].productLatLng;
+        delete updatedFormData.productPriceList[0].sellCountryIds;
+        delete updatedFormData.productPriceList[0].sellStateIds;
+        delete updatedFormData.productPriceList[0].sellCityIds;
     }
     // delete updatedFormData.productLocationId;
     delete updatedFormData.productCountryId;
@@ -465,6 +477,9 @@ const CreateProductPage = () => {
     delete updatedFormData.productCityId;
     delete updatedFormData.productTown;
     delete updatedFormData.productLatLng;
+    delete updatedFormData.sellCountryIds;
+    delete updatedFormData.sellStateIds;
+    delete updatedFormData.sellCityIds;
 
     delete updatedFormData.setUpPrice;
     delete updatedFormData.productCondition;

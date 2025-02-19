@@ -216,7 +216,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {/* For factories type */}
           {!isLoading && productDetails?.product_productPrice[0]?.isCustomProduct === "true" ? (
             <div className="flex w-full gap-x-3 self-end">
-              {productDetails?.adminId === loginUserId ? (
+              {productDetails?.adminId !== loginUserId ? (
               <><Button
                   type="button"
                   onClick={handleToCustomizeModal}
@@ -232,7 +232,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                     Message Vendor
                   </Button></>
               ) : null}
-              {productDetails?.adminId == loginUserId ? (
+              {/* {productDetails?.adminId == loginUserId ? (
                 <Button
                   type="button"
                   // onClick={onToCheckout}
@@ -241,7 +241,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 >
                   Edit Product
                 </Button>
-              ) : null}
+              ) : null} */}
             </div>
           ) : null}
         </div>
