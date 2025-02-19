@@ -26,7 +26,7 @@ const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
       control={formContext.control}
       name={name}
       render={({ field }) => (
-        <FormItem className="mb-4 w-full">
+        <FormItem className="mb-4 flex w-full flex-col gap-y-3">
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Input {...props} className="theme-form-control-s1" {...field} />

@@ -8,11 +8,16 @@ import { Label } from "../ui/label";
 import { useAuth } from "@/context/AuthContext";
 import Select from "react-select/dist/declarations/src/Select";
 import { GroupBase } from "react-select";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 import { Info } from "lucide-react"; // Using Lucide React icons
 
 const customStyles = {
-  control: (base: any) => ({ ...base, height: 48, minHeight: 48, }),
+  control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
 };
 
 const ReactSelectInput = () => {
@@ -29,28 +34,44 @@ const ReactSelectInput = () => {
   const createBrand = useCreateBrand();
 
   const memoizedBrands = useMemo(() => {
-    return productType ? brandsQuery?.data?.data.map((item: IBrands) => ({ label: item.brandName, value: item.id })) || [] : [];
+    return productType
+      ? brandsQuery?.data?.data.map((item: IBrands) => ({
+          label: item.brandName,
+          value: item.id,
+        })) || []
+      : [];
   }, [brandsQuery?.data?.data, productType]);
 
-    // Set default product type in the form
-    useEffect(() => {
-      formContext.setValue("typeOfProduct", "OWNBRAND");
-    }, [formContext]);
-  
+  // Set default product type in the form
+  useEffect(() => {
+    formContext.setValue("typeOfProduct", "OWNBRAND");
+  }, [formContext]);
 
   const handleCreate = async (inputValue: string) => {
     const response = await createBrand.mutateAsync({ brandName: inputValue });
 
     if (response.status && response.data) {
-      toast({ title: "Brand Create Successful", description: response.message, variant: "success", });
-      setValue({ label: response.data.brandName, value: response.data.id, });
+      toast({
+        title: "Brand Create Successful",
+        description: response.message,
+        variant: "success",
+      });
+      setValue({ label: response.data.brandName, value: response.data.id });
       formContext.setValue("brandId", response.data.id);
     } else {
-      toast({ title: "Brand Create Failed", description: response.message, variant: "danger", });
+      toast({
+        title: "Brand Create Failed",
+        description: response.message,
+        variant: "danger",
+      });
     }
   };
 
-  const brandType = [{ label: 'Brand', value: 'BRAND' }, { label: 'Spare part', value: 'SPAREPART' }, { label: 'Own brand', value: 'OWNBRAND' }]
+  const brandType = [
+    { label: "Brand", value: "BRAND" },
+    { label: "Spare part", value: "SPAREPART" },
+    { label: "Own brand", value: "OWNBRAND" },
+  ];
 
   const brandSelect = useRef<Select<any, false, GroupBase<any>>>(null);
 
@@ -58,57 +79,74 @@ const ReactSelectInput = () => {
     <>
       <div className="mt-2 flex flex-col gap-y-3">
         <Label>Product Type</Label>
-        <Controller name="typeOfProduct" control={formContext.control} render={({ field }) => (
-          <CreatableSelect {...field} isClearable options={brandType} styles={customStyles} instanceId="typeOfProduct" value={brandType.find((item: IOption) => item.value === field.value,)}
-            onChange={(newValue) => {
-              field.onChange(newValue?.value);
-              if (newValue?.value) {
-                setProductType(newValue?.value)
-                if (brandSelect.current) {
-                  brandSelect?.current?.clearValue()
+        <Controller
+          name="typeOfProduct"
+          control={formContext.control}
+          render={({ field }) => (
+            <CreatableSelect
+              {...field}
+              isClearable
+              options={brandType}
+              styles={customStyles}
+              instanceId="typeOfProduct"
+              value={brandType.find(
+                (item: IOption) => item.value === field.value,
+              )}
+              onChange={(newValue) => {
+                field.onChange(newValue?.value);
+                if (newValue?.value) {
+                  setProductType(newValue?.value);
+                  if (brandSelect.current) {
+                    brandSelect?.current?.clearValue();
+                  }
                 }
-              }
-            }}
-          />
-        )} />
+              }}
+            />
+          )}
+        />
         <p className="text-[13px] text-red-500">
           {formContext.formState.errors["typeOfProduct"]?.message as string}
         </p>
       </div>
       <div className="mt-2 flex flex-col gap-y-3">
-        <Label>Brand</Label>
+        <div className="flex w-full items-center gap-1.5">
+          <Label>Brand</Label>
           <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info className="w-4 h-4 text-gray-500 cursor-pointer" />
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              Type a brand name in the select box and press <strong>Enter</strong> to create a new Brand.
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        <Controller name="brandId" control={formContext.control} render={({ field }) => (
-          <CreatableSelect
-            // {...field}
-            name={field.name}
-            ref={brandSelect}
-            isClearable
-            isDisabled={createBrand.isPending}
-            isLoading={createBrand.isPending}
-            onChange={(newValue) => {
-              field.onChange(newValue?.value);
-              setValue(newValue);
-            }}
-            onCreateOption={handleCreate}
-            options={memoizedBrands}
-            value={memoizedBrands.find(
-              (item: IOption) => item.value === field.value,
-            )}
-            styles={customStyles}
-            instanceId="brandId"
-          />
-        )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-4 w-4 cursor-pointer text-gray-500" />
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                Type a brand name in the select box and press{" "}
+                <strong>Enter</strong> to create a new Brand.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <Controller
+          name="brandId"
+          control={formContext.control}
+          render={({ field }) => (
+            <CreatableSelect
+              // {...field}
+              name={field.name}
+              ref={brandSelect}
+              isClearable
+              isDisabled={createBrand.isPending}
+              isLoading={createBrand.isPending}
+              onChange={(newValue) => {
+                field.onChange(newValue?.value);
+                setValue(newValue);
+              }}
+              onCreateOption={handleCreate}
+              options={memoizedBrands}
+              value={memoizedBrands.find(
+                (item: IOption) => item.value === field.value,
+              )}
+              styles={customStyles}
+              instanceId="brandId"
+            />
+          )}
         />
         <p className="text-[13px] text-red-500">
           {formContext.formState.errors["brandId"]?.message as string}

@@ -13,8 +13,21 @@ import CounterTextInputField from "./CounterTextInputField";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CONSUMER_TYPE_LIST, SELL_TYPE_LIST } from "@/utils/constants";
-import { IAllCountries, ICity, ICountries, ILocations, IOption, IState } from "@/utils/types/common.types";
-import { useCountries, useLocation, useAllCountries, useFetchStatesByCountry, useFetchCitiesByState } from "@/apis/queries/masters.queries";
+import {
+  IAllCountries,
+  ICity,
+  ICountries,
+  ILocations,
+  IOption,
+  IState,
+} from "@/utils/types/common.types";
+import {
+  useCountries,
+  useLocation,
+  useAllCountries,
+  useFetchStatesByCountry,
+  useFetchCitiesByState,
+} from "@/apis/queries/masters.queries";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
@@ -61,15 +74,12 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   const watchDateOpen = formContext.watch("productPriceList.[0].dateOpen"); // Watch the Time Open value
 
-//   const watchStartTime = formContext.watch("productPriceList.[0].startTime");
-// const watchEndTime = formContext.watch("productPriceList.[0].endTime");
+  //   const watchStartTime = formContext.watch("productPriceList.[0].startTime");
+  // const watchEndTime = formContext.watch("productPriceList.[0].endTime");
 
+  // console.log("Start Time:", watchStartTime); // ✅ This should update dynamically
 
-
-// console.log("Start Time:", watchStartTime); // ✅ This should update dynamically
-
-// console.log("Form Values price:", formContext.getValues());
-
+  // console.log("Form Values price:", formContext.getValues());
 
   const watchConsumerType = formContext.watch(
     "productPriceList.[0].consumerType",
@@ -109,8 +119,12 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   // For multiple selction country, state, city
   const [selectedCountries, setSelectedCountries] = useState<OptionType[]>([]);
-  const [statesByCountry, setStatesByCountry] = useState<Record<string, OptionType[]>>({});
-  const [citiesByState, setCitiesByState] = useState<Record<string, OptionType[]>>({});
+  const [statesByCountry, setStatesByCountry] = useState<
+    Record<string, OptionType[]>
+  >({});
+  const [citiesByState, setCitiesByState] = useState<
+    Record<string, OptionType[]>
+  >({});
 
   const [selectedStates, setSelectedStates] = useState<OptionType[]>([]);
   const [selectedCities, setSelectedCities] = useState<OptionType[]>([]);
@@ -153,12 +167,15 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     }
   }, [selectedCountry]);
 
-  
-  
   const fetchStates = async (countryId: number) => {
     try {
       const response = await fetchStatesByCountry.mutateAsync({ countryId }); // Call your API
-      setStates(response.data.map((state: IState) => ({ label: state.name, value: state.id })));
+      setStates(
+        response.data.map((state: IState) => ({
+          label: state.name,
+          value: state.id,
+        })),
+      );
     } catch (error) {
       console.error("Error fetching states:", error);
     }
@@ -173,18 +190,22 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
       setCities([]);
     }
   }, [selectedState]);
-  
+
   const fetchCities = async (stateId: number) => {
     try {
       const response = await fetchCitiesByState.mutateAsync({ stateId }); // ✅ Pass as an object
-      setCities(response.data.map((city: ICity) => ({ label: city.name, value: city.id })));
+      setCities(
+        response.data.map((city: ICity) => ({
+          label: city.name,
+          value: city.id,
+        })),
+      );
     } catch (error) {
       console.error("Error fetching cities:", error);
     }
   };
 
   // {/* For latitude and longitude */}
-
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -199,7 +220,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         },
         (error) => {
           console.error("Error fetching location:", error);
-        }
+        },
       );
     } else {
       console.error("Geolocation is not supported by this browser.");
@@ -208,68 +229,71 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   // Whenever selectedCountries change, fetch states for all selected countries.
 
-useEffect(() => {
-  if (selectedCountries.length > 0) {
-    const fetchStates = async () => {
-      const statesData: Record<string, OptionType[]> = {};
+  useEffect(() => {
+    if (selectedCountries.length > 0) {
+      const fetchStates = async () => {
+        const statesData: Record<string, OptionType[]> = {};
 
-      try {
-        const responses = await Promise.all(
-          selectedCountries.map(async (country) => {
-            const response = await fetchStatesByCountry.mutateAsync({ countryId: Number(country.value) });
-            return { countryId: country.value, data: response.data };
-          })
-        );
+        try {
+          const responses = await Promise.all(
+            selectedCountries.map(async (country) => {
+              const response = await fetchStatesByCountry.mutateAsync({
+                countryId: Number(country.value),
+              });
+              return { countryId: country.value, data: response.data };
+            }),
+          );
 
-        responses.forEach(({ countryId, data }) => {
-          statesData[countryId] = data.map((state: any) => ({
-            label: state.name,
-            value: state.id,
-          }));
-        });
+          responses.forEach(({ countryId, data }) => {
+            statesData[countryId] = data.map((state: any) => ({
+              label: state.name,
+              value: state.id,
+            }));
+          });
 
-        setStatesByCountry(statesData);
-      } catch (error) {
-        console.error("Error fetching states:", error);
-      }
-    };
+          setStatesByCountry(statesData);
+        } catch (error) {
+          console.error("Error fetching states:", error);
+        }
+      };
 
-    fetchStates();
-  }
-}, [selectedCountries]);
+      fetchStates();
+    }
+  }, [selectedCountries]);
 
-// Fetch Cities When States Change
+  // Fetch Cities When States Change
 
-useEffect(() => {
-  if (selectedStates.length > 0) {
-    const fetchCities = async () => {
-      const citiesData: Record<string, OptionType[]> = {};
+  useEffect(() => {
+    if (selectedStates.length > 0) {
+      const fetchCities = async () => {
+        const citiesData: Record<string, OptionType[]> = {};
 
-      try {
-        const responses = await Promise.all(
-          selectedStates.map(async (state) => {
-            const response = await fetchCitiesByState.mutateAsync({ stateId: Number(state.value) });
-            return { stateId: state.value, data: response.data };
-          })
-        );
+        try {
+          const responses = await Promise.all(
+            selectedStates.map(async (state) => {
+              const response = await fetchCitiesByState.mutateAsync({
+                stateId: Number(state.value),
+              });
+              return { stateId: state.value, data: response.data };
+            }),
+          );
 
-        responses.forEach(({ stateId, data }) => {
-          citiesData[stateId] = data.map((city: any) => ({
-            label: city.name,
-            value: city.id,
-          }));
-        });
+          responses.forEach(({ stateId, data }) => {
+            citiesData[stateId] = data.map((city: any) => ({
+              label: city.name,
+              value: city.id,
+            }));
+          });
 
-        setCitiesByState(citiesData);
-      } catch (error) {
-        console.error("Error fetching cities:", error);
-      }
-    };
+          setCitiesByState(citiesData);
+        } catch (error) {
+          console.error("Error fetching cities:", error);
+        }
+      };
 
-    fetchCities();
-  }
-}, [selectedStates]);
-
+      fetchCities();
+    }
+  }, [selectedStates]);
 
   const errors = formContext.formState.errors;
 
@@ -295,15 +319,15 @@ useEffect(() => {
 
   const minQuantityPerCustomerMessage =
     errors &&
-      typeof errors["0"] === "object" &&
-      "minQuantityPerCustomer" in errors["0"]
+    typeof errors["0"] === "object" &&
+    "minQuantityPerCustomer" in errors["0"]
       ? errors["0"].minQuantityPerCustomer?.message
       : undefined;
 
   const maxQuantityPerCustomerMessage =
     errors &&
-      typeof errors["0"] === "object" &&
-      "maxQuantityPerCustomer" in errors["0"]
+    typeof errors["0"] === "object" &&
+    "maxQuantityPerCustomer" in errors["0"]
       ? errors["0"].maxQuantityPerCustomer?.message
       : undefined;
 
@@ -332,20 +356,19 @@ useEffect(() => {
       ? errors["0"].deliveryAfter?.message
       : undefined;
 
+  const { setValue } = formContext;
 
-      const { setValue } = formContext;
+  useEffect(() => {
+    if (watchSellType === "BUYGROUP") {
+      setValue("isCustomProduct", false);
+      setValue("isOfferPriceRequired", false);
+      setValue("isStockRequired", false);
+    }
+  }, [watchSellType, setValue]);
 
-    useEffect(() => {
-      if (watchSellType === "BUYGROUP") {
-        setValue("isCustomProduct", false);
-        setValue("isOfferPriceRequired", false);
-        setValue("isStockRequired", false);
-      }
-    }, [watchSellType, setValue]);
+  const [localTime, setLocalTime] = useState<string>("");
 
-    const [localTime, setLocalTime] = useState<string>("");
-
-      // Set the local time on component mount
+  // Set the local time on component mount
   useEffect(() => {
     const currentLocalTime = format(new Date(), "MMMM dd, yyyy hh:mm a"); // Desired format
     setLocalTime(currentLocalTime); // Update local time state
@@ -443,7 +466,7 @@ useEffect(() => {
           <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
             <div className="col-span-2 grid w-full grid-cols-2 gap-x-5 gap-y-4">
               {watchConsumerType === "EVERYONE" ||
-                watchConsumerType === "CONSUMER" ? (
+              watchConsumerType === "CONSUMER" ? (
                 <CounterTextInputField
                   label="Consumer Discount"
                   name="productPriceList.[0].consumerDiscount"
@@ -452,7 +475,7 @@ useEffect(() => {
               ) : null}
 
               {watchConsumerType === "EVERYONE" ||
-                watchConsumerType === "VENDORS" ? (
+              watchConsumerType === "VENDORS" ? (
                 <CounterTextInputField
                   label="Vendor Discount"
                   name="productPriceList.[0].vendorDiscount"
@@ -463,14 +486,14 @@ useEffect(() => {
 
             {watchSellType === "BUYGROUP" ? (
               <>
-               <div className="mb-4 w-full">
-                <label>Add Time</label>
-                <Input
-                  value={localTime} // Show the local time
-                  readOnly // Make it read-only
-                  className="theme-form-control-s1"
-                />
-              </div>
+                <div className="mb-4 w-full">
+                  <label>Add Time</label>
+                  <Input
+                    value={localTime} // Show the local time
+                    readOnly // Make it read-only
+                    className="theme-form-control-s1"
+                  />
+                </div>
 
                 <CounterTextInputField
                   label="Min Customer"
@@ -560,9 +583,10 @@ useEffect(() => {
                 /> */}
 
                 <ControlledDatePicker
-                label="Date Open"
-                name="productPriceList.[0].dateOpen"
-                isFuture />
+                  label="Date Open"
+                  name="productPriceList.[0].dateOpen"
+                  isFuture
+                />
 
                 <ControlledTimePicker
                   label="Time Open"
@@ -570,11 +594,11 @@ useEffect(() => {
                 />
 
                 <ControlledDatePicker
-                label="Date Close"
-                name="productPriceList.[0].dateClose"
-                isFuture
-                minDate={watchDateOpen} // Pass timeOpen as minDate to disable past dates
-                 />
+                  label="Date Close"
+                  name="productPriceList.[0].dateClose"
+                  isFuture
+                  minDate={watchDateOpen} // Pass timeOpen as minDate to disable past dates
+                />
 
                 <ControlledTimePicker
                   label="Time Close"
@@ -608,7 +632,9 @@ useEffect(() => {
             </div>
           ) : null}
 
-          {activeProductType !== "R" && watchSetUpPrice && watchSellType !== "BUYGROUP" ? (
+          {activeProductType !== "R" &&
+          watchSetUpPrice &&
+          watchSellType !== "BUYGROUP" ? (
             <div className="mb-4 flex w-full flex-row items-center gap-x-5">
               <>
                 <div className="flex flex-row items-center gap-x-3">
@@ -616,7 +642,11 @@ useEffect(() => {
                     name="isCustomProduct"
                     control={formContext.control}
                     render={({ field }) => (
-                      <Switch checked={!!field.value} onCheckedChange={field.onChange} className="data-[state=checked]:!bg-dark-orange" />
+                      <Switch
+                        checked={!!field.value}
+                        onCheckedChange={field.onChange}
+                        className="data-[state=checked]:!bg-dark-orange"
+                      />
                     )}
                   />
                   <Label>Customize Product</Label>
@@ -767,139 +797,166 @@ useEffect(() => {
           //     }
           //   </p>
           // </div>
-
-          <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Select Country</Label>
-            <Controller
-              name="productCountryId"
-              control={formContext.control}
-              render={({ field }) => (
-                <ReactSelect
-                  {...field}
-                  onChange={(newValue) => {
-                    setSelectedCountry(newValue?.value || null);
-                    setSelectedState(null); // Reset state when country changes
-                    setCities([]); // Clear cities when country changes
-                    field.onChange(newValue?.value);
-                  }}
-                  options={memoizedAllCountries}
-                  value={memoizedAllCountries.find((item:any) => item.value === field.value)}
-                  styles={customStyles}
-                  instanceId="productCountryId"
-                />
-              )}
-            />
-
-            <p className="text-[13px] text-red-500">
-              {
-                formContext.formState.errors["productCountryId"]
-                  ?.message as string
-              }
-            </p>
-
-            {/* State Dropdown - Visible only if country is selected */}
-            {selectedCountry && (
-              <>
-                <Label>Select State</Label>
-                <Controller
-                  name="productStateId"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <ReactSelect
-                      {...field}
-                      onChange={(newValue) => {
-                        setSelectedState(newValue?.value || null);
-                        setCities([]); // Clear cities when state changes
-                        field.onChange(newValue?.value);
-                      }}
-                      options={states}
-                      value={states.find((item) => item.value === field.value)}
-                      styles={customStyles}
-                      instanceId="productStateId"
-                    />
-                  )}
-                />
-                 <p className="text-[13px] text-red-500">
-              {
-                formContext.formState.errors["productStateId"]
-                  ?.message as string
-              }
-            </p>
-              </>
-              
-            )}
-           
-            
-             {/* City Dropdown - Visible only if state is selected */}
-              {selectedState && (
-                <>
-                <div className="mt-2 flex flex-col gap-y-3">
-                <Label>Select City</Label>
-                <Controller
-                  name="productCityId"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <ReactSelect
-                      {...field}
-                      onChange={(newValue) => {
-                        field.onChange(newValue?.value);
-                      } }
-                      options={cities}
-                      value={cities.find((item) => item.value === field.value)}
-                      styles={customStyles}
-                      instanceId="productCityId" />
-                  )} />
-                <p className="text-[13px] text-red-500">
-                  {formContext.formState.errors["productCityId"]
-                    ?.message as string}
-                </p>
-              </div>
-              <div className="mt-2 flex flex-col gap-y-3">
-                 {/* For Location */}
-                 <ControlledTextInput
-                    name= "productTown"
-                    placeholder="Enter Location"
-                  />
-                   {/* For latitude and longitude */}
-                  
-                  <Controller
-                  name="productLatLng"
-                  render={({ field }) => (
-                    <ControlledTextInput {...field} placeholder="Enter Lat, Long" readOnly />
-                  )}
-    />
-                  </div>
-                </>
-
-                
-                
-              )}
-          </div>
-        ) : null}
-
+          <>
             <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Where to sell Multiple Country</Label>
-            <Controller
-              name="sellCountryIds"
-              control={formContext.control}
-              render={({ field }) => (
-                <ReactSelect
+              <Label>Select Country</Label>
+              <Controller
+                name="productCountryId"
+                control={formContext.control}
+                render={({ field }) => (
+                  <ReactSelect
+                    {...field}
+                    onChange={(newValue) => {
+                      setSelectedCountry(newValue?.value || null);
+                      setSelectedState(null); // Reset state when country changes
+                      setCities([]); // Clear cities when country changes
+                      field.onChange(newValue?.value);
+                    }}
+                    options={memoizedAllCountries}
+                    value={memoizedAllCountries.find(
+                      (item: any) => item.value === field.value,
+                    )}
+                    styles={customStyles}
+                    instanceId="productCountryId"
+                  />
+                )}
+              />
+              <p className="text-[13px] text-red-500">
+                {
+                  formContext.formState.errors["productCountryId"]
+                    ?.message as string
+                }
+              </p>
+            </div>
+            <div className="mt-2 flex flex-col gap-y-3">
+              {/* State Dropdown - Visible only if country is selected */}
+              {selectedCountry && (
+                <>
+                  <Label>Select State</Label>
+                  <Controller
+                    name="productStateId"
+                    control={formContext.control}
+                    render={({ field }) => (
+                      <ReactSelect
+                        {...field}
+                        onChange={(newValue) => {
+                          setSelectedState(newValue?.value || null);
+                          setCities([]); // Clear cities when state changes
+                          field.onChange(newValue?.value);
+                        }}
+                        options={states}
+                        value={states.find(
+                          (item) => item.value === field.value,
+                        )}
+                        styles={customStyles}
+                        instanceId="productStateId"
+                      />
+                    )}
+                  />
+                  <p className="text-[13px] text-red-500">
+                    {
+                      formContext.formState.errors["productStateId"]
+                        ?.message as string
+                    }
+                  </p>
+                </>
+              )}
+            </div>
+            {/* City Dropdown - Visible only if state is selected */}
+            {selectedState && (
+              <>
+                <div className="mt-2 flex flex-col gap-y-3">
+                  <Label>Select City</Label>
+                  <Controller
+                    name="productCityId"
+                    control={formContext.control}
+                    render={({ field }) => (
+                      <ReactSelect
+                        {...field}
+                        onChange={(newValue) => {
+                          field.onChange(newValue?.value);
+                        }}
+                        options={cities}
+                        value={cities.find(
+                          (item) => item.value === field.value,
+                        )}
+                        styles={customStyles}
+                        instanceId="productCityId"
+                      />
+                    )}
+                  />
+                  <p className="text-[13px] text-red-500">
+                    {
+                      formContext.formState.errors["productCityId"]
+                        ?.message as string
+                    }
+                  </p>
+                </div>
+                <div className="mt-2 flex flex-col gap-y-3">
+                  {/* For Location */}
+                  {/* <label>Location</label> */}
+                  <ControlledTextInput
+                    name="productTown"
+                    placeholder="Enter Location"
+                    label="Location"
+                  />
+                </div>
+                <div className="mt-2 flex flex-col gap-y-3">
+                  {/* For latitude and longitude */}
+                  {/* <label>Latitude and Longitude</label> */}
+                  <Controller
+                    name="productLatLng"
+                    render={({ field }) => (
+                      <ControlledTextInput
+                        {...field}
+                        placeholder="Enter Lat, Long"
+                        label="Latitude and Longitude"
+                        readOnly
+                      />
+                    )}
+                  />
+                </div>
+              </>
+            )}
+            <div className="mt-2 flex flex-col gap-y-3"></div>
+          </>
+        ) : null}
+      </div>
+      <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-1">
+        <Label className="text-[16px] font-semibold">Where to sell</Label>
+      </div>
+      <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
+        <div className="mt-2 flex flex-col gap-y-3">
+          <Label>Select Multiple Country</Label>
+          <Controller
+            name="sellCountryIds"
+            control={formContext.control}
+            render={({ field }) => (
+              <ReactSelect
                 isMulti
                 {...field} // ✅ Ensures value is controlled
                 onChange={(newValues: MultiValue<OptionType>) => {
                   setSelectedCountries([...newValues]);
                   field.onChange(newValues);
-                
+
                   // 🔥 Remove states that belong to the removed country
                   const updatedStates = selectedStates.filter((state) =>
-                    newValues.some((country) => statesByCountry[country.value]?.some((s) => s.value === state.value))
+                    newValues.some((country) =>
+                      statesByCountry[country.value]?.some(
+                        (s) => s.value === state.value,
+                      ),
+                    ),
                   );
                   setSelectedStates(updatedStates);
                   formContext.setValue("sellStateIds", updatedStates); // ✅ Sync with form state
-                  
+
                   // 🔥 Remove cities that belong to removed states
                   const updatedCities = selectedCities.filter((city) =>
-                    updatedStates.some((state) => citiesByState[state.value]?.some((c) => c.value === city.value))
+                    updatedStates.some((state) =>
+                      citiesByState[state.value]?.some(
+                        (c) => c.value === city.value,
+                      ),
+                    ),
                   );
                   setSelectedCities(updatedCities);
                   formContext.setValue("sellCityIds", updatedCities); // ✅ Sync with form state
@@ -909,15 +966,14 @@ useEffect(() => {
                 styles={customStyles}
                 instanceId="sellCountryIds"
               />
-             )}
-            />
-            </div>
+            )}
+          />
+        </div>
 
-           {/* Show States when at least one country is selected */}
-              {selectedCountries.length > 0 && (
-
-            <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Where to sell Multiple State</Label>
+        {/* Show States when at least one country is selected */}
+        {selectedCountries.length > 0 && (
+          <div className="mt-2 flex flex-col gap-y-3">
+            <Label>Select Multiple State</Label>
             <Controller
               name="sellStateIds"
               control={formContext.control}
@@ -928,49 +984,56 @@ useEffect(() => {
                   onChange={(newValues: MultiValue<OptionType>) => {
                     setSelectedStates([...newValues]);
                     field.onChange(newValues);
-                  
+
                     // 🔥 Remove cities that belong to the removed state
                     const updatedCities = selectedCities.filter((city) =>
-                      newValues.some((state) => citiesByState[state.value]?.some((c) => c.value === city.value))
+                      newValues.some((state) =>
+                        citiesByState[state.value]?.some(
+                          (c) => c.value === city.value,
+                        ),
+                      ),
                     );
                     setSelectedCities(updatedCities);
                     formContext.setValue("sellCityIds", updatedCities); // ✅ Sync with form state
                   }}
-                  options={selectedCountries.flatMap((country) => statesByCountry[country.value] || [])}
+                  options={selectedCountries.flatMap(
+                    (country) => statesByCountry[country.value] || [],
+                  )}
                   value={selectedStates}
                   styles={customStyles}
                   instanceId="sellStateIds"
                 />
+              )}
+            />
+          </div>
+        )}
+
+        {/* Show Cities when at least one state is selected */}
+        {selectedStates.length > 0 && (
+          <div className="mt-2 flex flex-col gap-y-3">
+            <Label>Select Multiple City</Label>
+            <Controller
+              name="sellCityIds"
+              control={formContext.control}
+              render={({ field }) => (
+                <ReactSelect
+                  isMulti
+                  {...field} // ✅ Ensures value is controlled
+                  onChange={(newValues: MultiValue<OptionType>) => {
+                    field.onChange(newValues);
+                    setSelectedCities([...newValues]);
+                  }}
+                  options={selectedStates.flatMap(
+                    (state) => citiesByState[state.value] || [],
                   )}
-                  />
-            </div>
-
-               )}
-
-               {/* Show Cities when at least one state is selected */}
-                {selectedStates.length > 0 && (
-                <div className="mt-2 flex flex-col gap-y-3">
-                <Label>Where to sell Multiple City</Label>
-                <Controller
-                  name="sellCityIds"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <ReactSelect
-                      isMulti
-                      {...field} // ✅ Ensures value is controlled
-                      onChange={(newValues: MultiValue<OptionType>) => {
-                        field.onChange(newValues);
-                        setSelectedCities([...newValues]);
-                      }}
-                      options={selectedStates.flatMap((state) => citiesByState[state.value] || [])}
-                      value={selectedCities}
-                      styles={customStyles}
-                      instanceId="sellCityIds"
-                    />
-                      )}
-                      />
-                </div>
-               )}
+                  value={selectedCities}
+                  styles={customStyles}
+                  instanceId="sellCityIds"
+                />
+              )}
+            />
+          </div>
+        )}
 
         <div className="mt-2 flex flex-col gap-y-3">
           <Label>Place of Origin</Label>
