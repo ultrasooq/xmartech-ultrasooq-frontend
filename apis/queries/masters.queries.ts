@@ -4,6 +4,9 @@ import {
   fetchBrands,
   fetchCountries,
   fetchLocation,
+  fetchAllCountry,
+  fetchStatesByCountry,
+  fetchCitiesByState
 } from "../requests/masters.requests";
 import { APIResponseError } from "@/utils/types/common.types";
 
@@ -67,3 +70,63 @@ export const useLocation = (enabled = true) =>
     // },
     enabled,
   });
+
+  export const useAllCountries = (enabled = true) =>
+    useQuery({
+      queryKey: ["allCountry"],
+      queryFn: async () => {
+        const res = await fetchAllCountry();
+        return res.data;
+      },
+      // onError: (err: APIResponseError) => {
+      //   console.log(err);
+      // },
+      enabled,
+    });
+
+      export const useFetchStatesByCountry = () => {
+        const queryClient = useQueryClient();
+        return useMutation<
+          { data: any; message: string; status: boolean },
+          APIResponseError,
+          { countryId: number } // Payload Type
+        >({
+          mutationFn: async (payload) => {
+            const res = await fetchStatesByCountry(payload);
+            return res.data;
+          },
+          onSuccess: () => {
+            queryClient.invalidateQueries({
+              queryKey: ["stateByCountry"],
+            });
+          },
+          onError: (err: APIResponseError) => {
+            console.log(err);
+          },
+        });
+      };
+
+      export const useFetchCitiesByState = () => {
+        const queryClient = useQueryClient();
+        return useMutation<
+          { data: any; message: string; status: boolean },
+          APIResponseError,
+          { stateId: number } // Payload Type
+        >({
+          mutationFn: async (payload) => {
+            const res = await fetchCitiesByState(payload);
+            return res.data;
+          },
+          onSuccess: () => {
+            queryClient.invalidateQueries({
+              queryKey: ["cityByState"],
+            });
+          },
+          onError: (err: APIResponseError) => {
+            console.log(err);
+          },
+        });
+      };
+      
+
+     

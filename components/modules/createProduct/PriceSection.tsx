@@ -7,14 +7,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import ReactSelect from "react-select";
+import ReactSelect, { MultiValue } from "react-select";
 import { Label } from "@/components/ui/label";
 import CounterTextInputField from "./CounterTextInputField";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CONSUMER_TYPE_LIST, SELL_TYPE_LIST } from "@/utils/constants";
-import { ICountries, ILocations, IOption } from "@/utils/types/common.types";
-import { useCountries, useLocation } from "@/apis/queries/masters.queries";
+import { IAllCountries, ICity, ICountries, ILocations, IOption, IState } from "@/utils/types/common.types";
+import { useCountries, useLocation, useAllCountries, useFetchStatesByCountry, useFetchCitiesByState } from "@/apis/queries/masters.queries";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
@@ -25,6 +25,11 @@ import { format } from "date-fns";
 interface Option {
   readonly label: string;
   readonly value: string;
+}
+
+interface OptionType {
+  label: string;
+  value: string | number;
 }
 
 const customStyles = {
@@ -48,6 +53,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   const countriesQuery = useCountries();
   const locationsQuery = useLocation();
+  const countriesNewQuery = useAllCountries();
 
   const watchSetUpPrice = formContext.watch("setUpPrice");
   const watchIsOfferPriceRequired = formContext.watch("isOfferPriceRequired");
@@ -94,6 +100,21 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   //   "productPriceList.[0].deliveryAfter",
   // );
 
+  const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
+  const [selectedState, setSelectedState] = useState<any | null>(null);
+  const [states, setStates] = useState<IOption[]>([]);
+  const [cities, setCities] = useState<IOption[]>([]);
+  const fetchStatesByCountry = useFetchStatesByCountry();
+  const fetchCitiesByState = useFetchCitiesByState();
+
+  // For multiple selction country, state, city
+  const [selectedCountries, setSelectedCountries] = useState<OptionType[]>([]);
+  const [statesByCountry, setStatesByCountry] = useState<Record<string, OptionType[]>>({});
+  const [citiesByState, setCitiesByState] = useState<Record<string, OptionType[]>>({});
+
+  const [selectedStates, setSelectedStates] = useState<OptionType[]>([]);
+  const [selectedCities, setSelectedCities] = useState<OptionType[]>([]);
+
   const memoizedCountries = useMemo(() => {
     return (
       countriesQuery?.data?.data.map((item: ICountries) => {
@@ -111,6 +132,144 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationsQuery?.data?.data?.length]);
+
+  const memoizedAllCountries = useMemo(() => {
+    return (
+      countriesNewQuery?.data?.data.map((item: IAllCountries) => {
+        return { label: item.name, value: item.id };
+      }) || []
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countriesNewQuery?.data?.data?.length]);
+
+  // Fetch States When Country is Selected
+
+  useEffect(() => {
+    if (selectedCountry) {
+      fetchStates(selectedCountry);
+    } else {
+      setStates([]);
+      setSelectedState(null);
+    }
+  }, [selectedCountry]);
+
+  
+  
+  const fetchStates = async (countryId: number) => {
+    try {
+      const response = await fetchStatesByCountry.mutateAsync({ countryId }); // Call your API
+      setStates(response.data.map((state: IState) => ({ label: state.name, value: state.id })));
+    } catch (error) {
+      console.error("Error fetching states:", error);
+    }
+  };
+
+  // Fetch Cities When State is Selected
+
+  useEffect(() => {
+    if (selectedState) {
+      fetchCities(selectedState);
+    } else {
+      setCities([]);
+    }
+  }, [selectedState]);
+  
+  const fetchCities = async (stateId: number) => {
+    try {
+      const response = await fetchCitiesByState.mutateAsync({ stateId }); // ✅ Pass as an object
+      setCities(response.data.map((city: ICity) => ({ label: city.name, value: city.id })));
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
+
+  // {/* For latitude and longitude */}
+
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const latLng = `${latitude}, ${longitude}`;
+
+          // console.log(latLng); // Logs correct lat/lng values
+
+          setValue("productLatLng", latLng); // ✅ Update form state
+        },
+        (error) => {
+          console.error("Error fetching location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  }); // ✅ Add setValue as dependency
+
+  // Whenever selectedCountries change, fetch states for all selected countries.
+
+useEffect(() => {
+  if (selectedCountries.length > 0) {
+    const fetchStates = async () => {
+      const statesData: Record<string, OptionType[]> = {};
+
+      try {
+        const responses = await Promise.all(
+          selectedCountries.map(async (country) => {
+            const response = await fetchStatesByCountry.mutateAsync({ countryId: Number(country.value) });
+            return { countryId: country.value, data: response.data };
+          })
+        );
+
+        responses.forEach(({ countryId, data }) => {
+          statesData[countryId] = data.map((state: any) => ({
+            label: state.name,
+            value: state.id,
+          }));
+        });
+
+        setStatesByCountry(statesData);
+      } catch (error) {
+        console.error("Error fetching states:", error);
+      }
+    };
+
+    fetchStates();
+  }
+}, [selectedCountries]);
+
+// Fetch Cities When States Change
+
+useEffect(() => {
+  if (selectedStates.length > 0) {
+    const fetchCities = async () => {
+      const citiesData: Record<string, OptionType[]> = {};
+
+      try {
+        const responses = await Promise.all(
+          selectedStates.map(async (state) => {
+            const response = await fetchCitiesByState.mutateAsync({ stateId: Number(state.value) });
+            return { stateId: state.value, data: response.data };
+          })
+        );
+
+        responses.forEach(({ stateId, data }) => {
+          citiesData[stateId] = data.map((city: any) => ({
+            label: city.name,
+            value: city.id,
+          }));
+        });
+
+        setCitiesByState(citiesData);
+      } catch (error) {
+        console.error("Error fetching cities:", error);
+      }
+    };
+
+    fetchCities();
+  }
+}, [selectedStates]);
+
 
   const errors = formContext.formState.errors;
 
@@ -580,35 +739,238 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
       <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
         {activeProductType !== "R" ? (
+          // <div className="mt-2 flex flex-col gap-y-3">
+          //   <Label>Product Location</Label>
+          //   <Controller
+          //     name="productLocationId"
+          //     control={formContext.control}
+          //     render={({ field }) => (
+          //       <ReactSelect
+          //         {...field}
+          //         onChange={(newValue) => {
+          //           field.onChange(newValue?.value);
+          //         }}
+          //         options={memoizedLocations}
+          //         value={memoizedLocations.find(
+          //           (item: IOption) => item.value === field.value,
+          //         )}
+          //         styles={customStyles}
+          //         instanceId="productLocationId"
+          //       />
+          //     )}
+          //   />
+
+          //   <p className="text-[13px] text-red-500">
+          //     {
+          //       formContext.formState.errors["productLocationId"]
+          //         ?.message as string
+          //     }
+          //   </p>
+          // </div>
+
           <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Product Location</Label>
+            <Label>Select Country</Label>
             <Controller
-              name="productLocationId"
+              name="productCountryId"
               control={formContext.control}
               render={({ field }) => (
                 <ReactSelect
                   {...field}
                   onChange={(newValue) => {
+                    setSelectedCountry(newValue?.value || null);
+                    setSelectedState(null); // Reset state when country changes
+                    setCities([]); // Clear cities when country changes
                     field.onChange(newValue?.value);
                   }}
-                  options={memoizedLocations}
-                  value={memoizedLocations.find(
-                    (item: IOption) => item.value === field.value,
-                  )}
+                  options={memoizedAllCountries}
+                  value={memoizedAllCountries.find((item:any) => item.value === field.value)}
                   styles={customStyles}
-                  instanceId="productLocationId"
+                  instanceId="productCountryId"
                 />
               )}
             />
 
             <p className="text-[13px] text-red-500">
               {
-                formContext.formState.errors["productLocationId"]
+                formContext.formState.errors["productCountryId"]
                   ?.message as string
               }
             </p>
+
+            {/* State Dropdown - Visible only if country is selected */}
+            {selectedCountry && (
+              <>
+                <Label>Select State</Label>
+                <Controller
+                  name="productStateId"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      {...field}
+                      onChange={(newValue) => {
+                        setSelectedState(newValue?.value || null);
+                        setCities([]); // Clear cities when state changes
+                        field.onChange(newValue?.value);
+                      }}
+                      options={states}
+                      value={states.find((item) => item.value === field.value)}
+                      styles={customStyles}
+                      instanceId="productStateId"
+                    />
+                  )}
+                />
+                 <p className="text-[13px] text-red-500">
+              {
+                formContext.formState.errors["productStateId"]
+                  ?.message as string
+              }
+            </p>
+              </>
+              
+            )}
+           
+            
+             {/* City Dropdown - Visible only if state is selected */}
+              {selectedState && (
+                <>
+                <div className="mt-2 flex flex-col gap-y-3">
+                <Label>Select City</Label>
+                <Controller
+                  name="productCityId"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      {...field}
+                      onChange={(newValue) => {
+                        field.onChange(newValue?.value);
+                      } }
+                      options={cities}
+                      value={cities.find((item) => item.value === field.value)}
+                      styles={customStyles}
+                      instanceId="productCityId" />
+                  )} />
+                <p className="text-[13px] text-red-500">
+                  {formContext.formState.errors["productCityId"]
+                    ?.message as string}
+                </p>
+              </div>
+              <div className="mt-2 flex flex-col gap-y-3">
+                 {/* For Location */}
+                 <ControlledTextInput
+                    name= "productTown"
+                    placeholder="Enter Location"
+                  />
+                   {/* For latitude and longitude */}
+                  
+                  <Controller
+                  name="productLatLng"
+                  render={({ field }) => (
+                    <ControlledTextInput {...field} placeholder="Enter Lat, Long" readOnly />
+                  )}
+    />
+                  </div>
+                </>
+
+                
+                
+              )}
           </div>
         ) : null}
+
+            <div className="mt-2 flex flex-col gap-y-3">
+            <Label>Where to sell Multiple Country</Label>
+            <Controller
+              name="sellCountryIds"
+              control={formContext.control}
+              render={({ field }) => (
+                <ReactSelect
+                isMulti
+                {...field} // ✅ Ensures value is controlled
+                onChange={(newValues: MultiValue<OptionType>) => {
+                  setSelectedCountries([...newValues]);
+                  field.onChange(newValues);
+                
+                  // 🔥 Remove states that belong to the removed country
+                  const updatedStates = selectedStates.filter((state) =>
+                    newValues.some((country) => statesByCountry[country.value]?.some((s) => s.value === state.value))
+                  );
+                  setSelectedStates(updatedStates);
+                  formContext.setValue("sellStateIds", updatedStates); // ✅ Sync with form state
+                  
+                  // 🔥 Remove cities that belong to removed states
+                  const updatedCities = selectedCities.filter((city) =>
+                    updatedStates.some((state) => citiesByState[state.value]?.some((c) => c.value === city.value))
+                  );
+                  setSelectedCities(updatedCities);
+                  formContext.setValue("sellCityIds", updatedCities); // ✅ Sync with form state
+                }}
+                options={memoizedAllCountries}
+                value={selectedCountries}
+                styles={customStyles}
+                instanceId="sellCountryIds"
+              />
+             )}
+            />
+            </div>
+
+           {/* Show States when at least one country is selected */}
+              {selectedCountries.length > 0 && (
+
+            <div className="mt-2 flex flex-col gap-y-3">
+            <Label>Where to sell Multiple State</Label>
+            <Controller
+              name="sellStateIds"
+              control={formContext.control}
+              render={({ field }) => (
+                <ReactSelect
+                  isMulti
+                  {...field} // ✅ Ensures value is controlled
+                  onChange={(newValues: MultiValue<OptionType>) => {
+                    setSelectedStates([...newValues]);
+                    field.onChange(newValues);
+                  
+                    // 🔥 Remove cities that belong to the removed state
+                    const updatedCities = selectedCities.filter((city) =>
+                      newValues.some((state) => citiesByState[state.value]?.some((c) => c.value === city.value))
+                    );
+                    setSelectedCities(updatedCities);
+                    formContext.setValue("sellCityIds", updatedCities); // ✅ Sync with form state
+                  }}
+                  options={selectedCountries.flatMap((country) => statesByCountry[country.value] || [])}
+                  value={selectedStates}
+                  styles={customStyles}
+                  instanceId="sellStateIds"
+                />
+                  )}
+                  />
+            </div>
+
+               )}
+
+               {/* Show Cities when at least one state is selected */}
+                {selectedStates.length > 0 && (
+                <div className="mt-2 flex flex-col gap-y-3">
+                <Label>Where to sell Multiple City</Label>
+                <Controller
+                  name="sellCityIds"
+                  control={formContext.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      isMulti
+                      {...field} // ✅ Ensures value is controlled
+                      onChange={(newValues: MultiValue<OptionType>) => {
+                        field.onChange(newValues);
+                        setSelectedCities([...newValues]);
+                      }}
+                      options={selectedStates.flatMap((state) => citiesByState[state.value] || [])}
+                      value={selectedCities}
+                      styles={customStyles}
+                      instanceId="sellCityIds"
+                    />
+                      )}
+                      />
+                </div>
+               )}
 
         <div className="mt-2 flex flex-col gap-y-3">
           <Label>Place of Origin</Label>

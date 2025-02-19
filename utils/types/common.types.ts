@@ -14,6 +14,39 @@ export interface ICountries {
   status: string;
 }
 
+export interface IAllCountries {
+  id: number;
+  name: string;
+  sortname: string;
+  phoneCode: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  status: string;
+}
+
+export interface IState {
+  id: number;
+  name: string;
+  sortname: string;
+  phoneCode: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  status: string;
+}
+
+export interface ICity {
+  id: number;
+  name: string;
+  sortname: string;
+  phoneCode: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  status: string;
+}
+
 export interface ILocations {
   id: number;
   locationName: string;
