@@ -16,8 +16,6 @@ import {
 } from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 const OrdersPage = () => {
   const router = useRouter();
   const { toast } = useToast();

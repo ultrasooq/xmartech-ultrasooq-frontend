@@ -4809,6 +4809,36 @@ input::-ms-clear {
 
 
 
+.order_accordion .accordion {
+  @apply w-full;
+}
+
+.order_accordion .accordion .accordion__item {
+  @apply w-full mb-4;
+}
+
+.order_accordion .accordion .accordion__item .accordion__heading {
+  @apply w-[50%];
+}
+
+.order_accordion .accordion .accordion__item .accordion__heading .accordion__button {
+  @apply w-full bg-[#db2302] rounded-md p-3 text-center text-white capitalize font-medium;
+}
+
+.order_accordion .accordion .accordion__item .accordion__panel {
+  @apply w-full mt-3;
+}
+
+.cart-page .accordion .order-action-btn.half_button {
+  @apply justify-start !important;
+}
+
+.cart-page .accordion .order-action-btn.half_button .order-btn {
+  @apply w-auto !important;
+}
+
+
+
 
 @media only screen and (min-width: 240px) and (max-width: 767px) {
   

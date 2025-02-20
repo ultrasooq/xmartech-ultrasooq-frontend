@@ -66,7 +66,7 @@ const ProductDetailsPage = () => {
   const handleProductUpdateSuccess = () => {
     queryClient.invalidateQueries({
       queryKey: ["product-by-id"],
-    });  // Refetch product details
+    }); // Refetch product details
   };
 
   const cartListByDeviceQuery = useCartListByDevice(
@@ -141,10 +141,10 @@ const ProductDetailsPage = () => {
 
   const [globalQuantity, setGlobalQuantity] = useState(1); // Global state
 
-  const handleQuantity = async ( quantity: number,) => {
+  const handleQuantity = async (quantity: number) => {
     // console.log(quantity, "===>143")
     setGlobalQuantity(quantity); // Update global state
-  }
+  };
 
   const handleAddToCart = async (
     quantity: number,
@@ -231,7 +231,7 @@ const ProductDetailsPage = () => {
 
   const [isVisible, setIsVisible] = useState(false); // Initially hidden
 
-  const handelOpenCartLayout =  () => {
+  const handelOpenCartLayout = () => {
     setIsVisible(true); // Show the div when the button is clicked
   };
 
@@ -420,7 +420,6 @@ const ProductDetailsPage = () => {
                       More Offers
                     </TabsTrigger>
                   </TabsList>
-
                   <TabsContent value="description" className="mt-0">
                     <div className="w-full bg-white">
                       <PlateEditor
@@ -519,77 +518,80 @@ const ProductDetailsPage = () => {
         </div>
 
         {isVisible && (
-        <div className="product_cart_modal absolute right-[20px] top-[20px] w-[300px]">
-          <div className="card-item cart-items">
-            <div className="inline-flex w-full items-center justify-center pt-5 text-center">
-              <a
-                href="javascript:void(0)"
-                className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
-                onClick={handleCartPage}
-              >
-                go to cart page
-              </a>
-            </div>
-            <div className="cart-item-lists">
-              {haveAccessToken &&
-              !cartListByUser.data?.data?.length &&
-              !cartListByUser.isLoading ? (
-                <div className="px-3 py-6">
-                  <p className="my-3 text-center">No items in cart</p>
-                </div>
-              ) : null}
-
-              {!haveAccessToken &&
-              !cartListByDeviceQuery.data?.data?.length &&
-              !cartListByDeviceQuery.isLoading ? (
-                <div className="px-3 py-6">
-                  <p className="my-3 text-center">No items in cart</p>
-                </div>
-              ) : null}
-
-              <div className="px-3">
-                {cartListByUser.isLoading ? (
-                  <div className="my-3 space-y-3">
-                    {Array.from({ length: 2 }).map((_, i) => (
-                      <Skeleton key={i} className="h-28 w-full" />
-                    ))}
-                  </div>
-                ) : null}
-
-                {!haveAccessToken && cartListByDeviceQuery.isLoading ? (
-                  <div className="my-3 space-y-3">
-                    {Array.from({ length: 2 }).map((_, i) => (
-                      <Skeleton key={i} className="h-28 w-full" />
-                    ))}
-                  </div>
-                ) : null}
+          <div className="product_cart_modal absolute right-[20px] top-[20px] w-[300px]">
+            <div className="card-item cart-items">
+              <div className="inline-flex w-full items-center justify-center pt-5 text-center">
+                <a
+                  href="javascript:void(0)"
+                  className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
+                  onClick={handleCartPage}
+                >
+                  go to cart page
+                </a>
               </div>
+              <div className="cart-item-lists">
+                {haveAccessToken &&
+                !cartListByUser.data?.data?.length &&
+                !cartListByUser.isLoading ? (
+                  <div className="px-3 py-6">
+                    <p className="my-3 text-center">No items in cart</p>
+                  </div>
+                ) : null}
 
-              {memoizedCartList?.map((item: CartItem) => (
-                <ProductCard
-                  key={item.id}
-                  cartId={item.id}
-                  productId={item.productId}
-                  productPriceId={item.productPriceId}
-                  productName={
-                    item.productPriceDetails?.productPrice_product?.productName
-                  }
-                  offerPrice={item.productPriceDetails?.offerPrice}
-                  productQuantity={item.quantity}
-                  productImages={
-                    item.productPriceDetails?.productPrice_product
-                      ?.productImages
-                  }
-                  consumerDiscount={item.productPriceDetails?.consumerDiscount}
-                  onAdd={handleAddToCart}
-                  onRemove={handleRemoveItemFromCart}
-                  onWishlist={handleAddToWishlist}
-                  haveAccessToken={haveAccessToken}
-                />
-              ))}
+                {!haveAccessToken &&
+                !cartListByDeviceQuery.data?.data?.length &&
+                !cartListByDeviceQuery.isLoading ? (
+                  <div className="px-3 py-6">
+                    <p className="my-3 text-center">No items in cart</p>
+                  </div>
+                ) : null}
+
+                <div className="px-3">
+                  {cartListByUser.isLoading ? (
+                    <div className="my-3 space-y-3">
+                      {Array.from({ length: 2 }).map((_, i) => (
+                        <Skeleton key={i} className="h-28 w-full" />
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {!haveAccessToken && cartListByDeviceQuery.isLoading ? (
+                    <div className="my-3 space-y-3">
+                      {Array.from({ length: 2 }).map((_, i) => (
+                        <Skeleton key={i} className="h-28 w-full" />
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+
+                {memoizedCartList?.map((item: CartItem) => (
+                  <ProductCard
+                    key={item.id}
+                    cartId={item.id}
+                    productId={item.productId}
+                    productPriceId={item.productPriceId}
+                    productName={
+                      item.productPriceDetails?.productPrice_product
+                        ?.productName
+                    }
+                    offerPrice={item.productPriceDetails?.offerPrice}
+                    productQuantity={item.quantity}
+                    productImages={
+                      item.productPriceDetails?.productPrice_product
+                        ?.productImages
+                    }
+                    consumerDiscount={
+                      item.productPriceDetails?.consumerDiscount
+                    }
+                    onAdd={handleAddToCart}
+                    onRemove={handleRemoveItemFromCart}
+                    onWishlist={handleAddToWishlist}
+                    haveAccessToken={haveAccessToken}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
         )}
 
         <div className="product-view-s1-details-more-suggestion-sliders">

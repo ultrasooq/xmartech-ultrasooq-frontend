@@ -2,6 +2,13 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel,
+} from "react-accessible-accordion";
 
 type PaymentFormProps = {
   onCreateOrder: () => void;
@@ -14,7 +21,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 }) => {
   return (
     <div className="cart-page-left">
-      <Tabs className="flex w-full flex-wrap">
+      {/* <Tabs className="flex w-full flex-wrap">
         <TabsList className="flex h-auto w-[50%] flex-col gap-3">
           <TabsTrigger
             value="cash"
@@ -295,7 +302,346 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             </div>
           </TabsContent>
         </div>
-      </Tabs>
+      </Tabs> */}
+      <div className="order_accordion w-full">
+        <Accordion>
+          <AccordionItem>
+            <AccordionItemHeading>
+              <AccordionItemButton>Cash</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="w-full bg-white">
+                <div className="bodyPart">
+                  <div className="card-item card-payment-form px-5 pb-5 pt-3">
+                    <div className="flex flex-wrap">
+                      <div className="mb-4 w-full space-y-2">
+                        <p>
+                          Exercitation in fugiat est ut ad ea cupidatat ut in
+                          cupidatat occaecat ut occaecat
+                        </p>
+                      </div>
+                    </div>
+                    <div className="order-action-btn half_button">
+                      <Button
+                        onClick={onCreateOrder}
+                        disabled={isLoading}
+                        className="theme-primary-btn order-btn"
+                      >
+                        Confirm Order
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+
+          <AccordionItem>
+            <AccordionItemHeading>
+              <AccordionItemButton>diract payment</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="w-full bg-white">
+                <div className="bodyPart">
+                  <div className="card-item card-payment-form px-5 pb-5 pt-3">
+                    <div className="flex flex-wrap">
+                      <div className="mb-4 w-full space-y-2">
+                        <label
+                          className="text-sm font-medium 
+          leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Card Holder name
+                        </label>
+                        <div className="relative">
+                          <input
+                            className="theme-form-control-s1 flex h-9 w-full rounded-md border
+             border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors 
+             file:border-0 file:bg-transparent file:text-sm file:font-medium 
+             placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
+             disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="card holder name"
+                          />
+                        </div>
+                      </div>
+                      <div className="mb-4 w-full space-y-2">
+                        <label
+                          className="text-sm font-medium 
+          leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Card Number
+                        </label>
+                        <div className="relative">
+                          <input
+                            className="theme-form-control-s1 flex h-9
+             w-full rounded-md border border-input bg-transparent px-3
+              py-1 text-sm shadow-sm transition-colors file:border-0 
+              file:bg-transparent file:text-sm file:font-medium 
+              placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+              focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="card Number"
+                            id=":Rj2nnjkq:-form-item"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid w-full grid-cols-2 gap-4">
+                        <div className="mb-4 space-y-2 ">
+                          <label
+                            className="text-sm font-medium 
+          leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Valid through (MM/yY)
+                          </label>
+                          <div className="relative">
+                            <input
+                              className="theme-form-control-s1 flex h-9 w-full rounded-md 
+            border border-input bg-transparent px-3 py-1 text-sm
+             shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
+              file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
+              focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                              placeholder="Valid through (MM/YY)"
+                            />
+                          </div>
+                        </div>
+                        <div className="mb-4 space-y-2 ">
+                          <label
+                            className="text-sm font-medium 
+          leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            CVV
+                          </label>
+                          <div className="relative">
+                            <input
+                              className="theme-form-control-s1 flex h-9 w-full rounded-md 
+            border border-input bg-transparent px-3 py-1 text-sm
+             shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
+              file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
+              focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                              placeholder="CVV"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="order-action-btn">
+                      <Button
+                        onClick={onCreateOrder}
+                        disabled={isLoading}
+                        className="theme-primary-btn order-btn"
+                      >
+                        Payment
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+
+          <AccordionItem>
+            <AccordionItemHeading>
+              <AccordionItemButton>advance % payment</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="w-full bg-white">
+                <div className="bodyPart">
+                  <div className="card-item card-payment-form px-5 pb-5 pt-3">
+                    <div className="flex flex-wrap">
+                      <div className="mb-4 w-full space-y-2">
+                        <label
+                          className="text-sm font-medium 
+          leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Card Holder name
+                        </label>
+                        <div className="relative">
+                          <input
+                            className="theme-form-control-s1 flex h-9 w-full rounded-md border
+             border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors 
+             file:border-0 file:bg-transparent file:text-sm file:font-medium 
+             placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
+             disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="card holder name"
+                          />
+                        </div>
+                      </div>
+                      <div className="mb-4 w-full space-y-2">
+                        <label
+                          className="text-sm font-medium 
+          leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Card Number
+                        </label>
+                        <div className="relative">
+                          <input
+                            className="theme-form-control-s1 flex h-9
+             w-full rounded-md border border-input bg-transparent px-3
+              py-1 text-sm shadow-sm transition-colors file:border-0 
+              file:bg-transparent file:text-sm file:font-medium 
+              placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
+              focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="card Number"
+                            id=":Rj2nnjkq:-form-item"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid w-full grid-cols-2 gap-4">
+                        <div className="mb-4 space-y-2 ">
+                          <label
+                            className="text-sm font-medium 
+          leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Valid through (MM/yY)
+                          </label>
+                          <div className="relative">
+                            <input
+                              className="theme-form-control-s1 flex h-9 w-full rounded-md 
+            border border-input bg-transparent px-3 py-1 text-sm
+             shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
+              file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
+              focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                              placeholder="Valid through (MM/YY)"
+                            />
+                          </div>
+                        </div>
+                        <div className="mb-4 space-y-2 ">
+                          <label
+                            className="text-sm font-medium 
+          leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            CVV
+                          </label>
+                          <div className="relative">
+                            <input
+                              className="theme-form-control-s1 flex h-9 w-full rounded-md 
+            border border-input bg-transparent px-3 py-1 text-sm
+             shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
+              file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
+              focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                              placeholder="CVV"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="order-action-btn">
+                      <Button
+                        onClick={onCreateOrder}
+                        disabled={isLoading}
+                        className="theme-primary-btn order-btn"
+                      >
+                        Payment
+                      </Button>
+                    </div>
+                    <div className="w-full">
+                      <Button className="theme-primary-btn order-btn mt-2 h-14 w-full p-4">
+                        attached transaction receipt
+                      </Button>
+                      <div className="mt-3 flex w-auto flex-wrap rounded-sm bg-[#B3B3B3] px-10 py-7">
+                        <div className="relative mb-3 w-[80%]">
+                          <label className="mb-2 text-lg font-semibold text-black">
+                            Payment Amount:
+                          </label>
+                          <input
+                            type="text"
+                            className="h-12 w-full rounded-[5px] bg-white px-4 py-3 text-lg text-black focus:shadow-none focus:outline-none"
+                          />
+                        </div>
+                        <div className="relative mb-3 flex w-[20%] items-end justify-center text-center">
+                          <input
+                            type="file"
+                            className="absolute left-0 top-0 h-full w-full opacity-0"
+                          />
+                          <img
+                            src="/images/attach.png"
+                            alt=""
+                            className="h-auto w-[38px]"
+                          />
+                        </div>
+                        <div className="mt-2 flex h-auto w-full items-center justify-center gap-5">
+                          <button
+                            type="button"
+                            className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black"
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+
+          <AccordionItem>
+            <AccordionItemHeading>
+              <AccordionItemButton>pay it for me</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="w-full bg-white">
+                <div className="bodyPart">
+                  <div className="card-item card-payment-form px-5 pb-5 pt-3">
+                    <div className="flex flex-wrap">
+                      <div className="mb-4 w-full space-y-2">
+                        <p>
+                          Exercitation in fugiat est ut ad ea cupidatat ut in
+                          cupidatat occaecat ut occaecat
+                        </p>
+                      </div>
+                    </div>
+                    <div className="order-action-btn half_button">
+                      <Button
+                        onClick={onCreateOrder}
+                        disabled={isLoading}
+                        className="theme-primary-btn order-btn"
+                      >
+                        Confirm Order
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+
+          <AccordionItem>
+            <AccordionItemHeading>
+              <AccordionItemButton>Installments</AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel>
+              <div className="w-full bg-white">
+                <div className="bodyPart">
+                  <div className="card-item card-payment-form px-5 pb-5 pt-3">
+                    <div className="flex flex-wrap">
+                      <div className="mb-4 w-full space-y-2">
+                        <p>
+                          Exercitation in fugiat est ut ad ea cupidatat ut in
+                          cupidatat occaecat ut occaecat
+                        </p>
+                      </div>
+                    </div>
+                    <div className="order-action-btn half_button">
+                      <Button
+                        onClick={onCreateOrder}
+                        disabled={isLoading}
+                        className="theme-primary-btn order-btn"
+                      >
+                        Confirm Order
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AccordionItemPanel>
+          </AccordionItem>
+        </Accordion>
+      </div>
     </div>
   );
 };

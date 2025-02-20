@@ -272,14 +272,14 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-y-3 py-2">
-            <div className="order-1 !flex w-4/12 !items-center !py-4 md:!w-2/12 md:flex-1 lg:!w-1/6">
+          <div className="flex flex-wrap items-center">
+            <div className="!order-1 !flex !w-5/12 flex-1 !items-center !py-4 md:!w-2/12 lg:!w-1/6">
               <Link href="/home">
                 <Image src={LogoIcon} alt="logo" />
               </Link>
             </div>
-            <div className="w-12/12 order-3 flex items-center sm:py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
-              <div className="h-11 w-3/12 md:w-24 lg:w-auto">
+            <div className="!order-3 flex w-10/12 items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
+              <div className="h-11 w-24 md:w-24 lg:w-auto">
                 <select className="h-full w-full focus:outline-none">
                   <option>All</option>
                   <option>Apps & Games</option>
@@ -291,14 +291,14 @@ const Header = () => {
                   <option>Movies & TV Shows</option>
                 </select>
               </div>
-              <div className="w-6/6 h-11 border-l border-solid border-indigo-200">
+              <div className="h-11 w-4/6 border-l border-solid border-indigo-200">
                 <input
                   type="search"
                   className="form-control h-full w-full p-2.5 text-black focus:outline-none"
                   placeholder="I’m shopping for..."
                 />
               </div>
-              <div className="h-11 w-3/12">
+              <div className="h-11 w-1/6">
                 <button
                   type="button"
                   className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
@@ -307,7 +307,7 @@ const Header = () => {
                 </button>
               </div>
             </div>
-            <div className="order-2 flex w-8/12 justify-end sm:order-2 sm:w-7/12 sm:py-4 md:order-3 md:w-3/12 lg:w-1/6">
+            <div className="order-2 flex w-7/12 justify-end py-4 sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 lg:w-1/6">
               <ul className="flex items-center justify-end gap-x-4">
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
                   <Link
@@ -495,8 +495,8 @@ const Header = () => {
 
       <div className="w-full border-b border-solid border-gray-300 bg-white">
         <div className="container m-auto px-3">
-          <div className="relative flex flex-row flex-wrap">
-            <div className="flex flex-1 gap-x-2 md:gap-x-5">
+          <div className="relative flex flex-row">
+            <div className="flex flex-1 gap-x-5">
               <div className="dropdown">
                 <button className="dropbtn flex items-center">
                   <div>
@@ -684,7 +684,7 @@ const Header = () => {
                 ) : null}
               </div>
 
-              <div className="flex items-center gap-x-2 md:gap-x-5">
+              <div className="flex items-center gap-x-5">
                 {memoizedCategory.map((item: any) => (
                   <Button
                     type="button"
@@ -700,7 +700,7 @@ const Header = () => {
                     }}
                     variant="link"
                     className={cn(
-                      "p-1 text-sm font-semibold capitalize text-color-dark sm:text-base md:py-3",
+                      "py-3 text-sm font-semibold capitalize text-color-dark sm:text-base",
                       item?.id === assignedToId ? "underline" : "no-underline",
                     )}
                   >
@@ -711,7 +711,7 @@ const Header = () => {
             </div>
 
             <div className="flex items-center justify-end">
-              <ul className="flex items-center justify-end gap-x-2 md:gap-x-4">
+              <ul className="flex items-center justify-end gap-x-4">
                 <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
                   <a href="#" className="text-light-gray">
                     Buyer Central
