@@ -438,52 +438,55 @@ const Header = () => {
             <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-start">
               {memoizedMenu.map((item: any) => (
                 <>
-                <ButtonLink
-                  key={item.id}
-                  onClick={() => {
-                    setMenuId(item.id);
-                    if (item.name.toLowerCase().includes("home")) {
-                      router.push("/home");
-                    }
+                  <ButtonLink
+                    key={item.id}
+                    onClick={() => {
+                      setMenuId(item.id);
+                      if (item.name.toLowerCase().includes("home")) {
+                        router.push("/home");
+                      }
 
-                    if (item.name.toLowerCase().includes("store")) {
-                      router.push("/trending");
-                    }
+                      if (item.name.toLowerCase().includes("store")) {
+                        router.push("/trending");
+                      }
 
-                    if(item.name.toLowerCase().includes("buy group")){
+                      if (item.name.toLowerCase().includes("buy group")) {
                         router.push("/buygroup");
-                    }
+                      }
 
-                    if (item.name.toLowerCase().includes("rfq")) {
-                      router.push("/rfq");
+                      if (item.name.toLowerCase().includes("rfq")) {
+                        router.push("/rfq");
+                      }
+                      if (item.name.toLowerCase().includes("factories")) {
+                        router.push("/factories");
+                      }
+                    }}
+                    href={
+                      item.name.toLowerCase().includes("home")
+                        ? "/home"
+                        : item.name.toLowerCase().includes("store")
+                          ? "/trending"
+                          : item.name.toLowerCase().includes("rfq")
+                            ? "/rfq"
+                            : item.name.toLowerCase().includes("factories")
+                              ? "/factories"
+                              : item.name.toLowerCase().includes("buy group")
+                                ? "/buygroup"
+                                : "/trending"
                     }
-                    if (item.name.toLowerCase().includes("factories")) {
-                      router.push("/factories");
-                    }
-                  } }
-                  href={item.name.toLowerCase().includes("home")
-                    ? "/home"
-                    : item.name.toLowerCase().includes("store")
-                      ? "/trending"
-                      : item.name.toLowerCase().includes("rfq")
-                        ? "/rfq"
-                        : item.name.toLowerCase().includes("factories")
-                        ? "/factories"
-                         : item.name.toLowerCase().includes("buy group")
-                         ? "/buygroup"
-                        : "/trending"
-                        }
-                >
-                  <div className="flex gap-x-3">
-                    <Image
-                      src={item.icon}
-                      alt={item?.name}
-                      height={0}
-                      width={0}
-                      className="h-7 w-7" />{" "}
-                    <p>{item?.name}</p>
-                  </div>
-                </ButtonLink></>
+                  >
+                    <div className="flex gap-x-3">
+                      <Image
+                        src={item.icon}
+                        alt={item?.name}
+                        height={0}
+                        width={0}
+                        className="h-7 w-7"
+                      />{" "}
+                      <p>{item?.name}</p>
+                    </div>
+                  </ButtonLink>
+                </>
               ))}
             </div>
           </div>
