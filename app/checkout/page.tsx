@@ -298,20 +298,23 @@ const CheckoutPage = () => {
     }
   };
 
-  const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(
-    memoziedAddressList?.length > 0 ? String(memoziedAddressList[0].id) : null
-  );
-  
-  const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(
-    memoziedAddressList?.length > 0 ? String(memoziedAddressList[0].id) : null
-  );
+  // State for selected addresses
+const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(null);
+const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (memoziedAddressList?.length > 0) {
-      handleOrderDetails(memoziedAddressList[0], "shipping");
-      handleOrderDetails(memoziedAddressList[0], "billing");
-    }
-  }, [memoziedAddressList]);
+//  Set default selected address when addresses are loaded
+useEffect(() => {
+  if (memoziedAddressList.length > 0) {
+    setSelectedShippingAddressId(memoziedAddressList[0].id.toString());
+    setSelectedBillingAddressId(memoziedAddressList[0].id.toString());
+
+    // Call handleOrderDetails for both shipping and billing
+    handleOrderDetails(memoziedAddressList[0], "shipping");
+    handleOrderDetails(memoziedAddressList[0], "billing");
+
+  }
+}, [memoziedAddressList]);
+
 
   const onSaveOrder = () => {
     if (haveAccessToken) {

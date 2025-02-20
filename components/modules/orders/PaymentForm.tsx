@@ -51,6 +51,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           <TabsContent value="cash" className="mt-0">
             <div className="w-full bg-white">
               <h2>cash</h2>
+              <div className="order-action-btn">
+                <Button
+                  onClick={onCreateOrder}
+                  disabled={isLoading}
+                  className="theme-primary-btn order-btn"
+                >
+                  Payment
+                </Button>
+                  </div>
             </div>
           </TabsContent>
           <TabsContent value="diract-payment" className="mt-0">
