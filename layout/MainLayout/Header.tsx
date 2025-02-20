@@ -373,6 +373,9 @@ const Header = () => {
                         <DropdownMenuSeparator />
                         {me?.data?.data?.tradeRole !== "BUYER" ? (
                           <>
+                          <Link href="/team-members">
+                              <DropdownMenuItem>Team Members</DropdownMenuItem>
+                            </Link>
                             <Link href="/manage-products">
                               <DropdownMenuItem>Products</DropdownMenuItem>
                             </Link>

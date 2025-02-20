@@ -332,7 +332,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                     </div>
                     <div className="order-action-btn half_button">
                       <Button
-                        onClick={onCreateOrder}
+                       onClick={() => onCreateOrder('cash')}
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                       >
@@ -433,7 +433,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                     </div>
                     <div className="order-action-btn">
                       <Button
-                        onClick={onCreateOrder}
+                        onClick={() => onCreateOrder('directPayment')}
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                       >
@@ -534,7 +534,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                     </div>
                     <div className="order-action-btn">
                       <Button
-                        onClick={onCreateOrder}
+                       onClick={() => onCreateOrder('advancetPayment')}
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                       >
@@ -606,7 +606,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                     </div>
                     <div className="order-action-btn half_button">
                       <Button
-                        onClick={onCreateOrder}
+                        onClick={() => onCreateOrder('payItForMe')}
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                       >
@@ -637,7 +637,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                     </div>
                     <div className="order-action-btn half_button">
                       <Button
-                        onClick={onCreateOrder}
+                        onClick={() => onCreateOrder('installment')}
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                       >
