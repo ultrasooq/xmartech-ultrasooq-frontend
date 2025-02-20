@@ -198,10 +198,12 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               <Button
                 type="button"
                 // onClick={hasItem ? onToCart : onAdd}
-                onClick={hasItem ? openCartCard : onAdd}
+                // onClick={hasItem ? openCartCard : onAdd}
+                onClick={onAdd}
                 className="h-14 flex-1 rounded-none bg-color-yellow text-base"
               >
-                {hasItem ? "Send To Cart" : "Add To Cart"}
+                {/* {hasItem ? "Send To Cart" : "Add To Cart"} */}
+                {"Add To Cart"}
               </Button>
               <Button
                 type="button"

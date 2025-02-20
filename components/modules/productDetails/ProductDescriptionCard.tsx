@@ -258,7 +258,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             </h3>
           ) : (
             <h3>
-              ${calculateDiscountedPrice() * quantity} <span>${Number(productProductPrice) * quantity}</span>
+              ${calculateDiscountedPrice()} <span>${Number(productProductPrice)}</span>
             </h3>
           )}
         </div>

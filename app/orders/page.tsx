@@ -81,7 +81,8 @@ const OrdersPage = () => {
     }
   };
 
-  const handleCreateOrder = async () => {
+  const handleCreateOrder = async (paymentType: string) => {
+    alert (paymentType); return
     if (hasAccessToken) {
       let data = {};
       if (orders.orders) {

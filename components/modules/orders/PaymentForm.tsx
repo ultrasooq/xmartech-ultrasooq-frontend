@@ -4,7 +4,7 @@ import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type PaymentFormProps = {
-  onCreateOrder: () => void;
+  onCreateOrder: (paymentType: string) => void;
   isLoading: boolean;
 };
 
@@ -53,7 +53,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               <h2>cash</h2>
               <div className="order-action-btn">
                 <Button
-                  onClick={onCreateOrder}
+                  onClick={() => onCreateOrder('cash')}
                   disabled={isLoading}
                   className="theme-primary-btn order-btn"
                 >
@@ -146,7 +146,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                   </div>
                   <div className="order-action-btn">
                     <Button
-                      onClick={onCreateOrder}
+                      onClick={() => onCreateOrder('directPayment')}
                       disabled={isLoading}
                       className="theme-primary-btn order-btn"
                     >
@@ -241,7 +241,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                   </div>
                   <div className="order-action-btn">
                     <Button
-                      onClick={onCreateOrder}
+                      onClick={() => onCreateOrder('advancePayment')}
                       disabled={isLoading}
                       className="theme-primary-btn order-btn"
                     >

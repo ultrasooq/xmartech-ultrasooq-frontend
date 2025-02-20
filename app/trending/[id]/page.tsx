@@ -96,9 +96,12 @@ const ProductDetailsPage = () => {
     !!otherProductId && !!otherSellerId,
   );
   const deleteCartItem = useDeleteCartItem();
+  const [isVisible, setIsVisible] = useState(false); // Initially hidden
 
   const memoizedCartList = useMemo(() => {
+    console.log(cartListByUser.data?.data);
     if (cartListByUser.data?.data) {
+      setIsVisible(true); 
       return cartListByUser.data?.data || [];
     } else if (cartListByDeviceQuery.data?.data) {
       return cartListByDeviceQuery.data?.data || [];
@@ -170,7 +173,7 @@ const ProductDetailsPage = () => {
           description: "Check your cart for more details",
           variant: "success",
         });
-
+        setIsVisible(true); // Show the div when the button is clicked
         return response.status;
       }
     } else {
@@ -193,6 +196,7 @@ const ProductDetailsPage = () => {
           description: "Check your cart for more details",
           variant: "success",
         });
+        setIsVisible(true); // Show the div when the button is clicked
         return response.status;
       }
     }
@@ -229,7 +233,7 @@ const ProductDetailsPage = () => {
     }
   };
 
-  const [isVisible, setIsVisible] = useState(false); // Initially hidden
+ 
 
   const handelOpenCartLayout =  () => {
     setIsVisible(true); // Show the div when the button is clicked
