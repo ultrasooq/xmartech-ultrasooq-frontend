@@ -4806,3 +4806,14 @@ input::-ms-clear {
 .ql-container {
   height: 200px !important;
 }
+
+
+
+
+@media only screen and (min-width: 240px) and (max-width: 767px) {
+  
+  .dropbtn {
+    padding: 10px 5px;
+  }
+
+}
