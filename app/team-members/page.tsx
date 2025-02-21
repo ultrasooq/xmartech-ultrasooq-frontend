@@ -7,24 +7,23 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AddToMemberForm from "@/components/modules/teamMembers/AddToMemberForm";
 
 const TeamMembersPage = () => {
-
-   const [isAddToMemberModalOpen, setIsAddToMemberModalOpen] = useState(false);
-   const wrapperRef = useRef(null);
+  const [isAddToMemberModalOpen, setIsAddToMemberModalOpen] = useState(false);
+  const wrapperRef = useRef(null);
 
   const handleToggleAddModal = () =>
     setIsAddToMemberModalOpen(!isAddToMemberModalOpen);
 
   return (
     <section className="team_members_section">
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-12 team_members_heading">
+      <div className="container relative z-10 m-auto px-3">
+        <div className="flex w-full flex-wrap">
+          <div className="team_members_heading w-full">
             <h1>Team Members</h1>
             <button type="button" onClick={handleToggleAddModal}>
               <IoMdAdd /> Add New Member
             </button>
           </div>
-          <div className="col-lg-12 team_members_box">
+          <div className="team_members_table w-full">
             <table cellPadding={0} cellSpacing={0} border={0}>
               <thead>
                 <tr>
@@ -61,7 +60,7 @@ const TeamMembersPage = () => {
                   <td>Active</td>
                   <td>Action</td>
                 </tr>
-                
+
                 {/* {[...Array(10)].map((_, i) => (
                   <MemberCard key={i} />
                 ))} */}
@@ -77,17 +76,17 @@ const TeamMembersPage = () => {
         </div>
       </div>
       <Dialog open={isAddToMemberModalOpen} onOpenChange={handleToggleAddModal}>
-          <DialogContent
-            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
-            ref={wrapperRef}
-          >
-            <AddToMemberForm
-              onClose={() => {
-                setIsAddToMemberModalOpen(false);
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+        <DialogContent
+          className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+          ref={wrapperRef}
+        >
+          <AddToMemberForm
+            onClose={() => {
+              setIsAddToMemberModalOpen(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

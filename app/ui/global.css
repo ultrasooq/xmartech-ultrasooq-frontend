@@ -4837,6 +4837,47 @@ input::-ms-clear {
   @apply w-auto !important;
 }
 
+.team_members_section {
+  @apply w-full py-7;
+}
+
+.team_members_heading {
+  @apply w-full flex items-center justify-between mb-4;
+}
+
+.team_members_heading h1 {
+  @apply text-4xl font-semibold leading-10 text-color-dark;
+}
+
+.team_members_heading button {
+  @apply w-auto bg-[#db2302] rounded-sm p-3 text-center text-white capitalize font-semibold flex items-center justify-center;
+}
+
+.team_members_table {
+  @apply w-full rounded-lg border border-solid border-[#E4E3E3] bg-white py-5 px-4;
+}
+
+.team_members_table table {
+  @apply w-full border-none;
+  box-shadow: 0px 12px 40px 0px rgba(255, 69, 35, 0.07);
+}
+
+.team_members_table table thead {
+  @apply w-full bg-[#F3F3F3] border border-solid border-[#E8E8E8] rounded-sm;
+}
+
+.team_members_table table thead tr th {
+  @apply p-[20px] text-sm font-medium text-[#333] text-left;
+}
+
+.team_members_table table tbody tr td {
+  @apply p-[20px] border-b border-solid border-[#E8E8E8] text-sm font-normal text-[#7F818D]
+}
+
+.team_members_table table thead tr th:nth-child(5),
+.team_members_table table tbody tr td:nth-child(5) {
+  @apply text-center;
+}
 
 
 
