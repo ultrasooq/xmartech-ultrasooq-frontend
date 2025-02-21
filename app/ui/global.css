@@ -1690,6 +1690,10 @@
     overflow-y: auto;
   }
 
+  .add_member_modal .card-payment-form {
+    overflow: visible;
+  }
+
   .add-new-address-modal .order-action-btn {
     @apply flex justify-center pt-2;
   }
