@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY, menuBarIconList } from "@/utils/constants";
 import {
@@ -22,7 +22,7 @@ import {
   useCartCountWithLogin,
   useCartCountWithoutLogin,
 } from "@/apis/queries/cart.queries";
-import { isArray } from "lodash";
+import { debounce, isArray } from "lodash";
 import UnAuthUserIcon from "@/public/images/login.svg";
 import WishlistIcon from "@/public/images/wishlist.svg";
 import CartIcon from "@/public/images/cart.svg";
@@ -105,6 +105,38 @@ const Header = () => {
     categoryId ? categoryId : "",
     !!categoryId,
   );
+
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Sync initial state with URL parameter (with safe fallback)
+  useEffect(() => {
+    const term = searchParams?.get("term") || ""; // Optional chaining to prevent null error
+    setSearchTerm(term);
+  }, [searchParams]);
+  
+  // Debounced function to update URL
+  const updateURL = debounce((newTerm) => {
+    const params = new URLSearchParams(window.location.search);
+    if (newTerm) {
+      params.set("term", newTerm);
+    } else {
+      params.delete("term");
+    }
+    router.replace(`/trending?${params.toString()}`); // Update URL without full reload
+  }, 500);
+
+  const handleSearch = (event:any) => {
+    const newTerm = event.target.value;
+    setSearchTerm(newTerm);
+    updateURL(newTerm);
+  };
+
+  const handleKeyDown = (event:any) => {
+    if (event.key === "Enter") {
+      handleSearch(event);
+    }
+  };
 
   const memoizedInitials = useMemo(
     () => getInitials(me.data?.data?.firstName, me.data?.data?.lastName),
@@ -279,7 +311,7 @@ const Header = () => {
               </Link>
             </div>
             <div className="!order-3 flex w-10/12 items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
-              <div className="h-11 w-24 md:w-24 lg:w-auto">
+              {/* <div className="h-11 w-24 md:w-24 lg:w-auto">
                 <select className="h-full w-full focus:outline-none">
                   <option>All</option>
                   <option>Apps & Games</option>
@@ -290,18 +322,22 @@ const Header = () => {
                   <option>Electronics</option>
                   <option>Movies & TV Shows</option>
                 </select>
-              </div>
+              </div> */}
               <div className="h-11 w-4/6 border-l border-solid border-indigo-200">
                 <input
                   type="search"
                   className="form-control h-full w-full p-2.5 text-black focus:outline-none"
                   placeholder="I’m shopping for..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={handleKeyDown} // Calls search when Enter is pressed 
                 />
               </div>
               <div className="h-11 w-1/6">
                 <button
                   type="button"
                   className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
+                  onClick={() => updateURL(searchTerm)} // Update URL when clicking search
                 >
                   Search
                 </button>

@@ -56,6 +56,7 @@ import BannerSection from "@/components/modules/trending/BannerSection";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { useCategoryStore } from "@/lib/categoryStore";
 import TrendingCategories from "@/components/modules/trending/TrendingCategories";
+import { useSearchParams } from "next/navigation";
 
 const TrendingPage = () => {
   const queryClient = useQueryClient();
@@ -74,7 +75,18 @@ const TrendingPage = () => {
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
+  
+  const searchParams = useSearchParams();
+  const [searchUrlTerm, setSearchUrlTerm] = useState("");
 
+    // Ensure URL term is set before fetching data
+  useEffect(() => {
+    const term = searchParams?.get("term") || "";
+    if (term !== searchUrlTerm) {
+      setSearchUrlTerm(term);
+    }
+  }, [searchParams, searchUrlTerm]);
+  
   const me = useMe();
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
@@ -84,6 +96,7 @@ const TrendingPage = () => {
     page,
     limit,
     sort: sortBy,
+    term: searchUrlTerm,
     priceMin:
       priceRange[0] === 0
         ? 0
@@ -174,6 +187,7 @@ const TrendingPage = () => {
     allProductsQuery?.data?.data,
     allProductsQuery?.data?.data?.length,
     sortBy,
+    searchUrlTerm,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     priceRange[0],
     // eslint-disable-next-line react-hooks/exhaustive-deps
