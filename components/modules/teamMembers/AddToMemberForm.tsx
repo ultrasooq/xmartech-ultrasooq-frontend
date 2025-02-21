@@ -12,6 +12,14 @@ import { IOption, IUserRoles } from "@/utils/types/common.types";
 import { useToast } from "@/components/ui/use-toast";
 import { useUserRoles, useCreateUserRole } from "@/apis/queries/masters.queries";
 import { useCreateMember } from "@/apis/queries/member.queries";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { Info } from "lucide-react";
 
 const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
@@ -23,13 +31,15 @@ type AddToMemberFormProps = {
 
   const addFormSchema = z.object({
     email: z.string().trim().min(2, { message: "Email is required" }),
-    userRoleId: z.coerce.number().optional(),
+    userRoleId: z.coerce
+    .number()
+    .min(1, { message: "User Role is required" }), // Ensure it's a valid number (ID)
     tradeRole: z.coerce.string().optional(),
   });
 
   const addDefaultValues = {
     email: "",
-    userRoleId: 0,
+    userRoleId: null,
     tradeRole: "MEMBER"
   };
   
@@ -83,6 +93,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
       console.log(updatedFormData);
       const response = await createMember.mutateAsync(formData);
       if (response.status) {
+        onClose();
         toast({
           title: "Membert Add Successful",
           description: response.message,
@@ -90,7 +101,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
         });
        }  else {
         toast({
-          title: "RFQ Product Add Failed",
+          title: "Membert Add Failed",
           description: response.message,
           variant: "danger",
         });
@@ -123,6 +134,21 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
               type="text"
             />
 
+         <div className="flex w-full items-center gap-1.5">
+            <Label>User Role</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 cursor-pointer text-gray-500" />
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  Type a role in the select box and press{" "}
+                  <strong>Enter</strong> to create a new User Role.
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
             <Controller
               name="userRoleId"
               control={form.control}  // ✅ Use form.control instead
@@ -146,7 +172,6 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             />
        
           <Button
-           
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >

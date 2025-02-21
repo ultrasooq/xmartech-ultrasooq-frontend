@@ -1,17 +1,36 @@
 "use client"; // Add this at the top
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import MemberCard from "@/components/modules/teamMembers/MemberCard";
 // import Pagination from "@/components/shared/Pagination";
 import { IoMdAdd } from "react-icons/io";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AddToMemberForm from "@/components/modules/teamMembers/AddToMemberForm";
+import Pagination from "@/components/shared/Pagination";
+import { useAllMembers } from "@/apis/queries/member.queries";
 
 const TeamMembersPage = () => {
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+
   const [isAddToMemberModalOpen, setIsAddToMemberModalOpen] = useState(false);
   const wrapperRef = useRef(null);
 
   const handleToggleAddModal = () =>
     setIsAddToMemberModalOpen(!isAddToMemberModalOpen);
+
+   const membersQuery = useAllMembers({  
+       page,
+       limit,
+     });
+
+  const memoizedMember = useMemo(() => {
+        return membersQuery?.data?.data
+          ? membersQuery.data.data.map((item: any) => ({
+              label: item.userRoleName,
+              value: item.id,
+            }))
+          : [];
+      }, [membersQuery?.data?.data]);
 
   return (
     <section className="team_members_section">
@@ -24,7 +43,8 @@ const TeamMembersPage = () => {
             </button>
           </div>
           <div className="team_members_table w-full">
-            <table cellPadding={0} cellSpacing={0} border={0}>
+            {memoizedMember.length ? <>
+              <table cellPadding={0} cellSpacing={0} border={0}>
               <thead>
                 <tr>
                   <th>name</th>
@@ -35,43 +55,37 @@ const TeamMembersPage = () => {
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>Mrinmoyee</td>
-                  <td>mrin@yopmail.com</td>
-                  <td>User Role</td>
-                  <td>145256</td>
-                  <td>Active</td>
-                  <td>Action</td>
-                </tr>
-                <tr>
-                  <td>Mrinmoyee</td>
-                  <td>mrin@yopmail.com</td>
-                  <td>User Role</td>
-                  <td>145256</td>
-                  <td>Active</td>
-                  <td>Action</td>
-                </tr>
-                <tr>
-                  <td>Mrinmoyee</td>
-                  <td>mrin@yopmail.com</td>
-                  <td>User Role</td>
-                  <td>145256</td>
-                  <td>Active</td>
-                  <td>Action</td>
-                </tr>
 
-                {/* {[...Array(10)].map((_, i) => (
-                  <MemberCard key={i} />
-                ))} */}
+              <tbody>
+              {memoizedMember?.map((item: any) => (
+                <>
+                <tr>
+                  <td>Mrinmoyee</td>
+                  <td>mrin@yopmail.com</td>
+                  <td>User Role</td>
+                  <td>145256</td>
+                  <td>Active</td>
+                  <td>Action</td>
+                </tr>
+                </>
+                
+                 ))}
               </tbody>
             </table>
-            {/* <Pagination
+            </> : null}
+            
+            {!memoizedMember.length ? (
+                <p className="py-10 text-center text-sm font-medium">
+                  No Members Found
+                </p>
+              ) : null}
+
+            <Pagination
               page={page}
               setPage={setPage}
-              totalCount={productsQuery.data?.totalCount}
+              totalCount={membersQuery.data?.totalCount}
               limit={limit}
-            /> */}
+            />
           </div>
         </div>
       </div>

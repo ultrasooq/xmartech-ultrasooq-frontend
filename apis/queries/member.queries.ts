@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 import { APIResponseError } from "@/utils/types/common.types";
-import { createMember } from "../requests/member.requests";
+import { createMember, fetchAllMembers } from "../requests/member.requests";
 
 export const useCreateMember = () => {
   const queryClient = useQueryClient();
@@ -23,3 +23,16 @@ export const useCreateMember = () => {
       },
     });
   };
+
+  export const useAllMembers  = (payload: { page: number; limit: number;},enabled = true) =>
+      useQuery({
+        queryKey: ["members", payload],
+        queryFn: async () => {
+          const res = await fetchAllMembers(payload);
+          return res.data;
+        },
+        // onError: (err: APIResponseError) => {
+        //   console.log(err);
+        // },
+        enabled,
+  });
