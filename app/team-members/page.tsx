@@ -18,19 +18,19 @@ const TeamMembersPage = () => {
   const handleToggleAddModal = () =>
     setIsAddToMemberModalOpen(!isAddToMemberModalOpen);
 
-   const membersQuery = useAllMembers({  
-       page,
-       limit,
-     });
+  const membersQuery = useAllMembers({
+    page,
+    limit,
+  });
 
   const memoizedMember = useMemo(() => {
-        return membersQuery?.data?.data
-          ? membersQuery.data.data.map((item: any) => ({
-              label: item.userRoleName,
-              value: item.id,
-            }))
-          : [];
-      }, [membersQuery?.data?.data]);
+    return membersQuery?.data?.data
+      ? membersQuery.data.data.map((item: any) => ({
+          label: item.userRoleName,
+          value: item.id,
+        }))
+      : [];
+  }, [membersQuery?.data?.data]);
 
   return (
     <section className="team_members_section">
@@ -43,42 +43,43 @@ const TeamMembersPage = () => {
             </button>
           </div>
           <div className="team_members_table w-full">
-            {memoizedMember.length ? <>
-              <table cellPadding={0} cellSpacing={0} border={0}>
-              <thead>
-                <tr>
-                  <th>name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Employee ID</th>
-                  <th>Account Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
+            {memoizedMember.length ? (
+              <>
+                <table cellPadding={0} cellSpacing={0} border={0}>
+                  <thead>
+                    <tr>
+                      <th>name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Employee ID</th>
+                      <th>Account Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
 
-              <tbody>
-              {memoizedMember?.map((item: any) => (
-                <>
-                <tr>
-                  <td>Mrinmoyee</td>
-                  <td>mrin@yopmail.com</td>
-                  <td>User Role</td>
-                  <td>145256</td>
-                  <td>Active</td>
-                  <td>Action</td>
-                </tr>
-                </>
-                
-                 ))}
-              </tbody>
-            </table>
-            </> : null}
-            
+                  <tbody>
+                    {memoizedMember?.map((item: any) => (
+                      <>
+                        <tr>
+                          <td>Mrinmoyee</td>
+                          <td>mrin@yopmail.com</td>
+                          <td>User Role</td>
+                          <td>145256</td>
+                          <td>Active</td>
+                          <td>Action</td>
+                        </tr>
+                      </>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            ) : null}
+
             {!memoizedMember.length ? (
-                <p className="py-10 text-center text-sm font-medium">
-                  No Members Found
-                </p>
-              ) : null}
+              <p className="py-10 text-center text-sm font-medium">
+                No Members Found
+              </p>
+            ) : null}
 
             <Pagination
               page={page}
@@ -91,7 +92,7 @@ const TeamMembersPage = () => {
       </div>
       <Dialog open={isAddToMemberModalOpen} onOpenChange={handleToggleAddModal}>
         <DialogContent
-          className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
           ref={wrapperRef}
         >
           <AddToMemberForm
