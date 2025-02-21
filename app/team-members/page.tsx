@@ -7,6 +7,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AddToMemberForm from "@/components/modules/teamMembers/AddToMemberForm";
 import Pagination from "@/components/shared/Pagination";
 import { useAllMembers } from "@/apis/queries/member.queries";
+import { Info } from "lucide-react";
 
 const TeamMembersPage = () => {
   const [page, setPage] = useState(1);
@@ -26,8 +27,13 @@ const TeamMembersPage = () => {
   const memoizedMember = useMemo(() => {
         return membersQuery?.data?.data
           ? membersQuery.data.data.map((item: any) => ({
-              label: item.userRoleName,
-              value: item.id,
+              id: item?.id,
+              userDetailId: item?.userId,
+              fullName: `${item?.userDetail?.firstName} ${item?.userDetail?.lastName}`,
+              email: item?.userDetail?.email,
+              userRoleName: item?.userDetail?.userRoleName,
+              employeeId: item?.userDetail?.employeeId,
+              status: item?.userDetail?.status,
             }))
           : [];
       }, [membersQuery?.data?.data]);
@@ -47,7 +53,7 @@ const TeamMembersPage = () => {
               <table cellPadding={0} cellSpacing={0} border={0}>
               <thead>
                 <tr>
-                  <th>name</th>
+                  <th>Name</th>
                   <th>Email</th>
                   <th>Role</th>
                   <th>Employee ID</th>
@@ -60,12 +66,12 @@ const TeamMembersPage = () => {
               {memoizedMember?.map((item: any) => (
                 <>
                 <tr>
-                  <td>Mrinmoyee</td>
-                  <td>mrin@yopmail.com</td>
-                  <td>User Role</td>
-                  <td>145256</td>
-                  <td>Active</td>
-                  <td>Action</td>
+                  <td>{item?.fullName || '--'}</td>
+                  <td>{item.email || '--'}</td>
+                  <td>{item.userRoleName || '--'}</td>
+                  <td>{item.employeeId || '--'}</td>
+                  <td>{item.status || '--'}</td>
+                  <td> <Info className="h-4 w-4 cursor-pointer text-gray-500" /></td>
                 </tr>
                 </>
                 
