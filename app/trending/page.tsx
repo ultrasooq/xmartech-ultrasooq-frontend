@@ -60,6 +60,7 @@ import { useSearchParams } from "next/navigation";
 
 const TrendingPage = () => {
   const queryClient = useQueryClient();
+  // const searchParams = useSearchParams();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
@@ -76,16 +77,15 @@ const TrendingPage = () => {
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
   
-  const searchParams = useSearchParams();
   const [searchUrlTerm, setSearchUrlTerm] = useState("");
 
     // Ensure URL term is set before fetching data
-  useEffect(() => {
-    const term = searchParams?.get("term") || "";
-    if (term !== searchUrlTerm) {
-      setSearchUrlTerm(term);
-    }
-  }, [searchParams, searchUrlTerm]);
+  // useEffect(() => {
+  //   const term = searchParams?.get("term") || "";
+  //   if (term !== searchUrlTerm) {
+  //     setSearchUrlTerm(term);
+  //   }
+  // }, [searchParams, searchUrlTerm]);
   
   const me = useMe();
   const updateCartWithLogin = useUpdateCartWithLogin();

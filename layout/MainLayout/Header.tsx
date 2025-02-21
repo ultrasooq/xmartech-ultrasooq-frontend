@@ -76,6 +76,7 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
 };
 
 const Header = () => {
+  // const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -106,14 +107,13 @@ const Header = () => {
     !!categoryId,
   );
 
-  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
 
   // Sync initial state with URL parameter (with safe fallback)
-  useEffect(() => {
-    const term = searchParams?.get("term") || ""; // Optional chaining to prevent null error
-    setSearchTerm(term);
-  }, [searchParams]);
+  // useEffect(() => {
+  //   const term = searchParams?.get("term") || ""; // Optional chaining to prevent null error
+  //   setSearchTerm(term);
+  // }, [searchParams]);
   
   // Debounced function to update URL
   const updateURL = debounce((newTerm) => {
