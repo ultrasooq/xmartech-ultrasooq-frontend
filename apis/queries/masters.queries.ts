@@ -6,7 +6,9 @@ import {
   fetchLocation,
   fetchAllCountry,
   fetchStatesByCountry,
-  fetchCitiesByState
+  fetchCitiesByState,
+  createUserRole,
+  fetchuserRoles
 } from "../requests/masters.requests";
 import { APIResponseError } from "@/utils/types/common.types";
 
@@ -36,6 +38,20 @@ export const useBrands = (payload: { term?: string, addedBy?: number, type?: str
     enabled,
   });
 
+  export const useUserRoles = (enabled = true) =>
+    useQuery({
+      queryKey: ["userRoles"],
+      queryFn: async () => {
+        const res = await fetchuserRoles();
+        return res.data;
+      },
+      // onError: (err: APIResponseError) => {
+      //   console.log(err);
+      // },
+      enabled,
+    });
+  
+
 export const useCreateBrand = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -50,6 +66,28 @@ export const useCreateBrand = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["brands"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useCreateUserRole = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { userRoleName: string }
+  >({
+    mutationFn: async (payload) => {
+      const res = await createUserRole(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["userRoles"],
       });
     },
     onError: (err: APIResponseError) => {

@@ -23,10 +23,36 @@ export const fetchBrands = (payload: { term?: string, addedBy?: number, type?: s
   });
 };
 
+export const fetchuserRoles = () => {
+  const query = new URLSearchParams();
+  return axios({
+    method: "GET",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/getAllUserRole?${query}`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const createBrand = (payload: { brandName: string }) => {
   return axios({
     method: "POST",
     url: `${process.env.NEXT_PUBLIC_API_URL}/brand/addBrandByUser`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const createUserRole = (payload: { userRoleName: string }) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/createUserRole`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

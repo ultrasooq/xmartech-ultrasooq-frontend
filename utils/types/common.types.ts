@@ -65,6 +65,15 @@ export interface IBrands {
   status: string;
 }
 
+export interface IUserRoles {
+  id: number;
+  userRoleName: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  status: string;
+}
+
 export interface ISelectOptions {
   label: string;
   value: number;
