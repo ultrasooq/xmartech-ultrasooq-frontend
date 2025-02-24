@@ -76,10 +76,10 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
 };
 
 const Header = () => {
-  // const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
+  //  const searchParams = useSearchParams();
   const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -114,18 +114,26 @@ const Header = () => {
   //   const term = searchParams?.get("term") || ""; // Optional chaining to prevent null error
   //   setSearchTerm(term);
   // }, [searchParams]);
+
+    // Sync initial state with URL parameter safely inside `useEffect`
+    // useEffect(() => {
+    //   if (typeof window === "undefined") return; // Prevent SSR issues
+    //   const term = searchParams?.get("term") || "";
+    //   setSearchTerm(term);
+    // }, [searchParams]);
   
-  // Debounced function to update URL
-  const updateURL = debounce((newTerm) => {
+   // Debounced function to update URL
+   const updateURL = debounce((newTerm) => {
+    if (typeof window === "undefined") return; // Prevent SSR issues
     const params = new URLSearchParams(window.location.search);
     if (newTerm) {
       params.set("term", newTerm);
     } else {
       params.delete("term");
     }
-    router.replace(`/trending?${params.toString()}`); // Update URL without full reload
+    router.replace(`/trending?${params.toString()}`); // Update URL dynamically
   }, 500);
-
+  
   const handleSearch = (event:any) => {
     const newTerm = event.target.value;
     setSearchTerm(newTerm);

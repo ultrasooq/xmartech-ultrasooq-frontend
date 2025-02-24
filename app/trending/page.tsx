@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   IBrands,
   ISelectOptions,
@@ -56,9 +57,12 @@ import BannerSection from "@/components/modules/trending/BannerSection";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { useCategoryStore } from "@/lib/categoryStore";
 import TrendingCategories from "@/components/modules/trending/TrendingCategories";
-import { useSearchParams } from "next/navigation";
 
-const TrendingPage = () => {
+interface TrendingPageProps {
+  searchParams?: { term?: string };
+}
+
+const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const queryClient = useQueryClient();
   // const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -77,7 +81,8 @@ const TrendingPage = () => {
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
   
-  const [searchUrlTerm, setSearchUrlTerm] = useState("");
+  // const [searchUrlTerm, setSearchUrlTerm] = useState("");
+  const searchUrlTerm = searchParams?.term || "";
 
     // Ensure URL term is set before fetching data
   // useEffect(() => {
@@ -86,6 +91,19 @@ const TrendingPage = () => {
   //     setSearchUrlTerm(term);
   //   }
   // }, [searchParams, searchUrlTerm]);
+
+  // useEffect(() => {
+  //   if (typeof window === "undefined") return; // Prevent SSR issues
+  //   const term = searchParams?.get("term") || "";
+  //   console.log('HII')
+  //   setSearchUrlTerm(term);
+  // }, [searchParams]);
+
+  // useEffect(() => {
+  //   if (!searchParams) return; // ✅ Avoid SSR issues
+  //   const term = searchParams.get("term") || "";
+  //   setSearchUrlTerm(term);
+  // }, [searchParams]); // ✅ Only runs on the client
   
   const me = useMe();
   const updateCartWithLogin = useUpdateCartWithLogin();

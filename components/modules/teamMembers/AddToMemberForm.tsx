@@ -34,13 +34,13 @@ type AddToMemberFormProps = {
 
 const addFormSchema = z.object({
   email: z.string().trim().min(2, { message: "Email is required" }),
-  userRoleId: z.coerce.number().min(1, { message: "User Role is required" }), // Ensure it's a valid number (ID)
-  tradeRole: z.coerce.string().optional(),
+  userRoleId: z.number().min(1, { message: "User Role is required" }), // Ensure it stays a number
+  tradeRole: z.string().optional(),
 });
 
 const addDefaultValues = {
   email: "",
-  userRoleId: null,
+  userRoleId: undefined, // Ensures correct validation behavior
   tradeRole: "MEMBER",
 };
 
@@ -72,7 +72,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
         description: response.message,
         variant: "success",
       });
-      setValue({ label: response.data.brandName, value: response.data.id });
+      setValue({ label: response.data.userRoleName, value: response.data.id });
       form.setValue("userRoleId", response.data.id);
     } else {
       toast({
@@ -95,7 +95,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
     if (response.status) {
       onClose();
       toast({
-        title: "Membert Add Successful",
+        title: response.message,
         description: response.message,
         variant: "success",
       });
@@ -152,13 +152,15 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
             name="userRoleId"
             control={form.control} // ✅ Use form.control instead
             render={({ field }) => (
+              <>
               <CreatableSelect
                 name={field.name}
                 isClearable
                 isDisabled={createUserRole.isPending}
                 isLoading={createUserRole.isPending}
                 onChange={(newValue) => {
-                  field.onChange(newValue?.value);
+                  const numericValue = newValue ? Number(newValue.value) : 0; // Ensure it's a number
+                  field.onChange(numericValue); // Pass the correct numeric value
                   setValue(newValue);
                 }}
                 onCreateOption={handleCreate}
@@ -170,7 +172,14 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
                 instanceId="userRoleId"
                 className="z-[999]"
               />
-            )}
+               {/* Validation Error Message */}
+                {form.formState.errors.userRoleId && (
+                  <p className="text-red-500 text-sm">
+                    {form.formState.errors.userRoleId.message}
+                  </p>
+                )}
+              </>
+            )} 
           />
 
           <Button

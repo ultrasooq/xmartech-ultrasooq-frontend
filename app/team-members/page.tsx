@@ -29,7 +29,9 @@ const TeamMembersPage = () => {
           ? membersQuery.data.data.map((item: any) => ({
               id: item?.id,
               userDetailId: item?.userId,
-              fullName: `${item?.userDetail?.firstName} ${item?.userDetail?.lastName}`,
+              fullName : item?.userDetail?.firstName !== null
+  ? `${item.userDetail.firstName} ${item.userDetail.lastName ?? ""}`.trim() 
+  : "",
               email: item?.userDetail?.email,
               userRoleName: item?.userDetail?.userRoleName,
               employeeId: item?.userDetail?.employeeId,
@@ -66,7 +68,7 @@ const TeamMembersPage = () => {
               {memoizedMember?.map((item: any) => (
                 <>
                 <tr>
-                  <td>{item?.fullName || '--'}</td>
+                  <td>{item?.fullName || '-----'}</td>
                   <td>{item.email || '--'}</td>
                   <td>{item.userRoleName || '--'}</td>
                   <td>{item.employeeId || '--'}</td>
@@ -86,12 +88,14 @@ const TeamMembersPage = () => {
               </p>
             ) : null}
 
+          {membersQuery.data?.totalCount > limit && (
             <Pagination
               page={page}
               setPage={setPage}
               totalCount={membersQuery.data?.totalCount}
               limit={limit}
             />
+          )}
           </div>
         </div>
       </div>
