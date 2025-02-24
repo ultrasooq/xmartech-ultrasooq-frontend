@@ -80,7 +80,7 @@ const OrdersPage = () => {
   };
 
   const handleCreateOrder = async (paymentType: string) => {
-    alert (paymentType); return
+    alert (paymentType); 
     if (hasAccessToken) {
       let data = {};
       if (orders.orders) {
