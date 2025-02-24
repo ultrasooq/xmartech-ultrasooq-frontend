@@ -65,7 +65,7 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
       <a onClick={onClick} {...props}>
         <button
           type="button"
-          className="flex cursor-pointer px-8 text-sm font-semibold uppercase text-white md:py-10 md:text-sm lg:text-base xl:text-lg"
+          className="flex cursor-pointer px-2 text-sm font-semibold uppercase text-white md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg"
           onClick={onClick}
         >
           {children}
@@ -115,15 +115,15 @@ const Header = () => {
   //   setSearchTerm(term);
   // }, [searchParams]);
 
-    // Sync initial state with URL parameter safely inside `useEffect`
-    // useEffect(() => {
-    //   if (typeof window === "undefined") return; // Prevent SSR issues
-    //   const term = searchParams?.get("term") || "";
-    //   setSearchTerm(term);
-    // }, [searchParams]);
-  
-   // Debounced function to update URL
-   const updateURL = debounce((newTerm) => {
+  // Sync initial state with URL parameter safely inside `useEffect`
+  // useEffect(() => {
+  //   if (typeof window === "undefined") return; // Prevent SSR issues
+  //   const term = searchParams?.get("term") || "";
+  //   setSearchTerm(term);
+  // }, [searchParams]);
+
+  // Debounced function to update URL
+  const updateURL = debounce((newTerm) => {
     if (typeof window === "undefined") return; // Prevent SSR issues
     const params = new URLSearchParams(window.location.search);
     if (newTerm) {
@@ -133,14 +133,14 @@ const Header = () => {
     }
     router.replace(`/trending?${params.toString()}`); // Update URL dynamically
   }, 500);
-  
-  const handleSearch = (event:any) => {
+
+  const handleSearch = (event: any) => {
     const newTerm = event.target.value;
     setSearchTerm(newTerm);
     updateURL(newTerm);
   };
 
-  const handleKeyDown = (event:any) => {
+  const handleKeyDown = (event: any) => {
     if (event.key === "Enter") {
       handleSearch(event);
     }
@@ -279,10 +279,10 @@ const Header = () => {
       <div className="w-full bg-dark-cyan">
         <div className="container m-auto px-3">
           <div className="hidden sm:hidden md:flex md:gap-x-2.5">
-            <div className="py-4 text-sm font-normal text-white md:w-5/12 lg:w-4/12">
+            <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
               <p>Welcome to UltraSooq!</p>
             </div>
-            <div className="flex justify-end py-4 text-sm font-normal text-white md:w-7/12 lg:w-8/12">
+            <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
               <ul className="flex justify-end">
                 <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                   <a href="#">Store Location</a>
@@ -313,12 +313,12 @@ const Header = () => {
           </div>
 
           <div className="flex flex-wrap items-center">
-            <div className="!order-1 !flex !w-5/12 flex-1 !items-center !py-4 md:!w-2/12 lg:!w-1/6">
+            <div className="order-1 !flex !w-5/12 flex-1 !items-center !py-4 md:!w-2/12 lg:!w-1/6">
               <Link href="/home">
                 <Image src={LogoIcon} alt="logo" />
               </Link>
             </div>
-            <div className="!order-3 flex w-10/12 items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
+            <div className="order-3 flex w-full items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
               {/* <div className="h-11 w-24 md:w-24 lg:w-auto">
                 <select className="h-full w-full focus:outline-none">
                   <option>All</option>
@@ -331,17 +331,17 @@ const Header = () => {
                   <option>Movies & TV Shows</option>
                 </select>
               </div> */}
-              <div className="h-11 w-4/6 border-l border-solid border-indigo-200">
+              <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-4/6">
                 <input
                   type="search"
                   className="form-control h-full w-full p-2.5 text-black focus:outline-none"
                   placeholder="I’m shopping for..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={handleKeyDown} // Calls search when Enter is pressed 
+                  onKeyDown={handleKeyDown} // Calls search when Enter is pressed
                 />
               </div>
-              <div className="h-11 w-1/6">
+              <div className="h-11 w-1/4 md:w-full">
                 <button
                   type="button"
                   className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
@@ -351,7 +351,7 @@ const Header = () => {
                 </button>
               </div>
             </div>
-            <div className="order-2 flex w-7/12 justify-end py-4 sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 lg:w-1/6">
+            <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-4 lg:w-1/6">
               <ul className="flex items-center justify-end gap-x-4">
                 <li className="relative flex pb-3 pl-0 pr-1 pt-0">
                   <Link
@@ -417,7 +417,7 @@ const Header = () => {
                         <DropdownMenuSeparator />
                         {me?.data?.data?.tradeRole !== "BUYER" ? (
                           <>
-                          <Link href="/team-members">
+                            <Link href="/team-members">
                               <DropdownMenuItem>Team Members</DropdownMenuItem>
                             </Link>
                             <Link href="/manage-products">
@@ -542,8 +542,8 @@ const Header = () => {
 
       <div className="w-full border-b border-solid border-gray-300 bg-white">
         <div className="container m-auto px-3">
-          <div className="relative flex flex-row">
-            <div className="flex flex-1 gap-x-5">
+          <div className="relative flex flex-row flex-wrap md:flex-nowrap">
+            <div className="flex flex-1 gap-x-3 md:gap-x-5">
               <div className="dropdown">
                 <button className="dropbtn flex items-center">
                   <div>
@@ -731,7 +731,7 @@ const Header = () => {
                 ) : null}
               </div>
 
-              <div className="flex items-center gap-x-5">
+              <div className="flex items-center gap-x-1 md:gap-x-5">
                 {memoizedCategory.map((item: any) => (
                   <Button
                     type="button"
@@ -747,7 +747,7 @@ const Header = () => {
                     }}
                     variant="link"
                     className={cn(
-                      "py-3 text-sm font-semibold capitalize text-color-dark sm:text-base",
+                      "p-1 text-sm font-semibold capitalize text-color-dark sm:text-base md:py-3",
                       item?.id === assignedToId ? "underline" : "no-underline",
                     )}
                   >
