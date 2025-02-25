@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import {
   FormControl,
@@ -7,6 +7,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Accordion,
   AccordionContent,
@@ -20,6 +21,8 @@ type AccordionMultiSelectV2Props = {
   name: string;
   options?: OptionProps[];
   placeholder?: string;
+  canCreate?: boolean;
+  createOption?: (option: string) => void,
   error?: string;
 };
 
@@ -28,11 +31,29 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
   name,
   options = [],
   placeholder,
+  canCreate = false,
+  createOption = null,
   error,
 }) => {
   const formContext = useFormContext();
 
   const watcher = formContext.watch(name);
+
+  const [search, setSearch] = useState('');
+
+  let filteredOptions: OptionProps[] = [...options];
+  if (search) {
+    filteredOptions = filteredOptions.filter(
+      item => item.label.toString().toLowerCase().includes(search.toString().toLocaleLowerCase())
+    );
+  }
+
+  const addNew = (option: string) => {
+    if (createOption) {
+      createOption(option);
+      setSearch('');
+    }
+  };
 
   return (
     <>
@@ -62,8 +83,21 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
             </div>
           </AccordionTrigger>
           <AccordionContent>
+            <FormItem
+              className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0"
+            >
+              <FormControl>
+                <Input
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                ></Input>
+              </FormControl>
+            </FormItem>
+            {canCreate && filteredOptions.length == 0 && <div className="mb-4">
+              <a onClick={e => addNew(search)} style={{ cursor: 'pointer' }}>Add "{search}"</a>
+            </div>}
             <div className="flex flex-col">
-              {options.map((item) => (
+              {filteredOptions.map((item) => (
                 <FormField
                   key={item.value}
                   control={formContext.control}
