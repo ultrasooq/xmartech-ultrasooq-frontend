@@ -213,7 +213,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         {relatedProductsQuery?.isFetched &&
         memoizedRelatedProductList?.length ? (
           <Carousel
-            className="w-full"
+            className="related_slider w-full"
             opts={{
               align: "start",
               loop: true,

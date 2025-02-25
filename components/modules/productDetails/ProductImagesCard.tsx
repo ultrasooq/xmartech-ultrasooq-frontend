@@ -116,8 +116,8 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
   return (
     <div className="product-view-s1-left">
-      <div className="grid grid-cols-4 gap-4">
-        <div className="relative order-2 col-span-3 max-h-[500px] space-y-4 bg-gray-100">
+      <div className="mb-3 flex grid-cols-4 flex-col-reverse gap-4 md:mb-0 md:grid">
+        <div className="relative order-2 col-span-3 max-h-[250px] space-y-4 bg-gray-100 md:max-h-[500px]">
           {!isLoading && haveAccessToken ? (
             <button
               type="button"
@@ -137,7 +137,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 {previewImages?.map((item, index: number) => (
                   <CarouselItem key={index} className="basis pl-1">
                     <div className="p-1">
-                      <div className="relative min-h-[500px] w-full">
+                      <div className="relative min-h-[250px] w-full md:min-h-[500px]">
                         {isImage(item) ? (
                           <Image
                             src={item}
@@ -181,58 +181,33 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             </div>
           ) : null}
 
-          {isLoading ? <Skeleton className="min-h-[500px] w-full" /> : null}
+          {isLoading ? (
+            <Skeleton className="min-h-[250px] w-full md:min-h-[500px]" />
+          ) : null}
 
-          {!isLoading && askForPrice === "true" ? (
-            <Link href={`/seller-rfq-request?product_id=${productDetails?.id}`}>
-              <Button
-                type="button"
-                className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
-              >
-                Ask vendor for price
-              </Button>
-            </Link>
-          ) : null}
-          {!isLoading && askForPrice !== "true" ? (
-            <div className="flex w-full flex-wrap gap-3 self-end">
-              <Button
-                type="button"
-                // onClick={hasItem ? onToCart : onAdd}
-                // onClick={hasItem ? openCartCard : onAdd}
-                onClick={onAdd}
-                className="h-14 flex-1 rounded-none bg-color-yellow text-base"
-              >
-                {/* {hasItem ? "Send To Cart" : "Add To Cart"} */}
-                {"Add To Cart"}
-              </Button>
-              <Button
-                type="button"
-                // onClick={onToCheckout}
-                onClick={onToCart}
-                className="h-14 flex-1 rounded-none bg-dark-orange text-base"
-              >
-                Buy Now
-              </Button>
-            </div>
-          ) : null}
           {/* For factories type */}
-          {!isLoading && productDetails?.product_productPrice[0]?.isCustomProduct === "true" ? (
+          {!isLoading &&
+          productDetails?.product_productPrice[0]?.isCustomProduct ===
+            "true" ? (
             <div className="flex w-full gap-x-3 self-end">
               {productDetails?.adminId !== loginUserId ? (
-              <><Button
-                  type="button"
-                  onClick={handleToCustomizeModal}
-                  className="h-14 flex-1 rounded-none bg-color-blue text-base"
-                >
-                  Send to Customize
-                </Button><Button
-                  type="button"
-                  // onClick={onToCheckout}
-                  onClick={onToCart}
-                  className="h-14 flex-1 rounded-none bg-color-blue text-base"
-                >
+                <>
+                  <Button
+                    type="button"
+                    onClick={handleToCustomizeModal}
+                    className="h-14 flex-1 rounded-none bg-color-blue text-base"
+                  >
+                    Send to Customize
+                  </Button>
+                  <Button
+                    type="button"
+                    // onClick={onToCheckout}
+                    onClick={onToCart}
+                    className="h-14 flex-1 rounded-none bg-color-blue text-base"
+                  >
                     Message Vendor
-                  </Button></>
+                  </Button>
+                </>
               ) : null}
               {/* {productDetails?.adminId == loginUserId ? (
                 <Button
@@ -282,6 +257,39 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           ))}
         </div>
       </div>
+
+      {!isLoading && askForPrice === "true" ? (
+        <Link href={`/seller-rfq-request?product_id=${productDetails?.id}`}>
+          <Button
+            type="button"
+            className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
+          >
+            Ask vendor for price
+          </Button>
+        </Link>
+      ) : null}
+      {!isLoading && askForPrice !== "true" ? (
+        <div className="flex w-full flex-wrap justify-end gap-3 self-end">
+          <Button
+            type="button"
+            // onClick={hasItem ? onToCart : onAdd}
+            // onClick={hasItem ? openCartCard : onAdd}
+            onClick={onAdd}
+            className="h-14 max-w-[205px] flex-1 rounded-none bg-color-yellow text-base"
+          >
+            {/* {hasItem ? "Send To Cart" : "Add To Cart"} */}
+            {"Add To Cart"}
+          </Button>
+          <Button
+            type="button"
+            // onClick={onToCheckout}
+            onClick={onToCart}
+            className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+          >
+            Buy Now
+          </Button>
+        </div>
+      ) : null}
 
       {/* For Edit Dialog */}
 
