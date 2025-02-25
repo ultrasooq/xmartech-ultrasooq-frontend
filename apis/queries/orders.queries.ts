@@ -7,6 +7,7 @@ import {
 import {
   createOrder,
   createOrderUnAuth,
+  createPaymentIntent,
   fetchOrderById,
   fetchOrderBySellerId,
   fetchOrders,
@@ -122,6 +123,25 @@ export const useCreateOrderUnAuth = () => {
       console.log(err);
     },
   });
+};
+
+export const useCreateIntent = () => {
+  return useMutation<
+  { data: any; message: string; status: boolean },
+  APIResponseError,
+  {}
+>({
+  mutationFn: async (payload) => {
+    const res = await createPaymentIntent(payload);
+    return res.data;
+  },
+  onSuccess: () => {
+   console.log("Intent Created");
+  },
+  onError: (err: APIResponseError) => {
+    console.log(err);
+  },
+});
 };
 
 export const useOrderById = (

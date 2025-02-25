@@ -46,6 +46,19 @@ export const createOrderUnAuth = (payload: any) => {
   });
 };
 
+export const createPaymentIntent = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/payment/create-intent`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const fetchOrderById = (payload: { orderProductId: string }) => {
   return axios({
     method: "GET",
