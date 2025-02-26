@@ -24,6 +24,7 @@ import ReactSelect from "react-select";
 import PriceSection from "./PriceSection";
 import DescriptionSection from "./DescriptionSection";
 import { isImage, isVideo } from "@/utils/helper";
+import { useCreateTag } from "@/apis/queries/tags.queries";
 
 const customStyles = {
   control: (base: any) => ({
@@ -51,6 +52,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
   const formContext = useFormContext();
   const { toast } = useToast();
   const photosRef = useRef<HTMLInputElement>(null);
+  const createTag = useCreateTag();
   const [listIds, setListIds] = useState<string[]>([]);
   const [catList, setCatList] = useState<any[]>([]);
   const [currentId, setCurrentId] = useState<string>('184');
@@ -83,6 +85,28 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
   const handleRemovePreviewImage = (id: string) => {
     formContext.setValue("productImages", [...(watchProductImages || []).filter((item: ProductImageProps) => item.id !== id,),]);
   };
+
+  const handleCreateTag = async (tag: string) => {
+    const response = await createTag.mutateAsync({ tagName: tag });
+
+    if (response.status && response.data) {
+      toast({
+        title: "Tag Create Successful",
+        description: response.message,
+        variant: "success",
+      });
+      catList.push({ value: response.data.id, label: response.data.tagName });
+      let selected = formContext.getValues("productTagList") || [];
+      selected.push({ value: response.data.id, label: response.data.tagName });
+      formContext.setValue("productTagList", selected);
+    } else {
+      toast({
+        title: "Tag Create Failed",
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  }
 
   useEffect(() => {
     if (catList[currentIndex]) {
@@ -250,6 +274,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
                     name="productTagList"
                     options={tagsList || []}
                     placeholder="Tag"
+                    canCreate={true}
+                    createOption={handleCreateTag}
                     error={
                       formContext.formState.errors["productTagList"]
                         ?.message as string

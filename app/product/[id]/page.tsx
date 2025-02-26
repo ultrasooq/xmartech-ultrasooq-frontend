@@ -30,6 +30,8 @@ const baseProductPriceItemSchema = z.object({
   sellType: z.string().trim().optional(),
   consumerDiscount: z.coerce.number().optional(),
   vendorDiscount: z.coerce.number().optional(),
+  consumerDiscountType: z.coerce.string().optional(),
+  vendorDiscountType: z.coerce.string().optional(),
   minCustomer: z.coerce.number().optional(),
   maxCustomer: z.coerce.number().optional(),
   minQuantityPerCustomer: z.coerce.number().optional(),
