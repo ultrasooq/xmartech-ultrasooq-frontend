@@ -94,7 +94,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
               </FormControl>
             </FormItem>
             {canCreate && filteredOptions.length == 0 && <div className="mb-4">
-              <a onClick={e => addNew(search)} style={{ cursor: 'pointer' }}>Add "{search}"</a>
+              <a href="javascript:void(0)" onClick={e => addNew(search)} style={{ cursor: 'pointer' }}>Add {`"${search}"`}</a>
             </div>}
             <div className="flex flex-col">
               {filteredOptions.map((item) => (
