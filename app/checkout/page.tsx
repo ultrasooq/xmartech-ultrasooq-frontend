@@ -342,7 +342,7 @@ useEffect(() => {
 
       const data = {
         ...selectedOrderDetails,
-        paymentMethod: "cash",
+        // paymentMethod: "cash",
         cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
       };
 

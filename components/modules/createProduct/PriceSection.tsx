@@ -85,6 +85,8 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     "productPriceList.[0].consumerType",
   );
   const watchSellType = formContext.watch("productPriceList.[0].sellType");
+  const watchConsumerDiscount = formContext.watch("productPriceList.[0].consumerDiscount");
+  const watchVendorDiscount = formContext.watch("productPriceList.[0].vendorDiscount");
   // TODO: validation remove when user types
   // const watchMinCustomer = formContext.watch(
   //   "productPriceList.[0].minCustomer",
@@ -467,22 +469,56 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             <div className="col-span-2 grid w-full grid-cols-2 gap-x-5 gap-y-4">
               {watchConsumerType === "EVERYONE" ||
               watchConsumerType === "CONSUMER" ? (
-                <CounterTextInputField
-                  label="Consumer Discount"
-                  name="productPriceList.[0].consumerDiscount"
-                  placeholder="Discount"
-                />
+                <>
+                  <CounterTextInputField
+                    label="Consumer Discount"
+                    name="productPriceList.[0].consumerDiscount"
+                    placeholder="Discount"
+                  />
+                  {watchConsumerDiscount > 0 && <div className="flex w-full flex-col gap-y-2">
+                    <Label>Discount Type</Label>
+                    <Controller
+                        name="productPriceList.[0].consumerDiscountType"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <select {...field} className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
+                            <option value=""></option>
+                            <option value="FLAT">FLAT</option>
+                            <option value="PERCENTAGE">PERCENTAGE</option>
+                          </select>
+                        )}
+                    />
+                  </div>}
+                </>
               ) : null}
 
               {watchConsumerType === "EVERYONE" ||
               watchConsumerType === "VENDORS" ? (
-                <CounterTextInputField
-                  label="Vendor Discount"
-                  name="productPriceList.[0].vendorDiscount"
-                  placeholder="Discount"
-                />
+                <>
+                  <CounterTextInputField
+                    label="Vendor Discount"
+                    name="productPriceList.[0].vendorDiscount"
+                    placeholder="Discount"
+                  />
+                  {watchVendorDiscount > 0 && <div className="flex w-full flex-col gap-y-2">
+                    <Label>Discount Type</Label>
+                    <Controller
+                      name="productPriceList.[0].vendorDiscountType"
+                      control={formContext.control}
+                      render={({ field }) => (
+                        <select {...field} className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
+                          <option value=""></option>
+                          <option value="FLAT">FLAT</option>
+                          <option value="PERCENTAGE">PERCENTAGE</option>
+                        </select>
+                      )}
+                    />
+                  </div>}
+                </>
               ) : null}
             </div>
+
+            
 
             {watchSellType === "BUYGROUP" ? (
               <>

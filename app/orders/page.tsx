@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   useCartListByDevice,
   useCartListByUserId,
@@ -13,8 +13,14 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   useCreateOrder,
   useCreateOrderUnAuth,
+  useCreateIntent
 } from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+// Load Stripe with your public key
+const stripePromise = loadStripe("pk_test_51QuptGPQ2VnoEyMPay2u4FyltporIQfMh9hWcp2EEresPjx07AuT4lFLuvnNrvO7ksqtaepmRQHfYs4FLia8lIV500i83tXYMR");
 
 const OrdersPage = () => {
   const router = useRouter();
@@ -40,10 +46,21 @@ const OrdersPage = () => {
   );
   const createOrder = useCreateOrder();
   const createOrderUnAuth = useCreateOrderUnAuth();
+  // const createIntent = useCreateIntent();
+  const [advanceAmount, setAdvanceAmount] = useState(""); 
 
   // const memoizedCartList = useMemo(() => {
   //   return cartListByUser.data?.data || [];
   // }, [cartListByUser.data?.data]);
+
+  const calculateDiscountedPrice = (
+    offerPrice: string | number,
+    consumerDiscount: number,
+  ) => {
+    const price = offerPrice ? Number(offerPrice) : 0;
+    const discount = consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
 
   const calculateTotalAmount = () => {
     if (cartListByUser.data?.data?.length) {
@@ -53,11 +70,16 @@ const OrdersPage = () => {
           curr: {
             productPriceDetails: {
               offerPrice: string;
+              consumerDiscount: number;
             };
             quantity: number;
           },
         ) => {
-          return acc + +curr.productPriceDetails.offerPrice * curr.quantity;
+          // console.log(curr.productPriceDetails.offerPrice)
+          return acc + +calculateDiscountedPrice(
+            curr.productPriceDetails?.offerPrice ?? 0,
+            curr?.productPriceDetails?.consumerDiscount,
+          ) * curr.quantity;
         },
         0,
       );
@@ -68,23 +90,32 @@ const OrdersPage = () => {
           curr: {
             productPriceDetails: {
               offerPrice: string;
+              consumerDiscount: number;
             };
             quantity: number;
           },
         ) => {
-          return acc + +curr.productPriceDetails.offerPrice * curr.quantity;
+          return acc + +calculateDiscountedPrice(
+            curr.productPriceDetails?.offerPrice ?? 0,
+            curr?.productPriceDetails?.consumerDiscount,
+          ) * curr.quantity;
         },
         0,
       );
     }
   };
 
-  const handleCreateOrder = async (paymentType: string) => {
+  const handleAmount = async (getAmount:string) => {
+    console.log(advanceAmount, "==>108")
+    setAdvanceAmount(getAmount);
+  }
+
+  const handleCreateOrder = async (paymentType: string, paymentIntentId: string) => {
     alert (paymentType); 
     if (hasAccessToken) {
-      let data = {};
+      // let data = {};
       if (orders.orders) {
-        console.log(orders.orders.cartIds);
+        // console.log(orders.orders.cartIds);
         if (!orders.orders.cartIds?.length) {
           toast({
             title: "Order cannot be placed",
@@ -93,30 +124,39 @@ const OrdersPage = () => {
           });
           return;
         }
-        data = orders.orders;
-      }
-      const response = await createOrder.mutateAsync(data);
+         let data: Record<string, any> = { ...orders.orders }; // Using Record<string, any> to allow dynamic properties
+        //  data.totalAmount = calculateTotalAmount();
+       
+         data.paymentMethod = paymentType;
+         if (paymentIntentId )  data.paymentIntentId = paymentIntentId;
+        console.log(data) ; 
+        const response = await createOrder.mutateAsync(data);
 
-      if (response?.data) {
-        toast({
-          title: "Order Placed Successfully",
-          description:
-            "Your order has been placed successfully. You can check your order status in My Orders section",
-          variant: "success",
-        });
+          if (response?.data) {
+            toast({
+              title: "Order Placed Successfully",
+              description:
+                "Your order has been placed successfully. You can check your order status in My Orders section",
+              variant: "success",
+            });
 
-        orders.setOrders(initialOrderState.orders);
+            orders.setOrders(initialOrderState.orders);
 
-        router.push("/my-orders");
+            router.push("/my-orders");
+          }
       }
     } else {
-      console.log(orders.orders);
+      // console.log(orders.orders);
 
-      let data = {};
+      // let data = {};
       if (orders.orders) {
-        data = orders.orders;
-      }
-      const response = await createOrderUnAuth.mutateAsync(data);
+        let data: Record<string, any> = { ...orders.orders }; // Using Record<string, any> to allow dynamic properties
+        //  data.totalAmount = calculateTotalAmount();
+       
+         data.paymentMethod = paymentType;
+         if (paymentIntentId )  data.paymentIntentId = paymentIntentId;
+        console.log(data) ; 
+        const response = await createOrderUnAuth.mutateAsync(data);
 
       if (response?.data) {
         toast({
@@ -130,8 +170,11 @@ const OrdersPage = () => {
 
         router.push("/login");
       }
+      }
+      
     }
   };
+
 
   return (
     <div className="cart-page">
@@ -142,48 +185,14 @@ const OrdersPage = () => {
           </div>
         </div>
         <div className="cart-page-wrapper">
-          {/* <Tabs className="flex w-full">
-            <TabsList className="flex w-[50%] flex-col">
-              <TabsTrigger value="cash">cash</TabsTrigger>
-              <TabsTrigger value="diract-payment">diract payment</TabsTrigger>
-              <TabsTrigger value="advance-payment">
-                advance % payment
-              </TabsTrigger>
-              <TabsTrigger value="pay-me">pay it for me</TabsTrigger>
-              <TabsTrigger value="installments">Installments</TabsTrigger>
-            </TabsList>
-            <div className="w-[50%]">
-              <TabsContent value="cash" className="mt-0">
-                <div className="w-full bg-white">
-                  <h2>cash</h2>
-                </div>
-              </TabsContent>
-              <TabsContent value="diract-payment" className="mt-0">
-                <div className="w-full bg-white">
-                  <h2>diract payment</h2>
-                </div>
-              </TabsContent>
-              <TabsContent value="advance-payment" className="mt-0">
-                <div className="w-full bg-white">
-                  <h2>advance % payment</h2>
-                </div>
-              </TabsContent>
-              <TabsContent value="pay-me" className="mt-0">
-                <div className="w-full bg-white">
-                  <h2>pay it for me</h2>
-                </div>
-              </TabsContent>
-              <TabsContent value="installments" className="mt-0">
-                <div className="w-full bg-white">
-                  <h2>cash</h2>
-                </div>
-              </TabsContent>
-            </div>
-          </Tabs> */}
+        <Elements stripe={stripePromise}>
           <PaymentForm
             onCreateOrder={handleCreateOrder}
+            calculateTotalAmount={calculateTotalAmount}
+            onManageAmount={handleAmount}
             isLoading={createOrder.isPending}
           />
+          </Elements>
 
           <div className="cart-page-right">
             <div className="card-item priceDetails">
@@ -198,15 +207,28 @@ const OrdersPage = () => {
                     <p>Subtotal</p>
                     <h5>${calculateTotalAmount() || 0}</h5>
                   </li>
-                  <li>
-                    <p>Shipping</p>
-                    <h5>Free</h5>
-                  </li>
+                  {advanceAmount !== "" ? 
+                  <><li>
+                      <p>Advance Payment </p>
+                      <h5>${advanceAmount || 0}</h5>
+                    </li><li>
+                        <p>Shipping</p>
+                        <h5>Free</h5>
+                      </li></>
+                  : null }
                 </ul>
               </div>
               <div className="priceDetails-footer">
                 <h4>Total Amount</h4>
-                <h4 className="amount-value">${calculateTotalAmount() || 0}</h4>
+                <h4 className="amount-value">
+                {advanceAmount !== "" ? (advanceAmount || 0) : (calculateTotalAmount() || 0)}
+                  </h4> <br />
+                  {advanceAmount !== "" ? (
+                    <>
+                      <h4>Due Balance</h4>
+                      <h4 className="amount-value">   {(calculateTotalAmount() - Number(advanceAmount)).toFixed(2)} </h4>
+                    </>
+                  ) : null}
               </div>
             </div>
           </div>
