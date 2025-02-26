@@ -1,0 +1,136 @@
+"use client"; // Add this at the top
+import React, { useMemo, useRef, useState } from "react";
+import { IoMdAdd } from "react-icons/io";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import Pagination from "@/components/shared/Pagination";
+import { Info } from "lucide-react";
+import { IUserRoles } from "@/utils/types/common.types";
+import { useUserRolesWithPagination } from "@/apis/queries/masters.queries";
+import AddToRoleForm from "@/components/modules/teamMembers/AddToRoleForm";
+import PermissionForm from "@/components/modules/teamMembers/PermissionForm";
+
+const RoleSettingsPage = () => {
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+
+  const [isAddToRoleModalOpen, setIsAddToRoleModalOpen] = useState(false);
+  const [isAddToPermissionModalOpen, setIsAddToPermissionModalOpen] = useState(false);
+  const [selectedRoleId, setSelectedRoleId] = useState<number>(0);
+
+  const wrapperRef = useRef(null);
+
+  const handleToggleAddModal = () =>
+    setIsAddToRoleModalOpen(!isAddToRoleModalOpen);
+
+  const handleOpenPermissionModal = (roleId: number) => {
+    setSelectedRoleId(roleId);
+    setIsAddToPermissionModalOpen(true);
+};
+
+const handleClosePermissionModal = () => {
+    setIsAddToPermissionModalOpen(false);
+    setSelectedRoleId(0); // Reset roleId when closing
+};
+
+  const userRolesQuery = useUserRolesWithPagination({
+    page,
+    limit,
+  });
+
+  const memoizedUserRole = useMemo(() => {
+      return userRolesQuery?.data?.data
+        ? userRolesQuery.data.data.map((item: IUserRoles) => ({
+            label: item.userRoleName,
+            value: item.id,
+          }))
+        : [];
+    }, [userRolesQuery?.data?.data]);
+
+  return (
+    <section className="team_members_section">
+      <div className="container relative z-10 m-auto px-3">
+        <div className="flex w-full flex-wrap">
+          <div className="team_members_heading w-full">
+            <h1>Role Settings</h1>
+            <button type="button" onClick={handleToggleAddModal}>
+              <IoMdAdd /> Add New Role
+            </button>
+            
+          </div>
+          <div className="team_members_table w-full">
+            {memoizedUserRole.length ? <>
+              <table cellPadding={0} cellSpacing={0} border={0}>
+              <thead>
+                <tr>
+                  <th>Role Name</th>
+                  <th>Permission</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+              {memoizedUserRole?.map((item: any) => (
+                <>
+                <tr>
+                  <td>{item?.label || '-----'}</td>
+                  <td> <button type="button" onClick={() => handleOpenPermissionModal(item?.value)}>
+                         Setup Permission
+                        </button>
+                    </td>
+                  <td> <Info className="h-4 w-4 cursor-pointer text-gray-500" /></td>
+                </tr>
+                </>
+                
+                 ))}
+              </tbody>
+            </table>
+            </> : null}
+            
+            {!memoizedUserRole.length ? (
+              <p className="py-10 text-center text-sm font-medium">
+                No Roles Found
+              </p>
+            ) : null}
+
+          {userRolesQuery.data?.totalCount > limit && (
+            <Pagination
+              page={page}
+              setPage={setPage}
+              totalCount={userRolesQuery.data?.totalCount}
+              limit={limit}
+            />
+          )}
+          </div>
+        </div>
+      </div>
+      {/* Add Role Dialog */}
+      <Dialog open={isAddToRoleModalOpen} onOpenChange={handleToggleAddModal}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={wrapperRef}
+        >
+          <AddToRoleForm
+            onClose={() => {
+                setIsAddToRoleModalOpen(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+    {/* Add Edit permission Modal */}
+      <Dialog open={isAddToPermissionModalOpen} onOpenChange={handleClosePermissionModal}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={wrapperRef}
+        >
+          <PermissionForm
+            roleId={selectedRoleId} // Pass roleId to the form
+            onClosePer={handleClosePermissionModal}
+          />
+        </DialogContent>
+      </Dialog>
+
+    </section>
+  );
+};
+
+export default RoleSettingsPage;

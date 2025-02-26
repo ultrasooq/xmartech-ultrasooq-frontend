@@ -8,6 +8,7 @@ import AddToMemberForm from "@/components/modules/teamMembers/AddToMemberForm";
 import Pagination from "@/components/shared/Pagination";
 import { useAllMembers } from "@/apis/queries/member.queries";
 import { Info } from "lucide-react";
+import Link from "next/link";
 
 const TeamMembersPage = () => {
   const [page, setPage] = useState(1);
@@ -33,6 +34,7 @@ const TeamMembersPage = () => {
   ? `${item.userDetail.firstName} ${item.userDetail.lastName ?? ""}`.trim() 
   : "",
               email: item?.userDetail?.email,
+              phoneNumber: item?.userDetail?.phoneNumber,
               userRoleName: item?.userDetail?.userRoleName,
               employeeId: item?.userDetail?.employeeId,
               status: item?.userDetail?.status,
@@ -49,6 +51,12 @@ const TeamMembersPage = () => {
             <button type="button" onClick={handleToggleAddModal}>
               <IoMdAdd /> Add New Member
             </button>
+             <Link href={"/role-settings"}
+              className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+            >
+              {/* <IoMdAdd /> */}
+              Go to Role
+            </Link>
           </div>
           <div className="team_members_table w-full">
             {memoizedMember.length ? <>
@@ -57,6 +65,7 @@ const TeamMembersPage = () => {
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Phone Number</th>
                   <th>Role</th>
                   <th>Employee ID</th>
                   <th>Account Status</th>
@@ -70,6 +79,7 @@ const TeamMembersPage = () => {
                 <tr>
                   <td>{item?.fullName || '-----'}</td>
                   <td>{item.email || '--'}</td>
+                  <td>{item.phoneNumber || '---'}</td>
                   <td>{item.userRoleName || '--'}</td>
                   <td>{item.employeeId || '--'}</td>
                   <td>{item.status || '--'}</td>
