@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
@@ -20,6 +20,7 @@ type PaymentFormProps = {
   calculateTotalAmount: () => void;
   isLoading: boolean;
   onManageAmount: (advanceAmount: string) => void;
+  clearCardElement: boolean;
 };
 
 // Load Stripe with your public key
@@ -29,7 +30,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onCreateOrder,
   calculateTotalAmount,
   isLoading,
-  onManageAmount
+  onManageAmount,
+  clearCardElement
 }) => {
 
   const { toast } = useToast();
@@ -41,85 +43,138 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   // const [paymentIntentId, setPaymentIntentId] = useState(null); // State to store response data 
   const [isCardLoading, setIsCardLoading] = useState(false);
   const [cardComplete, setCardComplete] = useState(false); // Track if card details are valid
-  const [selectedPaymentType, setSelectedPaymentType] = useState<string | null>(null);
+  const [selectedPaymentType, setSelectedPaymentType] = useState<string>("");
   const [inputValue, setInputValue] = useState(""); // Temporary input value
   const [advanceAmount, setAdvanceAmount] = useState(""); // Stored amount when "Save" is clicked
+
+  // Expose a method to clear CardElement
+  useEffect(() => {
+    if (clearCardElement && elements) {
+      elements.getElement(CardElement)?.clear();
+      setName("");
+      setInputValue("");
+    }
+  }, [clearCardElement, elements]);
   
     const handleCardPayment = async (paymentType: string) => {
-      alert(paymentType)
       setSelectedPaymentType(paymentType); // Single state to track selected type
-      if(paymentType === 'direct') handleIntentCreate()
+      // if(paymentType === 'direct') handleIntentCreate()
     }
 
-    const handleIntentCreate = async () => {
+    const handleIntentCreate = async (paymentMethodId: string) => {
       const data = {
         amount: selectedPaymentType === 'direct' ? calculateTotalAmount() :Number(inputValue),
-        paymentMethod: "CARD"
+        paymentMethod: "CARD",
+        paymentMethodId: paymentMethodId
       }
   
       // console.log(data); return
       // if(data.amount !== 0){
         const response = await createIntent.mutateAsync(data);
   
-        if (response?.data) {
-          // console.log(response.data);
-          setClientSecret(response.data?.client_secret); // Set response data in state
-          // setPaymentIntentId(response.data?.id); // Set response data in state
-          // router.push("/login");
+        if (response?.status && response?.data) {
+          // console.log(response.data?.id); return;
+          // setClientSecret(response.data?.client_secret); // Set response data in state
+          // // setPaymentIntentId(response.data?.id); // Set response data in state
+          // // router.push("/login");
+          onCreateOrder(selectedPaymentType, response?.data?.id);
+          // if(selectedPaymentType === 'advance')  
+        } else {
+          toast({
+            title: "Payment Error:",
+            description: response.message,
+            variant: "danger",
+          });
         }
       // }
       
     }
 
-
-  // Handle form submission for Stripe payment
-  const handleSubmit = async () => {
-    if (!stripe || !elements) return;
-
-    setIsCardLoading(true);
-
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      console.error("CardElement not found");
-      setIsCardLoading(false);
-      return;
-    }
-
-    try {
-  
-      // Confirm Payment with Stripe
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement)!,
-          billing_details: { name },
-        },
-      });
-
-      if (result.error) {
-        console.error("Payment Error:", result.error.message);
-        toast({
-          title: "Payment Error:",
-          description: result.error.message,
-          variant: "danger",
-        });
-      } else {
-        console.log("Payment Success:", result.paymentIntent);
-        toast({
-          title: "Payment Success:",
-          description: "Payment Sucessfully done",
-          variant: "danger",
-        });
-        onCreateOrder("CARD", result.paymentIntent.id);
-      }
-    } catch (error) {
-      console.error("Payment Failed", error);
-    }
-  };
-
-   // Handle card input change
+     // Handle card input change
    const handleCardChange = (event: any) => {
     setCardComplete(event.complete); // event.complete is true when the card details are valid
   };
+
+
+  // Handle form submission for Direct Stripe payment
+  // const handleSubmit = async () => {
+  //   if (!stripe || !elements) return;
+
+  //   setIsCardLoading(true);
+
+  //   const cardElement = elements.getElement(CardElement);
+  //   if (!cardElement) {
+  //     console.error("CardElement not found");
+  //     setIsCardLoading(false);
+  //     return;
+  //   }
+
+  //   try {
+  
+  //     // Confirm Payment with Stripe
+  //     const result = await stripe.confirmCardPayment(clientSecret, {
+  //       payment_method: {
+  //         card: elements.getElement(CardElement)!,
+  //         billing_details: { name },
+  //       },
+  //     });
+
+  //     if (result.error) {
+  //       console.error("Payment Error:", result.error.message);
+  //       toast({
+  //         title: "Payment Error:",
+  //         description: result.error.message,
+  //         variant: "danger",
+  //       });
+  //     } else {
+  //       console.log("Payment Success:", result.paymentIntent);
+  //       toast({
+  //         title: "Payment Success:",
+  //         description: "Payment Sucessfully done",
+  //         variant: "danger",
+  //       });
+  //       onCreateOrder("CARD", result.paymentIntent.id);
+  //     }
+  //   } catch (error) {
+  //     console.error("Payment Failed", error);
+  //   }
+  // };
+
+  
+
+  const handlePayment = async () => {
+    if (!stripe || !elements) {
+      return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) return;
+
+    const { paymentMethod, error } = await stripe.createPaymentMethod({
+      type: "card",
+      card: cardElement,
+      billing_details: { name: name },
+    });
+
+    if (error) {
+      console.error(error);
+      toast({
+        title: "Payment Error:",
+        description: error.message,
+        variant: "danger",
+      });
+    } else {
+      // onCreateOrder("directPayment", { paymentMethodId: paymentMethod.id });
+      handleIntentCreate(paymentMethod.id);
+
+    }
+  };
+
+  // for Attachment
+
+  const handleAttachment = () => {
+    alert('hi');
+  }
 
   
   return (
@@ -188,73 +243,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         />
                       </div>
                     </div>
-                    {/* <div className="mb-4 w-full space-y-2">
-                      <label
-                        className="text-sm font-medium 
-        leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        Card Number
-                      </label>
-                      <div className="relative">
-                        <input
-                          name="cardNumber"
-                          value={formData.cardNumber}
-                          onChange={handleInputChange}
-                          className="theme-form-control-s1 flex h-9
-           w-full rounded-md border border-input bg-transparent px-3
-            py-1 text-sm shadow-sm transition-colors file:border-0 
-            file:bg-transparent file:text-sm file:font-medium 
-            placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 
-            focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                          placeholder="card Number"
-                          id=":Rj2nnjkq:-form-item"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid w-full grid-cols-2 gap-4">
-                      <div className="mb-4 space-y-2 ">
-                        <label
-                          className="text-sm font-medium 
-        leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Valid through (MM/YY)
-                        </label>
-                        <div className="relative">
-                          <input
-                            name="validThrough"
-                            value={formData.validThrough}
-                            onChange={handleInputChange}
-                            className="theme-form-control-s1 flex h-9 w-full rounded-md 
-          border border-input bg-transparent px-3 py-1 text-sm
-           shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-            file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-            focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                            placeholder="Valid through (MM/YY)"
-                          />
-                        </div>
-                      </div>
-                      <div className="mb-4 space-y-2 ">
-                        <label
-                          className="text-sm font-medium 
-        leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          CVV
-                        </label>
-                        <div className="relative">
-                          <input
-                           name="cvv"
-                           value={formData.cvv}
-                           onChange={handleInputChange}
-                           className="theme-form-control-s1 flex h-9 w-full rounded-md 
-          border border-input bg-transparent px-3 py-1 text-sm
-           shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
-            file:font-medium placeholder:text-muted-foreground focus-visible:outline-none 
-            focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                            placeholder="CVV"
-                          />
-                        </div>
-                      </div>
-                    </div> */}
+                    
                      <div className="mb-4 w-full space-y-2" style={{width: '650px'}}>
               <label className="text-sm font-medium">Card Details</label>
               <div className="theme-form-control-s1 border p-2">
@@ -263,7 +252,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             </div>
                   </div>
                   <div className="order-action-btn">
-                  <Button onClick={handleSubmit} disabled={isLoading || !stripe || !name.trim() || !cardComplete} className="theme-primary-btn order-btn">
+                  <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete} className="theme-primary-btn order-btn">
                 {isLoading ? "Processing..." : "Confirm Payment"}
               </Button>
                   </div>
@@ -317,7 +306,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                             onClick={() => {
                               setAdvanceAmount(inputValue);
                               onManageAmount(inputValue);
-                              handleIntentCreate();
+                              // handleIntentCreate();
                             }} // Set saved amount 
                             disabled={!inputValue} // Disable if inputValue is empty
                             className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
@@ -331,7 +320,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                               setAdvanceAmount(""); // Clear saved amount
                               onManageAmount("")
                             }}
-                            className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black"
+                            disabled={!inputValue} // Disable if inputValue is empty
+                            className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             Cancel
                           </button>
@@ -361,15 +351,21 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                       <div className="mb-4 w-full space-y-2" style={{width: '650px'}}>
                         <label className="text-sm font-medium">Card Details</label>
                         <div className="theme-form-control-s1 border p-2">
-                          <CardElement />
+                        <CardElement options={{ hidePostalCode: true }} onChange={handleCardChange} />
                         </div>
                       </div>
                     </div>
                     <div className="order-action-btn">
                     <div className="order-action-btn">
-                    <Button onClick={handleSubmit} disabled={isLoading || !stripe} className="theme-primary-btn order-btn">
+                    {/* <Button onClick={handleSubmit} disabled={isLoading || !stripe} className="theme-primary-btn order-btn">
                   {isLoading ? "Processing..." : "Confirm Payment"}
-                </Button>
+                </Button> */}
+                <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete || advanceAmount === ''} className="theme-primary-btn order-btn">
+                      {isLoading ? "Processing..." : "Confirm Payment"}
+                    </Button> &nbsp;&nbsp;
+                    <Button onClick={handleAttachment} className="theme-primary-btn order-btn">
+                      {isLoading ? "Processing..." : "Send Attachment"}
+                    </Button>
                     </div>
                     </div>
                     
