@@ -15,6 +15,8 @@ const TeamMembersPage = () => {
   const [limit] = useState(10);
 
   const [isAddToMemberModalOpen, setIsAddToMemberModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState("");
+
   const wrapperRef = useRef(null);
 
   const handleToggleAddModal = () =>
@@ -30,17 +32,29 @@ const TeamMembersPage = () => {
           ? membersQuery.data.data.map((item: any) => ({
               id: item?.id,
               userDetailId: item?.userId,
-              fullName : item?.userDetail?.firstName !== null
-  ? `${item.userDetail.firstName} ${item.userDetail.lastName ?? ""}`.trim() 
-  : "",
+              firstName : item?.userDetail?.firstName,
+              lastName: item?.userDetail?.lastName,
               email: item?.userDetail?.email,
               phoneNumber: item?.userDetail?.phoneNumber,
+              userRoleId: item?.userRoleId,
               userRoleName: item?.userDetail?.userRoleName,
               employeeId: item?.userDetail?.employeeId,
               status: item?.userDetail?.status,
             }))
           : [];
       }, [membersQuery?.data?.data]);
+
+      const handleClose = () => {
+        setIsAddToMemberModalOpen(false);
+        setSelectedMember("");
+      }
+        
+
+      const handleEditMode = (memBerInfo: any) => {
+        setSelectedMember(memBerInfo);
+        handleToggleAddModal();
+      }
+        
 
   return (
     <section className="team_members_section">
@@ -77,13 +91,13 @@ const TeamMembersPage = () => {
               {memoizedMember?.map((item: any) => (
                 <>
                 <tr>
-                  <td>{item?.fullName || '-----'}</td>
+                  <td>{item?.firstName} {item?.lastName}</td>
                   <td>{item.email || '--'}</td>
                   <td>{item.phoneNumber || '---'}</td>
                   <td>{item.userRoleName || '--'}</td>
                   <td>{item.employeeId || '--'}</td>
                   <td>{item.status || '--'}</td>
-                  <td> <Info className="h-4 w-4 cursor-pointer text-gray-500" /></td>
+                  <td> <Info className="h-4 w-4 cursor-pointer text-gray-500" onClick={() => handleEditMode(item)} /></td>
                 </tr>
                 </>
                 
@@ -114,11 +128,9 @@ const TeamMembersPage = () => {
           className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
           ref={wrapperRef}
         >
-          <AddToMemberForm
-            onClose={() => {
-              setIsAddToMemberModalOpen(false);
-            }}
-          />
+         
+           <AddToMemberForm onClose={handleClose} memberDetails={selectedMember} />
+             
         </DialogContent>
       </Dialog>
     </section>

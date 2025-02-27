@@ -77,6 +77,19 @@ export const createUserRole = (payload: { userRoleName: string }) => {
   });
 };
 
+export const updateUserRole = (payload: { userRoleName: string }) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/updateUserRole`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const fetchLocation = () => {
   return axios({
     method: "GET",
