@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type State = {
   orders: {
@@ -28,8 +29,12 @@ export type State = {
   };
 };
 
+// export type Actions = {
+//   setOrders: (data: State["orders"]) => void;
+// };
 export type Actions = {
   setOrders: (data: State["orders"]) => void;
+  resetOrders: () => void;
 };
 
 export const initialOrderState: State = {
@@ -54,7 +59,23 @@ export const initialOrderState: State = {
   },
 };
 
-export const useOrderStore = create<State & Actions>()((set) => ({
-  orders: initialOrderState.orders,
-  setOrders: (data) => set((state) => ({ ...state, orders: data })),
-}));
+// export const useOrderStore = create<State & Actions>()((set) => ({
+//   orders: initialOrderState.orders,
+//   setOrders: (data) => set((state) => ({ ...state, orders: data })),
+// }));
+
+export const useOrderStore = create<State & Actions>()(
+  persist(
+    (set) => ({
+      orders: initialOrderState.orders,
+
+      setOrders: (data) => set({ orders: data }),
+
+      resetOrders: () => set({ orders: initialOrderState.orders }),
+    }),
+    {
+      name: "order-storage", // Key to store in localStorage
+      getStorage: () => localStorage, // Use localStorage (or sessionStorage if needed)
+    }
+  )
+);

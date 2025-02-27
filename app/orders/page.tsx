@@ -106,22 +106,25 @@ const OrdersPage = () => {
   };
 
   const handleAmount = async (getAmount:string) => {
-    console.log(advanceAmount, "==>108")
+    // console.log(advanceAmount, "==>108")
     setAdvanceAmount(getAmount);
   }
 
-  const handleCreateOrder = async (paymentType: string, paymentIntentId: string) => {
-    alert (paymentType); 
+  const [clearCard, setClearCard] = useState(false);
+
+  const handleCreateOrder = async (paymentType: string, paymentIntentId: string) => { 
+    alert(paymentType);
     if (hasAccessToken) {
       // let data = {};
       if (orders.orders) {
-        // console.log(orders.orders.cartIds);
         if (!orders.orders.cartIds?.length) {
           toast({
             title: "Order cannot be placed",
             description: "Please go back to checkout and try again",
             variant: "danger",
           });
+           // Clear the CardElement before returning
+           setClearCard(true);  
           return;
         }
          let data: Record<string, any> = { ...orders.orders }; // Using Record<string, any> to allow dynamic properties
@@ -129,7 +132,7 @@ const OrdersPage = () => {
        
          data.paymentMethod = paymentType;
          if (paymentIntentId )  data.paymentIntentId = paymentIntentId;
-        console.log(data) ; 
+        // console.log(data) ; 
         const response = await createOrder.mutateAsync(data);
 
           if (response?.data) {
@@ -142,7 +145,7 @@ const OrdersPage = () => {
 
             orders.setOrders(initialOrderState.orders);
 
-            router.push("/my-orders");
+            paymentType === 'advance' ? setClearCard(false) : router.push("/my-orders");
           }
       }
     } else {
@@ -168,7 +171,7 @@ const OrdersPage = () => {
 
         orders.setOrders(initialOrderState.orders);
 
-        router.push("/login");
+        paymentType === 'advance' ? setClearCard(false) : router.push("/login");
       }
       }
       
@@ -191,6 +194,7 @@ const OrdersPage = () => {
             calculateTotalAmount={calculateTotalAmount}
             onManageAmount={handleAmount}
             isLoading={createOrder.isPending}
+            clearCardElement={clearCard}
           />
           </Elements>
 

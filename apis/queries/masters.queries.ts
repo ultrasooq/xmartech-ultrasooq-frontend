@@ -8,7 +8,8 @@ import {
   fetchStatesByCountry,
   fetchCitiesByState,
   createUserRole,
-  fetchuserRoles
+  fetchuserRoles,
+  fetchuserRolesWithPagination
 } from "../requests/masters.requests";
 import { APIResponseError } from "@/utils/types/common.types";
 
@@ -50,6 +51,20 @@ export const useBrands = (payload: { term?: string, addedBy?: number, type?: str
       // },
       enabled,
     });
+
+    export const useUserRolesWithPagination = (payload: { page: number; limit: number;},enabled = true) =>
+      useQuery({
+        queryKey: ["userRoles", payload],
+        queryFn: async () => {
+          const res = await fetchuserRolesWithPagination(payload);
+          return res.data;
+        },
+        // onError: (err: APIResponseError) => {
+        //   console.log(err);
+        // },
+        enabled,
+      });
+    
   
 
 export const useCreateBrand = () => {

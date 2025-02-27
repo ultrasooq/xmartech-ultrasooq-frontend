@@ -8,6 +8,7 @@ import { Controller, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CreatableSelect from "react-select/creatable";
+import Select from "react-select";
 import { IOption, IUserRoles } from "@/utils/types/common.types";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -33,15 +34,21 @@ type AddToMemberFormProps = {
 };
 
 const addFormSchema = z.object({
+  firstName: z.string().trim().min(2, { message: "First Name is required" }),
+  lastName: z.string().optional(),
   email: z.string().trim().min(2, { message: "Email is required" }),
   userRoleId: z.number().min(1, { message: "User Role is required" }), // Ensure it stays a number
   tradeRole: z.string().optional(),
+  phoneNumber: z.string().optional(),
 });
 
 const addDefaultValues = {
+  firstName: "",
+  lastName: "",
   email: "",
   userRoleId: undefined, // Ensures correct validation behavior
   tradeRole: "MEMBER",
+  phoneNumber: ""
 };
 
 const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
@@ -127,15 +134,37 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
           className="card-item card-payment-form px-5 pb-5 pt-3"
         >
           <ControlledTextInput
+            label="First Name"
+            name="firstName"
+            placeholder="Enter First Name"
+            type="text"
+          />
+
+          <ControlledTextInput
+            label="Last Name"
+            name="lastName"
+            placeholder="Enter Last Name"
+            type="text"
+          />
+
+
+          <ControlledTextInput
             label="Email"
             name="email"
             placeholder="Enter Email"
             type="text"
           />
 
+        <ControlledTextInput
+            label="Phone Number"
+            name="phoneNumber"
+            placeholder="Enter Phone Number"
+            type="number"
+          />
+
           <div className="flex w-full items-center gap-1.5">
             <Label>User Role</Label>
-            <TooltipProvider>
+            {/* <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Info className="h-4 w-4 cursor-pointer text-gray-500" />
@@ -145,7 +174,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
                   to create a new User Role.
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
           </div>
 
           <Controller
@@ -153,7 +182,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
             control={form.control} // ✅ Use form.control instead
             render={({ field }) => (
               <>
-              <CreatableSelect
+              {/* <CreatableSelect
                 name={field.name}
                 isClearable
                 isDisabled={createUserRole.isPending}
@@ -171,7 +200,24 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
                 styles={customStyles}
                 instanceId="userRoleId"
                 className="z-[999]"
-              />
+              /> */}
+
+                    <Select
+                      name={field.name}
+                      onChange={(newValue) => {
+                        const numericValue = newValue ? Number(newValue.value) : 0; // Ensure it's a number
+                        field.onChange(numericValue); // Pass the correct numeric value
+                        setValue(newValue);
+                      }}
+                      options={memoizedUserRole}
+                      value={memoizedUserRole.find(
+                        (item: IOption) => Number(item.value) === field.value
+                      )}
+                      styles={customStyles}
+                      instanceId="userRoleId"
+                      className="z-[999]"
+                      isSearchable={true} // Keep search enabled
+                    />
                {/* Validation Error Message */}
                 {form.formState.errors.userRoleId && (
                   <p className="text-red-500 text-sm">

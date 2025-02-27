@@ -2,6 +2,7 @@ import axios from "axios";
 import { isEmpty } from "lodash";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
+import urlcat from "urlcat";
 
 export const fetchCountries = () => {
   return axios({
@@ -35,6 +36,20 @@ export const fetchuserRoles = () => {
     },
   });
 };
+
+export const fetchuserRolesWithPagination = (payload: { page: number; limit: number;}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/user/getAllUserRole`, payload,),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+
 
 export const createBrand = (payload: { brandName: string }) => {
   return axios({
