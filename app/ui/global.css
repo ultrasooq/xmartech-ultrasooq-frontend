@@ -4891,4 +4891,107 @@ input::-ms-clear {
     padding: 10px 5px;
   }
 
+  .product-view-s1-left-right .container {
+    @apply flex-wrap;
+  }
+
+  .product-view-s1-left-right .product-view-s1-left {
+    @apply max-w-full mb-5;
+  }
+
+  .product-view-s1-left-right .product-view-s1-right {
+    @apply max-w-full;
+  }
+
+  .product-view-s1-left-right .product-view-s1-right .info-col h2 {
+    @apply text-[24px]
+  }
+
+  .product-view-s1-left-right.type2 .brand_sold_info {
+    @apply flex-wrap gap-2;
+  }
+
+  .product-view-s1-left-details-with-right-suggestion .container {
+    @apply flex-wrap;
+  }
+
+  .product-view-s1-left-details {
+    @apply max-w-full;
+  }
+
+  .product-view-s1-details-right-suggestion {
+    @apply max-w-full;
+  }
+
+  .product-view-s1-details-more-suggestion-sliders .related_slider button {
+    @apply left-0;
+  }
+
+  .product-view-s1-details-more-suggestion-sliders .related_slider button:last-child {
+    @apply left-auto right-0;
+  }
+
+
+  .rfq_section .rfq_main_box {
+    @apply flex-wrap p-0;
+  }
+
+  .rfq_section .rfq_main_box .rfq_middle {
+    @apply max-w-full;
+  }
+
+  .rfq_section .rfq_main_box .rfq_middle .rfq_middle_top {
+    @apply flex-wrap;
+  }
+
+  .rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .products_sec_top {
+    @apply flex-wrap gap-3;
+  }
+  
+  .qty-up-down-s1-with-rgMenuAction button {
+    @apply p-0 w-6 h-6;
+  }
+
+  .qty-up-down-s1-with-rgMenuAction button img {
+    @apply p-1;
+  }
+
+  .cart_button button {
+    @apply text-sm px-1 !important;
+  }
+
+}
+
+
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+
+  .product-view-s1-left-details-with-right-suggestion .container {
+    @apply gap-1.5;
+  }
+
+  .product-view-s1-left-details {
+    max-width: calc(100% - 220px);
+  }
+
+  .product-view-s1-details-right-suggestion {
+    @apply max-w-[220px]
+  }
+
+  .suggestion-same-branch-lists-s1 .contnet-bodypart {
+    @apply p-2;
+  }
+
+  .product-list-s1.outline-style .product-list-s1-box {
+    @apply pt-5;
+  }
+
+  .product-view-s1-details-more-suggestion-sliders .related_slider button {
+    @apply left-0;
+  }
+
+  .product-view-s1-details-more-suggestion-sliders .related_slider button:last-child {
+    @apply left-auto right-0;
+  }
+
+
 }

@@ -53,7 +53,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="w-full pt-16">
+    <footer className="w-full pt-6 md:pt-16">
       <div className="container m-auto">
         <div className="flex flex-wrap">
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-3/12 lg:w-3/12">
@@ -176,7 +176,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="flex flex-wrap">
-          <div className="flex w-full flex-wrap items-center justify-center border-t border-solid border-gray-200 py-5 lg:justify-between">
+          <div className="flex w-full flex-wrap items-center justify-center border-t border-solid border-gray-200 px-3 py-5 md:px-0 lg:justify-between">
             <div className="mb-3 flex w-auto items-center justify-start text-base font-normal capitalize text-light-gray lg:mb-0">
               <p>©2021 Ultrasooq All Rights Reserved</p>
             </div>

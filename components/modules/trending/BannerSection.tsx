@@ -47,7 +47,7 @@ const BannerSection = () => {
               </button>
             </div>
           </div>
-          <div className="relative h-[360px] w-[548px]">
+          <div className="relative h-[250px] w-full md:h-[360px] md:w-[548px]">
             <Image src={InnerBannerImage} alt="inner-banner" fill />
           </div>
         </div>
