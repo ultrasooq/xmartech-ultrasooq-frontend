@@ -10,7 +10,8 @@ import {
   createUserRole,
   fetchuserRoles,
   updateUserRole,
-  fetchuserRolesWithPagination
+  fetchuserRolesWithPagination,
+  deleteMemberRole
 } from "../requests/masters.requests";
 import { APIResponseError } from "@/utils/types/common.types";
 
@@ -65,6 +66,28 @@ export const useBrands = (payload: { term?: string, addedBy?: number, type?: str
         // },
         enabled,
       });
+
+      export const useDeleteMemberRole = () => {
+        const queryClient = useQueryClient();
+        return useMutation<
+          { data: any; message: string; status: boolean },
+          APIResponseError,
+          { id: number }
+        >({
+          mutationFn: async (payload) => {
+            const res = await deleteMemberRole(payload);
+            return res.data;
+          },
+          onSuccess: () => {
+            queryClient.invalidateQueries({
+              queryKey: ["userRoles"],
+            });
+          },
+          onError: (err: APIResponseError) => {
+            console.log(err);
+          },
+        });
+      }
     
   
 

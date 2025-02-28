@@ -3,11 +3,15 @@ import React, { useMemo, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Pagination from "@/components/shared/Pagination";
-import { Info } from "lucide-react";
+import { Delete, Info } from "lucide-react";
 import { IUserRoles } from "@/utils/types/common.types";
-import { useUserRolesWithPagination } from "@/apis/queries/masters.queries";
+import { useUserRolesWithPagination, useDeleteMemberRole } from "@/apis/queries/masters.queries";
 import AddToRoleForm from "@/components/modules/teamMembers/AddToRoleForm";
 import PermissionForm from "@/components/modules/teamMembers/PermissionForm";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import TrashIcon from "@/public/images/social-delete-icon.svg";
+import { useToast } from "@/components/ui/use-toast";
 
 const RoleSettingsPage = () => {
   const [page, setPage] = useState(1);
@@ -17,6 +21,8 @@ const RoleSettingsPage = () => {
   const [isAddToPermissionModalOpen, setIsAddToPermissionModalOpen] = useState(false);
   const [selectedRoleId, setSelectedRoleId] = useState<number>(0);
   const [selectedRoleInfo, setSelectedRoleinfo] = useState("");
+  const deleteMemberRole = useDeleteMemberRole();
+  const { toast } = useToast();
 
   const wrapperRef = useRef(null);
 
@@ -51,6 +57,25 @@ const handleClosePermissionModal = () => {
       setSelectedRoleinfo(roleInfo);
       handleToggleAddModal();
     }
+
+    const handleToDelete = async (id: number) => {
+      const response = await deleteMemberRole.mutateAsync({id});
+      if (response.status) {
+        toast({
+          title: response.message,
+          description: response.message,
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: "Role Delete Failed",
+          description: response.message,
+          variant: "danger",
+        });
+      }
+    }
+
+   
       
 
   return (
@@ -84,7 +109,12 @@ const handleClosePermissionModal = () => {
                          Setup Permission
                         </button>
                     </td>
-                  <td> <Info className="h-4 w-4 cursor-pointer text-gray-500" onClick={() => handleEditMode(item)} /></td>
+                  <td> <div className="flex items-center gap-1">
+                  <Info className="h-4 w-4 cursor-pointer text-gray-500" onClick={() => handleEditMode(item)} />
+                       <a href="javascript:void(0)" onClick={() => handleToDelete(item.value)}>
+                        <Image src={TrashIcon} alt="social-delete-icon" /> </a> 
+                  </div>
+                  </td>
                 </tr>
                 </>
                 
