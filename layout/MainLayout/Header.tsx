@@ -65,7 +65,7 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
       <a onClick={onClick} {...props}>
         <button
           type="button"
-          className="flex cursor-pointer px-2 text-sm font-semibold uppercase text-white md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg"
+          className="flex cursor-pointer text-sm font-semibold uppercase text-white md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg"
           onClick={onClick}
         >
           {children}

@@ -17,17 +17,22 @@ import {
 } from "@/apis/queries/masters.queries";
 
 
-const customStyles = {
-  control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
-};
 
 type AddToRoleFormProps = {
   onClose: () => void;
   roleDetails: any;
 };
 
+// const addFormSchema = z.object({
+//     userRoleName: z.string().trim().min(2, { message: "Role Name is required" }),
+// });
+
 const addFormSchema = z.object({
-    userRoleName: z.string().trim().min(2, { message: "Role Name is required" }),
+  userRoleName: z
+    .string()
+    .trim()
+    .min(2, { message: "Role Name is required" })
+    .regex(/^[A-Za-z\s]+$/, { message: "Role Name must contain only letters" }),
 });
 
 

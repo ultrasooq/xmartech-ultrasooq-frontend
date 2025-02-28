@@ -39,7 +39,7 @@ const TeamMembersPage = () => {
               userRoleId: item?.userRoleId,
               userRoleName: item?.userDetail?.userRoleName,
               employeeId: item?.userDetail?.employeeId,
-              status: item?.userDetail?.status,
+              status: item?.status,
             }))
           : [];
       }, [membersQuery?.data?.data]);

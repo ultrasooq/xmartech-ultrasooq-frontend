@@ -49,6 +49,18 @@ export const fetchuserRolesWithPagination = (payload: { page: number; limit: num
   });
 };
 
+export const deleteMemberRole = (payload: { id: number;}) => {
+  return axios({
+    method: "DELETE",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/user/deleteUserRole`, payload,),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 
 
 export const createBrand = (payload: { brandName: string }) => {
