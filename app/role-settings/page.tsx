@@ -68,7 +68,7 @@ const handleClosePermissionModal = () => {
         });
       } else {
         toast({
-          title: "Role Delete Failed",
+          title: response.message,
           description: response.message,
           variant: "danger",
         });
