@@ -13,6 +13,7 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   useUserRoles,
   useCreateUserRole,
+  useUpdateUserRole
 } from "@/apis/queries/masters.queries";
 
 
@@ -22,24 +23,24 @@ const customStyles = {
 
 type AddToRoleFormProps = {
   onClose: () => void;
+  roleDetails: any;
 };
 
 const addFormSchema = z.object({
     userRoleName: z.string().trim().min(2, { message: "Role Name is required" }),
 });
 
-const addDefaultValues = {
-    userRoleName: "",
-};
 
-const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose }) => {
+const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, roleDetails }) => {
   // const formContext = useFormContext();
   const createUserRole = useCreateUserRole();
+  const updateUserRole = useUpdateUserRole();
   const { toast } = useToast();
 //   const [, setValue] = useState<IOption | null>();
 
- 
-
+const addDefaultValues = {
+  userRoleName: roleDetails?.label || "",
+};
 
   const form = useForm({
     resolver: zodResolver(addFormSchema),
@@ -48,8 +49,13 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose }) => {
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = { ...formData };
-    console.log(updatedFormData);
-    const response = await createUserRole.mutateAsync(formData);
+    // console.log(updatedFormData);
+    let response;
+    if (roleDetails) {
+      response = await updateUserRole.mutateAsync({ userRoleId: roleDetails.value, ...formData });
+    } else {
+      response = await createUserRole.mutateAsync(formData);
+    }
     if (response.status) {
       onClose();
       toast({
@@ -69,7 +75,7 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose }) => {
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          Add Role
+          {roleDetails ? 'Edit Role' : 'Add Role' }
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -95,7 +101,7 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose }) => {
             type="submit"
             className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
-            Add Role
+             {roleDetails ? 'Edit Role' : 'Add Role' }
           </Button>
         </form>
       </Form>

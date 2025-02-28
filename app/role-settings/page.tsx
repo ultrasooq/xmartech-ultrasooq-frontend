@@ -16,6 +16,7 @@ const RoleSettingsPage = () => {
   const [isAddToRoleModalOpen, setIsAddToRoleModalOpen] = useState(false);
   const [isAddToPermissionModalOpen, setIsAddToPermissionModalOpen] = useState(false);
   const [selectedRoleId, setSelectedRoleId] = useState<number>(0);
+  const [selectedRoleInfo, setSelectedRoleinfo] = useState("");
 
   const wrapperRef = useRef(null);
 
@@ -45,6 +46,12 @@ const handleClosePermissionModal = () => {
           }))
         : [];
     }, [userRolesQuery?.data?.data]);
+
+    const handleEditMode = (roleInfo: any) => {
+      setSelectedRoleinfo(roleInfo);
+      handleToggleAddModal();
+    }
+      
 
   return (
     <section className="team_members_section">
@@ -77,7 +84,7 @@ const handleClosePermissionModal = () => {
                          Setup Permission
                         </button>
                     </td>
-                  <td> <Info className="h-4 w-4 cursor-pointer text-gray-500" /></td>
+                  <td> <Info className="h-4 w-4 cursor-pointer text-gray-500" onClick={() => handleEditMode(item)} /></td>
                 </tr>
                 </>
                 
@@ -112,7 +119,9 @@ const handleClosePermissionModal = () => {
           <AddToRoleForm
             onClose={() => {
                 setIsAddToRoleModalOpen(false);
+                setSelectedRoleinfo("");
             }}
+            roleDetails={selectedRoleInfo}
           />
         </DialogContent>
       </Dialog>

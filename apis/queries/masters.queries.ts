@@ -9,6 +9,7 @@ import {
   fetchCitiesByState,
   createUserRole,
   fetchuserRoles,
+  updateUserRole,
   fetchuserRolesWithPagination
 } from "../requests/masters.requests";
 import { APIResponseError } from "@/utils/types/common.types";
@@ -110,6 +111,28 @@ export const useCreateUserRole = () => {
     },
   });
 };
+
+export const useUpdateUserRole = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { userRoleName: string }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateUserRole(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["userRoles"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+}
 
 export const useLocation = (enabled = true) =>
   useQuery({

@@ -15,7 +15,7 @@ import {
   useUserRoles,
   useCreateUserRole,
 } from "@/apis/queries/masters.queries";
-import { useCreateMember } from "@/apis/queries/member.queries";
+import { useCreateMember, useUpdateMember } from "@/apis/queries/member.queries";
 import {
   Tooltip,
   TooltipTrigger,
@@ -31,6 +31,7 @@ const customStyles = {
 
 type AddToMemberFormProps = {
   onClose: () => void;
+  memberDetails: any;
 };
 
 const addFormSchema = z.object({
@@ -42,22 +43,15 @@ const addFormSchema = z.object({
   phoneNumber: z.string().optional(),
 });
 
-const addDefaultValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  userRoleId: undefined, // Ensures correct validation behavior
-  tradeRole: "MEMBER",
-  phoneNumber: ""
-};
 
-const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
+const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetails }) => {
   // const formContext = useFormContext();
   const createUserRole = useCreateUserRole();
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
   const userRolesQuery = useUserRoles();
   const createMember = useCreateMember();
+  const updateMember = useUpdateMember();
 
   const memoizedUserRole = useMemo(() => {
     return userRolesQuery?.data?.data
@@ -90,6 +84,16 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
     }
   };
 
+    // Default values based on whether editing or adding a new member
+    const addDefaultValues = {
+      firstName: memberDetails?.firstName || "",
+      lastName: memberDetails?.lastName || "",
+      email: memberDetails?.email || "",
+      userRoleId: Number(memberDetails?.userRoleId) || undefined,
+      tradeRole: memberDetails?.tradeRole || "MEMBER",
+      phoneNumber: memberDetails?.phoneNumber || "",
+    };
+
   const form = useForm({
     resolver: zodResolver(addFormSchema),
     defaultValues: addDefaultValues,
@@ -98,7 +102,14 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
   const onSubmit = async (formData: any) => {
     const updatedFormData = { ...formData };
     console.log(updatedFormData);
-    const response = await createMember.mutateAsync(formData);
+
+    let response;
+    if (memberDetails) {
+      response = await updateMember.mutateAsync({ memberId: memberDetails.id, ...formData });
+    } else {
+      response = await createMember.mutateAsync(formData);
+    }
+  
     if (response.status) {
       onClose();
       toast({
@@ -108,7 +119,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
       });
     } else {
       toast({
-        title: "Membert Add Failed",
+        title: response.message,
         description: response.message,
         variant: "danger",
       });
@@ -118,7 +129,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          Add Member
+          {memberDetails ? 'Edit Member' : 'Add Member' }
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -153,6 +164,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
             name="email"
             placeholder="Enter Email"
             type="text"
+            readOnly={memberDetails}
           />
 
         <ControlledTextInput
@@ -211,8 +223,8 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
                       }}
                       options={memoizedUserRole}
                       value={memoizedUserRole.find(
-                        (item: IOption) => Number(item.value) === field.value
-                      )}
+                        (item: IOption) => Number(item.value) === field.value // Use form state value instead of fixed memberDetails value
+                      ) || memoizedUserRole.find((item: IOption) => Number(item.value) === memberDetails?.userRoleId)} // Default to memberDetails value if not set
                       styles={customStyles}
                       instanceId="userRoleId"
                       className="z-[999]"
@@ -232,7 +244,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose }) => {
             type="submit"
             className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
-            Add Member
+             {memberDetails ? 'Edit Member' : 'Add Member' }
           </Button>
         </form>
       </Form>
