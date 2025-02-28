@@ -4930,7 +4930,35 @@ input::-ms-clear {
   .product-view-s1-details-more-suggestion-sliders .related_slider button:last-child {
     @apply left-auto right-0;
   }
+
+
+  .rfq_section .rfq_main_box {
+    @apply flex-wrap p-0;
+  }
+
+  .rfq_section .rfq_main_box .rfq_middle {
+    @apply max-w-full;
+  }
+
+  .rfq_section .rfq_main_box .rfq_middle .rfq_middle_top {
+    @apply flex-wrap;
+  }
+
+  .rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .products_sec_top {
+    @apply flex-wrap gap-3;
+  }
   
+  .qty-up-down-s1-with-rgMenuAction button {
+    @apply p-0 w-6 h-6;
+  }
+
+  .qty-up-down-s1-with-rgMenuAction button img {
+    @apply p-1;
+  }
+
+  .cart_button button {
+    @apply text-sm px-1 !important;
+  }
 
 }
 

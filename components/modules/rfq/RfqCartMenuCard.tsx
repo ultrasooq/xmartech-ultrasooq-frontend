@@ -66,7 +66,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
         </div>
         <div className="rfq_cart_wrap_content_top_bottom flex-wrap gap-3">
           <div className="qty-up-down-s1-with-rgMenuAction">
-            <div className="flex items-center gap-x-4">
+            <div className="flex items-center gap-x-3 md:gap-x-4">
               <Button
                 variant="outline"
                 className="relative hover:shadow-sm"
