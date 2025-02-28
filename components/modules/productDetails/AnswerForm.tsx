@@ -13,6 +13,7 @@ import { useToast } from "@/components/ui/use-toast";
 type AnswerFormProps = {
   onClose: () => void;
   questionId: number;
+  onReplySuccess?: (answer: string) => void;
 };
 
 const formSchema = z.object({
@@ -27,7 +28,7 @@ const formSchema = z.object({
     }),
 });
 
-const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId }) => {
+const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuccess }) => {
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -53,6 +54,8 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId }) => {
 
       form.reset();
       onClose();
+      
+      if (onReplySuccess) onReplySuccess(values.answer);
     } else {
       toast({
         title: "Answer Add Failed",

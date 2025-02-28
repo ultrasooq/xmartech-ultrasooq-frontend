@@ -1,0 +1,71 @@
+import React, { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+
+type OperationsProps = {
+    onSelect: (operation: string) => void;
+};
+
+type Operation = {
+    key: string;
+    label: string;
+}
+
+const Operations: React.FC<OperationsProps> = ({ onSelect }) => {
+    const [selectedOperation, setSelectedOperation] = useState<string>("questions_n_comments");
+
+    const operations: Operation[] = [
+        {
+            key: 'admin_n_support',
+            label: 'Admin & Support'
+        },
+        {
+            key: 'questions_n_comments',
+            label: 'Questions & Comments'
+        },
+        {
+            key: 'rate_n_review',
+            label: 'Rate & Review'
+        },
+        {
+            key: 'complains',
+            label: 'Complains'
+        }
+    ];
+
+    const selectOperation = (operation: string) => {
+        setSelectedOperation(operation);
+        onSelect(operation);
+    }
+
+    return (
+        <div className="w-[15%] border-r border-solid border-gray-300">
+            <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
+                <span>Vendor Operations</span>
+            </div>
+
+            <div className="h-[720px] w-full overflow-y-auto p-4">
+                {operations.map((operation: any) => (
+                    <button
+                        type="button"
+                        onClick={() => selectOperation(operation.key)}
+                        className={cn(
+                            "flex w-full flex-wrap rounded-md px-[10px] py-[20px]",
+                            selectedOperation == operation.key ? "shadow-lg bg-dark-orange text-white" : "",
+                        )}
+                        key={operation.key}
+                    >
+                        <div className="flex w-[calc(100%-2.5rem)] flex-wrap items-center justify-start gap-y-1 pl-3">
+                            <div className="flex w-full">
+                                <h4 className="text-color-[#333333] text-left text-[15px] font-normal uppercase">
+                                    {operation.label}
+                                </h4>
+                            </div>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default Operations;
