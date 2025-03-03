@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuestions } from "@/apis/queries/question.queries";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import AnswerForm from "../productDetails/AnswerForm";
+import Pagination from "@/components/shared/Pagination";
 
 type QuestionAndAnswersProps = {
     productId: number;
@@ -13,31 +14,63 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({ productId }) =>
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
     const [questions, setQuestions] = useState<any[]>([]);
     const [questionId, setQuestionId] = useState<number>(0);
+    const [page, setPage] = useState<number>(1);
+    const [limit, setLimit] = useState<number>(10);
     const questionQuery = useQuestions(
         {
-            page: 1,
-            limit: 10,
+            page: page,
+            limit: limit,
             productId: productId.toString(),
             sortType: "newest",
         },
         !!productId,
     );
 
-    useEffect(() => {
-        let questionList = questionQuery?.data?.data;
-    }, [productId]);
+    const memoizedQuestions = useMemo(() => {
+        return (
+            questionQuery?.data?.data?.map((item: any) => {
+                let question: {[key: string]: any} = {
+                    id: item.id,
+                    question: item.question,
+                    questionByUserId: item.questionByUserId,
+                    answers: []
+                };
 
-    useEffect(() => {
-        let questionList = questionQuery?.data?.data || [];
-        setQuestions(
-            questionList.map((question: any) => {
-                if (question.answerByuserIdDetail) {
-                    question.answeredBy = `${question.answerByuserIdDetail.firstName} ${question.answerByuserIdDetail.lastName}`;
+                if (item.questionByuserIdDetail) {
+                    question.questionBy = `${item.questionByuserIdDetail.firstName} ${item.questionByuserIdDetail.lastName}`;
                 }
+
+                if (item.productQuestionAnswerDetail.length > 0) {
+                    item.productQuestionAnswerDetail.forEach((elem: any, i: number) => {
+                        let answer: {[key: string]: any} = {
+                            id: elem.id,
+                            answer: elem.answer,
+                            answeredBy: ''
+                        };
+                        if (elem.answerByUserDetail) {
+                            answer.answeredBy = `${elem.answerByUserDetail.firstName} ${elem.answerByUserDetail.lastName}`;
+                        }
+                        question.answers.push(answer);
+                    });
+
+                } else if (item.answer) {
+                    question.answers.push({
+                        id: 0,
+                        answer: item.answer,
+                        answeredBy: ''
+                    });
+                }
+
                 return question;
-            }),
+            }) || []
         );
-    }, [questionQuery?.data?.data]);
+    }, [
+        questionQuery?.data?.data,
+        questionQuery?.data?.data?.length,
+        productId,
+        page,
+        limit,
+    ]);
 
     const handleToggleQuestionModal = () => setIsQuestionModalOpen(!isQuestionModalOpen);
 
@@ -70,43 +103,52 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({ productId }) =>
                         </>
                     ) : null}
 
-                    {!questionQuery?.isLoading && !questions?.length && (
+                    {(!questionQuery?.isLoading && !memoizedQuestions?.length) && (
                         <p className="text-center text-sm font-normal text-gray-500">
                             No data found
                         </p>
                     )}
 
-                    {!questionQuery.isLoading && questions.length > 0 && questions.map((question: any) => (
+                    {(!questionQuery.isLoading && memoizedQuestions.length > 0 ) && memoizedQuestions.map((question: any) => (
                         <div className="w-full border-b p-3" key={question.id}>
                             <article className="space-y-2">
                                 <h3 className="solid w-full rounded-md border-[5px] border-[#b5b5b5] bg-gray-300 px-3 py-2 font-bold">
                                     <span className="mr-2">Q:</span>
                                     {question.question}
                                 </h3>
+                                {question.questionBy && (
+                                    <p className="text-xs font-medium text-gray-500">
+                                        {question.questionBy}
+                                    </p>
+                                )}
                                 <div className="w-full pl-3">
-                                    {question.answer && 
-                                    <div className="solid text-md mb-2 w-full rounded-md border-[5px] border-[#b5b5b5] bg-gray-300 px-3 py-2">
-                                        <p>
-                                            <span className="mr-2 font-bold">A:</span>
-                                            {question.answer}
-                                        </p>
-                                    </div>}
-                                    {question.answeredBy && (
-                                        <p className="text-xs font-medium text-gray-500">
-                                            {question.answeredBy}
-                                        </p>
-                                    )}
-                                    {!question.answer && <div className="!my-2 text-center">
+                                    {question.answers.length && question.answers.map((answer: any) => (
+                                        <React.Fragment key={answer.id}>
+                                            <div className="solid text-md mb-2 w-full rounded-md border-[5px] border-[#b5b5b5] bg-gray-300 px-3 py-2">
+                                                <p>
+                                                    <span className="mr-2 font-bold">A:</span>
+                                                    {answer.answer}
+                                                </p>
+                                            </div>
+                                            {answer.answeredBy && (
+                                                <p className="text-xs font-medium text-gray-500">
+                                                    {answer.answeredBy}
+                                                </p>
+                                            )}
+                                        </React.Fragment>
+                                    ))}
+                                    <div className="!my-2 text-center">
                                         <Button variant="secondary" onClick={() => reply(question.id)}>
                                             Reply
                                         </Button>
-                                    </div>}
+                                    </div>
                                 </div>
                             </article>
                         </div>
                     ))}
                 </div>
             </div>
+
             <Dialog
                 open={isQuestionModalOpen}
                 onOpenChange={handleToggleQuestionModal}
@@ -119,6 +161,13 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({ productId }) =>
                     />
                 </DialogContent>
             </Dialog>
+
+            <Pagination
+                page={page}
+                setPage={setPage}
+                totalCount={questionQuery.data?.totalCount}
+                limit={limit}
+            />
         </div>
     );
 }

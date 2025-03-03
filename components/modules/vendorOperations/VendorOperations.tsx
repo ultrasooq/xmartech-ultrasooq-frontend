@@ -1,10 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import TaskIcon from "@/public/images/task-icon.svg";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useQuestions } from "@/apis/queries/question.queries";
 import Products from "@/components/modules/vendorOperations/Products";
 import Operations from "@/components/modules/vendorOperations/Operations";
 import QuestionAndAnswers from "./QuestionAndComments";
