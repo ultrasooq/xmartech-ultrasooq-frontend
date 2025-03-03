@@ -58,7 +58,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
           <div className="mb-4 w-full text-center">
             <Link
               href="/rfq-cart"
-              className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
+              className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
             >
               Go To RFQ Cart
             </Link>

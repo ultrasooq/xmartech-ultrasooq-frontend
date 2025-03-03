@@ -187,7 +187,7 @@ const RfqPage = () => {
                     <div className="rfq_add_new_product">
                       <Link
                         href="/product?productType=R"
-                        className="flex items-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
+                        className="flex items-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
                       >
                         <FaPlus />
                         Add new product in RFQ
