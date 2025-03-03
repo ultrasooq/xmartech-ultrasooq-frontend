@@ -4993,5 +4993,17 @@ input::-ms-clear {
     @apply left-auto right-0;
   }
 
+  .rfq_section .rfq_main_box .rfq_middle {
+    @apply max-w-[70%]
+  }
+
+  .rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .product_sec_list .product_list_part {
+    @apply w-[50%];
+  }
+
+  .rfq_section .rfq_main_box .rfq_right {
+    @apply max-w-[30%]
+  }
+
 
 }

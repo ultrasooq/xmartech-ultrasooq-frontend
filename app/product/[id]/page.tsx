@@ -876,8 +876,8 @@ const EditProductPage = () => {
                     <div className="form-groups-common-sec-s1">
                       <DescriptionAndSpecificationSection />
                     </div>
-                    <div className="mb-4 mt-4 inline-flex w-full items-center justify-end">
-                      <button className="rounded-sm bg-transparent px-4 py-4 text-lg font-bold leading-6 text-[#7F818D]">
+                    <div className="mb-4 mt-4 inline-flex w-full items-center justify-end gap-2">
+                      <button className="rounded-sm bg-transparent px-2 py-2 text-sm font-bold leading-6 text-[#7F818D] md:px-4 md:py-4 md:text-lg">
                         Save as Draft
                       </button>
 
@@ -887,7 +887,7 @@ const EditProductPage = () => {
                           uploadMultiple.isPending
                         }
                         type="submit"
-                        className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                        className="h-10 rounded bg-dark-orange px-6 text-center text-sm font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:h-12 md:px-10 md:text-lg"
                       >
                         {updateProductPriceByProductCondition.isPending ||
                         uploadMultiple.isPending ? (

@@ -55,7 +55,7 @@ const DescriptionAndSpecificationSection = () => {
               {fieldArrayForSpecification.fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="relative grid w-full grid-cols-2 gap-5"
+                  className="relative grid w-full grid-cols-1 gap-5 md:grid-cols-2"
                 >
                   <ControlledTextInput
                     name={`productSpecificationList.${index}.label`}

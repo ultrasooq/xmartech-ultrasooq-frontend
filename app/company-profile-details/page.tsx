@@ -59,7 +59,7 @@ export default function CompanyProfileDetailsPage() {
         <div className="container relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
-              <h2 className="text-4xl font-semibold leading-10 text-color-dark">
+              <h2 className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl">
                 Profile
               </h2>
             </div>
@@ -72,9 +72,9 @@ export default function CompanyProfileDetailsPage() {
               <VendorCard vendor={vendor} isLoading={vendorQuery.isLoading} />
             ) : null}
 
-            <div className="mt-12 w-full">
+            <div className="mt-6 w-full md:mt-12">
               <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
-                <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
+                <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-3 md:pt-7">
                   <TabsTrigger
                     value="profile-info"
                     className="w-full rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto"

@@ -48,14 +48,17 @@ type BasicInformationProps = {
   activeProductType?: string;
 };
 
-const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, activeProductType, }) => {
+const BasicInformationSection: React.FC<BasicInformationProps> = ({
+  tagsList,
+  activeProductType,
+}) => {
   const formContext = useFormContext();
   const { toast } = useToast();
   const photosRef = useRef<HTMLInputElement>(null);
   const createTag = useCreateTag();
   const [listIds, setListIds] = useState<string[]>([]);
   const [catList, setCatList] = useState<any[]>([]);
-  const [currentId, setCurrentId] = useState<string>('184');
+  const [currentId, setCurrentId] = useState<string>("184");
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   // const upload = useUploadFile();
@@ -75,7 +78,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
 
   const handleEditPreviewImage = (id: string, item: FileList) => {
     const tempArr = watchProductImages || [];
-    const filteredFormItem = tempArr.filter((item: ProductImageProps) => item.id === id,);
+    const filteredFormItem = tempArr.filter(
+      (item: ProductImageProps) => item.id === id,
+    );
     if (filteredFormItem.length) {
       filteredFormItem[0].path = item[0];
       formContext.setValue("productImages", [...tempArr]);
@@ -83,7 +88,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
   };
 
   const handleRemovePreviewImage = (id: string) => {
-    formContext.setValue("productImages", [...(watchProductImages || []).filter((item: ProductImageProps) => item.id !== id,),]);
+    formContext.setValue("productImages", [
+      ...(watchProductImages || []).filter(
+        (item: ProductImageProps) => item.id !== id,
+      ),
+    ]);
   };
 
   const handleCreateTag = async (tag: string) => {
@@ -106,7 +115,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
         variant: "danger",
       });
     }
-  }
+  };
 
   useEffect(() => {
     if (catList[currentIndex]) {
@@ -153,7 +162,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
                         name="categoryId"
                         control={formContext.control}
                         render={({ field }) => (
-                          <select {...field} className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0" onChange={(e) => {
+                          <select
+                            {...field}
+                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            onChange={(e) => {
                               if (e.target.value === "") {
                                 return;
                               }
@@ -193,41 +205,54 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
                       </p>
                     </div>
 
-                    {
-                      catList.length > 0 && catList.map((item, index) => (
-                        <div key={item?.id} className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3">
+                    {catList.length > 0 &&
+                      catList.map((item, index) => (
+                        <div
+                          key={item?.id}
+                          className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
+                        >
                           <div className="flex w-full flex-col justify-between gap-y-2">
-                            <Label>{'Sub '.repeat(index + 1 )} Category</Label>
-                            <select className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0" onChange={(e) => {
-                              if (e.target.value === "") {
-                                return;
-                              }
+                            <Label>{"Sub ".repeat(index + 1)} Category</Label>
+                            <select
+                              className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                              onChange={(e) => {
+                                if (e.target.value === "") {
+                                  return;
+                                }
 
-                              setCurrentId(e.target.value);
-                              setCurrentIndex(index + 1);
+                                setCurrentId(e.target.value);
+                                setCurrentIndex(index + 1);
 
-                              if (listIds[index + 1]) {
-                                let tempIds = listIds;
-                                tempIds[index + 1] = e.target.value;
-                                tempIds = tempIds.slice(0, index + 2);
-                                setListIds([...tempIds]);
-                                return;
-                              }
-                              setListIds([...listIds, e.target.value]);
-                            }} value={item?.children?.find((item: any) => listIds.includes(item.id?.toString()) ? item : "",)?.id?.toString()}>
+                                if (listIds[index + 1]) {
+                                  let tempIds = listIds;
+                                  tempIds[index + 1] = e.target.value;
+                                  tempIds = tempIds.slice(0, index + 2);
+                                  setListIds([...tempIds]);
+                                  return;
+                                }
+                                setListIds([...listIds, e.target.value]);
+                              }}
+                              value={item?.children
+                                ?.find((item: any) =>
+                                  listIds.includes(item.id?.toString())
+                                    ? item
+                                    : "",
+                                )
+                                ?.id?.toString()}
+                            >
                               <option value="">Select Sub Category</option>
-                              {
-                                item?.children?.map((item: any) => (
-                                  <option value={item.id?.toString()} key={item.id}>
-                                    {item.name}
-                                  </option>
-                                ))
-                              }
+                              {item?.children?.map((item: any) => (
+                                <option
+                                  value={item.id?.toString()}
+                                  key={item.id}
+                                >
+                                  {item.name}
+                                </option>
+                              ))}
                             </select>
                           </div>
                         </div>
-                      ))
-                    }
+                      ))}
                   </div>
 
                   <ControlledTextInput
@@ -288,7 +313,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
                         Product Image
                       </label>
                       <div className="flex w-full flex-wrap">
-                        <div className="grid grid-cols-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4">
                           {watchProductImages?.map(
                             (item: any, index: number) => (
                               <FormField
@@ -327,10 +352,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
                                                 src={
                                                   typeof item.path === "object"
                                                     ? URL.createObjectURL(
-                                                      item.path,
-                                                    )
+                                                        item.path,
+                                                      )
                                                     : typeof item.path ===
-                                                      "string"
+                                                        "string"
                                                       ? item.path
                                                       : "/images/no-image.jpg"
                                                 }
@@ -372,12 +397,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({ tagsList, ac
                                                 <ReactPlayer
                                                   url={
                                                     typeof item.path ===
-                                                      "object"
+                                                    "object"
                                                       ? URL.createObjectURL(
-                                                        item.path,
-                                                      )
+                                                          item.path,
+                                                        )
                                                       : typeof item.path ===
-                                                        "string"
+                                                          "string"
                                                         ? item.path
                                                         : "/images/no-image.jpg"
                                                   }
