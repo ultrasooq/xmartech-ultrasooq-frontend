@@ -243,6 +243,8 @@ export default function ProfilePage() {
         } else {
           router.push("/freelancer-profile");
         }
+      } else if (tradeRole == "MEMBER") {
+        router.push("/member-profile-details");
       }
     } else {
       toast({ title: "Profile Update Failed", description: response.message, variant: "danger", });

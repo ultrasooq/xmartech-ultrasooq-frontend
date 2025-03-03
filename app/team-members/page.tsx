@@ -37,7 +37,7 @@ const TeamMembersPage = () => {
               email: item?.userDetail?.email,
               phoneNumber: item?.userDetail?.phoneNumber,
               userRoleId: item?.userRoleId,
-              userRoleName: item?.userDetail?.userRoleName,
+              userRoleName: item?.userRolDetail?.userRoleName,
               employeeId: item?.userDetail?.employeeId,
               status: item?.status,
             }))
@@ -73,7 +73,7 @@ const TeamMembersPage = () => {
             </Link>
           </div>
           <div className="team_members_table w-full">
-            {memoizedMember.length ? <>
+            {!membersQuery?.isLoading && memoizedMember.length ? <>
               <table cellPadding={0} cellSpacing={0} border={0}>
               <thead>
                 <tr>
@@ -106,7 +106,7 @@ const TeamMembersPage = () => {
             </table>
             </> : null}
             
-            {!memoizedMember.length ? (
+            {!membersQuery?.isLoading && !memoizedMember.length ? (
               <p className="py-10 text-center text-sm font-medium">
                 No Members Found
               </p>

@@ -104,7 +104,7 @@ export default function LoginPage() {
       toast({
         title: "Login In progress",
         description: response.message,
-        variant: "danger",
+        variant: "success",
       });
       sessionStorage.setItem("email", values.email.toLowerCase());
       form.reset();

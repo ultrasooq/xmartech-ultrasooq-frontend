@@ -214,7 +214,7 @@ const Header = () => {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [subCategoryId, categoryId, menuId]);
 
-  const handleProfile = () => {
+  const handleProfile = () => {console.log(me?.data?.data?.tradeRole);
     switch (me?.data?.data?.tradeRole) {
       case "BUYER":
         return "/buyer-profile-details";
@@ -222,6 +222,8 @@ const Header = () => {
         return "/freelancer-profile-details";
       case "COMPANY":
         return "/company-profile-details";
+      case "MEMBER":
+        return "/member-profile-details";
       default:
         return "/home";
     }

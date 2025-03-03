@@ -90,7 +90,7 @@ const handleClosePermissionModal = () => {
             
           </div>
           <div className="team_members_table w-full">
-            {memoizedUserRole.length ? <>
+            {!userRolesQuery?.isLoading && memoizedUserRole.length ? <>
               <table cellPadding={0} cellSpacing={0} border={0}>
               <thead>
                 <tr>
@@ -123,7 +123,7 @@ const handleClosePermissionModal = () => {
             </table>
             </> : null}
             
-            {!memoizedUserRole.length ? (
+            {!userRolesQuery?.isLoading && !memoizedUserRole.length ? (
               <p className="py-10 text-center text-sm font-medium">
                 No Roles Found
               </p>
