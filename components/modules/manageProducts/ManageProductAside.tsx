@@ -200,7 +200,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                       options={PRODUCT_CONDITION_LIST}
                       value={PRODUCT_CONDITION_LIST.find(
                         (item: any) => item.value === field.value,
-                      ) || ''}
+                      ) || null}
                       styles={customStyles}
                       instanceId="productCondition"
                       // isDisabled={!watchIsProductConditionRequired}
