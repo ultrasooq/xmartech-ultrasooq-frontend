@@ -1691,7 +1691,7 @@
   }
 
   .add_member_modal .card-payment-form {
-    overflow: visible;
+    overflow: auto;
   }
 
   .add-new-address-modal .order-action-btn {
@@ -4878,6 +4878,11 @@ input::-ms-clear {
   @apply p-[20px] border-b border-solid border-[#E8E8E8] text-sm font-normal text-[#7F818D]
 }
 
+.team_members_table table thead tr th:nth-child(4),
+.team_members_table table tbody tr td:nth-child(4) {
+  @apply w-[20%] whitespace-normal break-words break-all;
+}
+
 .team_members_table table thead tr th:nth-child(5),
 .team_members_table table tbody tr td:nth-child(5) {
   @apply text-center;
@@ -4958,6 +4963,75 @@ input::-ms-clear {
 
   .cart_button button {
     @apply text-sm px-1 !important;
+  }
+
+  .team_members_heading {
+    @apply flex-wrap gap-2
+  }
+
+  .team_members_heading h1 {
+    @apply text-2xl
+  }
+
+  .team_members_heading button {
+    @apply p-2 text-sm;
+  }
+
+  .team_members_table {
+    @apply overflow-auto;
+  }
+
+  .team_members_table table thead tr th {
+    @apply p-[10px] whitespace-nowrap;
+  }
+  
+  .team_members_table table tbody tr td {
+    @apply p-[10px] whitespace-nowrap;
+  }
+  
+  .team_members_table table thead tr th:nth-child(4),
+  .team_members_table table tbody tr td:nth-child(4) {
+    @apply w-auto whitespace-nowrap;
+  }
+
+  .existing-product-add-page .container.m-auto.px-3 {
+    @apply px-4 !important;
+  }
+
+  .existing-product-add-wrapper {
+    @apply flex-wrap w-full;
+  }
+
+  .existing-product-add-layout {
+    @apply p-0;
+  }
+
+  .existing-product-add-lists .existing-product-add-box-row {
+    @apply flex-wrap;
+  }
+
+  .existing-product-add-wrapper .left-content {
+    @apply w-full;
+  }
+
+  .existing-product-add-headerPart {
+    @apply flex-wrap gap-2;
+  }
+
+  .existing-product-add-lists .existing-product-add-item {
+    @apply max-w-full;
+  }
+
+  .existing-product-add-body .manage_product_list {
+    @apply w-full mt-5 !important;
+  }
+
+  .my-order-wrapper {
+    @apply flex-wrap;
+  }
+
+  .my-order-wrapper .left-div {
+    @apply max-w-full;
   }
 
 }

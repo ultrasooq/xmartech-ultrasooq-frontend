@@ -137,7 +137,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 {previewImages?.map((item, index: number) => (
                   <CarouselItem key={index} className="basis pl-1">
                     <div className="p-1">
-                      <div className="relative min-h-[250px] w-full md:min-h-[500px]">
+                      <div className="relative min-h-[250px] w-full">
                         {isImage(item) ? (
                           <Image
                             src={item}
@@ -181,15 +181,13 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             </div>
           ) : null}
 
-          {isLoading ? (
-            <Skeleton className="min-h-[250px] w-full md:min-h-[500px]" />
-          ) : null}
+          {isLoading ? <Skeleton className="min-h-[250px] w-full" /> : null}
 
           {/* For factories type */}
           {!isLoading &&
           productDetails?.product_productPrice[0]?.isCustomProduct ===
             "true" ? (
-            <div className="flex w-full gap-x-3 self-end">
+            <div className="mb-4 flex w-full gap-x-3 self-end pb-4">
               {productDetails?.adminId !== loginUserId ? (
                 <>
                   <Button

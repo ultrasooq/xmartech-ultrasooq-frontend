@@ -15,7 +15,10 @@ import {
   useUserRoles,
   useCreateUserRole,
 } from "@/apis/queries/masters.queries";
-import { useCreateMember, useUpdateMember } from "@/apis/queries/member.queries";
+import {
+  useCreateMember,
+  useUpdateMember,
+} from "@/apis/queries/member.queries";
 import {
   Tooltip,
   TooltipTrigger,
@@ -36,16 +39,18 @@ type AddToMemberFormProps = {
 
 const addFormSchema = z.object({
   firstName: z
-  .string()
-  .trim()
-  .min(2, { message: "First Name is required" })
-  .regex(/^[A-Za-z\s]+$/, { message: "First Name must contain only letters" }),
+    .string()
+    .trim()
+    .min(2, { message: "First Name is required" })
+    .regex(/^[A-Za-z\s]+$/, {
+      message: "First Name must contain only letters",
+    }),
 
   lastName: z
-  .string()
-  .trim()
-  .regex(/^[A-Za-z\s]+$/, { message: "Last Name must contain only letters" })
-  .optional(), // Apply validation first, then make it optional
+    .string()
+    .trim()
+    .regex(/^[A-Za-z\s]+$/, { message: "Last Name must contain only letters" })
+    .optional(), // Apply validation first, then make it optional
 
   email: z
     .string()
@@ -60,12 +65,15 @@ const addFormSchema = z.object({
     .regex(/^[0-9]{10,15}$/, { message: "Phone number must be 10-15 digits" })
     .optional(), // Apply validation first, then make it optional
 
-    status: z.enum(["ACTIVE", "INACTIVE"], { message: "Status must be ACTIVE or INACTIVE" }), // ✅ Added status field
+  status: z.enum(["ACTIVE", "INACTIVE"], {
+    message: "Status must be ACTIVE or INACTIVE",
+  }), // ✅ Added status field
 });
 
-
-
-const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetails }) => {
+const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
+  onClose,
+  memberDetails,
+}) => {
   // const formContext = useFormContext();
   const createUserRole = useCreateUserRole();
   const { toast } = useToast();
@@ -106,16 +114,16 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetail
     }
   };
 
-    // Default values based on whether editing or adding a new member
-    const addDefaultValues = {
-      firstName: memberDetails?.firstName || "",
-      lastName: memberDetails?.lastName || "",
-      email: memberDetails?.email || "",
-      userRoleId: Number(memberDetails?.userRoleId) || undefined,
-      tradeRole: memberDetails?.tradeRole || "MEMBER",
-      phoneNumber: memberDetails?.phoneNumber || "",
-      status: memberDetails?.status || "ACTIVE"
-    };
+  // Default values based on whether editing or adding a new member
+  const addDefaultValues = {
+    firstName: memberDetails?.firstName || "",
+    lastName: memberDetails?.lastName || "",
+    email: memberDetails?.email || "",
+    userRoleId: Number(memberDetails?.userRoleId) || undefined,
+    tradeRole: memberDetails?.tradeRole || "MEMBER",
+    phoneNumber: memberDetails?.phoneNumber || "",
+    status: memberDetails?.status || "ACTIVE",
+  };
 
   const form = useForm({
     resolver: zodResolver(addFormSchema),
@@ -128,11 +136,14 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetail
 
     let response;
     if (memberDetails) {
-      response = await updateMember.mutateAsync({ memberId: memberDetails.id, ...formData });
+      response = await updateMember.mutateAsync({
+        memberId: memberDetails.id,
+        ...formData,
+      });
     } else {
       response = await createMember.mutateAsync(formData);
     }
-  
+
     if (response.status) {
       onClose();
       toast({
@@ -152,7 +163,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetail
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          {memberDetails ? 'Edit Member' : 'Add Member' }
+          {memberDetails ? "Edit Member" : "Add Member"}
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -181,7 +192,6 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetail
             type="text"
           />
 
-
           <ControlledTextInput
             label="Email"
             name="email"
@@ -190,7 +200,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetail
             readOnly={memberDetails}
           />
 
-        <ControlledTextInput
+          <ControlledTextInput
             label="Phone Number"
             name="phoneNumber"
             placeholder="Enter Phone Number"
@@ -217,7 +227,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetail
             control={form.control} // ✅ Use form.control instead
             render={({ field }) => (
               <>
-              {/* <CreatableSelect
+                {/* <CreatableSelect
                 name={field.name}
                 isClearable
                 isDisabled={createUserRole.isPending}
@@ -237,36 +247,41 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetail
                 className="z-[999]"
               /> */}
 
-                    <Select
-                      name={field.name}
-                      onChange={(newValue) => {
-                        const numericValue = newValue ? Number(newValue.value) : 0; // Ensure it's a number
-                        field.onChange(numericValue); // Pass the correct numeric value
-                        setValue(newValue);
-                      }}
-                      options={memoizedUserRole}
-                      value={memoizedUserRole.find(
-                        (item: IOption) => Number(item.value) === field.value // Use form state value instead of fixed memberDetails value
-                      ) || memoizedUserRole.find((item: IOption) => Number(item.value) === memberDetails?.userRoleId)} // Default to memberDetails value if not set
-                      styles={customStyles}
-                      instanceId="userRoleId"
-                      className="z-[9999]"
-                      isSearchable={true} // Keep search enabled
-                    />
-               {/* Validation Error Message */}
+                <Select
+                  name={field.name}
+                  onChange={(newValue) => {
+                    const numericValue = newValue ? Number(newValue.value) : 0; // Ensure it's a number
+                    field.onChange(numericValue); // Pass the correct numeric value
+                    setValue(newValue);
+                  }}
+                  options={memoizedUserRole}
+                  value={
+                    memoizedUserRole.find(
+                      (item: IOption) => Number(item.value) === field.value, // Use form state value instead of fixed memberDetails value
+                    ) ||
+                    memoizedUserRole.find(
+                      (item: IOption) =>
+                        Number(item.value) === memberDetails?.userRoleId,
+                    )
+                  } // Default to memberDetails value if not set
+                  styles={customStyles}
+                  instanceId="userRoleId"
+                  className="z-[9999]"
+                  isSearchable={true} // Keep search enabled
+                />
+                {/* Validation Error Message */}
                 {form.formState.errors.userRoleId && (
-                  <p className="text-red-500 text-sm">
+                  <p className="text-sm text-red-500">
                     {form.formState.errors.userRoleId.message}
                   </p>
                 )}
               </>
-            )} 
+            )}
           />
 
-
-        <div className="flex w-full items-center gap-1.5">
-        <Label>Status</Label>
-        </div>
+          <div className="flex w-full items-center gap-1.5">
+            <Label>Status</Label>
+          </div>
           <Controller
             name="status"
             control={form.control}
@@ -277,7 +292,9 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetail
                   { value: "INACTIVE", label: "INACTIVE" },
                 ]}
                 value={{ value: field.value, label: field.value }}
-                onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+                onChange={(selectedOption) =>
+                  field.onChange(selectedOption?.value)
+                }
                 className="z-[999]"
                 instanceId="status"
                 styles={customStyles}
@@ -289,7 +306,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({ onClose, memberDetail
             type="submit"
             className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
-             {memberDetails ? 'Edit Member' : 'Add Member' }
+            {memberDetails ? "Edit Member" : "Add Member"}
           </Button>
         </form>
       </Form>

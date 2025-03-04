@@ -129,7 +129,7 @@ export default function CompanyProfileDetailsPage() {
                                 ? "/company-profile"
                                 : "/company-profile/add-branch"
                             }
-                            className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                            className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-xs font-medium capitalize leading-6 text-white sm:text-sm"
                           >
                             <PlusIcon className="mr-1 h-5 w-5" />
                             Add

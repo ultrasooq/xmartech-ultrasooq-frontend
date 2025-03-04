@@ -22,8 +22,8 @@ const SellerRfqRequestPage = () => {
   }, []);
 
   return (
-    <section className="m-auto flex w-full max-w-[1400px] py-8">
-      <div className="w-[15%]">
+    <section className="m-auto flex w-full max-w-[1400px] flex-wrap py-8">
+      <div className="w-full md:w-[15%]">
         <div className="w-full px-0 py-0 shadow-lg">
           <ul>
             <li className="w-full py-1">
@@ -76,7 +76,9 @@ const SellerRfqRequestPage = () => {
                     className="brightness-0 invert"
                   />
                 </div>
-                <div className="pl-1 text-sm font-medium">Vendor Operations</div>
+                <div className="pl-1 text-sm font-medium">
+                  Vendor Operations
+                </div>
               </button>
             </li>
             {productId && (
@@ -104,13 +106,13 @@ const SellerRfqRequestPage = () => {
           </ul>
         </div>
       </div>
-      <div className="w-[85%] px-2">
+      <div className="w-full px-2 md:w-[85%]">
         {currentTab === "RFQ" ? (
           <SellerChat />
         ) : productId ? (
           <ProductChat productId={productId} />
         ) : null}
-        {currentTab === "Vendor Operations" && <VendorOperations/>}
+        {currentTab === "Vendor Operations" && <VendorOperations />}
       </div>
     </section>
   );
