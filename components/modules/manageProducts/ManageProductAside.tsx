@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   CONSUMER_TYPE_LIST,
@@ -128,8 +128,10 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           <button
             type="button"
             onClick={() => {
+              formContext.setValue("productLocationId", null);
               formContext.setValue("isHiddenRequired", false);
               formContext.setValue("isProductConditionRequired", false);
+              formContext.setValue("productCondition", null);
               formContext.setValue("isStockRequired", false);
               formContext.setValue("isOfferPriceRequired", false);
               formContext.setValue("isConsumerTypeRequired", false);
@@ -167,9 +169,10 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   options={memoizedLocations}
                   value={memoizedLocations.find(
                     (item: IOption) => item.value === field.value,
-                  )}
+                  ) || ''}
                   styles={customStyles}
                   instanceId="productLocationId"
+                  isClearable={true}
                 />
               )}
             />
@@ -197,7 +200,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                       options={PRODUCT_CONDITION_LIST}
                       value={PRODUCT_CONDITION_LIST.find(
                         (item: any) => item.value === field.value,
-                      )}
+                      ) || ''}
                       styles={customStyles}
                       instanceId="productCondition"
                       // isDisabled={!watchIsProductConditionRequired}

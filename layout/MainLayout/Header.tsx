@@ -214,7 +214,7 @@ const Header = () => {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [subCategoryId, categoryId, menuId]);
 
-  const handleProfile = () => {console.log(me?.data?.data?.tradeRole);
+  const handleProfile = () => {
     switch (me?.data?.data?.tradeRole) {
       case "BUYER":
         return "/buyer-profile-details";
