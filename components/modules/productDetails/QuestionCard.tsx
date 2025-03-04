@@ -9,6 +9,7 @@ type QuestionCardProps = {
   question: string;
   answer?: string;
   userName?: string;
+  answers: {[key: string]: any}[],
   isLastItem: boolean;
   hasAccessToken?: boolean;
 };
@@ -18,13 +19,20 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   question,
   answer,
   userName,
+  answers,
   isLastItem,
   hasAccessToken,
 }) => {
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
-  const handleToggleQuestionModal = () =>
-    setIsQuestionModalOpen(!isQuestionModalOpen);
+  const handleToggleQuestionModal = () => setIsQuestionModalOpen(!isQuestionModalOpen);
+
+  if (!answers?.length && answer) {
+    answers.push({
+      id: 0,
+      answer: answer
+    });
+  }
 
   return (
     <div
@@ -38,13 +46,23 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           <span className="mr-2">Q:</span>
           {question}
         </h3>
-        <p>
-          <span className="mr-2 font-bold">A:</span>
-          {answer || "No answer yet"}
-        </p>
-        <p className="text-xs font-medium text-gray-500">{userName || ""}</p>
+        {answers?.length && answers.map((answer: any) => (
+          <p key={answer.id}>
+            <span className="mr-2 font-bold">A:</span>
+            {answer.answer}
+          </p>
+        ))}
+        {!answers?.length && (
+          <>
+            <p>
+              <span className="mr-2 font-bold">A:</span>
+              {"No answer yet"}
+            </p>
+            <p className="text-xs font-medium text-gray-500">{userName || ""}</p>
+          </>
+        )}
 
-        {hasAccessToken && !answer ? (
+        {hasAccessToken && !answers?.length ? (
           <div className="!my-2 text-center">
             <Button variant="secondary" onClick={handleToggleQuestionModal}>
               Reply

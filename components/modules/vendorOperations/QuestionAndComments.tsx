@@ -16,12 +16,14 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({ productId }) =>
     const [questionId, setQuestionId] = useState<number>(0);
     const [page, setPage] = useState<number>(1);
     const [limit, setLimit] = useState<number>(10);
+    const [userType, setUserType] = useState<string>("CUSTOMER");
     const questionQuery = useQuestions(
         {
             page: page,
             limit: limit,
             productId: productId.toString(),
             sortType: "newest",
+            userType: userType
         },
         !!productId,
     );
@@ -70,6 +72,7 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({ productId }) =>
         productId,
         page,
         limit,
+        userType,
     ]);
 
     const handleToggleQuestionModal = () => setIsQuestionModalOpen(!isQuestionModalOpen);
@@ -92,6 +95,10 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({ productId }) =>
         <div className="w-[67%] border-r border-solid border-gray-300">
             <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
                 <span>Question & Comments</span>
+                <select onChange={(e) => setUserType(e.target.value)} value={userType}>
+                    <option value="CUSTOMER">CUSTOMER</option>
+                    <option value="VENDOR">VENDOR</option>
+                </select>
             </div>
             <div className="flex w-full border-t-2 border-gray-300 py-5">
                 <div className="w-full space-y-3">
@@ -162,12 +169,12 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({ productId }) =>
                 </DialogContent>
             </Dialog>
 
-            <Pagination
+            {questionQuery?.data?.data?.totalCount > 10 && <Pagination
                 page={page}
                 setPage={setPage}
                 totalCount={questionQuery.data?.totalCount}
                 limit={limit}
-            />
+            />}
         </div>
     );
 }

@@ -12,6 +12,7 @@ export const useQuestions = (
     limit: number;
     productId: string;
     sortType?: "newest" | "oldest";
+    userType?: string;
   },
   enabled = true,
 ) =>

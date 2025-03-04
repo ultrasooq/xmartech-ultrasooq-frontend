@@ -100,19 +100,23 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
                   firstName: string;
                   lastName: string;
                 };
+                productQuestionAnswerDetail: {[key: string]: any}[]
               },
               index: number,
-            ) => (
-              <QuestionCard
-                key={question.id}
-                id={question.id}
-                question={question.question}
-                answer={question.answer}
-                userName={`${question.answerByuserIdDetail?.firstName || ""} ${question.answerByuserIdDetail?.lastName || ""}`}
-                isLastItem={index === questionQuery.data?.data?.length - 1}
-                hasAccessToken={hasAccessToken}
-              />
-            ),
+            ) => {
+              return (
+                <QuestionCard
+                  key={question.id}
+                  id={question.id}
+                  question={question.question}
+                  answer={question.answer}
+                  userName={`${question.answerByuserIdDetail?.firstName || ""} ${question.answerByuserIdDetail?.lastName || ""}`}
+                  answers={question.productQuestionAnswerDetail}
+                  isLastItem={index === questionQuery.data?.data?.length - 1}
+                  hasAccessToken={hasAccessToken}
+                />
+              );
+            },
           )}
         </div>
       </div>
