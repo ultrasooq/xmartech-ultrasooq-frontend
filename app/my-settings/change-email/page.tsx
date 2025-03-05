@@ -80,7 +80,9 @@ export default function ChangeEmailPage() {
       <div className="container relative z-10 m-auto">
         <div className="flex">
           <div className="w-full rounded-lg border border-solid border-gray-300 bg-white p-4 shadow-sm">
-            <h2 className="mb-4 text-[22px] font-semibold">Change Email</h2>
+            <h2 className="mb-4  text-[18px] font-semibold md:text-[22px]">
+              Change Email
+            </h2>
             <div className="w-full">
               <Form {...form}>
                 <form
@@ -108,7 +110,7 @@ export default function ChangeEmailPage() {
                     <Button
                       disabled={changeEmail.isPending}
                       type="submit"
-                      className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                      className="h-12 w-full rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:text-lg"
                     >
                       {changeEmail.isPending ? (
                         <>

@@ -131,7 +131,7 @@ export default function ChangePasswordPage() {
               </div>
             ) : (
               <>
-                <h2 className="mb-4 text-[22px] font-semibold">
+                <h2 className="mb-4 text-[18px] font-semibold md:text-[22px]">
                   Change Password
                 </h2>
                 <div className="w-full">
@@ -201,7 +201,7 @@ export default function ChangePasswordPage() {
                         <Button
                           disabled={changePassword.isPending}
                           type="submit"
-                          className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                          className="h-12 w-full rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:text-lg"
                         >
                           {changePassword.isPending ? (
                             <>

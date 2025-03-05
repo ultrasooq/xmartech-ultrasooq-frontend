@@ -23,7 +23,7 @@ const SellerRfqRequestPage = () => {
 
   return (
     <section className="m-auto flex w-full max-w-[1400px] flex-wrap py-8">
-      <div className="w-full md:w-[15%]">
+      <div className="w-full px-2 md:w-[15%]">
         <div className="w-full px-0 py-0 shadow-lg">
           <ul>
             <li className="w-full py-1">

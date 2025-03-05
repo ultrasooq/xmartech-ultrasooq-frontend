@@ -5034,6 +5034,26 @@ input::-ms-clear {
     @apply max-w-full;
   }
 
+  .my-settings-page-wrapper {
+    @apply flex-wrap;
+  }
+
+  .my-settings-panel {
+    @apply max-w-full static mb-4;
+  }
+
+  .my-settings-content {
+    @apply max-w-full;
+  }
+
+  .card-item.selected-address .left-address-with-right-btn ul li {
+    @apply text-sm;
+  }
+
+  .my-settings-content h2 {
+    @apply text-[18px]
+  }
+
 }
 
 
@@ -5077,6 +5097,14 @@ input::-ms-clear {
 
   .rfq_section .rfq_main_box .rfq_right {
     @apply max-w-[30%]
+  }
+
+  .right-filter-lists .theme-primary-btn {
+    @apply whitespace-nowrap text-xs px-1 !important;
+  }
+
+  .existing-product-add-lists .existing-product-add-item {
+    @apply max-w-full;
   }
 
 

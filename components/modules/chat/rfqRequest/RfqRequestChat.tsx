@@ -685,7 +685,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     <div>
       <div className="flex w-full rounded-sm border border-solid border-gray-300">
         <div className="w-[15%] border-r border-solid border-gray-300">
-          <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
+          <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-base font-normal text-[#333333] md:px-[10px] md:py-[10px]">
             <span>Request for RFQ</span>
           </div>
           <RequestProductCard
@@ -752,25 +752,25 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             </Link>
           </div>
           <div className="flex w-full flex-wrap p-[20px]">
-            <div className="mb-5 max-h-[300px] w-full overflow-y-auto">
-              <div className="w-full rounded-sm border border-solid border-gray-300">
-                <div className="flex w-full border-b border-solid border-gray-300">
-                  <div className="w-[25%] px-1.5 py-3 text-sm font-normal text-gray-500">
+            <div className="mb-5 max-h-[300px] w-full border-solid border-gray-300">
+              <div className="w-full overflow-y-auto rounded-sm border">
+                <div className="flex w-full">
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[25%] md:text-sm">
                     Product
                   </div>
-                  <div className="w-[15%] px-1.5 py-3 text-sm font-normal text-gray-500">
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[15%] md:text-sm">
                     Delivery Date
                   </div>
-                  <div className="w-[10%] px-1.5 py-3 text-sm font-normal text-gray-500">
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm">
                     Brand
                   </div>
-                  <div className="w-[20%] px-1.5 py-3 text-sm font-normal text-gray-500">
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm">
                     Number Of Piece
                   </div>
-                  <div className="w-[10%] px-1.5 py-3 text-sm font-normal text-gray-500">
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm">
                     Price
                   </div>
-                  <div className="w-[20%] px-1.5 py-3 text-sm font-normal text-gray-500">
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm">
                     Address
                   </div>
                 </div>

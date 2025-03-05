@@ -133,7 +133,7 @@ const ManageProductsPage = () => {
     term: searchTerm !== "" ? searchTerm : undefined,
   });
 
-  const { data, refetch  } = allManagedProductsQuery;
+  const { data, refetch } = allManagedProductsQuery;
   const [products, setProducts] = useState(data?.data || []);
   const [totalCount, setTotalCount] = useState(data?.totalCount || 0);
 
@@ -148,7 +148,7 @@ const ManageProductsPage = () => {
   // Function to remove a product from the state
   const handleRemoveFromList = (removedProductId: number) => {
     setProducts((prevProducts: any[]) =>
-      prevProducts.filter((product) => product.id !== removedProductId)
+      prevProducts.filter((product) => product.id !== removedProductId),
     );
     setTotalCount((prevCount: number) => prevCount - 1);
     // If the last product on the page is removed, adjust pagination
@@ -353,7 +353,7 @@ const ManageProductsPage = () => {
                   <Input
                     type="text"
                     placeholder="Search Product"
-                    className="search-box h-[40px]"
+                    className="search-box h-[40px] w-[200px] sm:w-[160px] lg:w-80"
                     onChange={handleDebounce}
                   />
                 </li>
@@ -496,7 +496,7 @@ const ManageProductsPage = () => {
                           limit={limit}
                         />
                       ) : null} */}
-                        {totalCount > limit ? (
+                      {totalCount > limit ? (
                         <Pagination
                           page={page}
                           setPage={setPage}
