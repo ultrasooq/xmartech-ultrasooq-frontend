@@ -8,48 +8,61 @@ import SmileIcon from "@/public/images/smile.svg";
 import SendIcon from "@/public/images/send-button.png";
 import ProductChatHistory from "./ProductChatHistory";
 import { newAttachmentType, useSocket } from "@/context/SocketContext";
-import { findRoomId, getChatHistory, uploadAttachment } from "@/apis/requests/chat.requests";
+import {
+  findRoomId,
+  getChatHistory,
+  uploadAttachment,
+} from "@/apis/requests/chat.requests";
 import { useAuth } from "@/context/AuthContext";
 import AdminProductChat from "./Admin/AdminProductChat";
-import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { generateUniqueNumber } from "@/utils/helper";
-
 
 interface ProductChatProps {
   productId: number;
 }
 
 const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>("");
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false);
-  const [showEmoji, setShowEmoji] = useState<boolean>(false)
+  const [showEmoji, setShowEmoji] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<any>([]);
   const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
-  const [isAttachmentUploading, setIsAttachmentUploading] = useState<boolean>(false)
+  const [isAttachmentUploading, setIsAttachmentUploading] =
+    useState<boolean>(false);
   const inputRef = useRef(null);
 
-  const { sendMessage, cratePrivateRoom, newMessage, errorMessage, clearErrorMessage, newAttachment } = useSocket()
+  const {
+    sendMessage,
+    cratePrivateRoom,
+    newMessage,
+    errorMessage,
+    clearErrorMessage,
+    newAttachment,
+  } = useSocket();
   const { toast } = useToast();
   const { user } = useAuth();
 
   const product = useGetProductDetails(productId);
 
   const productDetails = product?.data?.data;
-  const sellerId = productDetails?.product_productPrice?.length > 0 ?
-    productDetails?.product_productPrice[0].adminDetail?.id : null;
+  const sellerId =
+    productDetails?.product_productPrice?.length > 0
+      ? productDetails?.product_productPrice[0].adminDetail?.id
+      : null;
 
   // check room id
   useEffect(() => {
     if (sellerId && user?.id !== sellerId) {
-      checkRoomId()
+      checkRoomId();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sellerId]);
 
   useEffect(() => {
     if (selectedRoom && user?.id !== sellerId) {
-      handleChatHistory()
+      handleChatHistory();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRoom]);
@@ -57,7 +70,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
   // receive a messaage
   useEffect(() => {
     if (newMessage) {
-      handleNewMessage(newMessage)
+      handleNewMessage(newMessage);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newMessage]);
@@ -70,10 +83,10 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         description: errorMessage,
         variant: "danger",
       });
-      clearErrorMessage()
+      clearErrorMessage();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [errorMessage])
+  }, [errorMessage]);
 
   // Update attachment status
   useEffect(() => {
@@ -81,26 +94,34 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
       handleUpdateAttachmentStatus(newAttachment);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newAttachment])
+  }, [newAttachment]);
 
   const handleUpdateAttachmentStatus = (attach: newAttachmentType) => {
     try {
-      if(attach?.senderId === user?.id) {
+      if (attach?.senderId === user?.id) {
         setSelectedChatHistory((prevChatHistory: any[]) =>
           prevChatHistory.map((item1: any) => ({
             ...item1,
             attachments: item1.attachments.map((item2: any) =>
               item2.uniqueId === attach.uniqueId
-                ? { ...item2, status: attach.status, filePath: attach.filePath, presignedUrl: attach.presignedUrl, fileType: attach?.fileType }
-                : item2
-            )
-          }))
+                ? {
+                    ...item2,
+                    status: attach.status,
+                    filePath: attach.filePath,
+                    presignedUrl: attach.presignedUrl,
+                    fileType: attach?.fileType,
+                  }
+                : item2,
+            ),
+          })),
         );
       } else {
         const chatHistory = [...selectedChatHistory];
-        const index = chatHistory.findIndex((message: any) => message.id === attach.messageId);
-        if(index !== -1) {
-          chatHistory[index]['attachments'].push(attach);
+        const index = chatHistory.findIndex(
+          (message: any) => message.id === attach.messageId,
+        );
+        if (index !== -1) {
+          chatHistory[index]["attachments"].push(attach);
           setSelectedChatHistory(chatHistory);
         }
       }
@@ -111,50 +132,50 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         variant: "danger",
       });
     }
-  }
+  };
 
   const checkRoomId = async () => {
     try {
       if (user?.id) {
         const payloadRoomFind = {
           userId: user?.id,
-          rfqId: productDetails?.id
-        }
+          rfqId: productDetails?.id,
+        };
         const room = await findRoomId(payloadRoomFind);
         if (room?.data?.roomId) {
-          setSelectedRoom(room?.data?.roomId)
+          setSelectedRoom(room?.data?.roomId);
         } else {
-          setSelectedRoom(null)
-          setChatHistoryLoading(false)
-          setSelectedChatHistory([])
+          setSelectedRoom(null);
+          setChatHistoryLoading(false);
+          setSelectedChatHistory([]);
         }
       }
     } catch (error) {
-      setChatHistoryLoading(false)
+      setChatHistoryLoading(false);
     }
-  }
+  };
 
   const handleChatHistory = async () => {
     try {
-      setChatHistoryLoading(true)
+      setChatHistoryLoading(true);
       const payload = {
-        roomId: selectedRoom
-      }
+        roomId: selectedRoom,
+      };
       const res = await getChatHistory(payload);
       if (res?.data?.status === 200) {
-        setSelectedChatHistory(res.data.data)
+        setSelectedChatHistory(res.data.data);
       }
-      setChatHistoryLoading(false)
+      setChatHistoryLoading(false);
     } catch (error) {
-      setChatHistoryLoading(false)
+      setChatHistoryLoading(false);
     }
-  }
+  };
 
   const handleSendMessage = async () => {
     try {
       if (message || attachments.length) {
         if (selectedRoom) {
-          sendNewMessage(selectedRoom, message)
+          sendNewMessage(selectedRoom, message);
         } else {
           handleCreateRoom(message);
         }
@@ -175,7 +196,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         variant: "danger",
       });
     }
-  }
+  };
 
   const handleUploadedFile = async () => {
     if (attachments?.length) {
@@ -197,10 +218,16 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
     }
   };
 
-  const sendNewMessage = (roomId: number, content: string, rfqQuoteProductId?: number, sellerUserId?: number, requestedPrice?: number) => {
+  const sendNewMessage = (
+    roomId: number,
+    content: string,
+    rfqQuoteProductId?: number,
+    sellerUserId?: number,
+    requestedPrice?: number,
+  ) => {
     const uniqueId = generateUniqueNumber();
     const attach = attachments.map((att: any) => {
-      const extension = att?.name.split('.').pop();
+      const extension = att?.name.split(".").pop();
       return {
         fileType: att?.type,
         fileName: att?.name,
@@ -208,8 +235,8 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         filePath: "",
         fileExtension: extension,
         uniqueId: att.uniqueId,
-        status: "UPLOADING"
-      }
+        status: "UPLOADING",
+      };
     });
     const newMessage = {
       roomId: "",
@@ -218,17 +245,17 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
       userId: user?.id,
       user: {
         firstName: user?.firstName,
-        lastName: user?.lastName
+        lastName: user?.lastName,
       },
       rfqQuotesUserId: null,
       attachments: attach,
       uniqueId,
       status: "SD",
-      createdAt: new Date()
-    }
-    const chatHistory = [...selectedChatHistory]
+      createdAt: new Date(),
+    };
+    const chatHistory = [...selectedChatHistory];
     chatHistory.push(newMessage);
-    setSelectedChatHistory(chatHistory)
+    setSelectedChatHistory(chatHistory);
 
     const msgPayload = {
       roomId: roomId,
@@ -239,15 +266,17 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
       sellerId: sellerUserId,
       rfqQuotesUserId: null,
       attachments: attach,
-      uniqueId: uniqueId
-    }
-    sendMessage(msgPayload)
-  }
+      uniqueId: uniqueId,
+    };
+    sendMessage(msgPayload);
+  };
 
   const handleNewMessage = (message: any) => {
     try {
       const chatHistory = [...selectedChatHistory];
-      const index = chatHistory.findIndex((chat) => chat?.uniqueId === message?.uniqueId);
+      const index = chatHistory.findIndex(
+        (chat) => chat?.uniqueId === message?.uniqueId,
+      );
       if (index !== -1) {
         // upload attachment once the message saved in draft mode, if attachments are selected
         if (chatHistory[index]?.attachments?.length) handleUploadedFile();
@@ -255,37 +284,41 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         const nMessage = {
           ...message,
           attachments: chatHistory[index]?.attachments || [],
-          status: "sent"
-        }
+          status: "sent",
+        };
         chatHistory[index] = nMessage;
       } else {
         const nMessage = {
           ...message,
           attachments: [],
-        }
-        chatHistory.push(nMessage)
+        };
+        chatHistory.push(nMessage);
       }
-      setSelectedChatHistory(chatHistory)
+      setSelectedChatHistory(chatHistory);
       if (!selectedRoom) {
-        setSelectedRoom(message?.roomId)
+        setSelectedRoom(message?.roomId);
       }
-    } catch (error) { }
-  }
+    } catch (error) {}
+  };
 
   const handleSendMessageKeyDown = (e: any) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
-
-  const handleCreateRoom = async (content: string, rfqQuoteProductId?: number, sellerUserId?: number, requestedPrice?: number) => {
+  const handleCreateRoom = async (
+    content: string,
+    rfqQuoteProductId?: number,
+    sellerUserId?: number,
+    requestedPrice?: number,
+  ) => {
     try {
       if (sellerId) {
         const uniqueId = generateUniqueNumber();
         const attach = attachments.map((att: any) => {
-          const extension = att?.name.split('.').pop();
+          const extension = att?.name.split(".").pop();
           return {
             fileType: att?.type,
             fileName: att?.name,
@@ -293,8 +326,8 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
             filePath: "",
             uniqueId: att.uniqueId,
             fileExtension: extension,
-            status: "UPLOADING"
-          }
+            status: "UPLOADING",
+          };
         });
 
         const newMessage = {
@@ -304,17 +337,17 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
           userId: user?.id,
           user: {
             firstName: user?.firstName,
-            lastName: user?.lastName
+            lastName: user?.lastName,
           },
           rfqQuotesUserId: null,
           attachments: attach,
           uniqueId,
           status: "SD",
-          createdAt: new Date()
-        }
-        const chatHistory = [...selectedChatHistory]
+          createdAt: new Date(),
+        };
+        const chatHistory = [...selectedChatHistory];
         chatHistory.push(newMessage);
-        setSelectedChatHistory(chatHistory)
+        setSelectedChatHistory(chatHistory);
 
         const payload = {
           participants: [user?.id, sellerId],
@@ -326,17 +359,17 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
           rfqQuotesUserId: null,
           uniqueId,
           attachments: attach,
-        }
+        };
         cratePrivateRoom(payload);
       }
     } catch (error) {
-      return ""
+      return "";
     }
-  }
+  };
 
   const onEmojiClick = (emojiObject: EmojiClickData) => {
-    setMessage(prevMessage => prevMessage + emojiObject.emoji);
-  }
+    setMessage((prevMessage) => prevMessage + emojiObject.emoji);
+  };
 
   const handleFileChange = (e: any) => {
     const files = Array.from(e.target.files);
@@ -349,13 +382,15 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
   };
 
   const removeFile = (index: number) => {
-    setAttachments((prevFiles: any) => prevFiles.filter((_: any, i: any) => i !== index));
+    setAttachments((prevFiles: any) =>
+      prevFiles.filter((_: any, i: any) => i !== index),
+    );
   };
 
   return (
     <div>
       <div className="flex w-full rounded-sm border border-solid border-gray-300">
-        <div className="w-[15%] border-r border-solid border-gray-300">
+        <div className="w-full border-r border-solid border-gray-300 lg:w-[15%]">
           <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
             <span>Product</span>
           </div>
@@ -419,10 +454,9 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
             sellerId={sellerId}
           />
         ) : (
-          <div className="w-[85%] border-r border-solid border-gray-300">
+          <div className="w-full border-r border-solid border-gray-300 lg:w-[85%]">
             <div className="flex w-full flex-wrap p-[20px]">
-              <div className="mb-5 max-h-[300px] w-full overflow-y-auto">
-              </div>
+              <div className="mb-5 max-h-[300px] w-full overflow-y-auto"></div>
               <ProductChatHistory
                 selectedChatHistory={selectedChatHistory}
                 chatHistoryLoading={chatHistoryLoading}
@@ -435,7 +469,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                     <input
                       ref={inputRef}
                       type="file"
-                      className="z-10 absolute inset-0 opacity-0"
+                      className="absolute inset-0 z-10 opacity-0"
                       multiple
                       onChange={handleFileChange}
                     />
@@ -454,39 +488,54 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                   </div>
                   <div className="flex w-[72px] items-center justify-between">
                     <div className="w-auto">
-                      <Image src={SmileIcon} alt="smile-icon" onClick={() => setShowEmoji(!showEmoji)} />
+                      <Image
+                        src={SmileIcon}
+                        alt="smile-icon"
+                        onClick={() => setShowEmoji(!showEmoji)}
+                      />
                     </div>
                     <div className="flex w-auto">
                       <button type="button" className="">
-                        <Image src={SendIcon} alt="send-icon" onClick={handleSendMessage} />
+                        <Image
+                          src={SendIcon}
+                          alt="send-icon"
+                          onClick={handleSendMessage}
+                        />
                       </button>
                     </div>
                   </div>
                 </div>
 
                 {showEmoji && (
-                  <div className="w-full mt-2 border-t border-solid">
+                  <div className="mt-2 w-full border-t border-solid">
                     <EmojiPicker onEmojiClick={onEmojiClick} className="mt-2" />
                   </div>
                 )}
 
                 {!isAttachmentUploading && attachments.length > 0 && (
-                  <div className="mt-2 w-full flex flex-wrap gap-2">
+                  <div className="mt-2 flex w-full flex-wrap gap-2">
                     {attachments.map((file: any, index: any) => (
-                      <div key={index} className="flex items-center border border-gray-300 p-2 rounded-md">
+                      <div
+                        key={index}
+                        className="flex items-center rounded-md border border-gray-300 p-2"
+                      >
                         <span className="mr-2">{file.name}</span>
-                        <button onClick={() => removeFile(index)} className="text-red-500">X</button>
+                        <button
+                          onClick={() => removeFile(index)}
+                          className="text-red-500"
+                        >
+                          X
+                        </button>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
             )}
-          </div >
+          </div>
         )}
-
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 

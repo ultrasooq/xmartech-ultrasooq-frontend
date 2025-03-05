@@ -656,7 +656,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
   return (
     <div>
-      <div className="flex w-full rounded-sm border border-solid border-gray-300">
+      <div className="flex w-full flex-wrap rounded-sm border border-solid border-gray-300">
         <div className="w-[20%] border-r border-solid border-gray-300">
           <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-sm font-normal text-[#333333] md:px-[10px] md:py-[10px] md:text-base">
             <span>Request for RFQ</span>

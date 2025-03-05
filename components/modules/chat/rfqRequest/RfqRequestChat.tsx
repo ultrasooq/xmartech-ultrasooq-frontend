@@ -683,8 +683,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
 
   return (
     <div>
-      <div className="flex w-full rounded-sm border border-solid border-gray-300">
-        <div className="w-[15%] border-r border-solid border-gray-300">
+      <div className="flex w-full flex-wrap rounded-sm border border-solid border-gray-300">
+        <div className="w-full border-r border-solid border-gray-300 lg:w-[15%]">
           <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-base font-normal text-[#333333] md:px-[10px] md:py-[10px]">
             <span>Request for RFQ</span>
           </div>
@@ -695,11 +695,11 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
               ?.map((item: any) => item?.[0])}
           />
         </div>
-        <div className="w-[18%] border-r border-solid border-gray-300">
+        <div className="w-full border-r border-solid border-gray-300 lg:w-[18%]">
           <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
             <span>Vendor Lists</span>
           </div>
-          <div className="h-[720px] w-full overflow-y-auto p-4">
+          <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]">
             {allRfqQuotesQuery?.isLoading ? (
               <div className="my-2 space-y-2">
                 {Array.from({ length: 2 }).map((_, i) => (
@@ -734,7 +734,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             ))}
           </div>
         </div>
-        <div className="w-[67%] border-r border-solid border-gray-300">
+        <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
           <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
             <span>
               Offering Price{" "}

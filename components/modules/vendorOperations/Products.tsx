@@ -39,11 +39,11 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
   };
 
   return (
-    <div className="w-[18%] border-r border-solid border-gray-300">
+    <div className="w-full border-r border-solid border-gray-300 lg:w-[18%]">
       <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
         <span>Product</span>
       </div>
-      <div className="h-[720px] w-full overflow-y-auto p-4">
+      <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]">
         {allProductsQuery?.isLoading ? (
           <div className="my-2 space-y-2">
             {Array.from({ length: 2 }).map((_, i) => (

@@ -96,7 +96,7 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
   };
 
   return (
-    <div className="w-[67%] border-r border-solid border-gray-300">
+    <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
       <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
         <span>Question & Comments</span>
         <select onChange={(e) => setUserType(e.target.value)} value={userType}>
