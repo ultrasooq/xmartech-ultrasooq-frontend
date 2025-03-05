@@ -106,7 +106,7 @@ const SellerRfqRequestPage = () => {
           </ul>
         </div>
       </div>
-      <div className="w-full flex-wrap px-2 md:w-[85%]">
+      <div className="w-full flex-wrap px-2 lg:w-[85%]">
         {currentTab === "RFQ" ? (
           <SellerChat />
         ) : productId ? (
