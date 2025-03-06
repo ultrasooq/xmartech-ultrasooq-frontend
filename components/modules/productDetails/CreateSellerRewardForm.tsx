@@ -1,0 +1,186 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { IoCloseSharp } from "react-icons/io5";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import { Controller, useForm, useFormContext } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import CreatableSelect from "react-select/creatable";
+import Select from "react-select";
+import { IOption, IUserRoles } from "@/utils/types/common.types";
+import { useToast } from "@/components/ui/use-toast";
+import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
+import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
+import { Input } from "@/components/plate-ui/input";
+
+const addFormSchema = z.object({
+    startDate: z.string().min(2, { message: "Start date is required" }),
+    startTime: z.string().min(2, { message: "Start time is required" }),
+    endDate: z.string().min(2, { message: "End date is required" }),
+    endTime: z.string().min(2, { message: "End time is required" }),
+    rewardPercentage: z.coerce.number().min(1, { message: 'Minimum value must be 1' }),
+    rewardFixAmount: z.coerce.number().min(1, { message: 'Minimum value must be 1' }),
+    minimumOrder: z.coerce.number().min(1, { message: 'Minimum order must be 1' })
+});
+
+type CreateSellerRewardFormProps = {
+    productId: number;
+    onClose: () => void;
+};
+
+const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ productId, onClose }) => {
+
+    // Default values based on whether editing or adding a new member
+    const addDefaultValues = {
+        startDate: "", //undefined as unknown as Date,
+        startTime: "",
+        endDate: "", //undefined as unknown as Date,
+        endTime: "",
+        rewardPercentage: 1,
+        rewardFixAmount: 1,
+        minimumOrder: 1,
+    };
+
+    const form = useForm({
+        resolver: zodResolver(addFormSchema),
+        defaultValues: addDefaultValues,
+    });
+
+    const onSubmit = () => {
+        console.log(form.getValues());
+    };
+
+    return (
+        <>
+            <div className="modal-header !justify-between">
+                <DialogTitle className="text-center text-xl font-bold">
+                    Create Seller Reward
+                </DialogTitle>
+                <Button
+                    onClick={onClose}
+                    className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+                >
+                    <IoCloseSharp size={20} />
+                </Button>
+            </div>
+
+            <Form {...form}>
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="card-item card-payment-form px-5 pb-5 pt-3"
+                >
+                    {/* <ControlledDatePicker
+                        label="Start Date"
+                        name="startDate"
+                        isFuture
+                    />
+
+                    <ControlledTimePicker
+                        label="Start Time"
+                        name="startTime"
+                    />
+
+                    <ControlledDatePicker
+                        label="End Date"
+                        name="endDate"
+                        isFuture
+                    />
+
+                    <ControlledTimePicker
+                        label="End Time"
+                        name="endTime"
+                    /> */}
+
+                    <ControlledTextInput
+                        label="Start Date"
+                        name="startDate"
+                        placeholder="Start Date"
+                    />
+
+                    <ControlledTextInput
+                        label="Start Time"
+                        name="startTime"
+                        placeholder="Start Time"
+                    />
+
+                    <ControlledTextInput
+                        label="End Date"
+                        name="endDate"
+                        placeholder="End Date"
+                    />
+
+                    <ControlledTextInput
+                        label="End Time"
+                        name="endTime"
+                        placeholder="End Time"
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="rewardPercentage"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Reward Percentage</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="rewardFixAmount"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Reward Fix Amount</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="minimumOrder"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Minimum Order</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <Button
+                        type="submit"
+                        className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                    >
+                        Create Reward
+                    </Button>
+                </form>
+            </Form>
+        </>
+    );
+}
+
+export default CreateSellerRewardForm;

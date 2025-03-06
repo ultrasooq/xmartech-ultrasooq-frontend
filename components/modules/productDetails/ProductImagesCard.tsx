@@ -26,6 +26,7 @@ import BasicInformationSection from "../editProduct/BasicInformationSection";
 import EditProductPage from "@/app/product/[id]/page";
 import { useMe } from "@/apis/queries/user.queries";
 import AddToCustomizeForm from "../factories/AddToCustomizeForm";
+import CreateSellerRewardForm from "./CreateSellerRewardForm";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -109,10 +110,15 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
   const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
 
-  const handleToCustomizeModal = () =>
-    setIsCustomizeModalOpen(!isCustomizeModalOpen);
+  const handleToCustomizeModal = () => setIsCustomizeModalOpen(!isCustomizeModalOpen);
 
-  // console.log(productDetails, "====>115")
+  const [isSellerRewardFormModalOpen, setIsSellerRewardFormModalOpen] = useState(false);
+
+  const createSellerReward = () => {
+    console.log(productDetails);
+  };
+
+  const handleSellerRewardFormModal = () => setIsSellerRewardFormModalOpen(!isSellerRewardFormModalOpen);
 
   return (
     <div className="product-view-s1-left">
@@ -286,6 +292,13 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           >
             Buy Now
           </Button>
+          <Button
+            type="button"
+            onClick={() => setIsSellerRewardFormModalOpen(true)}
+            className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+          >
+            Create Reward
+          </Button>
         </div>
       ) : null}
 
@@ -322,6 +335,18 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             selectedProductId={productDetails?.id}
             // selectedQuantity={quantity}
           />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isSellerRewardFormModalOpen} onOpenChange={handleSellerRewardFormModal}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={wrapperRef}
+        >
+          {productDetails && <CreateSellerRewardForm
+            productId={productDetails.id}
+            onClose={handleSellerRewardFormModal}
+          />}
         </DialogContent>
       </Dialog>
     </div>
