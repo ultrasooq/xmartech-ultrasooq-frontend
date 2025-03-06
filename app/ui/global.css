@@ -4923,6 +4923,10 @@ input::-ms-clear {
   .show_menu a button {
     @apply text-base;
   }
+
+  .menu {
+    @apply pt-7;
+  }
   
   .dropbtn {
     padding: 10px 5px;

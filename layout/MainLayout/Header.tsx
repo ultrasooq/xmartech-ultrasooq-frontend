@@ -498,7 +498,7 @@ const Header = () => {
           </div>
 
           <div
-            className={`h-[44px] w-full px-3 pt-7 md:flex md:px-0 ${isActive ? "show_menu" : "hidden"}`}
+            className={`me menu h-[44px] w-full px-3 md:flex md:px-0 ${isActive ? "show_menu" : "hidden"}`}
           >
             <div className="close" onClick={handleClick}>
               <IoCloseOutline />
