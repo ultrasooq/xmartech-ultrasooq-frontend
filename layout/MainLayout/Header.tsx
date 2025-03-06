@@ -452,7 +452,7 @@ const Header = () => {
                                 Seller Rewards
                               </DropdownMenuItem>
                             </Link>
-                            <Link href="/seller-rewards">
+                            <Link href="/share-links">
                               <DropdownMenuItem>
                                 Share Links
                               </DropdownMenuItem>
