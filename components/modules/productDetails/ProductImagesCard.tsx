@@ -288,13 +288,13 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           >
             Buy Now
           </Button>
-          <Button
+          {productDetails.userId == loginUserId && <Button
             type="button"
             onClick={() => setIsSellerRewardFormModalOpen(true)}
             className="h-14 flex-1 rounded-none bg-dark-orange text-base"
           >
             Create Reward
-          </Button>
+          </Button>}
         </div>
       ) : null}
 

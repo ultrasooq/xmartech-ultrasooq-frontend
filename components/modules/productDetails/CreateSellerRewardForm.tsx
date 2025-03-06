@@ -97,8 +97,11 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="card-item card-payment-form px-5 pb-5 pt-3"
+                    className="card-item card-payment-form px-5 pb-5"
                 >
+                    <label className="text-sm font-medium leading-none text-color-dark">
+                        Start Date
+                    </label>
                     <ControlledTextInput
                         type="date"
                         label="Start Date"
@@ -106,6 +109,9 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
                         placeholder="Start Date"
                     />
 
+                    <label className="text-sm font-medium leading-none text-color-dark">
+                        Start Time
+                    </label>
                     <ControlledTextInput
                         type="time"
                         label="Start Time"
@@ -113,6 +119,9 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
                         placeholder="Start Time"
                     />
 
+                    <label className="text-sm font-medium leading-none text-color-dark">
+                        End Date
+                    </label>
                     <ControlledTextInput
                         type="date"
                         label="End Date"
@@ -120,6 +129,9 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
                         placeholder="End Date"
                     />
 
+                    <label className="text-sm font-medium leading-none text-color-dark">
+                        End Time
+                    </label>
                     <ControlledTextInput
                         type="time"
                         label="End Time"
