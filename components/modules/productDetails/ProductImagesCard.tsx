@@ -114,10 +114,6 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
   const [isSellerRewardFormModalOpen, setIsSellerRewardFormModalOpen] = useState(false);
 
-  const createSellerReward = () => {
-    console.log(productDetails);
-  };
-
   const handleSellerRewardFormModal = () => setIsSellerRewardFormModalOpen(!isSellerRewardFormModalOpen);
 
   return (

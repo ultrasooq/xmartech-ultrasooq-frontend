@@ -447,6 +447,16 @@ const Header = () => {
                                 RFQ Seller Requests
                               </DropdownMenuItem>
                             </Link>
+                            <Link href="/seller-rewards">
+                              <DropdownMenuItem>
+                                Seller Rewards
+                              </DropdownMenuItem>
+                            </Link>
+                            <Link href="/seller-rewards">
+                              <DropdownMenuItem>
+                                Share Links
+                              </DropdownMenuItem>
+                            </Link>
                             <DropdownMenuSeparator />
                           </>
                         ) : null}

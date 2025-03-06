@@ -10,10 +10,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import CreatableSelect from "react-select/creatable";
 import Select from "react-select";
 import { IOption, IUserRoles } from "@/utils/types/common.types";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
 import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
 import { Input } from "@/components/plate-ui/input";
+import { useAddSellerReward } from "@/apis/queries/seller-reward.queries";
 
 const addFormSchema = z.object({
     startDate: z.string().min(2, { message: "Start date is required" }),
@@ -48,8 +49,34 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
         defaultValues: addDefaultValues,
     });
 
-    const onSubmit = () => {
-        console.log(form.getValues());
+    const addSellerReward = useAddSellerReward();
+
+    const onSubmit = async (values: z.infer<typeof addFormSchema>) => {
+        const response = await addSellerReward.mutateAsync({
+            productId: Number(productId),
+            startTime: values.startDate + ' ' + values.startTime,
+            endTime: values.endDate + ' ' + values.endTime,
+            rewardPercentage: values.rewardPercentage,
+            rewardFixAmount: values.rewardFixAmount,
+            minimumOrder: values.minimumOrder,
+        });
+
+        if (response.status) {
+            toast({
+                title: "Seller Reward Added Successfully",
+                description: response.message,
+                variant: "success",
+            });
+
+            form.reset();
+            onClose();
+        } else {
+            toast({
+                title: "Seller Reward Add Failed",
+                description: response.message,
+                variant: "danger",
+            });
+        }
     };
 
     return (
