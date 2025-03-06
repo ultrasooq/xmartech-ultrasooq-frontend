@@ -16,22 +16,22 @@ const Operations: React.FC<OperationsProps> = ({ onSelect }) => {
   );
 
   const operations: Operation[] = [
-    {
-      key: "admin_n_support",
-      label: "Admin & Support",
-    },
+    // {
+    //   key: "admin_n_support",
+    //   label: "Admin & Support",
+    // },
     {
       key: "questions_n_comments",
       label: "Questions & Comments",
     },
-    {
-      key: "rate_n_review",
-      label: "Rate & Review",
-    },
-    {
-      key: "complains",
-      label: "Complains",
-    },
+    // {
+    //   key: "rate_n_review",
+    //   label: "Rate & Review",
+    // },
+    // {
+    //   key: "complains",
+    //   label: "Complains",
+    // },
   ];
 
   const selectOperation = (operation: string) => {

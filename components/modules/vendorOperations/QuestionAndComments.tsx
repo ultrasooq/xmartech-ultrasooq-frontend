@@ -5,13 +5,16 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import AnswerForm from "../productDetails/AnswerForm";
 import Pagination from "@/components/shared/Pagination";
+import { useMe } from "@/apis/queries/user.queries";
 
 type QuestionAndAnswersProps = {
   productId: number;
+  productAddedBy: number;
 };
 
 const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
   productId,
+  productAddedBy
 }) => {
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
   const [questions, setQuestions] = useState<any[]>([]);
@@ -29,6 +32,8 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
     },
     !!productId,
   );
+
+  const me = useMe();
 
   const memoizedQuestions = useMemo(() => {
     return (
@@ -120,8 +125,7 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
             </p>
           )}
 
-          {!questionQuery.isLoading &&
-            memoizedQuestions.length > 0 &&
+          {!questionQuery.isLoading && memoizedQuestions.length > 0 &&
             memoizedQuestions.map((question: any) => (
               <div className="w-full border-b p-3" key={question.id}>
                 <article className="space-y-2">
@@ -135,7 +139,7 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
                     </p>
                   )}
                   <div className="w-full pl-3">
-                    {question.answers.length &&
+                    {question.answers.length ?
                       question.answers.map((answer: any) => (
                         <React.Fragment key={answer.id}>
                           <div className="solid text-md mb-1 w-full rounded-md border-[5px] border-[#b5b5b5] bg-gray-300 px-3 py-2">
@@ -150,15 +154,15 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
                             </p>
                           )}
                         </React.Fragment>
-                      ))}
-                    <div className="!my-2 text-center">
+                      )) : ''}
+                    {productAddedBy == me?.data?.data?.id && <div className="!my-2 text-center">
                       <Button
                         variant="secondary"
                         onClick={() => reply(question.id)}
                       >
                         Reply
                       </Button>
-                    </div>
+                    </div>}
                   </div>
                 </article>
               </div>
