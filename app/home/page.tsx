@@ -122,14 +122,14 @@ function HomePage() {
             <div className="w-full">
               <div className="bg-neutral-100 p-4 lg:p-8">
                 <div className="block w-full">
-                  <ul className="mb-2 grid grid-cols-3 gap-3 border-b border-solid border-gray-300 md:grid-cols-8">
+                  <ul className="mb-2 grid grid-cols-3 gap-3 border-b border-solid border-gray-300 sm:grid-cols-5 md:grid-cols-8">
                     {trendingTopicList.map((item: any) => (
                       <TrendingOptionCard key={uuidv4()} item={item} />
                     ))}
                   </ul>
                 </div>
                 <div className="block w-full py-5">
-                  <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-8">
+                  <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
                     {trendingList.map((item) => (
                       <TrendingCard key={uuidv4()} item={item} />
                     ))}

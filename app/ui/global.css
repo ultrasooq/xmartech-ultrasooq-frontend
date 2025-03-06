@@ -4888,9 +4888,41 @@ input::-ms-clear {
   @apply text-center;
 }
 
+.humberger, .close {
+  @apply hidden;
+}
+
 
 
 @media only screen and (min-width: 240px) and (max-width: 767px) {
+
+  .humberger {
+    @apply order-[4] px-3 flex;
+  }
+
+  .humberger svg {
+    @apply text-white text-[40px];
+  }
+
+  .close {
+    @apply flex items-center justify-center w-[40px] h-[40px] absolute top-[10px] right-[10px] !important; 
+  }
+
+  .close svg {
+    @apply text-white text-[40px];
+  }
+
+  .show_menu {
+    @apply h-screen fixed z-[999] top-0 left-0 pt-7 p-5 bg-dark-cyan;
+  }
+
+  .show_menu > div {
+    @apply h-full gap-5;
+  }
+
+  .show_menu a button {
+    @apply text-base;
+  }
   
   .dropbtn {
     padding: 10px 5px;
@@ -5052,6 +5084,33 @@ input::-ms-clear {
 
   .my-settings-content h2 {
     @apply text-[18px]
+  }
+
+  .body-content-s1 {
+    @apply flex flex-wrap;
+  }
+  .product-view-s1-left-right {
+    @apply order-2 flex flex-wrap px-3 box-border max-w-full;
+  }
+
+  .product-view-s1-left-details-with-right-suggestion {
+    @apply order-3 flex;
+  }
+
+  .product_cart_modal {
+    @apply flex order-1 static;
+  }
+
+  .product-view-s-9-details-more-suggestion-sliders {
+    @apply flex order-4 mr-0 ml-auto;
+  }
+
+  .product-view-s1-details-more-suggestion-sliders {
+    @apply flex order-4;
+  }
+
+  .custom-inner-banner-s1 {
+    @apply w-full;
   }
 
 }
