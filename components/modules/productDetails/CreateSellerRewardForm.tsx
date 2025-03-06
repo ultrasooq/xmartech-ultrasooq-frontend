@@ -15,6 +15,7 @@ import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker
 import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
 import { Input } from "@/components/plate-ui/input";
 import { useAddSellerReward } from "@/apis/queries/seller-reward.queries";
+import DatePicker from "@/components/shared/DatePicker";
 
 const addFormSchema = z.object({
     startDate: z.string().min(2, { message: "Start date is required" }),
@@ -54,8 +55,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
     const onSubmit = async (values: z.infer<typeof addFormSchema>) => {
         const response = await addSellerReward.mutateAsync({
             productId: Number(productId),
-            startTime: values.startDate + ' ' + values.startTime,
-            endTime: values.endDate + ' ' + values.endTime,
+            startTime: values.startDate + ' ' + values.startTime + ':00',
+            endTime: values.endDate + ' ' + values.endTime + ':00',
             rewardPercentage: values.rewardPercentage,
             rewardFixAmount: values.rewardFixAmount,
             minimumOrder: values.minimumOrder,
@@ -98,47 +99,29 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="card-item card-payment-form px-5 pb-5 pt-3"
                 >
-                    {/* <ControlledDatePicker
-                        label="Start Date"
-                        name="startDate"
-                        isFuture
-                    />
-
-                    <ControlledTimePicker
-                        label="Start Time"
-                        name="startTime"
-                    />
-
-                    <ControlledDatePicker
-                        label="End Date"
-                        name="endDate"
-                        isFuture
-                    />
-
-                    <ControlledTimePicker
-                        label="End Time"
-                        name="endTime"
-                    /> */}
-
                     <ControlledTextInput
+                        type="date"
                         label="Start Date"
                         name="startDate"
                         placeholder="Start Date"
                     />
 
                     <ControlledTextInput
+                        type="time"
                         label="Start Time"
                         name="startTime"
                         placeholder="Start Time"
                     />
 
                     <ControlledTextInput
+                        type="date"
                         label="End Date"
                         name="endDate"
                         placeholder="End Date"
                     />
 
                     <ControlledTextInput
+                        type="time"
                         label="End Time"
                         name="endTime"
                         placeholder="End Time"
@@ -200,9 +183,10 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
 
                     <Button
                         type="submit"
+                        disabled={addSellerReward?.isPending}
                         className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                     >
-                        Create Reward
+                        {!addSellerReward?.isPending ? "Create Reward" : "Processing"}
                     </Button>
                 </form>
             </Form>
