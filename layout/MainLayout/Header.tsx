@@ -543,7 +543,7 @@ const Header = () => {
                                 : "/trending"
                     }
                   >
-                    <div className="flex gap-x-3">
+                    <div className="flex gap-x-3" onClick={handleClick}>
                       <Image
                         src={item.icon}
                         alt={item?.name}
