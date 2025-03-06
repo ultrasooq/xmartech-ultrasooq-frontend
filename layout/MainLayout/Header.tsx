@@ -38,7 +38,7 @@ import { MdOutlineImageNotSupported } from "react-icons/md";
 import { useCategoryStore } from "@/lib/categoryStore";
 import GoogleTranslate from "@/components/GoogleTranslate";
 import { IoCloseOutline } from "react-icons/io5";
-import { CiMenuFries } from "react-icons/ci";
+import { IoIosMenu } from "react-icons/io";
 
 type CategoryProps = {
   id: number;
@@ -493,7 +493,7 @@ const Header = () => {
               className="humberger sm:w-7/12md:w-3/12 flex w-[20%] justify-end md:py-4 lg:w-1/6"
               onClick={handleClick}
             >
-              <CiMenuFries />
+              <IoIosMenu />
             </div>
           </div>
 
