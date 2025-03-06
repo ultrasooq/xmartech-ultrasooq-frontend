@@ -123,7 +123,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   return (
     <div className="product-view-s1-left">
       <div className="mb-3 flex grid-cols-4 flex-col-reverse gap-4 md:mb-0 md:grid">
-        <div className="relative order-2 col-span-3 max-h-[250px] space-y-4 bg-gray-100 md:max-h-[500px]">
+        <div className="relative order-2 col-span-3 space-y-4 bg-gray-100 md:max-h-[500px]">
           {!isLoading && haveAccessToken ? (
             <button
               type="button"
@@ -143,7 +143,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 {previewImages?.map((item, index: number) => (
                   <CarouselItem key={index} className="basis pl-1">
                     <div className="p-1">
-                      <div className="relative min-h-[250px] w-full">
+                      <div className="relative max-h-[250px] min-h-[250px] w-full">
                         {isImage(item) ? (
                           <Image
                             src={item}
@@ -193,7 +193,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {!isLoading &&
           productDetails?.product_productPrice[0]?.isCustomProduct ===
             "true" ? (
-            <div className="mb-4 flex w-full gap-x-3 self-end pb-4">
+            <div className="mb-2 flex w-full flex-wrap gap-3 self-end pb-2">
               {productDetails?.adminId !== loginUserId ? (
                 <>
                   <Button

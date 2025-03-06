@@ -37,6 +37,8 @@ import { cn } from "@/lib/utils";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import { useCategoryStore } from "@/lib/categoryStore";
 import GoogleTranslate from "@/components/GoogleTranslate";
+import { IoCloseOutline } from "react-icons/io5";
+import { IoIosMenu } from "react-icons/io";
 
 type CategoryProps = {
   id: number;
@@ -108,6 +110,12 @@ const Header = () => {
   );
 
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [isActive, setIsActive] = useState(false);
+
+  const handleClick = () => {
+    setIsActive(!isActive);
+  };
 
   // Sync initial state with URL parameter (with safe fallback)
   // useEffect(() => {
@@ -320,7 +328,7 @@ const Header = () => {
                 <Image src={LogoIcon} alt="logo" />
               </Link>
             </div>
-            <div className="order-3 flex w-full items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
+            <div className="order-3 flex w-[80%] items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
               {/* <div className="h-11 w-24 md:w-24 lg:w-auto">
                 <select className="h-full w-full focus:outline-none">
                   <option>All</option>
@@ -481,10 +489,21 @@ const Header = () => {
                 </li>
               </ul>
             </div>
+            <div
+              className="humberger sm:w-7/12md:w-3/12 flex w-[20%] justify-end md:py-4 lg:w-1/6"
+              onClick={handleClick}
+            >
+              <IoIosMenu />
+            </div>
           </div>
 
-          <div className="hidden h-[44px] w-full px-3 md:flex md:px-0">
-            <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-start">
+          <div
+            className={`h-[44px] w-full px-3 pt-7 md:flex md:px-0 ${isActive ? "show_menu" : "hidden"}`}
+          >
+            <div className="close" onClick={handleClick}>
+              <IoCloseOutline />
+            </div>
+            <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-between">
               {memoizedMenu.map((item: any) => (
                 <>
                   <ButtonLink
@@ -539,6 +558,13 @@ const Header = () => {
               ))}
             </div>
           </div>
+          {/* <p
+            className={`mt-4 ${isActive ? "font-bold text-green-500" : "text-black"}`}
+          >
+            {isActive
+              ? "Active class added!"
+              : "Click the button to add a class"}
+          </p> */}
         </div>
       </div>
 

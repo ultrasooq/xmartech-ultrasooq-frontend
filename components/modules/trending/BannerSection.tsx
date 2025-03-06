@@ -48,7 +48,12 @@ const BannerSection = () => {
             </div>
           </div>
           <div className="relative h-[250px] w-full md:h-[360px] md:w-[548px]">
-            <Image src={InnerBannerImage} alt="inner-banner" fill />
+            <Image
+              src={InnerBannerImage}
+              alt="inner-banner"
+              fill
+              className="h-auto md:h-full"
+            />
           </div>
         </div>
       </div>
