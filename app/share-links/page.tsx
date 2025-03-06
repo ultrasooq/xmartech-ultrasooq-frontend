@@ -22,7 +22,22 @@ const ShareLinksPage = () => {
         return shareLinksQuery?.data?.data || [];
     }, [shareLinksQuery?.data?.data]);
 
-    console.log(shareLinks);
+    const textAreaRef = useRef(null);
+
+    const copyShareLink = (id: number) => {
+        // navigator.clipboard.writeText();
+        var textField = document.createElement('textarea')
+        textField.innerText = `${location.origin}/share/${id}`;
+        document.body.appendChild(textField)
+        textField.select()
+        document.execCommand('copy')
+        textField.remove()
+        toast({
+            title: "Copied",
+            description: '',
+            variant: "success",
+        });
+    };
 
     return (
         <section className="team_members_section">
@@ -38,6 +53,7 @@ const ShareLinksPage = () => {
                                     <thead>
                                         <tr>
                                             <th>Product</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
 
@@ -47,6 +63,11 @@ const ShareLinksPage = () => {
                                                 <tr key={item.id}>
                                                     <td>
                                                         {item?.productDetail?.productName}
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" onClick={() => copyShareLink(item.id)}>
+                                                            Copy Share Link
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             );
