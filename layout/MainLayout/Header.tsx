@@ -571,7 +571,7 @@ const Header = () => {
       <div className="w-full border-b border-solid border-gray-300 bg-white">
         <div className="container m-auto px-3">
           <div className="relative flex flex-row flex-wrap md:flex-nowrap">
-            <div className="flex flex-1 gap-x-3 md:gap-x-5">
+            <div className="flex flex-1 flex-wrap gap-x-3 md:gap-x-5">
               <div className="dropdown">
                 <button className="dropbtn flex items-center">
                   <div>
