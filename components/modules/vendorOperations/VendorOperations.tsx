@@ -7,16 +7,16 @@ const VendorOperations = () => {
   const [selectedOperation, setSelectedOperation] = useState<string>(
     "questions_n_comments",
   );
-  const [selectedProductId, setSelectedProductId] = useState<number>(0);
+  const [selectedProduct, setSelectedProduct] = useState<{[key: string]: any}>();
 
   return (
     <>
       <div className="flex w-full flex-wrap rounded-sm border border-solid border-gray-300">
         <Operations onSelect={(operation) => setSelectedOperation(operation)} />
 
-        <Products onSelect={(id) => setSelectedProductId(id)} />
+        <Products onSelect={(product) => setSelectedProduct(product)} />
 
-        {selectedOperation == "admin_n_support" && selectedProductId && (
+        {selectedOperation == "admin_n_support" && selectedProduct && (
           <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
             <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Admin & Support</span>
@@ -24,11 +24,14 @@ const VendorOperations = () => {
           </div>
         )}
 
-        {selectedOperation == "questions_n_comments" && selectedProductId && (
-          <QuestionAndAnswers productId={selectedProductId} />
+        {selectedOperation == "questions_n_comments" && selectedProduct && (
+          <QuestionAndAnswers 
+            productId={selectedProduct.id} 
+            productAddedBy={selectedProduct.userId} 
+          />
         )}
 
-        {selectedOperation == "rate_n_review" && selectedProductId && (
+        {selectedOperation == "rate_n_review" && selectedProduct && (
           <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
             <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Rate & Review</span>
@@ -36,7 +39,7 @@ const VendorOperations = () => {
           </div>
         )}
 
-        {selectedOperation == "complains" && selectedProductId && (
+        {selectedOperation == "complains" && selectedProduct && (
           <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
             <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Complains</span>

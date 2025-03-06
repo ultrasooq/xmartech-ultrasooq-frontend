@@ -1,38 +1,31 @@
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import AnswerForm from "./AnswerForm";
+// import { Button } from "@/components/ui/button";
+// import { Dialog, DialogContent } from "@/components/ui/dialog";
+// import AnswerForm from "./AnswerForm";
 import { cn } from "@/lib/utils";
 
 type QuestionCardProps = {
   id: number;
   question: string;
-  answer?: string;
-  userName?: string;
+  questionByUserDetail?: {
+    id: number,
+    firstName: string;
+    lastName: string;
+  };
   answers: {[key: string]: any}[],
   isLastItem: boolean;
-  hasAccessToken?: boolean;
 };
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
   id,
   question,
-  answer,
-  userName,
+  questionByUserDetail,
   answers,
   isLastItem,
-  hasAccessToken,
 }) => {
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
-  const handleToggleQuestionModal = () => setIsQuestionModalOpen(!isQuestionModalOpen);
-
-  if (!answers?.length && answer) {
-    answers.push({
-      id: 0,
-      answer: answer
-    });
-  }
+  // const handleToggleQuestionModal = () => setIsQuestionModalOpen(!isQuestionModalOpen);
 
   return (
     <div
@@ -46,39 +39,45 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           <span className="mr-2">Q:</span>
           {question}
         </h3>
-        {answers?.length && answers.map((answer: any) => (
-          <p key={answer.id}>
-            <span className="mr-2 font-bold">A:</span>
-            {answer.answer}
-          </p>
-        ))}
+        {questionByUserDetail ? <p className="text-xs font-medium text-gray-500">
+          {`${questionByUserDetail.firstName} ${questionByUserDetail.lastName}`}
+        </p> : ''}
+        {answers?.length ? answers.map((answer: any) => (
+          <React.Fragment key={answer.id}>
+            <p>
+              <span className="mr-2 font-bold">A:</span>
+              {answer.answer}
+            </p>
+            <p className="text-xs font-medium text-gray-500">{answer.userName || ""}</p>
+          </React.Fragment>
+        )) : null}
         {!answers?.length && (
           <>
             <p>
               <span className="mr-2 font-bold">A:</span>
               {"No answer yet"}
             </p>
-            <p className="text-xs font-medium text-gray-500">{userName || ""}</p>
+            <p className="text-xs font-medium text-gray-500"></p>
           </>
         )}
 
-        {hasAccessToken && !answers?.length ? (
+        {/* {hasAccessToken && !answers?.length ? (
           <div className="!my-2 text-center">
             <Button variant="secondary" onClick={handleToggleQuestionModal}>
               Reply
             </Button>
           </div>
-        ) : null}
+        ) : null} */}
       </article>
 
-      <Dialog
+      {/* <Dialog
         open={isQuestionModalOpen}
         onOpenChange={handleToggleQuestionModal}
       >
         <DialogContent>
           <AnswerForm onClose={handleToggleQuestionModal} questionId={id} />
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };

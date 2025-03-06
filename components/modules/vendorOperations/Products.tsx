@@ -5,14 +5,14 @@ import { useAllProducts } from "@/apis/queries/product.queries";
 import { cn } from "@/lib/utils";
 
 type ProductsProps = {
-  onSelect?: (id: number) => void;
+  onSelect?: (item: {[key: string]: any}) => void;
 };
 
 const Products: React.FC<ProductsProps> = ({ onSelect }) => {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [productList, setProductList] = useState<any[]>([]);
-  const [selectedProductId, setSelectedProductId] = useState<number>(0);
+  const [selectedProduct, setSelectedProduct] = useState<{[key: string]: any}>();
   const allProductsQuery = useAllProducts(
     {
       page: page,
@@ -30,12 +30,12 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
       return item;
     });
     setProductList(products);
-    if (products.length > 0) selectProduct(products[0].id);
+    if (products.length > 0) selectProduct(products[0]);
   }, [allProductsQuery?.data?.data?.length]);
 
-  const selectProduct = (id: number) => {
-    setSelectedProductId(id);
-    if (onSelect) onSelect(id);
+  const selectProduct = (product: {[key: string]: any}) => {
+    setSelectedProduct(product);
+    if (onSelect) onSelect(product);
   };
 
   return (
@@ -63,10 +63,10 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
         {productList?.map((item: any) => (
           <button
             type="button"
-            onClick={() => selectProduct(item.id)}
+            onClick={() => selectProduct(item)}
             className={cn(
               "flex w-full flex-wrap rounded-md px-[10px] py-[20px]",
-              selectedProductId == item.id
+              selectedProduct?.id == item.id
                 ? "bg-dark-orange text-white shadow-lg"
                 : "",
             )}

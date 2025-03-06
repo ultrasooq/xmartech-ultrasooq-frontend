@@ -95,25 +95,63 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
               question: {
                 id: number;
                 question: string;
-                answer?: string;
-                answerByuserIdDetail?: {
+                questionByuserId: number;
+                questionByuserIdDetail?: {
+                  id: number;
                   firstName: string;
                   lastName: string;
                 };
-                productQuestionAnswerDetail: {[key: string]: any}[]
+                answer?: string;
+                answerByuserIdDetail?: {
+                  id: number;
+                  firstName: string;
+                  lastName: string;
+                };
+                productQuestionAnswerDetail: {
+                  id: number;
+                  answer: string;
+                  answerByUserDetail?: {[key: string]: any};
+                }[]
               },
               index: number,
             ) => {
+              let answers: {
+                id: number;
+                answer: string;
+                userName?: string;
+              }[] = [];
+              if (question.productQuestionAnswerDetail.length > 0) {
+                question.productQuestionAnswerDetail.forEach((item: {[key:string]: any}) => {
+                  answers.push({
+                    id: item.id,
+                    answer: item.answer,
+                    userName: item.answerByUserDetail ? `${item.answerByUserDetail.firstName} ${item.answerByUserDetail.lastName}` : ''
+                  });
+                });
+              } else if (question.answer) {
+                answers.push({
+                  id: 0,
+                  answer: question.answer,
+                  userName: question.answerByuserIdDetail ? `${question.answerByuserIdDetail.firstName} ${question.answerByuserIdDetail.lastName}` : ''
+                });
+              }
+
+              if (question.questionByuserIdDetail) {
+                question.questionByuserIdDetail = {
+                  id: question.questionByuserIdDetail.id,
+                  firstName: question.questionByuserIdDetail.firstName,
+                  lastName: question.questionByuserIdDetail.lastName
+                }
+              }
+
               return (
                 <QuestionCard
                   key={question.id}
                   id={question.id}
                   question={question.question}
-                  answer={question.answer}
-                  userName={`${question.answerByuserIdDetail?.firstName || ""} ${question.answerByuserIdDetail?.lastName || ""}`}
-                  answers={question.productQuestionAnswerDetail}
+                  questionByUserDetail={question.questionByuserIdDetail}
+                  answers={answers}
                   isLastItem={index === questionQuery.data?.data?.length - 1}
-                  hasAccessToken={hasAccessToken}
                 />
               );
             },
