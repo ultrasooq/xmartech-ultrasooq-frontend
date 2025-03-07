@@ -110,15 +110,18 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
   const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
 
-  const handleToCustomizeModal = () => setIsCustomizeModalOpen(!isCustomizeModalOpen);
+  const handleToCustomizeModal = () =>
+    setIsCustomizeModalOpen(!isCustomizeModalOpen);
 
-  const [isSellerRewardFormModalOpen, setIsSellerRewardFormModalOpen] = useState(false);
+  const [isSellerRewardFormModalOpen, setIsSellerRewardFormModalOpen] =
+    useState(false);
 
-  const handleSellerRewardFormModal = () => setIsSellerRewardFormModalOpen(!isSellerRewardFormModalOpen);
+  const handleSellerRewardFormModal = () =>
+    setIsSellerRewardFormModalOpen(!isSellerRewardFormModalOpen);
 
   return (
     <div className="product-view-s1-left">
-      <div className="mb-3 flex grid-cols-4 flex-col-reverse gap-4 md:mb-0 md:grid">
+      <div className="mb-3 flex flex-col-reverse md:mb-3 lg:mb-0 lg:grid lg:grid-cols-4 lg:gap-4">
         <div className="relative order-2 col-span-3 space-y-4 bg-gray-100 md:max-h-[500px]">
           {!isLoading && haveAccessToken ? (
             <button
@@ -288,13 +291,15 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           >
             Buy Now
           </Button>
-          {productDetails.userId == loginUserId && <Button
-            type="button"
-            onClick={() => setIsSellerRewardFormModalOpen(true)}
-            className="h-14 flex-1 rounded-none bg-dark-orange text-base"
-          >
-            Create Reward
-          </Button>}
+          {productDetails.userId == loginUserId && (
+            <Button
+              type="button"
+              onClick={() => setIsSellerRewardFormModalOpen(true)}
+              className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+            >
+              Create Reward
+            </Button>
+          )}
         </div>
       ) : null}
 
@@ -334,15 +339,20 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isSellerRewardFormModalOpen} onOpenChange={handleSellerRewardFormModal}>
+      <Dialog
+        open={isSellerRewardFormModalOpen}
+        onOpenChange={handleSellerRewardFormModal}
+      >
         <DialogContent
           className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
           ref={wrapperRef}
         >
-          {productDetails && <CreateSellerRewardForm
-            productId={productDetails.id}
-            onClose={handleSellerRewardFormModal}
-          />}
+          {productDetails && (
+            <CreateSellerRewardForm
+              productId={productDetails.id}
+              onClose={handleSellerRewardFormModal}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
