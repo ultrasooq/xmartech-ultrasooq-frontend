@@ -24,10 +24,10 @@ const ShareLinksPage = () => {
 
     const textAreaRef = useRef(null);
 
-    const copyShareLink = (id: number) => {
+    const copyShareLink = (id: number, productId: number) => {
         // navigator.clipboard.writeText();
         var textField = document.createElement('textarea')
-        textField.innerText = `${location.origin}/share/${id}`;
+        textField.innerText = `${location.origin}/share/${productId}?share=${id}`;
         document.body.appendChild(textField)
         textField.select()
         document.execCommand('copy')
@@ -65,7 +65,7 @@ const ShareLinksPage = () => {
                                                         {item?.productDetail?.productName}
                                                     </td>
                                                     <td>
-                                                        <button type="button" onClick={() => copyShareLink(item.id)}>
+                                                        <button type="button" onClick={() => copyShareLink(item.id, item.productId)}>
                                                             Copy Share Link
                                                         </button>
                                                     </td>

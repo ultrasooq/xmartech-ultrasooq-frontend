@@ -27,6 +27,8 @@ import EditProductPage from "@/app/product/[id]/page";
 import { useMe } from "@/apis/queries/user.queries";
 import AddToCustomizeForm from "../factories/AddToCustomizeForm";
 import CreateSellerRewardForm from "./CreateSellerRewardForm";
+import { useCreateShareLink, useSellerRewards } from "@/apis/queries/seller-reward.queries";
+import { toast } from "@/components/ui/use-toast";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -110,14 +112,40 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
   const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
 
-  const handleToCustomizeModal = () =>
-    setIsCustomizeModalOpen(!isCustomizeModalOpen);
+  const handleToCustomizeModal = () => setIsCustomizeModalOpen(!isCustomizeModalOpen);
 
-  const [isSellerRewardFormModalOpen, setIsSellerRewardFormModalOpen] =
-    useState(false);
+  const [rewardId, setRewardId] = useState<number>()
 
-  const handleSellerRewardFormModal = () =>
-    setIsSellerRewardFormModalOpen(!isSellerRewardFormModalOpen);
+  const sellerRewardsQuery = useSellerRewards({
+    page: 1,
+    limit: 50
+  });
+
+  useEffect(() => {
+    setRewardId(sellerRewardsQuery?.data?.data?.find((item: any) => item.productId == productDetails?.id)?.id);
+  }, [sellerRewardsQuery?.data?.data, productDetails]);
+
+  const generateShareLink = useCreateShareLink();
+
+  const createShareLink = async () => {
+    const response = await generateShareLink.mutateAsync({
+      sellerRewardId: Number(rewardId),
+    });
+
+    if (response.status) {
+        toast({
+            title: "Share Link Created Successfully",
+            description: response.message,
+            variant: "success",
+        });
+    } else {
+        toast({
+            title: "Share Link Create Failed",
+            description: response.message,
+            variant: "danger",
+        });
+    }
+  };
 
   return (
     <div className="product-view-s1-left">
@@ -291,15 +319,13 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           >
             Buy Now
           </Button>
-          {productDetails.userId == loginUserId && (
-            <Button
-              type="button"
-              onClick={() => setIsSellerRewardFormModalOpen(true)}
-              className="h-14 flex-1 rounded-none bg-dark-orange text-base"
-            >
-              Create Reward
-            </Button>
-          )}
+          {rewardId && <Button
+            type="button"
+            onClick={createShareLink}
+            className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+          >
+            Generate Share Link
+          </Button>}
         </div>
       ) : null}
 
@@ -336,23 +362,6 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             selectedProductId={productDetails?.id}
             // selectedQuantity={quantity}
           />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog
-        open={isSellerRewardFormModalOpen}
-        onOpenChange={handleSellerRewardFormModal}
-      >
-        <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
-          ref={wrapperRef}
-        >
-          {productDetails && (
-            <CreateSellerRewardForm
-              productId={productDetails.id}
-              onClose={handleSellerRewardFormModal}
-            />
-          )}
         </DialogContent>
       </Dialog>
     </div>

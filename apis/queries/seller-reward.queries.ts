@@ -46,9 +46,9 @@ export const useAddSellerReward = () => {
             return res.data;
         },
         onSuccess: () => {
-            // queryClient.invalidateQueries({
-            //     queryKey: ["seller_rewards"],
-            // });
+            queryClient.invalidateQueries({
+                queryKey: ["seller_rewards"],
+            });
         },
         onError: (err: APIResponseError) => {
             console.log(err);

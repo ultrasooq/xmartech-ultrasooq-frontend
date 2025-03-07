@@ -1,17 +1,19 @@
 "use client"; // Add this at the top
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import Pagination from "@/components/shared/Pagination";
 import { useCreateShareLink, useSellerRewards } from "@/apis/queries/seller-reward.queries";
-import { Link } from "lucide-react";
-import Image from "next/image";
-import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
-import { Button } from "react-day-picker";
 import { toast } from "@/components/ui/use-toast";
+import { IoMdAdd } from "react-icons/io";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import CreateSellerRewardForm from "@/components/modules/productDetails/CreateSellerRewardForm";
 
 const SellerRewardsPage = () => {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
+    const [isSellerRewardFormModalOpen, setIsSellerRewardFormModalOpen] = useState<boolean>(false);
+
+    const wrapperRef = useRef(null);
 
     const sellerRewardsQuery = useSellerRewards({
         page: page,
@@ -21,6 +23,8 @@ const SellerRewardsPage = () => {
     const sellerRewards = useMemo(() => {
         return sellerRewardsQuery?.data?.data || [];
     }, [sellerRewardsQuery?.data?.data]);
+
+    const handleSellerRewardFormModal = () => setIsSellerRewardFormModalOpen(!isSellerRewardFormModalOpen);
 
     const generateShareLink = useCreateShareLink();
 
@@ -50,7 +54,13 @@ const SellerRewardsPage = () => {
                 <div className="flex w-full flex-wrap">
                     <div className="team_members_heading w-full">
                         <h1>Seller Rewards</h1>
+                        <div className="flex justify-end gap-3">
+                            <button type="button" onClick={() => setIsSellerRewardFormModalOpen(true)}>
+                                Create Seller Reward
+                            </button>
+                        </div>
                     </div>
+                    
                     <div className="team_members_table w-full">
                         {!sellerRewardsQuery?.isLoading && sellerRewards.length ? (
                             <>
@@ -69,7 +79,7 @@ const SellerRewardsPage = () => {
 
                                     <tbody>
                                         {sellerRewards?.filter((item: any) => item.productDetail).map((item: any) => {
-                                            
+
                                             let image = item.productDetail?.productImages[0].image || PlaceholderImage;
                                             return (
                                                 <tr key={item.id}>
@@ -82,7 +92,7 @@ const SellerRewardsPage = () => {
                                                     <td>{item.rewardPercentage || "--"}</td>
                                                     <td>{item.minimumOrder || "--"}</td>
                                                     <td>
-                                                        <button onClick={() => createShareLink(item.id)}>
+                                                        <button type="button" onClick={() => createShareLink(item.id)}>
                                                             Generate Share Link
                                                         </button>
                                                     </td>
@@ -111,6 +121,16 @@ const SellerRewardsPage = () => {
                     </div>
                 </div>
             </div>
+            <Dialog open={isSellerRewardFormModalOpen} onOpenChange={handleSellerRewardFormModal}>
+                <DialogContent
+                    className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+                    ref={wrapperRef}
+                >
+                    <CreateSellerRewardForm
+                        onClose={handleSellerRewardFormModal}
+                    />
+                </DialogContent>
+            </Dialog>
         </section>
     );
 };

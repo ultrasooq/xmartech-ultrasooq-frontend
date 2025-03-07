@@ -16,8 +16,12 @@ import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker
 import { Input } from "@/components/plate-ui/input";
 import { useAddSellerReward } from "@/apis/queries/seller-reward.queries";
 import DatePicker from "@/components/shared/DatePicker";
+import { useMe } from "@/apis/queries/user.queries";
+import { useAllProducts } from "@/apis/queries/product.queries";
+import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 
 const addFormSchema = z.object({
+    productId: z.string().min(1, "Product is required"),
     startDate: z.string().min(2, { message: "Start date is required" }),
     startTime: z.string().min(2, { message: "Start time is required" }),
     endDate: z.string().min(2, { message: "End date is required" }),
@@ -28,14 +32,16 @@ const addFormSchema = z.object({
 });
 
 type CreateSellerRewardFormProps = {
-    productId: number;
     onClose: () => void;
 };
 
-const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ productId, onClose }) => {
+const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose }) => {
+
+    const me = useMe();
 
     // Default values based on whether editing or adding a new member
     const addDefaultValues = {
+        productId: "",
         startDate: "", //undefined as unknown as Date,
         startTime: "",
         endDate: "", //undefined as unknown as Date,
@@ -52,9 +58,25 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
 
     const addSellerReward = useAddSellerReward();
 
+    const [products, setProducts] = useState<any[]>([]);
+
+    const allProductsQuery = useAllProducts(
+        {
+            page: 1,
+            limit: 50,
+        },
+        true,
+    );
+
+    useEffect(() => {
+        setProducts((allProductsQuery?.data?.data || []).filter((item: any) => {
+            return item.userId == me?.data?.data?.id
+        }));
+    }, [allProductsQuery?.data?.data?.length]);
+
     const onSubmit = async (values: z.infer<typeof addFormSchema>) => {
         const response = await addSellerReward.mutateAsync({
-            productId: Number(productId),
+            productId: Number(values.productId),
             startTime: values.startDate + ' ' + values.startTime + ':00',
             endTime: values.endDate + ' ' + values.endTime + ':00',
             rewardPercentage: values.rewardPercentage,
@@ -99,6 +121,15 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ product
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="card-item card-payment-form px-5 pb-5"
                 >
+                    <ControlledSelectInput
+                      label="Product"
+                      name="productId"
+                      options={products.map((item: any) => ({
+                        value: item.id?.toString(),
+                        label: item.productName,
+                      }))}
+                    />
+                    
                     <label className="text-sm font-medium leading-none text-color-dark">
                         Start Date
                     </label>
