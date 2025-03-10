@@ -74,7 +74,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         {productType === "P" ? (
           <>
             <label>Price:</label>
-            <p>${productPrice[0].offerPrice}</p>
+            <p>${productPrice?.[0]?.offerPrice}</p>
           </>
         ) : null}
         {/* </Link> */}

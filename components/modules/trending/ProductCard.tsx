@@ -1,7 +1,7 @@
 import { TrendingProduct } from "@/utils/types/common.types";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import validator from "validator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaStar } from "react-icons/fa";
@@ -15,6 +15,7 @@ import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
+import { FaCircleCheck } from "react-icons/fa6";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -75,6 +76,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [item.productReview?.length],
   );
+
+  // const [quantity, setQuantity] = useState(0);
+
+  // useEffect(() => {
+  //   setQuantity(productQuantity || 0);
+  // }, [productQuantity]);
 
   return (
     <div className="product-list-s1-col">
@@ -188,6 +195,86 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </span>
             </h5>
           )}
+        </div>
+        <div className="quantity_wrap mb-2">
+          <label>Quantity</label>
+          <div className="qty-up-down-s1-with-rgMenuAction">
+            <div className="flex items-center gap-x-3 md:gap-x-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="relative hover:shadow-sm"
+                onClick={() => {
+                  //setQuantity(quantity - 1);
+                  // onAdd(quantity - 1, id, "remove");
+                  // cart.updateCart({
+                  //   quantity: quantity - 1,
+                  //   rfqProductId: id,
+                  // });
+                }}
+                //disabled={quantity === 0}
+              >
+                <Image
+                  src="/images/upDownBtn-minus.svg"
+                  alt="minus-icon"
+                  fill
+                  className="p-3"
+                />
+              </Button>
+              <p className="!mb-0 !text-black">{/* {quantity} */}</p>
+              <Button
+                type="button"
+                variant="outline"
+                className="relative hover:shadow-sm"
+                onClick={() => {
+                  //setQuantity(quantity + 1);
+                  // onAdd(quantity + 1, id, "add");
+                  // cart.updateCart({
+                  //   quantity: quantity + 1,
+                  //   rfqProductId: id,
+                  // });
+                }}
+              >
+                <Image
+                  src="/images/upDownBtn-plus.svg"
+                  alt="plus-icon"
+                  fill
+                  className="p-3"
+                />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="cart_button">
+          {/* {isAddedToCart ? ( */}
+          {/* <button
+            type="button"
+            className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
+            //disabled={quantity < 0}
+            //onClick={() => {
+            //onAdd(quantity, id, "add");
+            // console.log(quantity, id, "add");
+            // cart.updateCart({ quantity: 1, rfqProductId: id });
+            //}}
+          >
+            <FaCircleCheck color="#00C48C" />
+            Added to Cart
+          </button> */}
+          {/* ) : ( */}
+          <button
+            type="button"
+            className="add_to_cart_button"
+            //disabled={quantity === 0}
+            //</div>onClick={() => {
+            //onAdd(quantity, id, "add");
+            // console.log(quantity, id, "add");
+            // cart.updateCart({ quantity: 1, rfqProductId: id });
+            // }}
+          >
+            Add To Cart
+          </button>
+          {/* )} */}
         </div>
       </div>
     </div>
