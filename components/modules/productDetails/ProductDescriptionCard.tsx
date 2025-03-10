@@ -199,7 +199,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   // ✅ Fixing getLocalTimestamp to correctly combine Date + Time
   const getLocalTimestamp = (dateStr: any, timeStr: any) => {
     const date = new Date(dateStr); // Parse date part only
-    const [hours, minutes] = timeStr.split(":").map(Number); // Extract hours/minutes
+    const [hours, minutes] = (timeStr || '').split(":").map(Number); // Extract hours/minutes
 
     date.setHours(hours, minutes || 0, 0, 0); // Set correct time in local timezone
 
