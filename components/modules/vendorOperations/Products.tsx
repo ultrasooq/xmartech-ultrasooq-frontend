@@ -10,8 +10,9 @@ type ProductsProps = {
 
 const Products: React.FC<ProductsProps> = ({ onSelect }) => {
   const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(10);
+  const [limit] = useState<number>(10);
   const [productList, setProductList] = useState<any[]>([]);
+  const [productsCount, setProductsCount] = useState<number>(0);
   const [selectedProduct, setSelectedProduct] = useState<{[key: string]: any}>();
   const allProductsQuery = useAllProducts(
     {
@@ -29,13 +30,20 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
       }
       return item;
     });
-    setProductList(products);
-    if (products.length > 0) selectProduct(products[0]);
-  }, [allProductsQuery?.data?.data?.length]);
+    setProductList((prevProducts: any[]) => [...prevProducts, ...products]);
+    setProductsCount((prevCount: number) => prevCount + (allProductsQuery?.data?.data?.length || 0));
+    if (products.length > 0 && !selectedProduct) selectProduct(products[0]);
+  }, [allProductsQuery?.data?.data, page, limit]);
 
   const selectProduct = (product: {[key: string]: any}) => {
     setSelectedProduct(product);
     if (onSelect) onSelect(product);
+  };
+
+  const handleScroll = (elem: any) => {
+    if (elem.clientHeight + elem.scrollTop >= elem.scrollHeight && productsCount < allProductsQuery?.data?.totalCount) {
+      setPage((prevPage: number) => prevPage + 1);
+    }
   };
 
   return (
@@ -43,7 +51,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
       <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
         <span>Product</span>
       </div>
-      <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]">
+      <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]" onScroll={(e) => handleScroll(e.target)}>
         {allProductsQuery?.isLoading ? (
           <div className="my-2 space-y-2">
             {Array.from({ length: 2 }).map((_, i) => (
