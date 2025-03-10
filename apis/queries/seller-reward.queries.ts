@@ -12,6 +12,8 @@ export const useSellerRewards = (
         page: number;
         limit: number;
         term?: string;
+        productId?: string;
+        sortType?: "asc" | "desc";
     },
     enabled = true,
 ) =>
@@ -60,6 +62,8 @@ export const useShareLinks = (
     payload: {
         page: number;
         limit: number;
+        productId?: string;
+        sortType?: "asc" | "desc";
     },
     enabled = true,
 ) =>

@@ -11,18 +11,21 @@ import { toast } from "@/components/ui/use-toast";
 
 const ShareLinksPage = () => {
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [limit] = useState(10);
 
     const shareLinksQuery = useShareLinks({
         page: page,
-        limit: limit
+        limit: limit,
+        sortType: "desc"
     });
 
     const shareLinks = useMemo(() => {
         return shareLinksQuery?.data?.data || [];
-    }, [shareLinksQuery?.data?.data]);
-
-    const textAreaRef = useRef(null);
+    }, [
+        shareLinksQuery?.data?.data,
+        page,
+        limit,
+    ]);
 
     const copyShareLink = (id: number, productId: number) => {
         // navigator.clipboard.writeText();

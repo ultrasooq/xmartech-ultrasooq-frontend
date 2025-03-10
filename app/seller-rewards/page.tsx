@@ -10,19 +10,24 @@ import CreateSellerRewardForm from "@/components/modules/productDetails/CreateSe
 
 const SellerRewardsPage = () => {
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [limit] = useState(10);
     const [isSellerRewardFormModalOpen, setIsSellerRewardFormModalOpen] = useState<boolean>(false);
 
     const wrapperRef = useRef(null);
 
     const sellerRewardsQuery = useSellerRewards({
         page: page,
-        limit: limit
+        limit: limit,
+        sortType: "desc"
     });
 
     const sellerRewards = useMemo(() => {
         return sellerRewardsQuery?.data?.data || [];
-    }, [sellerRewardsQuery?.data?.data]);
+    }, [
+        sellerRewardsQuery?.data?.data,
+        page,
+        limit
+    ]);
 
     const handleSellerRewardFormModal = () => setIsSellerRewardFormModalOpen(!isSellerRewardFormModalOpen);
 

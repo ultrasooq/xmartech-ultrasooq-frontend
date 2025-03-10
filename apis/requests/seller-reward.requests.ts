@@ -6,7 +6,9 @@ import urlcat from "urlcat";
 export const fetchSellerRewards = (payload: {
     page: number;
     limit: number;
-    trem?: string;
+    term?: string;
+    productId?: string;
+    sortType?: "asc" | "desc";
 }) => {
     return axios({
         method: "GET",
@@ -45,6 +47,8 @@ export const addSellerReward = (payload: {
 export const fetchShareLinks = (payload: {
     page: number;
     limit: number;
+    productId?: string;
+    sortType?: "asc" | "desc";
 }) => {
     return axios({
         method: "GET",
