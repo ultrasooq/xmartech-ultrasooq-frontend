@@ -27,7 +27,10 @@ import EditProductPage from "@/app/product/[id]/page";
 import { useMe } from "@/apis/queries/user.queries";
 import AddToCustomizeForm from "../factories/AddToCustomizeForm";
 import CreateSellerRewardForm from "./CreateSellerRewardForm";
-import { useCreateShareLink, useSellerRewards } from "@/apis/queries/seller-reward.queries";
+import {
+  useCreateShareLink,
+  useSellerRewards,
+} from "@/apis/queries/seller-reward.queries";
 import { toast } from "@/components/ui/use-toast";
 
 type ProductImagesCardProps = {
@@ -112,17 +115,22 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
   const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
 
-  const handleToCustomizeModal = () => setIsCustomizeModalOpen(!isCustomizeModalOpen);
+  const handleToCustomizeModal = () =>
+    setIsCustomizeModalOpen(!isCustomizeModalOpen);
 
-  const [rewardId, setRewardId] = useState<number>()
+  const [rewardId, setRewardId] = useState<number>();
 
   const sellerRewardsQuery = useSellerRewards({
     page: 1,
-    limit: 50
+    limit: 50,
   });
 
   useEffect(() => {
-    setRewardId(sellerRewardsQuery?.data?.data?.find((item: any) => item.productId == productDetails?.id)?.id);
+    setRewardId(
+      sellerRewardsQuery?.data?.data?.find(
+        (item: any) => item.productId == productDetails?.id,
+      )?.id,
+    );
   }, [sellerRewardsQuery?.data?.data, productDetails]);
 
   const generateShareLink = useCreateShareLink();
@@ -133,17 +141,17 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
     });
 
     if (response.status) {
-        toast({
-            title: "Share Link Created Successfully",
-            description: response.message,
-            variant: "success",
-        });
+      toast({
+        title: "Share Link Created Successfully",
+        description: response.message,
+        variant: "success",
+      });
     } else {
-        toast({
-            title: "Share Link Create Failed",
-            description: response.message,
-            variant: "danger",
-        });
+      toast({
+        title: "Share Link Create Failed",
+        description: response.message,
+        variant: "danger",
+      });
     }
   };
 
@@ -315,17 +323,19 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             type="button"
             // onClick={onToCheckout}
             onClick={onToCart}
-            className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+            className="h-14 max-w-[205px] flex-1 rounded-none bg-dark-orange text-base"
           >
             Buy Now
           </Button>
-          {rewardId && <Button
-            type="button"
-            onClick={createShareLink}
-            className="h-14 flex-1 rounded-none bg-dark-orange text-base"
-          >
-            Generate Share Link
-          </Button>}
+          {rewardId && (
+            <Button
+              type="button"
+              onClick={createShareLink}
+              className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+            >
+              Generate Share Link
+            </Button>
+          )}
         </div>
       ) : null}
 

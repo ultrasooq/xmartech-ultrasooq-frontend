@@ -2542,6 +2542,12 @@
     background: #ff9f00 !important;
   }
 
+  .cart_button
+    button.add_to_cart_button {
+    @apply text-white !important;
+    background: #ff9f00 !important;
+  }
+
   .rfq_section
     .rfq_main_box
     .rfq_middle
@@ -2577,6 +2583,10 @@
     @apply flex w-full flex-col items-start gap-y-1;
   }
 
+  .quantity_wrap {
+    @apply flex w-full flex-col items-start gap-y-1;
+  }
+
   .rfq_section
     .rfq_main_box
     .rfq_middle
@@ -2589,6 +2599,11 @@
     @apply w-full text-xs font-normal uppercase leading-[14px] text-[#333333];
   }
 
+  .quantity_wrap
+    label {
+    @apply w-full text-xs font-normal uppercase leading-[14px] text-[#333333];
+  }
+
   .rfq_section
     .rfq_main_box
     .rfq_middle
@@ -2597,6 +2612,11 @@
     .product_list_part
     .product_list_content
     .quantity_wrap
+    .quantity {
+    @apply mb-2.5 inline-flex w-auto border border-solid border-[#DBDBDB];
+  }
+
+  .quantity_wrap
     .quantity {
     @apply mb-2.5 inline-flex w-auto border border-solid border-[#DBDBDB];
   }
@@ -2614,6 +2634,12 @@
     @apply h-[35px] w-[50px] border-[none] text-center font-medium text-[#7F818D] focus:shadow-none;
   }
 
+  .quantity_wrap
+    .quantity
+    input {
+    @apply h-[35px] w-[50px] border-[none] text-center font-medium text-[#7F818D] focus:shadow-none;
+  }
+
   .rfq_section
     .rfq_main_box
     .rfq_middle
@@ -2622,6 +2648,12 @@
     .product_list_part
     .product_list_content
     .quantity_wrap
+    .quantity
+    input:focus {
+    outline: none;
+  }
+
+  .quantity_wrap
     .quantity
     input:focus {
     outline: none;
@@ -2641,6 +2673,13 @@
     background: transparent;
   }
 
+  .quantity_wrap
+    .quantity
+    .adjust_field {
+    @apply h-[35px] w-[30px] border-[none] text-xl font-semibold text-[#7F818D] focus:shadow-none;
+    background: transparent;
+  }
+
   .rfq_section
     .rfq_main_box
     .rfq_middle
@@ -2649,6 +2688,12 @@
     .product_list_part
     .product_list_content
     .quantity_wrap
+    .quantity
+    .adjust_field:focus {
+    outline: none;
+  }
+
+  .quantity_wrap
     .quantity
     .adjust_field:focus {
     outline: none;
@@ -2673,6 +2718,12 @@
     .product_list_part
     .product_list_content
     .cart_button
+    button.add_to_cart_button {
+    @apply w-full rounded-sm border border-solid border-[#E8E8E8] p-2.5 text-[15px] font-bold leading-5 text-[#7F818D];
+    background: #fff;
+  }
+
+  .cart_button
     button.add_to_cart_button {
     @apply w-full rounded-sm border border-solid border-[#E8E8E8] p-2.5 text-[15px] font-bold leading-5 text-[#7F818D];
     background: #fff;
