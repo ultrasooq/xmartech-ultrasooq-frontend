@@ -996,7 +996,7 @@
 
   /* product-view-s1-left-right.type2 */
   .product-view-s1-left-right.type2 .product-view-s1-right .info-col {
-    @apply border-0 p-0 !important;
+    @apply mt-2 border-0 p-0 !important;
   }
 
   .product-view-s1-left-right.type2 .product-view-s1 {
@@ -2185,6 +2185,26 @@
 
   .rfq_section .rfq_main_box .rfq_left .product_filter_box .check_filter {
     @apply w-full p-[15px];
+  }
+
+  .time_left {
+    @apply bg-dark-orange absolute top-3 left-4 text-white px-3 py-1 rounded-sm text-xs;
+  }
+
+  .time_wrap {
+    @apply flex items-center justify-center p-[20px];
+  }
+
+  .time_field {
+    @apply text-center;
+  }
+
+  .time_field h3 {
+    @apply text-[#666] font-medium !important;
+  }
+
+  .time_field h6 {
+    @apply text-[#666] font-normal;
   }
 
   @media only screen and (min-width: 768px) and (max-width: 991px) {

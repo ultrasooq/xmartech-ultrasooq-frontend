@@ -199,7 +199,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   // ✅ Fixing getLocalTimestamp to correctly combine Date + Time
   const getLocalTimestamp = (dateStr: any, timeStr: any) => {
     const date = new Date(dateStr); // Parse date part only
-    const [hours, minutes] = (timeStr || '').split(":").map(Number); // Extract hours/minutes
+    const [hours, minutes] = (timeStr || "").split(":").map(Number); // Extract hours/minutes
 
     date.setHours(hours, minutes || 0, 0, 0); // Set correct time in local timezone
 
@@ -328,8 +328,22 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 {/* <label>Report Abuse</label> */}
                 <p>
                   {timeLeft !== "NotStarted" && timeLeft !== "Expired" && (
-                    <span className="color-text">
+                    <span className="">
                       Time Left: <b>{timeLeft}</b>
+                      <div className="time_wrap">
+                        <div className="time_field">
+                          <h3>3</h3>
+                          <h6>Days</h6>
+                        </div>
+                        <div className="time_field">
+                          <h3>18</h3>
+                          <h6>Hours</h6>
+                        </div>
+                        <div className="time_field">
+                          <h3>29</h3>
+                          <h6>Minutes</h6>
+                        </div>
+                      </div>
                     </span>
                   )}
                 </p>
