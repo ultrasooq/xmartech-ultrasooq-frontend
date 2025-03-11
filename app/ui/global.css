@@ -996,7 +996,7 @@
 
   /* product-view-s1-left-right.type2 */
   .product-view-s1-left-right.type2 .product-view-s1-right .info-col {
-    @apply border-0 p-0 !important;
+    @apply mt-2 border-0 p-0 !important;
   }
 
   .product-view-s1-left-right.type2 .product-view-s1 {

@@ -65,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <div className="flex items-center gap-x-4">
                 <Button
                   variant="outline"
-                  className="relative hover:shadow-sm"
+                  className="relative border border-solid border-gray-300 hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity - 1);
                     onAdd(quantity - 1, "remove", productPriceId);
@@ -82,7 +82,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <p>{quantity}</p>
                 <Button
                   variant="outline"
-                  className="relative hover:shadow-sm"
+                  className="relative border border-solid border-gray-300 hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity + 1);
                     onAdd(quantity + 1, "add", productPriceId);
