@@ -4,7 +4,6 @@ import Pagination from "@/components/shared/Pagination";
 import { useCreateShareLink, useSellerRewards } from "@/apis/queries/seller-reward.queries";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { toast } from "@/components/ui/use-toast";
-import { IoMdAdd } from "react-icons/io";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import CreateSellerRewardForm from "@/components/modules/productDetails/CreateSellerRewardForm";
 
@@ -31,28 +30,6 @@ const SellerRewardsPage = () => {
 
     const handleSellerRewardFormModal = () => setIsSellerRewardFormModalOpen(!isSellerRewardFormModalOpen);
 
-    const generateShareLink = useCreateShareLink();
-
-    const createShareLink = async (sellerRewardId: number) => {
-        const response = await generateShareLink.mutateAsync({
-            sellerRewardId: sellerRewardId,
-        });
-
-        if (response.status) {
-            toast({
-                title: "Share Link Created Successfully",
-                description: response.message,
-                variant: "success",
-            });
-        } else {
-            toast({
-                title: "Share Link Create Failed",
-                description: response.message,
-                variant: "danger",
-            });
-        }
-    };
-
     return (
         <section className="team_members_section">
             <div className="container relative z-10 m-auto px-3">
@@ -78,7 +55,7 @@ const SellerRewardsPage = () => {
                                             <th>Reward Amount</th>
                                             <th>Reward Percentage</th>
                                             <th>Minimum Order</th>
-                                            <th>Action</th>
+                                            <th>Stock</th>
                                         </tr>
                                     </thead>
 
@@ -91,16 +68,12 @@ const SellerRewardsPage = () => {
                                                     <td>
                                                         {item?.productDetail?.productName}
                                                     </td>
-                                                    <td>{item.startTime || "--"}</td>
-                                                    <td>{item.endTime || "---"}</td>
-                                                    <td>{item.rewardFixAmount || "--"}</td>
-                                                    <td>{item.rewardPercentage || "--"}</td>
-                                                    <td>{item.minimumOrder || "--"}</td>
-                                                    <td>
-                                                        <button type="button" onClick={() => createShareLink(item.id)}>
-                                                            Generate Share Link
-                                                        </button>
-                                                    </td>
+                                                    <td>{item.startTime}</td>
+                                                    <td>{item.endTime}</td>
+                                                    <td>{item.rewardFixAmount}</td>
+                                                    <td>{item.rewardPercentage}</td>
+                                                    <td>{item.minimumOrder}</td>
+                                                    <td>{item.stock}</td>
                                                 </tr>
                                             );
                                         })}

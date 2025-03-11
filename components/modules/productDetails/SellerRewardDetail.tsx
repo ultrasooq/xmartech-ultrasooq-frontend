@@ -1,0 +1,113 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { Button } from "@/components/ui/button";
+import { IoCloseSharp } from "react-icons/io5";
+import { Input } from "@/components/ui/input";
+import { useCreateShareLink } from "@/apis/queries/seller-reward.queries";
+import { toast } from "@/components/ui/use-toast";
+
+type SellerRewardDetailProps = {
+    reward: { [key: string]: string };
+    onClose: () => void;
+};
+
+const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose }) => {
+    const createShareLink = useCreateShareLink();
+
+    const generateShareLink = async () => {
+        const response = await createShareLink.mutateAsync({
+            sellerRewardId: Number(reward.id),
+        });
+
+        if (response.status) {
+            onClose();
+            toast({
+                title: "Share Link Created Successfully",
+                description: response.message,
+                variant: "success",
+            });
+        } else {
+            toast({
+                title: "Share Link Create Failed",
+                description: response.message,
+                variant: "danger",
+            });
+        }
+    };
+    return (
+        <>
+            <div className="modal-header !justify-between">
+                <DialogTitle className="text-center text-xl font-bold">
+                    Seller Reward
+                </DialogTitle>
+                <Button
+                    onClick={onClose}
+                    className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+                >
+                    <IoCloseSharp size={20} />
+                </Button>
+            </div>
+            <div className="card-item card-payment-form px-5 pb-5">
+                <label className="text-sm font-medium leading-none text-color-dark">
+                    Start Time
+                </label>
+                <Input
+                    value={reward.startTime}
+                    disabled={true}
+                />
+
+                <label className="text-sm font-medium leading-none text-color-dark">
+                    End Time
+                </label>
+                <Input
+                    value={reward.endTime}
+                    disabled={true}
+                />
+
+                <label className="text-sm font-medium leading-none text-color-dark">
+                    Reward Percentage
+                </label>
+                <Input
+                    value={reward.rewardPercentage}
+                    disabled={true}
+                />
+
+                <label className="text-sm font-medium leading-none text-color-dark">
+                    Reward Fix Amount
+                </label>
+                <Input
+                    value={reward.rewardFixAmount}
+                    disabled={true}
+                />
+
+                <label className="text-sm font-medium leading-none text-color-dark">
+                    Minimum Order
+                </label>
+                <Input
+                    value={reward.minimumOrder}
+                    disabled={true}
+                />
+
+                <label className="text-sm font-medium leading-none text-color-dark">
+                    Stock
+                </label>
+                <Input
+                    value={reward.stock}
+                    disabled={true}
+                />
+
+                <Button
+                    type="button"
+                    disabled={createShareLink?.isPending}
+                    className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                    onClick={generateShareLink}
+                >
+                    {!createShareLink?.isPending ? "Generate Link" : "Processing"}
+                </Button>
+            </div>
+        </>
+    );
+};
+
+export default SellerRewardDetail;
+

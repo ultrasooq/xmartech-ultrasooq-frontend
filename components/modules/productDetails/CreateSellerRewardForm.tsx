@@ -5,17 +5,11 @@ import { Button } from "@/components/ui/button";
 import { IoCloseSharp } from "react-icons/io5";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { Controller, useForm, useFormContext } from "react-hook-form";
-import { z } from "zod";
+import { date, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import CreatableSelect from "react-select/creatable";
-import Select from "react-select";
-import { IOption, IUserRoles } from "@/utils/types/common.types";
 import { toast, useToast } from "@/components/ui/use-toast";
-import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
-import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
 import { Input } from "@/components/plate-ui/input";
 import { useAddSellerReward } from "@/apis/queries/seller-reward.queries";
-import DatePicker from "@/components/shared/DatePicker";
 import { useMe } from "@/apis/queries/user.queries";
 import { useAllProducts } from "@/apis/queries/product.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
@@ -28,7 +22,8 @@ const addFormSchema = z.object({
     endTime: z.string().min(2, { message: "End time is required" }),
     rewardPercentage: z.coerce.number().min(1, { message: 'Minimum value must be 1' }),
     rewardFixAmount: z.coerce.number().min(1, { message: 'Minimum value must be 1' }),
-    minimumOrder: z.coerce.number().min(1, { message: 'Minimum order must be 1' })
+    minimumOrder: z.coerce.number().min(1, { message: 'Minimum order must be 1' }),
+    stock: z.coerce.number().min(1, { message: 'Minimum stock must be 1' })
 });
 
 type CreateSellerRewardFormProps = {
@@ -49,6 +44,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
         rewardPercentage: 1,
         rewardFixAmount: 1,
         minimumOrder: 1,
+        stock: 1
     };
 
     const form = useForm({
@@ -75,13 +71,44 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
     }, [allProductsQuery?.data?.data?.length]);
 
     const onSubmit = async (values: z.infer<typeof addFormSchema>) => {
+        let startDateTime = values.startDate + ' ' + values.startTime + ':00';
+        let endDateTime = values.endDate + ' ' + values.endTime + ':00';
+
+        if (new Date(startDateTime).getTime() < new Date().getTime()) {
+            toast({
+                title: "Datetime error",
+                description: 'Start datetime can not be in the past',
+                variant: "danger",
+            });
+            return;
+        }
+
+        if (new Date(values.startDate).getTime() > new Date(values.endDate).getTime()) {
+            toast({
+                title: "Datetime error",
+                description: 'Start date can not be greater than end date',
+                variant: "danger",
+            });
+            return;
+        }
+
+        if (values.startDate == values.endDate && new Date(startDateTime).getTime() >= new Date(endDateTime).getTime()) {
+            toast({
+                title: "Datetime error",
+                description: 'Start time must be less than end time',
+                variant: "danger",
+            });
+            return;
+        }
+
         const response = await addSellerReward.mutateAsync({
             productId: Number(values.productId),
-            startTime: values.startDate + ' ' + values.startTime + ':00',
-            endTime: values.endDate + ' ' + values.endTime + ':00',
+            startTime: startDateTime,
+            endTime: endDateTime,
             rewardPercentage: values.rewardPercentage,
             rewardFixAmount: values.rewardFixAmount,
             minimumOrder: values.minimumOrder,
+            stock: values.stock
         });
 
         if (response.status) {
@@ -212,6 +239,24 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Minimum Order</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="stock"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Stock</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"

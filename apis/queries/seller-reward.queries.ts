@@ -41,6 +41,7 @@ export const useAddSellerReward = () => {
             rewardPercentage: number;
             rewardFixAmount: number;
             minimumOrder: number;
+            stock: number;
         }
     >({
         mutationFn: async (payload) => {

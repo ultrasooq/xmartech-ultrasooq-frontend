@@ -31,6 +31,7 @@ export const addSellerReward = (payload: {
     rewardPercentage: number;
     rewardFixAmount: number;
     minimumOrder: number;
+    stock: number
 }) => {
     return axios({
         method: "POST",
