@@ -95,6 +95,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             />
           </div>
         ) : null}
+        <div className="time_left">
+          <span>Time Left: 10Days</span>
+        </div>
         <Link href={`/trending/${item.id}`}>
           {item?.askForPrice !== "true" ? (
             item.consumerDiscount ? (
