@@ -46,6 +46,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
 import {
+  useCartListByDevice,
+  useCartListByUserId,
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
@@ -183,6 +185,33 @@ const TrendingPage = () => {
     searchTerm,
     selectedBrandIds,
   ]);
+
+  const [cartList, setCartList] = useState<any[]>([]); 
+
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 20,
+      deviceId,
+    },
+    !haveAccessToken,
+  );
+
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 20,
+    },
+    haveAccessToken,
+  );
+
+  useEffect(() => {
+    if (cartListByUser.data?.data) {
+      setCartList((cartListByUser.data?.data || []).map((item: any) => item));
+    } else if (cartListByDeviceQuery.data?.data) {
+      setCartList((cartListByDeviceQuery.data?.data || []).map((item: any) => item));
+    }
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data])
 
   const handleAddToCart = async (quantity: number, productPriceId?: number) => {
     if (haveAccessToken) {
@@ -507,6 +536,7 @@ const TrendingPage = () => {
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
                       isInteractive
+                      productQuantity={cartList?.find((el: any) => el.productId == item.id)?.quantity || 0}
                     />
                   ))}
                 </div>

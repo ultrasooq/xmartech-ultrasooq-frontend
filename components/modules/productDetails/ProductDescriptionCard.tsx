@@ -42,7 +42,7 @@ type ProductDescriptionCardProps = {
   askForPrice?: string;
   otherSellerDetails?: any[];
   productPriceArr: any[];
-  onQuantityChange?: (newQuantity: number) => void;
+  onQuantityChange?: (newQuantity: number, action: "add" | "remove") => void;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -55,7 +55,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   productTags,
   category,
   productShortDescription,
-  productQuantity = 1, // Default to 1 if undefined
+  productQuantity = 0, // Default to 1 if undefined
   productReview,
   onAdd,
   isLoading,
@@ -111,12 +111,12 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   );
 
   useEffect(() => {
-    setQuantity(productQuantity || 1);
+    setQuantity(productQuantity || 0);
   }, [productQuantity]);
 
-  const updateQuantity = (newQuantity: number) => {
+  const updateQuantity = (newQuantity: number, action: "add" | "remove") => {
     setQuantity(newQuantity);
-    onQuantityChange?.(newQuantity); // Notify parent if function exists
+    onQuantityChange?.(newQuantity, action); // Notify parent if function exists
     return newQuantity;
   };
 
@@ -303,8 +303,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         <Button
           variant="outline"
           className="relative hover:shadow-sm"
-          onClick={() => updateQuantity(Math.max(1, quantity - 1))}
-          disabled={quantity === 1}
+          onClick={() => updateQuantity(quantity - 1, "remove")}
+          disabled={quantity === 0}
         >
           <Image src={MinusIcon} alt="minus-icon" fill className="p-3" />
         </Button>
@@ -312,7 +312,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         <Button
           variant="outline"
           className="relative hover:shadow-sm"
-          onClick={() => updateQuantity(quantity + 1)}
+          onClick={() => updateQuantity(quantity + 1, "add")}
         >
           <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
         </Button>

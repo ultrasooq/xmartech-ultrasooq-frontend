@@ -4,7 +4,8 @@ import {
     addSellerReward,
     createShareLink,
     fetchSellerRewards,
-    fetchShareLinks
+    fetchShareLinks,
+    fetchShareLinksBySellerRewardId
 } from "../requests/seller-reward.requests";
 
 export const useSellerRewards = (
@@ -101,3 +102,25 @@ export const useCreateShareLink = () => {
         },
     });
 };
+
+export const useShareLinksBySellerReward = (
+    payload: {
+        page: number;
+        limit: number;
+        term?: string;
+        sellerRewardId?: string;
+        sortType?: "asc" | "desc";
+    },
+    enabled = true,
+) =>
+    useQuery({
+        queryKey: ["share_links_by_reward", payload],
+        queryFn: async () => {
+            const res = await fetchShareLinksBySellerRewardId(payload);
+            return res.data;
+        },
+        // onError: (err: APIResponseError) => {
+        //   console.log(err);
+        // },
+        enabled,
+    });

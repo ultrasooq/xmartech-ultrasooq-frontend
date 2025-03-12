@@ -79,3 +79,24 @@ export const createShareLink = (payload: {
         },
     });
 };
+
+export const fetchShareLinksBySellerRewardId = (payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    sellerRewardId?: string;
+    sortType?: "asc" | "desc";
+}) => {
+    return axios({
+        method: "GET",
+        url: urlcat(
+            `${process.env.NEXT_PUBLIC_API_URL}/product/getAllGenerateLinkBySellerRewardId`,
+            payload,
+        ),
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+        }
+    });
+};
