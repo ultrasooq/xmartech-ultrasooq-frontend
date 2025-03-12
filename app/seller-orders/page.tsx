@@ -11,8 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
+import { PERMISSION_ORDERS, checkPermission } from "@/helpers/permission";
+import RedirectComponent from "@/components/RedirectComponent";
 
 const SellerOrdersPage = () => {
+  if (!checkPermission(PERMISSION_ORDERS)) return (<RedirectComponent to={"/home"} />)
+
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderStatus, setOrderStatus] = useState<string>("");

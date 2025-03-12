@@ -47,6 +47,33 @@ async function authorizeUser() {
   }
 }
 
+async function getUserPermissions() {
+  try {
+    const cookieStore = cookies();
+    const token = cookieStore.get(PUREMOON_TOKEN_KEY);
+    if (token?.value) {
+      const res = await axios({
+        method: "GET",
+        url: `${process.env.NEXT_PUBLIC_API_URL}/user/get-perrmision`,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: "Bearer " + token.value,
+        },
+      });
+      return res.data;
+    } else {
+      return {
+        status: 401,
+      };
+    }
+  } catch (error) {
+    return {
+      status: 500,
+    };
+  }
+}
+
 export default async function RootLayout({
   children,
 }: {
@@ -54,12 +81,17 @@ export default async function RootLayout({
 }) {
   const userData = await authorizeUser();
 
+  const permissions = await getUserPermissions();
+
   return (
     <SessionWrapper>
       <html lang="en">
         <body className={`${inter.className}`}>
           <ReactQueryProvider>
-            <AuthProvider user={{ id: userData?.data?.id, firstName: userData?.data?.firstName, lastName: userData?.data?.lastName}}>
+            <AuthProvider
+              user={{ id: userData?.data?.id, firstName: userData?.data?.firstName, lastName: userData?.data?.lastName, tradeRole: userData?.data?.tradeRole }}
+              permissions={[...(permissions?.data?.userRoleDetail?.userRolePermission || [])]}
+            >
               <SocketProvider>
                 <main className="overflow-x-visible">
                   <Sidebar />

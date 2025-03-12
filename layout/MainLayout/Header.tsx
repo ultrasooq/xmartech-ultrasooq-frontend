@@ -39,6 +39,16 @@ import { useCategoryStore } from "@/lib/categoryStore";
 import GoogleTranslate from "@/components/GoogleTranslate";
 import { IoCloseOutline } from "react-icons/io5";
 import { IoIosMenu } from "react-icons/io";
+import { 
+  PERMISSION_ORDERS, 
+  PERMISSION_PRODUCTS, 
+  PERMISSION_RFQ_QUOTES, 
+  PERMISSION_RFQ_SELLER_REQUESTS, 
+  PERMISSION_SELLER_REWARDS, 
+  PERMISSION_SHARE_LINKS, 
+  PERMISSION_TEAM_MEMBERS, 
+  getPermissions 
+} from "@/helpers/permission";
 
 type CategoryProps = {
   id: number;
@@ -82,6 +92,7 @@ const Header = () => {
   const pathname = usePathname();
   const queryClient = useQueryClient();
   //  const searchParams = useSearchParams();
+  const permissions: string[] = getPermissions();
   const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -116,19 +127,6 @@ const Header = () => {
   const handleClick = () => {
     setIsActive(!isActive);
   };
-
-  // Sync initial state with URL parameter (with safe fallback)
-  // useEffect(() => {
-  //   const term = searchParams?.get("term") || ""; // Optional chaining to prevent null error
-  //   setSearchTerm(term);
-  // }, [searchParams]);
-
-  // Sync initial state with URL parameter safely inside `useEffect`
-  // useEffect(() => {
-  //   if (typeof window === "undefined") return; // Prevent SSR issues
-  //   const term = searchParams?.get("term") || "";
-  //   setSearchTerm(term);
-  // }, [searchParams]);
 
   // Debounced function to update URL
   const updateURL = debounce((newTerm) => {
@@ -284,6 +282,13 @@ const Header = () => {
     }
   }, [isClickedOutside]);
 
+  const hideMenu = (permissionName: string): boolean => {
+    if (me?.data?.data?.tradeRole === "MEMBER" && !permissions.includes(permissionName)) {
+      return false
+    }
+    return true;
+  };
+
   return (
     <header className="relative w-full">
       <div className="w-full bg-dark-cyan">
@@ -427,39 +432,39 @@ const Header = () => {
                         <DropdownMenuSeparator />
                         {me?.data?.data?.tradeRole !== "BUYER" ? (
                           <>
-                            <Link href="/team-members">
+                            {hideMenu(PERMISSION_TEAM_MEMBERS) && <Link href="/team-members">
                               <DropdownMenuItem>Team Members</DropdownMenuItem>
-                            </Link>
-                            <Link href="/manage-products">
+                            </Link>}
+                            {hideMenu(PERMISSION_PRODUCTS) && <Link href="/manage-products">
                               <DropdownMenuItem>Products</DropdownMenuItem>
-                            </Link>
+                            </Link>}
                             <DropdownMenuSeparator />
-                            <Link href="/seller-orders">
+                            {hideMenu(PERMISSION_ORDERS) && <Link href="/seller-orders">
                               <DropdownMenuItem>Orders</DropdownMenuItem>
-                            </Link>
+                            </Link>}
                             <DropdownMenuSeparator />
-                            <Link href="/rfq-quotes">
+                            {hideMenu(PERMISSION_RFQ_QUOTES) && <Link href="/rfq-quotes">
                               <DropdownMenuItem>RFQ Quotes</DropdownMenuItem>
-                            </Link>
+                            </Link>}
                             <DropdownMenuSeparator />
-                            <Link href="/seller-rfq-request">
+                            {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && <Link href="/seller-rfq-request">
                               <DropdownMenuItem>
                                 RFQ Seller Requests
                               </DropdownMenuItem>
-                            </Link>
-                            <Link href="/seller-rewards">
+                            </Link>}
+                            {hideMenu(PERMISSION_SELLER_REWARDS) && <Link href="/seller-rewards">
                               <DropdownMenuItem>
                                 Seller Rewards
                               </DropdownMenuItem>
-                            </Link>
+                            </Link>}
                             <DropdownMenuSeparator />
                           </>
                         ) : null}
-                        <Link href="/share-links">
+                        {hideMenu(PERMISSION_SHARE_LINKS) && <Link href="/share-links">
                           <DropdownMenuItem>
                             Share Links
                           </DropdownMenuItem>
-                        </Link>
+                        </Link>}
                         <Link href="/my-settings/address">
                           <DropdownMenuItem>My Settings</DropdownMenuItem>
                         </Link>

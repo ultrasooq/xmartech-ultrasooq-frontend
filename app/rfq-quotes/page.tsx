@@ -35,8 +35,12 @@ import { CgDetailsMore } from "react-icons/cg";
 import { Dialog } from "@/components/ui/dialog";
 import DeleteContent from "@/components/shared/DeleteContent";
 import { useToast } from "@/components/ui/use-toast";
+import { PERMISSION_RFQ_QUOTES, checkPermission } from "@/helpers/permission";
+import RedirectComponent from "@/components/RedirectComponent";
 
 const RfqQuotesPage = () => {
+  if (!checkPermission(PERMISSION_RFQ_QUOTES)) return (<RedirectComponent to={"/home"} />)
+
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
