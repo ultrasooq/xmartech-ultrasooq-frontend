@@ -8,8 +8,12 @@ import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { Button } from "react-day-picker";
 import { toast } from "@/components/ui/use-toast";
+import { PERMISSION_SHARE_LINKS, checkPermission } from "@/helpers/permission";
+import RedirectComponent from "@/components/RedirectComponent";
 
 const ShareLinksPage = () => {
+    if (!checkPermission(PERMISSION_SHARE_LINKS)) return (<RedirectComponent to={"/home"} />)
+
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
 

@@ -8,8 +8,12 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import CreateSellerRewardForm from "@/components/modules/productDetails/CreateSellerRewardForm";
 import { Info } from "lucide-react";
 import Link from "next/link";
+import { PERMISSION_SELLER_REWARDS, checkPermission } from "@/helpers/permission";
+import RedirectComponent from "@/components/RedirectComponent";
 
 const SellerRewardsPage = () => {
+    if (!checkPermission(PERMISSION_SELLER_REWARDS)) return (<RedirectComponent to={"/home"} />);
+
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const [isSellerRewardFormModalOpen, setIsSellerRewardFormModalOpen] = useState<boolean>(false);

@@ -21,6 +21,8 @@ import { Input } from "@/components/ui/input";
 import { debounce } from "lodash";
 import { Dialog } from "@/components/ui/dialog";
 import AddProductContent from "@/components/modules/products/AddProductContent";
+import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
+import RedirectComponent from "@/components/RedirectComponent";
 
 const schema = z
   .object({
@@ -114,6 +116,8 @@ const defaultValues = {
 };
 
 const ManageProductsPage = () => {
+  if (!checkPermission(PERMISSION_PRODUCTS)) return (<RedirectComponent to={"/home"} />);
+  
   const router = useRouter();
   const { toast } = useToast();
   const [page, setPage] = useState(1);

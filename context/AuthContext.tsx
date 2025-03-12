@@ -6,6 +6,7 @@ interface User {
   id: number;
   firstName: string;
   lastName: string;
+  tradeRole: string;
 }
 
 interface AuthContextType {
@@ -13,15 +14,20 @@ interface AuthContextType {
   setUser: (user: User | null) => void;
   isAuthenticated: boolean;
   clearUser: () => void;
+  permissions: any[];
+  setPermissions: (permissions: any[]) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{
   user: User | null;
+  permissions: any[];
   children: React.ReactNode;
-}> = ({ user: initialUser, children }) => {
+}> = ({ user: initialUser, permissions: initialPermissions, children }) => {
   const [user, setUser] = useState<User | null>(initialUser);
+
+  const [permissions, setPermissions] = useState<any[]>(initialPermissions);
 
   const isAuthenticated = !!user;
 
@@ -30,7 +36,7 @@ export const AuthProvider: React.FC<{
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, isAuthenticated, clearUser }}>
+    <AuthContext.Provider value={{ user, setUser, isAuthenticated, clearUser, permissions, setPermissions }}>
       {children}
     </AuthContext.Provider>
   );

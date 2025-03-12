@@ -7,8 +7,12 @@ import { cn } from "@/lib/utils";
 import SellerChat from "@/components/modules/chat/seller/SellerChat";
 import ProductChat from "@/components/modules/chat/productChat/ProductChat";
 import VendorOperations from "@/components/modules/vendorOperations/VendorOperations";
+import { PERMISSION_RFQ_SELLER_REQUESTS, checkPermission } from "@/helpers/permission";
+import RedirectComponent from "@/components/RedirectComponent";
 
 const SellerRfqRequestPage = () => {
+  if (!checkPermission(PERMISSION_RFQ_SELLER_REQUESTS)) return (<RedirectComponent to={"/home"} />)
+
   const [currentTab, setCurrentTab] = useState<string>("RFQ");
   const [productId, setProductId] = useState<number | null>(null);
 

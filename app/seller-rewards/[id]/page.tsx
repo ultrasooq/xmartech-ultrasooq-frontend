@@ -4,8 +4,12 @@ import { useShareLinksBySellerReward } from "@/apis/queries/seller-reward.querie
 import Pagination from "@/components/shared/Pagination";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { PERMISSION_SELLER_REWARDS, checkPermission } from "@/helpers/permission";
+import RedirectComponent from "@/components/RedirectComponent";
 
 const SellerRewardDetailPage = () => {
+    if (!checkPermission(PERMISSION_SELLER_REWARDS)) return (<RedirectComponent to={"/home"} />)
+
     const searchParams = useParams();
     const [page, setPage] = useState<number>(1);
     const [limit] = useState<number>(10);

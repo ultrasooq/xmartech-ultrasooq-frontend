@@ -9,8 +9,12 @@ import Pagination from "@/components/shared/Pagination";
 import { useAllMembers } from "@/apis/queries/member.queries";
 import { Info } from "lucide-react";
 import Link from "next/link";
+import { PERMISSION_TEAM_MEMBERS, checkPermission } from "@/helpers/permission";
+import RedirectComponent from "@/components/RedirectComponent";
 
 const TeamMembersPage = () => {
+  if (!checkPermission(PERMISSION_TEAM_MEMBERS)) return (<RedirectComponent to={"/home"} />);
+
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
 

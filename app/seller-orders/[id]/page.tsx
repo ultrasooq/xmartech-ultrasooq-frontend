@@ -21,9 +21,13 @@ import Link from "next/link";
 import { MONTHS, formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { PERMISSION_ORDERS, checkPermission } from "@/helpers/permission";
+import RedirectComponent from "@/components/RedirectComponent";
 // import SellerReviewForm from "@/components/shared/SellerReviewForm";
 
 const MyOrderDetailsPage = ({}) => {
+  if (!checkPermission(PERMISSION_ORDERS)) return (<RedirectComponent to={"/home"} />)
+
   const searchParams = useParams();
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
