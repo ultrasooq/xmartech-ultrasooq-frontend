@@ -328,7 +328,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 {/* <label>Report Abuse</label> */}
                 <p>
                   {timeLeft !== "NotStarted" && timeLeft !== "Expired" && (
-                    <span className="">
+                    <div className="">
                       Time Left: <b>{timeLeft}</b>
                       <div className="time_wrap">
                         <div className="time_field">
@@ -344,7 +344,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                           <h6>Minutes</h6>
                         </div>
                       </div>
-                    </span>
+                    </div>
                   )}
                 </p>
                 <p>
