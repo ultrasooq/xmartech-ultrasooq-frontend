@@ -5176,6 +5176,10 @@ input::-ms-clear {
     @apply flex order-1 static mr-0 ml-auto;
   }
 
+  .product_cart_modal .card-item {
+    @apply w-full;
+  }
+
   .product-view-s-9-details-more-suggestion-sliders {
     @apply flex order-4 mr-0 ml-auto;
   }
