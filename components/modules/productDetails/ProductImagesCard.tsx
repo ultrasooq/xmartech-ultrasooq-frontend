@@ -100,8 +100,6 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const handleToggleEditModal = () => setIsEditModalOpen(!isEditModalOpen);
 
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
-
   const me = useMe();
 
   const loginUserId = me?.data?.data?.id;
@@ -123,13 +121,11 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
     limit: 1,
     productId: productDetails?.id,
     sortType: "desc"
-  });
+  }, !!productDetails?.id);
 
   useEffect(() => {
-    if (productDetails) {
-      const reward = sellerRewardsQuery?.data?.data?.[0];
-      if (reward && new Date(reward.endTime).getTime() > new Date().getTime()) setReward(reward);
-    }
+    const reward = sellerRewardsQuery?.data?.data?.[0];
+    if (reward && new Date(reward.endTime).getTime() > new Date().getTime()) setReward(reward);
   }, [sellerRewardsQuery?.data?.data, productDetails]);
 
   return (

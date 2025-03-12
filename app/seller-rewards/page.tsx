@@ -6,6 +6,8 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { toast } from "@/components/ui/use-toast";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import CreateSellerRewardForm from "@/components/modules/productDetails/CreateSellerRewardForm";
+import { Info } from "lucide-react";
+import Link from "next/link";
 
 const SellerRewardsPage = () => {
     const [page, setPage] = useState(1);
@@ -56,6 +58,7 @@ const SellerRewardsPage = () => {
                                             <th>Reward Percentage</th>
                                             <th>Minimum Order</th>
                                             <th>Stock</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
 
@@ -74,6 +77,15 @@ const SellerRewardsPage = () => {
                                                     <td>{item.rewardPercentage}</td>
                                                     <td>{item.minimumOrder}</td>
                                                     <td>{item.stock}</td>
+                                                    <td>
+                                                        <Link
+                                                            href={`/seller-rewards/${item.id}`}
+                                                        >
+                                                            <Info
+                                                                className="h-4 w-4 cursor-pointer text-gray-500"
+                                                            />
+                                                        </Link>
+                                                    </td>
                                                 </tr>
                                             );
                                         })}

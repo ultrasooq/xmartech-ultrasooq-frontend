@@ -16,6 +16,13 @@ import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { FaCircleCheck } from "react-icons/fa6";
+import { useCartStore } from "@/lib/rfqStore";
+import { toast } from "@/components/ui/use-toast";
+import {
+  useUpdateCartByDevice,
+  useUpdateCartWithLogin,
+} from "@/apis/queries/cart.queries";
+import { getOrCreateDeviceId } from "@/utils/helper";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -27,6 +34,7 @@ type ProductCardProps = {
   isSelectable?: boolean;
   selectedIds?: number[];
   onSelectedId?: (args0: boolean | string, args1: number) => void;
+  productQuantity?: number;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -39,7 +47,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isSelectable,
   selectedIds,
   onSelectedId,
+  productQuantity = 0
 }) => {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  const deviceId = getOrCreateDeviceId() || "";
+
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
@@ -77,11 +90,77 @@ const ProductCard: React.FC<ProductCardProps> = ({
     [item.productReview?.length],
   );
 
-  // const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(0);
 
-  // useEffect(() => {
-  //   setQuantity(productQuantity || 0);
-  // }, [productQuantity]);
+  useEffect(() => {
+    setQuantity(productQuantity || 0);
+  }, [productQuantity]);
+
+  const cart = useCartStore()
+
+  const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartByDevice = useUpdateCartByDevice();
+
+  const handleAddToCart = async (
+    quantity: number,
+    actionType: "add" | "remove",
+  ) => {
+    if (haveAccessToken) {
+      if (!item?.productProductPriceId) {
+        toast({
+          title: `Oops! Something went wrong`,
+          description: "Product Price Id not found",
+          variant: "danger",
+        });
+        return;
+      }
+      const response = await updateCartWithLogin.mutateAsync({
+        productPriceId: item?.productProductPriceId,
+        quantity,
+      });
+
+      if (response.status) {
+        if (actionType === "add" && quantity === 0) {
+          setQuantity(1);
+        } else {
+          setQuantity(quantity);
+        }
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+        return response.status;
+      }
+    } else {
+      if (!item?.productProductPriceId) {
+        toast({
+          title: `Oops! Something went wrong`,
+          description: "Product Price Id not found",
+          variant: "danger",
+        });
+        return;
+      }
+      const response = await updateCartByDevice.mutateAsync({
+        productPriceId: item?.productProductPriceId,
+        quantity,
+        deviceId,
+      });
+      if (response.status) {
+        if (actionType === "add" && quantity === 0) {
+          setQuantity(1);
+        } else {
+          setQuantity(quantity);
+        }
+        toast({
+          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
+          description: "Check your cart for more details",
+          variant: "success",
+        });
+        return response.status;
+      }
+    }
+  }
 
   return (
     <div className="product-list-s1-col">
@@ -95,9 +174,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             />
           </div>
         ) : null}
-        <div className="time_left">
-          <span>Time Left: 10Days</span>
-        </div>
+        {timeLeft && <div className="time_left">
+          <span>{timeLeft}</span>
+        </div>}
         <Link href={`/trending/${item.id}`}>
           {item?.askForPrice !== "true" ? (
             item.consumerDiscount ? (
@@ -208,14 +287,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 variant="outline"
                 className="relative hover:shadow-sm"
                 onClick={() => {
-                  //setQuantity(quantity - 1);
-                  // onAdd(quantity - 1, id, "remove");
-                  // cart.updateCart({
-                  //   quantity: quantity - 1,
-                  //   rfqProductId: id,
-                  // });
+                  handleAddToCart(quantity - 1, "remove");
                 }}
-                //disabled={quantity === 0}
+                disabled={quantity === 0}
               >
                 <Image
                   src="/images/upDownBtn-minus.svg"
@@ -224,18 +298,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   className="p-3"
                 />
               </Button>
-              <p className="!mb-0 !text-black">{/* {quantity} */}</p>
+              <p className="!mb-0 !text-black">{quantity}</p>
               <Button
                 type="button"
                 variant="outline"
                 className="relative hover:shadow-sm"
                 onClick={() => {
-                  //setQuantity(quantity + 1);
-                  // onAdd(quantity + 1, id, "add");
-                  // cart.updateCart({
-                  //   quantity: quantity + 1,
-                  //   rfqProductId: id,
-                  // });
+                  handleAddToCart(quantity + 1, "add");
                 }}
               >
                 <Image
@@ -250,34 +319,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         <div className="cart_button">
-          {/* {isAddedToCart ? ( */}
-          {/* <button
+          {quantity > 0 && <button
             type="button"
             className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
-            //disabled={quantity < 0}
-            //onClick={() => {
-            //onAdd(quantity, id, "add");
-            // console.log(quantity, id, "add");
-            // cart.updateCart({ quantity: 1, rfqProductId: id });
-            //}}
+            disabled={false}
           >
             <FaCircleCheck color="#00C48C" />
             Added to Cart
-          </button> */}
-          {/* ) : ( */}
-          <button
+          </button>}
+          {quantity == 0 && <button
             type="button"
             className="add_to_cart_button"
-            //disabled={quantity === 0}
-            //</div>onClick={() => {
-            //onAdd(quantity, id, "add");
-            // console.log(quantity, id, "add");
-            // cart.updateCart({ quantity: 1, rfqProductId: id });
-            // }}
+            onClick={() => handleAddToCart(quantity, "add")}
           >
             Add To Cart
-          </button>
-          {/* )} */}
+          </button>}
         </div>
       </div>
     </div>

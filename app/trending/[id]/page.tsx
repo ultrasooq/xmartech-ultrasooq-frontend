@@ -98,8 +98,23 @@ const ProductDetailsPage = () => {
   const deleteCartItem = useDeleteCartItem();
   const [isVisible, setIsVisible] = useState(false); // Initially hidden
 
+  const hasItemByUser = !!cartListByUser.data?.data?.find(
+    (item: any) => item.productId === Number(searchParams?.id),
+  );
+
+  const hasItemByDevice = !!cartListByDeviceQuery.data?.data?.find(
+    (item: any) => item.productId === Number(searchParams?.id),
+  );
+
+  const getProductQuantityByUser = cartListByUser.data?.data?.find(
+    (item: any) => item.productId === Number(searchParams?.id),
+  )?.quantity;
+
+  const getProductQuantityByDevice = cartListByDeviceQuery.data?.data?.find(
+    (item: any) => item.productId === Number(searchParams?.id),
+  )?.quantity;
+
   const memoizedCartList = useMemo(() => {
-    console.log(cartListByUser.data?.data);
     if (cartListByUser.data?.data) {
       setIsVisible(true);
       return cartListByUser.data?.data || [];
@@ -142,11 +157,14 @@ const ProductDetailsPage = () => {
     [productDetails?.productTags?.length],
   );
 
-  const [globalQuantity, setGlobalQuantity] = useState(1); // Global state
+  const [globalQuantity, setGlobalQuantity] = useState(0); // Global state
 
-  const handleQuantity = async (quantity: number) => {
-    // console.log(quantity, "===>143")
-    setGlobalQuantity(quantity); // Update global state
+  useEffect(() => {
+    setGlobalQuantity(getProductQuantityByUser || getProductQuantityByDevice || 0);
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
+
+  const handleQuantity = async (quantity: number, action: "add" | "remove") => {
+    handleAddToCart(quantity, action);
   };
 
   const handleAddToCart = async (
@@ -168,6 +186,11 @@ const ProductDetailsPage = () => {
       });
 
       if (response.status) {
+        if (actionType === "add" && quantity === 0) {
+          setGlobalQuantity(1);
+        } else {
+          setGlobalQuantity(quantity);
+        }
         toast({
           title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
           description: "Check your cart for more details",
@@ -191,6 +214,11 @@ const ProductDetailsPage = () => {
         deviceId,
       });
       if (response.status) {
+        if (actionType === "add" && quantity === 0) {
+          setGlobalQuantity(1);
+        } else {
+          setGlobalQuantity(quantity);
+        }
         toast({
           title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
           description: "Check your cart for more details",
@@ -201,22 +229,6 @@ const ProductDetailsPage = () => {
       }
     }
   };
-
-  const hasItemByUser = !!cartListByUser.data?.data?.find(
-    (item: any) => item.productId === Number(searchParams?.id),
-  );
-
-  const hasItemByDevice = !!cartListByDeviceQuery.data?.data?.find(
-    (item: any) => item.productId === Number(searchParams?.id),
-  );
-
-  const getProductQuantityByUser = cartListByUser.data?.data?.find(
-    (item: any) => item.productId === Number(searchParams?.id),
-  )?.quantity;
-
-  const getProductQuantityByDevice = cartListByDeviceQuery.data?.data?.find(
-    (item: any) => item.productId === Number(searchParams?.id),
-  )?.quantity;
 
   const handleCartPage = () => router.push("/cart");
   const handleCheckoutPage = async () => {
