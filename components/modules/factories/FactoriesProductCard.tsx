@@ -6,6 +6,9 @@ import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { FaCircleCheck } from "react-icons/fa6";
 import Link from "next/link";
+import ShoppingIcon from "@/components/icons/ShoppingIcon";
+import { FaRegHeart } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
 // import Link from "next/link";
 
 type RfqProductCardProps = {
@@ -66,6 +69,27 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           />
         </div>
       </Link>
+      <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full p-0 shadow-md"
+        >
+          <ShoppingIcon />
+        </Button>
+
+        <Link
+          href="#"
+          className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+        >
+          <FiEye size={18} />
+        </Link>
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full p-0 shadow-md"
+        >
+          <FaRegHeart size={16} />
+        </Button>
+      </div>
       <div className="product_list_content">
         <Link href={`/trending/${id}`}>
           <p>{productName}</p>

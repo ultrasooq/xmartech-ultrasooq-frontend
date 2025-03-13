@@ -2,6 +2,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { DialogTitle } from "@/components/ui/dialog";
 import { PUREMOON_TOKEN_KEY, menuBarIconList } from "@/utils/constants";
 import {
   DropdownMenu,
@@ -37,17 +39,17 @@ import { cn } from "@/lib/utils";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import { useCategoryStore } from "@/lib/categoryStore";
 import GoogleTranslate from "@/components/GoogleTranslate";
-import { IoCloseOutline } from "react-icons/io5";
+import { IoCloseOutline, IoCloseSharp } from "react-icons/io5";
 import { IoIosMenu } from "react-icons/io";
-import { 
-  PERMISSION_ORDERS, 
-  PERMISSION_PRODUCTS, 
-  PERMISSION_RFQ_QUOTES, 
-  PERMISSION_RFQ_SELLER_REQUESTS, 
-  PERMISSION_SELLER_REWARDS, 
-  PERMISSION_SHARE_LINKS, 
-  PERMISSION_TEAM_MEMBERS, 
-  getPermissions 
+import {
+  PERMISSION_ORDERS,
+  PERMISSION_PRODUCTS,
+  PERMISSION_RFQ_QUOTES,
+  PERMISSION_RFQ_SELLER_REQUESTS,
+  PERMISSION_SELLER_REWARDS,
+  PERMISSION_SHARE_LINKS,
+  PERMISSION_TEAM_MEMBERS,
+  getPermissions,
 } from "@/helpers/permission";
 
 type CategoryProps = {
@@ -257,6 +259,10 @@ const Header = () => {
   const wrapperRef = useRef(null);
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
+  const [isAddToRoleModalOpen, setIsAddToRoleModalOpen] = useState(false);
+  const handleToggleAddModal = () =>
+    setIsAddToRoleModalOpen(!isAddToRoleModalOpen);
+
   useEffect(() => {
     if (accessToken) {
       setIsLoggedIn(true);
@@ -283,541 +289,598 @@ const Header = () => {
   }, [isClickedOutside]);
 
   const hideMenu = (permissionName: string): boolean => {
-    if (me?.data?.data?.tradeRole === "MEMBER" && !permissions.includes(permissionName)) {
-      return false
+    if (
+      me?.data?.data?.tradeRole === "MEMBER" &&
+      !permissions.includes(permissionName)
+    ) {
+      return false;
     }
     return true;
   };
 
   return (
-    <header className="relative w-full">
-      <div className="w-full bg-dark-cyan">
-        <div className="container m-auto px-3">
-          <div className="hidden sm:hidden md:flex md:gap-x-2.5">
-            <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
-              <p>Welcome to UltraSooq!</p>
+    <>
+      <header className="relative w-full">
+        <div className="w-full bg-dark-cyan">
+          <div className="container m-auto px-3">
+            <div className="hidden sm:hidden md:flex md:gap-x-2.5">
+              <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
+                <p>Welcome to UltraSooq!</p>
+              </div>
+              <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
+                <ul className="flex justify-end">
+                  <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
+                    <a href="#">Store Location</a>
+                  </li>
+                  {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
+                  <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
+                    <Link href="/my-orders">Track Your Order</Link>
+                  </li>
+                  {/* ) : null} */}
+                  <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
+                    <select className="border-0 bg-transparent text-white focus:outline-none">
+                      <option className="bg-dark-cyan">USD</option>
+                      <option className="bg-dark-cyan">INR</option>
+                      <option className="bg-dark-cyan">AUD</option>
+                    </select>
+                  </li>
+                  <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
+                    <GoogleTranslate />
+                    {/* <select className="border-0 bg-transparent text-white focus:outline-none">
+                      <option className="bg-dark-cyan">English</option>
+                      <option className="bg-dark-cyan">Arabic</option>
+                      <option className="bg-dark-cyan">German</option>
+                      <option className="bg-dark-cyan">French</option>
+                    </select> */}
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
-              <ul className="flex justify-end">
-                <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                  <a href="#">Store Location</a>
-                </li>
-                {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
-                <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                  <Link href="/my-orders">Track Your Order</Link>
-                </li>
-                {/* ) : null} */}
-                <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                  <select className="border-0 bg-transparent text-white focus:outline-none">
-                    <option className="bg-dark-cyan">USD</option>
-                    <option className="bg-dark-cyan">INR</option>
-                    <option className="bg-dark-cyan">AUD</option>
+
+            <div className="flex flex-wrap items-center">
+              <div className="order-1 !flex !w-5/12 flex-1 !items-center !py-4 md:!w-2/12 lg:!w-1/6">
+                <Link href="/home">
+                  <Image src={LogoIcon} alt="logo" />
+                </Link>
+              </div>
+              <div className="order-3 flex w-[80%] items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
+                {/* <div className="h-11 w-24 md:w-24 lg:w-auto">
+                  <select className="h-full w-full focus:outline-none">
+                    <option>All</option>
+                    <option>Apps & Games</option>
+                    <option>Beauty</option>
+                    <option>Car & Motorbike</option>
+                    <option>Clothing & Accessories</option>
+                    <option>Computers & Accessories</option>
+                    <option>Electronics</option>
+                    <option>Movies & TV Shows</option>
                   </select>
-                </li>
-                <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
-                  <GoogleTranslate />
-                  {/* <select className="border-0 bg-transparent text-white focus:outline-none">
-                    <option className="bg-dark-cyan">English</option>
-                    <option className="bg-dark-cyan">Arabic</option>
-                    <option className="bg-dark-cyan">German</option>
-                    <option className="bg-dark-cyan">French</option>
-                  </select> */}
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center">
-            <div className="order-1 !flex !w-5/12 flex-1 !items-center !py-4 md:!w-2/12 lg:!w-1/6">
-              <Link href="/home">
-                <Image src={LogoIcon} alt="logo" />
-              </Link>
-            </div>
-            <div className="order-3 flex w-[80%] items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
-              {/* <div className="h-11 w-24 md:w-24 lg:w-auto">
-                <select className="h-full w-full focus:outline-none">
-                  <option>All</option>
-                  <option>Apps & Games</option>
-                  <option>Beauty</option>
-                  <option>Car & Motorbike</option>
-                  <option>Clothing & Accessories</option>
-                  <option>Computers & Accessories</option>
-                  <option>Electronics</option>
-                  <option>Movies & TV Shows</option>
-                </select>
-              </div> */}
-              <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-4/6">
-                <input
-                  type="search"
-                  className="form-control h-full w-full p-2.5 text-black focus:outline-none"
-                  placeholder="I’m shopping for..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={handleKeyDown} // Calls search when Enter is pressed
-                />
-              </div>
-              <div className="h-11 w-1/4 md:w-full">
-                <button
-                  type="button"
-                  className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
-                  onClick={() => updateURL(searchTerm)} // Update URL when clicking search
-                >
-                  Search
-                </button>
-              </div>
-            </div>
-            <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-4 lg:w-1/6">
-              <ul className="flex items-center justify-end gap-x-4">
-                <li className="relative flex pb-3 pl-0 pr-1 pt-0">
-                  <Link
-                    href="/wishlist"
-                    className="flex flex-wrap items-center"
+                </div> */}
+                <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-4/6">
+                  <input
+                    type="search"
+                    className="form-control h-full w-full p-2.5 text-black focus:outline-none"
+                    placeholder="I’m shopping for..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={handleKeyDown} // Calls search when Enter is pressed
+                  />
+                </div>
+                <div className="h-11 w-1/4 md:w-full">
+                  <button
+                    type="button"
+                    className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
+                    onClick={() => updateURL(searchTerm)} // Update URL when clicking search
                   >
-                    <Image
-                      src={WishlistIcon}
-                      height={28}
-                      width={33}
-                      alt="wishlist"
-                    />
-                    <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
-                      {wishlistCount.data?.data ? wishlistCount.data?.data : 0}
-                    </div>
-                  </Link>
-                </li>
-                <li className="relative flex pb-3 pl-0 pr-1 pt-0">
-                  <Link href="/cart" className="flex flex-wrap items-center">
-                    <Image
-                      src={CartIcon}
-                      height={29}
-                      width={26}
-                      alt="wishlist"
-                    />
-                    <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
-                      {hasAccessToken
-                        ? !isArray(cartCountWithLogin.data?.data)
-                          ? cartCountWithLogin.data?.data
-                          : 0
-                        : !isArray(cartCountWithoutLogin.data?.data)
-                          ? cartCountWithoutLogin.data?.data
-                          : 0}
-                    </div>
-                  </Link>
-                </li>
-                <li className="relative flex">
-                  {isLoggedIn ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        {me?.data?.data?.profilePicture ? (
-                          <Image
-                            src={me?.data?.data?.profilePicture}
-                            alt="image-icon"
-                            height={44}
-                            width={44}
-                            className="rounded-full"
-                          />
-                        ) : (
-                          <div className="h-[44px] w-[44px] rounded-full bg-gray-300">
-                            <p className="p-2 text-lg font-bold">
-                              {memoizedInitials}
-                            </p>
-                          </div>
-                        )}
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <Link href={handleProfile()}>
-                          <DropdownMenuItem className="cursor-pointer">
-                            Profile Information
-                          </DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuSeparator />
-                        {me?.data?.data?.tradeRole !== "BUYER" ? (
-                          <>
-                            {hideMenu(PERMISSION_TEAM_MEMBERS) && <Link href="/team-members">
-                              <DropdownMenuItem>Team Members</DropdownMenuItem>
-                            </Link>}
-                            {hideMenu(PERMISSION_PRODUCTS) && <Link href="/manage-products">
-                              <DropdownMenuItem>Products</DropdownMenuItem>
-                            </Link>}
-                            <DropdownMenuSeparator />
-                            {hideMenu(PERMISSION_ORDERS) && <Link href="/seller-orders">
-                              <DropdownMenuItem>Orders</DropdownMenuItem>
-                            </Link>}
-                            <DropdownMenuSeparator />
-                            {hideMenu(PERMISSION_RFQ_QUOTES) && <Link href="/rfq-quotes">
-                              <DropdownMenuItem>RFQ Quotes</DropdownMenuItem>
-                            </Link>}
-                            <DropdownMenuSeparator />
-                            {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && <Link href="/seller-rfq-request">
-                              <DropdownMenuItem>
-                                RFQ Seller Requests
-                              </DropdownMenuItem>
-                            </Link>}
-                            {hideMenu(PERMISSION_SELLER_REWARDS) && <Link href="/seller-rewards">
-                              <DropdownMenuItem>
-                                Seller Rewards
-                              </DropdownMenuItem>
-                            </Link>}
-                            <DropdownMenuSeparator />
-                          </>
-                        ) : null}
-                        {hideMenu(PERMISSION_SHARE_LINKS) && <Link href="/share-links">
-                          <DropdownMenuItem>
-                            Share Links
-                          </DropdownMenuItem>
-                        </Link>}
-                        <Link href="/my-settings/address">
-                          <DropdownMenuItem>My Settings</DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={handleLogout}
-                          className="cursor-pointer"
-                        >
-                          Logout
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
-                    <>
+                    Search
+                  </button>
+                </div>
+              </div>
+              <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-4 lg:w-1/6">
+                <ul className="flex items-center justify-end gap-x-4">
+                  <li className="relative flex pb-3 pl-0 pr-1 pt-0">
+                    <Link
+                      href="/wishlist"
+                      className="flex flex-wrap items-center"
+                    >
                       <Image
-                        src={UnAuthUserIcon}
+                        src={WishlistIcon}
                         height={28}
-                        width={28}
-                        alt="login-avatar-icon"
+                        width={33}
+                        alt="wishlist"
                       />
-                      <div className="flex flex-col">
-                        <Link
-                          href="/login"
-                          className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
-                        >
-                          Login
-                        </Link>
-                        <Link
-                          href="/register"
-                          className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
-                        >
-                          Register
-                        </Link>
+                      <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
+                        {wishlistCount.data?.data
+                          ? wishlistCount.data?.data
+                          : 0}
                       </div>
-                    </>
-                  )}
-                </li>
-              </ul>
-            </div>
-            <div
-              className="humberger sm:w-7/12md:w-3/12 flex w-[20%] justify-end md:py-4 lg:w-1/6"
-              onClick={handleClick}
-            >
-              <IoIosMenu />
-            </div>
-          </div>
-
-          <div
-            className={`me menu h-[44px] w-full px-3 md:flex md:px-0 ${isActive ? "show_menu" : "hidden"}`}
-          >
-            <div className="close" onClick={handleClick}>
-              <IoCloseOutline />
-            </div>
-            <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-between">
-              {memoizedMenu.map((item: any) => (
-                <>
-                  <ButtonLink
-                    key={item.id}
-                    onClick={() => {
-                      setMenuId(item.id);
-                      if (item.name.toLowerCase().includes("home")) {
-                        router.push("/home");
-                      }
-
-                      if (item.name.toLowerCase().includes("store")) {
-                        router.push("/trending");
-                      }
-
-                      if (item.name.toLowerCase().includes("buy group")) {
-                        router.push("/buygroup");
-                      }
-
-                      if (item.name.toLowerCase().includes("rfq")) {
-                        router.push("/rfq");
-                      }
-                      if (item.name.toLowerCase().includes("factories")) {
-                        router.push("/factories");
-                      }
-                    }}
-                    href={
-                      item.name.toLowerCase().includes("home")
-                        ? "/home"
-                        : item.name.toLowerCase().includes("store")
-                          ? "/trending"
-                          : item.name.toLowerCase().includes("rfq")
-                            ? "/rfq"
-                            : item.name.toLowerCase().includes("factories")
-                              ? "/factories"
-                              : item.name.toLowerCase().includes("buy group")
-                                ? "/buygroup"
-                                : "/trending"
-                    }
-                  >
-                    <div className="flex gap-x-3" onClick={handleClick}>
+                    </Link>
+                  </li>
+                  <li className="relative flex pb-3 pl-0 pr-1 pt-0">
+                    <Link href="/cart" className="flex flex-wrap items-center">
                       <Image
-                        src={item.icon}
-                        alt={item?.name}
-                        height={0}
-                        width={0}
-                        className="h-7 w-7"
-                      />{" "}
-                      <p>{item?.name}</p>
-                    </div>
-                  </ButtonLink>
-                </>
-              ))}
+                        src={CartIcon}
+                        height={29}
+                        width={26}
+                        alt="wishlist"
+                      />
+                      <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
+                        {hasAccessToken
+                          ? !isArray(cartCountWithLogin.data?.data)
+                            ? cartCountWithLogin.data?.data
+                            : 0
+                          : !isArray(cartCountWithoutLogin.data?.data)
+                            ? cartCountWithoutLogin.data?.data
+                            : 0}
+                      </div>
+                    </Link>
+                  </li>
+                  <li className="relative flex">
+                    {isLoggedIn ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          {me?.data?.data?.profilePicture ? (
+                            <Image
+                              src={me?.data?.data?.profilePicture}
+                              alt="image-icon"
+                              height={44}
+                              width={44}
+                              className="rounded-full"
+                            />
+                          ) : (
+                            <div className="h-[44px] w-[44px] rounded-full bg-gray-300">
+                              <p className="p-2 text-lg font-bold">
+                                {memoizedInitials}
+                              </p>
+                            </div>
+                          )}
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <Link href={handleProfile()}>
+                            <DropdownMenuItem className="cursor-pointer">
+                              Profile Information
+                            </DropdownMenuItem>
+                          </Link>
+                          <DropdownMenuSeparator />
+                          {me?.data?.data?.tradeRole !== "BUYER" ? (
+                            <>
+                              {hideMenu(PERMISSION_TEAM_MEMBERS) && (
+                                <Link href="/team-members">
+                                  <DropdownMenuItem>
+                                    Team Members
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              {hideMenu(PERMISSION_PRODUCTS) && (
+                                <Link href="/manage-products">
+                                  <DropdownMenuItem>Products</DropdownMenuItem>
+                                </Link>
+                              )}
+                              <DropdownMenuSeparator />
+                              {hideMenu(PERMISSION_ORDERS) && (
+                                <Link href="/seller-orders">
+                                  <DropdownMenuItem>Orders</DropdownMenuItem>
+                                </Link>
+                              )}
+                              <DropdownMenuSeparator />
+                              {hideMenu(PERMISSION_RFQ_QUOTES) && (
+                                <Link href="/rfq-quotes">
+                                  <DropdownMenuItem>
+                                    RFQ Quotes
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              <DropdownMenuSeparator />
+                              {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
+                                <Link href="/seller-rfq-request">
+                                  <DropdownMenuItem>
+                                    RFQ Seller Requests
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              {hideMenu(PERMISSION_SELLER_REWARDS) && (
+                                <Link href="/seller-rewards">
+                                  <DropdownMenuItem>
+                                    Seller Rewards
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              <DropdownMenuSeparator />
+                            </>
+                          ) : null}
+                          {hideMenu(PERMISSION_SHARE_LINKS) && (
+                            <Link href="/share-links">
+                              <DropdownMenuItem>Share Links</DropdownMenuItem>
+                            </Link>
+                          )}
+                          <Link href="/my-settings/address">
+                            <DropdownMenuItem>My Settings</DropdownMenuItem>
+                          </Link>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={handleLogout}
+                            className="cursor-pointer"
+                          >
+                            Logout
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <>
+                        <Image
+                          src={UnAuthUserIcon}
+                          height={28}
+                          width={28}
+                          alt="login-avatar-icon"
+                        />
+                        <div className="flex flex-col">
+                          <Link
+                            href="/login"
+                            className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
+                          >
+                            Login
+                          </Link>
+                          <Link
+                            href="/register"
+                            className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
+                          >
+                            Register
+                          </Link>
+                        </div>
+                      </>
+                    )}
+                  </li>
+                </ul>
+              </div>
+              <div
+                className="humberger sm:w-7/12md:w-3/12 flex w-[20%] justify-end md:py-4 lg:w-1/6"
+                onClick={handleClick}
+              >
+                <IoIosMenu />
+              </div>
             </div>
+
+            <div
+              className={`me menu h-[44px] w-full px-3 md:flex md:px-0 ${isActive ? "show_menu" : "hidden"}`}
+            >
+              <div className="close" onClick={handleClick}>
+                <IoCloseOutline />
+              </div>
+              <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-between">
+                {memoizedMenu.map((item: any) => (
+                  <>
+                    <ButtonLink
+                      key={item.id}
+                      onClick={() => {
+                        setMenuId(item.id);
+                        if (item.name.toLowerCase().includes("home")) {
+                          router.push("/home");
+                        }
+
+                        if (item.name.toLowerCase().includes("store")) {
+                          router.push("/trending");
+                        }
+
+                        if (item.name.toLowerCase().includes("buy group")) {
+                          router.push("/buygroup");
+                        }
+
+                        if (item.name.toLowerCase().includes("rfq")) {
+                          router.push("/rfq");
+                        }
+                        if (item.name.toLowerCase().includes("factories")) {
+                          router.push("/factories");
+                        }
+                      }}
+                      href={
+                        item.name.toLowerCase().includes("home")
+                          ? "/home"
+                          : item.name.toLowerCase().includes("store")
+                            ? "/trending"
+                            : item.name.toLowerCase().includes("rfq")
+                              ? "/rfq"
+                              : item.name.toLowerCase().includes("factories")
+                                ? "/factories"
+                                : item.name.toLowerCase().includes("buy group")
+                                  ? "/buygroup"
+                                  : "/trending"
+                      }
+                    >
+                      <div className="flex gap-x-3" onClick={handleClick}>
+                        <Image
+                          src={item.icon}
+                          alt={item?.name}
+                          height={0}
+                          width={0}
+                          className="h-7 w-7"
+                        />{" "}
+                        <p>{item?.name}</p>
+                      </div>
+                    </ButtonLink>
+                  </>
+                ))}
+              </div>
+            </div>
+            {/* <p
+              className={`mt-4 ${isActive ? "font-bold text-green-500" : "text-black"}`}
+            >
+              {isActive
+                ? "Active class added!"
+                : "Click the button to add a class"}
+            </p> */}
           </div>
-          {/* <p
-            className={`mt-4 ${isActive ? "font-bold text-green-500" : "text-black"}`}
-          >
-            {isActive
-              ? "Active class added!"
-              : "Click the button to add a class"}
-          </p> */}
         </div>
-      </div>
 
-      <div className="w-full border-b border-solid border-gray-300 bg-white">
-        <div className="container m-auto px-3">
-          <div className="relative flex flex-row flex-wrap md:flex-nowrap">
-            <div className="flex flex-1 flex-wrap gap-x-3 md:gap-x-5">
-              <div className="dropdown">
-                <button className="dropbtn flex items-center">
-                  <div>
-                    <Image src={HamburgerIcon} alt="hamburger-icon" />
-                  </div>
-                  <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
-                    All Categories
-                  </p>
-                  <div>
-                    <Image src={HamburgerDownIcon} alt="hamburger-down-icon" />
-                  </div>
-                </button>
+        <div className="w-full border-b border-solid border-gray-300 bg-white">
+          <div className="container m-auto px-3">
+            <div className="relative flex flex-row flex-wrap md:flex-nowrap">
+              <div className="flex w-full flex-1 flex-wrap gap-x-3 md:w-auto md:gap-x-5">
+                <div className="dropdown">
+                  <button className="dropbtn flex items-center">
+                    <div>
+                      <Image src={HamburgerIcon} alt="hamburger-icon" />
+                    </div>
+                    <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
+                      All Categories
+                    </p>
+                    <div>
+                      <Image
+                        src={HamburgerDownIcon}
+                        alt="hamburger-down-icon"
+                      />
+                    </div>
+                  </button>
 
-                {memoizedSubCategory?.length ? (
-                  <div className="dropdown-content">
-                    {memoizedSubCategory?.map(
-                      (item: CategoryProps, index: number) => (
-                        <div
-                          key={item?.id}
-                          className={cn(
-                            "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
-                            memoizedSubCategory?.length
-                              ? index === subCategoryIndex
-                                ? "dropdown-active-child"
-                                : null
-                              : null,
-                          )}
-                          onMouseEnter={() => setSubCategoryIndex(index)}
-                          onClick={() => {
-                            setSubCategoryIndex(index);
-                            category.setSubCategories(
-                              memoizedSubCategory?.[subCategoryIndex]?.children,
-                            );
-                            // category.setSubSubCategories([]);
-                            category.setCategoryId(item?.id.toString());
-                            // save index to check for child categories part of parent or not
-                            category.setSubCategoryIndex(index);
-                            category.setSubCategoryParentName(item?.name);
-                            category.setSubSubCategoryParentName(
-                              memoizedSubCategory?.[subCategoryIndex]
-                                ?.children?.[0]?.name,
-                            );
-                            category.setSubSubCategories(
-                              memoizedSubCategory?.[subCategoryIndex]
-                                ?.children?.[0]?.children,
-                            );
+                  {memoizedSubCategory?.length ? (
+                    <div className="dropdown-content">
+                      {memoizedSubCategory?.map(
+                        (item: CategoryProps, index: number) => (
+                          <div
+                            key={item?.id}
+                            className={cn(
+                              "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
+                              memoizedSubCategory?.length
+                                ? index === subCategoryIndex
+                                  ? "dropdown-active-child"
+                                  : null
+                                : null,
+                            )}
+                            onMouseEnter={() => setSubCategoryIndex(index)}
+                            onClick={() => {
+                              setSubCategoryIndex(index);
+                              category.setSubCategories(
+                                memoizedSubCategory?.[subCategoryIndex]
+                                  ?.children,
+                              );
+                              // category.setSubSubCategories([]);
+                              category.setCategoryId(item?.id.toString());
+                              // save index to check for child categories part of parent or not
+                              category.setSubCategoryIndex(index);
+                              category.setSubCategoryParentName(item?.name);
+                              category.setSubSubCategoryParentName(
+                                memoizedSubCategory?.[subCategoryIndex]
+                                  ?.children?.[0]?.name,
+                              );
+                              category.setSubSubCategories(
+                                memoizedSubCategory?.[subCategoryIndex]
+                                  ?.children?.[0]?.children,
+                              );
 
-                            //reset for second level category active index
-                            category.setSecondLevelCategoryIndex(0);
-                          }}
-                        >
-                          {item?.icon ? (
-                            <Image
-                              src={item.icon}
-                              alt={item?.name}
-                              height={24}
-                              width={24}
-                            />
-                          ) : (
-                            <MdOutlineImageNotSupported size={24} />
-                          )}
-                          <p
-                            title={item?.name}
-                            className="text-beat text-start text-sm"
+                              //reset for second level category active index
+                              category.setSecondLevelCategoryIndex(0);
+                            }}
                           >
-                            {item?.name}
-                          </p>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                ) : null}
-
-                {memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
-                  <div className="dropdown-content-second">
-                    {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
-                      (item: CategoryProps, index: number) => (
-                        <div
-                          key={item?.id}
-                          className={cn(
-                            "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
-                            memoizedSubCategory?.[subCategoryIndex]?.children
-                              ?.length
-                              ? index === subSubCategoryIndex
-                                ? "dropdown-active-child"
-                                : null
-                              : null,
-                          )}
-                          onMouseEnter={() => setSubSubCategoryIndex(index)}
-                          onClick={() => {
-                            setSubSubCategoryIndex(index);
-                            category.setSubSubCategories(
-                              memoizedSubCategory?.[subCategoryIndex]
-                                ?.children?.[subSubCategoryIndex]?.children,
-                            );
-                            category.setCategoryId(item?.id.toString());
-                            category.setSecondLevelCategoryIndex(index);
-                            category.setSubSubCategoryParentName(item?.name);
-                            //FIXME: need condition
-                            if (
-                              category.subCategoryIndex !== subCategoryIndex
-                            ) {
-                              category.setSubCategories([]);
-                              category.setSubCategoryParentName("");
-                            }
-                          }}
-                        >
-                          {item?.icon ? (
-                            <Image
-                              src={item.icon}
-                              alt={item?.name}
-                              height={24}
-                              width={24}
-                            />
-                          ) : (
-                            <MdOutlineImageNotSupported size={24} />
-                          )}
-                          <p
-                            title={item?.name}
-                            className="text-beat text-start text-sm"
-                          >
-                            {item?.name}
-                          </p>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                ) : null}
-
-                {memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                  subSubCategoryIndex
-                ]?.children?.length ? (
-                  <div className="dropdown-content-third p-3">
-                    <h4 className="mb-2 text-sm">
-                      {memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                        subSubCategoryIndex
-                      ]?.name || ""}
-                    </h4>
-                    <div className="grid grid-cols-5">
-                      {memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                        subSubCategoryIndex
-                      ]?.children?.map((item: CategoryProps, index: number) => (
-                        <div
-                          key={item?.id}
-                          className={cn(
-                            "dropdown-content-child flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3",
-                            memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                              subSubCategoryIndex
-                            ]?.children?.length
-                              ? index === subSubSubCategoryIndex
-                                ? "dropdown-active-child"
-                                : null
-                              : null,
-                          )}
-                          onMouseEnter={() => setSubSubSubCategoryIndex(index)}
-                          onClick={() => {
-                            setSubSubSubCategoryIndex(index);
-                            category.setCategoryId(item?.id.toString());
-                          }}
-                        >
-                          <div className="relative h-8 w-8">
                             {item?.icon ? (
                               <Image
                                 src={item.icon}
                                 alt={item?.name}
-                                // height={30}
-                                // width={30}
-                                fill
-                                className="object-contain"
+                                height={24}
+                                width={24}
                               />
                             ) : (
-                              <MdOutlineImageNotSupported size={30} />
+                              <MdOutlineImageNotSupported size={24} />
                             )}
+                            <p
+                              title={item?.name}
+                              className="text-beat text-start text-sm"
+                            >
+                              {item?.name}
+                            </p>
                           </div>
-                          <p
-                            title={item?.name}
-                            className="text-beat text-center text-sm"
-                          >
-                            {item?.name}
-                          </p>
-                        </div>
-                      ))}
+                        ),
+                      )}
                     </div>
-                  </div>
-                ) : null}
+                  ) : null}
+
+                  {memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
+                    <div className="dropdown-content-second">
+                      {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
+                        (item: CategoryProps, index: number) => (
+                          <div
+                            key={item?.id}
+                            className={cn(
+                              "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
+                              memoizedSubCategory?.[subCategoryIndex]?.children
+                                ?.length
+                                ? index === subSubCategoryIndex
+                                  ? "dropdown-active-child"
+                                  : null
+                                : null,
+                            )}
+                            onMouseEnter={() => setSubSubCategoryIndex(index)}
+                            onClick={() => {
+                              setSubSubCategoryIndex(index);
+                              category.setSubSubCategories(
+                                memoizedSubCategory?.[subCategoryIndex]
+                                  ?.children?.[subSubCategoryIndex]?.children,
+                              );
+                              category.setCategoryId(item?.id.toString());
+                              category.setSecondLevelCategoryIndex(index);
+                              category.setSubSubCategoryParentName(item?.name);
+                              //FIXME: need condition
+                              if (
+                                category.subCategoryIndex !== subCategoryIndex
+                              ) {
+                                category.setSubCategories([]);
+                                category.setSubCategoryParentName("");
+                              }
+                            }}
+                          >
+                            {item?.icon ? (
+                              <Image
+                                src={item.icon}
+                                alt={item?.name}
+                                height={24}
+                                width={24}
+                              />
+                            ) : (
+                              <MdOutlineImageNotSupported size={24} />
+                            )}
+                            <p
+                              title={item?.name}
+                              className="text-beat text-start text-sm"
+                            >
+                              {item?.name}
+                            </p>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  ) : null}
+
+                  {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                    subSubCategoryIndex
+                  ]?.children?.length ? (
+                    <div className="dropdown-content-third p-3">
+                      <h4 className="mb-2 text-sm">
+                        {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                          subSubCategoryIndex
+                        ]?.name || ""}
+                      </h4>
+                      <div className="grid grid-cols-5">
+                        {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                          subSubCategoryIndex
+                        ]?.children?.map(
+                          (item: CategoryProps, index: number) => (
+                            <div
+                              key={item?.id}
+                              className={cn(
+                                "dropdown-content-child flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3",
+                                memoizedSubCategory?.[subCategoryIndex]
+                                  ?.children?.[subSubCategoryIndex]?.children
+                                  ?.length
+                                  ? index === subSubSubCategoryIndex
+                                    ? "dropdown-active-child"
+                                    : null
+                                  : null,
+                              )}
+                              onMouseEnter={() =>
+                                setSubSubSubCategoryIndex(index)
+                              }
+                              onClick={() => {
+                                setSubSubSubCategoryIndex(index);
+                                category.setCategoryId(item?.id.toString());
+                              }}
+                            >
+                              <div className="relative h-8 w-8">
+                                {item?.icon ? (
+                                  <Image
+                                    src={item.icon}
+                                    alt={item?.name}
+                                    // height={30}
+                                    // width={30}
+                                    fill
+                                    className="object-contain"
+                                  />
+                                ) : (
+                                  <MdOutlineImageNotSupported size={30} />
+                                )}
+                              </div>
+                              <p
+                                title={item?.name}
+                                className="text-beat text-center text-sm"
+                              >
+                                {item?.name}
+                              </p>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="flex items-center gap-x-1 md:gap-x-5">
+                  {memoizedCategory.map((item: any) => (
+                    <Button
+                      type="button"
+                      key={item.id}
+                      onClick={() => {
+                        if (item?.assignTo) {
+                          setCategoryId(item.assignTo);
+                          setAssignedToId(item.id);
+                        } else {
+                          setCategoryId(undefined);
+                          setAssignedToId(undefined);
+                        }
+                      }}
+                      variant="link"
+                      className={cn(
+                        "p-1 text-sm font-semibold capitalize text-color-dark sm:text-base md:py-3",
+                        item?.id === assignedToId
+                          ? "underline"
+                          : "no-underline",
+                      )}
+                    >
+                      <p>{item.name}</p>
+                    </Button>
+                  ))}
+                </div>
               </div>
 
-              <div className="flex items-center gap-x-1 md:gap-x-5">
-                {memoizedCategory.map((item: any) => (
-                  <Button
-                    type="button"
-                    key={item.id}
-                    onClick={() => {
-                      if (item?.assignTo) {
-                        setCategoryId(item.assignTo);
-                        setAssignedToId(item.id);
-                      } else {
-                        setCategoryId(undefined);
-                        setAssignedToId(undefined);
-                      }
-                    }}
-                    variant="link"
-                    className={cn(
-                      "p-1 text-sm font-semibold capitalize text-color-dark sm:text-base md:py-3",
-                      item?.id === assignedToId ? "underline" : "no-underline",
-                    )}
-                  >
-                    <p>{item.name}</p>
-                  </Button>
-                ))}
+              <div className="flex w-full items-center justify-end md:w-auto">
+                <ul className="flex items-center justify-end gap-x-4">
+                  <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+                    <a href="#" className="text-light-gray">
+                      Buyer Central
+                    </a>
+                  </li>
+                  <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+                    <a
+                      href="#"
+                      className="text-light-gray"
+                      onClick={handleToggleAddModal}
+                    >
+                      Help Center
+                    </a>
+                  </li>
+                </ul>
               </div>
-            </div>
-
-            <div className="flex items-center justify-end">
-              <ul className="flex items-center justify-end gap-x-4">
-                <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-                  <a href="#" className="text-light-gray">
-                    Buyer Central
-                  </a>
-                </li>
-                <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-                  <a href="#" className="text-light-gray">
-                    Help Center
-                  </a>
-                </li>
-              </ul>
             </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <Dialog open={isAddToRoleModalOpen} onOpenChange={handleToggleAddModal}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={wrapperRef}
+        >
+          <div className="modal-header !justify-between">
+            <DialogTitle className="text-center text-xl font-bold">
+              Query
+            </DialogTitle>
+            <Button
+              //onClick={onClose}
+              className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+            >
+              <IoCloseSharp size={20} />
+            </Button>
+          </div>
+          <div className="">From Field</div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
