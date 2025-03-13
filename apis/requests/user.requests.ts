@@ -39,3 +39,15 @@ export const fetchUniqueUser = (payload: { userId: number | undefined }) => {
     },
   });
 };
+
+export const fetchUserPermissions = () => {
+  return axios({
+    method: "GET",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/get-perrmision`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

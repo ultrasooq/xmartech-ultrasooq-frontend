@@ -1,5 +1,5 @@
 "use client"; // Add this at the top
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import MemberCard from "@/components/modules/teamMembers/MemberCard";
 // import Pagination from "@/components/shared/Pagination";
 import { IoMdAdd } from "react-icons/io";
@@ -10,11 +10,11 @@ import { useAllMembers } from "@/apis/queries/member.queries";
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { PERMISSION_TEAM_MEMBERS, checkPermission } from "@/helpers/permission";
-import RedirectComponent from "@/components/RedirectComponent";
+import { useRouter } from "next/navigation";
 
 const TeamMembersPage = () => {
-  if (!checkPermission(PERMISSION_TEAM_MEMBERS)) return (<RedirectComponent to={"/home"} />);
-
+  const router = useRouter();
+  const hasPermission = checkPermission(PERMISSION_TEAM_MEMBERS);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
 
@@ -29,22 +29,22 @@ const TeamMembersPage = () => {
   const membersQuery = useAllMembers({
     page,
     limit,
-  });
+  }, hasPermission);
 
   const memoizedMember = useMemo(() => {
     return membersQuery?.data?.data
       ? membersQuery.data.data.map((item: any) => ({
-          id: item?.id,
-          userDetailId: item?.userId,
-          firstName: item?.userDetail?.firstName,
-          lastName: item?.userDetail?.lastName,
-          email: item?.userDetail?.email,
-          phoneNumber: item?.userDetail?.phoneNumber,
-          userRoleId: item?.userRoleId,
-          userRoleName: item?.userRolDetail?.userRoleName,
-          employeeId: item?.userDetail?.employeeId,
-          status: item?.status,
-        }))
+        id: item?.id,
+        userDetailId: item?.userId,
+        firstName: item?.userDetail?.firstName,
+        lastName: item?.userDetail?.lastName,
+        email: item?.userDetail?.email,
+        phoneNumber: item?.userDetail?.phoneNumber,
+        userRoleId: item?.userRoleId,
+        userRoleName: item?.userRolDetail?.userRoleName,
+        employeeId: item?.userDetail?.employeeId,
+        status: item?.status,
+      }))
       : [];
   }, [membersQuery?.data?.data]);
 
@@ -57,6 +57,12 @@ const TeamMembersPage = () => {
     setSelectedMember(memBerInfo);
     handleToggleAddModal();
   };
+
+  useEffect(() => {
+    if (!hasPermission) router.push("/home");
+  }, []);
+
+  if (!hasPermission) return <div></div>;
 
   return (
     <section className="team_members_section">

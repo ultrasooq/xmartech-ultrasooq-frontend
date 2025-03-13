@@ -25,6 +25,7 @@ import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { fetchUserPermissions } from "@/apis/requests/user.requests";
 
 const formSchema = z.object({
   email: z
@@ -52,7 +53,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
-  const { setUser } = useAuth();
+  const { setUser, setPermissions } = useAuth();
   const [rememberMe, setRememberMe] = useState<CheckedState>(false);
 
   const form = useForm({
@@ -89,7 +90,14 @@ export default function LoginPage() {
       // TODO: delete cart for trade role freelancer and company if logged in using device id
       // update cart
       await updateCart.mutateAsync({ deviceId });
-      setUser({ id: response.data?.id, firstName: response?.data?.firstName, lastName: response?.data?.lastName });
+      setUser({ id: response.data?.id, firstName: response?.data?.firstName, lastName: response?.data?.lastName, tradeRole: response?.data?.tradeRole });
+
+      try {
+        const permissions = await fetchUserPermissions();
+        setPermissions([...(permissions?.data?.data?.userRoleDetail?.userRolePermission || [])]);
+      } catch (e) {
+      }
+
       toast({
         title: "Login Successful",
         description: "You have successfully logged in.",

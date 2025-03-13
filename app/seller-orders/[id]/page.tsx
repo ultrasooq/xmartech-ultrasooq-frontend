@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
 import { MdHelpCenter } from "react-icons/md";
@@ -22,25 +22,21 @@ import { MONTHS, formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { PERMISSION_ORDERS, checkPermission } from "@/helpers/permission";
-import RedirectComponent from "@/components/RedirectComponent";
-// import SellerReviewForm from "@/components/shared/SellerReviewForm";
+import { useRouter } from "next/navigation";
 
 const MyOrderDetailsPage = ({}) => {
-  if (!checkPermission(PERMISSION_ORDERS)) return (<RedirectComponent to={"/home"} />)
-
+  const router = useRouter();
+  const hasPermission = checkPermission(PERMISSION_ORDERS);
   const searchParams = useParams();
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  // const [reviewId, setReviewId] = useState<number>();
 
-  const handleToggleStatusModal = () =>
-    setIsStatusModalOpen(!isStatusModalOpen);
+  const handleToggleStatusModal = () => setIsStatusModalOpen(!isStatusModalOpen);
 
   const orderByIdQuery = useOrderBySellerId(
     {
       orderProductId: searchParams?.id ? (searchParams.id as string) : "",
     },
-    !!searchParams?.id,
+    !!searchParams?.id && hasPermission,
   );
 
   const orderDetails = orderByIdQuery.data?.data;
@@ -85,8 +81,11 @@ const MyOrderDetailsPage = ({}) => {
     return `${dayOfWeek}, ${dayWithSuffix} ${month}`;
   }
 
-  // const handleToggleReviewModal = () =>
-  //   setIsReviewModalOpen(!isReviewModalOpen);
+  useEffect(() => {
+    if (!hasPermission) router.push("/home");
+  }, []);
+
+  if (!hasPermission) return <div></div>;
 
   return (
     <>

@@ -1,19 +1,14 @@
 "use client"; // Add this at the top
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Pagination from "@/components/shared/Pagination";
-import { useCreateShareLink, useShareLinks } from "@/apis/queries/seller-reward.queries";
-import { Link } from "lucide-react";
-import Image from "next/image";
-import validator from "validator";
-import PlaceholderImage from "@/public/images/product-placeholder.png";
-import { Button } from "react-day-picker";
+import { useShareLinks } from "@/apis/queries/seller-reward.queries";
 import { toast } from "@/components/ui/use-toast";
 import { PERMISSION_SHARE_LINKS, checkPermission } from "@/helpers/permission";
-import RedirectComponent from "@/components/RedirectComponent";
+import { useRouter } from "next/navigation";
 
 const ShareLinksPage = () => {
-    if (!checkPermission(PERMISSION_SHARE_LINKS)) return (<RedirectComponent to={"/home"} />)
-
+    const router = useRouter();
+    const hasPermission = checkPermission(PERMISSION_SHARE_LINKS);
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
 
@@ -21,7 +16,7 @@ const ShareLinksPage = () => {
         page: page,
         limit: limit,
         sortType: "desc"
-    });
+    }, hasPermission);
 
     const shareLinks = useMemo(() => {
         return shareLinksQuery?.data?.data || [];
@@ -45,6 +40,12 @@ const ShareLinksPage = () => {
             variant: "success",
         });
     };
+
+    useEffect(() => {
+        if (!hasPermission) router.push("/home");
+    }, []);
+    
+    if (!hasPermission) return <div></div>;
 
     return (
         <section className="team_members_section">

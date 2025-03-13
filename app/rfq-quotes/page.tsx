@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -36,11 +36,11 @@ import { Dialog } from "@/components/ui/dialog";
 import DeleteContent from "@/components/shared/DeleteContent";
 import { useToast } from "@/components/ui/use-toast";
 import { PERMISSION_RFQ_QUOTES, checkPermission } from "@/helpers/permission";
-import RedirectComponent from "@/components/RedirectComponent";
+import { useRouter } from "next/navigation";
 
 const RfqQuotesPage = () => {
-  if (!checkPermission(PERMISSION_RFQ_QUOTES)) return (<RedirectComponent to={"/home"} />)
-
+  const router = useRouter();
+  const hasPermission = checkPermission(PERMISSION_RFQ_QUOTES);
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
@@ -50,7 +50,7 @@ const RfqQuotesPage = () => {
   const rfqQuotesByBuyerIdQuery = useAllRfqQuotesByBuyerId({
     page,
     limit,
-  });
+  }, hasPermission);
   const deleteRfqQuote = useDeleteRfqQuote();
 
   const memoizedRfqQuotesProducts = useMemo(() => {
@@ -127,6 +127,12 @@ const RfqQuotesPage = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (!hasPermission) router.push("/home");
+  }, []);
+
+  if (!hasPermission) return <div></div>;
 
   return (
     <>

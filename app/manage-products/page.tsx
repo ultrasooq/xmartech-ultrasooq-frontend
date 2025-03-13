@@ -13,16 +13,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-// import { Card, CardHeader } from "@/components/ui/card";
-// import Link from "next/link";
 import { IoMdAdd } from "react-icons/io";
 import { Input } from "@/components/ui/input";
-// import { MdOutlineManageSearch } from "react-icons/md";
 import { debounce } from "lodash";
 import { Dialog } from "@/components/ui/dialog";
 import AddProductContent from "@/components/modules/products/AddProductContent";
 import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
-import RedirectComponent from "@/components/RedirectComponent";
 
 const schema = z
   .object({
@@ -115,10 +111,9 @@ const defaultValues = {
   isSellTypeRequired: false,
 };
 
-const ManageProductsPage = () => {
-  if (!checkPermission(PERMISSION_PRODUCTS)) return (<RedirectComponent to={"/home"} />);
-  
+const ManageProductsPage = () => {  
   const router = useRouter();
+  const hasPermission = checkPermission(PERMISSION_PRODUCTS);
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [limit] = useState(6);
@@ -135,7 +130,7 @@ const ManageProductsPage = () => {
     page,
     limit,
     term: searchTerm !== "" ? searchTerm : undefined,
-  });
+  }, hasPermission);
 
   const { data, refetch } = allManagedProductsQuery;
   const [products, setProducts] = useState(data?.data || []);
@@ -169,8 +164,7 @@ const ManageProductsPage = () => {
     setSearchTerm(event.target.value);
   }, 1000);
 
-  const handleAddProductModal = () =>
-    setIsAddProductModalOpen(!isAddProductModalOpen);
+  const handleAddProductModal = () => setIsAddProductModalOpen(!isAddProductModalOpen);
 
   const handleProductIds = (checked: boolean | string, id: number) => {
     let tempArr = selectedProductIds || [];
@@ -184,8 +178,6 @@ const ManageProductsPage = () => {
 
     setSelectedProductIds(tempArr);
   };
-
-  // console.log("form values", form.getValues());
 
   const onSubmit = async (formData: any) => {
     if (!selectedProductIds.length) {
@@ -316,7 +308,7 @@ const ManageProductsPage = () => {
     console.log({
       productPrice: [...finalData],
     });
-    // return;
+    
     const response = await updateMultipleProductPrice.mutateAsync({
       productPrice: [...finalData],
     });
@@ -341,6 +333,12 @@ const ManageProductsPage = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (!hasPermission) router.push("/home");
+  }, [])
+
+  if (!hasPermission) return <div></div>;
 
   return (
     <>
