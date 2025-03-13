@@ -8,15 +8,20 @@ import SellerChat from "@/components/modules/chat/seller/SellerChat";
 import ProductChat from "@/components/modules/chat/productChat/ProductChat";
 import VendorOperations from "@/components/modules/vendorOperations/VendorOperations";
 import { PERMISSION_RFQ_SELLER_REQUESTS, checkPermission } from "@/helpers/permission";
-import RedirectComponent from "@/components/RedirectComponent";
+import { useRouter } from "next/navigation";
 
 const SellerRfqRequestPage = () => {
-  if (!checkPermission(PERMISSION_RFQ_SELLER_REQUESTS)) return (<RedirectComponent to={"/home"} />)
-
+  const router = useRouter();
+  const hasPermission = checkPermission(PERMISSION_RFQ_SELLER_REQUESTS);
   const [currentTab, setCurrentTab] = useState<string>("RFQ");
   const [productId, setProductId] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!hasPermission) {
+      router.push("/home");
+      return;
+    }
+
     const params = new URLSearchParams(document.location.search);
     let pId = params.get("product_id");
     if (pId) {
@@ -24,6 +29,8 @@ const SellerRfqRequestPage = () => {
       setCurrentTab("MSG");
     }
   }, []);
+
+  if (!hasPermission) return <div></div>;
 
   return (
     <section className="m-auto flex w-full max-w-[1400px] flex-wrap py-8">

@@ -1,15 +1,15 @@
 "use client"; // Add this at the top
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useShareLinksBySellerReward } from "@/apis/queries/seller-reward.queries";
 import Pagination from "@/components/shared/Pagination";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { PERMISSION_SELLER_REWARDS, checkPermission } from "@/helpers/permission";
-import RedirectComponent from "@/components/RedirectComponent";
+import { useRouter } from "next/navigation";
 
 const SellerRewardDetailPage = () => {
-    if (!checkPermission(PERMISSION_SELLER_REWARDS)) return (<RedirectComponent to={"/home"} />)
-
+    const router = useRouter();
+    const hasPermission = checkPermission(PERMISSION_SELLER_REWARDS);
     const searchParams = useParams();
     const [page, setPage] = useState<number>(1);
     const [limit] = useState<number>(10);
@@ -19,7 +19,7 @@ const SellerRewardDetailPage = () => {
         limit: limit,
         sellerRewardId: searchParams?.id ? (searchParams.id as string) : "",
         sortType: "desc"
-    });
+    }, hasPermission);
 
     const sharedLinks = useMemo(() => {
         return (sharedLinksBySellerRewardQuery?.data?.data || []).map((link: any) => {
@@ -34,6 +34,12 @@ const SellerRewardDetailPage = () => {
         page,
         limit
     ]);
+
+    useEffect(() => {
+        if (!hasPermission) router.push("/home");
+    });
+
+    if (!hasPermission) return <div></div>;
 
     return (
         <section className="team_members_section">

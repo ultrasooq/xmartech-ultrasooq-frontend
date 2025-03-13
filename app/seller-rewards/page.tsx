@@ -9,11 +9,11 @@ import CreateSellerRewardForm from "@/components/modules/productDetails/CreateSe
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { PERMISSION_SELLER_REWARDS, checkPermission } from "@/helpers/permission";
-import RedirectComponent from "@/components/RedirectComponent";
+import { useRouter } from "next/navigation";
 
 const SellerRewardsPage = () => {
-    if (!checkPermission(PERMISSION_SELLER_REWARDS)) return (<RedirectComponent to={"/home"} />);
-
+    const router = useRouter();
+    const hasPermission = checkPermission(PERMISSION_SELLER_REWARDS);
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const [isSellerRewardFormModalOpen, setIsSellerRewardFormModalOpen] = useState<boolean>(false);
@@ -24,17 +24,23 @@ const SellerRewardsPage = () => {
         page: page,
         limit: limit,
         sortType: "desc"
-    });
+    }, hasPermission);
 
     const sellerRewards = useMemo(() => {
         return sellerRewardsQuery?.data?.data || [];
     }, [
         sellerRewardsQuery?.data?.data,
         page,
-        limit
+        limit,
     ]);
 
     const handleSellerRewardFormModal = () => setIsSellerRewardFormModalOpen(!isSellerRewardFormModalOpen);
+
+    useEffect(() => {
+        if (!hasPermission) router.push("/home");
+    }, []);
+
+    if (!hasPermission) return <div></div>;
 
     return (
         <section className="team_members_section">

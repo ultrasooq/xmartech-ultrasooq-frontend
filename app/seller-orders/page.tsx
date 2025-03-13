@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useOrdersBySellerId } from "@/apis/queries/orders.queries";
 import { FiSearch } from "react-icons/fi";
 import { IoIosCloseCircleOutline } from "react-icons/io";
@@ -12,11 +12,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 import { PERMISSION_ORDERS, checkPermission } from "@/helpers/permission";
-import RedirectComponent from "@/components/RedirectComponent";
+import { useRouter } from "next/navigation";
 
 const SellerOrdersPage = () => {
-  if (!checkPermission(PERMISSION_ORDERS)) return (<RedirectComponent to={"/home"} />)
-
+  const router = useRouter();
+  const hasPermission = checkPermission(PERMISSION_ORDERS);
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderStatus, setOrderStatus] = useState<string>("");
@@ -69,7 +69,7 @@ const SellerOrdersPage = () => {
     orderProductStatus: orderStatus,
     startDate: getYearDates(orderTime).startDate,
     endDate: getYearDates(orderTime).endDate,
-  });
+  }, hasPermission);
 
   const handleDebounce = debounce((event: any) => {
     setSearchTerm(event.target.value);
@@ -86,6 +86,12 @@ const SellerOrdersPage = () => {
     setOrderStatus("");
     setOrderTime("");
   };
+
+  useEffect(() => {
+    if (!hasPermission) router.push("/home");
+  });
+
+  if (!hasPermission) return <div></div>;
 
   return (
     <div className="my-order-main">
