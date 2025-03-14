@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button";
 // import { useCartStore } from "@/lib/rfqStore";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { FaCircleCheck } from "react-icons/fa6";
+import ShoppingIcon from "@/components/icons/ShoppingIcon";
+import { FaRegHeart } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
 // import Link from "next/link";
 
 type RfqProductCardProps = {
@@ -67,6 +71,28 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
           fill
         />
       </div>
+      <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full p-0 shadow-md"
+        >
+          <ShoppingIcon />
+        </Button>
+
+        <Link
+          href="#"
+          className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+        >
+          <FiEye size={18} />
+        </Link>
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full p-0 shadow-md"
+        >
+          <FaRegHeart size={16} />
+        </Button>
+      </div>
+      {/* </Link> */}
       <div className="product_list_content">
         <p>{productName}</p>
         {/* price For P type product */}
