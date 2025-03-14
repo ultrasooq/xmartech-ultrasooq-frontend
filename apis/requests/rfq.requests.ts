@@ -166,6 +166,23 @@ export const addFactoriesProductApi = (payload: {
   });
 };
 
+export const addCustomizeProductApi = (payload: {
+  productId: number;
+  note: string;
+  price: number;
+}) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addCustomizeProduct`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const deleteRfqCartItem = (payload: { rfqCartId: number }) => {
   return axios({
     method: "DELETE",

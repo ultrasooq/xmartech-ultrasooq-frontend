@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
-import { useUpdateFactoriesCartWithLogin } from "@/apis/queries/rfq.queries";
+import { useAddFactoriesProduct, useUpdateFactoriesCartWithLogin } from "@/apis/queries/rfq.queries";
 import { useToast } from "@/components/ui/use-toast";
 
 type FactoriesCartMenuCardProps = {
@@ -19,13 +19,6 @@ type FactoriesCartMenuCardProps = {
   customizeProductImages: {
     link: string;
   }[];
-//   onAdd: (
-//     args0: number,
-//     args1: number,
-//     args2: "add" | "remove",
-//     args3: number,
-//     args4: string,
-//   ) => void;
   onRemove: (args0: number) => void;
   offerPrice: number;
   note: string;
@@ -39,16 +32,15 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
   productQuantity,
   productImages,
   customizeProductImages,
-//   onAdd,
   onRemove,
   offerPrice,
   note,
 }) => {
   const { toast } = useToast();
-  // const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
 
-   const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
+  const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
+  const addFactoriesProduct = useAddFactoriesProduct();
 
   useEffect(() => {
     setQuantity(productQuantity);
@@ -56,22 +48,19 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
 
   const handleAddToCart = async (
     quantity: number,
+    action: "add" | "remove",
     productId: number,
     customizeProductId: number,
-    // offerPrice: number,
-    // note: string,
   ) => {
     const response = await updateFactoriesCartWithLogin.mutateAsync({
       productId,
       quantity,
       customizeProductId
-      // offerPrice,
-      // note,
     });
 
     if (response.status) {
       toast({
-        title: "Item added to cart",
+        title: `Item ${action == "add" ? "added to" : "removed from"} cart`,
         description: "Check your cart for more details",
         variant: "success",
       });
@@ -115,9 +104,6 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
       <div className="rfq_cart_wrap_content">
         <div className="rfq_cart_wrap_content_top">
           <p>{productName}</p>
-          {/* <div className="pen_gray_icon">
-            <img src="images/pen-gray-icon.png" alt="pen-gray-icon" />
-          </div> */}
         </div>
         <div className="rfq_cart_wrap_content_top_bottom flex-wrap gap-3">
           <div className="qty-up-down-s1-with-rgMenuAction">
@@ -129,10 +115,10 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
                   if (quantity > 0) {
                     const newQuantity = quantity - 1;
                     setQuantity(newQuantity);
-                    handleAddToCart(newQuantity, productId, customizeProductId);
+                    handleAddToCart(newQuantity, "remove", productId, customizeProductId);
                   }
                 }}
-                disabled={quantity === 1}
+                disabled={quantity === 0}
               >
                 <Image
                   src="/images/upDownBtn-minus.svg"
@@ -148,7 +134,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
                 onClick={() => {
                   const newQuantity = quantity + 1;
                   setQuantity(newQuantity);
-                  handleAddToCart(newQuantity, productId, customizeProductId);
+                  handleAddToCart(newQuantity, "add", productId, customizeProductId);
                 }}
               >
                 <Image
@@ -165,7 +151,6 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
             className="relative hover:shadow-sm"
             onClick={() => {
               onRemove(factoriesCartId);
-              // cart.deleteCartItem(rfqProductId);
             }}
           >
             Remove

@@ -1,6 +1,7 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  addCustomizeProductApi,
   addFactoriesProductApi,
   addFactoriesQuotes,
   addProductDuplicateRfq,
@@ -237,6 +238,23 @@ export const useAddFactoriesProduct = () => {
   >({
     mutationFn: async (payload) => {
       const res = await addFactoriesProductApi(payload);
+      return res.data;
+    },
+    onSuccess: () => {},
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useAddCustomizeProduct = () => {
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { productId: number, note: string, price: number }
+  >({
+    mutationFn: async (payload) => {
+      const res = await addCustomizeProductApi(payload);
       return res.data;
     },
     onSuccess: () => {},
