@@ -51,8 +51,8 @@ const RfqPage = () => {
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
-  // const cart = useCartStore();
   const [quantity, setQuantity] = useState<number | undefined>();
+  const [offerPrice, setOfferPrice] = useState<number | undefined>();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
@@ -66,8 +66,6 @@ const RfqPage = () => {
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
-    // brandIds:
-    //   selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
   });
   const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
 
@@ -75,10 +73,15 @@ const RfqPage = () => {
     setSearchRfqTerm(event.target.value);
   }, 1000);
 
-  const handleRFQCart = (quantity: number, productId: number) => {
-    handleToggleAddModal();
-    setSelectedProductId(productId);
-    setQuantity(quantity);
+  const handleRFQCart = (quantity: number, productId: number, action: "add" | "remove", price?: number) => {
+    if (action == "remove" && quantity == 0) {
+      handleAddToCart(quantity, productId, "remove", 0, '');
+    } else {
+      handleToggleAddModal();
+      setSelectedProductId(productId);
+      setQuantity(quantity);
+      setOfferPrice(price || 0);
+    }
   };
 
   const handleAddToCart = async (
@@ -112,12 +115,6 @@ const RfqPage = () => {
         rfqProductsQuery.data?.data.map((item: any) => {
           return {
             ...item,
-            // isAddedToCart: cart.cart.some(
-            //   (cartItem) => cartItem.rfqProductId === item.id,
-            // ),
-            // quantity:
-            //   cart.cart.find((cartItem) => cartItem.rfqProductId === item.id)
-            //     ?.quantity || 0,
             isAddedToCart:
               item?.product_rfqCart?.length &&
               item?.product_rfqCart[0]?.quantity > 0,
@@ -132,8 +129,6 @@ const RfqPage = () => {
     }
   }, [
     rfqProductsQuery.data?.data,
-    // me?.data?.data,
-    //  cart.cart
   ]);
 
   useEffect(() => {
@@ -274,6 +269,7 @@ const RfqPage = () => {
                               productImages={item?.productImages}
                               productQuantity={item?.quantity || 0}
                               productPrice={item?.product_productPrice}
+                              offerPrice={item?.offerPrice}
                               onAdd={handleRFQCart}
                               onToCart={handleCartPage}
                               onEdit={() => {
@@ -329,6 +325,7 @@ const RfqPage = () => {
               }}
               selectedProductId={selectedProductId}
               selectedQuantity={quantity}
+              offerPrice={Number(offerPrice) || 0}
             />
           </DialogContent>
         </Dialog>

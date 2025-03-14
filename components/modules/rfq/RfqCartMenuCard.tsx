@@ -60,9 +60,6 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
       <div className="rfq_cart_wrap_content">
         <div className="rfq_cart_wrap_content_top">
           <p>{productName}</p>
-          {/* <div className="pen_gray_icon">
-            <img src="images/pen-gray-icon.png" alt="pen-gray-icon" />
-          </div> */}
         </div>
         <div className="rfq_cart_wrap_content_top_bottom flex-wrap gap-3">
           <div className="qty-up-down-s1-with-rgMenuAction">
@@ -79,7 +76,6 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                     offerPrice ? Number(offerPrice) : 0,
                     note,
                   );
-                  // cart.updateCart({ quantity: quantity - 1, rfqProductId });
                 }}
                 disabled={quantity === 0}
               >
@@ -103,7 +99,6 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                     offerPrice ? Number(offerPrice) : 0,
                     note,
                   );
-                  // cart.updateCart({ quantity: quantity + 1, rfqProductId });
                 }}
               >
                 <Image
@@ -120,7 +115,6 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
             className="relative hover:shadow-sm"
             onClick={() => {
               onRemove(id);
-              // cart.deleteCartItem(rfqProductId);
             }}
           >
             Remove

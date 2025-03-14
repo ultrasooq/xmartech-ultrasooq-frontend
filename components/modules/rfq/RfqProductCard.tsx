@@ -17,13 +17,14 @@ type RfqProductCardProps = {
     image: string;
   }[];
   productQuantity: number;
-  onAdd: (args0: number, args1: number, args2: "add" | "remove") => void;
+  onAdd: (args0: number, args1: number, args3: "add" | "remove", args4?: number) => void;
   onToCart: () => void;
   onEdit: (args0: number) => void;
   isCreatedByMe: boolean;
   isAddedToCart: boolean;
   haveAccessToken: boolean;
   productPrice: any;
+  offerPrice?: number;
 };
 
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
@@ -41,8 +42,8 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   isAddedToCart,
   haveAccessToken,
   productPrice,
+  offerPrice,
 }) => {
-  // const cart = useCartStore();
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
@@ -66,9 +67,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
           fill
         />
       </div>
-      {/* </Link> */}
       <div className="product_list_content">
-        {/* <Link href={`/trending/${id}`}> */}
         <p>{productName}</p>
         {/* price For P type product */}
         {productType === "P" ? (
@@ -77,7 +76,6 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
             <p>${productPrice?.[0]?.offerPrice}</p>
           </>
         ) : null}
-        {/* </Link> */}
         {haveAccessToken ? (
           <div className="quantity_wrap mb-2">
             <label>Quantity</label>
@@ -89,11 +87,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity - 1);
-                    // onAdd(quantity - 1, id, "remove");
-                    // cart.updateCart({
-                    //   quantity: quantity - 1,
-                    //   rfqProductId: id,
-                    // });
+                    onAdd(quantity - 1, id, "remove", offerPrice);
                   }}
                   disabled={quantity === 0}
                 >
@@ -110,12 +104,8 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   variant="outline"
                   className="relative hover:shadow-sm"
                   onClick={() => {
-                    setQuantity(quantity + 1);
-                    // onAdd(quantity + 1, id, "add");
-                    // cart.updateCart({
-                    //   quantity: quantity + 1,
-                    //   rfqProductId: id,
-                    // });
+                    setQuantity(quantity + 1);console.log(offerPrice);
+                    onAdd(quantity + 1, id, "add", offerPrice);
                   }}
                 >
                   <Image
@@ -150,11 +140,6 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 type="button"
                 className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
                 disabled={quantity < 0}
-                onClick={() => {
-                  onAdd(quantity, id, "add");
-                  // console.log(quantity, id, "add");
-                  // cart.updateCart({ quantity: 1, rfqProductId: id });
-                }}
               >
                 <FaCircleCheck color="#00C48C" />
                 Added to RFQ Cart
@@ -163,11 +148,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               <button
                 type="button"
                 className="add_to_cart_button"
-                disabled={quantity === 0}
+                disabled={quantity > 0}
                 onClick={() => {
-                  onAdd(quantity, id, "add");
-                  // console.log(quantity, id, "add");
-                  // cart.updateCart({ quantity: 1, rfqProductId: id });
+                  onAdd(quantity + 1, id, "add");
                 }}
               >
                 Add To RFQ Cart
