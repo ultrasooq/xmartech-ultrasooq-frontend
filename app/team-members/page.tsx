@@ -26,25 +26,28 @@ const TeamMembersPage = () => {
   const handleToggleAddModal = () =>
     setIsAddToMemberModalOpen(!isAddToMemberModalOpen);
 
-  const membersQuery = useAllMembers({
-    page,
-    limit,
-  }, hasPermission);
+  const membersQuery = useAllMembers(
+    {
+      page,
+      limit,
+    },
+    hasPermission,
+  );
 
   const memoizedMember = useMemo(() => {
     return membersQuery?.data?.data
       ? membersQuery.data.data.map((item: any) => ({
-        id: item?.id,
-        userDetailId: item?.userId,
-        firstName: item?.userDetail?.firstName,
-        lastName: item?.userDetail?.lastName,
-        email: item?.userDetail?.email,
-        phoneNumber: item?.userDetail?.phoneNumber,
-        userRoleId: item?.userRoleId,
-        userRoleName: item?.userRolDetail?.userRoleName,
-        employeeId: item?.userDetail?.employeeId,
-        status: item?.status,
-      }))
+          id: item?.id,
+          userDetailId: item?.userId,
+          firstName: item?.userDetail?.firstName,
+          lastName: item?.userDetail?.lastName,
+          email: item?.userDetail?.email,
+          phoneNumber: item?.userDetail?.phoneNumber,
+          userRoleId: item?.userRoleId,
+          userRoleName: item?.userRolDetail?.userRoleName,
+          employeeId: item?.userDetail?.employeeId,
+          status: item?.status,
+        }))
       : [];
   }, [membersQuery?.data?.data]);
 
@@ -68,19 +71,35 @@ const TeamMembersPage = () => {
     <section className="team_members_section">
       <div className="container relative z-10 m-auto px-3">
         <div className="flex w-full flex-wrap">
+          <div className="mb-5 w-full">
+            <ul className="flex w-full items-center justify-start gap-1">
+              <Link
+                href={"/team-members"}
+                className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+              >
+                Team Members
+              </Link>
+              <Link
+                href={"/role-settings"}
+                className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+              >
+                Go to Role
+              </Link>
+            </ul>
+          </div>
           <div className="team_members_heading w-full">
             <h1>Team Members</h1>
             <div className="flex justify-end gap-3">
               <button type="button" onClick={handleToggleAddModal}>
                 <IoMdAdd /> Add New Member
               </button>
-              <Link
+              {/* <Link
                 href={"/role-settings"}
                 className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
-                {/* <IoMdAdd /> */}
+                <IoMdAdd />
                 Go to Role
-              </Link>
+              </Link> */}
             </div>
           </div>
           <div className="team_members_table w-full">

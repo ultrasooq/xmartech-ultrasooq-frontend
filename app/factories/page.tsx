@@ -2,25 +2,19 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "lodash";
 import {
-  useAddFactoriesProduct,
+  useAddCustomizeProduct,
   useFactoriesProducts,
-  useUpdateRfqCartWithLogin,
+  useUpdateFactoriesCartWithLogin,
 } from "@/apis/queries/rfq.queries";
-import RfqProductCard from "@/components/modules/rfq/RfqProductCard";
 import Pagination from "@/components/shared/Pagination";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
 import RfqProductTable from "@/components/modules/rfq/RfqProductTable";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import AddToRfqForm from "@/components/modules/rfq/AddToRfqForm";
 import { useMe } from "@/apis/queries/user.queries";
-import RfqCartMenu from "@/components/modules/rfq/RfqCartMenu";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useClickOutside } from "use-events";
-// import { useCartStore } from "@/lib/rfqStore";
-// import CategoryFilterList from "@/components/modules/rfq/CategoryFilterList";
-// import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 import {
   Select,
   SelectContent,
@@ -29,20 +23,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Link from "next/link";
 import Image from "next/image";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
 import SearchIcon from "@/public/images/search-icon-rfq.png";
 import Footer from "@/components/shared/Footer";
-import { FaPlus } from "react-icons/fa";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import FactoriesProductCard from "@/components/modules/factories/FactoriesProductCard";
 import { useQueryClient } from "@tanstack/react-query";
 import FactoryCartMenu from "@/components/modules/factories/FactoriesCartMenu";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { Button } from "@/components/ui/button";
+import { IoCloseSharp } from "react-icons/io5";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@/components/ui/form";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
+
+const addFormSchema = z.object({
+  price: z.coerce
+    .number()
+    .max(1000000, {
+      message: "Offer price must be less than 1000000",
+    })
+    .optional(),
+  note: z
+    .string()
+    .trim()
+    .max(100, {
+      message: "Description must be less than 100 characters",
+    })
+    .optional(),
+});
 
 const FactoriesPage = () => {
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
   const wrapperRef = useRef(null);
@@ -50,18 +70,18 @@ const FactoriesPage = () => {
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
   const [selectedProductId, setSelectedProductId] = useState<number>();
-  const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
+  const [isAddToFactoryModalOpen, setIsAddToFactoryModalOpen] = useState(false);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
-  // const cart = useCartStore();
-  const [quantity, setQuantity] = useState<number | undefined>();
+  const [cartList, setCartList] = useState<any[]>([]);
+  const addToWishlist = useAddToWishList();
+  const deleteFromWishlist = useDeleteFromWishList();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const handleToggleAddModal = () =>
-    setIsAddToCartModalOpen(!isAddToCartModalOpen);
+  const handleToggleAddModal = () => setIsAddToFactoryModalOpen(!isAddToFactoryModalOpen);
 
   const me = useMe(haveAccessToken);
   const rfqProductsQuery = useFactoriesProducts({
@@ -70,36 +90,62 @@ const FactoriesPage = () => {
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
-    // brandIds:
-    //   selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
   });
-  const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
-  const addFactoriesProduct = useAddFactoriesProduct();
+  const addCustomizeProduct = useAddCustomizeProduct();
+  const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
+
+  const form = useForm({
+    resolver: zodResolver(addFormSchema),
+    defaultValues: { note: "", price: 0 },
+  });
 
   const handleRfqDebounce = debounce((event: any) => {
     setSearchRfqTerm(event.target.value);
   }, 1000);
 
-  const handleRFQCart = (quantity: number, productId: number) => {
-    handleToggleAddModal();
+  const handleAddToFactories = async (productId: number) => {
     setSelectedProductId(productId);
-    setQuantity(quantity);
+    handleToggleAddModal();
   };
 
-  const queryClient = useQueryClient();
-
-  const handleAddToFactories = async (productId: number) => {
+  const addToFactories = async (formData: any) => {console.log(formData);
     try {
-      const response = await addFactoriesProduct.mutateAsync({ productId });
+      const response = await addCustomizeProduct.mutateAsync({
+        productId: Number(selectedProductId),
+        note: formData.note,
+        price: Number(formData.price) || 0
+      });
   
       if (response.status) {
+        handleToggleAddModal();
         toast({
           title: `Item Added`,
           description: "Item added successfully",
           variant: "success",
         });
-         // Refetch the listing API after a successful response
-         queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
+
+        // Refetch the listing API after a successful response
+        queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
+
+        const resp = await updateFactoriesCartWithLogin.mutateAsync({
+          productId: Number(selectedProductId),
+          customizeProductId: response?.data?.id,
+          quantity: 1
+        })
+
+        if (resp.status) {
+          toast({
+            title: "Item added to cart",
+            description: "Check your cart for more details",
+            variant: "success",
+          });
+        } else {
+          toast({
+            title: "Oops! Something went wrong",
+            description: response.message,
+            variant: "danger",
+          });
+        }
       }
     } catch (error) {
       toast({
@@ -108,8 +154,7 @@ const FactoriesPage = () => {
         variant: "destructive",
       });
     }
-  };
-
+  }
 
   const handleCartPage = () => router.push("/rfq-cart");
 
@@ -119,12 +164,6 @@ const FactoriesPage = () => {
         rfqProductsQuery.data?.data.map((item: any) => {
           return {
             ...item,
-            // isAddedToCart: cart.cart.some(
-            //   (cartItem) => cartItem.rfqProductId === item.id,
-            // ),
-            // quantity:
-            //   cart.cart.find((cartItem) => cartItem.rfqProductId === item.id)
-            //     ?.quantity || 0,
             isAddedToCart:
               item?.product_rfqCart?.length &&
               item?.product_rfqCart[0]?.quantity > 0,
@@ -139,14 +178,71 @@ const FactoriesPage = () => {
     }
   }, [
     rfqProductsQuery.data?.data,
-    // me?.data?.data,
-    //  cart.cart
   ]);
+
+  const handleDeleteFromWishlist = async (productId: number) => {
+    const response = await deleteFromWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "factoriesProducts",
+        ],
+      });
+    } else {
+      toast({
+        title: "Item not removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleAddToWishlist = async (
+    productId: number,
+    wishlistArr?: any[],
+  ) => {
+    const wishlistObject = wishlistArr?.find(
+      (item) => item.userId === me.data?.data?.id,
+    );
+    // return;
+    if (wishlistObject) {
+      handleDeleteFromWishlist(wishlistObject?.productId);
+      return;
+    }
+
+    const response = await addToWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "factoriesProducts",
+        ],
+      });
+    } else {
+      toast({
+        title: response.message || "Item not added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
 
   useEffect(() => {
     if (isClickedOutside) {
       setSelectedProductId(undefined);
-      setQuantity(undefined);
     }
   }, [isClickedOutside]);
 
@@ -190,24 +286,13 @@ const FactoriesPage = () => {
                       />
                     </button>
                   </div>
-                  {/* {haveAccessToken ? (
-                    <div className="rfq_add_new_product">
-                      <Link
-                        href="/product?productType=F"
-                        className="flex items-center gap-x-2 bg-dark-orange px-3 py-2 text-white"
-                      >
-                        <FaPlus />
-                        Add new product in FACTORIES
-                      </Link>
-                    </div>
-                  ) : null} */}
                 </div>
                 <div className="product_section product_gray_n_box">
                   <div className="row">
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
                         <div className="products_sec_top_left">
-                          <h4> trending & high rate product</h4>
+                          <h4>trending & high rate product</h4>
                         </div>
                         <div className="products_sec_top_right">
                           <div className="trending_filter">
@@ -279,15 +364,18 @@ const FactoriesPage = () => {
                               productNote={item?.productNote || "-"}
                               productStatus={item?.status}
                               productImages={item?.productImages}
-                              productQuantity={item?.quantity || 0}
+                              productQuantity={cartList.find((el: any) => el.productId == item.id)?.quantity || 0}
+                              customizeProductId={cartList.find((el: any) => el.productId == item.id)?.customizeProductId}
                               onAdd={() => handleAddToFactories(item?.id)}
                               onToCart={handleCartPage}
-                            //   onEdit={() => {
-                            //     handleToggleAddModal();
-                            //     setSelectedProductId(item?.id);
-                            //   }}
+                              onWishlist={() => handleAddToWishlist(item.id, item?.product_wishlist)}
                               isCreatedByMe={item?.userId === me.data?.data?.id}
                               isAddedToCart={item?.isAddedToCart}
+                              inWishlist={
+                                item?.product_wishlist?.find(
+                                  (el: any) => el?.userId === me.data?.data?.id,
+                                )
+                              }
                               haveAccessToken={haveAccessToken}
                             />
                           ))}
@@ -316,28 +404,64 @@ const FactoriesPage = () => {
                 </div>
               </div>
               <FactoryCartMenu
-                // onAdd={handleAddToCart}
+                onInitCart={setCartList}
                 haveAccessToken={haveAccessToken}
               />
             </div>
           </div>
         </div>
-        <Dialog open={isAddToCartModalOpen} onOpenChange={handleToggleAddModal}>
+
+        {/* add to factories modal */}
+        <Dialog open={isAddToFactoryModalOpen} onOpenChange={handleToggleAddModal}>
           <DialogContent
             className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
             ref={wrapperRef}
           >
-            <AddToRfqForm
-              onClose={() => {
-                setIsAddToCartModalOpen(false);
-                setSelectedProductId(undefined);
-                setQuantity(undefined);
-              }}
-              selectedProductId={selectedProductId}
-              selectedQuantity={quantity}
-            />
+            <div className="modal-header !justify-between">
+              <DialogTitle className="text-center text-xl font-bold">
+                Add To Factories
+              </DialogTitle>
+              <Button
+                onClick={handleToggleAddModal}
+                className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+              >
+                <IoCloseSharp size={20} />
+              </Button>
+            </div>
+
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(addToFactories)}
+                className="card-item card-payment-form px-5 pb-5 pt-3"
+              >
+                <ControlledTextareaInput
+                  label="Write a Note"
+                  name="note"
+                  placeholder="Write here..."
+                  rows={6}
+                />
+
+                <ControlledTextInput
+                  label="Price"
+                  name="price"
+                  placeholder="Price"
+                  type="number"
+                />
+                
+                <Button
+                  disabled={addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending}
+                  type="submit"
+                  className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                >
+                  {addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending ? (
+                    <LoaderWithMessage message="Please wait" />
+                  ) : "Add"}
+                </Button>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
+
       </section>
       <Footer />
     </>

@@ -17,6 +17,11 @@ export const fetchRfqProducts = (payload: {
       `${process.env.NEXT_PUBLIC_API_URL}/product/getAllRfqProduct`,
       payload,
     ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
   });
 };
 
@@ -33,6 +38,11 @@ export const fetchFactoriesProducts = (payload: {
       `${process.env.NEXT_PUBLIC_API_URL}/product/getAllFactoriesProduct`,
       payload,
     ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
   });
 };
 
@@ -157,6 +167,23 @@ export const addFactoriesProductApi = (payload: {
   return axios({
     method: "POST",
     url: `${process.env.NEXT_PUBLIC_API_URL}/product/addProductDuplicateFactories`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const addCustomizeProductApi = (payload: {
+  productId: number;
+  note: string;
+  price: number;
+}) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addCustomizeProduct`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

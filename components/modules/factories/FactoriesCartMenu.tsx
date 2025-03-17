@@ -4,25 +4,19 @@ import {
   useFactoriesCartListByUserId,
   useRfqCartListByUserId,
 } from "@/apis/queries/rfq.queries";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import FactoriesCartMenuCard from "./FactoriesCartMenuCard";
 
 type FactoryCartMenuProps = {
-  // onAdd: (
-  //   args0: number,
-  //   args1: number,
-  //   args2: "add" | "remove",
-  //   args3: number,
-  //   args4: string,
-  // ) => void;
+  onInitCart?: (cartList: any[]) => void; 
   haveAccessToken: boolean;
 };
 
 const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
-  // onAdd,
+  onInitCart,
   haveAccessToken,
 }) => {
   const { toast } = useToast();
@@ -56,7 +50,9 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
     }
   };
 
-  // For Add Cart
+  useEffect(() => {
+    if (onInitCart) onInitCart([...(factoriesCartListByUser.data?.data || [])]);
+  }, [factoriesCartListByUser.data?.data]);
 
   return (
     <div className="rfq_right">
@@ -94,7 +90,6 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
             customizeProductImages={
               item?.customizeProductDetail?.customizeProductImageDetail
             }
-            //   onAdd={onAdd}
             onRemove={handleRemoveItemFromFactoriesCart}
             offerPrice={item?.offerPrice}
             note={item?.note}

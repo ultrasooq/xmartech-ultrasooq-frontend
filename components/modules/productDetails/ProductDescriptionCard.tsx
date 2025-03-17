@@ -220,7 +220,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
     );
     const seconds = String(totalSeconds % 60).padStart(2, "0");
     // console.log(days, hours, minutes, seconds)
-    return `${days} Days, ${hours}:${minutes}:${seconds}`;
+    return `${days}:${hours}:${minutes}:${seconds}`;
   };
 
   return (
@@ -329,19 +329,23 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 <p>
                   {timeLeft !== "NotStarted" && timeLeft !== "Expired" && (
                     <div className="">
-                      Time Left: <b>{timeLeft}</b>
+                      Time Left
                       <div className="time_wrap">
                         <div className="time_field">
-                          <h3>3</h3>
+                          <h3>{timeLeft.split(':')[0]}</h3>
                           <h6>Days</h6>
                         </div>
                         <div className="time_field">
-                          <h3>18</h3>
+                          <h3>{timeLeft.split(':')[2]}</h3>
                           <h6>Hours</h6>
                         </div>
                         <div className="time_field">
-                          <h3>29</h3>
+                          <h3>{timeLeft.split(':')[2]}</h3>
                           <h6>Minutes</h6>
+                        </div>
+                        <div className="time_field">
+                          <h3>{timeLeft.split(':')[3]}</h3>
+                          <h6>Seconds</h6>
                         </div>
                       </div>
                     </div>

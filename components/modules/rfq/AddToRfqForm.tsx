@@ -38,6 +38,7 @@ type AddToRfqFormProps = {
   onClose: () => void;
   selectedProductId?: number;
   selectedQuantity?: number;
+  offerPrice?: number;
 };
 
 const addFormSchema = z.object({
@@ -85,13 +86,14 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   onClose,
   selectedProductId,
   selectedQuantity,
+  offerPrice,
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(selectedQuantity ? addFormSchema : editFormSchema),
-    defaultValues: selectedQuantity ? addDefaultValues : editDefaultValues,
-  });
+    defaultValues: selectedQuantity ? Object.assign(addDefaultValues, { offerPrice: offerPrice || 0}) : editDefaultValues,
+  }); 
   const photosRef = useRef<HTMLInputElement>(null);
 
   const watchProductImages = form.watch("productImages");
@@ -247,8 +249,6 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       productQueryById?.data?.data?.productType === "R"
     ) {
       // R type product
-
-      // return;
       const response = await updateProduct.mutateAsync({
         productId: selectedProductId,
         productType: "R",
@@ -344,8 +344,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           },
         ],
       };
-      console.log(data);
-      // return;
+
       const response = await createProduct.mutateAsync(data);
       if (response.status) {
         toast({
@@ -700,6 +699,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
               name="offerPrice"
               placeholder="Offer Price"
               type="number"
+              value={Number(offerPrice) || 0}
             />
           ) : null}
 

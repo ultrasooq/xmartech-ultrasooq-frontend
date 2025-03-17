@@ -4,8 +4,12 @@ import { IoMdAdd } from "react-icons/io";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Pagination from "@/components/shared/Pagination";
 import { Delete, Info } from "lucide-react";
+import Link from "next/link";
 import { IUserRoles } from "@/utils/types/common.types";
-import { useUserRolesWithPagination, useDeleteMemberRole } from "@/apis/queries/masters.queries";
+import {
+  useUserRolesWithPagination,
+  useDeleteMemberRole,
+} from "@/apis/queries/masters.queries";
 import AddToRoleForm from "@/components/modules/teamMembers/AddToRoleForm";
 import PermissionForm from "@/components/modules/teamMembers/PermissionForm";
 import Image from "next/image";
@@ -18,7 +22,8 @@ const RoleSettingsPage = () => {
   const [limit] = useState(10);
 
   const [isAddToRoleModalOpen, setIsAddToRoleModalOpen] = useState(false);
-  const [isAddToPermissionModalOpen, setIsAddToPermissionModalOpen] = useState(false);
+  const [isAddToPermissionModalOpen, setIsAddToPermissionModalOpen] =
+    useState(false);
   const [selectedRoleId, setSelectedRoleId] = useState<number>(0);
   const [selectedRoleInfo, setSelectedRoleinfo] = useState("");
   const deleteMemberRole = useDeleteMemberRole();
@@ -32,12 +37,12 @@ const RoleSettingsPage = () => {
   const handleOpenPermissionModal = (roleId: number) => {
     setSelectedRoleId(roleId);
     setIsAddToPermissionModalOpen(true);
-};
+  };
 
-const handleClosePermissionModal = () => {
+  const handleClosePermissionModal = () => {
     setIsAddToPermissionModalOpen(false);
     setSelectedRoleId(0); // Reset roleId when closing
-};
+  };
 
   const userRolesQuery = useUserRolesWithPagination({
     page,
@@ -45,98 +50,130 @@ const handleClosePermissionModal = () => {
   });
 
   const memoizedUserRole = useMemo(() => {
-      return userRolesQuery?.data?.data
-        ? userRolesQuery.data.data.map((item: IUserRoles) => ({
-            label: item.userRoleName,
-            value: item.id,
-          }))
-        : [];
-    }, [userRolesQuery?.data?.data]);
+    return userRolesQuery?.data?.data
+      ? userRolesQuery.data.data.map((item: IUserRoles) => ({
+          label: item.userRoleName,
+          value: item.id,
+        }))
+      : [];
+  }, [userRolesQuery?.data?.data]);
 
-    const handleEditMode = (roleInfo: any) => {
-      setSelectedRoleinfo(roleInfo);
-      handleToggleAddModal();
+  const handleEditMode = (roleInfo: any) => {
+    setSelectedRoleinfo(roleInfo);
+    handleToggleAddModal();
+  };
+
+  const handleToDelete = async (id: number) => {
+    const response = await deleteMemberRole.mutateAsync({ id });
+    if (response.status) {
+      toast({
+        title: response.message,
+        description: response.message,
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: response.message,
+        description: response.message,
+        variant: "danger",
+      });
     }
-
-    const handleToDelete = async (id: number) => {
-      const response = await deleteMemberRole.mutateAsync({id});
-      if (response.status) {
-        toast({
-          title: response.message,
-          description: response.message,
-          variant: "success",
-        });
-      } else {
-        toast({
-          title: response.message,
-          description: response.message,
-          variant: "danger",
-        });
-      }
-    }
-
-   
-      
+  };
 
   return (
     <section className="team_members_section">
       <div className="container relative z-10 m-auto px-3">
         <div className="flex w-full flex-wrap">
+          <div className="mb-5 w-full">
+            <ul className="flex w-full items-center justify-start gap-1">
+              <Link
+                href={"/team-members"}
+                className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+              >
+                Team Members
+              </Link>
+              <Link
+                href={"/role-settings"}
+                className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+              >
+                Go to Role
+              </Link>
+            </ul>
+          </div>
           <div className="team_members_heading w-full">
             <h1>Role Settings</h1>
             <button type="button" onClick={handleToggleAddModal}>
               <IoMdAdd /> Add New Role
             </button>
-            
           </div>
           <div className="team_members_table w-full">
-            {!userRolesQuery?.isLoading && memoizedUserRole.length ? <>
-              <table cellPadding={0} cellSpacing={0} border={0}>
-              <thead>
-                <tr>
-                  <th>Role Name</th>
-                  <th>Permission</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
+            {!userRolesQuery?.isLoading && memoizedUserRole.length ? (
+              <>
+                <table cellPadding={0} cellSpacing={0} border={0}>
+                  <thead>
+                    <tr>
+                      <th>Role Name</th>
+                      <th>Permission</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
 
-              <tbody>
-              {memoizedUserRole?.map((item: any) => (
-                <>
-                <tr>
-                  <td>{item?.label || '-----'}</td>
-                  <td> <button type="button" onClick={() => handleOpenPermissionModal(item?.value)}>
-                         Setup Permission
-                        </button>
-                    </td>
-                  <td> <div className="flex items-center gap-1">
-                  <Info className="h-4 w-4 cursor-pointer text-gray-500" onClick={() => handleEditMode(item)} />
-                       <a href="javascript:void(0)" onClick={() => handleToDelete(item.value)}>
-                        <Image src={TrashIcon} alt="social-delete-icon" /> </a> 
-                  </div>
-                  </td>
-                </tr>
-                </>
-                
-                 ))}
-              </tbody>
-            </table>
-            </> : null}
-            
+                  <tbody>
+                    {memoizedUserRole?.map((item: any) => (
+                      <>
+                        <tr>
+                          <td>{item?.label || "-----"}</td>
+                          <td>
+                            {" "}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleOpenPermissionModal(item?.value)
+                              }
+                            >
+                              Setup Permission
+                            </button>
+                          </td>
+                          <td>
+                            {" "}
+                            <div className="flex items-center gap-1">
+                              <Info
+                                className="h-4 w-4 cursor-pointer text-gray-500"
+                                onClick={() => handleEditMode(item)}
+                              />
+                              <a
+                                href="javascript:void(0)"
+                                onClick={() => handleToDelete(item.value)}
+                              >
+                                <Image
+                                  src={TrashIcon}
+                                  alt="social-delete-icon"
+                                />{" "}
+                              </a>
+                            </div>
+                          </td>
+                        </tr>
+                      </>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            ) : null}
+
             {!userRolesQuery?.isLoading && !memoizedUserRole.length ? (
               <p className="py-10 text-center text-sm font-medium">
                 No Roles Found
               </p>
             ) : null}
 
-          {userRolesQuery.data?.totalCount > limit && (
-            <Pagination
-              page={page}
-              setPage={setPage}
-              totalCount={userRolesQuery.data?.totalCount}
-              limit={limit}
-            />
-          )}
+            {userRolesQuery.data?.totalCount > limit && (
+              <Pagination
+                page={page}
+                setPage={setPage}
+                totalCount={userRolesQuery.data?.totalCount}
+                limit={limit}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -148,15 +185,18 @@ const handleClosePermissionModal = () => {
         >
           <AddToRoleForm
             onClose={() => {
-                setIsAddToRoleModalOpen(false);
-                setSelectedRoleinfo("");
+              setIsAddToRoleModalOpen(false);
+              setSelectedRoleinfo("");
             }}
             roleDetails={selectedRoleInfo}
           />
         </DialogContent>
       </Dialog>
-    {/* Add Edit permission Modal */}
-      <Dialog open={isAddToPermissionModalOpen} onOpenChange={handleClosePermissionModal}>
+      {/* Add Edit permission Modal */}
+      <Dialog
+        open={isAddToPermissionModalOpen}
+        onOpenChange={handleClosePermissionModal}
+      >
         <DialogContent
           className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
           ref={wrapperRef}
@@ -167,7 +207,6 @@ const handleClosePermissionModal = () => {
           />
         </DialogContent>
       </Dialog>
-
     </section>
   );
 };
