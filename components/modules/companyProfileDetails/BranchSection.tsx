@@ -75,7 +75,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
               </Link>
             </div>
             <div className="flex w-full flex-wrap">
-              <div className="w-7/12">
+              <div className="sm:w-7/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
                     <span className="text-sm font-normal capitalize leading-4 text-gray-500">
