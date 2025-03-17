@@ -7,7 +7,7 @@ import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { FaCircleCheck } from "react-icons/fa6";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
-import { FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 // import Link from "next/link";
 
@@ -24,8 +24,10 @@ type RfqProductCardProps = {
   onAdd: (args0: number, args1: number, args3: "add" | "remove", args4?: number) => void;
   onToCart: () => void;
   onEdit: (args0: number) => void;
+  onWishlist: () => void;
   isCreatedByMe: boolean;
   isAddedToCart: boolean;
+  inWishlist?: boolean;
   haveAccessToken: boolean;
   productPrice: any;
   offerPrice?: number;
@@ -42,8 +44,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   onAdd,
   onToCart,
   onEdit,
+  onWishlist,
   isCreatedByMe,
   isAddedToCart,
+  inWishlist,
   haveAccessToken,
   productPrice,
   offerPrice,
@@ -75,12 +79,12 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         <Button
           variant="ghost"
           className="relative h-8 w-8 rounded-full p-0 shadow-md"
+          onClick={() => onAdd(quantity + 1, id, "add", offerPrice)}
         >
           <ShoppingIcon />
         </Button>
-
         <Link
-          href="#"
+          href={`/trending/${id}`}
           className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
         >
           <FiEye size={18} />
@@ -88,8 +92,13 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         <Button
           variant="ghost"
           className="relative h-8 w-8 rounded-full p-0 shadow-md"
+          onClick={onWishlist}
         >
-          <FaRegHeart size={16} />
+          {inWishlist ? (
+            <FaHeart color="red" size={16} />
+          ) : (
+            <FaRegHeart size={16} />
+          )}
         </Button>
       </div>
       {/* </Link> */}
@@ -130,7 +139,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   variant="outline"
                   className="relative hover:shadow-sm"
                   onClick={() => {
-                    setQuantity(quantity + 1);console.log(offerPrice);
+                    setQuantity(quantity + 1);
                     onAdd(quantity + 1, id, "add", offerPrice);
                   }}
                 >

@@ -8,7 +8,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useAddFactoriesProduct, useUpdateFactoriesCartWithLogin } from "@/apis/queries/rfq.queries";
 import { FaCircleCheck } from "react-icons/fa6";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
-import { FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 // import Link from "next/link";
 
@@ -25,8 +25,10 @@ type RfqProductCardProps = {
   customizeProductId?: number;
   onAdd: (args0: number) => void;
   onToCart: () => void;
+  onWishlist: () => void;
   isCreatedByMe: boolean;
   isAddedToCart: boolean;
+  inWishlist?: boolean;
   haveAccessToken: boolean;
 };
 
@@ -41,8 +43,10 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   customizeProductId,
   onAdd,
   onToCart,
+  onWishlist,
   isCreatedByMe,
   isAddedToCart,
+  inWishlist,
   haveAccessToken,
 }) => {
   const [quantity, setQuantity] = useState(0);
@@ -108,12 +112,12 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
         <Button
           variant="ghost"
           className="relative h-8 w-8 rounded-full p-0 shadow-md"
+          onClick={() => handleAddToCart(quantity + 1, "add", id, customizeProductId)}
         >
           <ShoppingIcon />
         </Button>
-
         <Link
-          href="#"
+          href={`/trending/${id}`}
           className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
         >
           <FiEye size={18} />
@@ -121,8 +125,13 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
         <Button
           variant="ghost"
           className="relative h-8 w-8 rounded-full p-0 shadow-md"
+          onClick={onWishlist}
         >
-          <FaRegHeart size={16} />
+          {inWishlist ? (
+            <FaHeart color="red" size={16} />
+          ) : (
+            <FaRegHeart size={16} />
+          )}
         </Button>
       </div>
       <div className="product_list_content">

@@ -37,8 +37,11 @@ import SearchIcon from "@/public/images/search-icon-rfq.png";
 import Footer from "@/components/shared/Footer";
 import { FaPlus } from "react-icons/fa";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
 
 const RfqPage = () => {
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
   const wrapperRef = useRef(null);
@@ -53,6 +56,8 @@ const RfqPage = () => {
   const [limit] = useState(8);
   const [quantity, setQuantity] = useState<number | undefined>();
   const [offerPrice, setOfferPrice] = useState<number | undefined>();
+  const addToWishlist = useAddToWishList();
+  const deleteFromWishlist = useDeleteFromWishList();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
@@ -130,6 +135,66 @@ const RfqPage = () => {
   }, [
     rfqProductsQuery.data?.data,
   ]);
+
+  const handleDeleteFromWishlist = async (productId: number) => {
+    const response = await deleteFromWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "rfq-products",
+        ],
+      });
+    } else {
+      toast({
+        title: "Item not removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleAddToWishlist = async (
+    productId: number,
+    wishlistArr?: any[],
+  ) => {
+    const wishlistObject = wishlistArr?.find(
+      (item) => item.userId === me.data?.data?.id,
+    );
+    // return;
+    if (wishlistObject) {
+      handleDeleteFromWishlist(wishlistObject?.productId);
+      return;
+    }
+
+    const response = await addToWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "rfq-products",
+        ],
+      });
+    } else {
+      toast({
+        title: response.message || "Item not added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
 
   useEffect(() => {
     if (isClickedOutside) {
@@ -276,8 +341,14 @@ const RfqPage = () => {
                                 handleToggleAddModal();
                                 setSelectedProductId(item?.id);
                               }}
+                              onWishlist={() => handleAddToWishlist(item.id, item?.product_wishlist)}
                               isCreatedByMe={item?.userId === me.data?.data?.id}
                               isAddedToCart={item?.isAddedToCart}
+                              inWishlist={
+                                item?.product_wishlist?.find(
+                                  (el: any) => el?.userId === me.data?.data?.id,
+                                )
+                              }
                               haveAccessToken={haveAccessToken}
                             />
                           ))}

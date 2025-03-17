@@ -96,8 +96,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     setQuantity(productQuantity || 0);
   }, [productQuantity]);
 
-  const cart = useCartStore()
-
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
 
@@ -161,6 +159,63 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }
     }
   }
+
+  const getLocalTimestamp = (dateStr: any, timeStr: any) => {
+    const date = new Date(dateStr); // Parse date part only
+    const [hours, minutes] = (timeStr || "").split(":").map(Number); // Extract hours/minutes
+
+    date.setHours(hours, minutes || 0, 0, 0); // Set correct time in local timezone
+
+    return date.getTime(); // Return timestamp in milliseconds
+  };
+
+  // ✅ Corrected formatTime function to display (Days, Hours, Minutes, Seconds)
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(
+      2,
+      "0",
+    );
+    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
+      2,
+      "0",
+    );
+    const seconds = String(totalSeconds % 60).padStart(2, "0");
+    // console.log(days, hours, minutes, seconds)
+    return `${days} Days; ${hours}:${minutes}:${seconds}`;
+  };
+
+  useEffect(() => {
+    if (!item?.productPrices?.length || item?.productPrices?.[0]?.sellType !== "BUYGROUP") return;
+
+    const product = item.productPrices[0];
+
+    const startTimestamp = getLocalTimestamp(product.dateOpen, product.startTime);
+    const endTimestamp = getLocalTimestamp(product.dateClose, product.endTime);
+
+    const updateCountdown = () => {
+      const now = Date.now();
+
+      if (now < startTimestamp) {
+        setTimeLeft("NotStarted");
+        return;
+      }
+
+      let ms = endTimestamp - now;
+      if (ms <= 0) {
+        setTimeLeft("Expired");
+        return;
+      }
+
+      setTimeLeft(formatTime(ms));
+    };
+
+    updateCountdown(); // Initial call
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [item?.productPrices?.length])
 
   return (
     <div className="product-list-s1-col">

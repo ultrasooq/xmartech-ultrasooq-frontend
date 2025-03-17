@@ -43,6 +43,7 @@ import { Form } from "@/components/ui/form";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
 
 const addFormSchema = z.object({
   price: z.coerce
@@ -61,6 +62,7 @@ const addFormSchema = z.object({
 });
 
 const FactoriesPage = () => {
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
   const wrapperRef = useRef(null);
@@ -74,6 +76,8 @@ const FactoriesPage = () => {
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [cartList, setCartList] = useState<any[]>([]);
+  const addToWishlist = useAddToWishList();
+  const deleteFromWishlist = useDeleteFromWishList();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
@@ -98,8 +102,6 @@ const FactoriesPage = () => {
   const handleRfqDebounce = debounce((event: any) => {
     setSearchRfqTerm(event.target.value);
   }, 1000);
-
-  const queryClient = useQueryClient();
 
   const handleAddToFactories = async (productId: number) => {
     setSelectedProductId(productId);
@@ -177,6 +179,66 @@ const FactoriesPage = () => {
   }, [
     rfqProductsQuery.data?.data,
   ]);
+
+  const handleDeleteFromWishlist = async (productId: number) => {
+    const response = await deleteFromWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "factoriesProducts",
+        ],
+      });
+    } else {
+      toast({
+        title: "Item not removed from wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleAddToWishlist = async (
+    productId: number,
+    wishlistArr?: any[],
+  ) => {
+    const wishlistObject = wishlistArr?.find(
+      (item) => item.userId === me.data?.data?.id,
+    );
+    // return;
+    if (wishlistObject) {
+      handleDeleteFromWishlist(wishlistObject?.productId);
+      return;
+    }
+
+    const response = await addToWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: "Item added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "factoriesProducts",
+        ],
+      });
+    } else {
+      toast({
+        title: response.message || "Item not added to wishlist",
+        description: "Check your wishlist for more details",
+        variant: "danger",
+      });
+    }
+  };
 
   useEffect(() => {
     if (isClickedOutside) {
@@ -306,8 +368,14 @@ const FactoriesPage = () => {
                               customizeProductId={cartList.find((el: any) => el.productId == item.id)?.customizeProductId}
                               onAdd={() => handleAddToFactories(item?.id)}
                               onToCart={handleCartPage}
+                              onWishlist={() => handleAddToWishlist(item.id, item?.product_wishlist)}
                               isCreatedByMe={item?.userId === me.data?.data?.id}
                               isAddedToCart={item?.isAddedToCart}
+                              inWishlist={
+                                item?.product_wishlist?.find(
+                                  (el: any) => el?.userId === me.data?.data?.id,
+                                )
+                              }
                               haveAccessToken={haveAccessToken}
                             />
                           ))}
