@@ -1435,11 +1435,11 @@
   }
 
   .card-item.cart-items .cart-item-lists .cart-item-list-col {
-    @apply flex items-start justify-between gap-x-4 border-b border-solid border-b-[#EDEDED] px-8 py-5 last:border-b-0;
+    @apply flex items-start justify-between gap-x-4 border-b border-solid border-b-[#EDEDED] px-4 py-4 last:border-b-0;
   }
 
   .card-item.cart-items .cart-item-lists .cart-item-list-col figure {
-    @apply flex gap-x-6;
+    @apply flex gap-x-4;
   }
 
   .card-item.cart-items

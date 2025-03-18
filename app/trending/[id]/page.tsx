@@ -534,7 +534,7 @@ const ProductDetailsPage = () => {
         </div>
 
         {isVisible && (
-          <div className="product_cart_modal absolute right-[20px] top-[20px] w-full px-4 md:w-[300px]">
+          <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 md:w-[300px]">
             <div className="card-item cart-items">
               <div className="inline-flex w-full items-center justify-center pt-5 text-center">
                 <a

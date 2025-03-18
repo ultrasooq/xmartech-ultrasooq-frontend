@@ -356,7 +356,7 @@ const Header = () => {
                     <option>Movies & TV Shows</option>
                   </select>
                 </div> */}
-                <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-4/6">
+                <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-5/6">
                   <input
                     type="search"
                     className="form-control h-full w-full p-2.5 text-black focus:outline-none"
@@ -366,7 +366,7 @@ const Header = () => {
                     onKeyDown={handleKeyDown} // Calls search when Enter is pressed
                   />
                 </div>
-                <div className="h-11 w-1/4 md:w-full">
+                <div className="h-11 w-1/4 md:w-1/6">
                   <button
                     type="button"
                     className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
@@ -441,7 +441,7 @@ const Header = () => {
                               Profile Information
                             </DropdownMenuItem>
                           </Link>
-                          <DropdownMenuSeparator />
+                          {/* <DropdownMenuSeparator /> */}
                           {me?.data?.data?.tradeRole !== "BUYER" ? (
                             <>
                               {hideMenu(PERMISSION_TEAM_MEMBERS) && (
@@ -456,13 +456,13 @@ const Header = () => {
                                   <DropdownMenuItem>Products</DropdownMenuItem>
                                 </Link>
                               )}
-                              <DropdownMenuSeparator />
+                              {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_ORDERS) && (
                                 <Link href="/seller-orders">
                                   <DropdownMenuItem>Orders</DropdownMenuItem>
                                 </Link>
                               )}
-                              <DropdownMenuSeparator />
+                              {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_QUOTES) && (
                                 <Link href="/rfq-quotes">
                                   <DropdownMenuItem>
@@ -470,7 +470,7 @@ const Header = () => {
                                   </DropdownMenuItem>
                                 </Link>
                               )}
-                              <DropdownMenuSeparator />
+                              {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
                                 <Link href="/seller-rfq-request">
                                   <DropdownMenuItem>
@@ -485,7 +485,7 @@ const Header = () => {
                                   </DropdownMenuItem>
                                 </Link>
                               )}
-                              <DropdownMenuSeparator />
+                              {/* <DropdownMenuSeparator /> */}
                             </>
                           ) : null}
                           {hideMenu(PERMISSION_SHARE_LINKS) && (
@@ -496,7 +496,7 @@ const Header = () => {
                           <Link href="/my-settings/address">
                             <DropdownMenuItem>My Settings</DropdownMenuItem>
                           </Link>
-                          <DropdownMenuSeparator />
+                          {/* <DropdownMenuSeparator /> */}
                           <DropdownMenuItem
                             onClick={handleLogout}
                             className="cursor-pointer"

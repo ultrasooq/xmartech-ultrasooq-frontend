@@ -83,7 +83,7 @@ const TeamMembersPage = () => {
                 href={"/role-settings"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
-                Go to Role
+                Role
               </Link>
             </ul>
           </div>

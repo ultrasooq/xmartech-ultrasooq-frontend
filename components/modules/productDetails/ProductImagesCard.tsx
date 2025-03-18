@@ -108,24 +108,31 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
   const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
 
-  const handleToCustomizeModal = () => setIsCustomizeModalOpen(!isCustomizeModalOpen);
+  const handleToCustomizeModal = () =>
+    setIsCustomizeModalOpen(!isCustomizeModalOpen);
 
-  const [reward, setReward] = useState<{[key: string]: string}>();
+  const [reward, setReward] = useState<{ [key: string]: string }>();
 
-  const [isSellerRewardDetailModalOpen, setIsSellerRewardDetailModalOpen] = useState<boolean>(false);
+  const [isSellerRewardDetailModalOpen, setIsSellerRewardDetailModalOpen] =
+    useState<boolean>(false);
 
-  const handleSellerRewardDetailModal = () => setIsSellerRewardDetailModalOpen(!isSellerRewardDetailModalOpen);
+  const handleSellerRewardDetailModal = () =>
+    setIsSellerRewardDetailModalOpen(!isSellerRewardDetailModalOpen);
 
-  const sellerRewardsQuery = useSellerRewards({
-    page: 1,
-    limit: 1,
-    productId: productDetails?.id,
-    sortType: "desc"
-  }, !!productDetails?.id);
+  const sellerRewardsQuery = useSellerRewards(
+    {
+      page: 1,
+      limit: 1,
+      productId: productDetails?.id,
+      sortType: "desc",
+    },
+    !!productDetails?.id,
+  );
 
   useEffect(() => {
     const reward = sellerRewardsQuery?.data?.data?.[0];
-    if (reward && new Date(reward.endTime).getTime() > new Date().getTime()) setReward(reward);
+    if (reward && new Date(reward.endTime).getTime() > new Date().getTime())
+      setReward(reward);
   }, [sellerRewardsQuery?.data?.data, productDetails]);
 
   return (
@@ -196,43 +203,6 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           ) : null}
 
           {isLoading ? <Skeleton className="min-h-[250px] w-full" /> : null}
-
-          {/* For factories type */}
-          {!isLoading &&
-          productDetails?.product_productPrice[0]?.isCustomProduct ===
-            "true" ? (
-            <div className="mb-2 flex w-full flex-wrap gap-3 self-end pb-2">
-              {productDetails?.adminId !== loginUserId ? (
-                <>
-                  <Button
-                    type="button"
-                    onClick={handleToCustomizeModal}
-                    className="h-14 flex-1 rounded-none bg-color-blue text-base"
-                  >
-                    Send to Customize
-                  </Button>
-                  <Button
-                    type="button"
-                    // onClick={onToCheckout}
-                    onClick={onToCart}
-                    className="h-14 flex-1 rounded-none bg-color-blue text-base"
-                  >
-                    Message Vendor
-                  </Button>
-                </>
-              ) : null}
-              {/* {productDetails?.adminId == loginUserId ? (
-                <Button
-                  type="button"
-                  // onClick={onToCheckout}
-                  onClick={handleToggleEditModal}
-                  className="h-14 flex-1 rounded-none bg-color-yellow text-base"
-                >
-                  Edit Product
-                </Button>
-              ) : null} */}
-            </div>
-          ) : null}
         </div>
 
         <div className="col-span-1 m-auto flex !h-full flex-col gap-4 self-start">
@@ -269,6 +239,42 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           ))}
         </div>
       </div>
+
+      {/* For factories type */}
+      {!isLoading &&
+      productDetails?.product_productPrice[0]?.isCustomProduct === "true" ? (
+        <div className="my-2 flex w-full flex-wrap justify-end gap-3 self-end pb-2">
+          {productDetails?.adminId !== loginUserId ? (
+            <>
+              <Button
+                type="button"
+                onClick={handleToCustomizeModal}
+                className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
+              >
+                Send to Customize
+              </Button>
+              <Button
+                type="button"
+                // onClick={onToCheckout}
+                onClick={onToCart}
+                className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
+              >
+                Message Vendor
+              </Button>
+            </>
+          ) : null}
+          {/* {productDetails?.adminId == loginUserId ? (
+                <Button
+                  type="button"
+                  // onClick={onToCheckout}
+                  onClick={handleToggleEditModal}
+                  className="h-14 flex-1 rounded-none bg-color-yellow text-base"
+                >
+                  Edit Product
+                </Button>
+              ) : null} */}
+        </div>
+      ) : null}
 
       {!isLoading && askForPrice === "true" ? (
         <Link href={`/seller-rfq-request?product_id=${productDetails?.id}`}>
@@ -344,17 +350,22 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
         </DialogContent>
       </Dialog>
 
-      {reward && <Dialog open={isSellerRewardDetailModalOpen} onOpenChange={handleSellerRewardDetailModal}>
-        <DialogContent
-          className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
-          ref={wrapperRef}
+      {reward && (
+        <Dialog
+          open={isSellerRewardDetailModalOpen}
+          onOpenChange={handleSellerRewardDetailModal}
         >
-          <SellerRewardDetail 
-            reward={reward}
-            onClose={() => setIsSellerRewardDetailModalOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>}
+          <DialogContent
+            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+            ref={wrapperRef}
+          >
+            <SellerRewardDetail
+              reward={reward}
+              onClose={() => setIsSellerRewardDetailModalOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
