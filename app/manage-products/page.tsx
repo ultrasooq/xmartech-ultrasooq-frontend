@@ -364,13 +364,13 @@ const ManageProductsPage = () => {
                   />
                 </li>
                 <li>
-                  {/* <button
+                  <button
                     className="theme-primary-btn add-btn p-2"
                     onClick={handleAddProductModal}
                   >
                     <IoMdAdd size={24} />
                     <span className="d-none-mobile">Add Product</span>
-                  </button> */}
+                  </button>
                 </li>
               </ul>
             </div>

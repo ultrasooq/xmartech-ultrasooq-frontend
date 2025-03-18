@@ -1,31 +1,23 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import React from "react";
+import { Form } from "@/components/ui/form";
 import { DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { IoCloseSharp } from "react-icons/io5";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import { Controller, useForm, useFormContext } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Select from "react-select";
-import { IOption, IUserRoles } from "@/utils/types/common.types";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  useUserRoles,
   useCreateUserRole,
   useUpdateUserRole
 } from "@/apis/queries/masters.queries";
 
-
-
 type AddToRoleFormProps = {
   onClose: () => void;
+  updatePermission: (roleId: number) => void;
   roleDetails: any;
 };
-
-// const addFormSchema = z.object({
-//     userRoleName: z.string().trim().min(2, { message: "Role Name is required" }),
-// });
 
 const addFormSchema = z.object({
   userRoleName: z
@@ -36,16 +28,14 @@ const addFormSchema = z.object({
 });
 
 
-const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, roleDetails }) => {
-  // const formContext = useFormContext();
+const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission, roleDetails }) => {
   const createUserRole = useCreateUserRole();
   const updateUserRole = useUpdateUserRole();
   const { toast } = useToast();
-//   const [, setValue] = useState<IOption | null>();
 
-const addDefaultValues = {
-  userRoleName: roleDetails?.label || "",
-};
+  const addDefaultValues = {
+    userRoleName: roleDetails?.label || "",
+  };
 
   const form = useForm({
     resolver: zodResolver(addFormSchema),
@@ -54,7 +44,6 @@ const addDefaultValues = {
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = { ...formData };
-    // console.log(updatedFormData);
     let response;
     if (roleDetails) {
       response = await updateUserRole.mutateAsync({ userRoleId: roleDetails.value, ...formData });
@@ -63,6 +52,7 @@ const addDefaultValues = {
     }
     if (response.status) {
       onClose();
+      updatePermission(response.data.id);
       toast({
         title: response.message,
         description: response.message,

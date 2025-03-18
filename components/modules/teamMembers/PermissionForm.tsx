@@ -1,20 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { DialogTitle } from "@/components/ui/dialog";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { IoCloseSharp } from "react-icons/io5";
-import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import { Controller, useForm, useFormContext } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Select from "react-select";
-import { IOption, IUserRoles } from "@/utils/types/common.types";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  useUserRoles,
-  useCreateUserRole,
-} from "@/apis/queries/masters.queries";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import {
@@ -24,13 +15,9 @@ import {
   useUpdatePermission,
 } from "@/apis/queries/member.queries";
 
-const customStyles = {
-  control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
-};
-
 type PermissionFormProps = {
   roleId: number;
-  onClosePer: () => void;
+  onClose: () => void;
 };
 
 const addFormSchema = z.object({
@@ -55,7 +42,7 @@ const addFormSchema = z.object({
 
 const PermissionForm: React.FC<PermissionFormProps> = ({
   roleId,
-  onClosePer,
+  onClose,
 }) => {
   const permissionsQuery = usePermissions();
   const addPermission = useSetPermission();
@@ -108,7 +95,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
     }
 
     if (response.status) {
-      onClosePer();
+      onClose();
       toast({
         title: response.message,
         description: response.message,
@@ -122,6 +109,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
       });
     }
   };
+
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">

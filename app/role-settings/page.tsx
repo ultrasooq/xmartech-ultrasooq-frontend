@@ -177,6 +177,7 @@ const RoleSettingsPage = () => {
           </div>
         </div>
       </div>
+
       {/* Add Role Dialog */}
       <Dialog open={isAddToRoleModalOpen} onOpenChange={handleToggleAddModal}>
         <DialogContent
@@ -188,10 +189,12 @@ const RoleSettingsPage = () => {
               setIsAddToRoleModalOpen(false);
               setSelectedRoleinfo("");
             }}
+            updatePermission={(roleId: number) => handleOpenPermissionModal(roleId)}
             roleDetails={selectedRoleInfo}
           />
         </DialogContent>
       </Dialog>
+
       {/* Add Edit permission Modal */}
       <Dialog
         open={isAddToPermissionModalOpen}
@@ -203,7 +206,7 @@ const RoleSettingsPage = () => {
         >
           <PermissionForm
             roleId={selectedRoleId} // Pass roleId to the form
-            onClosePer={handleClosePermissionModal}
+            onClose={handleClosePermissionModal}
           />
         </DialogContent>
       </Dialog>
