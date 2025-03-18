@@ -19,6 +19,8 @@ import { debounce } from "lodash";
 import { Dialog } from "@/components/ui/dialog";
 import AddProductContent from "@/components/modules/products/AddProductContent";
 import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
+import { useMe } from "@/apis/queries/user.queries";
+import { useAuth } from "@/context/AuthContext";
 
 const schema = z
   .object({
@@ -120,6 +122,7 @@ const ManageProductsPage = () => {
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const me = useMe();
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -130,7 +133,8 @@ const ManageProductsPage = () => {
     page,
     limit,
     term: searchTerm !== "" ? searchTerm : undefined,
-  }, hasPermission);
+    selectedAdminId: me?.data?.data?.tradeRole == 'MEMBER' ? me?.data?.data?.addedBy : undefined
+  }, hasPermission && !!me?.data?.data?.id);
 
   const { data, refetch } = allManagedProductsQuery;
   const [products, setProducts] = useState(data?.data || []);
@@ -389,7 +393,7 @@ const ManageProductsPage = () => {
                         </div>
                       ) : null}
 
-                      {!allManagedProductsQuery.data?.data.length &&
+                      {!allManagedProductsQuery.data?.data?.length &&
                       !allManagedProductsQuery.isLoading ? (
                         <p className="w-full py-10 text-center text-base font-medium">
                           No product found

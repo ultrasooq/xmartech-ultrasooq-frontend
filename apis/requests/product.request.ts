@@ -195,6 +195,7 @@ export const getAllManagedProducts = (payload: {
   page: number;
   limit: number;
   term?: string;
+  selectedAdminId?: number;
 }) => {
   return axios({
     method: "GET",
