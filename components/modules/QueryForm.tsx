@@ -10,6 +10,7 @@ import { Form } from "@/components/ui/form";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 import { useSubmitQuery } from "@/apis/queries/help-center.queries";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 type QueryFormProps = {
     onClose: () => void;
@@ -32,9 +33,12 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
         defaultValues: { email: '', query: '' },
     });
 
+    const { user } = useAuth();
+
     const submitQuery = useSubmitQuery();
 
     const onSubmit = async (formData: any) => {
+        if (user?.id) formData.userId = user.id;
         const response = await submitQuery.mutateAsync(formData);
 
         if (response.status) {

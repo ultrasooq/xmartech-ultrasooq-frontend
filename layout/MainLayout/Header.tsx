@@ -496,6 +496,9 @@ const Header = () => {
                           <Link href="/my-settings/address">
                             <DropdownMenuItem>My Settings</DropdownMenuItem>
                           </Link>
+                          <Link href="/queries">
+                            <DropdownMenuItem>Queries</DropdownMenuItem>
+                          </Link>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={handleLogout}
