@@ -51,6 +51,7 @@ import {
   PERMISSION_TEAM_MEMBERS,
   getPermissions,
 } from "@/helpers/permission";
+import QueryForm from "@/components/modules/QueryForm";
 
 type CategoryProps = {
   id: number;
@@ -259,9 +260,8 @@ const Header = () => {
   const wrapperRef = useRef(null);
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const [isAddToRoleModalOpen, setIsAddToRoleModalOpen] = useState(false);
-  const handleToggleAddModal = () =>
-    setIsAddToRoleModalOpen(!isAddToRoleModalOpen);
+  const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
+  const handleToggleQueryModal = () => setIsQueryModalOpen(!isQueryModalOpen);
 
   useEffect(() => {
     if (accessToken) {
@@ -849,7 +849,7 @@ const Header = () => {
                     <a
                       href="#"
                       className="text-light-gray"
-                      onClick={handleToggleAddModal}
+                      onClick={handleToggleQueryModal}
                     >
                       Help Center
                     </a>
@@ -861,23 +861,14 @@ const Header = () => {
         </div>
       </header>
 
-      <Dialog open={isAddToRoleModalOpen} onOpenChange={handleToggleAddModal}>
+      <Dialog open={isQueryModalOpen} onOpenChange={handleToggleQueryModal}>
         <DialogContent
           className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
           ref={wrapperRef}
         >
-          <div className="modal-header !justify-between">
-            <DialogTitle className="text-center text-xl font-bold">
-              Query
-            </DialogTitle>
-            <Button
-              //onClick={onClose}
-              className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
-            >
-              <IoCloseSharp size={20} />
-            </Button>
-          </div>
-          <div className="">From Field</div>
+          <QueryForm
+            onClose={handleToggleQueryModal}
+          />
         </DialogContent>
       </Dialog>
     </>
