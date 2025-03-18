@@ -11,6 +11,7 @@ import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextare
 import { useSubmitQuery } from "@/apis/queries/help-center.queries";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import { useMe } from "@/apis/queries/user.queries";
 
 type QueryFormProps = {
     onClose: () => void;
@@ -28,17 +29,18 @@ const queryFormSchema = z.object({
 });
 
 const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
+    const [email, setEmail] = useState<string>('');
     const form = useForm({
         resolver: zodResolver(queryFormSchema),
         defaultValues: { email: '', query: '' },
     });
 
-    const { user } = useAuth();
+    const me = useMe();
 
     const submitQuery = useSubmitQuery();
 
     const onSubmit = async (formData: any) => {
-        if (user?.id) formData.userId = user.id;
+        if (me?.data?.data?.id) formData.userId = me?.data?.data?.id;
         const response = await submitQuery.mutateAsync(formData);
 
         if (response.status) {
@@ -57,6 +59,10 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
             });
         }
     };
+
+    useEffect(() => {
+        if (me?.data?.data?.email) form.setValue('email', me?.data?.data?.email);
+    }, [me?.data?.data?.id])
 
     return (
         <>
