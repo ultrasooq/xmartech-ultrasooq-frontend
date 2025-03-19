@@ -89,6 +89,19 @@ export const createUserRole = (payload: { userRoleName: string }) => {
   });
 };
 
+export const copyUserRole = (payload: { userRoleId: number }) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/user/copy-userRole-with-permission`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const updateUserRole = (payload: { userRoleName: string }) => {
   return axios({
     method: "PATCH",

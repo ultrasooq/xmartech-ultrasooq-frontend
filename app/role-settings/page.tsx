@@ -3,12 +3,13 @@ import React, { useMemo, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Pagination from "@/components/shared/Pagination";
-import { Delete, Info } from "lucide-react";
+import { Copy, Delete, Info } from "lucide-react";
 import Link from "next/link";
 import { IUserRoles } from "@/utils/types/common.types";
 import {
   useUserRolesWithPagination,
   useDeleteMemberRole,
+  useCopyUserRole,
 } from "@/apis/queries/masters.queries";
 import AddToRoleForm from "@/components/modules/teamMembers/AddToRoleForm";
 import PermissionForm from "@/components/modules/teamMembers/PermissionForm";
@@ -52,11 +53,33 @@ const RoleSettingsPage = () => {
   const memoizedUserRole = useMemo(() => {
     return userRolesQuery?.data?.data
       ? userRolesQuery.data.data.map((item: IUserRoles) => ({
-          label: item.userRoleName,
-          value: item.id,
-        }))
+        label: item.userRoleName,
+        value: item.id,
+      }))
       : [];
   }, [userRolesQuery?.data?.data]);
+
+  const copyUserRole = useCopyUserRole();
+
+  const copyRole = async (roleInfo: any) => {
+    if (copyUserRole?.isPending) return;
+
+    const response = await copyUserRole.mutateAsync({ userRoleId: roleInfo.value });
+
+    if (response.status) {
+      toast({
+        title: "Role Copy Success",
+        description: response.message,
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: "Role Copy Failed",
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  };
 
   const handleEditMode = (roleInfo: any) => {
     setSelectedRoleinfo(roleInfo);
@@ -120,40 +143,42 @@ const RoleSettingsPage = () => {
 
                   <tbody>
                     {memoizedUserRole?.map((item: any) => (
-                      <>
-                        <tr>
-                          <td>{item?.label || "-----"}</td>
-                          <td>
-                            {" "}
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenPermissionModal(item?.value)
-                              }
+                      <tr key={item.id}>
+                        <td>{item?.label || "-----"}</td>
+                        <td>
+                          {" "}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleOpenPermissionModal(item?.value)
+                            }
+                          >
+                            Setup Permission
+                          </button>
+                        </td>
+                        <td>
+                          {" "}
+                          <div className="flex items-center gap-1">
+                            <Copy
+                              className={`h-4 w-4 mr-1 ${!copyUserRole.isPending ? 'cursor-pointer' : ''} text-gray-500`}
+                              onClick={() => copyRole(item)}
+                            />
+                            <Info
+                              className="h-4 w-4 cursor-pointer text-gray-500"
+                              onClick={() => handleEditMode(item)}
+                            />
+                            <a
+                              className="cursor-pointer"
+                              onClick={() => handleToDelete(item.value)}
                             >
-                              Setup Permission
-                            </button>
-                          </td>
-                          <td>
-                            {" "}
-                            <div className="flex items-center gap-1">
-                              <Info
-                                className="h-4 w-4 cursor-pointer text-gray-500"
-                                onClick={() => handleEditMode(item)}
-                              />
-                              <a
-                                href="javascript:void(0)"
-                                onClick={() => handleToDelete(item.value)}
-                              >
-                                <Image
-                                  src={TrashIcon}
-                                  alt="social-delete-icon"
-                                />{" "}
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-                      </>
+                              <Image
+                                src={TrashIcon}
+                                alt="social-delete-icon"
+                              />{" "}
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
                     ))}
                   </tbody>
                 </table>
