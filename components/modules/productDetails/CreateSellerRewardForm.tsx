@@ -11,7 +11,7 @@ import { toast, useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/plate-ui/input";
 import { useAddSellerReward } from "@/apis/queries/seller-reward.queries";
 import { useMe } from "@/apis/queries/user.queries";
-import { useAllProducts } from "@/apis/queries/product.queries";
+import { useAllManagedProducts } from "@/apis/queries/product.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 
 const addFormSchema = z.object({
@@ -56,19 +56,20 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
 
     const [products, setProducts] = useState<any[]>([]);
 
-    const allProductsQuery = useAllProducts(
+    const productsQuery = useAllManagedProducts(
         {
             page: 1,
             limit: 50,
+            selectedAdminId: me?.data?.data?.tradeRole == 'MEMBER' ? me?.data?.data?.addedBy : undefined
         },
         true,
     );
 
     useEffect(() => {
-        setProducts((allProductsQuery?.data?.data || []).filter((item: any) => {
-            return item.userId == me?.data?.data?.id
+        setProducts((productsQuery?.data?.data || []).filter((item: any) => {
+            return item?.productPrice_product?.id;
         }));
-    }, [allProductsQuery?.data?.data?.length]);
+    }, [productsQuery?.data?.data]);
 
     const onSubmit = async (values: z.infer<typeof addFormSchema>) => {
         let startDateTime = values.startDate + ' ' + values.startTime + ':00';
@@ -152,8 +153,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                       label="Product"
                       name="productId"
                       options={products.map((item: any) => ({
-                        value: item.id?.toString(),
-                        label: item.productName,
+                        value: item.productId?.toString(),
+                        label: item.productPrice_product?.productName,
                       }))}
                     />
                     

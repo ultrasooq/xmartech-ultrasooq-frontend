@@ -1,39 +1,43 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAllProducts } from "@/apis/queries/product.queries";
+import { useAllManagedProducts, useAllProducts } from "@/apis/queries/product.queries";
 import { cn } from "@/lib/utils";
+import { useMe } from "@/apis/queries/user.queries";
 
 type ProductsProps = {
   onSelect?: (item: {[key: string]: any}) => void;
 };
 
 const Products: React.FC<ProductsProps> = ({ onSelect }) => {
+  const me = useMe();
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(10);
   const [productList, setProductList] = useState<any[]>([]);
   const [productsCount, setProductsCount] = useState<number>(0);
   const [selectedProduct, setSelectedProduct] = useState<{[key: string]: any}>();
-  const allProductsQuery = useAllProducts(
+  const productsQuery = useAllManagedProducts(
     {
       page: page,
       limit: limit,
+      selectedAdminId: me?.data?.data?.tradeRole == 'MEMBER' ? me?.data?.data?.addedBy : undefined
     },
     true,
   );
 
   useEffect(() => {
-    const products = (allProductsQuery?.data?.data || []).map((item: any) => {
+    const products = (productsQuery?.data?.data || []).map((item: any) => {
+      let product = item.productPrice_product;
       item.image = null;
-      if (item.productImages.length > 0) {
-        item.image = item.productImages[0].image;
+      if (product?.productImages?.length > 0) {
+        item.image = product?.productImages[0].image;
       }
       return item;
     });
     setProductList((prevProducts: any[]) => [...prevProducts, ...products]);
-    setProductsCount((prevCount: number) => prevCount + (allProductsQuery?.data?.data?.length || 0));
+    setProductsCount((prevCount: number) => prevCount + (productsQuery?.data?.data?.length || 0));
     if (products.length > 0 && !selectedProduct) selectProduct(products[0]);
-  }, [allProductsQuery?.data?.data, page, limit]);
+  }, [productsQuery?.data?.data, page, limit]);
 
   const selectProduct = (product: {[key: string]: any}) => {
     setSelectedProduct(product);
@@ -41,7 +45,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
   };
 
   const handleScroll = (elem: any) => {
-    if (elem.clientHeight + elem.scrollTop >= elem.scrollHeight && productsCount < allProductsQuery?.data?.totalCount) {
+    if (elem.clientHeight + elem.scrollTop >= elem.scrollHeight && productsCount < productsQuery?.data?.totalCount) {
       setPage((prevPage: number) => prevPage + 1);
     }
   };
@@ -52,7 +56,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
         <span>Product</span>
       </div>
       <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]" onScroll={(e) => handleScroll(e.target)}>
-        {allProductsQuery?.isLoading ? (
+        {productsQuery?.isLoading ? (
           <div className="my-2 space-y-2">
             {Array.from({ length: 2 }).map((_, i) => (
               <Skeleton key={i} className="h-24 w-full" />
@@ -60,7 +64,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
           </div>
         ) : null}
 
-        {!allProductsQuery?.isLoading && !productList?.length ? (
+        {!productsQuery?.isLoading && !productList?.length ? (
           <div className="my-2 space-y-2">
             <p className="text-center text-sm font-normal text-gray-500">
               No data found
@@ -74,7 +78,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
             onClick={() => selectProduct(item)}
             className={cn(
               "flex w-full flex-wrap rounded-md px-[10px] py-[20px]",
-              selectedProduct?.id == item.id
+              selectedProduct?.productId == item.productId
                 ? "bg-dark-orange text-white shadow-lg"
                 : "",
             )}
@@ -82,7 +86,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
           >
             <div className="relative h-[40px] w-[40px] rounded-full">
               <Image
-                src={item.image || item.barcode}
+                src={item.image || item.productPrice_product?.barcode}
                 alt="global-icon"
                 fill
                 className="rounded-full"
@@ -91,7 +95,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
             <div className="flex w-[calc(100%-2.5rem)] flex-wrap items-center justify-start gap-y-1 pl-3">
               <div className="flex w-full">
                 <h4 className="text-color-[#333333] text-left text-[14px] font-normal uppercase">
-                  {item.productName}
+                  {item.productPrice_product?.productName}
                 </h4>
               </div>
             </div>

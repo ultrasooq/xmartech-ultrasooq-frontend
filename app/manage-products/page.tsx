@@ -113,7 +113,7 @@ const defaultValues = {
   isSellTypeRequired: false,
 };
 
-const ManageProductsPage = () => {  
+const ManageProductsPage = () => {
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_PRODUCTS);
   const { toast } = useToast();
@@ -134,7 +134,7 @@ const ManageProductsPage = () => {
     limit,
     term: searchTerm !== "" ? searchTerm : undefined,
     selectedAdminId: me?.data?.data?.tradeRole == 'MEMBER' ? me?.data?.data?.addedBy : undefined
-  }, hasPermission && !!me?.data?.data?.id);
+  }, hasPermission);
 
   const { data, refetch } = allManagedProductsQuery;
   const [products, setProducts] = useState(data?.data || []);

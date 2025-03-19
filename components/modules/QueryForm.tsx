@@ -40,7 +40,18 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
     const submitQuery = useSubmitQuery();
 
     const onSubmit = async (formData: any) => {
-        if (me?.data?.data?.id) formData.userId = me?.data?.data?.id;
+        if (me?.data?.data?.id) {
+            if (formData.email != me?.data?.data?.email) {
+                toast({
+                    title: "Email mismatch",
+                    description: `Email must be equal to ${me?.data?.data?.email}`,
+                    variant: "danger"
+                });
+                return;
+            }
+
+            formData.userId = me?.data?.data?.id;
+        }
         const response = await submitQuery.mutateAsync(formData);
 
         if (response.status) {
@@ -89,6 +100,7 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                         name="email"
                         placeholder="Enter Email"
                         type="email"
+                        disabled={!!me?.data?.data?.id}
                     />
 
                     <ControlledTextareaInput
