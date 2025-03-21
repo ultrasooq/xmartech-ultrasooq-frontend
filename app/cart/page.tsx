@@ -15,10 +15,12 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { CartItem } from "@/utils/types/cart.types";
 import { getCookie } from "cookies-next";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 
 const CartListPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -188,7 +190,7 @@ const CartListPage = () => {
       <div className="container m-auto px-3">
         <div className="headerPart">
           <div className="lediv">
-            <h3>My Cart</h3>
+            <h3>{t("my_cart")}</h3>
           </div>
         </div>
         <div className="cart-page-wrapper">
@@ -197,7 +199,7 @@ const CartListPage = () => {
               <div className="card-item cart-items">
                 <div className="card-inner-headerPart">
                   <div className="lediv">
-                    <h3>Cart items</h3>
+                    <h3>{t("cart_items")}</h3>
                   </div>
                 </div>
                 <div className="cart-item-lists">
@@ -205,7 +207,7 @@ const CartListPage = () => {
                   !cartListByUser.data?.data?.length &&
                   !cartListByUser.isLoading ? (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center">No items in cart</p>
+                      <p className="my-3 text-center">{t("no_cart_items")}</p>
                     </div>
                   ) : null}
 
@@ -213,7 +215,7 @@ const CartListPage = () => {
                   !cartListByDeviceQuery.data?.data?.length &&
                   !cartListByDeviceQuery.isLoading ? (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center">No items in cart</p>
+                      <p className="my-3 text-center">{t("no_cart_items")}</p>
                     </div>
                   ) : null}
 
@@ -268,23 +270,23 @@ const CartListPage = () => {
             <div className="card-item priceDetails">
               <div className="card-inner-headerPart">
                 <div className="lediv">
-                  <h3>Price Details</h3>
+                  <h3>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
                   <li>
-                    <p>Subtotal</p>
+                    <p>{t("subtotal")}</p>
                     <h5>${calculateTotalAmount() || 0}</h5>
                   </li>
                   <li>
-                    <p>Shipping</p>
-                    <h5>Free</h5>
+                    <p>{t("shipping")}</p>
+                    <h5>{t("free")}</h5>
                   </li>
                 </ul>
               </div>
               <div className="priceDetails-footer">
-                <h4>Total Amount</h4>
+                <h4>{t("total_amount")}</h4>
                 <h4 className="amount-value">${calculateTotalAmount() || 0}</h4>
               </div>
             </div>
@@ -294,7 +296,7 @@ const CartListPage = () => {
                 disabled={!memoizedCartList?.length}
                 className="theme-primary-btn order-btn"
               >
-                Place Order
+                {t("place_order")}
               </Button>
               {/* <Link
                 href="/checkout"

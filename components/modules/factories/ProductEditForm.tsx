@@ -26,6 +26,7 @@ import { handleDescriptionParse } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
+import { useTranslations } from "next-intl";
 
 const baseProductPriceItemSchema = z.object({
   consumerType: z.string().trim().optional(),
@@ -359,6 +360,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
   //   selectedQuantity,
   onProductUpdateSuccess
   }) => {
+  const t = useTranslations();
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useParams();
@@ -878,7 +880,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
     <>
     <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          Edit Product
+          {t("edit_product")}
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -931,9 +933,9 @@ const ProductEditForm: React.FC<EditFormProps> = ({
                       >
                         {updateProduct.isPending ||
                         uploadMultiple.isPending ? (
-                          <LoaderWithMessage message="Please wait" />
+                          <LoaderWithMessage message={t("please_wait")} />
                         ) : (
-                          "Update"
+                          t("update")
                         )}
                       </Button>
                     </div>

@@ -25,6 +25,7 @@ import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
 import { useAuth } from "@/context/AuthContext";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { generateUniqueNumber } from "@/utils/helper";
+import { useTranslations } from "next-intl";
 
 interface RfqRequestChatProps {
   rfqQuoteId: any;
@@ -49,6 +50,7 @@ interface RfqRequestVendorDetailsProps {
 }
 
 const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
+  const t = useTranslations();
   const [activeSellerId, setActiveSellerId] = useState<number>();
   const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
   const [rfqQuotesUserId, setRfqQuotesUserId] = useState<number>();
@@ -711,7 +713,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             {!allRfqQuotesQuery?.isLoading && !vendorList?.length ? (
               <div className="my-2 space-y-2">
                 <p className="text-center text-sm font-normal text-gray-500">
-                  No data found
+                  {t("no_data_found")}
                 </p>
               </div>
             ) : null}
@@ -737,7 +739,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
           <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
             <span>
-              Offering Price{" "}
+              {t("offering_price")}{" "}
               <b className="text-[#679A03]">
                 {selectedVendor?.offerPrice
                   ? `$${selectedVendor?.offerPrice}`

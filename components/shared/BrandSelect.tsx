@@ -15,12 +15,14 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { Info } from "lucide-react"; // Using Lucide React icons
+import { useTranslations } from "next-intl";
 
 const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
 };
 
 const ReactSelectInput = () => {
+  const t = useTranslations();
   const formContext = useFormContext();
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
@@ -68,9 +70,9 @@ const ReactSelectInput = () => {
   };
 
   const brandType = [
-    { label: "Brand", value: "BRAND" },
-    { label: "Spare part", value: "SPAREPART" },
-    { label: "Own brand", value: "OWNBRAND" },
+    { label: t("brand"), value: "BRAND" },
+    { label: t("spare_part"), value: "SPAREPART" },
+    { label: t("own_brand"), value: "OWNBRAND" },
   ];
 
   const brandSelect = useRef<Select<any, false, GroupBase<any>>>(null);
@@ -78,7 +80,7 @@ const ReactSelectInput = () => {
   return (
     <>
       <div className="mt-2 flex flex-col gap-y-3">
-        <Label>Product Type</Label>
+        <Label>{t("product_type")}</Label>
         <Controller
           name="typeOfProduct"
           control={formContext.control}
@@ -110,7 +112,7 @@ const ReactSelectInput = () => {
       </div>
       <div className="mt-2 flex flex-col gap-y-3">
         <div className="flex w-full items-center gap-1.5">
-          <Label>Brand</Label>
+          <Label>{t("brand")}</Label>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

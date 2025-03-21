@@ -42,6 +42,7 @@ import { useSession, signIn } from "next-auth/react";
 import { getLoginType } from "@/utils/helper";
 import Link from "next/link";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 const formSchema = z
   .object({
@@ -120,6 +121,7 @@ const formSchema = z
   });
 
 export default function RegisterPage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
@@ -215,9 +217,9 @@ export default function RegisterPage() {
             <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                  Registration
+                  {t("registration")}
                 </h2>
-                <p>Create Your account</p>
+                <p>{t("create_your_account")}</p>
               </div>
               <div className="w-full">
                 <ul className="flex w-full flex-wrap items-center justify-between">
@@ -237,7 +239,7 @@ export default function RegisterPage() {
                         height={26}
                         width={26}
                       />
-                      <span>Sign up with Facebook</span>
+                      <span>{t("facebook_sign_up")}</span>
                     </Button>
                   </li>
                   <li className="w-full p-0 sm:w-6/12 sm:pl-3">
@@ -256,7 +258,7 @@ export default function RegisterPage() {
                         height={26}
                         width={26}
                       />
-                      <span>Sign up with Google</span>
+                      <span>{t("google_sign_up")}</span>
                     </Button>
                   </li>
                 </ul>
@@ -278,7 +280,7 @@ export default function RegisterPage() {
                       render={({ field }) => (
                         <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row md:items-start">
                           <FormLabel className="mb-3 mr-6 capitalize md:mb-0">
-                            Please select trade role:
+                            {t("select_trade_role")}:
                           </FormLabel>
                           <div className="!mt-0">
                             <FormControl className="mb-2">
@@ -316,21 +318,21 @@ export default function RegisterPage() {
                     />
 
                     <ControlledTextInput
-                      label="First Name"
+                      label={t("first_name")}
                       name="firstName"
-                      placeholder="Enter Your First Name"
+                      placeholder={t("enter_first_name")}
                     />
 
                     <ControlledTextInput
-                      label="Last Name"
+                      label={t("last_name")}
                       name="lastName"
-                      placeholder="Enter Your Last Name"
+                      placeholder={t("enter_last_name")}
                     />
 
                     <ControlledTextInput
-                      label="Email Address"
+                      label={t("email")}
                       name="email"
-                      placeholder="Enter Your Email Address"
+                      placeholder={t("enter_email")}
                       disabled={
                         getLoginType() === "FACEBOOK" ||
                         getLoginType() === "GOOGLE"
@@ -340,24 +342,24 @@ export default function RegisterPage() {
                     />
 
                     <ControlledTextInput
-                      label="Login Password"
+                      label={t("login_password")}
                       name="initialPassword"
-                      placeholder="Enter Your Login Password"
+                      placeholder={t("enter_login_password")}
                       type="password"
                     />
 
                     <ControlledTextInput
-                      label="Confirm Password"
+                      label={t("confirm_password")}
                       name="password"
-                      placeholder="Enter Your Login Password Again"
+                      placeholder={t("enter_login_password_again")}
                       type="password"
                     />
 
                     <ControlledPhoneInput
-                      label="Phone Number"
+                      label={t("phone_number")}
                       name="phoneNumber"
                       countryName="cc"
-                      placeholder="Enter Your Phone Number"
+                      placeholder={t("enter_phone_number")}
                     />
 
                     <FormField
@@ -374,14 +376,14 @@ export default function RegisterPage() {
                           </FormControl>
                           <div className="flex flex-col leading-none">
                             <div className="agreeText text-xs text-light-gray md:text-sm">
-                              <span>I Agree the </span>
+                              <span>{t("i_agree")}</span>
                               <Button
                                 onClick={handleToggleTermsModal}
                                 type="button"
                                 className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
                               >
                                 <span className="text-xs text-light-gray underline md:text-sm">
-                                  Terms Of Use
+                                  {t("terms_of_use")}
                                 </span>
                               </Button>
                               <span className="mx-1 text-xs text-light-gray md:text-sm">
@@ -393,7 +395,7 @@ export default function RegisterPage() {
                                 className="ml-1 bg-transparent p-0 text-xs shadow-none hover:bg-transparent md:text-sm"
                               >
                                 <span className="text-light-gray underline">
-                                  Privacy Policy
+                                  {t("privacy_policy")}
                                 </span>
                               </Button>
                             </div>
@@ -411,7 +413,7 @@ export default function RegisterPage() {
                         {register.isPending ? (
                           <LoaderWithMessage message="Please wait" />
                         ) : (
-                          "Agree & Register"
+                          t("agree_n_register")
                         )}
                       </Button>
                     </div>

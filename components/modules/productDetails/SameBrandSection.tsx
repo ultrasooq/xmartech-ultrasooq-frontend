@@ -24,6 +24,7 @@ import {
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { useTranslations } from "next-intl";
 
 type SameBrandSectionProps = {
   productDetails: any;
@@ -34,6 +35,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
   productDetails,
   productId,
 }) => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
@@ -206,7 +208,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
     <div className="suggestion-list-s1-col">
       <div className="suggestion-same-branch-lists-s1">
         <div className="title-headerpart">
-          <h3>Same Brand</h3>
+          <h3>{t("same_brand")}</h3>
         </div>
         <div className="contnet-bodypart min-h-[460px]">
           {!sameBrandProductsQuery?.isFetched ? (
@@ -261,7 +263,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
             {sameBrandProductsQuery?.isFetched &&
             !memoizedSameBrandProductList?.length ? (
               <div className="w-full text-center">
-                <h3>No products found</h3>
+                <h3>{t("no_product_found")}</h3>
               </div>
             ) : null}
           </div>

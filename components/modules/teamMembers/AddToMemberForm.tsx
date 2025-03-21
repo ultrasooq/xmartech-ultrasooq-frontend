@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
@@ -74,7 +75,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   onClose,
   memberDetails,
 }) => {
-  // const formContext = useFormContext();
+  const t = useTranslations();
   const createUserRole = useCreateUserRole();
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
@@ -163,7 +164,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          {memberDetails ? "Edit Member" : "Add Member"}
+          {memberDetails ? t("edit_member") : t("add_member")}
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -179,31 +180,31 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
           className="card-item card-payment-form px-5 pb-5 pt-3"
         >
           <ControlledTextInput
-            label="First Name"
+            label={t("first_name")}
             name="firstName"
-            placeholder="Enter First Name"
+            placeholder={t("first_name_placeholder")}
             type="text"
           />
 
           <ControlledTextInput
-            label="Last Name"
+            label={t("last_name")}
             name="lastName"
-            placeholder="Enter Last Name"
+            placeholder={t("last_name_plceholder")}
             type="text"
           />
 
           <ControlledTextInput
-            label="Email"
+            label={t("email")}
             name="email"
-            placeholder="Enter Email"
+            placeholder={t("email_placeholder")}
             type="text"
             readOnly={memberDetails}
           />
 
           <ControlledTextInput
-            label="Phone Number"
+            label={t("phone_number")}
             name="phoneNumber"
-            placeholder="Enter Phone Number"
+            placeholder={t("phone_number_placeholder")}
             type="number"
           />
 
@@ -280,7 +281,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
           />
 
           <div className="flex w-full items-center gap-1.5">
-            <Label>Status</Label>
+            <Label>{t("status")}</Label>
           </div>
           <Controller
             name="status"
@@ -306,7 +307,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             type="submit"
             className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
-            {memberDetails ? "Edit Member" : "Add Member"}
+            {memberDetails ? t("edit_member") : t("add_member")}
           </Button>
         </form>
       </Form>

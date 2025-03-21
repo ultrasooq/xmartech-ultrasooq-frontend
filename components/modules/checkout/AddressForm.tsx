@@ -18,6 +18,7 @@ import {
 import { IoCloseSharp } from "react-icons/io5";
 import { ALPHABETS_REGEX } from "@/utils/constants";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 type AddressFormProps = {
   addressId?: number;
@@ -101,6 +102,7 @@ const formSchema = z.object({
 });
 
 const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -195,7 +197,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          {`${addressId ? "Edit" : "Add"} New Address`}
+          {`${addressId}` ? t("edit_address") : t("add_address")}
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -211,32 +213,32 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
         >
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
             <ControlledTextInput
-              label="First Name"
+              label={t("first_name")}
               name="firstName"
-              placeholder="Enter Your First Name"
+              placeholder={t("enter_first_name")}
             />
 
             <ControlledTextInput
-              label="Last Name"
+              label={t("last_name")}
               name="lastName"
-              placeholder="Enter Your Last Name"
+              placeholder={t("enter_last_name")}
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-1">
             <ControlledPhoneInput
-              label="Phone Number"
+              label={t("phone_number")}
               name="phoneNumber"
               countryName="cc"
-              placeholder="Enter Your Phone Number"
+              placeholder={t("enter_phone_number")}
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-1">
             <ControlledTextInput
-              label="Address"
+              label={t("address")}
               name="address"
-              placeholder="Address"
+              placeholder={t("address")}
             />
           </div>
 
@@ -244,25 +246,25 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             <ControlledTextInput label="City" name="city" placeholder="City" />
 
             <ControlledTextInput
-              label="Province"
+              label={t("province")}
               name="province"
-              placeholder="Province"
+              placeholder={t("province")}
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
             <ControlledTextInput
-              label="Post Code"
+              label={t("postcode")}
               type="number"
               name="postCode"
-              placeholder="Post Code"
+              placeholder={t("postcode")}
               onWheel={(e) => e.currentTarget.blur()}
             />
 
             <ControlledTextInput
-              label="Country"
+              label={t("country")}
               name="country"
-              placeholder="Country"
+              placeholder={t("country")}
             />
 
             {/* <ControlledSelectInput
@@ -280,9 +282,9 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             {createAddress.isPending || updateAddress.isPending ? (
               <LoaderWithMessage message="Please wait" />
             ) : addressId ? (
-              "Edit Address"
+              t("edit_address")
             ) : (
-              "Add Address"
+              t("add_address")
             )}
           </Button>
         </form>

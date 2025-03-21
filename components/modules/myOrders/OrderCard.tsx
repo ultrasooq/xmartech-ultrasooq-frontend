@@ -7,6 +7,7 @@ import { PiStarFill } from "react-icons/pi";
 // import { Dialog, DialogContent } from "@/components/ui/dialog";
 // import ReviewForm from "@/components/shared/ReviewForm";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useTranslations } from "next-intl";
 
 type OrderCardProps = {
   id: number;
@@ -49,10 +50,12 @@ const OrderCard: React.FC<OrderCardProps> = ({
   //   );
   // }, [productReview?.length, id]);
 
+  const t = useTranslations();
+
   return (
     <div className="my-order-card">
       <h5 className="mb-2">
-        Order ID: <span className="font-semibold">{orderId}</span>
+        {t("order_id")}: <span className="font-semibold">{orderId}</span>
       </h5>
       <div className="my-order-box">
         <Link href={`/my-orders/${id}`}>
@@ -82,31 +85,31 @@ const OrderCard: React.FC<OrderCardProps> = ({
             {orderStatus === "CONFIRMED" ? (
               <>
                 <BiCircle color="green" />
-                Placed on{" "}
+                {t("placed_on")}{" "}
                 {orderProductDate ? formattedDate(orderProductDate) : ""}
               </>
             ) : null}
             {orderStatus === "SHIPPED" ? (
               <>
-                <BiCircle color="green" /> Shipped on{" "}
+                <BiCircle color="green" /> {t("shipped_on")}{" "}
                 {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}
             {orderStatus === "OFD" ? (
               <>
-                <BiCircle color="green" /> Out for delivery{" "}
+                <BiCircle color="green" /> {t("out_for_delivery")}{" "}
                 {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}
             {orderStatus === "DELIVERED" ? (
               <>
-                <BiSolidCircle color="green" /> Delivered on{" "}
+                <BiSolidCircle color="green" /> {t("delivered_on")}{" "}
                 {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}
             {orderStatus === "CANCELLED" ? (
               <>
-                <BiSolidCircle color="red" /> Cancelled on{" "}
+                <BiSolidCircle color="red" /> {t("cancelled_on")}{" "}
                 {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}
@@ -119,7 +122,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
               className="ratingLink"
             >
               <PiStarFill />
-              Rate & Review Product
+              {t("rate_n_review_product")}
             </Link>
           ) : null}
         </div>

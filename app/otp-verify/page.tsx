@@ -18,8 +18,10 @@ import Image from "next/image";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 export default function OtpVerifyPage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
@@ -207,9 +209,9 @@ export default function OtpVerifyPage() {
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Verify OTP
+                {t("veridy_otp")}
               </h2>
-              <p>Enter the OTP which you received via email</p>
+              <p>{t("enter_otp")}</p>
             </div>
             <div className="w-full">
               <Form {...form}>
@@ -246,7 +248,7 @@ export default function OtpVerifyPage() {
                       {verifyOtp.isPending ? (
                         <LoaderWithMessage message="Please wait" />
                       ) : (
-                        "Verify"
+                        t("verify")
                       )}
                     </Button>
                   </div>
@@ -265,7 +267,7 @@ export default function OtpVerifyPage() {
                   onClick={handleResendOtp}
                   className="cursor-pointer p-0 font-medium text-dark-orange"
                 >
-                  Resend
+                  {t("resend")}
                 </Button>
               </div>
               {count !== 0 ? (

@@ -58,8 +58,10 @@ import BannerSection from "@/components/modules/trending/BannerSection";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { useCategoryStore } from "@/lib/categoryStore";
 import TrendingCategories from "@/components/modules/trending/TrendingCategories";
+import { useTranslations } from "next-intl";
 
 const TrendingPage = () => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
@@ -349,13 +351,13 @@ const TrendingPage = () => {
               >
                 <AccordionItem value="brand">
                   <AccordionTrigger className="px-3 text-base hover:!no-underline">
-                    By Brand
+                    {t("by_brand")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="filter-sub-header">
                       <Input
                         type="text"
-                        placeholder="Search Brand"
+                        placeholder={t("search_brand")}
                         className="custom-form-control-s1 searchInput rounded-none"
                         onChange={handleDebounce}
                       />
@@ -394,7 +396,7 @@ const TrendingPage = () => {
 
                 <AccordionItem value="price">
                   <AccordionTrigger className="px-3 text-base hover:!no-underline">
-                    Price
+                    {t("price")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="px-4">
@@ -427,7 +429,7 @@ const TrendingPage = () => {
                           className="mb-4"
                           onClick={() => setPriceRange([])}
                         >
-                          Clear
+                          {t("clear")}
                         </Button>
                       </div>
                       <div className="range-price-left-right-info">
@@ -468,12 +470,12 @@ const TrendingPage = () => {
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>
                         <SelectTrigger className="custom-form-control-s1 bg-white">
-                          <SelectValue placeholder="Sort by" />
+                          <SelectValue placeholder={t("sort_by")} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="desc">Sort by latest</SelectItem>
-                            <SelectItem value="asc">Sort by oldest</SelectItem>
+                            <SelectItem value="desc">{t("sort_by_latest")}</SelectItem>
+                            <SelectItem value="asc">{t("sort_by_oldest")}</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -519,7 +521,7 @@ const TrendingPage = () => {
               ) : null}
 
               {!memoizedProductList.length && !allProductsQuery.isLoading ? (
-                <p className="text-center text-sm font-medium">No data found</p>
+                <p className="text-center text-sm font-medium">{t("no_data_found")}</p>
               ) : null}
 
               {viewType === "grid" ? (

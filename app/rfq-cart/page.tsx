@@ -25,6 +25,7 @@ import { MdOutlineChevronLeft } from "react-icons/md";
 import { z } from "zod";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
 import Footer from "@/components/shared/Footer";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   address: z.string().trim().min(1, { message: "Address is required" }),
@@ -34,6 +35,7 @@ const formSchema = z.object({
 });
 
 const RfqCartPage = () => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
@@ -166,21 +168,21 @@ const RfqCartPage = () => {
               >
                 <MdOutlineChevronLeft />
               </button>
-              <h3>RFQ Cart Items</h3>
+              <h3>{t("rfq_cart_items")}</h3>
             </div>
             <div className="bodyPart">
               <div className="add-delivery-card">
-                <h3>Add Delivery Address & date</h3>
+                <h3>{t("add_delivery_address_date")}</h3>
                 <Form {...form}>
                   <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
                     <ControlledSelectInput
-                      label="Address"
+                      label={t("address")}
                       name="address"
                       options={memoziedAddressList}
                     />
 
                     <div>
-                      <Label>Date</Label>
+                      <Label>{t("date")}</Label>
                       <ControlledDatePicker name="rfqDate" isFuture />
                     </div>
                   </form>
@@ -188,7 +190,7 @@ const RfqCartPage = () => {
               </div>
 
               <div className="rfq-cart-item-lists">
-                <h4>RFQ Cart Items</h4>
+                <h4>{t("rfq_cart_items")}</h4>
                 <div className="rfq-cart-item-ul">
                   {memoizedRfqCartList.map((item: any) => (
                     <RfqProductCard
@@ -209,7 +211,7 @@ const RfqCartPage = () => {
 
                   {!memoizedRfqCartList.length ? (
                     <div className="my-10 text-center">
-                      <h4>No items in cart</h4>
+                      <h4>{t("no_cart_items")}</h4>
                     </div>
                   ) : null}
                 </div>
@@ -229,10 +231,10 @@ const RfqCartPage = () => {
                         height={20}
                         className="mr-2 animate-spin"
                       />
-                      Please wait
+                      {t("please_wait")}
                     </>
                   ) : (
-                    "Request For RFQ"
+                    t("request_for_rfq")
                   )}
                 </Button>
               </div>

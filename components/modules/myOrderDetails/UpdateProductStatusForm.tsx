@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { STATUS_LIST } from "@/utils/constants";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
+import { useTranslations } from "next-intl";
 
 type UpdateProductStatusFormProps = {
   orderProductId: string;
@@ -43,6 +44,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   onClose,
   orderProductStatus,
 }) => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const form = useForm({
@@ -213,7 +215,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
         </div>
         <div className="modal-footer">
           <button type="submit" className="theme-primary-btn submit-btn">
-            Save
+            {t("save")}
           </button>
         </div>
       </form>

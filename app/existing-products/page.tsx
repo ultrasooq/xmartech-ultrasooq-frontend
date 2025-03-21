@@ -32,8 +32,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
+import { useTranslations } from "next-intl";
 
 const ExistingProductsPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const [searchProductTerm, setSearchProductTerm] = useState("");
@@ -186,7 +188,7 @@ const ExistingProductsPage = () => {
             <div className="mb-5 flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
               <div className="flex flex-wrap items-center justify-start">
                 <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
-                  Choose Products
+                  {t("choose_products")}
                 </h4>
               </div>
             </div>
@@ -194,7 +196,7 @@ const ExistingProductsPage = () => {
               <div className="filter-sub-header">
                 <Input
                   type="text"
-                  placeholder="Search Product"
+                  placeholder={t("search_product")}
                   className="border-color-[rgb(232 232 232 / var(--tw-border-opacity))] h-[45px] w-full rounded-none border border-solid px-3 py-0 text-sm font-normal"
                   onChange={handleProductDebounce}
                 />
@@ -206,13 +208,13 @@ const ExistingProductsPage = () => {
               >
                 <AccordionItem value="brand">
                   <AccordionTrigger className="px-3 text-base hover:!no-underline">
-                    By Brand
+                    {t("by_brand")}
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="filter-sub-header">
                       <Input
                         type="text"
-                        placeholder="Search Brand"
+                        placeholder={t("search_brand")}
                         className="custom-form-control-s1 searchInput rounded-none"
                         onChange={handleBrandDebounce}
                       />
@@ -221,7 +223,7 @@ const ExistingProductsPage = () => {
                       <div className="filter-checklists">
                         {!memoizedBrands.length ? (
                           <p className="text-center text-sm font-medium">
-                            No data found
+                            {t("no_data_found")}
                           </p>
                         ) : null}
                         {memoizedBrands.map((item: ISelectOptions) => (
@@ -264,7 +266,7 @@ const ExistingProductsPage = () => {
               ) : null}
 
               {!memoizedProductList.length && !allProductsQuery.isLoading ? (
-                <p className="text-center text-sm font-medium">No data found</p>
+                <p className="text-center text-sm font-medium">{t("no_data_found")}</p>
               ) : null}
 
               <div className="product-list-s1">
@@ -299,7 +301,7 @@ const ExistingProductsPage = () => {
       {selectedProductIds.length ? (
         <div className="fixed bottom-0 left-0 z-10 flex w-full items-center justify-end border-t border-solid border-gray-300 bg-dark-orange px-10 py-3">
           <p className="mr-4 text-base font-medium text-white">
-            {selectedProductIds.length} Products Selected
+            {t("n_products_selected").replace("{n}", String(selectedProductIds.length))}
           </p>
           <Button
             type="submit"
@@ -317,10 +319,10 @@ const ExistingProductsPage = () => {
                   height={20}
                   className="mr-2 animate-spin"
                 />
-                <span>Please wait</span>
+                <span>{t("please_wait")}</span>
               </>
             ) : (
-              "Next"
+              t("next")
             )}
           </Button>
         </div>

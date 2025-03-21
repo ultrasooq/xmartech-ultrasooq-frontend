@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   email: z
@@ -34,6 +35,7 @@ const formSchema = z.object({
 });
 
 export default function ChangeEmailPage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -81,7 +83,7 @@ export default function ChangeEmailPage() {
         <div className="flex">
           <div className="w-full rounded-lg border border-solid border-gray-300 bg-white p-4 shadow-sm">
             <h2 className="mb-4  text-[18px] font-semibold md:text-[22px]">
-              Change Email
+              {t("change_email")}
             </h2>
             <div className="w-full">
               <Form {...form}>
@@ -94,7 +96,7 @@ export default function ChangeEmailPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem className="mb-4 w-full">
-                        <FormLabel>New Email</FormLabel>
+                        <FormLabel>{t("new_email")}</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Enter Your Email"
@@ -121,10 +123,10 @@ export default function ChangeEmailPage() {
                             height={20}
                             className="mr-2 animate-spin"
                           />
-                          Please wait
+                          {t("please_wait")}
                         </>
                       ) : (
-                        "Change Email"
+                        t("change_email")
                       )}
                     </Button>
                   </div>

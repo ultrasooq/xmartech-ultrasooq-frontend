@@ -23,6 +23,7 @@ import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTe
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import QuillEditor from "@/components/shared/Quill/QuillEditor";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -43,6 +44,7 @@ const formSchema = z.object({
 });
 
 export default function EditProfilePage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -189,14 +191,14 @@ export default function EditProfilePage() {
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Profile
+                {t("profile")}
               </h2>
             </div>
             <div className="flex w-full flex-wrap">
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                   <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                    Company Information
+                    {t("company_information")}
                   </label>
                 </div>
               </div>
@@ -207,7 +209,7 @@ export default function EditProfilePage() {
                     name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5">
-                        <FormLabel>Upload Company Logo</FormLabel>
+                        <FormLabel>{t("upload_company_logo")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -239,13 +241,13 @@ export default function EditProfilePage() {
                                       alt="camera"
                                     />
                                     <span>
-                                      Drop your Company Logo here, or{" "}
+                                      {t("drop_your_company_logo")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
                                     <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                      (.jpg or .png only. Up to 1mb)
+                                      ({t("company_logo_spec")})
                                     </p>
                                   </div>
                                 </div>
@@ -263,8 +265,7 @@ export default function EditProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title:
-                                          "Image size should be less than 500MB",
+                                        title: "Image size should be less than 500MB",
                                         variant: "danger",
                                       });
                                       return;
@@ -284,14 +285,14 @@ export default function EditProfilePage() {
 
                   <div className="mb-3.5 w-full md:w-6/12 md:pl-3.5">
                     <ControlledTextInput
-                      label="Company Name"
+                      label={t("company_name")}
                       name="companyName"
-                      placeholder="Company Name"
+                      placeholder={t("company_name")}
                     />
 
                     {/* TODO:fix this */}
                     <ControlledSelectInput
-                      label="Business Type"
+                      label={t("business_type")}
                       name="businessTypeList"
                       options={memoizedTags.map((item: OptionProps) => ({
                         value: item.value?.toString(),
@@ -300,9 +301,9 @@ export default function EditProfilePage() {
                     />
 
                     <ControlledTextInput
-                      label="Annual Purchasing Volume"
+                      label={t("annual_purchasing_volume")}
                       name="annualPurchasingVolume"
-                      placeholder="Annual Purchasing Volume"
+                      placeholder={t("annual_purchasing_volume")}
                       type="number"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -313,16 +314,16 @@ export default function EditProfilePage() {
               <div className="mb-3.5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
                   <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
-                    Registration Address
+                    {t("registration_address")}
                   </label>
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                   <div className="relative w-full">
                     <ControlledTextInput
-                      label="Address"
+                      label={t("address")}
                       name="address"
-                      placeholder="Address"
+                      placeholder={t("address")}
                     />
 
                     <Image
@@ -335,30 +336,30 @@ export default function EditProfilePage() {
                   </div>
 
                   <ControlledTextInput
-                    label="City"
+                    label={t("city")}
                     name="city"
-                    placeholder="City"
+                    placeholder={t("city")}
                   />
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                   <ControlledTextInput
-                    label="Province"
+                    label={t("province")}
                     name="province"
-                    placeholder="Province"
+                    placeholder={t("province")}
                   />
 
-                  <ControlledSelectInput label="Country" name="country" options={memoizedCountries} />
+                  <ControlledSelectInput label={t("country")} name="country" options={memoizedCountries} />
                 </div>
 
-                <ControlledPhoneInput name={"phoneNumber"} countryName={"cc"} placeholder="Enter Your Phone Number" />
+                <ControlledPhoneInput name={"phoneNumber"} countryName={"cc"} placeholder={t("enter_phone_number")} />
 
               </div>
 
               <div className="mb-5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
                   <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
-                    More Information
+                    {t("more_information")}
                   </label>
                 </div>
 
@@ -368,7 +369,7 @@ export default function EditProfilePage() {
                   <ControlledSelectInput label="Total Number of Employees" name="totalNoOfEmployee" options={NO_OF_EMPLOYEES_LIST} />
                 </div>
 
-                <QuillEditor label="About Us" name="aboutUsJson" />
+                <QuillEditor label={t("about_us")} name="aboutUsJson" />
               </div>
             </div>
 
@@ -377,7 +378,7 @@ export default function EditProfilePage() {
                 updateCompanyProfile.isPending || upload.isPending ? (
                   <>
                     <Image src="/images/load.png" alt="loader-icon" width={20} height={20} className="mr-2 animate-spin" />
-                    Please wait
+                    {t("please_wait")}
                   </>
                 ) : (
                   "Edit changes"

@@ -16,8 +16,10 @@ import Pagination from "@/components/shared/Pagination";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
+import { useTranslations } from "next-intl";
 
 const WishlistPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const [page, setPage] = useState(1);
@@ -70,18 +72,18 @@ const WishlistPage = () => {
               >
                 <MdOutlineChevronLeft size="24" />
               </Button>
-              <h3 className="text-3xl font-semibold">My Wishlist</h3>
+              <h3 className="text-3xl font-semibold">{t("my_wishlist")}</h3>
             </div>
             <div className="min-h-[400px] rounded-2xl border border-solid border-[#E4E3E3] bg-white p-4 shadow-[0px_4px_23px_0px_#EEF1F5]">
               {wishlistQuery.data?.data?.length ? (
                 <p className="px-5 text-xl font-medium">
-                  My Wishlist {wishlistQuery.data?.data?.length} items
+                  {t("my_wishlist")} {wishlistQuery.data?.data?.length} items
                 </p>
               ) : null}
 
               {!wishlistQuery.isLoading && !wishlistQuery.data?.data?.length ? (
                 <p className="mt-10 text-center text-xl font-medium">
-                  No items in wishlist
+                  {t("no_wishlist_items")}
                 </p>
               ) : null}
 

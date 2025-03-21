@@ -13,6 +13,7 @@ import { useMe } from "@/apis/queries/user.queries";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import { handleDescriptionParse } from "@/utils/helper";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   aboutUs: z.string().trim().optional(),
@@ -20,6 +21,7 @@ const formSchema = z.object({
 });
 
 export default function EditProfilePage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -95,14 +97,14 @@ export default function EditProfilePage() {
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                  My Profile
+                  {t("my_profile")}
                 </h2>
               </div>
               <div className="mb-5">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                     <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                      Freelancer Information
+                      {t("freelancer_information")}
                     </label>
                   </div>
                 </div>
@@ -124,7 +126,7 @@ export default function EditProfilePage() {
                       height={20}
                       className="mr-2 animate-spin"
                     />
-                    Please wait
+                    {t("please_wait")}
                   </>
                 ) : (
                   "Edit changes"

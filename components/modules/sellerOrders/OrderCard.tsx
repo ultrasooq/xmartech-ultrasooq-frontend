@@ -4,6 +4,7 @@ import React from "react";
 import { SELLER_DELIVERY_STATUS, formattedDate } from "@/utils/constants";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useTranslations } from "next-intl";
 
 type OrderCardProps = {
   id: number;
@@ -38,11 +39,12 @@ const OrderCard: React.FC<OrderCardProps> = ({
   productPriceId,
   productId,
 }) => {
-  console.log(tradeRole, sellerId, productPriceId, productId);
+  const t = useTranslations();
+
   return (
     <div className="my-order-card">
       <h5 className="mb-2">
-        Order ID: <span className="font-semibold">{sellerOrderId}</span>
+        {t("order_id")}: <span className="font-semibold">{sellerOrderId}</span>
       </h5>
       <div className="my-order-box">
         <Link href={`/seller-orders/${id}`}>
@@ -72,31 +74,31 @@ const OrderCard: React.FC<OrderCardProps> = ({
             {orderStatus === "CONFIRMED" ? (
               <>
                 <BiCircle color="green" />
-                Placed on{" "}
+                {t("placed_on")}{" "}
                 {orderProductDate ? formattedDate(orderProductDate) : ""}
               </>
             ) : null}
             {orderStatus === "SHIPPED" ? (
               <>
-                <BiCircle color="green" /> Shipped on{" "}
+                <BiCircle color="green" /> {t("shipped_on")}{" "}
                 {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}
             {orderStatus === "OFD" ? (
               <>
-                <BiCircle color="green" /> Out for delivery{" "}
+                <BiCircle color="green" /> {t("out_for_delivery")}{" "}
                 {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}
             {orderStatus === "DELIVERED" ? (
               <>
-                <BiSolidCircle color="green" /> Delivered on{" "}
+                <BiSolidCircle color="green" /> {t("delivered_on")}{" "}
                 {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}
             {orderStatus === "CANCELLED" ? (
               <>
-                <BiSolidCircle color="red" /> Cancelled on{" "}
+                <BiSolidCircle color="red" /> {t("cancelled_on")}{" "}
                 {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}

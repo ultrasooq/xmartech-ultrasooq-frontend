@@ -12,6 +12,7 @@ import {
   useCreateUserRole,
   useUpdateUserRole
 } from "@/apis/queries/masters.queries";
+import { useTranslations } from "next-intl";
 
 type AddToRoleFormProps = {
   onClose: () => void;
@@ -29,6 +30,7 @@ const addFormSchema = z.object({
 
 
 const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission, roleDetails }) => {
+  const t = useTranslations();
   const createUserRole = useCreateUserRole();
   const updateUserRole = useUpdateUserRole();
   const { toast } = useToast();
@@ -70,7 +72,7 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          {roleDetails ? 'Edit Role' : 'Add Role' }
+          {roleDetails ? t('edit_role') : t('add_role') }
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -86,7 +88,7 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission
           className="card-item card-payment-form px-5 pb-5 pt-3"
         >
           <ControlledTextInput
-            label="Role Name"
+            label={t("role_name")}
             name="userRoleName"
             placeholder="Enter Name"
             type="text"
@@ -96,7 +98,7 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission
             type="submit"
             className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
           >
-             {roleDetails ? 'Edit Role' : 'Add Role' }
+             {roleDetails ? t('edit_role') : t("add_role") }
           </Button>
         </form>
       </Form>

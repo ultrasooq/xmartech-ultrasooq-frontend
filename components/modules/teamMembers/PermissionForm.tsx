@@ -14,6 +14,7 @@ import {
   useGetPermission,
   useUpdatePermission,
 } from "@/apis/queries/member.queries";
+import { useTranslations } from "next-intl";
 
 type PermissionFormProps = {
   roleId: number;
@@ -44,6 +45,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
   roleId,
   onClose,
 }) => {
+  const t = useTranslations();
   const permissionsQuery = usePermissions();
   const addPermission = useSetPermission();
   const updatePermission = useUpdatePermission();
@@ -131,15 +133,15 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
                   {memoizedGetPermission.length
-                    ? "Update Permission"
-                    : "Add Permission"}
+                    ? t("update_permission")
+                    : t("add_permission")}
                 </h2>
               </div>
 
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                   <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                    Permission Information
+                    {t("permission_information")}
                   </label>
                 </div>
               </div>
@@ -178,12 +180,12 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
                       height={20}
                       className="mr-2 animate-spin"
                     />
-                    Please wait
+                    {t("please_wait")}
                   </>
                 ) : memoizedGetPermission.length ? (
-                  "Update Permission"
+                  t("update_permission")
                 ) : (
-                  "Add Permission"
+                  t("add_permission")
                 )}
               </Button>
             </form>

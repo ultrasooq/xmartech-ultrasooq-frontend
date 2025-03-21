@@ -3,6 +3,7 @@ import moment from "moment";
 import { useAuth } from "@/context/AuthContext";
 import { updateUnreadMessages } from "@/apis/requests/chat.requests";
 import DownloadIconButton from "../DownloadIconButton";
+import { useTranslations } from "next-intl";
 
 interface ProductChatHistoryProps {
   roomId?: number | null;
@@ -21,6 +22,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
   unreadMsgCount,
   updateMessageCount
 }) => {
+  const t = useTranslations();
   const { user } = useAuth();
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -185,7 +187,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
           </div>
         ) : (
           <div className="mt-5 flex w-full flex-wrap items-end">
-            {chatHistoryLoading ? "Loading..." : "No chat history found"}
+            {chatHistoryLoading ? "Loading..." : t("no_chat_history_found")}
           </div>
         )}
       </div>

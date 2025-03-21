@@ -13,12 +13,14 @@ import { useUpdatFreelancerActiveStatus } from "@/apis/queries/freelancer.querie
 import { useToast } from "@/components/ui/use-toast";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 type ProfileCardProps = {
   userDetails: any;
 };
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const updateFeelancerAvailabilityStatus = useUpdatFreelancerActiveStatus();
 
@@ -129,7 +131,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
                 className="mr-1"
                 alt="edit-icon"
               />
-              edit
+              {t("edit")}
             </Link>
           </div>
         </div>
@@ -162,7 +164,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
           </ul>
         </div>
         <div className="text-normal mt-5 w-full text-sm font-normal leading-4 text-gray-500">
-          <p>Business Type</p>
+          <p>{t("business_type")}</p>
           {userDetails?.userBranch?.[0]?.userBranchBusinessType?.map(
             (item: any) => (
               <span
@@ -177,7 +179,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
         <div className="mt-5 flex w-full flex-wrap items-center justify-between">
           <div className="my-2 text-sm font-normal leading-4 text-gray-500">
             <p>
-              Freelancer ID:
+              {t("freelancer_id")}:
               <span className="text-base font-medium leading-4 text-gray-600">
                 {userDetails?.uniqueId
                   ? `${FREELANCER_UNIQUE_ID}${userDetails?.uniqueId}`
@@ -201,7 +203,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
               onChange={handleTimeChange}
               value={userDetails?.onlineOffline || "0"}
             >
-              <option value="">Select</option>
+              <option value="">{t("select")}</option>
               <option value="0" disabled={userDetails?.onlineOffline === "0"}>
                 Offline
               </option>

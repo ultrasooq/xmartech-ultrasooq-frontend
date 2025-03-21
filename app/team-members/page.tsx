@@ -1,6 +1,5 @@
 "use client"; // Add this at the top
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import MemberCard from "@/components/modules/teamMembers/MemberCard";
 // import Pagination from "@/components/shared/Pagination";
 import { IoMdAdd } from "react-icons/io";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -11,8 +10,10 @@ import { Info } from "lucide-react";
 import Link from "next/link";
 import { PERMISSION_TEAM_MEMBERS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const TeamMembersPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_TEAM_MEMBERS);
   const [page, setPage] = useState(1);
@@ -77,21 +78,21 @@ const TeamMembersPage = () => {
                 href={"/team-members"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
-                Team Members
+                {t("team_members")}
               </Link>
               <Link
                 href={"/role-settings"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
-                Role
+                {t("role")}
               </Link>
             </ul>
           </div>
           <div className="team_members_heading w-full">
-            <h1>Team Members</h1>
+            <h1>{t("team_members")}</h1>
             <div className="flex justify-end gap-3">
               <button type="button" onClick={handleToggleAddModal}>
-                <IoMdAdd /> Add New Member
+                <IoMdAdd /> {t("add_new_member")}
               </button>
               {/* <Link
                 href={"/role-settings"}
@@ -108,13 +109,13 @@ const TeamMembersPage = () => {
                 <table cellPadding={0} cellSpacing={0} border={0}>
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Phone Number</th>
-                      <th>Role</th>
-                      <th>Employee ID</th>
-                      <th>Account Status</th>
-                      <th>Action</th>
+                      <th>{t("name")}</th>
+                      <th>{t("email")}</th>
+                      <th>{t("phone_number")}</th>
+                      <th>{t("role")}</th>
+                      <th>{t("employee_id")}</th>
+                      <th>{t("account_status")}</th>
+                      <th>{t("action")}</th>
                     </tr>
                   </thead>
 
@@ -147,7 +148,7 @@ const TeamMembersPage = () => {
 
             {!membersQuery?.isLoading && !memoizedMember.length ? (
               <p className="py-10 text-center text-sm font-medium">
-                No Members Found
+                {t("no_members_found")}
               </p>
             ) : null}
 

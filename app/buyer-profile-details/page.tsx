@@ -12,8 +12,10 @@ import TradeRoleUpgradeContent from "@/components/modules/buyerProfileDetails/Tr
 import ConfirmContent from "@/components/shared/ConfirmContent";
 import { useToast } from "@/components/ui/use-toast";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import { useTranslations } from "next-intl";
 
 const BuyerProfileDetailsPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -81,18 +83,18 @@ const BuyerProfileDetailsPage = () => {
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
               <h2 className="text-4xl font-semibold leading-10 text-color-dark">
-                My Profile
+                {t("my_profile")}
               </h2>
             </div>
 
             <div className="common-q-text-with-action">
-              <p>Do you want to upgrad your profile?</p>
+              <p>Do you want to upgrade your profile?</p>
               <button
                 type="button"
                 onClick={handleRoleModal}
                 className="theme-primary-btn addbtn"
               >
-                Update
+                {t("update")}
               </button>
             </div>
             <ProfileCard userDetails={me.data?.data} />
@@ -103,7 +105,7 @@ const BuyerProfileDetailsPage = () => {
                     value="profile-info"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                   >
-                    Profile Info
+                    {t("profile_info")}
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">

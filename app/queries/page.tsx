@@ -9,8 +9,10 @@ import { IoCloseSharp } from "react-icons/io5";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { query } from "urlcat";
+import { useTranslations } from "next-intl";
 
 const QueriesPage = () => {
+    const t = useTranslations();
     const [isQueryModalOpen, setIsQueryModalOpen] = useState<boolean>(false);
     const [selectedQuery, setSelectedQuery] = useState<any>();
     const [page, setPage] = useState(1);
@@ -66,10 +68,10 @@ const QueriesPage = () => {
                                     <table cellPadding={0} cellSpacing={0} border={0}>
                                         <thead>
                                             <tr>
-                                                <th>Query</th>
-                                                <th>Response</th>
-                                                <th>Date & Time</th>
-                                                <th>Action</th>
+                                                <th>{t("query")}</th>
+                                                <th>{t("response")}</th>
+                                                <th>{t("date_n_time")}</th>
+                                                <th>{t("action")}</th>
                                             </tr>
                                         </thead>
 
@@ -101,7 +103,7 @@ const QueriesPage = () => {
 
                             {!helpCenterQueriesQuery?.isLoading && !helpCenterQueries.length ? (
                                 <p className="py-10 text-center text-sm font-medium">
-                                    No Data Found
+                                    {t("no_data_found")}
                                 </p>
                             ) : null}
 
@@ -124,7 +126,7 @@ const QueriesPage = () => {
                     >
                         <div className="modal-header !justify-between">
                             <DialogTitle className="text-center text-xl font-bold">
-                                Query
+                                {t("query")}
                             </DialogTitle>
                             <Button
                                 onClick={handleQueryModal}
@@ -135,7 +137,7 @@ const QueriesPage = () => {
                         </div>
                         <form className="card-item card-payment-form px-5 pb-5 pt-3">
                             <div>
-                                <Label htmlFor="query">Query</Label>
+                                <Label htmlFor="query">{t("query")}</Label>
                                 <Textarea
                                     disabled={true}
                                     defaultValue={selectedQuery.query}
@@ -143,7 +145,7 @@ const QueriesPage = () => {
                                 />
                             </div>
                             <div className="pt-3">
-                                <Label htmlFor="reply">Reply</Label>
+                                <Label htmlFor="reply">{t("reply")}</Label>
                                 <Textarea
                                     disabled={true}
                                     defaultValue={selectedQuery.response}

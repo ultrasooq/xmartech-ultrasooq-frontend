@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useTranslations } from "next-intl";
 // import { useCartStore } from "@/lib/rfqStore";
 
 type RfqProductCardProps = {
@@ -36,6 +37,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   onRemove,
   note,
 }) => {
+  const t = useTranslations();
   const [quantity, setQuantity] = useState(1);
   // const cart = useCartStore();
 
@@ -60,7 +62,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         </div>
         <figcaption>
           <h5>{productName}</h5>
-          <label>Quantity</label>
+          <label>{t("quantity")}</label>
           <div className="qty-with-remove">
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-4">
@@ -118,16 +120,16 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 // cart.deleteCartItem(rfqProductId);
               }}
             >
-              Remove
+              {t("remove")}
             </Button>
           </div>
         </figcaption>
       </figure>
       <p>
-        <span>Note:</span> {note}
+        <span>{t("note")}:</span> {note}
       </p>
       <div className="price-info">
-        <h5>Price</h5>
+        <h5>{t("price")}</h5>
         <p>${offerPrice ? Number(offerPrice) * quantity : 0}</p>
       </div>
     </div>

@@ -6,8 +6,10 @@ import Image from "next/image";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import AddIcon from "@/public/images/add-icon.svg";
 import TrashIcon from "@/public/images/social-delete-icon.svg";
+import { useTranslations } from "next-intl";
 
 const DescriptionAndSpecificationSection = () => {
+  const t = useTranslations();
   const formContext = useFormContext();
 
   const fieldArrayForSpecification = useFieldArray({
@@ -26,11 +28,11 @@ const DescriptionAndSpecificationSection = () => {
 
   return (
     <div className="flex w-full flex-wrap">
-      <h3>Description & Specification</h3>
+      <h3>{t("description_n_specification")}</h3>
       <div className="mb-3.5 w-full">
         <div className="relative mb-4 w-full">
           <ControlledRichTextEditor
-            label="Description"
+            label={t("description")}
             name="descriptionJson"
           />
         </div>
@@ -39,7 +41,7 @@ const DescriptionAndSpecificationSection = () => {
             <div>
               <div className="flex w-full items-center justify-between">
                 <label className="text-sm font-medium leading-none text-color-dark">
-                  Specification
+                  {t("specification")}
                 </label>
 
                 <Button
@@ -48,7 +50,7 @@ const DescriptionAndSpecificationSection = () => {
                   className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
                 >
                   <Image src={AddIcon} className="mr-1" alt="add-icon" />
-                  <span>Add Specification</span>
+                  <span>{t("add_specification")}</span>
                 </Button>
               </div>
 
@@ -59,14 +61,14 @@ const DescriptionAndSpecificationSection = () => {
                 >
                   <ControlledTextInput
                     name={`productSpecificationList.${index}.label`}
-                    placeholder="Enter Label"
-                    label="Label"
+                    placeholder={t("enter_label")}
+                    label={t("label")}
                   />
 
                   <ControlledTextInput
                     name={`productSpecificationList.${index}.specification`}
-                    placeholder="Enter Value"
-                    label="Value"
+                    placeholder={t("enter_value")}
+                    label={t("value")}
                   />
 
                   {index !== 0 ? (

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import { setUserLocale } from "@/src/services/locale";
+import React, { createContext, startTransition, useContext, useState } from "react";
 
 interface User {
   id: number;
@@ -16,6 +17,7 @@ interface AuthContextType {
   clearUser: () => void;
   permissions: any[];
   setPermissions: (permissions: any[]) => void;
+  applyTranslation: (locale: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,8 +37,15 @@ export const AuthProvider: React.FC<{
     setUser(null);
   };
 
+  const applyTranslation = async (locale: string) => {
+    await setUserLocale(locale);
+    startTransition(() => {
+      
+    })
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, isAuthenticated, clearUser, permissions, setPermissions }}>
+    <AuthContext.Provider value={{ user, setUser, isAuthenticated, clearUser, permissions, setPermissions, applyTranslation }}>
       {children}
     </AuthContext.Provider>
   );

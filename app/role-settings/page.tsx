@@ -17,8 +17,10 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslations } from "next-intl";
 
 const RoleSettingsPage = () => {
+  const t = useTranslations();
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
 
@@ -113,20 +115,20 @@ const RoleSettingsPage = () => {
                 href={"/team-members"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
-                Team Members
+                {t("team_members")}
               </Link>
               <Link
                 href={"/role-settings"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
-                Role
+                {t("role")}
               </Link>
             </ul>
           </div>
           <div className="team_members_heading w-full">
-            <h1>Role Settings</h1>
+            <h1>{t("role_settings")}</h1>
             <button type="button" onClick={handleToggleAddModal}>
-              <IoMdAdd /> Add New Role
+              <IoMdAdd /> {t("add_new_role")}
             </button>
           </div>
           <div className="team_members_table w-full">
@@ -135,9 +137,9 @@ const RoleSettingsPage = () => {
                 <table cellPadding={0} cellSpacing={0} border={0}>
                   <thead>
                     <tr>
-                      <th>Role Name</th>
-                      <th>Permission</th>
-                      <th>Action</th>
+                      <th>{t("role_name")}</th>
+                      <th>{t("permission")}</th>
+                      <th>{t("action")}</th>
                     </tr>
                   </thead>
 
@@ -153,7 +155,7 @@ const RoleSettingsPage = () => {
                               handleOpenPermissionModal(item?.value)
                             }
                           >
-                            Setup Permission
+                            {t("setup_permission")}
                           </button>
                         </td>
                         <td>
@@ -187,7 +189,7 @@ const RoleSettingsPage = () => {
 
             {!userRolesQuery?.isLoading && !memoizedUserRole.length ? (
               <p className="py-10 text-center text-sm font-medium">
-                No Roles Found
+                {("no_roles_found")}
               </p>
             ) : null}
 

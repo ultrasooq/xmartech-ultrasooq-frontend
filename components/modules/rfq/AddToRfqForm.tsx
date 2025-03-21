@@ -33,6 +33,7 @@ import {
   isVideo,
 } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 type AddToRfqFormProps = {
   onClose: () => void;
@@ -88,6 +89,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   selectedQuantity,
   offerPrice,
 }) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
@@ -449,7 +451,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          {selectedQuantity ? `Add to RFQ cart` : "Edit Product"}
+          {selectedQuantity ? t("add_to_rfq_cart") : t("edit_product")}
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -466,7 +468,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           <div className="relative mb-4 w-full">
             <div className="space-y-2">
               <label className="text-sm font-medium leading-none text-color-dark">
-                Product Image
+                {t("product_image")}
               </label>
               <div className="flex w-full flex-wrap">
                 <div className="grid grid-cols-3">
@@ -559,7 +561,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
                                     <div className="absolute h-20 w-full p-5">
                                       <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
-                                        Upload Video
+                                        {t("upload_video")}
                                       </p>
                                     </div>
                                     <Input
@@ -591,7 +593,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                     />
                                   </div>
                                 ) : (
-                                  <AddImageContent description="Drop your File , or " />
+                                  <AddImageContent description={t("drop_your_file")} />
                                 )}
 
                                 {/* <Input
@@ -629,7 +631,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                           width={29}
                           height={28}
                         />
-                        <span>Add More</span>
+                        <span>{t("add_more")}</span>
                       </div>
                     </div>
 
@@ -687,17 +689,17 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           </div>
 
           <ControlledTextareaInput
-            label="Write a Note"
+            label={t("write_a_note")}
             name="note"
-            placeholder="Write here..."
+            placeholder=""
             rows={6}
           />
 
           {selectedQuantity ? (
             <ControlledTextInput
-              label="Offer Price"
+              label={t("offer_price")}
               name="offerPrice"
-              placeholder="Offer Price"
+              placeholder={t("offer_price")}
               type="number"
               value={Number(offerPrice) || 0}
             />
@@ -721,7 +723,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             updateRfqCartWithLogin.isPending ? (
               <LoaderWithMessage message="Please wait" />
             ) : (
-              `${selectedQuantity ? "Add to Cart" : "Edit"}`
+              `${selectedQuantity ? t("add_to_cart") : t("edit")}`
             )}
           </Button>
         </form>

@@ -7,6 +7,7 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
+import { useTranslations } from "next-intl";
 
 type GuestAddressFormProps = {
   onClose: () => void;
@@ -88,6 +89,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
   guestShippingAddress,
   guestBillingAddress,
 }) => {
+  const t = useTranslations();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -144,58 +146,58 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
         >
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
             <ControlledTextInput
-              label="First Name"
+              label={t("first_name")}
               name="firstName"
-              placeholder="Enter Your First Name"
+              placeholder={t("enter_first_name")}
             />
 
             <ControlledTextInput
-              label="Last Name"
+              label={t("last_name")}
               name="lastName"
-              placeholder="Enter Your Last Name"
+              placeholder={t("enter_last_name")}
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-1">
             <ControlledPhoneInput
-              label="Phone Number"
+              label={t("phone_number")}
               name="phoneNumber"
               countryName="cc"
-              placeholder="Enter Your Phone Number"
+              placeholder={t("enter_phone_number")}
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-1">
             <ControlledTextInput
-              label="Address"
+              label={t("address")}
               name="address"
-              placeholder="Address"
+              placeholder={t("address")}
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-            <ControlledTextInput label="City" name="city" placeholder="City" />
+            <ControlledTextInput label={t("city")} name="city" placeholder={t("city")} />
 
             <ControlledTextInput
-              label="Province"
+              label={t("province")}
               name="province"
-              placeholder="Province"
+              placeholder={t("province")}
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
             <ControlledTextInput
-              label="Post Code"
+              label={t("postcode")}
               type="number"
               name="postCode"
-              placeholder="Post Code"
+              placeholder={t("postcode")}
               onWheel={(e) => e.currentTarget.blur()}
             />
 
             <ControlledTextInput
-              label="Country"
+              label={t("country")}
               name="country"
-              placeholder="Country"
+              placeholder={t("country")}
             />
 
             {/* <ControlledSelectInput
@@ -211,8 +213,8 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
           >
             {(addressType === "shipping" && guestShippingAddress) ||
             (addressType === "billing" && guestBillingAddress)
-              ? "Edit Address"
-              : "Add Address"}
+              ? t("edit_address")
+              : t("add_address")}
           </Button>
         </form>
       </Form>

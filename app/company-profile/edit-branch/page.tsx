@@ -37,6 +37,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import ReactSelect from "react-select";
+import { useTranslations } from "next-intl";
 
 const customStyles = {
   control: (base: any) => ({
@@ -159,6 +160,7 @@ const formSchema = z
   });
 
 export default function EditBranchPage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -385,14 +387,14 @@ export default function EditBranchPage() {
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Edit Branch
+                {t("edit_branch")}
               </h2>
             </div>
 
             <div className="mb-4 w-full">
               <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                 <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                  Branch Information
+                  {t("branch_information")}
                 </label>
               </div>
             </div>
@@ -412,7 +414,7 @@ export default function EditBranchPage() {
                   name="uploadBranchImage"
                   render={({ field }) => (
                     <FormItem className="mb-3.5 w-full">
-                      <FormLabel>Upload Branch Front Picture</FormLabel>
+                      <FormLabel>{t("upload_branch_front_picture")}</FormLabel>
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                           <div className="relative h-full w-full">
@@ -443,11 +445,11 @@ export default function EditBranchPage() {
                                     alt="camera"
                                   />
                                   <span>
-                                    Drop your Branch Front Picture here, or{" "}
+                                    {t("drop_your_branch_front_picture")}{" "}
                                   </span>
                                   <span className="text-blue-500">browse</span>
                                   <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                    (.jpg or .png only. Up to 1mb)
+                                    ({t("branch_front_picture_spec")})
                                   </p>
                                 </div>
                               </div>
@@ -463,8 +465,7 @@ export default function EditBranchPage() {
                                 if (event.target.files?.[0]) {
                                   if (event.target.files[0].size > 524288000) {
                                     toast({
-                                      title:
-                                        "Image size should be less than 500MB",
+                                      title: "Image size should be less than 500MB",
                                       variant: "danger",
                                     });
                                     return;
@@ -487,7 +488,7 @@ export default function EditBranchPage() {
                   name="uploadProofOfAddress"
                   render={({ field }) => (
                     <FormItem className="mb-3.5 w-full">
-                      <FormLabel>Proof Of Address</FormLabel>
+                      <FormLabel>{t("address_proof")}</FormLabel>
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                           <div className="relative h-full w-full">
@@ -519,11 +520,11 @@ export default function EditBranchPage() {
                                     alt="camera"
                                   />
                                   <span>
-                                    Drop your Proof of Address here, or{" "}
+                                    {t("drop_your_address_proof")}{" "}
                                   </span>
                                   <span className="text-blue-500">browse</span>
                                   <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                    (.jpg or .png only. Up to 1mb)
+                                    ({t("address_proof_spec")})
                                   </p>
                                 </div>
                               </div>
@@ -565,7 +566,7 @@ export default function EditBranchPage() {
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                     <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                      Branch Location
+                      {t("branch_location")}
                     </label>
                   </div>
                 </div>
@@ -573,9 +574,9 @@ export default function EditBranchPage() {
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                   <div className="relative w-full">
                     <ControlledTextInput
-                      label="Address"
+                      label={t("address")}
                       name="address"
-                      placeholder="Address"
+                      placeholder={t("address")}
                     />
 
                     <Image
@@ -588,9 +589,9 @@ export default function EditBranchPage() {
                   </div>
 
                   <ControlledTextInput
-                    label="City"
+                    label={t("city")}
                     name="city"
-                    placeholder="City"
+                    placeholder={t("city")}
                   />
                 </div>
 
@@ -639,9 +640,9 @@ export default function EditBranchPage() {
                   />
 
                   <ControlledTextInput
-                    label="Branch Contact Name"
+                    label={t("branch_contact_name")}
                     name="contactName"
-                    placeholder="Branch Contact Name"
+                    placeholder={t("branch_contact_name")}
                   />
                 </div>
               </div>
@@ -650,7 +651,7 @@ export default function EditBranchPage() {
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                     <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                      Branch Working Hours
+                      {t("branch_working_hours")}
                     </label>
                   </div>
                 </div>
@@ -658,7 +659,7 @@ export default function EditBranchPage() {
                   <div className="flex flex-wrap">
                     <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
                       <Label htmlFor="startTime" className="text-color-dark">
-                        Start Time
+                        {t("start_time")}
                       </Label>
                       <Controller
                         name="startTime"
@@ -686,7 +687,7 @@ export default function EditBranchPage() {
 
                     <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
                       <Label htmlFor="endTime" className="text-color-dark">
-                        End Time
+                        {t("end_time")}
                       </Label>
                       <Controller
                         name="endTime"
@@ -696,7 +697,7 @@ export default function EditBranchPage() {
                             {...field}
                             className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                           >
-                            <option value="">Select</option>
+                            <option value="">{t("select")}</option>
                             {HOURS_24_FORMAT.map(
                               (hour: string, index: number) => (
                                 <option key={index} value={hour}>
@@ -750,7 +751,7 @@ export default function EditBranchPage() {
                   </div>
                   {form.formState.errors.workingDays?.message ? (
                     <p className="text-[13px] text-red-500">
-                      Working Day is required
+                      {t("working_day_required")}
                     </p>
                   ) : null}
                 </div>
@@ -803,10 +804,10 @@ export default function EditBranchPage() {
                     height={20}
                     className="mr-2 animate-spin"
                   />
-                  Please wait
+                  {t}
                 </>
               ) : (
-                "Edit changes"
+                t("edit_changes")
               )}
             </Button>
           </form>

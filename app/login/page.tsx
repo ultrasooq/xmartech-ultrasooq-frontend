@@ -26,6 +26,7 @@ import Link from "next/link";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { fetchUserPermissions } from "@/apis/requests/user.requests";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   email: z
@@ -50,6 +51,7 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
@@ -197,9 +199,9 @@ export default function LoginPage() {
             <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                  Login
+                  {t("login")}
                 </h2>
-                <p>Login to your account</p>
+                <p>{t("login_to_your_account")}</p>
               </div>
               <div className="w-full">
                 <Form {...form}>
@@ -208,13 +210,13 @@ export default function LoginPage() {
                     onSubmit={form.handleSubmit(onSubmit)}
                   >
                     <ControlledTextInput
-                      label="Email or Phone number or ID"
+                      label={t("email_phone_id")}
                       name="email"
-                      placeholder="Enter Your Email or Phone number or ID"
+                      placeholder={t("enter_email_phone_id")}
                     />
 
                     <ControlledTextInput
-                      label="Password"
+                      label={t("password")}
                       name="password"
                       placeholder="**********"
                       type="password"
@@ -232,7 +234,7 @@ export default function LoginPage() {
                             htmlFor="remember"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           >
-                            Remember me
+                            {t("remember_me")}
                           </label>
                         </div>
                         <div className="w-auto">
@@ -240,7 +242,7 @@ export default function LoginPage() {
                             className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
                             href="/forget-password"
                           >
-                            Forgot Password?
+                            {t("forgot_password")}
                           </Link>
                         </div>
                       </div>
@@ -254,7 +256,7 @@ export default function LoginPage() {
                         {login.isPending ? (
                           <LoaderWithMessage message="Please wait" />
                         ) : (
-                          "Login"
+                          t("login")
                         )}
                       </Button>
                     </div>

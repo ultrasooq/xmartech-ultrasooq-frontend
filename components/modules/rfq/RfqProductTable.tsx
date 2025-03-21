@@ -12,12 +12,15 @@ import Image from "next/image";
 import validator from "validator";
 import { TrendingProduct } from "@/utils/types/common.types";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useTranslations } from "next-intl";
 
 type ProducTableProps = {
   list: TrendingProduct[];
 };
 
 const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
+  const t = useTranslations();
+
   return (
     <CardContent className="main-content w-full">
       <Card className="main-content-card !p-0 shadow-none">
@@ -25,11 +28,11 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>{t("product")}</TableHead>
+                <TableHead>{t("category")}</TableHead>
                 {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
                 {/* <TableHead>SKU No</TableHead> */}
-                <TableHead>Brand</TableHead>
+                <TableHead>{t("brand")}</TableHead>
                 {/* <TableHead>Price</TableHead> */}
               </TableRow>
             </TableHeader>

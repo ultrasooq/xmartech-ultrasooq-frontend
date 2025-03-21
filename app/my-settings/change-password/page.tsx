@@ -21,6 +21,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import { useTranslations } from "next-intl";
 
 const formSchema = z
   .object({
@@ -63,6 +64,7 @@ const formSchema = z
   });
 
 export default function ChangePasswordPage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -132,7 +134,7 @@ export default function ChangePasswordPage() {
             ) : (
               <>
                 <h2 className="mb-4 text-[18px] font-semibold md:text-[22px]">
-                  Change Password
+                  {t("change_password")}
                 </h2>
                 <div className="w-full">
                   <Form {...form}>
@@ -145,7 +147,7 @@ export default function ChangePasswordPage() {
                         name="password"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full">
-                            <FormLabel>Old Password</FormLabel>
+                            <FormLabel>{t("old_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
@@ -164,7 +166,7 @@ export default function ChangePasswordPage() {
                         name="newPassword"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full">
-                            <FormLabel>New Password</FormLabel>
+                            <FormLabel>{t("new_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
@@ -183,7 +185,7 @@ export default function ChangePasswordPage() {
                         name="confirmPassword"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full">
-                            <FormLabel>Re-Enter New Password</FormLabel>
+                            <FormLabel>{t("reenter_new_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
@@ -212,10 +214,10 @@ export default function ChangePasswordPage() {
                                 height={20}
                                 className="mr-2 animate-spin"
                               />
-                              Please wait
+                              {t("please_wait")}
                             </>
                           ) : (
-                            "Change Password"
+                            t("change_password")
                           )}
                         </Button>
                       </div>

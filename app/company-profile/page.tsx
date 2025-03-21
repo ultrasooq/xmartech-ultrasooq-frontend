@@ -37,6 +37,7 @@ import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -187,6 +188,7 @@ const formSchema = z.object({
 });
 
 export default function CompanyProfilePage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -404,14 +406,14 @@ export default function CompanyProfilePage() {
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Company Profile
+                {t("company_profile")}
               </h2>
             </div>
             <div className="flex w-full flex-wrap">
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                   <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                    Company Information
+                    {t("company_information")}
                   </label>
                 </div>
               </div>
@@ -422,7 +424,7 @@ export default function CompanyProfilePage() {
                     name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5">
-                        <FormLabel>Upload Company Logo</FormLabel>
+                        <FormLabel>{t("upload_company_logo")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -449,13 +451,13 @@ export default function CompanyProfilePage() {
                                       alt="camera"
                                     />
                                     <span>
-                                      Drop your Company Logo here, or{" "}
+                                      {t("drop_your_company_logo")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
                                     <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                      (.jpg or .png only. Up to 1mb)
+                                      ({t("company_logo_spec")})
                                     </p>
                                   </div>
                                 </div>
@@ -494,14 +496,14 @@ export default function CompanyProfilePage() {
 
                   <div className="mb-3.5 w-full md:w-6/12 md:pl-3.5">
                     <ControlledTextInput
-                      label="Company Name"
+                      label={t("company_name")}
                       name="companyName"
-                      placeholder="Company Name"
+                      placeholder={t("company_name")}
                     />
 
                     {/* TODO:fix this */}
                     <ControlledSelectInput
-                      label="Business Type"
+                      label={t("business_type")}
                       name="businessTypeList"
                       options={memoizedTags.map((item: OptionProps) => ({
                         value: item.value?.toString(),
@@ -510,9 +512,9 @@ export default function CompanyProfilePage() {
                     />
 
                     <ControlledTextInput
-                      label="Annual Purchasing Volume"
+                      label={t("annual_purchasing_volume")}
                       name="annualPurchasingVolume"
-                      placeholder="Annual Purchasing Volume"
+                      placeholder={t("annual_purchasing_volume")}
                       type="number"
                       onWheel={(e) => e.currentTarget.blur()}
                     />
@@ -523,16 +525,16 @@ export default function CompanyProfilePage() {
               <div className="mb-3.5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
                   <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
-                    Registration Address
+                    {t("registration_address")}
                   </label>
                 </div>
                 <div className="flex flex-wrap">
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <div className="relative w-full">
                       <ControlledTextInput
-                        label="Address"
+                        label={t("address")}
                         name="address"
-                        placeholder="Address"
+                        placeholder={t("address")}
                       />
 
                       <Image
@@ -545,21 +547,21 @@ export default function CompanyProfilePage() {
                     </div>
 
                     <ControlledTextInput
-                      label="City"
+                      label={t("city")}
                       name="city"
-                      placeholder="City"
+                      placeholder={t("city")}
                     />
                   </div>
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <ControlledTextInput
-                      label="Province"
+                      label={t("province")}
                       name="province"
-                      placeholder="Province"
+                      placeholder={t("province")}
                     />
 
                     <ControlledSelectInput
-                      label="Country"
+                      label={t("country")}
                       name="country"
                       options={memoizedCountries}
                     />
@@ -570,14 +572,14 @@ export default function CompanyProfilePage() {
               <div className="mb-5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
                   <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
-                    More Information
+                    {t("more_information")}
                   </label>
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                   {/* TODO: fix submit value type */}
                   <ControlledSelectInput
-                    label="Year Of Establishment"
+                    label={t("year_of_establishment")}
                     name="yearOfEstablishment"
                     options={memoizedLastTwoHundredYears?.map((item: any) => ({
                       label: item?.toString(),
@@ -586,20 +588,20 @@ export default function CompanyProfilePage() {
                   />
 
                   <ControlledSelectInput
-                    label="Total Number of Employees"
+                    label={t("total_no_of_employees")}
                     name="totalNoOfEmployee"
                     options={NO_OF_EMPLOYEES_LIST}
                   />
                 </div>
 
-                <ControlledRichTextEditor label="About Us" name="aboutUsJson" />
+                <ControlledRichTextEditor label={t("about_us")} name="aboutUsJson" />
               </div>
             </div>
 
             <div className="mb-3.5 w-full">
               <div className="mb-4 flex w-full items-center justify-between border-y border-solid border-gray-200 py-2.5">
                 <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
-                  Branch
+                  {t("branch")}
                 </label>
                 <Button
                   type="button"
@@ -613,7 +615,7 @@ export default function CompanyProfilePage() {
                     height={14}
                     alt="add-icon"
                   />
-                  <span>Add new branch</span>
+                  <span>{t("add_new_branch")}</span>
                 </Button>
               </div>
             </div>
@@ -622,10 +624,10 @@ export default function CompanyProfilePage() {
               <div key={field.id}>
                 <div className="mb-3.5 w-full">
                   <AccordionMultiSelectV2
-                    label="Business Type"
+                    label={t("business_type")}
                     name={`branchList.${index}.businessTypeList`}
                     options={memoizedTags || []}
-                    placeholder="Business Type"
+                    placeholder={t("business_type")}
                     error={String(form.formState.errors?.branchList?.[index]?.businessTypeList?.message)}
                   />
 
@@ -634,7 +636,7 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.branchFrontPicture`}
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full">
-                        <FormLabel>Upload Branch Front Picture</FormLabel>
+                        <FormLabel>{t("upload_branch_front_picture")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -662,13 +664,13 @@ export default function CompanyProfilePage() {
                                       alt="camera"
                                     />
                                     <span>
-                                      Drop your Branch Front Picture here, or{" "}
+                                      {t("drop_your_branch_front_picture")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
                                     <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                      (.jpg or .png only. Up to 1mb)
+                                      ({t("branch_front_picture_spec")})
                                     </p>
                                   </div>
                                 </div>
@@ -687,8 +689,7 @@ export default function CompanyProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title:
-                                          "Image size should be less than 500MB",
+                                        title: "Image size should be less than 500MB",
                                         variant: "danger",
                                       });
                                       return;
@@ -714,7 +715,7 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.proofOfAddress`}
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full">
-                        <FormLabel>Proof Of Address</FormLabel>
+                        <FormLabel>{t("proof_of_address")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -741,13 +742,13 @@ export default function CompanyProfilePage() {
                                       alt="camera"
                                     />
                                     <span>
-                                      Drop your Proof of Address here, or{" "}
+                                      {t("drop_your_address_proof")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
                                     <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                      (.jpg or .png only. Up to 1mb)
+                                      ({t("address_proof_spec")})
                                     </p>
                                   </div>
                                 </div>
@@ -794,7 +795,7 @@ export default function CompanyProfilePage() {
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                       <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                        Branch Location
+                        {t("branch_location")}
                       </label>
                     </div>
                   </div>
@@ -802,9 +803,9 @@ export default function CompanyProfilePage() {
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <div className="relative w-full">
                       <ControlledTextInput
-                        label="Address"
+                        label={t("address")}
                         name={`branchList.${index}.address`}
-                        placeholder="Address"
+                        placeholder={t("address")}
                       />
 
                       <Image
@@ -817,21 +818,21 @@ export default function CompanyProfilePage() {
                     </div>
 
                     <ControlledTextInput
-                      label="City"
+                      label={t("city")}
                       name={`branchList.${index}.city`}
-                      placeholder="City"
+                      placeholder={t("city")}
                     />
                   </div>
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <ControlledTextInput
-                      label="Province"
+                      label={t("province")}
                       name={`branchList.${index}.province`}
-                      placeholder="Province"
+                      placeholder={t("province")}
                     />
 
                     <ControlledSelectInput
-                      label="Country"
+                      label={t("country")}
                       name={`branchList.${index}.country`}
                       options={memoizedCountries}
                     />
@@ -839,16 +840,16 @@ export default function CompanyProfilePage() {
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <ControlledPhoneInput
-                      label="Branch Contact Number"
+                      label={t("branch_contact_number")}
                       name={`branchList.${index}.contactNumber`}
                       countryName="cc"
-                      placeholder="Branch Contact Number"
+                      placeholder={t("branch_contact_number")}
                     />
 
                     <ControlledTextInput
-                      label="Branch Contact Name"
+                      label={t("branch_contact_name")}
                       name={`branchList.${index}.contactName`}
-                      placeholder="Branch Contact Name"
+                      placeholder={t("branch_contact_name")}
                     />
                   </div>
                 </div>
@@ -857,7 +858,7 @@ export default function CompanyProfilePage() {
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                       <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                        Branch Working Hours
+                        {t("branch_working_hours")}
                       </label>
                     </div>
                   </div>
@@ -865,7 +866,7 @@ export default function CompanyProfilePage() {
                     <div className="flex flex-wrap">
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
                         <Label htmlFor="startTime" className="text-color-dark">
-                          Start Time
+                          {t("start_time")}
                         </Label>
                         <Controller
                           name={`branchList.${index}.startTime`}
@@ -896,7 +897,7 @@ export default function CompanyProfilePage() {
 
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
                         <Label htmlFor="endTime" className="text-color-dark">
-                          End Time
+                          {t("end_time")}
                         </Label>
                         <Controller
                           name={`branchList.${index}.endTime`}
@@ -1040,7 +1041,7 @@ export default function CompanyProfilePage() {
                   Please wait
                 </>
               ) : (
-                "Save changes"
+                t("save_cahnges")
               )}
             </Button>
           </form>

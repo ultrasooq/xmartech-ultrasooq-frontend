@@ -5,6 +5,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import { Input } from "@/components/ui/input";
 import { useCreateShareLink } from "@/apis/queries/seller-reward.queries";
 import { toast } from "@/components/ui/use-toast";
+import { useTranslations } from "next-intl";
 
 type SellerRewardDetailProps = {
     reward: { [key: string]: string };
@@ -12,6 +13,7 @@ type SellerRewardDetailProps = {
 };
 
 const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose }) => {
+    const t = useTranslations();
     const createShareLink = useCreateShareLink();
 
     const generateShareLink = async () => {
@@ -38,7 +40,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
         <>
             <div className="modal-header !justify-between">
                 <DialogTitle className="text-center text-xl font-bold">
-                    Seller Reward
+                    {t("seller_reward")}
                 </DialogTitle>
                 <Button
                     onClick={onClose}
@@ -49,7 +51,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
             </div>
             <div className="card-item card-payment-form px-5 pb-5">
                 <label className="text-sm font-medium leading-none text-color-dark">
-                    Start Time
+                    {t("start_time")}
                 </label>
                 <Input
                     value={reward.startTime}
@@ -57,7 +59,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                 />
 
                 <label className="text-sm font-medium leading-none text-color-dark">
-                    End Time
+                    {t("end_time")}
                 </label>
                 <Input
                     value={reward.endTime}
@@ -65,7 +67,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                 />
 
                 <label className="text-sm font-medium leading-none text-color-dark">
-                    Reward Percentage
+                    {t("reward_percentage")}
                 </label>
                 <Input
                     value={reward.rewardPercentage}
@@ -73,7 +75,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                 />
 
                 <label className="text-sm font-medium leading-none text-color-dark">
-                    Reward Fix Amount
+                    {t("reward_fix_amount")}
                 </label>
                 <Input
                     value={reward.rewardFixAmount}
@@ -81,7 +83,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                 />
 
                 <label className="text-sm font-medium leading-none text-color-dark">
-                    Minimum Order
+                    {t("minimum_order")}
                 </label>
                 <Input
                     value={reward.minimumOrder}
@@ -89,7 +91,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                 />
 
                 <label className="text-sm font-medium leading-none text-color-dark">
-                    Stock
+                    {t("stock")}
                 </label>
                 <Input
                     value={reward.stock}
@@ -102,7 +104,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                     onClick={generateShareLink}
                 >
-                    {!createShareLink?.isPending ? "Generate Link" : "Processing"}
+                    {!createShareLink?.isPending ? t("generate_link") : t("processing")}
                 </Button>
             </div>
         </>

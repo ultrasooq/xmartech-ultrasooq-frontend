@@ -5,8 +5,10 @@ import { useShareLinks } from "@/apis/queries/seller-reward.queries";
 import { toast } from "@/components/ui/use-toast";
 import { PERMISSION_SHARE_LINKS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const ShareLinksPage = () => {
+    const t = useTranslations();
     const router = useRouter();
     const hasPermission = checkPermission(PERMISSION_SHARE_LINKS);
     const [page, setPage] = useState(1);
@@ -52,7 +54,7 @@ const ShareLinksPage = () => {
             <div className="container relative z-10 m-auto px-3">
                 <div className="flex w-full flex-wrap">
                     <div className="team_members_heading w-full">
-                        <h1>Share Links</h1>
+                        <h1>{t("share_links")}</h1>
                     </div>
                     <div className="team_members_table w-full">
                         {!shareLinksQuery?.isLoading && shareLinks.length ? (
@@ -60,7 +62,7 @@ const ShareLinksPage = () => {
                                 <table cellPadding={0} cellSpacing={0} border={0}>
                                     <thead>
                                         <tr>
-                                            <th>Product</th>
+                                            <th>{t("product")}</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -74,7 +76,7 @@ const ShareLinksPage = () => {
                                                     </td>
                                                     <td>
                                                         <button type="button" onClick={() => copyShareLink(item.id, item.productId)}>
-                                                            Copy Share Link
+                                                            {t("copy_share_link")}
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -87,7 +89,7 @@ const ShareLinksPage = () => {
 
                         {!shareLinksQuery?.isLoading && !shareLinks.length ? (
                             <p className="py-10 text-center text-sm font-medium">
-                                No Data Found
+                                {t("no_data_found")}
                             </p>
                         ) : null}
 

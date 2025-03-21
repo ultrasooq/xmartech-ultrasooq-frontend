@@ -27,6 +27,7 @@ import { useMe } from "@/apis/queries/user.queries";
 import AddToCustomizeForm from "../factories/AddToCustomizeForm";
 import { useSellerRewards } from "@/apis/queries/seller-reward.queries";
 import SellerRewardDetail from "./SellerRewardDetail";
+import { useTranslations } from "next-intl";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -57,6 +58,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   openCartCard,
   onProductUpdateSuccess,
 }) => {
+  const t = useTranslations();
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -251,7 +253,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 onClick={handleToCustomizeModal}
                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
               >
-                Send to Customize
+                {t("send_to_customize")}
               </Button>
               <Button
                 type="button"
@@ -259,7 +261,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 onClick={onToCart}
                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
               >
-                Message Vendor
+                {t("message_vendor")}
               </Button>
             </>
           ) : null}
@@ -282,7 +284,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             type="button"
             className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
           >
-            Ask vendor for price
+            {t("ask_vendor_for_price")}
           </Button>
         </Link>
       ) : null}
@@ -293,7 +295,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             onClick={onAdd}
             className="h-14 max-w-[205px] flex-1 rounded-none bg-color-yellow text-base"
           >
-            {"Add To Cart"}
+            {t("add_to_cart")}
           </Button>
           <Button
             type="button"
@@ -301,7 +303,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             onClick={onToCart}
             className="h-14 max-w-[205px] flex-1 rounded-none bg-dark-orange text-base"
           >
-            Buy Now
+            {t("buy_now")}
           </Button>
           {reward && (
             <Button
@@ -309,7 +311,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               onClick={() => setIsSellerRewardDetailModalOpen(true)}
               className="h-14 flex-1 rounded-none bg-dark-orange text-base"
             >
-              Generate Share Link
+              {t("generate_share_link")}
             </Button>
           )}
         </div>

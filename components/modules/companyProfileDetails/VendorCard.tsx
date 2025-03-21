@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 import NoImagePlaceholder from "@/public/images/no-image.jpg";
 import { COMPANY_UNIQUE_ID } from "@/utils/constants";
+import { useTranslations } from "next-intl";
 
 type VendorCardProps = {
   vendor: any;
@@ -9,6 +10,8 @@ type VendorCardProps = {
 };
 
 const VendorCard: React.FC<VendorCardProps> = ({ vendor }) => {
+  const t = useTranslations();
+
   return (
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
       <div className="relative h-40 w-40 rounded-2xl">
@@ -32,7 +35,7 @@ const VendorCard: React.FC<VendorCardProps> = ({ vendor }) => {
         <div className="mt-3 h-auto w-full"></div>
         <div className="text-normal mt-4 w-full text-sm font-normal leading-4 text-gray-500">
           <p>
-            Annual Purchasing Volume:{" "}
+            {t("annual_purchasing_volume")}:{" "}
             <span className="font-bold text-dark-cyan">
               {vendor?.userProfile?.[0]?.annualPurchasingVolume
                 ? `$${vendor.userProfile[0].annualPurchasingVolume}`
@@ -41,7 +44,7 @@ const VendorCard: React.FC<VendorCardProps> = ({ vendor }) => {
           </p>
         </div>
         <div className="text-normal mt-4 w-full text-sm font-normal leading-4 text-gray-500">
-          <h5>Business Type</h5>
+          <h5>{t("business_type")}</h5>
           <div className="tagLists">
             <div className="tagItem">
               {vendor?.userProfile
@@ -58,7 +61,7 @@ const VendorCard: React.FC<VendorCardProps> = ({ vendor }) => {
         <div className="mt-4 flex w-full flex-wrap items-center justify-between">
           <div className="my-2 text-sm font-normal leading-4 text-gray-500">
             <p>
-              Company ID:
+              {t("company_id")}:
               <span className="text-base font-medium leading-4 text-gray-600">
                 {vendor?.uniqueId
                   ? `${COMPANY_UNIQUE_ID}${vendor?.uniqueId}`

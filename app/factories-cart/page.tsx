@@ -30,6 +30,7 @@ import { z } from "zod";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
 import Footer from "@/components/shared/Footer";
 import FactoriesCustomizedProductCard from "@/components/modules/factoriesCart/FactoriesCustomizedProductCard";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   address: z.string().trim().min(1, { message: "Address is required" }),
@@ -39,6 +40,7 @@ const formSchema = z.object({
 });
 
 const FactoriesCartPage = () => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
@@ -175,21 +177,21 @@ const FactoriesCartPage = () => {
               >
                 <MdOutlineChevronLeft />
               </button>
-              <h3>Customize Cart Items</h3>
+              <h3>{t("customize_cart_items")}</h3>
             </div>
             <div className="bodyPart">
               <div className="add-delivery-card">
-                <h3>Add Delivery Address & date</h3>
+                <h3>{t("add_delivery_address_date")}</h3>
                 <Form {...form}>
                   <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
                     <ControlledSelectInput
-                      label="Address"
+                      label={t("address")}
                       name="address"
                       options={memoziedAddressList}
                     />
 
                     <div>
-                      <Label>Date</Label>
+                      <Label>{t("date")}</Label>
                       <ControlledDatePicker name="factoriesDate" isFuture />
                     </div>
                   </form>
@@ -197,7 +199,7 @@ const FactoriesCartPage = () => {
               </div>
 
               <div className="rfq-cart-item-lists">
-                <h4>Customize Cart Items</h4>
+                <h4>{t("customize_cart_items")}</h4>
                 <div className="rfq-cart-item-ul">
                   {memoizedFactoriseCartList.map((item: any) => (
                     <FactoriesCustomizedProductCard
@@ -223,7 +225,7 @@ const FactoriesCartPage = () => {
 
                   {!memoizedFactoriseCartList.length ? (
                     <div className="my-10 text-center">
-                      <h4>No items in cart</h4>
+                      <h4>{t("no_cart_items")}</h4>
                     </div>
                   ) : null}
                 </div>
@@ -243,10 +245,10 @@ const FactoriesCartPage = () => {
                         height={20}
                         className="mr-2 animate-spin"
                       />
-                      Please wait
+                      {t("please_wait")}
                     </>
                   ) : (
-                    "Request For Customize "
+                    t("request_for_customize")
                   )}
                 </Button>
               </div>

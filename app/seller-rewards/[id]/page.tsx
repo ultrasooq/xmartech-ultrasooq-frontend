@@ -6,8 +6,10 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { PERMISSION_SELLER_REWARDS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const SellerRewardDetailPage = () => {
+    const t = useTranslations();
     const router = useRouter();
     const hasPermission = checkPermission(PERMISSION_SELLER_REWARDS);
     const searchParams = useParams();
@@ -46,13 +48,13 @@ const SellerRewardDetailPage = () => {
             <div className="container relative z-10 m-auto px-3">
                 <div className="flex w-full flex-wrap">
                     <div className="team_members_heading w-full">
-                        <h1>Share Links</h1>
+                        <h1>{t("share_links")}</h1>
                         <div className="flex justify-end gap-3">
                             <Link
                                 href={"/seller-rewards"}
                                 className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
                             >
-                                Back
+                                {t("back")}
                             </Link>
                         </div>
                     </div>
@@ -63,10 +65,10 @@ const SellerRewardDetailPage = () => {
                                 <table cellPadding={0} cellSpacing={0} border={0}>
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Phone Number</th>
-                                            <th>Total Sell</th>
-                                            <th>Orders Placed</th>
+                                            <th>{t("name")}</th>
+                                            <th>{t("phone_number")}</th>
+                                            <th>{t("total_sell")}</th>
+                                            <th>{t("orders_placed")}</th>
                                         </tr>
                                     </thead>
 
@@ -88,7 +90,7 @@ const SellerRewardDetailPage = () => {
 
                         {!sharedLinksBySellerRewardQuery?.isLoading && !sharedLinks.length ? (
                             <p className="py-10 text-center text-sm font-medium">
-                                No Data Found
+                                {t("no_data_found")}
                             </p>
                         ) : null}
 

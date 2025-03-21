@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useTranslations } from "next-intl";
 
 type RfqCartMenuCardProps = {
   id: number;
@@ -36,6 +37,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
   offerPrice,
   note,
 }) => {
+  const t = useTranslations();
   // const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
 
@@ -117,7 +119,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
               onRemove(id);
             }}
           >
-            Remove
+            {t("remove")}
           </Button>
         </div>
       </div>

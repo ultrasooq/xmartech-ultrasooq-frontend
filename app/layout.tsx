@@ -12,6 +12,10 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
 import { AuthProvider } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketContext";
+import { NextIntlClientProvider } from 'next-intl';
+import { useEffect, useState } from "react";
+import { getLocale } from "next-intl/server";
+import { getUserLocale } from "@/src/services/locale";
 
 export const metadata: Metadata = {
   title: {
@@ -83,9 +87,11 @@ export default async function RootLayout({
 
   const permissions = await getUserPermissions();
 
+  const locale = await getLocale();
+
   return (
     <SessionWrapper>
-      <html lang="en">
+      <html lang={locale}>
         <body className={`${inter.className}`}>
           <ReactQueryProvider>
             <AuthProvider
@@ -94,11 +100,13 @@ export default async function RootLayout({
             >
               <SocketProvider>
                 <main className="overflow-x-visible">
-                  <Sidebar />
-                  <Header />
-                  <NextTopLoader color="#DB2302" showSpinner={false} />
-                  {children}
-                  <Toaster />
+                  <NextIntlClientProvider>
+                    <Sidebar />
+                    <Header locale={locale} />
+                    <NextTopLoader color="#DB2302" showSpinner={false} />
+                    {children}
+                    <Toaster />
+                  </NextIntlClientProvider>
                 </main>
               </SocketProvider>
             </AuthProvider>

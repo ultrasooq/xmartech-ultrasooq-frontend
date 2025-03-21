@@ -39,8 +39,10 @@ import PlateEditor from "@/components/shared/Plate/PlateEditor";
 import ProductCard from "@/components/modules/cartList/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CartItem } from "@/utils/types/cart.types";
+import { useTranslations } from "next-intl";
 
 const ProductDetailsPage = () => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const searchParams = useParams();
   const searchQuery = useSearchParams();
@@ -403,37 +405,37 @@ const ProductDetailsPage = () => {
                       value="description"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                     >
-                      Description
+                      {t("description")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="specification"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                     >
-                      Specification
+                      {t("specification")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="vendor"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                     >
-                      Vendor
+                      {t("vendor")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="reviews"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                     >
-                      Reviews
+                      {t("reviews")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="qanda"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                     >
-                      Questions
+                      {t("questions")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="offers"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                     >
-                      More Offers
+                      {t("more_offers")}
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="description" className="mt-0">
@@ -456,7 +458,7 @@ const ProductDetailsPage = () => {
                       ) : null}
                       {productDetails?.product_productSpecification?.length ? (
                         <div className="specification-sec">
-                          <h2>Specification</h2>
+                          <h2>{t("specification")}</h2>
                           <table className="specification-table">
                             <tbody>
                               <tr className="grid grid-cols-2">
@@ -542,7 +544,7 @@ const ProductDetailsPage = () => {
                   className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
                   onClick={handleCartPage}
                 >
-                  go to cart page
+                  {t("go_to_cart_page")}
                 </a>
               </div>
               <div className="cart-item-lists">
@@ -550,7 +552,7 @@ const ProductDetailsPage = () => {
                 !cartListByUser.data?.data?.length &&
                 !cartListByUser.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center">No items in cart</p>
+                    <p className="my-3 text-center">{t("no_cart_items")}</p>
                   </div>
                 ) : null}
 
@@ -558,7 +560,7 @@ const ProductDetailsPage = () => {
                 !cartListByDeviceQuery.data?.data?.length &&
                 !cartListByDeviceQuery.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center">No items in cart</p>
+                    <p className="my-3 text-center">{t("no_cart_items")}</p>
                   </div>
                 ) : null}
 

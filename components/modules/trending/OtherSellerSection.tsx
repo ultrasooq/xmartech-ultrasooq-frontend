@@ -20,6 +20,7 @@ import {
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
+import { useTranslations } from "next-intl";
 
 type OtherSellerSectionProps = {
   setIsDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -30,6 +31,7 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
   setIsDrawerOpen,
   otherSellerDetails,
 }) => {
+  const t = useTranslations();
   const router = useRouter();
   const searchParams = useParams();
   // const searchQuery = useSearchParams();
@@ -230,7 +232,7 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
 
         {!otherSellerDetails?.length && !productQueryById.isLoading ? (
           <p className="py-10 text-center text-sm font-medium">
-            No Sellers Found
+            {t("no_sellers_found")}
           </p>
         ) : null}
 

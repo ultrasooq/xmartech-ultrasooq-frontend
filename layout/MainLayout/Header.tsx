@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -52,6 +52,9 @@ import {
   getPermissions,
 } from "@/helpers/permission";
 import QueryForm from "@/components/modules/QueryForm";
+import { useTranslations } from "next-intl";
+import { cookies } from "next/headers";
+import { setUserLocale } from "@/src/services/locale";
 
 type CategoryProps = {
   id: number;
@@ -90,7 +93,9 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
   );
 };
 
-const Header = () => {
+const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
+  const t = useTranslations();
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -108,7 +113,7 @@ const Header = () => {
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
-  const { clearUser } = useAuth();
+  const { clearUser, applyTranslation } = useAuth();
   const wishlistCount = useWishlistCount(hasAccessToken);
   const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
   const cartCountWithoutLogin = useCartCountWithoutLogin(
@@ -174,7 +179,7 @@ const Header = () => {
       );
     }
     tempArr.unshift({
-      name: "Home",
+      name: t("home"),
       id: 0,
       icon: menuBarIconList[0],
     });
@@ -310,11 +315,11 @@ const Header = () => {
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <a href="#">Store Location</a>
+                    <a href="#">{t('store_location')}</a>
                   </li>
                   {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <Link href="/my-orders">Track Your Order</Link>
+                    <Link href="/my-orders">{t('track_your_order')}</Link>
                   </li>
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
@@ -325,13 +330,15 @@ const Header = () => {
                     </select>
                   </li>
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
-                    <GoogleTranslate />
-                    {/* <select className="border-0 bg-transparent text-white focus:outline-none">
-                      <option className="bg-dark-cyan">English</option>
-                      <option className="bg-dark-cyan">Arabic</option>
-                      <option className="bg-dark-cyan">German</option>
-                      <option className="bg-dark-cyan">French</option>
-                    </select> */}
+                    {/* <GoogleTranslate /> */}
+                    <select className="border-0 bg-transparent text-white focus:outline-none" 
+                      defaultValue={locale}
+                      onChange={(e) => applyTranslation(e.target.value)}>
+                      <option className="bg-dark-cyan" value="en">English</option>
+                      <option className="bg-dark-cyan" value="ar">Arabic</option>
+                      {/* <option className="bg-dark-cyan">German</option>
+                      <option className="bg-dark-cyan">French</option> */}
+                    </select>
                   </li>
                 </ul>
               </div>
@@ -372,7 +379,7 @@ const Header = () => {
                     className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
                     onClick={() => updateURL(searchTerm)} // Update URL when clicking search
                   >
-                    Search
+                    {t('search')}
                   </button>
                 </div>
               </div>
@@ -438,7 +445,7 @@ const Header = () => {
                         <DropdownMenuContent>
                           <Link href={handleProfile()}>
                             <DropdownMenuItem className="cursor-pointer">
-                              Profile Information
+                              {t('profile_information')}
                             </DropdownMenuItem>
                           </Link>
                           {/* <DropdownMenuSeparator /> */}
@@ -447,26 +454,26 @@ const Header = () => {
                               {hideMenu(PERMISSION_TEAM_MEMBERS) && (
                                 <Link href="/team-members">
                                   <DropdownMenuItem>
-                                    Team Members
+                                    {t('team_members')}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_PRODUCTS) && (
                                 <Link href="/manage-products">
-                                  <DropdownMenuItem>Products</DropdownMenuItem>
+                                  <DropdownMenuItem>{t('products')}</DropdownMenuItem>
                                 </Link>
                               )}
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_ORDERS) && (
                                 <Link href="/seller-orders">
-                                  <DropdownMenuItem>Orders</DropdownMenuItem>
+                                  <DropdownMenuItem>{t('orders')}</DropdownMenuItem>
                                 </Link>
                               )}
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_QUOTES) && (
                                 <Link href="/rfq-quotes">
                                   <DropdownMenuItem>
-                                    RFQ Quotes
+                                    {t('rfq_quotes')}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
@@ -474,14 +481,14 @@ const Header = () => {
                               {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
                                 <Link href="/seller-rfq-request">
                                   <DropdownMenuItem>
-                                    RFQ Seller Requests
+                                    {t('rfq_seller_requests')}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_SELLER_REWARDS) && (
                                 <Link href="/seller-rewards">
                                   <DropdownMenuItem>
-                                    Seller Rewards
+                                    {t('seller_rewards')}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
@@ -490,14 +497,14 @@ const Header = () => {
                           ) : null}
                           {hideMenu(PERMISSION_SHARE_LINKS) && (
                             <Link href="/share-links">
-                              <DropdownMenuItem>Share Links</DropdownMenuItem>
+                              <DropdownMenuItem>{t('share_links')}</DropdownMenuItem>
                             </Link>
                           )}
                           <Link href="/my-settings/address">
-                            <DropdownMenuItem>My Settings</DropdownMenuItem>
+                            <DropdownMenuItem>{t('my_settings')}</DropdownMenuItem>
                           </Link>
                           <Link href="/queries">
-                            <DropdownMenuItem>Queries</DropdownMenuItem>
+                            <DropdownMenuItem>{t('queries')}</DropdownMenuItem>
                           </Link>
                           <DropdownMenuSeparator />
                           {/* <DropdownMenuSeparator /> */}
@@ -505,7 +512,7 @@ const Header = () => {
                             onClick={handleLogout}
                             className="cursor-pointer"
                           >
-                            Logout
+                            {t('logout')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -522,13 +529,13 @@ const Header = () => {
                             href="/login"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
                           >
-                            Login
+                            {t('login')}
                           </Link>
                           <Link
                             href="/register"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
                           >
-                            Register
+                            {t('register')}
                           </Link>
                         </div>
                       </>
@@ -625,7 +632,7 @@ const Header = () => {
                       <Image src={HamburgerIcon} alt="hamburger-icon" />
                     </div>
                     <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
-                      All Categories
+                      {t('all_categories')}
                     </p>
                     <div>
                       <Image
@@ -846,7 +853,7 @@ const Header = () => {
                 <ul className="flex items-center justify-end gap-x-4">
                   <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
                     <a href="#" className="text-light-gray">
-                      Buyer Central
+                      {t('buyer_central')}
                     </a>
                   </li>
                   <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
@@ -855,7 +862,7 @@ const Header = () => {
                       className="text-light-gray"
                       onClick={handleToggleQueryModal}
                     >
-                      Help Center
+                      {t('help_center')}
                     </a>
                   </li>
                 </ul>

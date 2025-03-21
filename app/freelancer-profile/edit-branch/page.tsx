@@ -31,6 +31,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import ReactSelect from "react-select";
+import { useTranslations } from "next-intl";
 
 const customStyles = {
   control: (base: any) => ({
@@ -145,6 +146,7 @@ const formSchema = z
   });
 
 export default function EditBranchPage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -326,24 +328,24 @@ export default function EditBranchPage() {
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                  My Profile
+                  {t("my_profile")}
                 </h2>
               </div>
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                     <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                      Freelancer Information
+                      {t("freelancer_information")}
                     </label>
                   </div>
                 </div>
                 <div className="mb-3.5 w-full">
                   <div className="flex flex-wrap">
                     <AccordionMultiSelectV2
-                      label="Business Type"
+                      label={t("business_type")}
                       name="businessTypeList"
                       options={memoizedTags || []}
-                      placeholder="Business Type"
+                      placeholder={t("business_type")}
                       error={form.formState.errors.businessTypeList?.message}
                     />
                   </div>
@@ -353,7 +355,7 @@ export default function EditBranchPage() {
                     <div className="mb-4 w-full">
                       <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                         <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                          Address
+                          {t("address")}
                         </label>
                       </div>
                     </div>
@@ -361,9 +363,9 @@ export default function EditBranchPage() {
                     <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                       <div className="relative w-full">
                         <ControlledTextInput
-                          label="Address"
+                          label={t("address")}
                           name="address"
-                          placeholder="Address"
+                          placeholder={t("address")}
                         />
 
                         <Image
@@ -376,17 +378,17 @@ export default function EditBranchPage() {
                       </div>
 
                       <ControlledTextInput
-                        label="City"
+                        label={t("city")}
                         name="city"
-                        placeholder="City"
+                        placeholder={t("city")}
                       />
                     </div>
 
                     <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                       <ControlledTextInput
-                        label="Province"
+                        label={t("province")}
                         name="province"
-                        placeholder="Province"
+                        placeholder={t("province")}
                       />
 
                       {/* <ControlledSelectInput
@@ -395,7 +397,7 @@ export default function EditBranchPage() {
                         options={memoizedCountries}
                       /> */}
                       <div className="mt-2 flex flex-col gap-y-3">
-                        <Label>Country</Label>
+                        <Label>{t("country")}</Label>
                         <Controller
                           name="country"
                           control={form.control}
@@ -419,16 +421,16 @@ export default function EditBranchPage() {
 
                     <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                       <ControlledPhoneInput
-                        label="Branch Contact Number"
+                        label={t("branch_contact_number")}
                         name="contactNumber"
                         countryName="cc"
-                        placeholder="Branch Contact Number"
+                        placeholder={t("branch_contact_number")}
                       />
 
                       <ControlledTextInput
-                        label="Branch Contact Name"
+                        label={t("branch_contact_name")}
                         name="contactName"
-                        placeholder="Branch Contact Name"
+                        placeholder={t("branch_contact_name")}
                       />
                     </div>
                   </div>
@@ -438,14 +440,14 @@ export default function EditBranchPage() {
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                     <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                      Working Hours
+                      {t("working_hours")}
                     </label>
                   </div>
                 </div>
                 <div className="grid w-full grid-cols-1 gap-x-6 md:grid-cols-2">
                   <div className="mb-4 flex w-full flex-col gap-y-3">
                     <Label htmlFor="startTime" className="text-color-dark">
-                      Start Time
+                      {t("start_time")}
                     </Label>
                     <Controller
                       name="startTime"
@@ -472,7 +474,7 @@ export default function EditBranchPage() {
                   </div>
                   <div className="mb-4 flex w-full flex-col gap-y-3">
                     <Label htmlFor="endTime" className="text-color-dark">
-                      End Time
+                      {t("end_time")}
                     </Label>
                     <Controller
                       name="endTime"
@@ -536,7 +538,7 @@ export default function EditBranchPage() {
 
                   {form.formState.errors.workingDays?.message ? (
                     <p className="text-[13px] text-red-500">
-                      Working Day is required
+                      {t("working_day_required")}
                     </p>
                   ) : null}
                 </div>
@@ -569,10 +571,10 @@ export default function EditBranchPage() {
                       height={20}
                       className="mr-2 animate-spin"
                     />
-                    Please wait
+                    {t("please_wait")}
                   </>
                 ) : (
-                  "Edit changes"
+                  t("edit_changes")
                 )}
               </Button>
             </form>

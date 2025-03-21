@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import Image from "next/image";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 type InformationSectionProps = {
   userDetails: any;
@@ -10,6 +11,7 @@ type InformationSectionProps = {
 const InformationSection: React.FC<InformationSectionProps> = ({
   userDetails,
 }) => {
+  const t = useTranslations();
   const getSocialLinks = useMemo(() => {
     if (userDetails?.userSocialLink?.length > 0) {
       const socialLinks = userDetails?.userSocialLink?.map(
@@ -39,7 +41,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
     <div className="w-full border-b-2 border-dashed border-gray-200 py-4">
       <div className="flex w-full flex-wrap items-center justify-between pb-5">
         <h2 className="left-8 text-2xl font-semibold text-color-dark">
-          Contact Information
+          {t("contact_information")}
         </h2>
         <div className="w-auto">
           <Link
@@ -53,7 +55,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
               className="mr-1"
               alt="edit-icon"
             />
-            edit
+            {t("edit")}
           </Link>
         </div>
       </div>
@@ -62,7 +64,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
           <div className="flex w-full flex-wrap py-3.5">
             <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0">
               <span className="text-sm font-normal capitalize leading-4 text-gray-500">
-                email:
+                {t("email")}:
               </span>
             </div>
             <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0">
@@ -74,7 +76,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
           <div className="flex w-full flex-wrap py-3.5">
             <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0">
               <span className="text-sm font-normal capitalize leading-4 text-gray-500">
-                Phone:
+                {t("phone")}:
               </span>
             </div>
             <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0">
@@ -86,7 +88,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
           <div className="flex w-full flex-wrap py-3.5">
             <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0">
               <span className="text-sm font-normal capitalize leading-4 text-gray-500">
-                Social Links:
+                {t("social_links")}:
               </span>
             </div>
             <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0">

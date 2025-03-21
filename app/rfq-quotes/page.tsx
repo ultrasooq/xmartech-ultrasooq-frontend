@@ -37,8 +37,10 @@ import DeleteContent from "@/components/shared/DeleteContent";
 import { useToast } from "@/components/ui/use-toast";
 import { PERMISSION_RFQ_QUOTES, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const RfqQuotesPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_RFQ_QUOTES);
   const { toast } = useToast();
@@ -149,11 +151,11 @@ const RfqQuotesPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>RFQ ID</TableHead>
-                    <TableHead>Delivery Date</TableHead>
-                    <TableHead>No Of Quote</TableHead>
-                    <TableHead className="text-center">Action</TableHead>
+                    <TableHead>{t("product")}</TableHead>
+                    <TableHead>{t("rfq_id")}</TableHead>
+                    <TableHead>{t("delivery_date")}</TableHead>
+                    <TableHead>{t("no_of_quote")}</TableHead>
+                    <TableHead className="text-center">{t("action")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -224,7 +226,7 @@ const RfqQuotesPage = () => {
                                   className="td-dots-dropdown-item flex items-center gap-1"
                                 >
                                   <CgDetailsMore height={24} width={24} />
-                                  View
+                                  {t("view")}
                                 </Link>
                               </MenubarItem>
                               <MenubarSeparator />
@@ -241,7 +243,7 @@ const RfqQuotesPage = () => {
                                   alt="trash-icon"
                                   className="mr-2 h-4 w-4"
                                 />
-                                Delete
+                                {t("delete")}
                               </MenubarItem>
                             </MenubarContent>
                           </MenubarMenu>
@@ -263,7 +265,7 @@ const RfqQuotesPage = () => {
               {!memoizedRfqQuotesProducts.length &&
               !rfqQuotesByBuyerIdQuery.isLoading ? (
                 <p className="py-10 text-center text-sm font-medium">
-                  No Product Found
+                  {t("no_product_found")}
                 </p>
               ) : null}
 

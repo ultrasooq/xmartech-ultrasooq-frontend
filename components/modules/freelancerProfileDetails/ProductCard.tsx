@@ -15,6 +15,7 @@ import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
+import { useTranslations } from "next-intl";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -33,6 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   haveAccessToken,
   isSeller,
 }) => {
+  const t = useTranslations();
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
@@ -173,7 +175,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               type="button"
               className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
             >
-              Ask vendor for price
+              {t("ask_vendor_for_price")}
             </button>
           </Link>
         ) : (

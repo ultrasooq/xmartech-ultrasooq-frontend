@@ -44,6 +44,7 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
+import { useTranslations } from "next-intl";
 
 const addFormSchema = z.object({
   price: z.coerce
@@ -62,6 +63,7 @@ const addFormSchema = z.object({
 });
 
 const FactoriesPage = () => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
@@ -256,7 +258,7 @@ const FactoriesPage = () => {
 
   return (
     <>
-      <title>RFQ | Ultrasooq</title>
+      <title>{t("rfq")} | Ultrasooq</title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
@@ -274,7 +276,7 @@ const FactoriesPage = () => {
                     <input
                       type="search"
                       className="form-control"
-                      placeholder="Search Product"
+                      placeholder={t("search_product")}
                       onChange={handleRfqDebounce}
                     />
                     <button type="button">
@@ -292,7 +294,7 @@ const FactoriesPage = () => {
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
                         <div className="products_sec_top_left">
-                          <h4>trending & high rate product</h4>
+                          <h4>{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
                           <div className="trending_filter">
@@ -301,15 +303,15 @@ const FactoriesPage = () => {
                               defaultValue={sortBy}
                             >
                               <SelectTrigger className="custom-form-control-s1 bg-white">
-                                <SelectValue placeholder="Sort by" />
+                                <SelectValue placeholder={t("sort_by")} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
                                   <SelectItem value="newest">
-                                    Sort by latest
+                                    {t("sort_by_latest")}
                                   </SelectItem>
                                   <SelectItem value="oldest">
-                                    Sort by oldest
+                                    {t("sort_by_oldest")}
                                   </SelectItem>
                                 </SelectGroup>
                               </SelectContent>
@@ -349,7 +351,7 @@ const FactoriesPage = () => {
                       {!rfqProductsQuery?.data?.data?.length &&
                       !rfqProductsQuery.isLoading ? (
                         <p className="my-10 text-center text-sm font-medium">
-                          No data found
+                          {t("no_data_found")}
                         </p>
                       ) : null}
 
@@ -419,7 +421,7 @@ const FactoriesPage = () => {
           >
             <div className="modal-header !justify-between">
               <DialogTitle className="text-center text-xl font-bold">
-                Add To Factories
+                {t("add_to_factories")}
               </DialogTitle>
               <Button
                 onClick={handleToggleAddModal}
@@ -435,16 +437,16 @@ const FactoriesPage = () => {
                 className="card-item card-payment-form px-5 pb-5 pt-3"
               >
                 <ControlledTextareaInput
-                  label="Write a Note"
+                  label={t("write_a_note")}
                   name="note"
-                  placeholder="Write here..."
+                  placeholder=""
                   rows={6}
                 />
 
                 <ControlledTextInput
-                  label="Price"
+                  label={t("price")}
                   name="price"
-                  placeholder="Price"
+                  placeholder={t("price")}
                   type="number"
                 />
                 
@@ -454,8 +456,8 @@ const FactoriesPage = () => {
                   className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                 >
                   {addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending ? (
-                    <LoaderWithMessage message="Please wait" />
-                  ) : "Add"}
+                    <LoaderWithMessage message={t("please_wait")} />
+                  ) : t("add")}
                 </Button>
               </form>
             </Form>

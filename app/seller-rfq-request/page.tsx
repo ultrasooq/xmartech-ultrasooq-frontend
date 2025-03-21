@@ -9,8 +9,10 @@ import ProductChat from "@/components/modules/chat/productChat/ProductChat";
 import VendorOperations from "@/components/modules/vendorOperations/VendorOperations";
 import { PERMISSION_RFQ_SELLER_REQUESTS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const SellerRfqRequestPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_RFQ_SELLER_REQUESTS);
   const [currentTab, setCurrentTab] = useState<string>("RFQ");
@@ -67,7 +69,7 @@ const SellerRfqRequestPage = () => {
                     className="brightness-0 invert"
                   />
                 </div>
-                <div className="pl-1 text-sm font-medium">RFQ</div>
+                <div className="pl-1 text-sm font-medium">{t("rfq")}</div>
               </button>
             </li>
             <li
@@ -88,7 +90,7 @@ const SellerRfqRequestPage = () => {
                   />
                 </div>
                 <div className="pl-1 text-sm font-medium">
-                  Vendor Operations
+                  {t("vendor_operations")}
                 </div>
               </button>
             </li>

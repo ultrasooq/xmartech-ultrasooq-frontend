@@ -5,6 +5,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
 import { useQuestions } from "@/apis/queries/question.queries";
+import { useTranslations } from "next-intl";
 
 type QuestionsAnswersSectionProps = {
   hasAccessToken?: boolean;
@@ -15,6 +16,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
   hasAccessToken,
   productId,
 }) => {
+  const t = useTranslations();
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
   const [sortType, setSortType] = useState<"newest" | "oldest">("newest");
 
@@ -36,7 +38,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
       <div className="flex w-full flex-wrap items-center justify-between">
         <div className="flex w-auto flex-wrap items-start justify-start">
           <h2 className="mb-0 text-2xl font-semibold leading-7 text-color-dark">
-            Questions &amp; Answers
+            {t("question_n_answers")}
           </h2>
         </div>
         <div className="w-auto">
@@ -53,7 +55,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
                 className="mr-2"
                 alt="pen-icon"
               />
-              <span>Post a Question</span>
+              <span>{t("post_a_question")}</span>
             </button>
           ) : null}
         </div>
@@ -67,7 +69,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
               onClick={() => setSortType("newest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
-              Newest
+              {t("newest")}
             </Button>
           </li>
 
@@ -77,7 +79,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
               onClick={() => setSortType("oldest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
-              Oldest
+              {t("oldest")}
             </Button>
           </li>
         </ul>
@@ -86,7 +88,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
         <div className="w-full space-y-3">
           {!questionQuery?.data?.data?.length ? (
             <div className="w-full text-center text-sm font-bold text-dark-orange">
-              No questions found
+              {t("no_questions_found")}
             </div>
           ) : null}
 

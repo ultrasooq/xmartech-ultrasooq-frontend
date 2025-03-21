@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 
 type ViewMultiTagSectionProps = {
@@ -7,11 +8,13 @@ type ViewMultiTagSectionProps = {
 const ViewMultiTagSection: React.FC<ViewMultiTagSectionProps> = ({
   categoryDetails,
 }) => {
+  const t = useTranslations();
+
   return (
     <div className="mt-6 w-full pb-5">
       <div className="w-full">
         <label className="block text-lg font-semibold leading-5 text-color-dark">
-          Tag
+          {t("tag")}
         </label>
         <div className="flex w-full flex-wrap">
           {categoryDetails?.map((item: any) => (
