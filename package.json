@@ -99,6 +99,7 @@
     "moment": "^2.29.1",
     "next": "^14.1.0",
     "next-auth": "^4.24.7",
+    "next-intl": "^4.0.2",
     "nextjs-toploader": "^1.6.12",
     "postcss": "^8.4.35",
     "prop-types": "^15.7.2",

@@ -795,6 +795,7 @@ export default function EditBranchPage() {
               type="submit"
               className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
             >
+              
               {updateCompanyBranch.isPending || upload.isPending ? (
                 <>
                   <Image
@@ -804,7 +805,7 @@ export default function EditBranchPage() {
                     height={20}
                     className="mr-2 animate-spin"
                   />
-                  {t}
+                  {t("please_wait")}
                 </>
               ) : (
                 t("edit_changes")
