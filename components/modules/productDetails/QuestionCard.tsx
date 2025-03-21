@@ -3,6 +3,7 @@ import React, { useState } from "react";
 // import { Dialog, DialogContent } from "@/components/ui/dialog";
 // import AnswerForm from "./AnswerForm";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 type QuestionCardProps = {
   id: number;
@@ -23,6 +24,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   answers,
   isLastItem,
 }) => {
+  const t = useTranslations();
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
   // const handleToggleQuestionModal = () => setIsQuestionModalOpen(!isQuestionModalOpen);
@@ -55,7 +57,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           <>
             <p>
               <span className="mr-2 font-bold">A:</span>
-              {"No answer yet"}
+              {t("no_answer_yet")}
             </p>
             <p className="text-xs font-medium text-gray-500"></p>
           </>

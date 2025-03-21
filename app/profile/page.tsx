@@ -42,6 +42,7 @@ import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput
 import AddImageContent from "@/components/modules/profile/AddImageContent";
 import ClostIcon from "@/public/images/close-white.svg";
 import BackgroundImage from "@/public/images/before-login-bg.png";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   uploadImage: z.any().optional(),
@@ -99,6 +100,7 @@ const formSchema = z.object({
 });
 
 export default function ProfilePage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const frontIdentityRef = useRef<HTMLInputElement>(null);
@@ -316,9 +318,9 @@ export default function ProfilePage() {
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-9/12 lg:w-7/12 lg:p-12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Profile
+                {t("profile")}
               </h2>
-              <p>Update Profile</p>
+              <p>{t("update_profile")}</p>
             </div>
             <div className="w-full">
               <Form {...form}>
@@ -363,7 +365,7 @@ export default function ProfilePage() {
                                     height={29}
                                     alt="camera"
                                   />
-                                  <span>Upload Image</span>
+                                  <span>{t("upload_image")}</span>
                                 </div>
                               </div>
                             )}
@@ -400,15 +402,15 @@ export default function ProfilePage() {
                   />
 
                   <ControlledTextInput
-                    label="First Name"
+                    label={t("first_name")}
                     name="firstName"
-                    placeholder="Enter Your First Name"
+                    placeholder={t("enter_first_name")}
                   />
 
                   <ControlledTextInput
-                    label="Last Name"
+                    label={t("last_name")}
                     name="lastName"
-                    placeholder="Enter Your Last Name"
+                    placeholder={t("enter_last_name")}
                   />
 
                   <FormField
@@ -417,7 +419,7 @@ export default function ProfilePage() {
                     render={({ field }) => (
                       <FormItem className="mb-5 flex w-full flex-col items-start">
                         <FormLabel className="mb-3 mr-6 capitalize">
-                          Gender
+                          {t("gender")}
                         </FormLabel>
                         <FormControl>
                           <RadioGroup
@@ -452,13 +454,13 @@ export default function ProfilePage() {
                   />
 
                   <ControlledDatePicker
-                    label="Date of Birth"
+                    label={t("dob")}
                     name="dateOfBirth"
                   />
 
-                  <ControlledTextInput label="User Name" name="userName" placeholder="Enter Your User Name" />
-                  <ControlledTextInput label="Email" name="email" placeholder="Enter Your Email" disabled />
-                  <ControlledTextInput label="New Password" name="newPassword" placeholder="**********" type="password" />
+                  <ControlledTextInput label={t("username")} name="userName" placeholder={t("enter_username")} />
+                  <ControlledTextInput label={t("email")} name="email" placeholder={t("enter_email")} disabled />
+                  <ControlledTextInput label={t("new_password")} name="newPassword" placeholder="**********" type="password" />
 
                   <div className="w-full">
                     <div className="flex w-full items-center justify-between">
@@ -470,7 +472,7 @@ export default function ProfilePage() {
                             : "",
                         )}
                       >
-                        Phone Number
+                        {t("phone_number")}
                       </label>
 
                       <Button
@@ -485,7 +487,7 @@ export default function ProfilePage() {
                           height={14}
                           alt="add-icon"
                         />
-                        <span>Add Phone Number</span>
+                        <span>{t("add_phone_number")}</span>
                       </Button>
                     </div>
                   </div>
@@ -514,7 +516,7 @@ export default function ProfilePage() {
                   <div className="mb-1 w-full">
                     <div className="flex w-full items-center justify-between">
                       <label className="block text-left text-sm font-medium capitalize leading-4 text-color-dark">
-                        Social Links
+                        {t("social_links")}
                       </label>
 
                       <Button
@@ -529,7 +531,7 @@ export default function ProfilePage() {
                           height={14}
                           alt="add-icon"
                         />
-                        <span>Add Link</span>
+                        <span>{t("add_link")}</span>
                       </Button>
                     </div>
                   </div>
@@ -559,7 +561,7 @@ export default function ProfilePage() {
                                   alt="social-facebook-icon"
                                 />
                               ) : (
-                                <span className="capitalize">Select Type</span>
+                                <span className="capitalize">{t("select_type")}</span>
                               )}
                               <div className="wrap relative flex break-all">
                                 <p
@@ -589,13 +591,13 @@ export default function ProfilePage() {
 
                           <AccordionContent className="pb-0">
                             <ControlledSelectInput
-                              label="Type"
+                              label={t("type")}
                               name={`socialLinkList.${index}.linkType`}
                               options={SOCIAL_MEDIA_LIST}
                             />
 
                             <ControlledTextInput
-                              label="Link"
+                              label={t("link")}
                               name={`socialLinkList.${index}.link`}
                               placeholder="Enter Your Link"
                             />
@@ -624,7 +626,7 @@ export default function ProfilePage() {
                       render={({ field }) => (
                         <FormItem className="mb-3.5 w-full">
                           <FormLabel className="block">
-                            Upload Identity Proof
+                            {t("upload_identity_proof")}
                           </FormLabel>
                           <div className="upload-identity-proof-both-side">
                             <div className="upload-identity-proof-both-side-col">
@@ -673,7 +675,7 @@ export default function ProfilePage() {
                                         className="object-contain"
                                       />
                                     ) : (
-                                      <AddImageContent description="Drop your Identify proof here, or " />
+                                      <AddImageContent description={t("drop_your_identity_proof")} />
                                     )}
 
                                     <Input
@@ -757,7 +759,7 @@ export default function ProfilePage() {
                                         className="object-contain"
                                       />
                                     ) : (
-                                      <AddImageContent description="Drop your Identify proof here, or " />
+                                      <AddImageContent description={t("drop_your_identity_proof")} />
                                     )}
 
                                     <Input
@@ -817,10 +819,10 @@ export default function ProfilePage() {
                           height={20}
                           className="mr-2 animate-spin"
                         />
-                        Please wait
+                        {t("please_wait")}
                       </>
                     ) : (
-                      "Update Profile"
+                      t("update_profile")
                     )}
                   </Button>
                 </form>

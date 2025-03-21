@@ -23,6 +23,7 @@ import {
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { useTranslations } from "next-intl";
 
 type RelatedProductsSectionProps = {
   calculateTagIds: string;
@@ -33,6 +34,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
   calculateTagIds,
   productId,
 }) => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
@@ -206,7 +208,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
       <div className="container m-auto">
         <div className="products-header-filter">
           <div className="le-info">
-            <h3>Related products</h3>
+            <h3>{t("related_products")}</h3>
           </div>
         </div>
 

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 type TagInformationSectionProps = {
   tagDetails: any;
@@ -6,11 +7,13 @@ type TagInformationSectionProps = {
 const TagInformationSection: React.FC<TagInformationSectionProps> = ({
   tagDetails,
 }) => {
+  const t = useTranslations();
+
   return (
     <div className="mt-6 w-full pb-5">
       <div className="w-full">
         <label className="block text-lg font-semibold leading-5 text-color-dark">
-          Tag
+          {t("tag")}
         </label>
         <div className="flex w-full flex-wrap">
           {tagDetails?.userBranchTags?.map((item: any) => (

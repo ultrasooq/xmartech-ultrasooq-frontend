@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 type DeleteContentProps = {
   onClose: () => void;
@@ -19,13 +20,15 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
   onConfirm,
   isLoading,
 }) => {
+  const t = useTranslations();
+
   return (
     <DialogContent className="custom-ui-alert-popup danger-alert-popup">
       <DialogHeader className="alert-popup-headerpart">
-        <h1>Delete</h1>
+        <h1>{t("delete")}</h1>
       </DialogHeader>
       <DialogDescription className="alert-popup-bodypart">
-        <h4>Are you sure you want to delete?</h4>
+        <h4>{t("confirm_delete")}</h4>
       </DialogDescription>
       <DialogFooter className="alert-actions">
         <div className="alert-actions-col">
@@ -34,7 +37,7 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
             disabled={isLoading}
             className="alert--cancel-btn"
           >
-            No
+            {t("no")}
           </Button>
         </div>
         <div className="alert-actions-col">
@@ -52,10 +55,10 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
                   height={20}
                   className="mr-2 animate-spin"
                 />
-                Please wait
+                {t("please_wait")}
               </>
             ) : (
-              "Yes"
+              t("yes")
             )}
           </Button>
         </div>

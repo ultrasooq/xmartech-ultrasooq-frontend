@@ -17,6 +17,7 @@ import SelectInput from "@/components/shared/SelectInput";
 import { INPUT_TYPE_LIST, SIZE_LIST } from "@/utils/constants";
 import ControlledRadioInput from "@/components/shared/Forms/ControlledRadioInput";
 import ControlledCheckboxInput from "@/components/shared/Forms/ControlledCheckboxInput";
+import { useTranslations } from "next-intl";
 
 type ProductDetailsSectionProps = {};
 
@@ -29,6 +30,7 @@ type Field = {
 };
 
 const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
+  const t = useTranslations();
   const [selectOption, setSelectOption] = useState<string>();
   const [isCustomFieldModalOpen, setIsCustomFieldModalOpen] = useState(false);
   const [customfields, setCustomFields] = useState<Field[]>([]);
@@ -199,7 +201,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
       <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
         <div className="flex w-full flex-wrap">
           <div className="form-groups-common-sec-s1">
-            <h3>Product Details</h3>
+            <h3>{t("product_details")}</h3>
 
             <div className="mb-3.5 w-full">
               <div className="flex flex-wrap">
@@ -262,7 +264,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                       height={14}
                       width={14}
                     />
-                    Add Custom Field
+                    {t("add_custom_field")}
                   </Button>
                 </div>
               </div>
@@ -288,7 +290,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Label</Label>
+                <Label className="text-sm font-normal">{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -305,7 +307,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                         field: (
                           <ControlledTextInput
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value || "Enter Label"}
+                            label={e.target.value || t("enter_label")}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
@@ -323,7 +325,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   defaultValue={
                     customfields.filter(
                       (item) => item.key === customFieldType?.key,
-                    )?.[0]?.field?.props?.label || "Enter Label"
+                    )?.[0]?.field?.props?.label || t("enter_label")
                   }
                 />
               </div>
@@ -333,29 +335,29 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">Required</Label>
+                <Label className="text-sm font-normal">{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>Size</Label>
+                <Label>{t("size")}</Label>
                 <SelectInput
-                  label="Size"
+                  label={t("size")}
                   options={SIZE_LIST}
                   onValueChange={handleItemSize}
                 />
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>Input Type</Label>
+                <Label>{t("input_type")}</Label>
                 <SelectInput
-                  label="Input Type"
+                  label={t("input_type")}
                   options={INPUT_TYPE_LIST}
                   onValueChange={handleItemInputType}
                 />
               </div>
 
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Placeholder</Label>
+                <Label className="text-sm font-normal">{t("placeholder")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -391,7 +393,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   defaultValue={
                     customfields.filter(
                       (item) => item.key === customFieldType?.key,
-                    )?.[0]?.field?.props?.placeholder || "Enter Label"
+                    )?.[0]?.field?.props?.placeholder || t("enter_label")
                   }
                 />
               </div>
@@ -401,7 +403,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Label</Label>
+                <Label className="text-sm font-normal">{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -418,14 +420,14 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                         field: (
                           <ControlledTextareaInput
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value || "Enter Label"}
+                            label={e.target.value || t("enter_label")}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
                             }
                             placeholder={
                               tempFields[fieldIndex].field.props.placeholder ||
-                              "Enter Placeholder"
+                              t("enter_placeholder")
                             }
                           />
                         ),
@@ -436,7 +438,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   defaultValue={
                     customfields.filter(
                       (item) => item.key === customFieldType?.key,
-                    )?.[0]?.field?.props?.label || "Enter Label"
+                    )?.[0]?.field?.props?.label || t("enter_label")
                   }
                 />
               </div>
@@ -450,16 +452,16 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>Size</Label>
+                <Label>{t("size")}</Label>
                 <SelectInput
-                  label="Size"
+                  label={t("size")}
                   options={SIZE_LIST}
                   onValueChange={handleItemSize}
                 />
               </div>
 
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Placeholder</Label>
+                <Label className="text-sm font-normal">{t("placeholder")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -500,7 +502,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Label</Label>
+                <Label className="text-sm font-normal">{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -517,7 +519,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                         field: (
                           <ControlledSelectInput
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value || "Enter Label"}
+                            label={e.target.value || t("enter_label")}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
@@ -537,13 +539,13 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">Required</Label>
+                <Label className="text-sm font-normal">{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>Size</Label>
+                <Label>{t("size")}</Label>
                 <SelectInput
-                  label="Size"
+                  label={t("size")}
                   options={SIZE_LIST}
                   onValueChange={handleItemSize}
                 />
@@ -592,7 +594,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     }
                   }}
                 >
-                  Add
+                  {t("add")}
                 </Button>
               </div>
               <div>
@@ -677,7 +679,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Label</Label>
+                <Label className="text-sm font-normal">{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -694,7 +696,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                         field: (
                           <ControlledCheckboxInput
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value || "Enter Label"}
+                            label={e.target.value || t("enter_label")}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
@@ -714,7 +716,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">Required</Label>
+                <Label className="text-sm font-normal">{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex flex-row">
@@ -773,7 +775,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Label</Label>
+                <Label className="text-sm font-normal">{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -810,7 +812,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">Required</Label>
+                <Label className="text-sm font-normal">{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex flex-row">
@@ -860,7 +862,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     }
                   }}
                 >
-                  Add
+                  {t("add")}
                 </Button>
               </div>
               <div>
@@ -897,7 +899,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                                             key={tempFields[fieldIndex].key}
                                             label={
                                               tempFields[fieldIndex].field.props
-                                                .label || "Enter Label"
+                                                .label || t("enter_label")
                                             }
                                             name={
                                               tempFields[fieldIndex].field.props
@@ -945,7 +947,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">Label</Label>
+                <Label className="text-sm font-normal">{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -962,7 +964,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                         field: (
                           <ControlledDatePicker
                             key={tempFields[fieldIndex].key}
-                            label={e.target.value || "Enter Label"}
+                            label={e.target.value || t("enter_label")}
                             name={
                               tempFields[fieldIndex].field.props.name ||
                               "customFields"
@@ -981,13 +983,13 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">Required</Label>
+                <Label className="text-sm font-normal">{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>Size</Label>
+                <Label>{t("size")}</Label>
                 <SelectInput
-                  label="Size"
+                  label={t("size")}
                   options={SIZE_LIST}
                   onValueChange={handleItemSize}
                 />

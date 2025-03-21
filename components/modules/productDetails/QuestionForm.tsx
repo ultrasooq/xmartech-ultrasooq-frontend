@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useAddQuestion } from "@/apis/queries/question.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type QuestionFormProps = {
   onClose: () => void;
@@ -28,6 +29,7 @@ const formSchema = z.object({
 });
 
 const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
+  const t = useTranslations();
   const searchParams = useParams();
   const { toast } = useToast();
   const form = useForm({
@@ -67,22 +69,16 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
     <div>
       <DialogHeader>
         <DialogTitle className="mb-5 text-center text-xl font-semibold">
-          Post your question
+          {t("post_your_question")}
         </DialogTitle>
       </DialogHeader>
 
       <section className="grid gap-3 md:grid-cols-2">
         <div className="pl-5">
           <ul className="list-disc">
-            <li>Be specific, ask questions only about the product.</li>
-            <li>
-              Ensure you have gone through the product specifications before
-              posting your question.
-            </li>
-            <li>
-              Reach out to Ultrasooq customer care for queries related to
-              offers, orders, delivery etc.
-            </li>
+            <li>{t("question_instruction_1")}</li>
+            <li>{t("question_instruction_2")}</li>
+            <li>{t("question_instruction_3")}</li>
           </ul>
         </div>
 
@@ -92,9 +88,9 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
             className="card-item card-payment-form"
           >
             <ControlledTextareaInput
-              label="Type your question here"
+              label={t("type_your_question_here")}
               name="question"
-              placeholder="Enter your question here"
+              placeholder={t("enter_your_question_here")}
               rows={6}
             />
 
@@ -112,10 +108,10 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
                     height={20}
                     className="mr-2 animate-spin"
                   />
-                  Please wait
+                  {t("please_wait")}
                 </>
               ) : (
-                "Submit"
+                t("submit")
               )}
             </Button>
           </form>

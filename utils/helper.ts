@@ -42,6 +42,7 @@ export const getCurrentDay = () => {
 };
 
 export const countryObjs = countryCodes.customList(
+  // @ts-ignore
   "countryNameEn" as CountryProperty.countryNameEn,
   "+{countryCallingCode}",
 );

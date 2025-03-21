@@ -25,6 +25,7 @@ import PriceSection from "./PriceSection";
 import DescriptionSection from "./DescriptionSection";
 import { isImage, isVideo } from "@/utils/helper";
 import { useCreateTag } from "@/apis/queries/tags.queries";
+import { useTranslations } from "next-intl";
 
 const customStyles = {
   control: (base: any) => ({
@@ -52,6 +53,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
   activeProductType,
 }) => {
+  const t = useTranslations();
   const formContext = useFormContext();
   const { toast } = useToast();
   const photosRef = useRef<HTMLInputElement>(null);
@@ -154,10 +156,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             <div className=" w-full">
               <div className="flex flex-wrap">
                 <div className="form-groups-common-sec-s1">
-                  <h3>Basic Information</h3>
+                  <h3>{t("basic_information")}</h3>
                   <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
                     <div className="flex w-full flex-col justify-between gap-y-2">
-                      <Label>Product Category</Label>
+                      <Label>{t("product_category")}</Label>
                       <Controller
                         name="categoryId"
                         control={formContext.control}
@@ -185,7 +187,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             value={catList[0]?.id || ""}
                             disabled={true} // This makes the select field disabled
                           >
-                            <option value="">Select Category</option>
+                            <option value="">{t("select_category")}</option>
                             {memoizedCategories.map((item: ISelectOptions) => (
                               <option
                                 value={item.value?.toString()}
@@ -240,7 +242,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                 )
                                 ?.id?.toString()}
                             >
-                              <option value="">Select Sub Category</option>
+                              <option value="">{t("select_sub_category")}</option>
                               {item?.children?.map((item: any) => (
                                 <option
                                   value={item.id?.toString()}
@@ -256,16 +258,16 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
 
                   <ControlledTextInput
-                    label="Product Name"
+                    label={t("product_name")}
                     name="productName"
-                    placeholder="Product Name"
+                    placeholder={t("product_name")}
                   />
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <BrandSelect />
 
                     <div className="mt-2 flex flex-col gap-y-3">
-                      <Label>Product Condition</Label>
+                      <Label>{t("product_condition")}</Label>
                       <Controller
                         name="productCondition"
                         control={formContext.control}
@@ -295,10 +297,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
 
                   <AccordionMultiSelectV2
-                    label="Tag"
+                    label={t("tags")}
                     name="productTagList"
                     options={tagsList || []}
-                    placeholder="Tag"
+                    placeholder={t("tags")}
                     canCreate={true}
                     createOption={handleCreateTag}
                     error={
@@ -310,7 +312,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   <div className="relative mb-4 w-full">
                     <div className="space-y-2">
                       <label className="text-sm font-medium leading-none text-color-dark">
-                        Product Image
+                        {t("product_image")}
                       </label>
                       <div className="flex w-full flex-wrap">
                         <div className="grid grid-cols-2 md:grid-cols-4">
@@ -415,7 +417,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                                               <div className="absolute h-20 w-full p-5">
                                                 <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
-                                                  Upload Video
+                                                  {t("upload_video")}
                                                 </p>
                                               </div>
                                               <Input
@@ -447,7 +449,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                               />
                                             </div>
                                           ) : (
-                                            <AddImageContent description="Drop your File , or " />
+                                            <AddImageContent description={t("drop_your_file")} />
                                           )}
                                         </div>
                                       </div>
@@ -467,7 +469,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   width={29}
                                   height={28}
                                 />
-                                <span>Add More</span>
+                                <span>{t("add_more")}</span>
                               </div>
                             </div>
 

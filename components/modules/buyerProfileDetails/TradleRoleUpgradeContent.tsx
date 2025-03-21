@@ -3,6 +3,7 @@ import { DialogContent } from "@/components/ui/dialog";
 import Image from "next/image";
 import FreelancerIcon from "@/public/images/freelancer.svg";
 import CompanyIcon from "@/public/images/company.svg";
+import { useTranslations } from "next-intl";
 
 type TradeRoleUpgradeContentProps = {
   onClose?: () => void;
@@ -13,10 +14,11 @@ const TradeRoleUpgradeContent: React.FC<TradeRoleUpgradeContentProps> = ({
   onClose,
   onConfirmRole,
 }) => {
+  const t = useTranslations();
   return (
     <DialogContent className="custom-action-type-chose-picker">
       <div className="modal-headerpart">
-        <h5>Kindly select your preferred role</h5>
+        <h5>{t("select_your_preferred_role")}</h5>
       </div>
       <div className="modal-bodypart">
         <div className="import-pickup-type-selector-lists">
@@ -32,12 +34,8 @@ const TradeRoleUpgradeContent: React.FC<TradeRoleUpgradeContentProps> = ({
                 <Image src={FreelancerIcon} alt="freelancer-icon" />
               </div>
               <div className="text-container">
-                <h5>Freelancer</h5>
-                <p>
-                  Lorem Ipsum is simply Lorem 1500s, when an unknown printer
-                  took a galley of type and scrambled it to make a type specimen
-                  book.
-                </p>
+                <h5>{t("freelancer")}</h5>
+                <p></p>
               </div>
             </div>
           </div>
@@ -53,12 +51,8 @@ const TradeRoleUpgradeContent: React.FC<TradeRoleUpgradeContentProps> = ({
                 <Image src={CompanyIcon} alt="company-icon" />
               </div>
               <div className="text-container">
-                <h5>Company</h5>
-                <p>
-                  Lorem Ipsum is simply Lorem 1500s, when an unknown printer
-                  took a galley of type and scrambled it to make a type specimen
-                  book.
-                </p>
+                <h5>{t("company")}</h5>
+                <p></p>
               </div>
             </div>
           </div>

@@ -18,11 +18,13 @@ import {
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { useTranslations } from "next-intl";
 
 // Load Stripe with your public key
 const stripePromise = loadStripe("pk_test_51QuptGPQ2VnoEyMPay2u4FyltporIQfMh9hWcp2EEresPjx07AuT4lFLuvnNrvO7ksqtaepmRQHfYs4FLia8lIV500i83tXYMR");
 
 const OrdersPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
@@ -184,7 +186,7 @@ const OrdersPage = () => {
       <div className="container m-auto px-3">
         <div className="headerPart">
           <div className="lediv">
-            <h3>Make payment</h3>
+            <h3>{t("make_payment")}</h3>
           </div>
         </div>
         <div className="cart-page-wrapper">
@@ -202,28 +204,28 @@ const OrdersPage = () => {
             <div className="card-item priceDetails">
               <div className="card-inner-headerPart">
                 <div className="lediv">
-                  <h3>Price Details</h3>
+                  <h3>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
                   <li>
-                    <p>Subtotal</p>
+                    <p>{t("subtotal")}</p>
                     <h5>${calculateTotalAmount() || 0}</h5>
                   </li>
                   {advanceAmount !== "" ? 
                   <><li>
-                      <p>Advance Payment </p>
+                      <p>{t("advance_payment")}</p>
                       <h5>${advanceAmount || 0}</h5>
                     </li><li>
-                        <p>Shipping</p>
-                        <h5>Free</h5>
+                        <p>{t("shipping")}</p>
+                        <h5>{t("free")}</h5>
                       </li></>
                   : null }
                 </ul>
               </div>
               <div className="priceDetails-footer">
-                <h4>Total Amount</h4>
+                <h4>{t("total_amount")}</h4>
                 <h4 className="amount-value">
                 {advanceAmount !== "" ? (advanceAmount || 0) : (calculateTotalAmount() || 0)}
                   </h4> <br />

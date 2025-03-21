@@ -1,4 +1,5 @@
 import DynamicForm from "@/components/shared/DynamicForm";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 type DynamicFormViewSectionProps = {
@@ -8,11 +9,13 @@ type DynamicFormViewSectionProps = {
 const DynamicFormViewSection: React.FC<DynamicFormViewSectionProps> = ({
   dynamicFormList,
 }) => {
+  const t = useTranslations();
+
   return (
     <div className="grid w-full grid-cols-1 gap-x-5">
       <div className="col-span-3 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
         {!dynamicFormList?.length ? (
-          <p className="text-center">No Form Found</p>
+          <p className="text-center">{t("no_form_found")}</p>
         ) : null}
 
         <div className="space-y-5">

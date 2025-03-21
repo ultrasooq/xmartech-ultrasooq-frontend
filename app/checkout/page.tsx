@@ -38,8 +38,10 @@ import validator from "validator";
 import GuestAddressForm from "@/components/modules/checkout/GuestAddressForm";
 import AddIcon from "@/public/images/addbtn.svg";
 import { useAddToWishList } from "@/apis/queries/wishlist.queries";
+import { useTranslations } from "next-intl";
 
 const CheckoutPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const wrapperRef = useRef(null);
   const { toast } = useToast();
@@ -487,7 +489,7 @@ useEffect(() => {
               <div className="card-item cart-items">
                 <div className="card-inner-headerPart">
                   <div className="lediv">
-                    <h3>cart items</h3>
+                    <h3>{t("cart_items")}</h3>
                   </div>
                 </div>
 
@@ -541,16 +543,16 @@ useEffect(() => {
                 <div className="card-item selected-address">
                   <div className="card-inner-headerPart">
                     <div className="lediv">
-                      <h3>Your Informations</h3>
+                      <h3>{t("your_informations")}</h3>
                     </div>
                   </div>
 
                   <div className="selected-address-lists">
                     <div className="space-y-2 p-3">
-                      <Label>Email</Label>
+                      <Label>{t("email")}</Label>
                       <Input
                         className="theme-form-control-s1"
-                        placeholder="Enter Your Email"
+                        placeholder={t("enter_email")}
                         onChange={(e) => setGuestEmail(e.target.value)}
                         value={guestEmail}
                       />
@@ -564,8 +566,8 @@ useEffect(() => {
                   <div className="lediv">
                     <h3>
                       {me?.data
-                        ? `Select Shipping address`
-                        : "Shipping address"}
+                        ? t("select_shipping_address")
+                        : t("shipping_address")}
                     </h3>
                   </div>
                 </div>
@@ -656,7 +658,7 @@ useEffect(() => {
                           height={14}
                           width={14}
                         />{" "}
-                        Add a new shipping address
+                        {t("add_new_shipping_address")}
                       </Button>
                     </div>
                   </div>
@@ -667,7 +669,7 @@ useEffect(() => {
                 <div className="card-inner-headerPart">
                   <div className="lediv">
                     <h3>
-                      {me?.data ? `Select Billing address` : "Billing address"}
+                      {me?.data ? t("select_billing_address") : t("billing_address")}
                     </h3>
                   </div>
 
@@ -695,7 +697,7 @@ useEffect(() => {
                           checked={sameAsShipping}
                         />
                         <Label htmlFor="same_as_shipping">
-                          Same As Shipping address
+                          {t("same_as_shipping_address")}
                         </Label>
                       </div>
                     ) : null}
@@ -753,7 +755,7 @@ useEffect(() => {
                   ) : (
                     <div className="px-3 py-6">
                       <p className="my-3 text-center">
-                        Same as shipping address
+                        {t("same_as_shipping_address")}
                       </p>
                     </div>
                   )}
@@ -795,7 +797,7 @@ useEffect(() => {
                           height={14}
                           width={14}
                         />{" "}
-                        Add a new billing address
+                        {t("add_new_billing_address")}
                       </Button>
                     </div>
                   </div>
@@ -817,7 +819,7 @@ useEffect(() => {
                         height={14}
                         width={14}
                       />{" "}
-                      Add a new address
+                      {t("add_new_address")}
                     </Button>
                   </div>
                 </div>
@@ -828,23 +830,23 @@ useEffect(() => {
             <div className="card-item priceDetails">
               <div className="card-inner-headerPart">
                 <div className="lediv">
-                  <h3>Price Details</h3>
+                  <h3>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
                   <li>
-                    <p>Subtotal</p>
+                    <p>{t("subtotal")}</p>
                     <h5>${calculateTotalAmount() || 0}</h5>
                   </li>
                   <li>
-                    <p>Shipping</p>
-                    <h5>Free</h5>
+                    <p>{t("shipping")}</p>
+                    <h5>{t("free")}</h5>
                   </li>
                 </ul>
               </div>
               <div className="priceDetails-footer">
-                <h4>Total Amount</h4>
+                <h4>{t("total_amount")}</h4>
                 <h4 className="amount-value">${calculateTotalAmount() || 0}</h4>
               </div>
             </div>
@@ -854,7 +856,7 @@ useEffect(() => {
                 disabled={!memoizedCartList?.length}
                 className="theme-primary-btn order-btn"
               >
-                Continue
+                {t("continue")}
               </Button>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { RfqProductPriceRequestStatus } from "@/utils/types/chat.types";
 import { useSocket } from "@/context/SocketContext";
 import { updateUnreadMessages } from "@/apis/requests/chat.requests";
 import DownloadIconButton from "../DownloadIconButton";
+import { useTranslations } from "next-intl";
 
 interface SellerChatHistoryProps {
   roomId: number | null;
@@ -27,6 +28,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
   rfqUserId,
   isUploadingCompleted
 }) => {
+  const t = useTranslations();
   const { user } = useAuth();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { updateRfqRequestStatus } = useSocket();
@@ -296,7 +298,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
           </div>
         ) : (
           <div className="mt-5 flex w-full flex-wrap items-end">
-            {chatHistoryLoading ? "Loading..." : "No chat history found"}
+            {chatHistoryLoading ? "Loading..." : t("no_chat_history_found")}
           </div>
         )}
       </div>

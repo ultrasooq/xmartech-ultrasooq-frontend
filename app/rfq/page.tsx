@@ -39,8 +39,10 @@ import { FaPlus } from "react-icons/fa";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
+import { useTranslations } from "next-intl";
 
 const RfqPage = () => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
@@ -213,7 +215,7 @@ const RfqPage = () => {
 
   return (
     <>
-      <title>RFQ | Ultrasooq</title>
+      <title>{t("rfq")} | Ultrasooq</title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
@@ -250,7 +252,7 @@ const RfqPage = () => {
                         className="flex items-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
                       >
                         <FaPlus />
-                        Add new product in RFQ
+                        {t("add_new_rfq_product")}
                       </Link>
                     </div>
                   ) : null}
@@ -260,7 +262,7 @@ const RfqPage = () => {
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
                         <div className="products_sec_top_left">
-                          <h4> trending & high rate product</h4>
+                          <h4>t{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
                           <div className="trending_filter">
@@ -269,15 +271,15 @@ const RfqPage = () => {
                               defaultValue={sortBy}
                             >
                               <SelectTrigger className="custom-form-control-s1 bg-white">
-                                <SelectValue placeholder="Sort by" />
+                                <SelectValue placeholder={t("sort_by")} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
                                   <SelectItem value="newest">
-                                    Sort by latest
+                                    {t("sort_by_latest")}
                                   </SelectItem>
                                   <SelectItem value="oldest">
-                                    Sort by oldest
+                                    {t("sort_by_oldest")}
                                   </SelectItem>
                                 </SelectGroup>
                               </SelectContent>
@@ -317,7 +319,7 @@ const RfqPage = () => {
                       {!rfqProductsQuery?.data?.data?.length &&
                       !rfqProductsQuery.isLoading ? (
                         <p className="my-10 text-center text-sm font-medium">
-                          No data found
+                          {t("no_data_found")}
                         </p>
                       ) : null}
 

@@ -26,7 +26,7 @@ const VendorOperations = () => {
 
         {selectedOperation == "questions_n_comments" && selectedProduct && (
           <QuestionAndAnswers 
-            productId={selectedProduct.id} 
+            productId={selectedProduct.productId} 
             productAddedBy={selectedProduct.userId} 
           />
         )}

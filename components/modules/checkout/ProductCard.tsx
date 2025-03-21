@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useTranslations } from "next-intl";
 
 type ProductCardProps = {
   cartId: number;
@@ -34,6 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   haveAccessToken,
   consumerDiscount,
 }) => {
+  const t = useTranslations();
   const [quantity, setQuantity] = useState(1);
 
   const calculateDiscountedPrice = () => {
@@ -60,7 +62,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <figcaption>
           <h4 className="!text-lg !font-bold">{productName}</h4>
           <div className="custom-form-group">
-            <label>Quantity</label>
+            <label>{t("quantity")}</label>
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-4">
                 <Button
@@ -98,7 +100,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     className="px-2 underline"
                     onClick={() => onRemove(cartId)}
                   >
-                    Remove
+                    {t("remove")}
                   </Button>
                 </li>
                 {haveAccessToken ? (
@@ -108,7 +110,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                       className="px-2 underline"
                       onClick={() => onWishlist(productId)}
                     >
-                      Move to wishlist
+                      {t("move_to_wishlist")}
                     </Button>
                   </li>
                 ) : null}
@@ -118,7 +120,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </figcaption>
       </figure>
       <div className="right-info">
-        <h6>Price</h6>
+        <h6>{t("price")}</h6>
         <h5>${quantity * calculateDiscountedPrice()}</h5>
       </div>
     </div>

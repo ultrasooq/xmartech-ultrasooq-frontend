@@ -18,8 +18,10 @@ import { cn } from "@/lib/utils";
 // import ReviewForm from "@/components/shared/ReviewForm";
 // import { useMe } from "@/apis/queries/user.queries";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useTranslations } from "next-intl";
 
 const MyOrderDetailsPage = ({}) => {
+  const t = useTranslations();
   const searchParams = useParams();
   // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   // const [reviewId, setReviewId] = useState<number>();
@@ -92,10 +94,10 @@ const MyOrderDetailsPage = ({}) => {
               <div className="my-order-lists for-delivery-address">
                 <ul className="page-indicator-s1 !mb-0">
                   <li>
-                    <Link href="/home">Home</Link>
+                    <Link href="/home">{t("home")}</Link>
                   </li>
                   <li>
-                    <Link href="/my-orders">My Orders</Link>
+                    <Link href="/my-orders">{t("my_orders")}</Link>
                   </li>
                   <li>
                     <h5>
@@ -113,7 +115,7 @@ const MyOrderDetailsPage = ({}) => {
                     <div className="my-order-card">
                       <div className="delivery-address">
                         <div className="delivery-address-col deliveryAddress">
-                          <h2>Delivery Address</h2>
+                          <h2>{t("delivery_address")}</h2>
                           <h3>
                             {shippingDetails?.firstName}{" "}
                             {shippingDetails?.lastName}
@@ -123,14 +125,14 @@ const MyOrderDetailsPage = ({}) => {
                             {shippingDetails?.postCode}
                           </address>
                           <p>
-                            Phone Number{" "}
+                            {t("phone_number")}{" "}
                             <span className="!text-red-500">
                               {shippingDetails?.phone}
                             </span>
                           </p>
                         </div>
                         <div className="delivery-address-col deliveryAddress">
-                          <h2>Billing Address</h2>
+                          <h2>{t("billing_address")}</h2>
                           <h3>
                             {billingDetails?.firstName}{" "}
                             {billingDetails?.lastName}
@@ -140,7 +142,7 @@ const MyOrderDetailsPage = ({}) => {
                             {billingDetails?.postCode}
                           </address>
                           <p>
-                            Phone Number{" "}
+                            {t("phone_number")}{" "}
                             <span className="!text-red-500">
                               {billingDetails?.phone}
                             </span>
@@ -225,7 +227,7 @@ const MyOrderDetailsPage = ({}) => {
                                   : 0}
                               </h4>
                               <p className="text-gray-500">
-                                Quantity x {orderDetails?.orderQuantity || 0}
+                                {t("quantity")} x {orderDetails?.orderQuantity || 0}
                               </p>
                             </figcaption>
                           </figure>
@@ -235,7 +237,7 @@ const MyOrderDetailsPage = ({}) => {
                             <ul>
                               <li className="complted">
                                 <div className="orderStatusText">
-                                  Order Received
+                                  {t("order_received")}
                                 </div>
                                 <div className="dot">
                                   <small></small>
@@ -262,7 +264,7 @@ const MyOrderDetailsPage = ({}) => {
                                 )}
                               >
                                 <div className="orderStatusText">
-                                  Order Confirmed
+                                  {t("order_confirmed")}
                                 </div>
                                 <div className="dot">
                                   <small></small>
@@ -285,7 +287,7 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText">Shipped</div>
+                                <div className="orderStatusText">{t("shipped")}</div>
                                 <div className="dot">
                                   <small></small>
                                 </div>
@@ -309,7 +311,7 @@ const MyOrderDetailsPage = ({}) => {
                                 )}
                               >
                                 <div className="orderStatusText">
-                                  Out for delivery
+                                  {t("out_for_delivery")}
                                 </div>
                                 <div className="dot">
                                   <small></small>
@@ -341,8 +343,8 @@ const MyOrderDetailsPage = ({}) => {
                                 >
                                   {orderDetails?.orderProductStatus ===
                                   "CANCELLED"
-                                    ? "Cancelled"
-                                    : "Delivered"}
+                                    ? t("cancelled")
+                                    : t("delivered")}
                                 </div>
                                 <div className="dot">
                                   <small
@@ -372,7 +374,7 @@ const MyOrderDetailsPage = ({}) => {
                             "CONFIRMED" ? (
                               <>
                                 <BiCircle color="green" />
-                                Placed on{" "}
+                                {t("placed_on")}{" "}
                                 {orderDetails?.orderProductDate
                                   ? formattedDate(orderDetails.orderProductDate)
                                   : ""}
@@ -382,7 +384,7 @@ const MyOrderDetailsPage = ({}) => {
                             {orderDetails?.orderProductStatus === "SHIPPED" ? (
                               <>
                                 <BiCircle color="green" />
-                                Shipped on{" "}
+                                {t("shipped_on")}{" "}
                                 {orderDetails?.updatedAt
                                   ? formattedDate(orderDetails.updatedAt)
                                   : ""}
@@ -391,7 +393,7 @@ const MyOrderDetailsPage = ({}) => {
 
                             {orderDetails?.orderProductStatus === "OFD" ? (
                               <>
-                                <BiCircle color="green" /> Out for delivery{" "}
+                                <BiCircle color="green" /> {t("out_for_delivery")}{" "}
                                 {orderDetails?.updatedAt
                                   ? formattedDate(orderDetails.updatedAt)
                                   : ""}
@@ -401,7 +403,7 @@ const MyOrderDetailsPage = ({}) => {
                             {orderDetails?.orderProductStatus ===
                             "DELIVERED" ? (
                               <>
-                                <BiSolidCircle color="green" /> Delivered on{" "}
+                                <BiSolidCircle color="green" /> {t("delivered_on")}{" "}
                                 {orderDetails?.updatedAt
                                   ? formattedDate(orderDetails.updatedAt)
                                   : ""}
@@ -411,7 +413,7 @@ const MyOrderDetailsPage = ({}) => {
                             {orderDetails?.orderProductStatus ===
                             "CANCELLED" ? (
                               <>
-                                <BiSolidCircle color="red" /> Cancelled on{" "}
+                                <BiSolidCircle color="red" /> {t("cancelled_on")}{" "}
                                 {orderDetails?.updatedAt
                                   ? formattedDate(orderDetails.updatedAt)
                                   : ""}
@@ -425,12 +427,12 @@ const MyOrderDetailsPage = ({}) => {
                               className="ratingLink"
                             >
                               <PiStarFill />
-                              Rate & Review Product
+                              {t("rate_n_review_product")}
                             </Link>
                           ) : null}
                           <Button variant="ghost" className="ratingLink mt-0">
                             <MdHelpCenter />
-                            Need Help?
+                            {t("need_help")}
                           </Button>
 
                           {orderDetails?.orderProductStatus === "DELIVERED" ? (
@@ -448,7 +450,7 @@ const MyOrderDetailsPage = ({}) => {
                               className="ratingLink"
                             >
                               <PiStarFill />
-                              Rate & Review Seller
+                              {t("rate_n_review_seller")}
                             </Link>
                           ) : null}
                         </div>

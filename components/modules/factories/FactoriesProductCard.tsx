@@ -10,6 +10,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
+import { useTranslations } from "next-intl";
 // import Link from "next/link";
 
 type RfqProductCardProps = {
@@ -49,6 +50,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   inWishlist,
   haveAccessToken,
 }) => {
+  const t = useTranslations();
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
@@ -141,7 +143,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
       </div>
 
       <div className="quantity_wrap mb-2">
-        <label>Quantity</label>
+        <label>{t("quantity")}</label>
         <div className="qty-up-down-s1-with-rgMenuAction">
           <div className="flex items-center gap-x-3 md:gap-x-4">
             <Button
@@ -190,7 +192,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
         >
           <FaCircleCheck color="#00C48C" />
-          Added to Cart
+          {t("added_to_cart")}
         </button>}
         {quantity == 0 && <button
           type="button"
@@ -199,7 +201,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
             if (onAdd) onAdd(id);
           }}
         >
-          Add To Cart
+          {t("add_to_cart")}
         </button>}
       </div>
     </div>

@@ -5,12 +5,15 @@ import { COMPANY_UNIQUE_ID } from "@/utils/constants";
 import { cn } from "@/lib/utils";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 type ProfileCardProps = {
   userDetails: any;
 };
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
+  const t = useTranslations();
+
   const isOnlineToday = useMemo(() => {
     const getActiveDays = userDetails?.userBranch
       ?.map((item: any) => {
@@ -86,7 +89,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
         <div className="mt-3 h-auto w-full"></div>
         <div className="text-normal md-2 w-full text-sm font-normal leading-4 text-gray-500 md:mt-4">
           <p>
-            Annual Purchasing Volume:{" "}
+            {t("annual_purchasing_volume")}:{" "}
             <span className="font-bold text-dark-cyan">
               {userDetails?.userProfile?.[0]?.annualPurchasingVolume
                 ? `$${userDetails.userProfile[0].annualPurchasingVolume}`
@@ -95,7 +98,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
           </p>
         </div>
         <div className="text-normal mt-2 w-full text-sm font-normal leading-4 text-gray-500 md:mt-4">
-          <p>Business Type</p>
+          <p>{t("business_type")}</p>
           {userDetails?.userProfile?.[0]?.userProfileBusinessType?.map(
             (item: any) => (
               <span
@@ -110,7 +113,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
         <div className="mt-4 flex w-full flex-wrap items-center justify-between">
           <div className="my-2 text-sm font-normal leading-4 text-gray-500">
             <p>
-              Company ID:
+              {t("company_id")}:
               <span className="text-base font-medium leading-4 text-gray-600">
                 {userDetails?.uniqueId
                   ? `${COMPANY_UNIQUE_ID}${userDetails?.uniqueId}`

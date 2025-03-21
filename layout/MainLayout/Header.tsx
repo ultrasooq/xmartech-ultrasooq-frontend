@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -51,6 +51,10 @@ import {
   PERMISSION_TEAM_MEMBERS,
   getPermissions,
 } from "@/helpers/permission";
+import QueryForm from "@/components/modules/QueryForm";
+import { useTranslations } from "next-intl";
+import { cookies } from "next/headers";
+import { setUserLocale } from "@/src/services/locale";
 
 type CategoryProps = {
   id: number;
@@ -89,7 +93,9 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
   );
 };
 
-const Header = () => {
+const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
+  const t = useTranslations();
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -107,7 +113,7 @@ const Header = () => {
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
-  const { clearUser } = useAuth();
+  const { clearUser, applyTranslation } = useAuth();
   const wishlistCount = useWishlistCount(hasAccessToken);
   const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
   const cartCountWithoutLogin = useCartCountWithoutLogin(
@@ -173,7 +179,7 @@ const Header = () => {
       );
     }
     tempArr.unshift({
-      name: "Home",
+      name: t("home"),
       id: 0,
       icon: menuBarIconList[0],
     });
@@ -259,9 +265,8 @@ const Header = () => {
   const wrapperRef = useRef(null);
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const [isAddToRoleModalOpen, setIsAddToRoleModalOpen] = useState(false);
-  const handleToggleAddModal = () =>
-    setIsAddToRoleModalOpen(!isAddToRoleModalOpen);
+  const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
+  const handleToggleQueryModal = () => setIsQueryModalOpen(!isQueryModalOpen);
 
   useEffect(() => {
     if (accessToken) {
@@ -310,11 +315,11 @@ const Header = () => {
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <a href="#">Store Location</a>
+                    <a href="#">{t('store_location')}</a>
                   </li>
                   {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <Link href="/my-orders">Track Your Order</Link>
+                    <Link href="/my-orders">{t('track_your_order')}</Link>
                   </li>
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
@@ -325,13 +330,15 @@ const Header = () => {
                     </select>
                   </li>
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
-                    <GoogleTranslate />
-                    {/* <select className="border-0 bg-transparent text-white focus:outline-none">
-                      <option className="bg-dark-cyan">English</option>
-                      <option className="bg-dark-cyan">Arabic</option>
-                      <option className="bg-dark-cyan">German</option>
-                      <option className="bg-dark-cyan">French</option>
-                    </select> */}
+                    {/* <GoogleTranslate /> */}
+                    <select className="border-0 bg-transparent text-white focus:outline-none" 
+                      defaultValue={locale}
+                      onChange={(e) => applyTranslation(e.target.value)}>
+                      <option className="bg-dark-cyan" value="en">English</option>
+                      <option className="bg-dark-cyan" value="ar">Arabic</option>
+                      {/* <option className="bg-dark-cyan">German</option>
+                      <option className="bg-dark-cyan">French</option> */}
+                    </select>
                   </li>
                 </ul>
               </div>
@@ -356,7 +363,7 @@ const Header = () => {
                     <option>Movies & TV Shows</option>
                   </select>
                 </div> */}
-                <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-4/6">
+                <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-5/6">
                   <input
                     type="search"
                     className="form-control h-full w-full p-2.5 text-black focus:outline-none"
@@ -366,13 +373,13 @@ const Header = () => {
                     onKeyDown={handleKeyDown} // Calls search when Enter is pressed
                   />
                 </div>
-                <div className="h-11 w-1/4 md:w-full">
+                <div className="h-11 w-1/4 md:w-1/6">
                   <button
                     type="button"
                     className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
                     onClick={() => updateURL(searchTerm)} // Update URL when clicking search
                   >
-                    Search
+                    {t('search')}
                   </button>
                 </div>
               </div>
@@ -438,70 +445,74 @@ const Header = () => {
                         <DropdownMenuContent>
                           <Link href={handleProfile()}>
                             <DropdownMenuItem className="cursor-pointer">
-                              Profile Information
+                              {t('profile_information')}
                             </DropdownMenuItem>
                           </Link>
-                          <DropdownMenuSeparator />
+                          {/* <DropdownMenuSeparator /> */}
                           {me?.data?.data?.tradeRole !== "BUYER" ? (
                             <>
                               {hideMenu(PERMISSION_TEAM_MEMBERS) && (
                                 <Link href="/team-members">
                                   <DropdownMenuItem>
-                                    Team Members
+                                    {t('team_members')}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_PRODUCTS) && (
                                 <Link href="/manage-products">
-                                  <DropdownMenuItem>Products</DropdownMenuItem>
+                                  <DropdownMenuItem>{t('products')}</DropdownMenuItem>
                                 </Link>
                               )}
-                              <DropdownMenuSeparator />
+                              {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_ORDERS) && (
                                 <Link href="/seller-orders">
-                                  <DropdownMenuItem>Orders</DropdownMenuItem>
+                                  <DropdownMenuItem>{t('orders')}</DropdownMenuItem>
                                 </Link>
                               )}
-                              <DropdownMenuSeparator />
+                              {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_QUOTES) && (
                                 <Link href="/rfq-quotes">
                                   <DropdownMenuItem>
-                                    RFQ Quotes
+                                    {t('rfq_quotes')}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
-                              <DropdownMenuSeparator />
+                              {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
                                 <Link href="/seller-rfq-request">
                                   <DropdownMenuItem>
-                                    RFQ Seller Requests
+                                    {t('rfq_seller_requests')}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_SELLER_REWARDS) && (
                                 <Link href="/seller-rewards">
                                   <DropdownMenuItem>
-                                    Seller Rewards
+                                    {t('seller_rewards')}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
-                              <DropdownMenuSeparator />
+                              {/* <DropdownMenuSeparator /> */}
                             </>
                           ) : null}
                           {hideMenu(PERMISSION_SHARE_LINKS) && (
                             <Link href="/share-links">
-                              <DropdownMenuItem>Share Links</DropdownMenuItem>
+                              <DropdownMenuItem>{t('share_links')}</DropdownMenuItem>
                             </Link>
                           )}
                           <Link href="/my-settings/address">
-                            <DropdownMenuItem>My Settings</DropdownMenuItem>
+                            <DropdownMenuItem>{t('my_settings')}</DropdownMenuItem>
+                          </Link>
+                          <Link href="/queries">
+                            <DropdownMenuItem>{t('queries')}</DropdownMenuItem>
                           </Link>
                           <DropdownMenuSeparator />
+                          {/* <DropdownMenuSeparator /> */}
                           <DropdownMenuItem
                             onClick={handleLogout}
                             className="cursor-pointer"
                           >
-                            Logout
+                            {t('logout')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -518,13 +529,13 @@ const Header = () => {
                             href="/login"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
                           >
-                            Login
+                            {t('login')}
                           </Link>
                           <Link
                             href="/register"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
                           >
-                            Register
+                            {t('register')}
                           </Link>
                         </div>
                       </>
@@ -621,7 +632,7 @@ const Header = () => {
                       <Image src={HamburgerIcon} alt="hamburger-icon" />
                     </div>
                     <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
-                      All Categories
+                      {t('all_categories')}
                     </p>
                     <div>
                       <Image
@@ -842,16 +853,16 @@ const Header = () => {
                 <ul className="flex items-center justify-end gap-x-4">
                   <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
                     <a href="#" className="text-light-gray">
-                      Buyer Central
+                      {t('buyer_central')}
                     </a>
                   </li>
                   <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
                     <a
                       href="#"
                       className="text-light-gray"
-                      onClick={handleToggleAddModal}
+                      onClick={handleToggleQueryModal}
                     >
-                      Help Center
+                      {t('help_center')}
                     </a>
                   </li>
                 </ul>
@@ -861,23 +872,14 @@ const Header = () => {
         </div>
       </header>
 
-      <Dialog open={isAddToRoleModalOpen} onOpenChange={handleToggleAddModal}>
+      <Dialog open={isQueryModalOpen} onOpenChange={handleToggleQueryModal}>
         <DialogContent
           className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
           ref={wrapperRef}
         >
-          <div className="modal-header !justify-between">
-            <DialogTitle className="text-center text-xl font-bold">
-              Query
-            </DialogTitle>
-            <Button
-              //onClick={onClose}
-              className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
-            >
-              <IoCloseSharp size={20} />
-            </Button>
-          </div>
-          <div className="">From Field</div>
+          <QueryForm
+            onClose={handleToggleQueryModal}
+          />
         </DialogContent>
       </Dialog>
     </>

@@ -6,6 +6,7 @@ import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useAddFactoriesProduct, useUpdateFactoriesCartWithLogin } from "@/apis/queries/rfq.queries";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslations } from "next-intl";
 
 type FactoriesCartMenuCardProps = {
   factoriesCartId: number;
@@ -36,6 +37,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
   offerPrice,
   note,
 }) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
 
@@ -153,7 +155,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
               onRemove(factoriesCartId);
             }}
           >
-            Remove
+            {t("remove")}
           </Button>
         </div>
       </div>

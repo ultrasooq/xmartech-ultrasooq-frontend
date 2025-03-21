@@ -13,10 +13,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { v4 as uuidv4 } from "uuid";
 import { IoMdAdd } from "react-icons/io";
+import { useTranslations } from "next-intl";
 
 type AddressPageProps = {};
 
 const AddressPage: React.FC<AddressPageProps> = ({}) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const wrapperRef = useRef(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -57,7 +59,7 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
 
   return (
     <div className="my-settings-content">
-      <h2>Manage Address</h2>
+      <h2>{t("manage_address")}</h2>
       <div className="my-address-sec">
         <div className="card-item cart-items for-add">
           <div className="top-heading">
@@ -66,7 +68,7 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
               type="button"
               onClick={() => handleToggleAddModal()}
             >
-              <IoMdAdd size={24} /> Add a new address{" "}
+              <IoMdAdd size={24} /> {t("add_new_address")}{" "}
             </button>
           </div>
         </div>
@@ -84,7 +86,7 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
         <div className="card-item selected-address">
           <div className="selected-address-lists">
             {!allUserAddressQuery.isLoading && !memoziedAddressList?.length ? (
-              <p className="py-10 text-center">No address found</p>
+              <p className="py-10 text-center">{t("no_address_found")}</p>
             ) : null}
 
             {memoziedAddressList?.map((item: AddressItem) => (

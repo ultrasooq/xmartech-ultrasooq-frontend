@@ -18,8 +18,10 @@ import VendorInformationSection from "@/components/modules/companyProfileDetails
 import VendorMoreInformationSection from "@/components/modules/companyProfileDetails/VendorMoreInfomationSection";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function CompanyProfileDetailsPage() {
+  const t = useTranslations();
   const [activeTab, setActiveTab] = useState("profile-info");
   const [activeSellerId, setActiveSellerId] = useState<string | null>();
 
@@ -60,7 +62,7 @@ export default function CompanyProfileDetailsPage() {
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
               <h2 className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl">
-                Profile
+                {t("my_profile")}
               </h2>
             </div>
 
@@ -79,21 +81,21 @@ export default function CompanyProfileDetailsPage() {
                     value="profile-info"
                     className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:px-3 md:py-4 md:text-base"
                   >
-                    Profile Info
+                    {t("profile_info")}
                   </TabsTrigger>
 
                   <TabsTrigger
                     value="ratings"
                     className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:py-4 md:text-base"
                   >
-                    Ratings & Reviews
+                    {t("ratings_n_reviews")}
                   </TabsTrigger>
 
                   <TabsTrigger
                     value="products"
                     className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:py-4 md:text-base"
                   >
-                    Products
+                    {t("products")}
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">

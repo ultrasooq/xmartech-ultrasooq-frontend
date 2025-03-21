@@ -13,6 +13,7 @@ import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   email: z
@@ -28,6 +29,7 @@ const formSchema = z.object({
 });
 
 export default function ForgetPasswordPage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -76,9 +78,9 @@ export default function ForgetPasswordPage() {
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                Forgot Your Password
+                {t("forgot_your_password")}
               </h2>
-              <p>Enter email address to receive password reset link</p>
+              <p>{t("forgot_password_instruction")}</p>
             </div>
             <div className="w-full">
               <Form {...form}>
@@ -87,9 +89,9 @@ export default function ForgetPasswordPage() {
                   onSubmit={form.handleSubmit(onSubmit)}
                 >
                   <ControlledTextInput
-                    label="Email or Phone number or ID"
+                    label={t("email_phone_id")}
                     name="email"
-                    placeholder="Enter Your Email or Phone number or ID"
+                    placeholder={t("enter_email_phone_id")}
                   />
 
                   <div className="mb-4 w-full">
@@ -99,9 +101,9 @@ export default function ForgetPasswordPage() {
                       className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold  leading-6"
                     >
                       {forgotPassword.isPending ? (
-                        <LoaderWithMessage message="Please wait" />
+                        <LoaderWithMessage message={t("please_wait")} />
                       ) : (
-                        "Reset Password"
+                        t("reset_password")
                       )}
                     </Button>
                   </div>

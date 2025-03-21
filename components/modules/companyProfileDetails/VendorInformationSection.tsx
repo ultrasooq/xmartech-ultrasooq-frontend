@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useMemo } from "react";
 
@@ -8,6 +9,7 @@ type VendorInformationSectionProps = {
 const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
   vendor,
 }) => {
+  const t = useTranslations();
   const getSocialLinks = useMemo(() => {
     if (vendor?.userSocialLink?.length > 0) {
       const socialLinks = vendor?.userSocialLink?.map(
@@ -37,14 +39,14 @@ const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
     <div className="w-full border-b-2 border-dashed border-gray-200 py-4">
       <div className="flex w-full flex-wrap items-center justify-between pb-5">
         <h2 className="left-8 text-2xl font-semibold text-color-dark">
-          Company Information
+          {t("company_information")}
         </h2>
       </div>
       <div className="w-full">
         <div className="w-full">
           <div className="mb-4 w-full">
             <label className="text-lg font-bold text-color-dark">
-              Registration Address
+              {t("registration_address")}
             </label>
           </div>
           <div className="flex w-full flex-wrap">
@@ -52,7 +54,7 @@ const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
               <div className="flex w-full flex-wrap py-4">
                 <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
                   <span className="text-sm font-normal capitalize leading-4 text-gray-500">
-                    email:
+                    {t("email")}:
                   </span>
                 </div>
                 <div className="mr-1 flex w-8/12  items-center justify-start sm:mr-0">
@@ -66,7 +68,7 @@ const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
               <div className="flex w-full flex-wrap py-4">
                 <div className="mr-1 flex w-5/12 items-center justify-start sm:mr-0">
                   <span className="text-sm font-normal capitalize leading-4 text-gray-500">
-                    Phone:
+                    {t("phone")}:
                   </span>
                 </div>
                 <div className="mr-1 flex w-7/12  items-center justify-start sm:mr-0">
@@ -80,7 +82,7 @@ const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
               <div className="flex w-full flex-wrap py-4">
                 <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
                   <span className="text-sm font-normal capitalize leading-4 text-gray-500">
-                    Social Links:
+                    {t("social_links")}:
                   </span>
                 </div>
                 <div className="mr-1 flex w-8/12  items-center justify-start sm:mr-0">

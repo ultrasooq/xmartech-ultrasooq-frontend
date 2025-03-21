@@ -17,6 +17,7 @@ import OtherSellerSection from "../trending/OtherSellerSection";
 import Link from "next/link";
 import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 import PlusIcon from "@/public/images/upDownBtn-plus.svg";
+import { useTranslations } from "next-intl";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -71,6 +72,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   productPriceArr,
   onQuantityChange, // Callback to update productQuantity outside
 }) => {
+  const t = useTranslations();
   const [quantity, setQuantity] = useState(productQuantity);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
@@ -290,7 +292,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                       ))}
                     </ul>
                   ) : (
-                    <p>No Description</p>
+                    <p>{t("no_description")}</p>
                   )}
                 </div>
               </div>
@@ -329,7 +331,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 <p>
                   {timeLeft !== "NotStarted" && timeLeft !== "Expired" && (
                     <div className="">
-                      Time Left
+                      {t("time_left")}
                       <div className="time_wrap">
                         <div className="time_field">
                           <h3>{timeLeft.split(':')[0]}</h3>
@@ -352,38 +354,38 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   )}
                 </p>
                 <p>
-                  <span className="color-text">Group Buy deal ends :</span>{" "}
+                  <span className="color-text">{t("group_buy_deal_ends")} :</span>{" "}
                   {formatDateTimeWithTimezone(
                     productPriceArr[0]?.dateClose,
                     productPriceArr[0]?.endTime,
                   )}
                 </p>
                 <p>
-                  <span className="color-text">Timezone:</span> {getUTCOffset()}{" "}
+                  <span className="color-text">{t("timezone")}:</span> {getUTCOffset()}{" "}
                   ({userTimezone})
                 </p>
 
                 <p>
-                  <span className="color-text">Minimum Quantity:</span>{" "}
+                  <span className="color-text">{t("minimum_quantity")}:</span>{" "}
                   <b>{productPriceArr[0]?.minQuantity}</b>
                 </p>
                 <p>
-                  <span className="color-text">Maximum Quantity:</span>{" "}
+                  <span className="color-text">{(t("maximum_quantity"))}:</span>{" "}
                   <b>{productPriceArr[0]?.maxQuantity}</b>
                 </p>
                 <p>
-                  <span className="color-text">Deals sold:</span>
+                  <span className="color-text">{t("deals_sold")}:</span>
                   {0}
                 </p>
                 <p>
                   <span className="color-text">
-                    Minimum Quantity Per Customer:
+                    {t("minimum_quantity_per_customer")}:
                   </span>{" "}
                   <b>{productPriceArr[0]?.minQuantityPerCustomer}</b>
                 </p>
                 <p>
                   <span className="color-text">
-                    Maximum Quantity Per Customer:
+                    {t("maximum_quantity_per_customer")}:
                   </span>{" "}
                   <b>{productPriceArr[0]?.maxQuantityPerCustomer}</b>
                 </p>
@@ -405,7 +407,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     width={28}
                     height={22}
                   />
-                  <span>Secure Payment</span>
+                  <span>{t("secure_payment")}</span>
                 </li>
                 <li>
                   <Image
@@ -414,7 +416,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     width={28}
                     height={28}
                   />
-                  <span>Secure Payment</span>
+                  <span>{t("secure_payment")}</span>
                 </li>
               </ul>
             </div>
@@ -429,15 +431,15 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           <div className="row">
             <div className="col-12 col-md-12">
               <div className="form-group mb-0">
-                <label>Report Abuse</label>
+                <label>{t("report_abuse")}</label>
                 <p>
-                  <span className="color-text">SKU:</span> {skuNo}
+                  <span className="color-text">{t("sku")}:</span> {skuNo}
                 </p>
                 <p>
-                  <span className="color-text">Categories:</span> {category}
+                  <span className="color-text">{t("categories")}:</span> {category}
                 </p>
                 <p>
-                  <span className="color-text">Tags:</span>{" "}
+                  <span className="color-text">{t("tags")}:</span>{" "}
                   {productTags
                     ?.map((item) => item.productTagsTag?.tagName)
                     .join(", ")}
@@ -461,7 +463,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                       <ScrollArea className="h-screen">
                         <div className="mx-auto w-full p-2">
                           <DrawerHeader>
-                            <DrawerTitle>All Sellers</DrawerTitle>
+                            <DrawerTitle>{t("all_sellers")}</DrawerTitle>
                           </DrawerHeader>
                           <OtherSellerSection
                             setIsDrawerOpen={setIsDrawerOpen}

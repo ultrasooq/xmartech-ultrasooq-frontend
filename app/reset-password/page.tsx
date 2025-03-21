@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 const formSchema = z
   .object({
@@ -48,6 +49,7 @@ const formSchema = z
   });
 
 export default function ResetPasswordPage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -127,7 +129,7 @@ export default function ResetPasswordPage() {
               <>
                 <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                   <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                    Reset Password
+                    {t("reset_password")}
                   </h2>
                 </div>
                 <div className="w-full">
@@ -137,14 +139,14 @@ export default function ResetPasswordPage() {
                       onSubmit={form.handleSubmit(onSubmit)}
                     >
                       <ControlledTextInput
-                        label="New Password"
+                        label={t("new_password")}
                         name="newPassword"
                         placeholder="**********"
                         type="password"
                       />
 
                       <ControlledTextInput
-                        label="Re-Enter New Password"
+                        label={t("reenter_new_password")}
                         name="confirmPassword"
                         placeholder="**********"
                         type="password"
@@ -159,7 +161,7 @@ export default function ResetPasswordPage() {
                           {resetPassword.isPending ? (
                             <LoaderWithMessage message="Please wait" />
                           ) : (
-                            "Change Password"
+                            t("change_password")
                           )}
                         </Button>
                       </div>

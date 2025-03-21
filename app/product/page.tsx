@@ -19,6 +19,7 @@ import { imageExtensions, videoExtensions } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 const baseProductPriceItemSchema = z.object({
   consumerType: z.string().trim().optional(),
@@ -449,6 +450,7 @@ const defaultValues = {
 };
 
 const CreateProductPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const [activeProductType, setActiveProductType] = useState<string>();
@@ -761,7 +763,7 @@ const CreateProductPage = () => {
                       <DescriptionAndSpecificationSection />
                       <div className="mb-4 mt-4 inline-flex w-full items-center justify-end gap-2">
                         <button className="rounded-sm bg-transparent px-2 py-2 text-sm font-bold leading-6 text-[#7F818D] md:px-4 md:py-4 md:text-lg">
-                          Save as Draft
+                          {t("save_as_draft")}
                         </button>
 
                         <Button
@@ -775,7 +777,7 @@ const CreateProductPage = () => {
                           uploadMultiple.isPending ? (
                             <LoaderWithMessage message="Please wait" />
                           ) : (
-                            "Continue"
+                            t("continue")
                           )}
                         </Button>
                       </div>

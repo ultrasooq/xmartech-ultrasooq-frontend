@@ -13,12 +13,14 @@ import validator from "validator";
 import { TrendingProduct } from "@/utils/types/common.types";
 import Link from "next/link";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useTranslations } from "next-intl";
 
 type ProducTableProps = {
   list: TrendingProduct[];
 };
 
 const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
+  const t = useTranslations();
   const calculateDiscountedPrice = ({ item }: { item: any }) => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
@@ -34,11 +36,11 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>{(t("product"))}</TableHead>
+                <TableHead>{t("category")}</TableHead>
                 {/* <TableHead>SKU No</TableHead> */}
-                <TableHead>Brand</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead>{t("brand")}</TableHead>
+                <TableHead>{t("price")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -74,7 +76,7 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
                           type="button"
                           className="inline-block rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
                         >
-                          Ask vendor for price
+                          {t("ask_vendor_for_price")}
                         </button>
                       </Link>
                     ) : (

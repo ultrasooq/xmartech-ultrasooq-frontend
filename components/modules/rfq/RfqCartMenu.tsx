@@ -6,6 +6,7 @@ import React, { useMemo } from "react";
 import RfqCartMenuCard from "./RfqCartMenuCard";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 type RfqCartMenuProps = {
   onAdd: (
@@ -22,6 +23,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
   onAdd,
   haveAccessToken,
 }) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const rfqCartListByUser = useRfqCartListByUserId(
     {
@@ -60,18 +62,18 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
               href="/rfq-cart"
               className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
             >
-              Go To RFQ Cart
+              {t("go_to_rfq_cart")}
             </Link>
           </div>
         ) : null}
 
         <h4 className="text-center">
-          Your RFQ Cart ({memoizedRfqCartList.length} items)
+          {t("your_rfq_cart")} ({memoizedRfqCartList.length} items)
         </h4>
 
         {!memoizedRfqCartList.length && (
           <div className="my-10 text-center">
-            <h4>No items in cart</h4>
+            <h4>{t("no_cart_items")}</h4>
           </div>
         )}
 

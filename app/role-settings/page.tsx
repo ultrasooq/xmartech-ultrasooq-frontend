@@ -3,12 +3,13 @@ import React, { useMemo, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Pagination from "@/components/shared/Pagination";
-import { Delete, Info } from "lucide-react";
+import { Copy, Delete, Info } from "lucide-react";
 import Link from "next/link";
 import { IUserRoles } from "@/utils/types/common.types";
 import {
   useUserRolesWithPagination,
   useDeleteMemberRole,
+  useCopyUserRole,
 } from "@/apis/queries/masters.queries";
 import AddToRoleForm from "@/components/modules/teamMembers/AddToRoleForm";
 import PermissionForm from "@/components/modules/teamMembers/PermissionForm";
@@ -16,8 +17,10 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslations } from "next-intl";
 
 const RoleSettingsPage = () => {
+  const t = useTranslations();
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
 
@@ -52,11 +55,33 @@ const RoleSettingsPage = () => {
   const memoizedUserRole = useMemo(() => {
     return userRolesQuery?.data?.data
       ? userRolesQuery.data.data.map((item: IUserRoles) => ({
-          label: item.userRoleName,
-          value: item.id,
-        }))
+        label: item.userRoleName,
+        value: item.id,
+      }))
       : [];
   }, [userRolesQuery?.data?.data]);
+
+  const copyUserRole = useCopyUserRole();
+
+  const copyRole = async (roleInfo: any) => {
+    if (copyUserRole?.isPending) return;
+
+    const response = await copyUserRole.mutateAsync({ userRoleId: roleInfo.value });
+
+    if (response.status) {
+      toast({
+        title: "Role Copy Success",
+        description: response.message,
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: "Role Copy Failed",
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  };
 
   const handleEditMode = (roleInfo: any) => {
     setSelectedRoleinfo(roleInfo);
@@ -90,20 +115,20 @@ const RoleSettingsPage = () => {
                 href={"/team-members"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
-                Team Members
+                {t("team_members")}
               </Link>
               <Link
                 href={"/role-settings"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               >
-                Go to Role
+                {t("role")}
               </Link>
             </ul>
           </div>
           <div className="team_members_heading w-full">
-            <h1>Role Settings</h1>
+            <h1>{t("role_settings")}</h1>
             <button type="button" onClick={handleToggleAddModal}>
-              <IoMdAdd /> Add New Role
+              <IoMdAdd /> {t("add_new_role")}
             </button>
           </div>
           <div className="team_members_table w-full">
@@ -112,48 +137,50 @@ const RoleSettingsPage = () => {
                 <table cellPadding={0} cellSpacing={0} border={0}>
                   <thead>
                     <tr>
-                      <th>Role Name</th>
-                      <th>Permission</th>
-                      <th>Action</th>
+                      <th>{t("role_name")}</th>
+                      <th>{t("permission")}</th>
+                      <th>{t("action")}</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {memoizedUserRole?.map((item: any) => (
-                      <>
-                        <tr>
-                          <td>{item?.label || "-----"}</td>
-                          <td>
-                            {" "}
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleOpenPermissionModal(item?.value)
-                              }
+                      <tr key={item.id}>
+                        <td>{item?.label || "-----"}</td>
+                        <td>
+                          {" "}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleOpenPermissionModal(item?.value)
+                            }
+                          >
+                            {t("setup_permission")}
+                          </button>
+                        </td>
+                        <td>
+                          {" "}
+                          <div className="flex items-center gap-1">
+                            <Copy
+                              className={`h-4 w-4 mr-1 ${!copyUserRole.isPending ? 'cursor-pointer' : ''} text-gray-500`}
+                              onClick={() => copyRole(item)}
+                            />
+                            <Info
+                              className="h-4 w-4 cursor-pointer text-gray-500"
+                              onClick={() => handleEditMode(item)}
+                            />
+                            <a
+                              className="cursor-pointer"
+                              onClick={() => handleToDelete(item.value)}
                             >
-                              Setup Permission
-                            </button>
-                          </td>
-                          <td>
-                            {" "}
-                            <div className="flex items-center gap-1">
-                              <Info
-                                className="h-4 w-4 cursor-pointer text-gray-500"
-                                onClick={() => handleEditMode(item)}
-                              />
-                              <a
-                                href="javascript:void(0)"
-                                onClick={() => handleToDelete(item.value)}
-                              >
-                                <Image
-                                  src={TrashIcon}
-                                  alt="social-delete-icon"
-                                />{" "}
-                              </a>
-                            </div>
-                          </td>
-                        </tr>
-                      </>
+                              <Image
+                                src={TrashIcon}
+                                alt="social-delete-icon"
+                              />{" "}
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
                     ))}
                   </tbody>
                 </table>
@@ -162,7 +189,7 @@ const RoleSettingsPage = () => {
 
             {!userRolesQuery?.isLoading && !memoizedUserRole.length ? (
               <p className="py-10 text-center text-sm font-medium">
-                No Roles Found
+                {("no_roles_found")}
               </p>
             ) : null}
 
@@ -177,6 +204,7 @@ const RoleSettingsPage = () => {
           </div>
         </div>
       </div>
+
       {/* Add Role Dialog */}
       <Dialog open={isAddToRoleModalOpen} onOpenChange={handleToggleAddModal}>
         <DialogContent
@@ -188,10 +216,12 @@ const RoleSettingsPage = () => {
               setIsAddToRoleModalOpen(false);
               setSelectedRoleinfo("");
             }}
+            updatePermission={(roleId: number) => handleOpenPermissionModal(roleId)}
             roleDetails={selectedRoleInfo}
           />
         </DialogContent>
       </Dialog>
+
       {/* Add Edit permission Modal */}
       <Dialog
         open={isAddToPermissionModalOpen}
@@ -203,7 +233,7 @@ const RoleSettingsPage = () => {
         >
           <PermissionForm
             roleId={selectedRoleId} // Pass roleId to the form
-            onClosePer={handleClosePermissionModal}
+            onClose={handleClosePermissionModal}
           />
         </DialogContent>
       </Dialog>

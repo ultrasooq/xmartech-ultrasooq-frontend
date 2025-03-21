@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import AnswerForm from "../productDetails/AnswerForm";
 import Pagination from "@/components/shared/Pagination";
 import { useMe } from "@/apis/queries/user.queries";
+import { useTranslations } from "next-intl";
 
 type QuestionAndAnswersProps = {
   productId: number;
@@ -16,6 +17,7 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
   productId,
   productAddedBy
 }) => {
+  const t = useTranslations();
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
   const [questions, setQuestions] = useState<any[]>([]);
   const [questionId, setQuestionId] = useState<number>(0);
@@ -103,10 +105,10 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
   return (
     <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
       <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-        <span>Question & Comments</span>
+        <span>{t("question_n_comments")}</span>
         <select onChange={(e) => setUserType(e.target.value)} value={userType}>
-          <option value="CUSTOMER">CUSTOMER</option>
-          <option value="VENDOR">VENDOR</option>
+          <option value="CUSTOMER">{t("customer").toUpperCase()}</option>
+          <option value="VENDOR">{t("vendor").toUpperCase()}</option>
         </select>
       </div>
       <div className="flex w-full border-t-2 border-gray-300 py-5">
@@ -121,7 +123,7 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
 
           {!questionQuery?.isLoading && !memoizedQuestions?.length && (
             <p className="text-center text-sm font-normal text-gray-500">
-              No data found
+              {t("no_data_found")}
             </p>
           )}
 

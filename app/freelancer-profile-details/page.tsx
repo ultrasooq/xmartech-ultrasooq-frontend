@@ -16,8 +16,10 @@ import VendorInformationSection from "@/components/modules/freelancerProfileDeta
 import VendorMoreInformationSection from "@/components/modules/freelancerProfileDetails/VendorMoreInformationSection";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function FreelancerProfileDetailsPage() {
+  const t = useTranslations();
   const [activeTab, setActiveTab] = useState("profile-info");
 
   const me = useMe();
@@ -57,7 +59,7 @@ export default function FreelancerProfileDetailsPage() {
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
               <h2 className="text-4xl font-semibold leading-10 text-color-dark">
-                My Profile
+                {t("my_profile")}
               </h2>
             </div>
 
@@ -77,21 +79,21 @@ export default function FreelancerProfileDetailsPage() {
                     value="profile-info"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                   >
-                    Profile Info
+                    {t("profile_info")}
                   </TabsTrigger>
 
                   <TabsTrigger
                     value="ratings"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                   >
-                    Ratings & Reviews
+                    {t("ratings_n_reviews")}
                   </TabsTrigger>
 
                   <TabsTrigger
                     value="products"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                   >
-                    Products
+                    {t("products")}
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
@@ -116,7 +118,7 @@ export default function FreelancerProfileDetailsPage() {
                               className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
                             >
                               <PlusIcon className="mr-1 h-5 w-5" />
-                              Add
+                              {t("add")}
                             </Link>
                           </div>
                         ) : null}

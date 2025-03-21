@@ -33,6 +33,7 @@ import { useCountries } from "@/apis/queries/masters.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   uploadBranchImage: z.any().optional(),
@@ -133,6 +134,7 @@ const formSchema = z.object({
 });
 
 const AddBranchPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -279,14 +281,14 @@ const AddBranchPage = () => {
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
-                  Add Branch
+                  {t("add_branch")}
                 </h2>
               </div>
 
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                   <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                    Branch Information
+                    {t("branch_information")}
                   </label>
                 </div>
               </div>
@@ -294,10 +296,10 @@ const AddBranchPage = () => {
               <div>
                 <div className="mb-3.5 w-full">
                   <AccordionMultiSelectV2
-                    label="Business Type"
+                    label={t("business_type")}
                     name="businessTypeList"
                     options={memoizedTags || []}
-                    placeholder="Business Type"
+                    placeholder={t("business_type")}
                     error={String(form.formState.errors?.businessTypeList?.message)}
                   />
 
@@ -333,13 +335,13 @@ const AddBranchPage = () => {
                                       alt="camera"
                                     />
                                     <span>
-                                      Drop your Branch Front Picture here, or{" "}
+                                      {t("drop_your_branch_front_picture")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
                                     <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                      (.jpg or .png only. Up to 1mb)
+                                      ({t("branch_front_picture_spec")})
                                     </p>
                                   </div>
                                 </div>
@@ -410,13 +412,13 @@ const AddBranchPage = () => {
                                       alt="camera"
                                     />
                                     <span>
-                                      Drop your Proof of Address here, or{" "}
+                                      {t("drop_your_address_proof")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
                                     <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-                                      (.jpg or .png only. Up to 1mb)
+                                      ({t("address_proof_spec")})
                                     </p>
                                   </div>
                                 </div>
@@ -460,7 +462,7 @@ const AddBranchPage = () => {
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                       <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                        Branch Location
+                        {t("branch_location")}
                       </label>
                     </div>
                   </div>
@@ -468,9 +470,9 @@ const AddBranchPage = () => {
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <div className="relative w-full">
                       <ControlledTextInput
-                        label="Address"
+                        label={t("address")}
                         name="address"
-                        placeholder="Address"
+                        placeholder={t("address")}
                       />
 
                       <Image
@@ -483,21 +485,21 @@ const AddBranchPage = () => {
                     </div>
 
                     <ControlledTextInput
-                      label="City"
+                      label={t("city")}
                       name="city"
-                      placeholder="City"
+                      placeholder={t("city")}
                     />
                   </div>
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <ControlledTextInput
-                      label="Province"
+                      label={t("province")}
                       name="province"
-                      placeholder="Province"
+                      placeholder={t("province")}
                     />
 
                     <ControlledSelectInput
-                      label="Country"
+                      label={t("country")}
                       name="country"
                       options={memoizedCountries}
                     />
@@ -505,16 +507,16 @@ const AddBranchPage = () => {
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <ControlledPhoneInput
-                      label="Branch Contact Number"
+                      label={t("branch_contact_number")}
                       name="contactNumber"
                       countryName="cc"
-                      placeholder="Branch Contact Number"
+                      placeholder={t("branch_contact_number")}
                     />
 
                     <ControlledTextInput
-                      label="Branch Contact Name"
+                      label={t("branch_contact_name")}
                       name="contactName"
-                      placeholder="Branch Contact Name"
+                      placeholder={t("branch_contact_name")}
                     />
                   </div>
                 </div>
@@ -531,7 +533,7 @@ const AddBranchPage = () => {
                     <div className="flex flex-wrap">
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
                         <Label htmlFor="startTime" className="text-color-dark">
-                          Start Time
+                          {t("start_time")}
                         </Label>
                         <Controller
                           name="startTime"
@@ -559,7 +561,7 @@ const AddBranchPage = () => {
 
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
                         <Label htmlFor="endTime" className="text-color-dark">
-                          End Time
+                          {t("end_time")}
                         </Label>
                         <Controller
                           name="endTime"
@@ -623,7 +625,7 @@ const AddBranchPage = () => {
                     </div>
                     {form.formState.errors.workingDays?.message ? (
                       <p className="text-[13px] text-red-500">
-                        Working Day is required
+                        {t("working_day_required")}
                       </p>
                     ) : null}
                   </div>
@@ -645,7 +647,7 @@ const AddBranchPage = () => {
                     name="mainOffice"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
-                        <FormLabel>Main Office:</FormLabel>
+                        <FormLabel>{t("main_branch")}:</FormLabel>
                         <FormControl>
                           <Switch
                             checked={!!field.value}
@@ -676,7 +678,7 @@ const AddBranchPage = () => {
                     Please wait
                   </>
                 ) : (
-                  "Add Branch"
+                  t("add_branch")
                 )}
               </Button>
             </form>

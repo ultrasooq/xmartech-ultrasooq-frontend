@@ -9,6 +9,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
+import { useTranslations } from "next-intl";
 // import Link from "next/link";
 
 type RfqProductCardProps = {
@@ -52,6 +53,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   productPrice,
   offerPrice,
 }) => {
+  const t = useTranslations();
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
@@ -177,7 +179,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 disabled={quantity < 0}
               >
                 <FaCircleCheck color="#00C48C" />
-                Added to RFQ Cart
+                {t("added_to_rfq_cart")}
               </button>
             ) : (
               <button
@@ -188,7 +190,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   onAdd(quantity + 1, id, "add");
                 }}
               >
-                Add To RFQ Cart
+                {t("add_to_rfq_cart")}
               </button>
             )}
           </div>

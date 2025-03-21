@@ -34,6 +34,7 @@ import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker
 import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 
 interface Option {
   readonly label: string;
@@ -62,6 +63,7 @@ type PriceSectionProps = {
 };
 
 const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
+  const t = useTranslations();
   const formContext = useFormContext();
 
   const countriesQuery = useCountries();
@@ -378,7 +380,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   return (
     <div className="form-groups-common-sec-s1">
-      <h3 className={cn(activeProductType === "R" ? "!mb-0" : "")}>Price</h3>
+      <h3 className={cn(activeProductType === "R" ? "!mb-0" : "")}>{t("price")}</h3>
       {activeProductType !== "R" ? (
         <div className="mb-4 flex w-full flex-row items-center gap-x-5">
           <div className="text-with-checkagree">
@@ -395,7 +397,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Set up price</FormLabel>
+                    <FormLabel>{t("set_up_price")}</FormLabel>
                   </div>
                 </FormItem>
               )}
@@ -409,7 +411,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           {activeProductType !== "R" ? (
             <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
               <div className="mt-2 flex flex-col gap-y-3">
-                <Label>Consumer Type</Label>
+                <Label>{t("consumer_type")}</Label>
                 <Controller
                   name="productPriceList.[0].consumerType"
                   control={formContext.control}
@@ -436,7 +438,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               </div>
 
               <div className="mt-2 flex flex-col gap-y-3">
-                <Label>Sell Type</Label>
+                <Label>{t("sell_type")}</Label>
                 <Controller
                   name="productPriceList.[0].sellType"
                   control={formContext.control}
@@ -471,20 +473,20 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               watchConsumerType === "CONSUMER" ? (
                 <>
                   <CounterTextInputField
-                    label="Consumer Discount"
+                    label={t("consumer_discount")}
                     name="productPriceList.[0].consumerDiscount"
-                    placeholder="Discount"
+                    placeholder={t("discount")}
                   />
                   {watchConsumerDiscount > 0 && <div className="flex w-full flex-col gap-y-2">
-                    <Label>Discount Type</Label>
+                    <Label>{t("discount_type")}</Label>
                     <Controller
                         name="productPriceList.[0].consumerDiscountType"
                         control={formContext.control}
                         render={({ field }) => (
                           <select {...field} className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
                             <option value=""></option>
-                            <option value="FLAT">FLAT</option>
-                            <option value="PERCENTAGE">PERCENTAGE</option>
+                            <option value="FLAT">{t("flat").toUpperCase()}</option>
+                            <option value="PERCENTAGE">{t("percentage").toUpperCase()}</option>
                           </select>
                         )}
                     />
@@ -496,20 +498,20 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               watchConsumerType === "VENDORS" ? (
                 <>
                   <CounterTextInputField
-                    label="Vendor Discount"
+                    label={t("vendor_discount")}
                     name="productPriceList.[0].vendorDiscount"
-                    placeholder="Discount"
+                    placeholder={t("discount")}
                   />
                   {watchVendorDiscount > 0 && <div className="flex w-full flex-col gap-y-2">
-                    <Label>Discount Type</Label>
+                    <Label>{t("discount_type")}</Label>
                     <Controller
                       name="productPriceList.[0].vendorDiscountType"
                       control={formContext.control}
                       render={({ field }) => (
                         <select {...field} className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
                           <option value=""></option>
-                          <option value="FLAT">FLAT</option>
-                          <option value="PERCENTAGE">PERCENTAGE</option>
+                          <option value="FLAT">{t("flat").toUpperCase()}</option>
+                          <option value="PERCENTAGE">{t("percentge").toUpperCase()}</option>
                         </select>
                       )}
                     />
@@ -523,7 +525,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             {watchSellType === "BUYGROUP" ? (
               <>
                 <div className="mb-4 w-full">
-                  <label>Add Time</label>
+                  <label>{t("add_time")}</label>
                   <Input
                     value={localTime} // Show the local time
                     readOnly // Make it read-only
@@ -532,9 +534,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 </div>
 
                 <CounterTextInputField
-                  label="Min Customer"
+                  label={t("min_customer")}
                   name="productPriceList.[0].minCustomer"
-                  placeholder="Min"
+                  placeholder={t("min")}
                   errorMessage={
                     minCustomerMessage
                       ? minCustomerMessage.toString()
@@ -543,9 +545,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 />
 
                 <CounterTextInputField
-                  label="Max Customer"
+                  label={t("max_customer")}
                   name="productPriceList.[0].maxCustomer"
-                  placeholder="Max"
+                  placeholder={t("max")}
                   errorMessage={
                     maxCustomerMessage
                       ? maxCustomerMessage.toString()
@@ -558,9 +560,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             {watchSellType === "BUYGROUP" ? (
               <>
                 <CounterTextInputField
-                  label="Min Quantity"
+                  label={t("max_quantity")}
                   name="productPriceList.[0].minQuantity"
-                  placeholder="Min"
+                  placeholder={t("min")}
                   errorMessage={
                     minQuantityMessage
                       ? minQuantityMessage.toString()
@@ -569,9 +571,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 />
 
                 <CounterTextInputField
-                  label="Max Quantity"
+                  label={t("min_quantity")}
                   name="productPriceList.[0].maxQuantity"
-                  placeholder="Max"
+                  placeholder={t("max")}
                   errorMessage={
                     maxQuantityMessage
                       ? maxQuantityMessage.toString()
@@ -584,9 +586,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" ? (
               <>
                 <CounterTextInputField
-                  label="Min Quantity Per Customer"
+                  label={t("min_quantity_per_customer")}
                   name="productPriceList.[0].minQuantityPerCustomer"
-                  placeholder="Min"
+                  placeholder={t("min")}
                   errorMessage={
                     minQuantityPerCustomerMessage
                       ? minQuantityPerCustomerMessage.toString()
@@ -595,9 +597,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 />
 
                 <CounterTextInputField
-                  label="Max Quantity Per Customer"
+                  label={t("max_quantity_per_customer")}
                   name="productPriceList.[0].maxQuantityPerCustomer"
-                  placeholder="Max"
+                  placeholder={t("max")}
                   errorMessage={
                     maxQuantityPerCustomerMessage
                       ? maxQuantityPerCustomerMessage.toString()
@@ -619,25 +621,25 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 /> */}
 
                 <ControlledDatePicker
-                  label="Date Open"
+                  label={t("date_open")}
                   name="productPriceList.[0].dateOpen"
                   isFuture
                 />
 
                 <ControlledTimePicker
-                  label="Time Open"
+                  label={t("time_open")}
                   name="productPriceList.[0].startTime"
                 />
 
                 <ControlledDatePicker
-                  label="Date Close"
+                  label={t("date_close")}
                   name="productPriceList.[0].dateClose"
                   isFuture
                   minDate={watchDateOpen} // Pass timeOpen as minDate to disable past dates
                 />
 
                 <ControlledTimePicker
-                  label="Time Close"
+                  label={t("time_close")}
                   name="productPriceList.[0].endTime"
                 />
 
@@ -656,7 +658,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           {activeProductType !== "R" ? (
             <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
               <CounterTextInputField
-                label="Deliver After"
+                label={t("deliver_after")}
                 name="productPriceList.[0].deliveryAfter"
                 placeholder="After"
                 errorMessage={
@@ -685,7 +687,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       />
                     )}
                   />
-                  <Label>Customize Product</Label>
+                  <Label>{t("customize_product")}</Label>
                 </div>
 
                 <div className="flex flex-row items-center gap-x-3">
@@ -700,7 +702,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       />
                     )}
                   />
-                  <Label>Ask for the Price</Label>
+                  <Label>{t("ask_for_the_price")}</Label>
                 </div>
 
                 <div className="flex flex-row items-center gap-x-3">
@@ -715,7 +717,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       />
                     )}
                   />
-                  <Label>Ask for the Stock</Label>
+                  <Label>{t("ask_for_the_stock")}</Label>
                 </div>
               </>
             </div>
@@ -728,7 +730,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 name="productPrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Price</FormLabel>
+                    <FormLabel>{t("product_price")}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
@@ -737,7 +739,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                         <Input
                           type="number"
                           onWheel={(e) => e.currentTarget.blur()}
-                          placeholder="Product Price"
+                          placeholder={t("product_price")}
                           className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
                           disabled={watchIsOfferPriceRequired}
                           {...field}
@@ -755,7 +757,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 name="offerPrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Offer Price</FormLabel>
+                    <FormLabel>{t("offer_price")}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
@@ -764,7 +766,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                         <Input
                           type="number"
                           onWheel={(e) => e.currentTarget.blur()}
-                          placeholder="Offer Price"
+                          placeholder={t("offer_price")}
                           className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
                           disabled={watchIsOfferPriceRequired}
                           {...field}
@@ -783,12 +785,12 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 name="productPriceList.[0].stock"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Stock</FormLabel>
+                    <FormLabel>{t("stock")}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         onWheel={(e) => e.currentTarget.blur()}
-                        placeholder="Stock"
+                        placeholder={t("stock")}
                         className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
                         disabled={watchIsStockRequired}
                         {...field}
@@ -835,7 +837,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           // </div>
           <>
             <div className="mt-2 flex flex-col gap-y-3">
-              <Label>Select Country</Label>
+              <Label>{t("select_country")}</Label>
               <Controller
                 name="productCountryId"
                 control={formContext.control}
@@ -868,7 +870,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               {/* State Dropdown - Visible only if country is selected */}
               {selectedCountry && (
                 <>
-                  <Label>Select State</Label>
+                  <Label>{t("select_state")}</Label>
                   <Controller
                     name="productStateId"
                     control={formContext.control}
@@ -902,7 +904,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             {selectedState && (
               <>
                 <div className="mt-2 flex flex-col gap-y-3">
-                  <Label>Select City</Label>
+                  <Label>{t("select_city")}</Label>
                   <Controller
                     name="productCityId"
                     control={formContext.control}
@@ -933,7 +935,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   {/* <label>Location</label> */}
                   <ControlledTextInput
                     name="productTown"
-                    placeholder="Enter Location"
+                    placeholder={t("enter_location")}
                     label="Location"
                   />
                 </div>
@@ -945,8 +947,8 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     render={({ field }) => (
                       <ControlledTextInput
                         {...field}
-                        placeholder="Enter Lat, Long"
-                        label="Latitude and Longitude"
+                        placeholder={t("enter_lat_long")}
+                        label={t("latitude_n_longitude")}
                         readOnly
                       />
                     )}
@@ -959,11 +961,11 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         ) : null}
       </div>
       <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-1">
-        <Label className="text-[16px] font-semibold">Where to sell</Label>
+        <Label className="text-[16px] font-semibold">{t("where_to_sell")}</Label>
       </div>
       <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
         <div className="mt-2 flex flex-col gap-y-3">
-          <Label>Select Multiple Country</Label>
+          <Label>{t("select_multiple_country")}</Label>
           <Controller
             name="sellCountryIds"
             control={formContext.control}
@@ -1009,7 +1011,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         {/* Show States when at least one country is selected */}
         {selectedCountries.length > 0 && (
           <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Select Multiple State</Label>
+            <Label>{t("select_multiple_state")}</Label>
             <Controller
               name="sellStateIds"
               control={formContext.control}
@@ -1047,7 +1049,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         {/* Show Cities when at least one state is selected */}
         {selectedStates.length > 0 && (
           <div className="mt-2 flex flex-col gap-y-3">
-            <Label>Select Multiple City</Label>
+            <Label>{t("select_multiple_city")}</Label>
             <Controller
               name="sellCityIds"
               control={formContext.control}
@@ -1072,7 +1074,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         )}
 
         <div className="mt-2 flex flex-col gap-y-3">
-          <Label>Place of Origin</Label>
+          <Label>{t("place_of_origin")}</Label>
           <Controller
             name="placeOfOriginId"
             control={formContext.control}

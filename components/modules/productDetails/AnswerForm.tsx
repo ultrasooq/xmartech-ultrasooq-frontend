@@ -9,6 +9,7 @@ import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextare
 import { Button } from "@/components/ui/button";
 import { useUpdateAnswer } from "@/apis/queries/question.queries";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslations } from "next-intl";
 
 type AnswerFormProps = {
   onClose: () => void;
@@ -29,6 +30,7 @@ const formSchema = z.object({
 });
 
 const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuccess }) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -69,7 +71,7 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
     <div>
       <DialogHeader>
         <DialogTitle className="mb-5 text-center text-xl font-semibold">
-          Post your answer
+          {t("post_your_answer")}
         </DialogTitle>
       </DialogHeader>
 
@@ -79,9 +81,9 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
           className="card-item card-payment-form"
         >
           <ControlledTextareaInput
-            label="Type your answer here"
+            label={t("type_your_answer_here")}
             name="answer"
-            placeholder="Enter your answer here"
+            placeholder={t("enter_your_answer_here")}
             rows={6}
           />
 
@@ -99,10 +101,10 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
                   height={20}
                   className="mr-2 animate-spin"
                 />
-                Please wait
+                {t("please_wait")}
               </>
             ) : (
-              "Submit"
+              t("submit")
             )}
           </Button>
         </form>

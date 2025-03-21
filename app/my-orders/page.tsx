@@ -13,9 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 // import { useMe } from "@/apis/queries/user.queries";
 
 const MyOrdersPage = () => {
+  const t = useTranslations();
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderStatus, setOrderStatus] = useState<string>("");
@@ -92,18 +94,18 @@ const MyOrdersPage = () => {
       <div className="container m-auto px-3">
         <ul className="page-indicator-s1">
           <li>
-            <Link href="/home">Home</Link>
+            <Link href="/home">{t("home")}</Link>
           </li>
           <li>
-            <Link href="/my-orders">My Orders</Link>
+            <Link href="/my-orders">{t("my_orders")}</Link>
           </li>
         </ul>
 
         <div className="my-order-wrapper">
           <div className="left-div">
             <div className="card-box">
-              <h2>Filter</h2>
-              <h3>Order Status</h3>
+              <h2>{t("filter")}</h2>
+              <h3>{t("order_status")}</h3>
 
               <RadioGroup
                 className="flex flex-col gap-y-3"
@@ -113,44 +115,44 @@ const MyOrdersPage = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="" id="ALL" />
                   <Label htmlFor="ALL" className="text-base">
-                    All
+                    {t("all")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="CONFIRMED" id="CONFIRMED" />
                   <Label htmlFor="CONFIRMED" className="text-base">
-                    Confirmed
+                    {t("confirmed")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="SHIPPED" id="SHIPPED" />
                   <Label htmlFor="SHIPPED" className="text-base">
-                    Shipped
+                    {t("shipped")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="OFD" id="OFD" />
                   <Label htmlFor="OFD" className="text-base">
-                    On the way
+                    {t("on_the_way")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="DELIVERED" id="DELIVERED" />
                   <Label htmlFor="DELIVERED" className="text-base">
-                    Delivered
+                    {t("delivered")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="CANCELLED" id="CANCELLED" />
                   <Label htmlFor="CANCELLED" className="text-base">
-                    Cancelled
+                    {t("cancelled")}
                   </Label>
                 </div>
               </RadioGroup>
 
               <div className="divider"></div>
 
-              <h3>Order time</h3>
+              <h3>{t("order_time")}</h3>
 
               <RadioGroup
                 className="flex flex-col gap-y-3"
@@ -160,7 +162,7 @@ const MyOrdersPage = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="last30" id="last30" />
                   <Label htmlFor="last30" className="text-base">
-                    Last 30 days
+                    {t("last_30_days")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -196,7 +198,7 @@ const MyOrdersPage = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="older" id="older" />
                   <Label htmlFor="older" className="text-base">
-                    Older
+                    {t("older")}
                   </Label>
                 </div>
               </RadioGroup>
@@ -205,7 +207,7 @@ const MyOrdersPage = () => {
 
               <div className="mt-4 text-center">
                 <Button variant="outline" onClick={handleClearFilter}>
-                  Clear Filter
+                  {t("clean_filter")}
                 </Button>
               </div>
             </div>
@@ -233,7 +235,7 @@ const MyOrdersPage = () => {
               </div>
               <button type="button" className="search-btn theme-primary-btn">
                 <FiSearch />
-                Search Orders
+                {t("search_orders")}
               </button>
             </div>
             <div className="my-order-lists">
@@ -253,7 +255,7 @@ const MyOrdersPage = () => {
               {!ordersQuery.isLoading && !ordersQuery?.data?.data?.length ? (
                 <div className="w-full p-3">
                   <p className="text-center text-lg font-semibold">
-                    No orders found
+                    {t("no_orders_found")}
                   </p>
                 </div>
               ) : null}

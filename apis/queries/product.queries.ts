@@ -306,6 +306,7 @@ export const useAllManagedProducts = (
     page: number;
     limit: number;
     term?: string;
+    selectedAdminId?: number;
   },
   enabled = true,
 ) =>

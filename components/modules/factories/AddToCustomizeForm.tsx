@@ -36,6 +36,7 @@ import {
 } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type AddToCustomizeFormProps = {
   onClose: () => void;
@@ -96,6 +97,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
   selectedProductId,
 //   selectedQuantity,
 }) => {
+  const t = useTranslations();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -362,7 +364,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
     <>
       <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
-          {`Add Customize Cart`}
+          {t("add_customize_cart")}
         </DialogTitle>
         <Button
           onClick={onClose}
@@ -379,7 +381,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
           <div className="relative mb-4 w-full">
             <div className="space-y-2">
               <label className="text-sm font-medium leading-none text-color-dark">
-                Product Image
+                {t("product_image")}
               </label>
               <div className="flex w-full flex-wrap">
                 <div className="grid grid-cols-3">
@@ -472,7 +474,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
 
                                     <div className="absolute h-20 w-full p-5">
                                       <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
-                                        Upload Video
+                                        {t("upload_video")}
                                       </p>
                                     </div>
                                     <Input
@@ -504,7 +506,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                                     />
                                   </div>
                                 ) : (
-                                  <AddImageContent description="Drop your File , or " />
+                                  <AddImageContent description={t("drop_your_file")} />
                                 )}
 
                                 {/* <Input
@@ -542,7 +544,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                           width={29}
                           height={28}
                         />
-                        <span>Add More</span>
+                        <span>{t("add_more")}</span>
                       </div>
                     </div>
 
@@ -600,24 +602,24 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
           </div>
 
           <ControlledTextareaInput
-            label="Write a Note"
+            label={t("write_a_note")}
             name="note"
-            placeholder="Write here..."
+            placeholder=""
             rows={6}
           />
 
           {/* {selectedQuantity ? ( */}
             <ControlledTextInput
-              label="Offer Price From"
+              label={t("offer_price_from")}
               name="fromPrice"
-              placeholder="From Price"
+              placeholder={t("offer_price")}
               type="number"
             />
 
             <ControlledTextInput
-              label="Offer Price To"
+              label={t("offer_price_to")}
               name="toPrice"
-              placeholder="To Price"
+              placeholder={t("to_price")}
               type="number"
             />
           {/* ) : null} */}
@@ -643,7 +645,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
               `${selectedQuantity ? "Add to Cart" : "Edit"}`
             
             )} */}
-            Add to Cart
+            {t("add_t_cart")}
           </Button>
         </form>
       </Form>

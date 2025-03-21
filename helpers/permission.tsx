@@ -1,12 +1,12 @@
 import { useAuth } from "@/context/AuthContext"
 
-export const PERMISSION_TEAM_MEMBERS = "teammember";
-export const PERMISSION_PRODUCTS = "product";
-export const PERMISSION_ORDERS = "order";
-export const PERMISSION_RFQ_QUOTES = "rfqquote";
-export const PERMISSION_RFQ_SELLER_REQUESTS = "rfqsellerrequest";
-export const PERMISSION_SELLER_REWARDS = "sellerreward";
-export const PERMISSION_SHARE_LINKS = "sharedlink";
+export const PERMISSION_TEAM_MEMBERS = "Team Member";
+export const PERMISSION_PRODUCTS = "Product";
+export const PERMISSION_ORDERS = "Order";
+export const PERMISSION_RFQ_QUOTES = "RFQ Quotes";
+export const PERMISSION_RFQ_SELLER_REQUESTS = "RFQ Seller Requests";
+export const PERMISSION_SELLER_REWARDS = "Seller Reward";
+export const PERMISSION_SHARE_LINKS = "Shared Link";
 
 export const checkPermission = (permissionName: string): boolean => {
     const { user, permissions } = useAuth();

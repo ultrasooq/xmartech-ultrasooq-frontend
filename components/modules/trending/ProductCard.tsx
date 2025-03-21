@@ -23,6 +23,7 @@ import {
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
+import { useTranslations } from "next-intl";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -49,6 +50,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onSelectedId,
   productQuantity = 0
 }) => {
+  const t = useTranslations();
+
   const [timeLeft, setTimeLeft] = useState("");
 
   const deviceId = getOrCreateDeviceId() || "";
@@ -198,13 +201,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
       const now = Date.now();
 
       if (now < startTimestamp) {
-        setTimeLeft("NotStarted");
+        setTimeLeft(t("not_started"));
         return;
       }
 
       let ms = endTimestamp - now;
       if (ms <= 0) {
-        setTimeLeft("Expired");
+        setTimeLeft(t("expired"));
         return;
       }
 
@@ -321,7 +324,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 type="button"
                 className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
               >
-                Ask vendor for price
+                {t("ask_vendor_for_price")}
               </button>
             </Link>
           ) : (
@@ -334,7 +337,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
         <div className="quantity_wrap mb-2">
-          <label>Quantity</label>
+          <label>{t("quantity")}</label>
           <div className="qty-up-down-s1-with-rgMenuAction">
             <div className="flex items-center gap-x-3 md:gap-x-4">
               <Button
@@ -380,14 +383,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
             disabled={false}
           >
             <FaCircleCheck color="#00C48C" />
-            Added to Cart
+            {t("added_to_cart")}
           </button>}
           {quantity == 0 && <button
             type="button"
             className="add_to_cart_button"
             onClick={() => handleAddToCart(quantity, "add")}
           >
-            Add To Cart
+            {t("add_to_cart")}
           </button>}
         </div>
       </div>

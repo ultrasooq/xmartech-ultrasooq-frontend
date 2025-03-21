@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { useTranslations } from "next-intl";
 // import { useCartStore } from "@/lib/rfqStore";
 
 type FactoriesProductCardProps = {
@@ -42,6 +43,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
   onRemove,
   note,
 }) => {
+  const t = useTranslations();
   const [quantity, setQuantity] = useState(1);
   // const cart = useCartStore();
 
@@ -81,7 +83,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
         </div>
         <figcaption>
           <h5>{productName}</h5>
-          <label>Quantity</label>
+          <label>{t("quantity")}</label>
           <div className="qty-with-remove">
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-4">
@@ -135,7 +137,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
                 // cart.deleteCartItem(rfqProductId);
               }}
             >
-              Remove
+              {t("remove")}
             </Button>
           </div>
         </figcaption>
@@ -144,7 +146,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
         <span>Note:</span> {note}
       </p>
       <div className="price-info">
-        <h5>Price</h5>
+        <h5>{t("price")}</h5>
         {/* <p>${offerFromPrice ? Number(offerFromPrice) * quantity : 0}</p> */}
         <p> ${offerFromPrice ? `${Number(offerFromPrice)} - ${Number(offerToPrice)}` : '0'}</p>
       </div>

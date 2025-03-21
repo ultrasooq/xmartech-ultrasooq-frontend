@@ -10,8 +10,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { IBrands, ISelectOptions } from "@/utils/types/common.types";
 import { useBrands } from "@/apis/queries/masters.queries";
 import { debounce } from "lodash";
+import { useTranslations } from "next-intl";
 
 const BrandFilterList = () => {
+  const t = useTranslations();
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const brandsQuery = useBrands({
@@ -57,13 +59,13 @@ const BrandFilterList = () => {
           >
             <AccordionItem value="brand">
               <AccordionTrigger className="px-3 text-base hover:!no-underline">
-                By Brand
+                {t("by_brand")}
               </AccordionTrigger>
               <AccordionContent>
                 <div className="filter-sub-header">
                   <Input
                     type="text"
-                    placeholder="Search Brand"
+                    placeholder={t("search_brand")}
                     className="custom-form-control-s1 searchInput rounded-none"
                     onChange={handleDebounce}
                   />
@@ -72,7 +74,7 @@ const BrandFilterList = () => {
                   <div className="filter-checklists">
                     {!memoizedBrands.length ? (
                       <p className="text-center text-sm font-medium">
-                        No data found
+                        {t("no_data_found")}
                       </p>
                     ) : null}
                     {memoizedBrands.map((item: ISelectOptions) => (

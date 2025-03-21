@@ -540,6 +540,13 @@
   }
 
   /* size2 */
+  
+
+
+  /* start: trending-search-sec */
+
+  /* end: custom-inner-banner-s1 */
+
   .custom-inner-banner-s1.size2 {
   }
 
@@ -558,10 +565,6 @@
   .custom-inner-banner-s1.size2 .custom-inner-banner-s1-captionBox {
     padding: 24px 32px;
   }
-
-  /* end: custom-inner-banner-s1 */
-
-  /* start: trending-search-sec */
 
   .trending-search-sec {
     @apply mt-[84px];
@@ -1435,11 +1438,11 @@
   }
 
   .card-item.cart-items .cart-item-lists .cart-item-list-col {
-    @apply flex items-start justify-between gap-x-4 border-b border-solid border-b-[#EDEDED] px-8 py-5 last:border-b-0;
+    @apply flex items-start justify-between gap-x-4 border-b border-solid border-b-[#EDEDED] px-4 py-4 last:border-b-0;
   }
 
   .card-item.cart-items .cart-item-lists .cart-item-list-col figure {
-    @apply flex gap-x-6;
+    @apply flex gap-x-4;
   }
 
   .card-item.cart-items
@@ -5203,6 +5206,35 @@ input::-ms-clear {
 
 @media only screen and (min-width: 768px) and (max-width: 1023px) {
 
+  .team_members_heading {
+    @apply flex-wrap gap-2
+  }
+
+  .team_members_heading h1 {
+    @apply text-2xl
+  }
+
+  .team_members_heading button {
+    @apply p-2 text-sm;
+  }
+
+  .team_members_table {
+    @apply overflow-auto;
+  }
+
+  .team_members_table table thead tr th {
+    @apply p-[10px] whitespace-nowrap;
+  }
+  
+  .team_members_table table tbody tr td {
+    @apply p-[10px] whitespace-nowrap;
+  }
+  
+  .team_members_table table thead tr th:nth-child(4),
+  .team_members_table table tbody tr td:nth-child(4) {
+    @apply w-auto whitespace-nowrap;
+  }
+
   .product-view-s1-left-details-with-right-suggestion .container {
     @apply gap-1.5;
   }
@@ -5249,36 +5281,6 @@ input::-ms-clear {
 
   .existing-product-add-lists .existing-product-add-item {
     @apply max-w-full;
-  }
-
-
-  .team_members_heading {
-    @apply flex-wrap gap-2
-  }
-
-  .team_members_heading h1 {
-    @apply text-2xl
-  }
-
-  .team_members_heading button {
-    @apply p-2 text-sm;
-  }
-
-  .team_members_table {
-    @apply overflow-auto;
-  }
-
-  .team_members_table table thead tr th {
-    @apply p-[10px] whitespace-nowrap;
-  }
-  
-  .team_members_table table tbody tr td {
-    @apply p-[10px] whitespace-nowrap;
-  }
-  
-  .team_members_table table thead tr th:nth-child(4),
-  .team_members_table table tbody tr td:nth-child(4) {
-    @apply w-auto whitespace-nowrap;
   }
 
 
