@@ -130,14 +130,14 @@ const ProductDetailsPage = () => {
     const response = await deleteCartItem.mutateAsync({ cartId });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     } else {
       toast({
-        title: "Item not removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_not_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "danger",
       });
     }
@@ -178,8 +178,8 @@ const ProductDetailsPage = () => {
     if (haveAccessToken) {
       if (!productDetails?.product_productPrice?.[0]?.id) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -196,8 +196,8 @@ const ProductDetailsPage = () => {
           setGlobalQuantity(quantity);
         }
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         setIsVisible(true); // Show the div when the button is clicked
@@ -206,8 +206,8 @@ const ProductDetailsPage = () => {
     } else {
       if (!productDetails?.product_productPrice?.[0]?.id) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -224,8 +224,8 @@ const ProductDetailsPage = () => {
           setGlobalQuantity(quantity);
         }
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         setIsVisible(true); // Show the div when the button is clicked
@@ -259,8 +259,8 @@ const ProductDetailsPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -271,8 +271,8 @@ const ProductDetailsPage = () => {
       });
     } else {
       toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -289,8 +289,8 @@ const ProductDetailsPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -301,8 +301,8 @@ const ProductDetailsPage = () => {
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }

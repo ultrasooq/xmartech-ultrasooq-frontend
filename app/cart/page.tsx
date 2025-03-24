@@ -122,8 +122,8 @@ const CartListPage = () => {
 
       if (response.status) {
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType === "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
       }
@@ -135,8 +135,8 @@ const CartListPage = () => {
       });
       if (response.status) {
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType === "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
       }
@@ -147,14 +147,14 @@ const CartListPage = () => {
     const response = await deleteCartItem.mutateAsync({ cartId });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     } else {
       toast({
-        title: "Item not removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_not_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "danger",
       });
     }
@@ -164,14 +164,14 @@ const CartListPage = () => {
     const response = await addToWishlist.mutateAsync({ productId });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }

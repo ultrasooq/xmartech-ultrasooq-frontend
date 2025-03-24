@@ -4,14 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import AddProductIcon from "@/public/images/add-product.svg";
 import ExistingProductIcon from "@/public/images/existing-product.svg";
+import { useTranslations } from "next-intl";
 
 type AddProductContentProps = {};
 
 const AddProductContent: React.FC<AddProductContentProps> = () => {
+  const t = useTranslations();
+
   return (
     <DialogContent className="custom-action-type-chose-picker">
       <div className="modal-headerpart">
-        <DialogTitle>Choose Add Product Type</DialogTitle>
+        <DialogTitle>{t("choose_add_product_type")}</DialogTitle>
       </div>
       <div className="modal-bodypart">
         <div className="import-pickup-type-selector-lists">
@@ -24,7 +27,7 @@ const AddProductContent: React.FC<AddProductContentProps> = () => {
                 <Image src={AddProductIcon} alt="add-product-icon" />
               </div>
               <div className="text-container">
-                <h5>Add a new product</h5>
+                <h5>{t("add_new_product")}</h5>
                 <p>
                   Lorem Ipsum is simply Lorem 1500s, when an unknown printer
                   took a galley of type and scrambled it to make a type specimen

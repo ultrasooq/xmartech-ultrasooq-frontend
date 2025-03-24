@@ -50,7 +50,7 @@ const DescriptionSection = () => {
               <ControlledTextInput
                 key={field.id}
                 name={`productShortDescriptionList.${index}.shortDescription`}
-                placeholder="Enter Short Description"
+                placeholder={t("enter_short_description")}
               />
 
              {/* <ControlledRichTextEditor

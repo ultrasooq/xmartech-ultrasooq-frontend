@@ -17,12 +17,14 @@ import { useAuth } from "@/context/AuthContext";
 import AdminProductChat from "./Admin/AdminProductChat";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { generateUniqueNumber } from "@/utils/helper";
+import { useTranslations } from "next-intl";
 
 interface ProductChatProps {
   productId: number;
 }
 
 const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
+  const t = useTranslations();
   const [message, setMessage] = useState<string>("");
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false);
@@ -79,7 +81,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
   useEffect(() => {
     if (errorMessage) {
       toast({
-        title: "Chat",
+        title: t("chat"),
         description: errorMessage,
         variant: "danger",
       });
@@ -127,8 +129,8 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed to update the attachment status",
+        title: t("chat"),
+        description: t("attachment_update_status_failed"),
         variant: "danger",
       });
     }
@@ -184,15 +186,15 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         setShowEmoji(false);
       } else {
         toast({
-          title: "Chat",
-          description: "Please type your message",
+          title: t("chat"),
+          description: t("please_type_your_message"),
           variant: "danger",
         });
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed!",
+        title: t("chat"),
+        description: t("failed"),
         variant: "danger",
       });
     }

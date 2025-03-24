@@ -14,6 +14,7 @@ import {
 } from "react-accessible-accordion";
 import { useCreateIntent } from "@/apis/queries/orders.queries";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslations } from "next-intl";
 
 type PaymentFormProps = {
   onCreateOrder: (paymentType: string, paymentIntent: string) => void;
@@ -33,7 +34,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   onManageAmount,
   clearCardElement
 }) => {
-
+  const t = useTranslations();
   const { toast } = useToast();
   const stripe = useStripe();
   const elements = useElements();
@@ -81,7 +82,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           // if(selectedPaymentType === 'advance')  
         } else {
           toast({
-            title: "Payment Error:",
+            title: t("payment_error"),
             description: response.message,
             variant: "danger",
           });
@@ -94,53 +95,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
    const handleCardChange = (event: any) => {
     setCardComplete(event.complete); // event.complete is true when the card details are valid
   };
-
-
-  // Handle form submission for Direct Stripe payment
-  // const handleSubmit = async () => {
-  //   if (!stripe || !elements) return;
-
-  //   setIsCardLoading(true);
-
-  //   const cardElement = elements.getElement(CardElement);
-  //   if (!cardElement) {
-  //     console.error("CardElement not found");
-  //     setIsCardLoading(false);
-  //     return;
-  //   }
-
-  //   try {
-  
-  //     // Confirm Payment with Stripe
-  //     const result = await stripe.confirmCardPayment(clientSecret, {
-  //       payment_method: {
-  //         card: elements.getElement(CardElement)!,
-  //         billing_details: { name },
-  //       },
-  //     });
-
-  //     if (result.error) {
-  //       console.error("Payment Error:", result.error.message);
-  //       toast({
-  //         title: "Payment Error:",
-  //         description: result.error.message,
-  //         variant: "danger",
-  //       });
-  //     } else {
-  //       console.log("Payment Success:", result.paymentIntent);
-  //       toast({
-  //         title: "Payment Success:",
-  //         description: "Payment Sucessfully done",
-  //         variant: "danger",
-  //       });
-  //       onCreateOrder("CARD", result.paymentIntent.id);
-  //     }
-  //   } catch (error) {
-  //     console.error("Payment Failed", error);
-  //   }
-  // };
-
-  
 
   const handlePayment = async () => {
     if (!stripe || !elements) {
@@ -159,7 +113,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     if (error) {
       console.error(error);
       toast({
-        title: "Payment Error:",
+        title: t("payment_error"),
         description: error.message,
         variant: "danger",
       });

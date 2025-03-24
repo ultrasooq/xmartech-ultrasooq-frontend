@@ -62,7 +62,7 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission
       });
     } else {
       toast({
-        title: "Role Add Failed",
+        title: t("role_add_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -90,7 +90,7 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission
           <ControlledTextInput
             label={t("role_name")}
             name="userRoleName"
-            placeholder="Enter Name"
+            placeholder={t("name_placeholder")}
             type="text"
           />
 

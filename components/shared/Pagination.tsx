@@ -6,6 +6,7 @@ import PreviousIcon from "@/public/images/pagination-prev.svg";
 import NextIcon from "@/public/images/pagination-next.svg";
 import LastIcon from "@/public/images/pagination-last.svg";
 import ReactPaginate from "react-paginate";
+import { useTranslations } from "next-intl";
 
 type PaginationProps = {
   // data: [];
@@ -22,6 +23,7 @@ const Pagination: React.FC<PaginationProps> = ({
   setPage,
   limit,
 }) => {
+  const t = useTranslations();
   const itemsPerPage = limit;
   // const [itemOffset, setItemOffset] = useState(0);
   // const endOffset = itemOffset + itemsPerPage;
@@ -53,7 +55,7 @@ const Pagination: React.FC<PaginationProps> = ({
             width={0}
             className="h-auto w-[7px]"
           />
-          First
+          {t("first")}
         </Button>
       </li>
       <li>
@@ -99,7 +101,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="theme-primary-btn last"
           onClick={() => setPage(pageCount)}
         >
-          Last
+          {t("last")}
           <Image
             src={LastIcon}
             alt="next-icon"

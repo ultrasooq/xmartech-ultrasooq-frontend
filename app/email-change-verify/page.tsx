@@ -59,7 +59,7 @@ export default function EmailChangeVerifyPage() {
   const onSubmit = async (formData: any) => {
     if (otp.join("") === "") {
       toast({
-        title: "OTP is required",
+        title: t("otp_is_required"),
         variant: "danger",
       });
       return;
@@ -69,7 +69,7 @@ export default function EmailChangeVerifyPage() {
 
     if (combinedOtp.length !== 4) {
       toast({
-        title: "OTP length should be 4 digits",
+        title: t("otp_length_should_be_n_digits", { n: 4 }),
         variant: "danger",
       });
       return;
@@ -82,7 +82,7 @@ export default function EmailChangeVerifyPage() {
 
     if (response?.status) {
       toast({
-        title: "Update Successful",
+        title: t("update_successful"),
         description: response.message,
         variant: "success",
       });
@@ -94,7 +94,7 @@ export default function EmailChangeVerifyPage() {
       }, 3000);
     } else {
       toast({
-        title: "Update Failed",
+        title: t("update_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -109,7 +109,7 @@ export default function EmailChangeVerifyPage() {
 
     if (!data.email) {
       toast({
-        title: "Email is required",
+        title: t("email_is_required"),
         variant: "danger",
       });
       return;
@@ -118,7 +118,7 @@ export default function EmailChangeVerifyPage() {
 
     if (response.status && response.otp) {
       toast({
-        title: "Verification code sent",
+        title: t("verification_code_sent"),
         description: response?.message,
         variant: "success",
       });
@@ -126,7 +126,7 @@ export default function EmailChangeVerifyPage() {
       setOtp(new Array(4).fill(""));
     } else {
       toast({
-        title: "Verification error!",
+        title: t("verification_error"),
         description: response?.message,
         variant: "danger",
       });

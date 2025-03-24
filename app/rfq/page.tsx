@@ -107,8 +107,8 @@ const RfqPage = () => {
 
     if (response.status) {
       toast({
-        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-        description: "Check your cart for more details",
+        title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -144,8 +144,8 @@ const RfqPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -155,8 +155,8 @@ const RfqPage = () => {
       });
     } else {
       toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -180,8 +180,8 @@ const RfqPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -191,8 +191,8 @@ const RfqPage = () => {
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -233,7 +233,7 @@ const RfqPage = () => {
                     <input
                       type="search"
                       className="form-control"
-                      placeholder="Search Product"
+                      placeholder={t("search_product")}
                       onChange={handleRfqDebounce}
                     />
                     <button type="button">
@@ -262,7 +262,7 @@ const RfqPage = () => {
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
                         <div className="products_sec_top_left">
-                          <h4>t{t("trending_n_high_rate_product")}</h4>
+                          <h4>{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
                           <div className="trending_filter">

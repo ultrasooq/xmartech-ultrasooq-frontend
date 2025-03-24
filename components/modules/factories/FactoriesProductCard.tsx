@@ -75,13 +75,13 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
 
       if (response.status) {
         toast({
-          title: `Item ${action == "add" ? "added to" : "removed from"} cart`,
-          description: "Check your cart for more details",
+          title: action == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
       } else {
         toast({
-          title: "Oops! Something went wrong",
+          title: t("something_went_wrong"),
           description: response.message,
           variant: "danger",
         });

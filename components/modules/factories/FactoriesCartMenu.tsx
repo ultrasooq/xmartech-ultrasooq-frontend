@@ -45,8 +45,8 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
     });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -71,7 +71,7 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
         ) : null}
 
         <h4 className="text-center">
-          {t("your_factories_cart")} ({memoizedFactoriseCartList.length} items)
+          {t("your_factories_cart")} ({t("n_items", { n: memoizedFactoriseCartList.length })})
         </h4>
 
         {!memoizedFactoriseCartList.length && (

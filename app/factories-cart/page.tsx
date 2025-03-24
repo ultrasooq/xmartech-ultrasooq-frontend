@@ -95,13 +95,13 @@ const FactoriesCartPage = () => {
 
     if (response.status) {
       toast({
-        title: `Item added to cart`,
-        description: "Check your cart for more details",
+        title: t("item_added_to_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }else {
       toast({
-        title: "Oops! Something went wrong",
+        title: t("something_went_wrong"),
         description: response.message,
         variant: "danger",
       });
@@ -112,8 +112,8 @@ const FactoriesCartPage = () => {
     const response = await deleteFactoriesCartItem.mutateAsync({ factoriesCartId });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -143,8 +143,8 @@ const FactoriesCartPage = () => {
     const response = await addFactoriesRequestQuotes.mutateAsync(updatedFormData);
     if (response.status) {
       toast({
-        title: "Quotes added successfully",
-        description: "Check your quotes for more details",
+        title: t("quotes_added_successfully"),
+        description: t("check_your_quotes_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -154,7 +154,7 @@ const FactoriesCartPage = () => {
       // router.push("/rfq-quotes");
     } else {
       toast({
-        title: "Something went wrong",
+        title: t("something_went_wrong"),
         description: response.message,
         variant: "danger",
       });

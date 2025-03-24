@@ -228,7 +228,7 @@ export default function ProfilePage() {
     // return;
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
-      toast({ title: "Profile Updated", description: "Your profile has been updated successfully", variant: "success", });
+      toast({ title: t("profile_updated"), description: t("profile_update_info"), variant: "success", });
       form.reset();
       const tradeRole = response.data?.tradeRole;
       if (tradeRole === "BUYER") {
@@ -249,7 +249,7 @@ export default function ProfilePage() {
         router.push("/member-profile-details");
       }
     } else {
-      toast({ title: "Profile Update Failed", description: response.message, variant: "danger", });
+      toast({ title: t("profile_update_failed"), description: response.message, variant: "danger", });
     }
   };
 
@@ -382,8 +382,7 @@ export default function ProfilePage() {
                                     event.target.files[0].size > 524288000
                                   ) {
                                     toast({
-                                      title:
-                                        "Image size should be less than 500MB",
+                                      title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                       variant: "danger",
                                     });
                                     return;
@@ -691,8 +690,7 @@ export default function ProfilePage() {
                                             524288000
                                           ) {
                                             toast({
-                                              title:
-                                                "Image size should be less than 500MB",
+                                              title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;
@@ -775,8 +773,7 @@ export default function ProfilePage() {
                                             524288000
                                           ) {
                                             toast({
-                                              title:
-                                                "Image size should be less than 500MB",
+                                              title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;

@@ -251,8 +251,8 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     if (haveAccessToken) {
       if (!productPriceId) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -264,16 +264,16 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
 
       if (response.status) {
         toast({
-          title: "Item added to cart",
-          description: "Check your cart for more details",
+          title: t("something_went_wrong"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
       }
     } else {
       if (!productPriceId) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -285,8 +285,8 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
       });
       if (response.status) {
         toast({
-          title: "Item added to cart",
-          description: "Check your cart for more details",
+          title: t("something_went_wrong"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         return response.status;
@@ -300,8 +300,8 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     });
     if (response.status) {
       toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -312,8 +312,8 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
       });
     } else {
       toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -337,8 +337,8 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -349,8 +349,8 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -496,7 +496,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                   {/* <h3></h3> */}
                 </div>
                 <div className="rg-filter">
-                  <p>{allProductsQuery.data?.totalCount} Products found</p>
+                  <p>{t("n_products_found", { n: allProductsQuery.data?.totalCount })}</p>
                   <ul>
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>

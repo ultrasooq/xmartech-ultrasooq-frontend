@@ -157,8 +157,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
     if (response.status) {
       toast({
-        title: "Item added to cart",
-        description: "Check your cart for more details",
+        title: t("something_went_wrong"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
       form.reset();
@@ -169,7 +169,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       onClose();
     } else {
       toast({
-        title: "Oops! Something went wrong",
+        title: t("something_went_wrong"),
         description: response.message,
         variant: "danger",
       });
@@ -258,7 +258,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       });
       if (response.status) {
         toast({
-          title: "RFQ Product Update Successful",
+          title: t("rfq_product_update_successful"),
           description: response.message,
           variant: "success",
         });
@@ -280,7 +280,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         }
       } else {
         toast({
-          title: "RFQ Product Update Failed",
+          title: t("rfq_product_update_failed"),
           description: response.message,
           variant: "danger",
         });
@@ -350,7 +350,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       const response = await createProduct.mutateAsync(data);
       if (response.status) {
         toast({
-          title: "RFQ Product Add Successful",
+          title: t("rfq_product_add_successful"),
           description: response.message,
           variant: "success",
         });
@@ -359,7 +359,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         });
         if (dependentResponse.status) {
           toast({
-            title: "Product Duplicate Successful",
+            title: t("product_duplicate_successful"),
             description: dependentResponse.message,
             variant: "success",
           });
@@ -381,14 +381,14 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           }
         } else {
           toast({
-            title: "Product Duplicate Failed",
+            title: t("product_duplicate_failed"),
             description: dependentResponse.message,
             variant: "danger",
           });
         }
       } else {
         toast({
-          title: "RFQ Product Add Failed",
+          title: t("rfq_product_add_failed"),
           description: response.message,
           variant: "danger",
         });
@@ -527,7 +527,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                           ) {
                                             toast({
                                               title:
-                                                "One of your file size should be less than 500MB",
+                                                t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;
@@ -577,7 +577,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                           ) {
                                             toast({
                                               title:
-                                                "One of your file size should be less than 500MB",
+                                                t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;
@@ -650,8 +650,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                               filesArray.some((file) => file.size > 524288000)
                             ) {
                               toast({
-                                title:
-                                  "One of your image size should be less than 500MB",
+                                title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                 variant: "danger",
                               });
                               return;

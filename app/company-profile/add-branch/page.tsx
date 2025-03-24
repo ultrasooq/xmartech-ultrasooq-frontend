@@ -246,7 +246,7 @@ const AddBranchPage = () => {
 
     if (response.status && response.data) {
       toast({
-        title: "Branch Add Successful",
+        title: t("branch_add_successful"),
         description: response.message,
         variant: "success",
       });
@@ -254,7 +254,7 @@ const AddBranchPage = () => {
       router.push("/company-profile-details");
     } else {
       toast({
-        title: "Branch Add Failed",
+        title: t("branch_add_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -359,8 +359,7 @@ const AddBranchPage = () => {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title:
-                                          "Image size should be less than 500MB",
+                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                         variant: "danger",
                                       });
                                       return;
@@ -436,8 +435,7 @@ const AddBranchPage = () => {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title:
-                                          "Image size should be less than 500MB",
+                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                         variant: "danger",
                                       });
                                       return;

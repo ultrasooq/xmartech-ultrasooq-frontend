@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { downloadAttachment } from "@/apis/requests/chat.requests";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslations } from "next-intl";
 
 const useDownloadFile = () => {
+    const t = useTranslations();
     const [downloadLoading, setDownloadLoading] = useState(false);
     const { toast } = useToast();
 
@@ -24,24 +26,24 @@ const useDownloadFile = () => {
                     downloadFile(response?.data?.url);
                 } else {
                     toast({
-                        title: "Chat",
-                        description: "Failed to download the file",
+                        title: t("chat"),
+                        description: t("file_download_failed"),
                         variant: "danger",
                     });
                 }
                 setDownloadLoading(false);
             } else {
                 toast({
-                    title: "Chat",
-                    description: "File path is missing",
+                    title: t("chat"),
+                    description: t("file_path_missing"),
                     variant: "danger",
                 });
             }
         } catch (error) {
             setDownloadLoading(false);
             toast({
-                title: "Chat",
-                description: "Failed to download the file",
+                title: t("chat"),
+                description: t("file_download_failed"),
                 variant: "danger",
             });
         }

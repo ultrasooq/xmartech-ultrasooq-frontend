@@ -253,8 +253,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       callbackUrl: "/home",
     });
     toast({
-      title: "Logout Successful",
-      description: "You have successfully logged out.",
+      title: t("logout_successful"),
+      description: t("you_have_successfully_logged_out"),
       variant: "success",
     });
 
@@ -310,7 +310,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           <div className="container m-auto px-3">
             <div className="hidden sm:hidden md:flex md:gap-x-2.5">
               <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
-                <p>Welcome to UltraSooq!</p>
+                <p>{t("welcome")}</p>
               </div>
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
@@ -367,7 +367,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   <input
                     type="search"
                     className="form-control h-full w-full p-2.5 text-black focus:outline-none"
-                    placeholder="I’m shopping for..."
+                    placeholder={t("global_search_placeholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={handleKeyDown} // Calls search when Enter is pressed

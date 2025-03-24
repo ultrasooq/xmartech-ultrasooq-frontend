@@ -427,6 +427,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       )}
                       styles={customStyles}
                       instanceId="productPriceList.[0].consumerType"
+                      placeholder={t("select")}
                     />
                   )}
                 />
@@ -454,6 +455,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       )}
                       styles={customStyles}
                       instanceId="productPriceList.[0].sellType"
+                      placeholder={t("sell_type")}
                     />
                   )}
                 />
@@ -856,6 +858,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     )}
                     styles={customStyles}
                     instanceId="productCountryId"
+                    placeholder={t("select")}
                   />
                 )}
               />
@@ -888,6 +891,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                         )}
                         styles={customStyles}
                         instanceId="productStateId"
+                        placeholder={t("select")}
                       />
                     )}
                   />
@@ -920,6 +924,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                         )}
                         styles={customStyles}
                         instanceId="productCityId"
+                        placeholder={t("select")}
                       />
                     )}
                   />
@@ -1003,6 +1008,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 value={selectedCountries}
                 styles={customStyles}
                 instanceId="sellCountryIds"
+                placeholder={t("select")}
               />
             )}
           />
@@ -1040,6 +1046,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   value={selectedStates}
                   styles={customStyles}
                   instanceId="sellStateIds"
+                  placeholder={t("select")}
                 />
               )}
             />
@@ -1090,6 +1097,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 )}
                 styles={customStyles}
                 instanceId="placeOfOriginId"
+                placeholder={t("select")}
               />
             )}
           />

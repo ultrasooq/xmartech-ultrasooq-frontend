@@ -18,6 +18,7 @@ import CounterTextInputField from "../createProduct/CounterTextInputField";
 import { useToast } from "@/components/ui/use-toast";
 import { Dialog } from "@/components/ui/dialog";
 import AddProductContent from "../products/AddProductContent";
+import { useTranslations } from "next-intl";
 
 type ManageProductCardProps = {
   selectedIds?: number[];
@@ -80,6 +81,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   productCondition: initialCondition,
   onRemove,
 }) => {
+  const t = useTranslations();
   const { toast } = useToast();
 
   // Status update part
@@ -98,21 +100,21 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
       if (response.status) {
         setStatus(newStatus); // Update local state to reflect the new status
         toast({
-          title: "Status Update",
-          description: "Status updated successfully",
+          title: t("status_update_successful"),
+          description: t("status_updated_successfully"),
           variant: "success",
         });
       } else {
         toast({
-          title: "Status Update",
-          description: "Oops! Something went wrong",
+          title: t("status_update_failed"),
+          description: t("something_went_wrong"),
           variant: "danger",
         });
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update status",
+        title: t("error"),
+        description: t("failed_to_update_status"),
         variant: "danger",
       });
     }
@@ -320,21 +322,21 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
 
       if (response.status) {
         toast({
-          title: "Product Update",
-          description: "The product has been successfully updated.",
+          title: t("product_update_successful"),
+          description: t("product_updated_successfully"),
           variant: "success",
         });
       } else {
         toast({
-          title: "Product Update",
-          description: "Oops! Something went wrong",
+          title: t("product_update_failed"),
+          description: t("something_went_wrong"),
           variant: "danger",
         });
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update product",
+        title: t("error"),
+        description: t("failed_to_update_product"),
         variant: "danger",
       });
     }
@@ -356,23 +358,23 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
 
       if (response.status) {
         toast({
-          title: "Product Remove",
-          description: "The product has been successfully removed.",
+          title: t("product_removed"),
+          description: t("product_removed_successfully"),
           variant: "success",
         });
         // Call the function to remove the product from the UI
         onRemove(id);
       } else {
         toast({
-          title: "Product Remove",
-          description: "Oops! Something went wrong",
+          title: t("product_removed"),
+          description: t("something_went_wrong"),
           variant: "danger",
         });
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to remove product",
+        title: t("error"),
+        description: t("failed_to_remove_product"),
         variant: "danger",
       });
     }
@@ -470,7 +472,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         className="h-[20px] w-[20px]"
                         checked={askForStock === "false"} // Checkbox is checked when askForStock is false
                       />
-                      <div className="text-[12px] font-semibold">Stock</div>
+                      <div className="text-[12px] font-semibold">{t("stock")}</div>
                     </div>
                     {askForStock === "false" ? (
                       <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -497,7 +499,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </div>
                     ) : (
                       <div className="text-center text-[16px] font-semibold text-gray-500">
-                        Ask for Stock
+                        {t("ask_for_the_stock")}
                       </div>
                     )}
                   </div>
@@ -509,7 +511,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         className="h-[20px] w-[20px]"
                         checked={askForPrice === "false"} // Checkbox is checked when askForStock is false
                       />
-                      <div className="text-[12px] font-semibold">Price</div>
+                      <div className="text-[12px] font-semibold">{t("price")}</div>
                     </div>
                     {askForStock === "false" ? (
                       <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -535,7 +537,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </div>
                     ) : (
                       <div className="text-center text-[16px] font-semibold text-gray-500">
-                        Ask for Price
+                        {t("ask_for_the_price")}
                       </div>
                     )}
                   </div>
@@ -575,7 +577,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Product Condition
+                        {t("product_condition")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -584,15 +586,15 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         value={initialCondition} // Bind the selected value to the state
                         onChange={(e) => setCondition(e.target.value)} // Update the state when the value changes
                       >
-                        <option value={"NEW"}>New</option>
-                        <option value={"OLD"}>Old</option>
+                        <option value={"NEW"}>{t("new")}</option>
+                        <option value={"OLD"}>{t("old")}</option>
                       </select>
                     </div>
                   </div>
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Deliver After
+                        {t("deliver_after")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -638,7 +640,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
                       onClick={handleUpdate} // Attach the handleUpdate function here
                     >
-                      Update
+                      {t("update")}
                     </button>
                   </div>
                   <div className="flex flex-wrap space-y-1">
@@ -647,7 +649,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
                       onClick={handleAddProductModal}
                     >
-                      Add New
+                      {t("add_new")}
                     </button>
                   </div>
                 </div>
@@ -658,7 +660,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
                       onClick={handleReset}
                     >
-                      Reset
+                      {t("reset")}
                     </button>
                   </div>
                   <div className="flex flex-wrap space-y-1">
@@ -667,7 +669,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
                       onClick={handleRemoveProduct}
                     >
-                      Remove
+                      {t("remove")}
                     </button>
                   </div>
                 </div>
@@ -678,7 +680,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold">Time Open</div>
+                      <div className="text-[12px] font-semibold">{t("time_open")}</div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                       <a
@@ -705,7 +707,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Time Close
+                        {t("time_close")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -750,7 +752,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex w-full items-center justify-start gap-2 text-black md:w-[40%]">
                       <div className="text-[12px] font-semibold">
-                        Customer Type
+                        {t("consumer_type")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2 md:w-[60%]">
@@ -759,9 +761,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         value={initialConsumerType} // Bind the selected value to the state
                         onChange={(e) => setConsumer(e.target.value)} // Update the state when the value changes
                       >
-                        <option value={"CONSUMER"}>Consumer</option>
-                        <option value={"VENDORS"}>Vendors</option>
-                        <option value={"EVERYONE"}>Everyone</option>
+                        <option value={"CONSUMER"}>{t("consumer")}</option>
+                        <option value={"VENDORS"}>{t("vendor")}</option>
+                        <option value={"EVERYONE"}>{t("everyone")}</option>
                       </select>
                     </div>
                   </div>
@@ -783,7 +785,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex w-[40%] items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold">Sell Type</div>
+                      <div className="text-[12px] font-semibold">{t("sell_type")}</div>
                     </div>
                     <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                       <select
@@ -791,10 +793,10 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         value={initialSellType} // Bind the selected value to the state
                         onChange={(e) => setSell(e.target.value)} // Update the state when the value changes
                       >
-                        <option value={"NORMALSELL"}>Normal Sell</option>
-                        <option value={"BUYGROUP"}>By Group</option>
-                        <option value={"OTHERS"}>Others</option>
-                        <option value={"EVERYONE"}>Every One</option>
+                        <option value={"NORMALSELL"}>{t("normal_sell")}</option>
+                        <option value={"BUYGROUP"}>{t("buy_group")}</option>
+                        <option value={"OTHERS"}>{t("others")}</option>
+                        <option value={"EVERYONE"}>{t("everyone")}</option>
                       </select>
                     </div>
                   </div>
@@ -804,7 +806,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Vendor Discount
+                        {t("vendor_discount")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -832,7 +834,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Consumer Discount
+                        {t("consumer_discount")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -863,7 +865,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Min Quantity
+                        {t("min_quantity")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -891,7 +893,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Max Quantity
+                        {t("max_quantity")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -922,7 +924,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Min Customer
+                        {t("min_customer")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -950,7 +952,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Max Customer
+                        {t("max_customer")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -981,7 +983,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Min Qty Consumer
+                        {t("min_quantity_per_customer")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -1009,7 +1011,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   <div className="flex flex-wrap space-y-1">
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
-                        Max Qty Consumer
+                        {t("max_quantity_per_customer")}
                       </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">

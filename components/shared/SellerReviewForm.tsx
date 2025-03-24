@@ -17,6 +17,7 @@ import { useToast } from "../ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import LoaderWithMessage from "./LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 type ReviewFormProps = {
   onClose: () => void;
@@ -49,6 +50,7 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
   adminId,
   productId,
 }) => {
+  const t = useTranslations();
   const searchParams = useParams();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -75,48 +77,6 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
       productId,
     };
 
-    console.log(updatedFormData);
-    // return;
-
-    // if (reviewId) {
-    //   const response = await updateReview.mutateAsync(
-    //     {
-    //       productReviewId: reviewId,
-    //       ...updatedFormData,
-    //     },
-    //     {
-    //       onSuccess: () => {
-    //         queryClient.invalidateQueries({
-    //           queryKey: ["product-by-id", searchParams?.id],
-    //         });
-    //         queryClient.refetchQueries({
-    //           queryKey: ["existing-products", { page: 1, limit: 40 }],
-    //         });
-    //         queryClient.refetchQueries({
-    //           queryKey: ["seller-review-by-id", { productReviewId: reviewId }],
-    //         });
-    //         queryClient.refetchQueries({
-    //           queryKey: ["seller-reviews"],
-    //         });
-    //       },
-    //     },
-    //   );
-    //   if (response.status) {
-    //     toast({
-    //       title: "Review Update Successful",
-    //       description: response.message,
-    //       variant: "success",
-    //     });
-    //     form.reset();
-    //     onClose();
-    //   } else {
-    //     toast({
-    //       title: "Review Update Failed",
-    //       description: response.message,
-    //       variant: "danger",
-    //     });
-    //   }
-    // } else {
     const response = await addReview.mutateAsync(updatedFormData, {
       onSuccess: () => {
         queryClient.invalidateQueries({
@@ -130,7 +90,7 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
 
     if (response.status) {
       toast({
-        title: "Review Add Successful",
+        title: t("review_add_successful"),
         description: response.message,
         variant: "success",
       });
@@ -138,7 +98,7 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
       onClose();
     } else {
       toast({
-        title: "Review Add Failed",
+        title: t("review_add_failed"),
         description: response.message,
         variant: "danger",
       });

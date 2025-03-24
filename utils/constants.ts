@@ -314,22 +314,22 @@ export const imageExtensions: string[] = [
 
 export const CONSUMER_TYPE_LIST = [
   {
-    label: "Consumer",
+    label: "consumer",
     value: "CONSUMER",
   },
   {
-    label: "Vendors",
-    value: "VENDORS",
+    label: "vendor",
+    value: "VENDOR",
   },
 ];
 
 export const SELL_TYPE_LIST = [
   {
-    label: "Normal Sell",
+    label: "normal_sell",
     value: "NORMALSELL",
   },
   {
-    label: "Buy Group",
+    label: "buy_group",
     value: "BUYGROUP",
   },
 ];
@@ -367,11 +367,11 @@ export const DELIVER_AFTER_LIST = [
 
 export const PRODUCT_CONDITION_LIST = [
   {
-    label: "New",
+    label: "new",
     value: "NEW",
   },
   {
-    label: "Old",
+    label: "old",
     value: "OLD",
   },
 ];

@@ -135,11 +135,11 @@ export default function EditProfilePage() {
 
     const response = await updateCompanyProfile.mutateAsync(data);
     if (response.status && response.data) {
-      toast({ title: "Profile Edit Successful", description: response.message, variant: "success", });
+      toast({ title: t("profile_edit_successful"), description: response.message, variant: "success", });
       form.reset();
       router.push("/company-profile-details");
     } else {
-      toast({ title: "Profile Edit Failed", description: response.message, variant: "danger", });
+      toast({ title: t("profile_edit_failed"), description: response.message, variant: "danger", });
     }
   };
 
@@ -265,7 +265,7 @@ export default function EditProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: "Image size should be less than 500MB",
+                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                         variant: "danger",
                                       });
                                       return;

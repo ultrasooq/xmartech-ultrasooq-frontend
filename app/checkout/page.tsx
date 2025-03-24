@@ -199,8 +199,8 @@ const CheckoutPage = () => {
 
       if (response.status) {
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
       }
@@ -212,8 +212,8 @@ const CheckoutPage = () => {
       });
       if (response.status) {
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
       }
@@ -224,8 +224,8 @@ const CheckoutPage = () => {
     const response = await deleteCartItem.mutateAsync({ cartId });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -235,14 +235,14 @@ const CheckoutPage = () => {
     const response = await delteAddress.mutateAsync({ userAddressId });
     if (response.status) {
       toast({
-        title: "Address removed",
-        description: "Check your address for more details",
+        title: t("address_removed"),
+        description: t("check_your_address_for_more_details"),
         variant: "success",
       });
     } else {
       toast({
-        title: "Item not removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_not_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "danger",
       });
     }
@@ -252,14 +252,14 @@ const CheckoutPage = () => {
     const response = await addToWishlist.mutateAsync({ productId });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -336,7 +336,7 @@ useEffect(() => {
 
       if (!selectedOrderDetails?.shippingAddress) {
         toast({
-          title: "Please select a shipping address",
+          title: t("please_select_a_shipping_address"),
           variant: "danger",
         });
         return;
@@ -361,7 +361,7 @@ useEffect(() => {
 
       if (!data.billingAddress) {
         toast({
-          title: "Please select a billing address",
+          title: t("please_select_a_billing_address"),
           variant: "danger",
         });
         return;
@@ -372,7 +372,7 @@ useEffect(() => {
     } else {
       if (!guestEmail) {
         toast({
-          title: "Please enter email address",
+          title: t("please_enter_email_address"),
           variant: "danger",
         });
         return;
@@ -380,7 +380,7 @@ useEffect(() => {
 
       if (!validator.isEmail(guestEmail)) {
         toast({
-          title: "Please enter valid email address",
+          title: t("please_enter_valid_email_address"),
           variant: "danger",
         });
         return;
@@ -398,7 +398,7 @@ useEffect(() => {
 
       if (!guestShippingAddress) {
         toast({
-          title: "Please add a shipping address",
+          title: t("please_add_a_shipping_address"),
           variant: "danger",
         });
         return;
@@ -422,7 +422,7 @@ useEffect(() => {
 
       if (!guestBillingAddress) {
         toast({
-          title: "Please add a billing address",
+          title: t("please_add_a_billing_address"),
           variant: "danger",
         });
         return;

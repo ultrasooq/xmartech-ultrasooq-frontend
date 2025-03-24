@@ -121,8 +121,8 @@ const FactoriesPage = () => {
       if (response.status) {
         handleToggleAddModal();
         toast({
-          title: `Item Added`,
-          description: "Item added successfully",
+          title: t("item_added"),
+          description: t("item_added_successfully"),
           variant: "success",
         });
 
@@ -137,13 +137,13 @@ const FactoriesPage = () => {
 
         if (resp.status) {
           toast({
-            title: "Item added to cart",
-            description: "Check your cart for more details",
+            title: t("something_went_wrong"),
+            description: t("check_your_cart_for_more_details"),
             variant: "success",
           });
         } else {
           toast({
-            title: "Oops! Something went wrong",
+            title: t("something_went_wrong"),
             description: response.message,
             variant: "danger",
           });
@@ -151,8 +151,8 @@ const FactoriesPage = () => {
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to add item",
+        title: t("error"),
+        description: t("failed_to_add_item"),
         variant: "destructive",
       });
     }
@@ -188,8 +188,8 @@ const FactoriesPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -199,8 +199,8 @@ const FactoriesPage = () => {
       });
     } else {
       toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -224,8 +224,8 @@ const FactoriesPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -235,8 +235,8 @@ const FactoriesPage = () => {
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }

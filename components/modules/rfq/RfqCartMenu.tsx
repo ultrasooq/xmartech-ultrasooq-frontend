@@ -46,8 +46,8 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
     const response = await deleteRfqCartItem.mutateAsync({ rfqCartId });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -68,7 +68,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
         ) : null}
 
         <h4 className="text-center">
-          {t("your_rfq_cart")} ({memoizedRfqCartList.length} items)
+          {t("your_rfq_cart")} ({t("n_items", { n: memoizedRfqCartList.length })})
         </h4>
 
         {!memoizedRfqCartList.length && (

@@ -137,7 +137,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
 
       if (response.status) {
         toast({
-          title: "Address Edit Successful",
+          title: t("address_edit_successful"),
           description: response.message,
           variant: "success",
         });
@@ -145,7 +145,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
         onClose();
       } else {
         toast({
-          title: "Address Edit Failed",
+          title: t("address_edit_failed"),
           description: response.message,
           variant: "danger",
         });
@@ -155,7 +155,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
 
       if (response.status) {
         toast({
-          title: "Address Add Successful",
+          title: t("address_add_successful"),
           description: response.message,
           variant: "success",
         });
@@ -163,7 +163,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
         onClose();
       } else {
         toast({
-          title: "Address Add Failed",
+          title: t("address_add_failed"),
           description: response.message,
           variant: "danger",
         });

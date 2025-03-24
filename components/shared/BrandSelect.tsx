@@ -54,7 +54,7 @@ const ReactSelectInput = () => {
 
     if (response.status && response.data) {
       toast({
-        title: "Brand Create Successful",
+        title: t("brand_create_successful"),
         description: response.message,
         variant: "success",
       });
@@ -62,7 +62,7 @@ const ReactSelectInput = () => {
       formContext.setValue("brandId", response.data.id);
     } else {
       toast({
-        title: "Brand Create Failed",
+        title: t("brand_create_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -103,6 +103,7 @@ const ReactSelectInput = () => {
                   }
                 }
               }}
+              placeholder={t("select")}
             />
           )}
         />
@@ -119,8 +120,7 @@ const ReactSelectInput = () => {
                 <Info className="h-4 w-4 cursor-pointer text-gray-500" />
               </TooltipTrigger>
               <TooltipContent side="right">
-                Type a brand name in the select box and press{" "}
-                <strong>Enter</strong> to create a new Brand.
+                {t("brand_input_info")}{" "}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -147,6 +147,7 @@ const ReactSelectInput = () => {
               )}
               styles={customStyles}
               instanceId="brandId"
+              placeholder={t("select")}
             />
           )}
         />

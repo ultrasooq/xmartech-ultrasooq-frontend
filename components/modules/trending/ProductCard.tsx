@@ -109,8 +109,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     if (haveAccessToken) {
       if (!item?.productProductPriceId) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -127,8 +127,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           setQuantity(quantity);
         }
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         return response.status;
@@ -136,8 +136,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     } else {
       if (!item?.productProductPriceId) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -154,8 +154,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           setQuantity(quantity);
         }
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         return response.status;

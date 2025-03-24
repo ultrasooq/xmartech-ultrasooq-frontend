@@ -105,7 +105,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
       });
     } else {
       toast({
-        title: "Permission Set Failed",
+        title: t("permission_set_failed"),
         description: response.message,
         variant: "danger",
       });

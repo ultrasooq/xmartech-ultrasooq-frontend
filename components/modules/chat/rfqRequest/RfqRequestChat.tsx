@@ -151,7 +151,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
   useEffect(() => {
     if (errorMessage) {
       toast({
-        title: "Chat",
+        title: t("chat"),
         description: errorMessage,
         variant: "danger",
       });
@@ -207,8 +207,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed to update the attachment status",
+        title: t("chat"),
+        description: t("attachment_update_status_failed"),
         variant: "danger",
       });
     }
@@ -344,15 +344,15 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         setShowEmoji(false);
       } else {
         toast({
-          title: "Chat",
-          description: "Please type your message",
+          title: t("chat"),
+          description: t("please_type_your_message"),
           variant: "danger",
         });
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed!",
+        title: t("chat"),
+        description: t("failed"),
         variant: "danger",
       });
     }

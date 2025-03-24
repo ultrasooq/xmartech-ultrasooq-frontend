@@ -173,8 +173,8 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
 
     if (response.status) {
       toast({
-        title: "Item added to cart",
-        description: "Check your cart for more details",
+        title: t("something_went_wrong"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
       // form.reset();
@@ -186,7 +186,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
         onClose();
     } else {
       toast({
-        title: "Oops! Something went wrong",
+        title: t("something_went_wrong"),
         description: response.message,
         variant: "danger",
       });
@@ -286,7 +286,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
       });
       if (response.status) {
         toast({
-          title: "Customize Product Update Successful",
+          title: t("customize_product_update_successful"),
           description: response.message,
           variant: "success",
         });
@@ -299,7 +299,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
         
       } else {
         toast({
-          title: "Customize Product Update Failed",
+          title: t("customize_product_update_failed"),
           description: response.message,
           variant: "danger",
         });
@@ -439,8 +439,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                                             524288000
                                           ) {
                                             toast({
-                                              title:
-                                                "One of your file size should be less than 500MB",
+                                              title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;
@@ -489,8 +488,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                                             524288000
                                           ) {
                                             toast({
-                                              title:
-                                                "One of your file size should be less than 500MB",
+                                              title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;
@@ -563,8 +561,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                               filesArray.some((file) => file.size > 524288000)
                             ) {
                               toast({
-                                title:
-                                  "One of your image size should be less than 500MB",
+                                title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                 variant: "danger",
                               });
                               return;

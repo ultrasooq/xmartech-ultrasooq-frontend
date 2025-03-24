@@ -90,8 +90,8 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     if (haveAccessToken) {
       if (!productPriceId) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -103,16 +103,16 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
 
       if (response.status) {
         toast({
-          title: `Item added to cart`,
-          description: "Check your cart for more details",
+          title: t("item_added_to_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
       }
     } else {
       if (!productPriceId) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -124,8 +124,8 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
       });
       if (response.status) {
         toast({
-          title: `Item added to cart`,
-          description: "Check your cart for more details",
+          title: t("item_added_to_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         return response.status;
@@ -139,8 +139,8 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     });
     if (response.status) {
       toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -151,8 +151,8 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
       });
     } else {
       toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -176,8 +176,8 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -188,8 +188,8 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }

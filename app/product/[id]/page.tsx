@@ -24,6 +24,7 @@ import { imageExtensions, videoExtensions } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { handleDescriptionParse } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 const baseProductPriceItemSchema = z.object({
   consumerType: z.string().trim().optional(),
@@ -344,6 +345,7 @@ const defaultValues = {
 };
 
 const EditProductPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useParams();
@@ -397,241 +399,6 @@ const EditProductPage = () => {
       }
     }
   };
-
-  console.log(form.formState.errors);
-
-  // const onSubmit = async (formData: any) => {
-  //   const updatedFormData = {
-  //     ...formData,
-  //     productType: "P",
-  //   };
-  //   if (watchProductImages.length) {
-  //     const fileTypeArrays = watchProductImages.filter(
-  //       (item: any) => typeof item.path === "object",
-  //     );
-
-  //     const imageUrlArray: any = fileTypeArrays?.length
-  //       ? await handleUploadedFile(fileTypeArrays)
-  //       : [];
-
-  //     const stringTypeArrays = watchProductImages
-  //       .filter((item: any) => typeof item.path !== "object")
-  //       .map((item: any) => {
-  //         const extension = item.path.split(".").pop()?.toLowerCase();
-
-  //         if (extension) {
-  //           if (videoExtensions.includes(extension)) {
-  //             const videoName: string = item?.path.split("/").pop()!;
-  //             return {
-  //               video: item?.path,
-  //               videoName,
-  //             };
-  //           } else if (imageExtensions.includes(extension)) {
-  //             const imageName: string = item?.path.split("/").pop()!;
-  //             return {
-  //               image: item?.path,
-  //               imageName,
-  //             };
-  //           }
-  //         }
-  //       });
-
-  //     const formattedimageUrlArrays = imageUrlArray?.map((item: any) => {
-  //       const extension = item.split(".").pop()?.toLowerCase();
-
-  //       if (extension) {
-  //         if (videoExtensions.includes(extension)) {
-  //           const videoName: string = item.split("/").pop()!;
-  //           return {
-  //             video: item,
-  //             videoName,
-  //           };
-  //         } else if (imageExtensions.includes(extension)) {
-  //           const imageName: string = item.split("/").pop()!;
-  //           return {
-  //             image: item,
-  //             imageName,
-  //           };
-  //         }
-  //       }
-
-  //       return {
-  //         image: item,
-  //         imageName: item,
-  //       };
-  //     });
-  //     updatedFormData.productImages = [
-  //       ...stringTypeArrays,
-  //       ...formattedimageUrlArrays,
-  //     ];
-
-  //     if (updatedFormData.productImages.length) {
-  //       updatedFormData.productImagesList = updatedFormData.productImages;
-  //     }
-  //   }
-
-  //   delete updatedFormData.productImages;
-  //   updatedFormData.productId = Number(searchParams?.id);
-  //   updatedFormData.productPriceList = [
-  //     {
-  //       ...updatedFormData.productPriceList[0],
-  //       productPrice: updatedFormData.productPrice,
-  //       offerPrice: updatedFormData.productPrice,
-  //       productLocationId: updatedFormData.productLocationId,
-  //       productCondition: updatedFormData.productCondition,
-  //     },
-  //   ];
-  //   delete updatedFormData.productLocationId;
-  //   delete updatedFormData.setUpPrice;
-  //   delete updatedFormData.productCondition;
-
-  //   console.log("edit:", updatedFormData);
-  //   // return;
-  //   const response = await updateProduct.mutateAsync(updatedFormData);
-  //   if (response.status && response.data) {
-  //     toast({
-  //       title: "Product Update Successful",
-  //       description: response.message,
-  //       variant: "success",
-  //     });
-  //     form.reset();
-
-  //     queryClient.invalidateQueries({
-  //       queryKey: ["product-by-id", searchParams?.id],
-  //     });
-  //     productQueryById.refetch();
-
-  //     router.push("/manage-products");
-  //   } else {
-  //     toast({
-  //       title: "Product Update Failed",
-  //       description: response.message,
-  //       variant: "danger",
-  //     });
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (productQueryById?.data?.data) {
-  //     const product = productQueryById?.data?.data;
-
-  //     const productTagList = product?.productTags
-  //       ? product?.productTags?.map((item: any) => {
-  //           return {
-  //             label: item?.productTagsTag?.tagName,
-  //             value: item?.productTagsTag?.id,
-  //           };
-  //         })
-  //       : [];
-
-  //     const productImages = product?.productImages?.length
-  //       ? product?.productImages?.map((item: any) => {
-  //           if (item?.image) {
-  //             return {
-  //               path: item?.image,
-  //               id: uuidv4(),
-  //             };
-  //           } else if (item?.video) {
-  //             return {
-  //               path: item?.video,
-  //               id: uuidv4(),
-  //             };
-  //           }
-  //         })
-  //       : [];
-
-  //     const productImagesList = product?.productImages
-  //       ? product?.productImages?.map((item: any) => {
-  //           if (item?.video) {
-  //             return {
-  //               video: item?.video,
-  //               videoName: item?.videoName,
-  //             };
-  //           } else if (item?.image) {
-  //             return {
-  //               image: item?.image,
-  //               imageName: item?.imageName,
-  //             };
-  //           }
-  //         })
-  //       : undefined;
-
-  //     const productShortDescriptionList = product
-  //       ?.product_productShortDescription?.length
-  //       ? product?.product_productShortDescription.map((item: any) => ({
-  //           shortDescription: item?.shortDescription,
-  //         }))
-  //       : [
-  //           {
-  //             shortDescription: "",
-  //           },
-  //         ];
-
-  //     const productSpecificationList = product?.product_productSpecification
-  //       ?.length
-  //       ? product?.product_productSpecification.map((item: any) => ({
-  //           label: item?.label,
-  //           specification: item?.specification,
-  //         }))
-  //       : [
-  //           {
-  //             label: "",
-  //             specification: "",
-  //           },
-  //         ];
-
-  //     form.reset({
-  //       productName: product?.productName,
-  //       categoryId: product?.categoryId ? product?.categoryId : 0,
-  //       categoryLocation: product?.categoryLocation
-  //         ? product?.categoryLocation
-  //         : "",
-  //       brandId: product?.brandId ? product?.brandId : 0,
-  //       productCondition:
-  //         product?.product_productPrice?.[0]?.productCondition || "",
-  //       productLocationId: product?.product_productPrice?.[0]?.productLocationId
-  //         ? product?.product_productPrice?.[0]?.productLocationId
-  //         : 0,
-  //       skuNo: product?.skuNo,
-  //       productTagList: productTagList || undefined,
-  //       productImages: productImages || [],
-  //       productImagesList: productImagesList || undefined,
-  //       productPriceList: [
-  //         {
-  //           consumerType:
-  //             product?.product_productPrice?.[0]?.consumerType || "",
-  //           sellType: product?.product_productPrice?.[0]?.sellType || "",
-  //           consumerDiscount:
-  //             product?.product_productPrice?.[0]?.consumerDiscount || 0,
-  //           vendorDiscount:
-  //             product?.product_productPrice?.[0]?.vendorDiscount || 0,
-  //           minQuantity: product?.product_productPrice?.[0]?.minQuantity || 0,
-  //           maxQuantity: product?.product_productPrice?.[0]?.maxQuantity || 0,
-  //           minCustomer: product?.product_productPrice?.[0]?.minCustomer || 0,
-  //           maxCustomer: product?.product_productPrice?.[0]?.maxCustomer || 0,
-  //           minQuantityPerCustomer:
-  //             product?.product_productPrice?.[0]?.minQuantityPerCustomer || 0,
-  //           maxQuantityPerCustomer:
-  //             product?.product_productPrice?.[0]?.maxQuantityPerCustomer || 0,
-  //           timeOpen: product?.product_productPrice?.[0]?.timeOpen || 0,
-  //           timeClose: product?.product_productPrice?.[0]?.timeClose || 0,
-  //           deliveryAfter:
-  //             product?.product_productPrice?.[0]?.deliveryAfter || 0,
-  //         },
-  //       ],
-  //       productPrice: product?.productPrice ? Number(product.productPrice) : 0,
-  //       offerPrice: product?.productPrice ? Number(product.productPrice) : 0,
-  //       placeOfOriginId: product?.placeOfOriginId
-  //         ? product?.placeOfOriginId
-  //         : 0,
-  //       productShortDescriptionList: productShortDescriptionList,
-  //       productSpecificationList: productSpecificationList,
-  //       description: product?.description,
-  //       specification: product?.specification,
-  //     });
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [productQueryById?.data?.data, searchParams?.id]);
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
@@ -743,7 +510,7 @@ const EditProductPage = () => {
       await updateProductPriceByProductCondition.mutateAsync(finalData);
     if (response.status && response.data) {
       toast({
-        title: "Product Update Successful",
+        title: t("product_update_successful"),
         description: response.message,
         variant: "success",
       });
@@ -761,7 +528,7 @@ const EditProductPage = () => {
       router.push("/manage-products");
     } else {
       toast({
-        title: "Product Update Failed",
+        title: t("product_update_failed"),
         description: response.message,
         variant: "danger",
       });

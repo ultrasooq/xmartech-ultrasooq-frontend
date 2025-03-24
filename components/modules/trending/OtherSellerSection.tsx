@@ -89,8 +89,8 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
     if (haveAccessToken) {
       if (!sellerId) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -102,8 +102,8 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
 
       if (response.status) {
         toast({
-          title: "Item added to removed from cart",
-          description: "Check your cart for more details",
+          title: t("item_added_to_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
 
@@ -112,8 +112,8 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
     } else {
       if (!productDetails?.product_productPrice?.[0]?.id) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -125,8 +125,8 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
       });
       if (response.status) {
         toast({
-          title: "Item added to removed from cart",
-          description: "Check your cart for more details",
+          title: t("item_added_to_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         return response.status;

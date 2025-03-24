@@ -74,13 +74,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
     const response = await updateFeelancerAvailabilityStatus.mutateAsync(data);
     if (response.status && response.data) {
       toast({
-        title: "Branch Status Update Successful",
+        title: t("branch_status_update_successful"),
         description: response.message,
         variant: "success",
       });
     } else {
       toast({
-        title: "Branch Status Update Failed",
+        title: t("branch_status_update_failed"),
         description: response.message,
         variant: "danger",
       });

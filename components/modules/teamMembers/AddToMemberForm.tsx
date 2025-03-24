@@ -66,7 +66,7 @@ const addFormSchema = z.object({
     .regex(/^[0-9]{10,15}$/, { message: "Phone number must be 10-15 digits" })
     .optional(), // Apply validation first, then make it optional
 
-  status: z.enum(["ACTIVE", "INACTIVE"], {
+  status: z.enum([("active"), "INACTIVE"], {
     message: "Status must be ACTIVE or INACTIVE",
   }), // ✅ Added status field
 });
@@ -100,7 +100,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
 
     if (response.status && response.data) {
       toast({
-        title: "User Role Create Successful",
+        title: t("user_role_create_successful"),
         description: response.message,
         variant: "success",
       });
@@ -108,7 +108,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
       form.setValue("userRoleId", response.data.id);
     } else {
       toast({
-        title: "User Role Create Failed",
+        title: t("user_role_create_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -189,7 +189,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
           <ControlledTextInput
             label={t("last_name")}
             name="lastName"
-            placeholder={t("last_name_plceholder")}
+            placeholder={t("last_name_placeholder")}
             type="text"
           />
 
@@ -209,45 +209,13 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
           />
 
           <div className="flex w-full items-center gap-1.5">
-            <Label>User Role</Label>
-            {/* <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-4 w-4 cursor-pointer text-gray-500" />
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  Type a role in the select box and press <strong>Enter</strong>{" "}
-                  to create a new User Role.
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
+            <Label>{t("user_role")}</Label>
           </div>
-
           <Controller
             name="userRoleId"
             control={form.control} // ✅ Use form.control instead
             render={({ field }) => (
               <>
-                {/* <CreatableSelect
-                name={field.name}
-                isClearable
-                isDisabled={createUserRole.isPending}
-                isLoading={createUserRole.isPending}
-                onChange={(newValue) => {
-                  const numericValue = newValue ? Number(newValue.value) : 0; // Ensure it's a number
-                  field.onChange(numericValue); // Pass the correct numeric value
-                  setValue(newValue);
-                }}
-                onCreateOption={handleCreate}
-                options={memoizedUserRole}
-                value={memoizedUserRole.find(
-                  (item: IOption) => Number(item.value) === field.value,
-                )}
-                styles={customStyles}
-                instanceId="userRoleId"
-                className="z-[999]"
-              /> */}
-
                 <Select
                   name={field.name}
                   onChange={(newValue) => {
@@ -289,8 +257,8 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             render={({ field }) => (
               <Select
                 options={[
-                  { value: "ACTIVE", label: "ACTIVE" },
-                  { value: "INACTIVE", label: "INACTIVE" },
+                  { value: "ACTIVE", label: t("active").toUpperCase() },
+                  { value: "INACTIVE", label: t("inactive").toUpperCase() },
                 ]}
                 value={{ value: field.value, label: field.value }}
                 onChange={(selectedOption) =>

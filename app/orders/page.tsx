@@ -121,8 +121,8 @@ const OrdersPage = () => {
       if (orders.orders) {
         if (!orders.orders.cartIds?.length) {
           toast({
-            title: "Order cannot be placed",
-            description: "Please go back to checkout and try again",
+            title: t("order_cant_be_placed"),
+            description: t("order_placed_retry_info"),
             variant: "danger",
           });
            // Clear the CardElement before returning
@@ -139,9 +139,8 @@ const OrdersPage = () => {
 
           if (response?.data) {
             toast({
-              title: "Order Placed Successfully",
-              description:
-                "Your order has been placed successfully. You can check your order status in My Orders section",
+              title: t("order_placed_successfully"),
+              description: t("order_placed_success_info"),
               variant: "success",
             });
 
@@ -165,9 +164,8 @@ const OrdersPage = () => {
 
       if (response?.data) {
         toast({
-          title: "Order Placed Successfully",
-          description:
-            "Your order has been placed successfully. Kindly login to continue. You can check your order status in My Orders section",
+          title: t("order_placed_successfully"),
+          description: t("order_placed_success_info_without_login"),
           variant: "success",
         });
 

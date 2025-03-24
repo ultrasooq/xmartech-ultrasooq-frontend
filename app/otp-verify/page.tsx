@@ -59,7 +59,7 @@ export default function OtpVerifyPage() {
   const onSubmit = async (formData: any) => {
     if (otp.join("") === "") {
       toast({
-        title: "OTP is required",
+        title: t("otp_is_required"),
         variant: "danger",
       });
       return;
@@ -69,7 +69,7 @@ export default function OtpVerifyPage() {
 
     if (combinedOtp.length !== 4) {
       toast({
-        title: "OTP length should be 4 digits",
+        title: t("otp_length_should_be_n_digits", { n: 4 }),
         variant: "danger",
       });
       return;
@@ -88,7 +88,7 @@ export default function OtpVerifyPage() {
         expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
       });
       toast({
-        title: "Verification Successful",
+        title: t("verification_successful"),
         description: response.message,
         variant: "success",
       });
@@ -98,7 +98,7 @@ export default function OtpVerifyPage() {
       router.push("/profile");
     } else {
       toast({
-        title: "Verification Failed",
+        title: t("verification_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -113,7 +113,7 @@ export default function OtpVerifyPage() {
 
     if (!data.email) {
       toast({
-        title: "Email is required",
+        title: t("email_is_required"),
         variant: "danger",
       });
       return;
@@ -122,7 +122,7 @@ export default function OtpVerifyPage() {
 
     if (response.status && response.otp) {
       toast({
-        title: "Verification code sent",
+        title: t("verification_code_sent"),
         description: response.message,
         variant: "success",
       });
@@ -130,7 +130,7 @@ export default function OtpVerifyPage() {
       setOtp(new Array(4).fill(""));
     } else {
       toast({
-        title: "Verification error!",
+        title: t("verification_error"),
         description: response.message,
         variant: "danger",
       });

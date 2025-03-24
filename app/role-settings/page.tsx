@@ -70,13 +70,13 @@ const RoleSettingsPage = () => {
 
     if (response.status) {
       toast({
-        title: "Role Copy Success",
+        title: t("role_copy_success"),
         description: response.message,
         variant: "success",
       });
     } else {
       toast({
-        title: "Role Copy Failed",
+        title: t("role_copy_failed"),
         description: response.message,
         variant: "danger",
       });

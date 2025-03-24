@@ -80,8 +80,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
 
         if (new Date(startDateTime).getTime() < new Date().getTime()) {
             toast({
-                title: "Datetime error",
-                description: 'Start datetime can not be in the past',
+                title: t("datetime_error"),
+                description: t("start_datetime_cant_be_in_past"),
                 variant: "danger",
             });
             return;
@@ -89,8 +89,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
 
         if (new Date(values.startDate).getTime() > new Date(values.endDate).getTime()) {
             toast({
-                title: "Datetime error",
-                description: 'Start date can not be greater than end date',
+                title: t("datetime_error"),
+                description: t("start_date_cant_be_greater_than_end_date"),
                 variant: "danger",
             });
             return;
@@ -98,8 +98,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
 
         if (values.startDate == values.endDate && new Date(startDateTime).getTime() >= new Date(endDateTime).getTime()) {
             toast({
-                title: "Datetime error",
-                description: 'Start time must be less than end time',
+                title: t("datetime_error"),
+                description: t("start_time_must_be_less_than_end_time"),
                 variant: "danger",
             });
             return;
@@ -117,7 +117,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
 
         if (response.status) {
             toast({
-                title: "Seller Reward Added Successfully",
+                title: t("seller_reward_add_successful"),
                 description: response.message,
                 variant: "success",
             });
@@ -126,7 +126,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
             onClose();
         } else {
             toast({
-                title: "Seller Reward Add Failed",
+                title: t("seller_reward_add_failed"),
                 description: response.message,
                 variant: "danger",
             });

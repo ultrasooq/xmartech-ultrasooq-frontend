@@ -49,7 +49,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
 
     if (response.status) {
       toast({
-        title: "Question Add Successful",
+        title: t("question_add_successful"),
         description: response.message,
         variant: "success",
       });
@@ -58,7 +58,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
       onClose();
     } else {
       toast({
-        title: "Question Add Failed",
+        title: t("question_add_failed"),
         description: response.message,
         variant: "danger",
       });

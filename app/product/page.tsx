@@ -654,8 +654,8 @@ const CreateProductPage = () => {
     // TODO: category input field change
     if (updatedFormData.categoryId === 0) {
       toast({
-        title: "Product Create Failed",
-        description: "Please select category",
+        title: t("product_create_failed"),
+        description: t("please_select_category"),
         variant: "danger",
       });
       return;
@@ -672,7 +672,7 @@ const CreateProductPage = () => {
 
     if (response.status && response.data) {
       toast({
-        title: "Product Create Successful",
+        title: t("product_create_successful"),
         description: response.message,
         variant: "success",
       });
@@ -686,7 +686,7 @@ const CreateProductPage = () => {
       }
     } else {
       toast({
-        title: "Product Create Failed",
+        title: t("product_create_failed"),
         description: response.message,
         variant: "danger",
       });

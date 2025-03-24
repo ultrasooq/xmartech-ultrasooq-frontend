@@ -21,6 +21,7 @@ import AddProductContent from "@/components/modules/products/AddProductContent";
 import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
 import { useMe } from "@/apis/queries/user.queries";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "use-intl";
 
 const schema = z
   .object({
@@ -114,6 +115,7 @@ const defaultValues = {
 };
 
 const ManageProductsPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_PRODUCTS);
   const { toast } = useToast();
@@ -186,8 +188,8 @@ const ManageProductsPage = () => {
   const onSubmit = async (formData: any) => {
     if (!selectedProductIds.length) {
       toast({
-        title: "Update Failed",
-        description: "Please select at least one product",
+        title: t("update_failed"),
+        description: t("please_select_at_least_one_product"),
         variant: "danger",
       });
       return;
@@ -319,8 +321,8 @@ const ManageProductsPage = () => {
 
     if (response.status) {
       toast({
-        title: "Update Successful",
-        description: "Products updated successfully",
+        title: t("update_successful"),
+        description: t("products_updated_successfully"),
         variant: "success",
       });
       // **Trigger refetch to update the product list**
@@ -331,7 +333,7 @@ const ManageProductsPage = () => {
       router.push("/manage-products");
     } else {
       toast({
-        title: "Update Failed",
+        title: t("update_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -352,13 +354,13 @@ const ManageProductsPage = () => {
             {/* start: existing-product-add-headerPart */}
             <div className="existing-product-add-headerPart">
               <h2 className="text-2xl font-medium capitalize text-color-dark">
-                Products
+                {t("products")}
               </h2>
               <ul className="right-filter-lists flex flex-row flex-nowrap gap-x-2">
                 <li>
                   <Input
                     type="text"
-                    placeholder="Search Product"
+                    placeholder={t("search_product")}
                     className="search-box h-[40px] w-[200px] sm:w-[160px] lg:w-80"
                     onChange={handleDebounce}
                   />
@@ -369,7 +371,7 @@ const ManageProductsPage = () => {
                     onClick={handleAddProductModal}
                   >
                     <IoMdAdd size={24} />
-                    <span className="d-none-mobile">Add Product</span>
+                    <span className="d-none-mobile">{t("add_product")}</span>
                   </button>
                 </li>
               </ul>
@@ -396,7 +398,7 @@ const ManageProductsPage = () => {
                       {!allManagedProductsQuery.data?.data?.length &&
                       !allManagedProductsQuery.isLoading ? (
                         <p className="w-full py-10 text-center text-base font-medium">
-                          No product found
+                          {t("no_product_found")}
                         </p>
                       ) : null}
 

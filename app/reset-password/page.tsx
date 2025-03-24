@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
     const response = await resetPassword.mutateAsync(values, {
       onError: (err) => {
         toast({
-          title: "Password Reset Failed",
+          title: t("password_reset_failed"),
           description: err?.response?.data?.message,
           variant: "danger",
         });
@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
 
     if (response?.status && response?.data) {
       toast({
-        title: "Password Reset Successful",
+        title: t("password_reset_successful"),
         description: response?.message,
         variant: "success",
       });
@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
       }, 3000);
     } else {
       toast({
-        title: "Password Reset Failed",
+        title: t("password_reset_failed"),
         description: response?.message,
         variant: "danger",
       });

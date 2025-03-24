@@ -17,6 +17,7 @@ import Ratings from "./Ratings";
 import { useToast } from "../ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type ReviewFormProps = {
   onClose: () => void;
@@ -40,6 +41,7 @@ const formSchema = z.object({
 });
 
 const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
+  const t = useTranslations();
   const searchParams = useParams();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -92,7 +94,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
       );
       if (response.status) {
         toast({
-          title: "Review Update Successful",
+          title: t("review_update_successful"),
           description: response.message,
           variant: "success",
         });
@@ -100,7 +102,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
         onClose();
       } else {
         toast({
-          title: "Review Update Failed",
+          title: t("review_update_failed"),
           description: response.message,
           variant: "danger",
         });
@@ -119,7 +121,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
 
       if (response.status) {
         toast({
-          title: "Review Add Successful",
+          title: t("review_add_successful"),
           description: response.message,
           variant: "success",
         });
@@ -127,7 +129,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
         onClose();
       } else {
         toast({
-          title: "Review Add Failed",
+          title: t("review_add_failed"),
           description: response.message,
           variant: "danger",
         });

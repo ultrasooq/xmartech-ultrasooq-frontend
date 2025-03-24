@@ -49,7 +49,7 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
 
     if (response.status) {
       toast({
-        title: "Answer Add Successful",
+        title: t("answer_add_successful"),
         description: response.message,
         variant: "success",
       });
@@ -60,7 +60,7 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
       if (onReplySuccess) onReplySuccess(values.answer);
     } else {
       toast({
-        title: "Answer Add Failed",
+        title: t("answer_add_failed"),
         description: response.message,
         variant: "danger",
       });
