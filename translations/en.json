@@ -480,6 +480,8 @@
     "setup_permission": "Setup Permission",
     "add_permission": "Add Permission",
     "update_permission": "Update Permission",
+    "permission_information": "Permission Information",
+    "permission_type": "Permission Type",
     "no_roles_found": "No Roles Found",
 
     "quick_links": "Quick Links",

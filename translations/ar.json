@@ -480,6 +480,8 @@
     "setup_permission": "إذن الإعداد",
     "add_permission": "إضافة إذن",
     "update_permission": "تحديث إذن",
+    "permission_information": "معلومات الإذن",
+    "permission_type": "نوع إذن",
     "no_roles_found": "لم يتم العثور على أدوار",
 
     "quick_links": "روابط سريعة",

@@ -149,7 +149,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
               <div>
                 <div className="mb-3.5 w-full">
                   <AccordionMultiSelectV2
-                    label="Permission Type"
+                    label={t("permission_type")}
                     name="permissionIdList"
                     options={memoizedPermissions || []}
                     // value={selectedValues} // Ensure checked state
