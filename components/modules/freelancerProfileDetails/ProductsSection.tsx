@@ -207,7 +207,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
         </p>
       ) : null}
 
-      <div className="grid grid-cols-5 gap-3">
+      <div className="flex flex-wrap gap-3 md:grid md:grid-cols-5">
         {!sellerId &&
           memoizedProducts.map((item: any) => (
             <ProductCard

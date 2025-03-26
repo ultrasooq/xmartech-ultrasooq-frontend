@@ -15,7 +15,7 @@ interface SellerChatHistoryProps {
   buyerId: number | undefined;
   rfqUserId: number;
   unreadMsgCount: number | 0;
-  isUploadingCompleted?: boolean | null
+  isUploadingCompleted?: boolean | null;
 }
 
 const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
@@ -26,7 +26,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
   buyerId,
   unreadMsgCount,
   rfqUserId,
-  isUploadingCompleted
+  isUploadingCompleted,
 }) => {
   const t = useTranslations();
   const { user } = useAuth();
@@ -59,7 +59,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
         rfqQuoteProductId: chat.rfqQuoteProductId,
       };
       updateRfqRequestStatus(payload);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const handleUnreadMessages = async () => {
@@ -72,7 +72,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
         await updateUnreadMessages(payload);
         updateRfqMessageCount();
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   return (
@@ -91,17 +91,32 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                             {chat?.attachments.map((file: any, index: any) => (
                               <div
                                 key={index}
-                                className="border mb-2 border-gray-300 p-2 rounded-md flex justify-between items-center"
+                                className="mb-2 flex items-center justify-between rounded-md border border-gray-300 p-2"
                               >
                                 <div className="flex-1">
-                                  {file?.fileType.includes("imag") && file?.presignedUrl ? (
-                                    <img src={file?.presignedUrl} className="w-full max-w-sm h-auto" />
-                                  ) : file?.fileType.includes("video") && file?.presignedUrl && (
-                                    <video src={file?.presignedUrl} className="w-full max-w-sm h-auto" controls />
+                                  {file?.fileType.includes("imag") &&
+                                  file?.presignedUrl ? (
+                                    <img
+                                      src={file?.presignedUrl}
+                                      className="h-auto w-full max-w-sm"
+                                    />
+                                  ) : (
+                                    file?.fileType.includes("video") &&
+                                    file?.presignedUrl && (
+                                      <video
+                                        src={file?.presignedUrl}
+                                        className="h-auto w-full max-w-sm"
+                                        controls
+                                      />
+                                    )
                                   )}
-                                  <p className="mr-2 truncate">{file.fileName}</p>
+                                  <p className="mr-2 truncate">
+                                    {file.fileName}
+                                  </p>
                                   <p className="mr-2 truncate text-xs italic">
-                                    {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
+                                    {file?.status === "UPLOADING"
+                                      ? "Uploading..."
+                                      : file?.status}
                                   </p>
                                 </div>
                                 <DownloadIconButton
@@ -112,7 +127,9 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                             ))}
                           </div>
                         )}
-                        {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
+                        {isUploadingCompleted
+                          ? "Attachment(s) uploading..."
+                          : ""}
                         {chat?.content && (
                           <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
                             <p
@@ -130,7 +147,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                 <p>
                                   status:
                                   {chat.rfqProductPriceRequest?.status ===
-                                    "APPROVED" ? (
+                                  "APPROVED" ? (
                                     <span className="rounded-sm bg-blue-700 p-0.5 text-white">
                                       Approved
                                     </span>
@@ -147,24 +164,22 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                 </p>
                               </div>
                             )}
-
                           </div>
                         )}
-
                       </div>
 
                       <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
-                        {chat?.status === "SD" ?
-                          <span>Sending...</span> :
+                        {chat?.status === "SD" ? (
+                          <span>Sending...</span>
+                        ) : (
                           <span>
                             {chat.createdAt
                               ? moment(chat.createdAt)
-                                .startOf("seconds")
-                                .fromNow()
-                              : ""
-                            }
+                                  .startOf("seconds")
+                                  .fromNow()
+                              : ""}
                           </span>
-                        }
+                        )}
                       </div>
                     </div>
                     <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
@@ -174,76 +189,99 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                       {/* <Image src={UserChatIcon} alt="user-chat-icon" /> */}
                     </div>
                   </div>
-                ) : (chat?.attachments?.length > 0 || chat?.content) && (
-                  <div className="mt-5 flex w-full flex-wrap items-end">
-                    <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
-                      <span className="flex h-full w-full items-center justify-center">
-                        {`${chat?.user?.firstName?.[0] ?? ""}${chat?.user?.lastName?.[0] ?? ""}`}
-                      </span>
-                    </div>
-                    <div className="w-[calc(100%-2rem)] pl-2">
-                      <div className="mb-1 inline-block w-auto rounded-xl p-3 text-left text-sm">
-                        {chat?.attachments?.length > 0 && (
-                          <div className="mb-2 w-full">
-                            {chat?.attachments.map((file: any, index: any) => (
-                              <div
-                                key={index}
-                                className="border mb-2 border-gray-300 p-2 rounded-md flex justify-between items-center"
-                              >
-                                <div className="flex-1">
-                                  {file?.fileType.includes("imag") && file?.presignedUrl ? (
-                                    <img src={file?.presignedUrl} className="w-full max-w-sm h-auto" />
-                                  ) : file?.fileType.includes("video") && file?.presignedUrl && (
-                                    <video src={file?.presignedUrl} className="w-full max-w-sm h-auto" controls />
-                                  )}
-                                  <p className="mr-2 truncate">{file.fileName}</p>
-                                  <p className="mr-2 truncate text-xs italic">
-                                    {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
-                                  </p>
-                                </div>
-                                <DownloadIconButton
-                                  attachmentId={file?.id}
-                                  filePath={file?.filePath}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
-                        {chat?.content && (
-                          <div className="inline-block w-auto rounded-xl bg-[#F1F2F6] p-3 text-right text-sm text-white">
-                            <p
-                              dangerouslySetInnerHTML={{
-                                __html: chat?.content,
-                              }}
-                            />
+                ) : (
+                  (chat?.attachments?.length > 0 || chat?.content) && (
+                    <div className="mt-5 flex w-full flex-wrap items-end">
+                      <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
+                        <span className="flex h-full w-full items-center justify-center">
+                          {`${chat?.user?.firstName?.[0] ?? ""}${chat?.user?.lastName?.[0] ?? ""}`}
+                        </span>
+                      </div>
+                      <div className="w-[calc(100%-4rem)] pl-2">
+                        <div className="mb-1 inline-block w-auto w-full rounded-xl p-3 text-left text-sm">
+                          {chat?.attachments?.length > 0 && (
+                            <div className="mb-2 w-full">
+                              {chat?.attachments.map(
+                                (file: any, index: any) => (
+                                  <div
+                                    key={index}
+                                    className="mb-2 flex items-center justify-between rounded-md border border-gray-300 p-2"
+                                  >
+                                    <div className="w-full flex-1">
+                                      {file?.fileType.includes("imag") &&
+                                      file?.presignedUrl ? (
+                                        <img
+                                          src={file?.presignedUrl}
+                                          className="h-auto w-full max-w-sm"
+                                        />
+                                      ) : (
+                                        file?.fileType.includes("video") &&
+                                        file?.presignedUrl && (
+                                          <video
+                                            src={file?.presignedUrl}
+                                            className="h-auto w-full max-w-sm"
+                                            controls
+                                          />
+                                        )
+                                      )}
+                                      <p className="mr-2 truncate">
+                                        {file.fileName}
+                                      </p>
+                                      <p className="mr-2 truncate text-xs italic">
+                                        {file?.status === "UPLOADING"
+                                          ? "Uploading..."
+                                          : file?.status}
+                                      </p>
+                                    </div>
+                                    <DownloadIconButton
+                                      attachmentId={file?.id}
+                                      filePath={file?.filePath}
+                                    />
+                                  </div>
+                                ),
+                              )}
+                            </div>
+                          )}
+                          {isUploadingCompleted
+                            ? "Attachment(s) uploading..."
+                            : ""}
+                          {chat?.content && (
+                            <div className="inline-block w-auto rounded-xl bg-[#F1F2F6] p-3 text-right text-sm text-white">
+                              <p
+                                dangerouslySetInnerHTML={{
+                                  __html: chat?.content,
+                                }}
+                              />
 
-                            {chat?.rfqProductPriceRequest && (
-                              <div>
-                                <p>
-                                  Requested Price: $
-                                  {chat.rfqProductPriceRequest?.requestedPrice}
-                                </p>
-                                <p>
-                                  status:
-                                  {chat.rfqProductPriceRequest?.status ===
+                              {chat?.rfqProductPriceRequest && (
+                                <div>
+                                  <p>
+                                    Requested Price: $
+                                    {
+                                      chat.rfqProductPriceRequest
+                                        ?.requestedPrice
+                                    }
+                                  </p>
+                                  <p>
+                                    status:
+                                    {chat.rfqProductPriceRequest?.status ===
                                     "APPROVED" ? (
-                                    <span className="rounded-sm bg-blue-700 p-0.5 text-white">
-                                      Approved
-                                    </span>
-                                  ) : chat.rfqProductPriceRequest?.status ===
-                                    "REJECTED" ? (
-                                    <span className="rounded-sm bg-red-600 p-0.5 text-white">
-                                      Rejected
-                                    </span>
-                                  ) : (
-                                    <span className="rounded-sm bg-yellow-700 p-0.5 text-white">
-                                      Pending
-                                    </span>
-                                  )}
-                                </p>
-                                {chat.rfqProductPriceRequest?.status ===
-                                  "PENDING" && (
+                                      <span className="rounded-sm bg-blue-700 p-0.5 text-white">
+                                        Approved
+                                      </span>
+                                    ) : chat.rfqProductPriceRequest?.status ===
+                                      "REJECTED" ? (
+                                      <span className="rounded-sm bg-red-600 p-0.5 text-white">
+                                        Rejected
+                                      </span>
+                                    ) : (
+                                      <span className="rounded-sm bg-yellow-700 p-0.5 text-white">
+                                        Pending
+                                      </span>
+                                    )}
+                                  </p>
+                                  {chat.rfqProductPriceRequest?.status ===
+                                    "PENDING" && (
                                     <div className="mt-2">
                                       <button
                                         onClick={() =>
@@ -271,27 +309,28 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                       </button>
                                     </div>
                                   )}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
 
-                      <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
-                        {chat?.status === "SD" ?
-                          <span>Sending...</span> :
-                          <span>
-                            {chat.createdAt
-                              ? moment(chat.createdAt)
-                                .startOf("seconds")
-                                .fromNow()
-                              : ""
-                            }
-                          </span>
-                        }
+                        <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
+                          {chat?.status === "SD" ? (
+                            <span>Sending...</span>
+                          ) : (
+                            <span>
+                              {chat.createdAt
+                                ? moment(chat.createdAt)
+                                    .startOf("seconds")
+                                    .fromNow()
+                                : ""}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )
                 )}
               </div>
             ))}

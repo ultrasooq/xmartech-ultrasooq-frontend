@@ -25,7 +25,10 @@ type MultiSelectCategoryProps = {
   branchId?: string | undefined | null;
 };
 
-const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name, branchId, }) => {
+const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
+  name,
+  branchId,
+}) => {
   const formContext = useFormContext();
   const [categoryId, setCategoryId] = useState<number | undefined>();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
@@ -135,9 +138,9 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name, branchI
     <div className="my-3 space-y-2">
       <Label>Tags</Label>
 
-      <div className="grid grid-cols-3">
+      <div className="flex flex-wrap md:grid md:grid-cols-3">
         {memoizedMenu?.length ? (
-          <div className="max-h-[300px] overflow-y-auto">
+          <div className="w-full overflow-y-auto md:max-h-[300px]">
             {memoizedMenu?.map((item: CategoryProps, index: number) => (
               <div
                 key={item?.id}
@@ -224,7 +227,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name, branchI
               item?.children,
           )
           ?.flat()?.length ? (
-          <div className="max-h-[300px] overflow-y-auto">
+          <div className="w-full overflow-y-auto md:max-h-[300px]">
             {multiSubCategoryList
               ?.map((item: CategoryProps) => item?.children)
               ?.flat()
@@ -314,7 +317,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({ name, branchI
               item?.children,
           )
           ?.flat()?.length ? (
-          <div className="max-h-[300px] overflow-y-auto">
+          <div className="w-full overflow-y-auto md:max-h-[300px]">
             {multiSubSubCategoryList
               ?.map((item: CategoryProps) => item?.children)
               ?.flat()
