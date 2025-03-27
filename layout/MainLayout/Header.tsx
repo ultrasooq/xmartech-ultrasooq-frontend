@@ -1,5 +1,11 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -307,7 +313,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     <>
       <header className="relative w-full">
         <div className="w-full bg-dark-cyan">
-          <div className="container m-auto px-3">
+          <div className="container m-auto px-3 pt-3">
             <div className="hidden sm:hidden md:flex md:gap-x-2.5">
               <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
                 <p>{t("welcome")}</p>
@@ -315,11 +321,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <a href="#">{t('store_location')}</a>
+                    <a href="#">{t("store_location")}</a>
                   </li>
                   {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <Link href="/my-orders">{t('track_your_order')}</Link>
+                    <Link href="/my-orders">{t("track_your_order")}</Link>
                   </li>
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
@@ -331,11 +337,17 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </li>
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
                     {/* <GoogleTranslate /> */}
-                    <select className="border-0 bg-transparent text-white focus:outline-none" 
+                    <select
+                      className="border-0 bg-transparent text-white focus:outline-none"
                       defaultValue={locale}
-                      onChange={(e) => applyTranslation(e.target.value)}>
-                      <option className="bg-dark-cyan" value="en">English</option>
-                      <option className="bg-dark-cyan" value="ar">Arabic</option>
+                      onChange={(e) => applyTranslation(e.target.value)}
+                    >
+                      <option className="bg-dark-cyan" value="en">
+                        English
+                      </option>
+                      <option className="bg-dark-cyan" value="ar">
+                        Arabic
+                      </option>
                       {/* <option className="bg-dark-cyan">German</option>
                       <option className="bg-dark-cyan">French</option> */}
                     </select>
@@ -379,7 +391,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
                     onClick={() => updateURL(searchTerm)} // Update URL when clicking search
                   >
-                    {t('search')}
+                    {t("search")}
                   </button>
                 </div>
               </div>
@@ -445,7 +457,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         <DropdownMenuContent>
                           <Link href={handleProfile()}>
                             <DropdownMenuItem className="cursor-pointer">
-                              {t('profile_information')}
+                              {t("profile_information")}
                             </DropdownMenuItem>
                           </Link>
                           {/* <DropdownMenuSeparator /> */}
@@ -454,26 +466,30 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {hideMenu(PERMISSION_TEAM_MEMBERS) && (
                                 <Link href="/team-members">
                                   <DropdownMenuItem>
-                                    {t('team_members')}
+                                    {t("team_members")}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_PRODUCTS) && (
                                 <Link href="/manage-products">
-                                  <DropdownMenuItem>{t('products')}</DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    {t("products")}
+                                  </DropdownMenuItem>
                                 </Link>
                               )}
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_ORDERS) && (
                                 <Link href="/seller-orders">
-                                  <DropdownMenuItem>{t('orders')}</DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    {t("orders")}
+                                  </DropdownMenuItem>
                                 </Link>
                               )}
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_QUOTES) && (
                                 <Link href="/rfq-quotes">
                                   <DropdownMenuItem>
-                                    {t('rfq_quotes')}
+                                    {t("rfq_quotes")}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
@@ -481,14 +497,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
                                 <Link href="/seller-rfq-request">
                                   <DropdownMenuItem>
-                                    {t('rfq_seller_requests')}
+                                    {t("rfq_seller_requests")}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_SELLER_REWARDS) && (
                                 <Link href="/seller-rewards">
                                   <DropdownMenuItem>
-                                    {t('seller_rewards')}
+                                    {t("seller_rewards")}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
@@ -497,14 +513,18 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           ) : null}
                           {hideMenu(PERMISSION_SHARE_LINKS) && (
                             <Link href="/share-links">
-                              <DropdownMenuItem>{t('share_links')}</DropdownMenuItem>
+                              <DropdownMenuItem>
+                                {t("share_links")}
+                              </DropdownMenuItem>
                             </Link>
                           )}
                           <Link href="/my-settings/address">
-                            <DropdownMenuItem>{t('my_settings')}</DropdownMenuItem>
+                            <DropdownMenuItem>
+                              {t("my_settings")}
+                            </DropdownMenuItem>
                           </Link>
                           <Link href="/queries">
-                            <DropdownMenuItem>{t('queries')}</DropdownMenuItem>
+                            <DropdownMenuItem>{t("queries")}</DropdownMenuItem>
                           </Link>
                           <DropdownMenuSeparator />
                           {/* <DropdownMenuSeparator /> */}
@@ -512,7 +532,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             onClick={handleLogout}
                             className="cursor-pointer"
                           >
-                            {t('logout')}
+                            {t("logout")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -529,13 +549,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             href="/login"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
                           >
-                            {t('login')}
+                            {t("login")}
                           </Link>
                           <Link
                             href="/register"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
                           >
-                            {t('register')}
+                            {t("register")}
                           </Link>
                         </div>
                       </>
@@ -632,7 +652,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       <Image src={HamburgerIcon} alt="hamburger-icon" />
                     </div>
                     <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
-                      {t('all_categories')}
+                      {t("all_categories")}
                     </p>
                     <div>
                       <Image
@@ -649,7 +669,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           <div
                             key={item?.id}
                             className={cn(
-                              "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
+                              "dropdown-content-child flex cursor-pointer items-center justify-start gap-2 p-3",
                               memoizedSubCategory?.length
                                 ? index === subCategoryIndex
                                   ? "dropdown-active-child"
@@ -710,7 +730,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           <div
                             key={item?.id}
                             className={cn(
-                              "dropdown-content-child flex cursor-pointer items-center justify-start gap-x-2 p-3",
+                              "dropdown-content-child flex cursor-pointer items-center justify-start gap-2 p-3",
                               memoizedSubCategory?.[subCategoryIndex]?.children
                                 ?.length
                                 ? index === subSubCategoryIndex
@@ -768,7 +788,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           subSubCategoryIndex
                         ]?.name || ""}
                       </h4>
-                      <div className="grid grid-cols-5">
+                      <div className="flex flex-col sm:grid sm:grid-cols-5">
                         {memoizedSubCategory?.[subCategoryIndex]?.children?.[
                           subSubCategoryIndex
                         ]?.children?.map(
@@ -776,7 +796,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             <div
                               key={item?.id}
                               className={cn(
-                                "dropdown-content-child flex cursor-pointer flex-col items-center justify-start gap-y-2 p-3",
+                                "dropdown-content-child flex cursor-pointer flex-row items-center justify-start gap-2 p-3 sm:flex-col",
                                 memoizedSubCategory?.[subCategoryIndex]
                                   ?.children?.[subSubCategoryIndex]?.children
                                   ?.length
@@ -853,7 +873,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 <ul className="flex items-center justify-end gap-x-4">
                   <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
                     <a href="#" className="text-light-gray">
-                      {t('buyer_central')}
+                      {t("buyer_central")}
                     </a>
                   </li>
                   <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
@@ -862,7 +882,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       className="text-light-gray"
                       onClick={handleToggleQueryModal}
                     >
-                      {t('help_center')}
+                      {t("help_center")}
                     </a>
                   </li>
                 </ul>
@@ -877,9 +897,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
           ref={wrapperRef}
         >
-          <QueryForm
-            onClose={handleToggleQueryModal}
-          />
+          <QueryForm onClose={handleToggleQueryModal} />
         </DialogContent>
       </Dialog>
     </>

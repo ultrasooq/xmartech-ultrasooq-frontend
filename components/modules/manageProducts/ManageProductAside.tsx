@@ -45,7 +45,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   isLoading,
 }) => {
   const t = useTranslations();
-  
+
   const formContext = useFormContext();
 
   const locationsQuery = useLocation();
@@ -157,8 +157,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
         </div>
 
         <div className="select_main_wrap">
-
-        <div className="mt-2 flex flex-col gap-y-3">
+          <div className="mt-2 flex flex-col gap-y-3">
             <Label>{t("product_location")}</Label>
             <Controller
               name="productLocationId"
@@ -170,9 +169,11 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     field.onChange(newValue?.value);
                   }}
                   options={memoizedLocations}
-                  value={memoizedLocations.find(
-                    (item: IOption) => item.value === field.value,
-                  ) || ''}
+                  value={
+                    memoizedLocations.find(
+                      (item: IOption) => item.value === field.value,
+                    ) || ""
+                  }
                   styles={customStyles}
                   instanceId="productLocationId"
                   isClearable={true}
@@ -183,31 +184,40 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           </div>
 
           <div className="flex items-center justify-start gap-[10px] py-2">
-          <Controller
-                name="isProductConditionRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                )}
-              />
-            <Label>{t("product_condition")}</Label>
-            <div className="w-[170px] border-[1px] border-[#ccc] border-[solid]">
             <Controller
+              name="isProductConditionRequired"
+              control={formContext.control}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  className="h-[30px] w-[30px]"
+                  checked={!!field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+              <Label>{t("product_condition")}</Label>
+              <div className="flex w-full gap-2 space-y-2">
+                <Controller
                   name="productCondition"
                   control={formContext.control}
                   render={({ field }) => (
                     <ReactSelect
+                      className="w-full"
                       {...field}
                       onChange={(newValue) => {
                         field.onChange(newValue?.value);
                       }}
-                      options={PRODUCT_CONDITION_LIST.map(condition => {
+                      options={PRODUCT_CONDITION_LIST.map((condition) => {
                         condition.label = t(condition.label);
                         return condition;
                       })}
-                      value={PRODUCT_CONDITION_LIST.find(
-                        (item: any) => item.value === field.value,
-                      ) || null}
+                      value={
+                        PRODUCT_CONDITION_LIST.find(
+                          (item: any) => item.value === field.value,
+                        ) || null
+                      }
                       styles={customStyles}
                       instanceId="productCondition"
                       placeholder={t("select")}
@@ -215,76 +225,93 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     />
                   )}
                 />
+              </div>
             </div>
           </div>
 
           <div className="flex items-center justify-start gap-[10px] py-2">
-          <Controller
-                name="isHiddenRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                )}
-              />
-            <div className="flex w-[222px] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+            <Controller
+              name="isHiddenRequired"
+              control={formContext.control}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  className="h-[30px] w-[30px]"
+                  checked={!!field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <div className="flex w-[calc(100%_-_40px)] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
               <IoIosEyeOff className="text-[20px] text-[#ccc]" />
               <Label>{t("hide_All_selected")}</Label>
             </div>
           </div>
 
           <div className="flex items-center justify-start gap-[10px] py-2">
-          <Controller
-                name="isStockRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                )}
-              />
-            <div className="flex w-[222px] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
-            <Label>{t("ask_for_the_stock")}</Label>
-            {!watchIsStockRequired ? (
-                <Controller
-                  name="stock"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <div className="space-y-2">
-                      <Input
-                        type="number"
-                        className="theme-form-control-s1"
-                        placeholder={t("ask_for_the_stock")}
-                        {...field}
-                        onWheel={(e) => e.currentTarget.blur()}
-                        disabled={watchIsStockRequired}
-                      />
-                    </div>
-                  )}
+            <Controller
+              name="isStockRequired"
+              control={formContext.control}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  className="h-[30px] w-[30px]"
+                  checked={!!field.value}
+                  onChange={field.onChange}
                 />
-              ) : null}
-              {stockMessage ? (
-                <p className="text-[13px] text-red-500">
-                  {stockMessage.toString()}
-                </p>
-              ) : null}
+              )}
+            />
+            <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+              <Label>{t("ask_for_the_stock")}</Label>
+              <div className="flex w-full gap-2 space-y-2">
+                {!watchIsStockRequired ? (
+                  <Controller
+                    name="stock"
+                    control={formContext.control}
+                    render={({ field }) => (
+                      <div className="space-y-2">
+                        <Input
+                          type="number"
+                          className="theme-form-control-s1"
+                          placeholder={t("ask_for_the_stock")}
+                          {...field}
+                          onWheel={(e) => e.currentTarget.blur()}
+                          disabled={watchIsStockRequired}
+                        />
+                      </div>
+                    )}
+                  />
+                ) : null}
+                {stockMessage ? (
+                  <p className="text-[13px] text-red-500">
+                    {stockMessage.toString()}
+                  </p>
+                ) : null}
+              </div>
             </div>
           </div>
 
-
-         <div className="flex items-center justify-start gap-[10px] py-2">
-         <Controller
-                name="isOfferPriceRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                )}
-              />
-            <div className="flex w-[222px] items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
-            <Label>{t("ask_for_the_price")}</Label>
+          <div className="flex items-center justify-start gap-[10px] py-2">
+            <Controller
+              name="isOfferPriceRequired"
+              control={formContext.control}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  className="h-[30px] w-[30px]"
+                  checked={!!field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+              <Label>{t("ask_for_the_price")}</Label>
               {!watchIsOfferPriceRequired ? (
                 <Controller
                   name="offerPrice"
                   control={formContext.control}
                   render={({ field }) => (
-                    <div className="space-y-2">
+                    <div className="flex w-full gap-2 space-y-2">
                       <Input
                         type="number"
                         className="theme-form-control-s1"
@@ -306,36 +333,46 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           </div>
 
           <div className="flex items-center justify-start gap-[10px] py-2">
-          <Controller
-                name="isDeliveryAfterRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                )}
-              />
-            <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
-            <Label>{t("deliver_after")}</Label>
-              {/* <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]"> */}
-              <CounterTextInputField
+            <Controller
+              name="isDeliveryAfterRequired"
+              control={formContext.control}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  className="h-[30px] w-[30px]"
+                  checked={!!field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <Label>{t("deliver_after")}</Label>
+              <div className="flex w-full gap-2 space-y-2">
+                {/* <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]"> */}
+                <CounterTextInputField
                   name="deliveryAfter"
                   placeholder="After"
                 />
-              {/* </div> */}
+                {/* </div> */}
+              </div>
             </div>
           </div>
 
-
-
           {watchSellType === "BUYGROUP" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
-                 <Controller
-                  name="isTimeOpen"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
-                <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <Controller
+                name="isTimeOpen"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>{t("time_open")}</Label>
                 <CounterTextInputField
                   label=""
@@ -348,14 +385,19 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           {watchSellType === "BUYGROUP" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
-                <Controller
-                  name="IsTimeClose"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
-               <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <Controller
+                name="IsTimeClose"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>{t("time_close")}</Label>
                 <CounterTextInputField
                   label=""
@@ -366,28 +408,34 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             </div>
           ) : null}
 
-
-        <div className="flex items-center justify-start gap-[10px] py-2">
+          <div className="flex items-center justify-start gap-[10px] py-2">
             <Controller
-                name="isConsumerTypeRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                )}
-              />
-            <Label>{t("consumer_type")}</Label>
-            <div className="w-[170px] border-[1px] border-[#ccc] border-[solid]">
-            <Controller
+              name="isConsumerTypeRequired"
+              control={formContext.control}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  className="h-[30px] w-[30px]"
+                  checked={!!field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+              <Label>{t("consumer_type")}</Label>
+              <div className="flex w-full gap-2 space-y-2">
+                <Controller
                   name="consumerType"
                   control={formContext.control}
                   defaultValue="CONSUMER" // ✅ Set default inside Controller
                   render={({ field }) => (
                     <ReactSelect
+                      className="w-full"
                       {...field}
                       onChange={(newValue) => {
                         field.onChange(newValue?.value);
                       }}
-                      options={CONSUMER_TYPE_LIST.map(option => {
+                      options={CONSUMER_TYPE_LIST.map((option) => {
                         option.label = t(option.label);
                         return option;
                       })}
@@ -400,34 +448,42 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     />
                   )}
                 />
-                  {consumerTypeMessage ? (
-                <p className="text-[13px] text-red-500">
-                  {consumerTypeMessage.toString()}
-                </p>
-              ) : null}
+                {consumerTypeMessage ? (
+                  <p className="text-[13px] text-red-500">
+                    {consumerTypeMessage.toString()}
+                  </p>
+                ) : null}
+              </div>
             </div>
           </div>
 
           <div className="flex items-center justify-start gap-[10px] py-2">
-          <Controller
-                name="isSellTypeRequired"
-                control={formContext.control}
-                render={({ field }) => (
-                  <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                )}
-              />
-            <Label>{t("sell_type")}</Label>
-            <div className="w-[170px] border-[1px] border-[#ccc] border-[solid]">
             <Controller
+              name="isSellTypeRequired"
+              control={formContext.control}
+              render={({ field }) => (
+                <input
+                  type="checkbox"
+                  className="h-[30px] w-[30px]"
+                  checked={!!field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2">
+              <Label>{t("sell_type")}</Label>
+              <div className="flex w-full gap-2 space-y-2">
+                <Controller
                   name="sellType"
                   control={formContext.control}
                   render={({ field }) => (
                     <ReactSelect
+                      className="w-full"
                       {...field}
                       onChange={(newValue) => {
                         field.onChange(newValue?.value);
                       }}
-                      options={SELL_TYPE_LIST.map(option => {
+                      options={SELL_TYPE_LIST.map((option) => {
                         option.label = t(option.label);
                         return option;
                       })}
@@ -441,32 +497,39 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   )}
                 />
                 {sellTypeMessage ? (
-                <p className="text-[13px] text-red-500">
-                  {sellTypeMessage.toString()}
-                </p>
-              ) : null}
+                  <p className="text-[13px] text-red-500">
+                    {sellTypeMessage.toString()}
+                  </p>
+                ) : null}
+              </div>
             </div>
           </div>
-
 
           {watchConsumerType === "EVERYONE" ||
           watchConsumerType === "CONSUMER" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
               {/* <div className="select_type_checkbox"> */}
-                <Controller
-                  name="isVendorDiscountRequired"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
+              <Controller
+                name="isVendorDiscountRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
               {/* </div> */}
-              <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>{t("vendor_discount")}</Label>
+                <div className="flex w-full gap-2 space-y-2">
                   <CounterTextInputField
                     name="vendorDiscount"
                     placeholder="Discount"
                   />
+                </div>
               </div>
             </div>
           ) : null}
@@ -475,15 +538,20 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           watchConsumerType === "VENDORS" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
               {/* <div className="select_type_checkbox"> */}
-                <Controller
-                  name="isConsumerDiscountRequired"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
+              <Controller
+                name="isConsumerDiscountRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
               {/* </div> */}
-              <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>{t("consumer_discount")}</Label>
                 {watchIsConsumerDiscountRequired ? (
                   <CounterTextInputField
@@ -498,15 +566,20 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
               {/* <div className="select_type_checkbox"> */}
-                <Controller
-                  name="isMinQuantityRequired"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
+              <Controller
+                name="isMinQuantityRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
               {/* </div> */}
-              <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>{t("min_quantity")}</Label>
                 <CounterTextInputField name="minQuantity" placeholder="Min" />
               </div>
@@ -515,14 +588,19 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
 
           {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
-                <Controller
-                  name="isMaxQuantityRequired"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
-             <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <Controller
+                name="isMaxQuantityRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>{t("max_quantity")}</Label>
                 <CounterTextInputField name="maxQuantity" placeholder="Max" />
               </div>
@@ -530,54 +608,47 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           ) : null}
 
           {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
-             <div className="flex items-center justify-start gap-[10px] py-2">
-                <Controller
-                  name="isMinCustomerRequired"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
-             <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+            <div className="flex items-center justify-start gap-[10px] py-2">
+              <Controller
+                name="isMinCustomerRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>{t("min_customer")}</Label>
+                <div className="flex w-full gap-2 space-y-2">
                   <CounterTextInputField name="minCustomer" placeholder="Min" />
+                </div>
               </div>
             </div>
           ) : null}
 
           {watchSellType === "EVERYONE" || watchSellType === "BUYGROUP" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
-                <Controller
-                  name="isMaxCustomerRequired"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
-             <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <Controller
+                name="isMaxCustomerRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>{t("max_customer")}</Label>
+                <div className="flex w-full gap-2 space-y-2">
                   <CounterTextInputField name="maxCustomer" placeholder="Max" />
                 </div>
-            </div>
-          ) : null}
-
-          {watchSellType === "EVERYONE" ||
-          watchSellType === "NORMALSELL" ||
-          watchSellType === "BUYGROUP" ? (
-            <div className="flex items-center justify-start gap-[10px] py-2">
-                <Controller
-                  name="isMinQuantityPerCustomerRequired"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
-              <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
-                <Label>{t("min_quantity_per_customer")}</Label>
-                <CounterTextInputField
-                  name="minQuantityPerCustomer"
-                  placeholder="Min"
-                />
               </div>
             </div>
           ) : null}
@@ -586,19 +657,54 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           watchSellType === "NORMALSELL" ||
           watchSellType === "BUYGROUP" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
-                <Controller
-                  name="isMaxQuantityPerCustomerRequired"
-                  control={formContext.control}
-                  render={({ field }) => (
-                    <input type="checkbox" className="h-[30px] w-[30px]" checked={!!field.value}  onChange={field.onChange} />
-                  )}
-                />
-             <div className="flex w-[222px] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <Controller
+                name="isMinQuantityPerCustomerRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+                <Label>{t("min_quantity_per_customer")}</Label>
+                <div className="flex w-full gap-2 space-y-2">
+                  <CounterTextInputField
+                    name="minQuantityPerCustomer"
+                    placeholder="Min"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {watchSellType === "EVERYONE" ||
+          watchSellType === "NORMALSELL" ||
+          watchSellType === "BUYGROUP" ? (
+            <div className="flex items-center justify-start gap-[10px] py-2">
+              <Controller
+                name="isMaxQuantityPerCustomerRequired"
+                control={formContext.control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    className="h-[30px] w-[30px]"
+                    checked={!!field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label>{t("max_quantity_per_customer")}</Label>
-                <CounterTextInputField
-                  name="maxQuantityPerCustomer"
-                  placeholder="Max"
-                />
+                <div className="flex w-full gap-2 space-y-2">
+                  <CounterTextInputField
+                    name="maxQuantityPerCustomer"
+                    placeholder="Max"
+                  />
+                </div>
               </div>
             </div>
           ) : null}
@@ -610,7 +716,11 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             disabled={isLoading}
             className="w-full !bg-[#DF2100]"
           >
-            {isLoading ? <LoaderWithMessage message={t("please_wait")} /> : t("update")}
+            {isLoading ? (
+              <LoaderWithMessage message={t("please_wait")} />
+            ) : (
+              t("update")
+            )}
           </Button>
         </div>
       </div>
