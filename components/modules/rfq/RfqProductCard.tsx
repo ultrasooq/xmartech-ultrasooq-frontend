@@ -22,7 +22,7 @@ type RfqProductCardProps = {
     image: string;
   }[];
   productQuantity: number;
-  onAdd: (args0: number, args1: number, args3: "add" | "remove", args4?: number) => void;
+  onAdd: (args0: number, args1: number, args2: "add" | "remove", args3?: number, args4?: number, args5?: string) => void;
   onToCart: () => void;
   onEdit: (args0: number) => void;
   onWishlist: () => void;
@@ -31,7 +31,8 @@ type RfqProductCardProps = {
   inWishlist?: boolean;
   haveAccessToken: boolean;
   productPrice: any;
-  offerPrice?: number;
+  offerPriceFrom?: number;
+  offerPriceTo?: number;
 };
 
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
@@ -51,7 +52,8 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   inWishlist,
   haveAccessToken,
   productPrice,
-  offerPrice,
+  offerPriceFrom,
+  offerPriceTo
 }) => {
   const t = useTranslations();
   const [quantity, setQuantity] = useState(0);
@@ -81,7 +83,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         <Button
           variant="ghost"
           className="relative h-8 w-8 rounded-full p-0 shadow-md"
-          onClick={() => onAdd(quantity + 1, id, "add", offerPrice)}
+          onClick={() => onAdd(quantity + 1, id, "add", undefined, undefined, '')}
         >
           <ShoppingIcon />
         </Button>
@@ -124,7 +126,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity - 1);
-                    onAdd(quantity - 1, id, "remove", offerPrice);
+                    onAdd(quantity - 1, id, "remove", offerPriceFrom, offerPriceTo, '');
                   }}
                   disabled={quantity === 0}
                 >
@@ -142,7 +144,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   className="relative hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity + 1);
-                    onAdd(quantity + 1, id, "add", offerPrice);
+                    onAdd(quantity + 1, id, "add", offerPriceFrom, offerPriceTo, '');
                   }}
                 >
                   <Image
@@ -187,7 +189,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 className="add_to_cart_button"
                 disabled={quantity > 0}
                 onClick={() => {
-                  onAdd(quantity + 1, id, "add");
+                  onAdd(quantity + 1, id, "add", offerPriceFrom, offerPriceTo, '');
                 }}
               >
                 {t("add_to_rfq_cart")}

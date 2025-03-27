@@ -202,6 +202,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
         askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -557,22 +558,26 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
 
               {viewType === "grid" ? (
                 <div className="product-list-s1">
-                  {memoizedProductList.map((item: TrendingProduct) => (
-                    <ProductCard
-                      key={item.id}
-                      item={item}
-                      onAdd={() =>
-                        handleAddToCart(-1, item.productProductPriceId)
-                      }
-                      onWishlist={() =>
-                        handleAddToWishlist(item.id, item?.productWishlist)
-                      }
-                      inWishlist={item?.inWishlist}
-                      haveAccessToken={haveAccessToken}
-                      isInteractive
-                      productQuantity={cartList?.find((el: any) => el.productId == item.id)?.quantity || 0}
-                    />
-                  ))}
+                  {memoizedProductList.map((item: TrendingProduct) => {
+                    const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
+                    return (
+                      <ProductCard
+                        key={item.id}
+                        item={item}
+                        onAdd={() =>
+                          handleAddToCart(-1, item.productProductPriceId)
+                        }
+                        onWishlist={() =>
+                          handleAddToWishlist(item.id, item?.productWishlist)
+                        }
+                        inWishlist={item?.inWishlist}
+                        haveAccessToken={haveAccessToken}
+                        isInteractive
+                        productQuantity={cartQuantity}
+                        isAddedToCart={cartQuantity > 0}
+                      />
+                    )
+                  })}
                 </div>
               ) : null}
 

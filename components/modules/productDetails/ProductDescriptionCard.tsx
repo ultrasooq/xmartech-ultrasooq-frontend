@@ -18,6 +18,7 @@ import Link from "next/link";
 import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import { useTranslations } from "next-intl";
+import { toast } from "@/components/ui/use-toast";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -43,6 +44,8 @@ type ProductDescriptionCardProps = {
   askForPrice?: string;
   otherSellerDetails?: any[];
   productPriceArr: any[];
+  minQuantity?: number;
+  maxQuantity?: number;
   onQuantityChange?: (newQuantity: number, action: "add" | "remove") => void;
 };
 
@@ -70,6 +73,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   askForPrice,
   otherSellerDetails,
   productPriceArr,
+  minQuantity,
+  maxQuantity,
   onQuantityChange, // Callback to update productQuantity outside
 }) => {
   const t = useTranslations();
@@ -117,9 +122,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   }, [productQuantity]);
 
   const updateQuantity = (newQuantity: number, action: "add" | "remove") => {
+    if (maxQuantity && maxQuantity < newQuantity) {
+      toast({
+        description: t('max_quantity_must_be_n', { n: maxQuantity }),
+        variant: "danger"
+      });
+      return;
+    }
+
     setQuantity(newQuantity);
     onQuantityChange?.(newQuantity, action); // Notify parent if function exists
-    return newQuantity;
   };
 
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -338,7 +350,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                           <h6>Days</h6>
                         </div>
                         <div className="time_field">
-                          <h3>{timeLeft.split(':')[2]}</h3>
+                          <h3>{timeLeft.split(':')[1]}</h3>
                           <h6>Hours</h6>
                         </div>
                         <div className="time_field">
@@ -366,11 +378,11 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 </p>
 
                 <p>
-                  <span className="color-text">{t("minimum_quantity")}:</span>{" "}
+                  <span className="color-text">{t("min_quantity")}:</span>{" "}
                   <b>{productPriceArr[0]?.minQuantity}</b>
                 </p>
                 <p>
-                  <span className="color-text">{(t("maximum_quantity"))}:</span>{" "}
+                  <span className="color-text">{(t("max_quantity"))}:</span>{" "}
                   <b>{productPriceArr[0]?.maxQuantity}</b>
                 </p>
                 <p>
@@ -379,13 +391,13 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 </p>
                 <p>
                   <span className="color-text">
-                    {t("minimum_quantity_per_customer")}:
+                    {t("min_quantity_per_customer")}:
                   </span>{" "}
                   <b>{productPriceArr[0]?.minQuantityPerCustomer}</b>
                 </p>
                 <p>
                   <span className="color-text">
-                    {t("maximum_quantity_per_customer")}:
+                    {t("max_quantity_per_customer")}:
                   </span>{" "}
                   <b>{productPriceArr[0]?.maxQuantityPerCustomer}</b>
                 </p>

@@ -18,11 +18,13 @@ type RfqCartMenuCardProps = {
     args0: number,
     args1: number,
     args2: "add" | "remove",
-    args3: number,
-    args4: string,
+    args3?: number,
+    args4?: number,
+    args5?: string,
   ) => void;
   onRemove: (args0: number) => void;
-  offerPrice: number;
+  offerPriceFrom: number;
+  offerPriceTo: number,
   note: string;
 };
 
@@ -34,7 +36,8 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
   productImages,
   onAdd,
   onRemove,
-  offerPrice,
+  offerPriceFrom,
+  offerPriceTo,
   note,
 }) => {
   const t = useTranslations();
@@ -75,7 +78,8 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                     quantity - 1,
                     rfqProductId,
                     "remove",
-                    offerPrice ? Number(offerPrice) : 0,
+                    offerPriceFrom,
+                    offerPriceTo,
                     note,
                   );
                 }}
@@ -98,8 +102,9 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                     quantity + 1,
                     rfqProductId,
                     "add",
-                    offerPrice ? Number(offerPrice) : 0,
-                    note,
+                    offerPriceFrom,
+                    offerPriceTo,
+                    ''
                   );
                 }}
               >

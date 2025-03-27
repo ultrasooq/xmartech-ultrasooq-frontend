@@ -15,7 +15,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
-import { imageExtensions, videoExtensions } from "@/utils/constants";
+import { BUYGROUP_MENU_ID, FACTORIES_MENU_ID, RFQ_MENU_ID, STORE_MENU_ID, imageExtensions, videoExtensions } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
@@ -24,24 +24,24 @@ import { useTranslations } from "next-intl";
 const baseProductPriceItemSchema = z.object({
   consumerType: z.string().trim().optional(),
   sellType: z.string().trim().optional(),
-  consumerDiscount: z.coerce.number().optional(),
-  vendorDiscount: z.coerce.number().optional(),
+  consumerDiscount: z.coerce.number().optional().or(z.literal('')),
+  vendorDiscount: z.coerce.number().optional().or(z.literal('')),
   consumerDiscountType: z.coerce.string().optional(),
   vendorDiscountType: z.coerce.string().optional(),
-  minCustomer: z.coerce.number().optional(),
-  maxCustomer: z.coerce.number().optional(),
-  minQuantityPerCustomer: z.coerce.number().optional(),
-  maxQuantityPerCustomer: z.coerce.number().optional(),
-  minQuantity: z.coerce.number().optional(),
-  maxQuantity: z.coerce.number().optional(),
+  minCustomer: z.coerce.number().optional().or(z.literal('')),
+  maxCustomer: z.coerce.number().optional().or(z.literal('')),
+  minQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
+  maxQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
+  minQuantity: z.coerce.number().optional().or(z.literal('')),
+  maxQuantity: z.coerce.number().optional().or(z.literal('')),
   dateOpen: z.coerce.string().optional(),
   dateClose: z.coerce.string().optional(),
   startTime: z.coerce.string().optional(),
-  endTime: z.coerce.string().optional(),
-  timeOpen: z.coerce.number().optional(),
+  endTime: z.coerce.string().optional().or(z.literal('')),
+  timeOpen: z.coerce.number().optional().or(z.literal('')),
   timeClose: z.coerce.number().optional(),
-  deliveryAfter: z.coerce.number().optional(),
-  stock: z.coerce.number().optional(),
+  deliveryAfter: z.coerce.number().optional().or(z.literal('')),
+  stock: z.coerce.number().optional().or(z.literal('')),
 });
 
 const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
@@ -62,20 +62,21 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
       .min(1, { message: "Delivery After is required" }),
   })
   .refine(
-    ({ minQuantity, maxQuantity }) =>
-      (!minQuantity || minQuantity) <= (!maxQuantity || maxQuantity),
+    ({ minQuantity, maxQuantity, sellType }) => sellType != 'BUYGROUP' || 
+    (minQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)) || 
+    (maxQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)),
     {
-      message: "Min Quantity must be less than or equal to Max Quantity",
+      message: "Min Quantity must be less than Max Quantity",
       path: ["minQuantity"],
     },
   )
   .refine(
     ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
-      (!minQuantityPerCustomer || minQuantityPerCustomer) <=
-      (!maxQuantityPerCustomer || maxQuantityPerCustomer),
+      (minQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)) || 
+      (maxQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)),
     {
       message:
-        "Min Quantity Per Customer must be less than or equal to Max Quantity Per Customer",
+        "Min Quantity Per Customer must be less than Max Quantity Per Customer",
       path: ["minQuantityPerCustomer"],
     },
   )
@@ -155,6 +156,15 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
         });
       }
     }
+    if (sellType == "BUYGROUP") {
+      if ((minQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0)) || (maxQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0))) {
+        ctx.addIssue({
+          code: "custom",
+          message: "test",
+          path: ["maxQuantity"],
+        });
+      }
+    }
     // if (sellType === "BUYGROUP") {
     //   if (!startTime) {
     //     ctx.addIssue({ code: "custom", message: "Time Open is required", path: ["startTime"], });
@@ -209,8 +219,8 @@ const formSchemaForTypeP = z
       .min(1, { message: "Tag is required" })
       .transform((value) => value.map((item) => ({ tagId: item.value }))),
     productImagesList: z.any().optional(),
-    productPrice: z.coerce.number().optional(),
-    offerPrice: z.coerce.number().optional(),
+    productPrice: z.coerce.number().optional().or(z.literal('')),
+    offerPrice: z.coerce.number().optional().or(z.literal('')),
     placeOfOriginId: z
       .number()
       .min(1, { message: "Place of Origin is required" }),
@@ -383,7 +393,7 @@ const formSchemaForTypeR = z
     }
   });
 
-const defaultValues = {
+const defaultValues: {[key: string]: any} = {
   productName: "",
   categoryId: 0,
   categoryLocation: "",
@@ -393,8 +403,8 @@ const defaultValues = {
   productCondition: "",
   productTagList: undefined,
   productImagesList: undefined,
-  productPrice: 0,
-  offerPrice: 0,
+  productPrice: "",
+  offerPrice: "",
   placeOfOriginId: 0,
   // productLocationId: 0,
   productCountryId: 0,
@@ -423,24 +433,24 @@ const defaultValues = {
     {
       consumerType: "",
       sellType: "",
-      consumerDiscount: 0,
-      vendorDiscount: 0,
+      consumerDiscount: "",
+      vendorDiscount: "",
       consumerDiscountType: "",
       vendorDiscountType: "",
-      minCustomer: 0,
-      maxCustomer: 0,
-      minQuantityPerCustomer: 0,
-      maxQuantityPerCustomer: 0,
-      minQuantity: 0,
-      maxQuantity: 0,
+      minCustomer: "",
+      maxCustomer: "",
+      minQuantityPerCustomer: "",
+      maxQuantityPerCustomer: "",
+      minQuantity: "",
+      maxQuantity: "",
       dateOpen: "",
       dateClose: "",
-      timeOpen: 0,
-      timeClose: 0,
+      timeOpen: "",
+      timeClose: "",
       startTime: "",
       endTime: "",
-      deliveryAfter: 0,
-      stock: 0,
+      deliveryAfter: "",
+      stock: "",
     },
   ],
   setUpPrice: true,
@@ -495,12 +505,8 @@ const CreateProductPage = () => {
     // return
     const updatedFormData = {
       ...formData,
-      productType:
-        activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
-      status:
-        activeProductType === "R" || activeProductType === "F"
-          ? "ACTIVE"
-          : "INACTIVE",
+      productType: activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
+      status: activeProductType === "R" || activeProductType === "F" ? "ACTIVE" : "INACTIVE",
     };
 
     if (watchProductImages.length) {
@@ -558,7 +564,6 @@ const CreateProductPage = () => {
           : updatedFormData.productPriceList?.[0]?.stock
             ? updatedFormData.productPriceList[0].stock
             : 0,
-        // productLocationId: updatedFormData.productLocationId,
         productCountryId: updatedFormData.productCountryId,
         productStateId: updatedFormData.productStateId,
         productCityId: updatedFormData.productCityId,
@@ -568,12 +573,6 @@ const CreateProductPage = () => {
         sellCountryIds: updatedFormData.sellCountryIds,
         sellStateIds: updatedFormData.sellStateIds,
         sellCityIds: updatedFormData.sellCityIds,
-        // status:
-        //   activeProductType !== "R" && updatedFormData.productPrice !== 0
-        //     ? "ACTIVE"
-        //     : activeProductType === "R" && updatedFormData.offerPrice !== 0
-        //       ? "ACTIVE"
-        //       : "INACTIVE",
         status:
           activeProductType === "R"
             ? updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired
@@ -585,37 +584,31 @@ const CreateProductPage = () => {
               : "INACTIVE",
       },
     ];
+
     if (activeProductType === "R") {
-      updatedFormData.productPriceList[0] = [
-        {
-          consumerType: "",
-          sellType: "",
-          consumerDiscount: 0,
-          vendorDiscount: 0,
-          consumerDiscountType: "",
-          vendorDiscountType: "",
-          minCustomer: 0,
-          maxCustomer: 0,
-          minQuantityPerCustomer: 0,
-          maxQuantityPerCustomer: 0,
-          minQuantity: 0,
-          maxQuantity: 0,
-          timeOpen: 0,
-          timeClose: 0,
-          deliveryAfter: 0,
-          stock: 0,
-          askForStock: updatedFormData.isStockRequired ? "true" : undefined,
-          askForPrice: updatedFormData.isOfferPriceRequired
-            ? "true"
-            : undefined,
-          // status:
-          //   updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired
-          //     ? "ACTIVE"
-          //     : undefined,
-          ...updatedFormData.productPriceList[0],
-        },
-      ];
-      // delete updatedFormData.productPriceList[0].productLocationId;
+      updatedFormData.productPriceList[0] = {
+        consumerType: "",
+        sellType: "",
+        consumerDiscount: 0,
+        vendorDiscount: 0,
+        consumerDiscountType: "",
+        vendorDiscountType: "",
+        minCustomer: 0,
+        maxCustomer: 0,
+        minQuantityPerCustomer: 0,
+        maxQuantityPerCustomer: 0,
+        minQuantity: 0,
+        maxQuantity: 0,
+        timeOpen: 0,
+        timeClose: 0,
+        deliveryAfter: 0,
+        stock: 0,
+        askForStock: updatedFormData.isStockRequired ? "true" : undefined,
+        askForPrice: updatedFormData.isOfferPriceRequired
+          ? "true"
+          : undefined,
+        ...updatedFormData.productPriceList[0],
+      };
       delete updatedFormData.productPriceList[0].productCountryId;
       delete updatedFormData.productPriceList[0].productStateId;
       delete updatedFormData.productPriceList[0].productCityId;
@@ -625,6 +618,20 @@ const CreateProductPage = () => {
       delete updatedFormData.productPriceList[0].sellStateIds;
       delete updatedFormData.productPriceList[0].sellCityIds;
     }
+
+    if (updatedFormData.productPriceList?.[0]?.sellType == 'NORMALSELL') {
+      updatedFormData.productPriceList[0].menuId = STORE_MENU_ID;
+    }
+    if (updatedFormData.productPriceList?.[0]?.sellType == 'BUYGROUP') {
+      updatedFormData.productPriceList[0].menuId = BUYGROUP_MENU_ID;
+    }
+    if (updatedFormData.isCustomProduct) {
+      updatedFormData.productPriceList[0].menuId = FACTORIES_MENU_ID;
+    }
+    if (activeProductType == "R") {
+      updatedFormData.productPriceList[0].menuId = RFQ_MENU_ID;
+    }
+
     // delete updatedFormData.productLocationId;
     delete updatedFormData.productCountryId;
     delete updatedFormData.productStateId;
@@ -666,8 +673,6 @@ const CreateProductPage = () => {
       : ""),
       delete updatedFormData.descriptionJson;
 
-    // console.log("add:", updatedFormData);
-    // return;
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {

@@ -7,9 +7,11 @@ import PlateEditor from "../Plate/PlateEditor";
 interface ControlledRichTextEditorProps {
   label: string;
   name: string;
+  value?: any[],
+  onChange?: (e: any) => void;
 }
 
-const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({ label, name, }) => {
+const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({ label, name, value, onChange, }) => {
   const formContext = useFormContext();
 
   return (
@@ -24,7 +26,15 @@ const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({ lab
         render={({ field }) => (
           // <Tiptap onChange={field.onChange} description={field.value} />
           // <QuillEditor onChange={field.onChange} description={field.value} />
-          <PlateEditor onChange={field.onChange} description={field.value} />
+          <PlateEditor 
+            onChange={(e) => {
+              if (onChange) {
+                onChange(e);
+              } else {
+                field.onChange(e);
+              }
+            }} 
+            description={value || field.value} />
         )}
       />
     </div>

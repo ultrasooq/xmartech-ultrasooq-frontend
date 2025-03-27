@@ -14,13 +14,15 @@ type RfqProductCardProps = {
   productImages: {
     image: string;
   }[];
-  offerPrice: string;
+  offerPriceFrom: string;
+  offerPriceTo: string;
   onAdd: (
     args0: number,
     args1: number,
     args2: "add" | "remove",
-    args3: number,
-    args4: string,
+    args3?: number,
+    args4?: number,
+    args5?: string,
   ) => void;
   onRemove: (args0: number) => void;
   note: string;
@@ -32,7 +34,8 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   productName,
   productQuantity,
   productImages,
-  offerPrice,
+  offerPriceFrom,
+  offerPriceTo,
   onAdd,
   onRemove,
   note,
@@ -75,7 +78,8 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                       quantity - 1,
                       rfqProductId,
                       "remove",
-                      offerPrice ? Number(offerPrice) : 0,
+                      Number(offerPriceFrom || 0),
+                      Number(offerPriceTo || 0),
                       note,
                     );
                   }}
@@ -98,7 +102,8 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                       quantity + 1,
                       rfqProductId,
                       "add",
-                      offerPrice ? Number(offerPrice) : 0,
+                      Number(offerPriceFrom || 0),
+                      Number(offerPriceTo || 0),
                       note,
                     );
                   }}
@@ -117,7 +122,6 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               className="relative hover:shadow-sm"
               onClick={() => {
                 onRemove(id);
-                // cart.deleteCartItem(rfqProductId);
               }}
             >
               {t("remove")}
@@ -129,8 +133,12 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         <span>{t("note")}:</span> {note}
       </p>
       <div className="price-info">
-        <h5>{t("price")}</h5>
-        <p>${offerPrice ? Number(offerPrice) * quantity : 0}</p>
+        <h5>{t("offer_price_from")}</h5>
+        <p>${offerPriceFrom}</p>
+      </div>
+      <div className="price-info">
+        <h5>{t("offer_price_to")}</h5>
+        <p>${offerPriceTo}</p>
       </div>
     </div>
   );

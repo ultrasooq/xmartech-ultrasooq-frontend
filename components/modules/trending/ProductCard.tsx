@@ -36,6 +36,7 @@ type ProductCardProps = {
   selectedIds?: number[];
   onSelectedId?: (args0: boolean | string, args1: number) => void;
   productQuantity?: number;
+  isAddedToCart?: boolean;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -48,7 +49,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isSelectable,
   selectedIds,
   onSelectedId,
-  productQuantity = 0
+  productQuantity = 0,
+  isAddedToCart,
 }) => {
   const t = useTranslations();
 
@@ -106,6 +108,28 @@ const ProductCard: React.FC<ProductCardProps> = ({
     quantity: number,
     actionType: "add" | "remove",
   ) => {
+    const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
+    if (actionType == "add" && minQuantity && minQuantity > quantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null; 
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    if (actionType == "remove" && minQuantity && minQuantity > quantity) {
+      quantity = 0;
+    }
+
     if (haveAccessToken) {
       if (!item?.productProductPriceId) {
         toast({
@@ -345,7 +369,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 variant="outline"
                 className="relative hover:shadow-sm"
                 onClick={() => {
-                  handleAddToCart(quantity - 1, "remove");
+                  if (isAddedToCart) {
+                    handleAddToCart(quantity - 1, "remove");
+                  } else {
+                    setQuantity(quantity - 1);
+                  }
                 }}
                 disabled={quantity === 0}
               >
@@ -362,7 +390,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 variant="outline"
                 className="relative hover:shadow-sm"
                 onClick={() => {
-                  handleAddToCart(quantity + 1, "add");
+                  if (isAddedToCart) {
+                    handleAddToCart(quantity + 1, "add");
+                  } else {
+                    setQuantity(quantity + 1);
+                  }
                 }}
               >
                 <Image
@@ -377,7 +409,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         <div className="cart_button">
-          {quantity > 0 && <button
+          {isAddedToCart && <button
             type="button"
             className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
             disabled={false}
@@ -385,10 +417,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <FaCircleCheck color="#00C48C" />
             {t("added_to_cart")}
           </button>}
-          {quantity == 0 && <button
+          {!isAddedToCart && <button
             type="button"
             className="add_to_cart_button"
             onClick={() => handleAddToCart(quantity, "add")}
+            disabled={quantity == 0}
           >
             {t("add_to_cart")}
           </button>}

@@ -513,7 +513,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                         <select {...field} className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
                           <option value=""></option>
                           <option value="FLAT">{t("flat").toUpperCase()}</option>
-                          <option value="PERCENTAGE">{t("percentge").toUpperCase()}</option>
+                          <option value="PERCENTAGE">{t("percentage").toUpperCase()}</option>
                         </select>
                       )}
                     />
@@ -521,8 +521,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 </>
               ) : null}
             </div>
-
-            
 
             {watchSellType === "BUYGROUP" ? (
               <>
@@ -562,7 +560,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             {watchSellType === "BUYGROUP" ? (
               <>
                 <CounterTextInputField
-                  label={t("max_quantity")}
+                  label={t("min_quantity")}
                   name="productPriceList.[0].minQuantity"
                   placeholder={t("min")}
                   errorMessage={
@@ -573,7 +571,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 />
 
                 <CounterTextInputField
-                  label={t("min_quantity")}
+                  label={t("max_quantity")}
                   name="productPriceList.[0].maxQuantity"
                   placeholder={t("max")}
                   errorMessage={

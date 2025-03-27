@@ -484,15 +484,6 @@ const EditProductPage = () => {
 
     delete updatedFormData.productImagesList;
 
-    console.log("edit:", {
-      ...updatedFormData,
-      productSellerImageList,
-      productId: Number(searchParams?.id),
-      description: updatedFormData?.descriptionJson
-        ? JSON.stringify(updatedFormData?.descriptionJson)
-        : "",
-    });
-
     const finalData = {
       ...updatedFormData,
       productSellerImageList,
@@ -504,8 +495,6 @@ const EditProductPage = () => {
 
     delete finalData.descriptionJson;
 
-    console.log(finalData);
-    // return;
     const response =
       await updateProductPriceByProductCondition.mutateAsync(finalData);
     if (response.status && response.data) {
@@ -578,6 +567,16 @@ const EditProductPage = () => {
         ?.product_productShortDescription?.length
         ? product?.product_productShortDescription.map((item: any) => ({
             shortDescription: item?.shortDescription,
+            shortDescriptionJson: [
+              {
+                children: [
+                  {
+                    text: item?.shortDescription
+                  }
+                ],
+                type: 'p'
+              }
+            ]
           }))
         : [
             {
@@ -605,9 +604,7 @@ const EditProductPage = () => {
         productShortDescriptionList: productShortDescriptionList,
         productSpecificationList: productSpecificationList,
         description: product?.description || "",
-        descriptionJson: product?.description
-          ? handleDescriptionParse(product?.description)
-          : undefined,
+        descriptionJson: product?.description ? handleDescriptionParse(product?.description) : undefined,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
