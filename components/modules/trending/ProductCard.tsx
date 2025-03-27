@@ -27,7 +27,6 @@ import { useTranslations } from "next-intl";
 
 type ProductCardProps = {
   item: TrendingProduct;
-  onAdd?: () => void;
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
@@ -41,7 +40,6 @@ type ProductCardProps = {
 
 const ProductCard: React.FC<ProductCardProps> = ({
   item,
-  onAdd,
   onWishlist,
   inWishlist,
   haveAccessToken,
@@ -105,29 +103,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const updateCartByDevice = useUpdateCartByDevice();
 
   const handleAddToCart = async (
-    quantity: number,
+    newQuantity: number,
     actionType: "add" | "remove",
   ) => {
     const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
-    if (actionType == "add" && minQuantity && minQuantity > quantity) {
+    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null; 
+
+    if (actionType == 'add' && newQuantity == -1) {
+      newQuantity = minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
+    }
+
+    if (actionType == "add" && minQuantity && minQuantity > newQuantity) {
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
         variant: "danger",
-      })
+      });
       return;
     }
 
-    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null; 
-    if (maxQuantity && maxQuantity < quantity) {
+    if (maxQuantity && maxQuantity < newQuantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
         variant: "danger",
-      })
+      });
       return;
     }
 
-    if (actionType == "remove" && minQuantity && minQuantity > quantity) {
-      quantity = 0;
+    if (actionType == "remove" && minQuantity && minQuantity > newQuantity) {
+      newQuantity = 0;
     }
 
     if (haveAccessToken) {
@@ -141,14 +144,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: item?.productProductPriceId,
-        quantity,
+        quantity: newQuantity,
       });
 
       if (response.status) {
-        if (actionType === "add" && quantity === 0) {
+        if (actionType === "add" && newQuantity === 0) {
           setQuantity(1);
         } else {
-          setQuantity(quantity);
+          setQuantity(newQuantity);
         }
         toast({
           title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
@@ -168,14 +171,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }
       const response = await updateCartByDevice.mutateAsync({
         productPriceId: item?.productProductPriceId,
-        quantity,
+        quantity: newQuantity,
         deviceId,
       });
       if (response.status) {
-        if (actionType === "add" && quantity === 0) {
+        if (actionType === "add" && newQuantity === 0) {
           setQuantity(1);
         } else {
-          setQuantity(quantity);
+          setQuantity(newQuantity);
         }
         toast({
           title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
@@ -292,7 +295,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <Button
                 variant="ghost"
                 className="relative h-8 w-8 rounded-full p-0 shadow-md"
-                onClick={onAdd}
+                onClick={() => handleAddToCart(-1, "add")}
               >
                 <ShoppingIcon />
               </Button>

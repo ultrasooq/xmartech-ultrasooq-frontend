@@ -274,7 +274,6 @@ const ExistingProductsPage = () => {
                   <ProductCard
                     key={item.id}
                     item={item}
-                    onAdd={() => { }}
                     onWishlist={() => { }}
                     inWishlist={item?.inWishlist}
                     haveAccessToken={haveAccessToken}

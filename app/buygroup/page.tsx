@@ -48,8 +48,6 @@ import { useMe } from "@/apis/queries/user.queries";
 import {
   useCartListByDevice,
   useCartListByUserId,
-  useUpdateCartByDevice,
-  useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
@@ -80,8 +78,6 @@ const TrendingPage = () => {
   const category = useCategoryStore();
 
   const me = useMe();
-  const updateCartWithLogin = useUpdateCartWithLogin();
-  const updateCartByDevice = useUpdateCartByDevice();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
   const allProductsQuery = useAllBuyGroupProducts({
@@ -215,53 +211,6 @@ const TrendingPage = () => {
       setCartList((cartListByDeviceQuery.data?.data || []).map((item: any) => item));
     }
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data])
-
-  const handleAddToCart = async (quantity: number, productPriceId?: number) => {
-    if (haveAccessToken) {
-      if (!productPriceId) {
-        toast({
-          title: t("something_went_wrong"),
-          description: t("product_price_id_not_found"),
-          variant: "danger",
-        });
-        return;
-      }
-      const response = await updateCartWithLogin.mutateAsync({
-        productPriceId,
-        quantity,
-      });
-
-      if (response.status) {
-        toast({
-          title: t("something_went_wrong"),
-          description: t("check_your_cart_for_more_details"),
-          variant: "success",
-        });
-      }
-    } else {
-      if (!productPriceId) {
-        toast({
-          title: t("something_went_wrong"),
-          description: t("product_price_id_not_found"),
-          variant: "danger",
-        });
-        return;
-      }
-      const response = await updateCartByDevice.mutateAsync({
-        productPriceId,
-        quantity,
-        deviceId,
-      });
-      if (response.status) {
-        toast({
-          title: t("something_went_wrong"),
-          description: t("check_your_cart_for_more_details"),
-          variant: "success",
-        });
-        return response.status;
-      }
-    }
-  };
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -532,9 +481,6 @@ const TrendingPage = () => {
                       <ProductCard
                         key={item.id}
                         item={item}
-                        onAdd={() =>
-                          handleAddToCart(-1, item.productProductPriceId)
-                        }
                         onWishlist={() =>
                           handleAddToWishlist(item.id, item?.productWishlist)
                         }
