@@ -43,51 +43,55 @@ type AddToRfqFormProps = {
   offerPriceTo?: number;
 };
 
-const addFormSchema = z.object({
-  offerPriceFrom: z.coerce
-    .number({ invalid_type_error: 'Offer price from is required' })
-    .min(1, {
-      message: "Offer price from is required"
-    })
-    .max(1000000, {
-      message: "Offer price from must be less than 1000000",
-    }),
-  offerPriceTo: z.coerce
-    .number({ invalid_type_error: 'Offer price to is required' })
-    .min(1, {
-      message: "Offer price to is required"
-    })
-    .max(1000000, {
-      message: "Offer price to must be less than 1000000",
-    }),
-  note: z
-    .string()
-    .trim()
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    })
-    .optional(),
-  productImagesList: z.any().optional(),
-}).refine(
-  ({ offerPriceFrom, offerPriceTo }) => {
-    return Number(offerPriceFrom) < Number(offerPriceTo);
-  },
-  {
-    message: "Offer Price From must be less than Offer Price To",
-    path: ["offerPriceFrom"],
-  }
-);
+const addFormSchema = (t: any) => {
+  return z.object({
+    offerPriceFrom: z.coerce
+      .number({ invalid_type_error: t("offer_price_from_required") })
+      .min(1, {
+        message: t("offer_price_from_required")
+      })
+      .max(1000000, {
+        message: t("offer_price_from_must_be_less_than_price", { price: 1000000 }),
+      }),
+    offerPriceTo: z.coerce
+      .number({ invalid_type_error: t("offer_price_to_required") })
+      .min(1, {
+        message: t("offer_price_to_required")
+      })
+      .max(1000000, {
+        message: t("offer_price_to_must_be_less_than_price", { price: 1000000 }),
+      }),
+    note: z
+      .string()
+      .trim()
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      })
+      .optional(),
+    productImagesList: z.any().optional(),
+  }).refine(
+    ({ offerPriceFrom, offerPriceTo }) => {
+      return Number(offerPriceFrom) < Number(offerPriceTo);
+    },
+    {
+      message: t("offer_price_from_must_be_less_than_offer_price_to"),
+      path: ["offerPriceFrom"],
+    }
+  );
+}
 
-const editFormSchema = z.object({
-  note: z
-    .string()
-    .trim()
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    })
-    .optional(),
-  productImagesList: z.any().optional(),
-});
+const editFormSchema = (t: any) => {
+  return z.object({
+    note: z
+      .string()
+      .trim()
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      })
+      .optional(),
+    productImagesList: z.any().optional(),
+  });
+};
 
 const addDefaultValues = {
   note: "",
@@ -112,7 +116,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
-    resolver: zodResolver(selectedQuantity ? addFormSchema : editFormSchema),
+    resolver: zodResolver(selectedQuantity ? addFormSchema(t) : editFormSchema(t)),
     defaultValues: selectedQuantity ? Object.assign(
       addDefaultValues, 
       { 
@@ -724,7 +728,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           />
 
           {selectedQuantity ? (
-            <>
+            <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
               <ControlledTextInput
                 label={t("offer_price_from")}
                 name="offerPriceFrom"
@@ -740,7 +744,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                 type="number"
                 defaultValue={""}
               />
-            </>
+            </div>
           ) : null}
 
           <Button

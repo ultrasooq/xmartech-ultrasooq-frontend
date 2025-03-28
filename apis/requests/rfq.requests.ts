@@ -180,7 +180,8 @@ export const addFactoriesProductApi = (payload: {
 export const addCustomizeProductApi = (payload: {
   productId: number;
   note: string;
-  price: number;
+  fromPrice: number;
+  toPrice: number
 }) => {
   return axios({
     method: "POST",

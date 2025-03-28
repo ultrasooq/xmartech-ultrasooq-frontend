@@ -384,7 +384,7 @@
     "add_delivery_address_date": "Add Delivery Address & Date",
     "buy_now": "Buy Now",
 
-    "request_for_customize ": "Request For Customize",
+    "request_for_customize": "Request For Customize",
     "customize_cart_items": "Customize Cart Items",
 
     "rfq": "RFQ",
@@ -708,6 +708,19 @@
     "minimum_value_must_be_n": "Minimum value must be {n}",
     "minimum_order_must_be_n": "Minimum order must be {n}",
     "minimum_stock_must_be_n": "Minimum stock must be {n}",
+
+    "offer_price_from_required": "Offer price from is required",
+    "offer_price_from_must_be_less_than_price": "Offer price from must be less than {price}",
+    "offer_price_to_required": "Offer price to is required",
+    "offer_price_to_must_be_less_than_price": "Offer price to must be less than {price}",
+    "offer_price_from_must_be_less_than_offer_price_to": "Offer Price From must be less than Offer Price To",
+
+    "from_price_required": "From price is required",
+    "from_price_must_be_less_than_price": "From price must be less than {price}",
+    "to_price_required": "To price is required",
+    "to_price_must_be_less_than_price": "To price must be less than {price}",
+    "from_price_must_be_less_than_to_price": "From price must be less than to price",
+    "delivery_date_required": "Delivery Date is required",
 
     "description_required": "Description is required",
     "description_must_be_less_than_n_chars": "Description must be less than {n} characters",

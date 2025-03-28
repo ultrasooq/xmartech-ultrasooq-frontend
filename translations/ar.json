@@ -384,7 +384,7 @@
     "add_delivery_address_date": "إضافة عنوان التسليم والتاريخ",
     "buy_now": "اشتري الآن",
 
-    "request_for_customize ": "طلب التخصيص",
+    "request_for_customize": "طلب التخصيص",
     "customize_cart_items": "تخصيص عناصر العربة",
 
     "rfq": "RFQ",
@@ -708,6 +708,19 @@
     "minimum_value_must_be_n": "يجب أن تكون القيمة الدنيا {n}",
     "minimum_order_must_be_n": "يجب أن يكون الحد الأدنى للطلب {n}",
     "minimum_stock_must_be_n": "يجب أن يكون الحد الأدنى للمخزون {n}",
+
+    "offer_price_from_required": "مطلوب سعر العرض من",
+    "offer_price_from_must_be_less_than_price": "يجب أن يكون سعر العرض أقل من {price}",
+    "offer_price_to_required": "سعر العرض مطلوب",
+    "offer_price_to_must_be_less_than_price": "يجب أن يكون سعر العرض أقل من {price}",
+    "offer_price_from_must_be_less_than_offer_price_to": "يجب أن يكون سعر العرض أقل من سعر العرض إلى",
+
+    "from_price_required": "من السعر مطلوب",
+    "from_price_must_be_less_than_price": "من السعر يجب أن يكون أقل من {price}",
+    "to_price_required": "للسعر مطلوب",
+    "to_price_must_be_less_than_price": "يجب أن يكون السعر أقل من {price}",
+    "from_price_must_be_less_than_to_price": "من السعر يجب أن يكون أقل من السعر",
+    "delivery_date_required": "تاريخ التسليم مطلوب",
 
     "description_required": "الوصف مطلوب",
     "description_must_be_less_than_n_chars": "يجب أن يكون الوصف أقل من أحرف {n}",

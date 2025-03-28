@@ -25,7 +25,7 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
   const factoriesCartListByUser = useFactoriesCartListByUserId(
     {
       page: 1,
-      limit: 20,
+      limit: 100,
     },
     haveAccessToken,
   );
@@ -93,8 +93,9 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
               item?.customizeProductDetail?.customizeProductImageDetail
             }
             onRemove={handleRemoveItemFromFactoriesCart}
-            offerPrice={item?.offerPrice}
-            note={item?.note}
+            fromPrice={item?.customizeProductDetail?.fromPrice}
+            toPrice={item?.customizeProductDetail?.toPrice}
+            note={item?.customizeProductDetail?.note}
           />
         ))}
       </div>

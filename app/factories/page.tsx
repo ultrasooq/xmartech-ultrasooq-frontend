@@ -45,108 +45,147 @@ import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextare
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
+import { useCartListByUserId, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
 
-const addFormSchema = z.object({
-  price: z.coerce
-    .number()
-    .max(1000000, {
-      message: "Offer price must be less than 1000000",
-    })
-    .optional(),
-  note: z
-    .string()
-    .trim()
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    })
-    .optional(),
-});
+const addFormSchema = (t: any) => {
+  return z.object({
+    fromPrice: z.coerce
+      .number({ invalid_type_error: t("from_price_required") })
+      .min(1, {
+        message: t("from_price_required")
+      })
+      .max(1000000, {
+        message: t("from_price_must_be_less_than_price", { price: 1000000 }),
+      }),
+    toPrice: z.coerce
+      .number({ invalid_type_error: t("to_price_required") })
+      .min(1, {
+        message: t("to_price_required")
+      })
+      .max(1000000, {
+        message: t("to_price_must_be_less_than_price", { price: 1000000 }),
+      }),
+    note: z
+      .string()
+      .trim()
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      })
+      .optional(),
+  }).refine(
+    ({ fromPrice, toPrice }) => {
+      return Number(fromPrice) < Number(toPrice);
+    },
+    {
+      message: t("from_price_must_be_less_than_to_price"),
+      path: ["fromPrice"],
+    }
+  )
+};
 
 const FactoriesPage = () => {
   const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const router = useRouter();
   const wrapperRef = useRef(null);
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
-  const [selectedProductId, setSelectedProductId] = useState<number>();
-  const [isAddToFactoryModalOpen, setIsAddToFactoryModalOpen] = useState(false);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [cartList, setCartList] = useState<any[]>([]);
+  const [factoriesCartList, setFactoriesCartList] = useState<any[]>([]);
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
 
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const [isAddToFactoryModalOpen, setIsAddToFactoryModalOpen] = useState(false);
+  const [selectedCustomizedProduct, setSelectedCustomizedProduct] = useState<{[key: string]: any}>();
 
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
   const handleToggleAddModal = () => setIsAddToFactoryModalOpen(!isAddToFactoryModalOpen);
 
   const me = useMe(haveAccessToken);
-  const rfqProductsQuery = useFactoriesProducts({
+  const factoriesProductsQuery = useFactoriesProducts({
     page,
     limit,
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
   });
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 100,
+    },
+    haveAccessToken,
+  );
   const addCustomizeProduct = useAddCustomizeProduct();
   const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
 
   const form = useForm({
-    resolver: zodResolver(addFormSchema),
-    defaultValues: { note: "", price: 0 },
+    resolver: zodResolver(addFormSchema(t)),
+    defaultValues: { note: "" },
   });
 
   const handleRfqDebounce = debounce((event: any) => {
     setSearchRfqTerm(event.target.value);
   }, 1000);
 
-  const handleAddToFactories = async (productId: number) => {
-    setSelectedProductId(productId);
+  const handleAddToFactories = (productId: number) => {
+    const item = factoriesCartList.find((el: any) => el.productId == productId)
+    setSelectedCustomizedProduct({
+      id: productId,
+      customizedProductId: item?.customizeProductId,
+      quantity: item?.quantity,
+      fromPrice: item?.customizeProductDetail?.fromPrice,
+      toPrice: item?.customizeProductDetail?.toPrice,
+      note: item?.customizeProductDetail?.note
+    });
     handleToggleAddModal();
   };
 
-  const addToFactories = async (formData: any) => {console.log(formData);
+  const addToFactories = async (formData: any) => {
     try {
-      const response = await addCustomizeProduct.mutateAsync({
-        productId: Number(selectedProductId),
-        note: formData.note,
-        price: Number(formData.price) || 0
-      });
-  
-      if (response.status) {
-        handleToggleAddModal();
-        toast({
-          title: t("item_added"),
-          description: t("item_added_successfully"),
-          variant: "success",
+      if (!selectedCustomizedProduct?.customizedProductId) {
+        const response = await addCustomizeProduct.mutateAsync({
+          productId: Number(selectedCustomizedProduct?.id),
+          note: formData.note,
+          fromPrice: Number(formData.fromPrice) || 0,
+          toPrice: Number(formData.toPrice) || 0
         });
-
-        // Refetch the listing API after a successful response
-        queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
-
-        const resp = await updateFactoriesCartWithLogin.mutateAsync({
-          productId: Number(selectedProductId),
-          customizeProductId: response?.data?.id,
-          quantity: 1
-        })
-
-        if (resp.status) {
+    
+        if (response.status) {
+          handleToggleAddModal();
           toast({
-            title: t("something_went_wrong"),
-            description: t("check_your_cart_for_more_details"),
+            title: t("item_added"),
+            description: t("item_added_successfully"),
             variant: "success",
           });
-        } else {
-          toast({
-            title: t("something_went_wrong"),
-            description: response.message,
-            variant: "danger",
-          });
+  
+          // Refetch the listing API after a successful response
+          queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
+  
+          const resp = await updateFactoriesCartWithLogin.mutateAsync({
+            productId: Number(selectedCustomizedProduct?.id),
+            customizeProductId: response?.data?.id,
+            quantity: 1
+          })
+  
+          if (resp.status) {
+            toast({
+              title: t("item_added_to_cart"),
+              description: t("check_your_cart_for_more_details"),
+              variant: "success",
+            });
+          } else {
+            toast({
+              title: t("something_went_wrong"),
+              description: response.message,
+              variant: "danger",
+            });
+          }
         }
       }
     } catch (error) {
@@ -158,20 +197,14 @@ const FactoriesPage = () => {
     }
   }
 
-  const handleCartPage = () => router.push("/rfq-cart");
-
   const memoizedRfqProducts = useMemo(() => {
-    if (rfqProductsQuery.data?.data) {
+    if (factoriesProductsQuery.data?.data) {
       return (
-        rfqProductsQuery.data?.data.map((item: any) => {
+        factoriesProductsQuery.data?.data.map((item: any) => {
           return {
             ...item,
-            isAddedToCart:
-              item?.product_rfqCart?.length &&
-              item?.product_rfqCart[0]?.quantity > 0,
-            quantity:
-              item?.product_rfqCart?.length &&
-              item?.product_rfqCart[0]?.quantity,
+            isAddedToFactoryCart: item?.product_rfqCart?.length && item?.product_rfqCart[0]?.quantity > 0,
+            factoryCartQuantity: item?.product_rfqCart?.length ? item.product_rfqCart[0].quantity : 0,
           };
         }) || []
       );
@@ -179,8 +212,14 @@ const FactoriesPage = () => {
       return [];
     }
   }, [
-    rfqProductsQuery.data?.data,
+    factoriesProductsQuery.data?.data,
   ]);
+
+  useEffect(() => {
+    if (cartListByUser.data?.data) {
+      setCartList((cartListByUser.data?.data || []).map((item: any) => item));
+    }
+  }, [cartListByUser.data?.data]);
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -244,7 +283,7 @@ const FactoriesPage = () => {
 
   useEffect(() => {
     if (isClickedOutside) {
-      setSelectedProductId(undefined);
+      setSelectedCustomizedProduct(undefined);
     }
   }, [isClickedOutside]);
 
@@ -340,7 +379,7 @@ const FactoriesPage = () => {
                         </div>
                       </div>
 
-                      {rfqProductsQuery.isLoading && viewType === "grid" ? (
+                      {factoriesProductsQuery.isLoading && viewType === "grid" ? (
                         <div className="mt-5 grid grid-cols-4 gap-5">
                           {Array.from({ length: 8 }).map((_, index) => (
                             <SkeletonProductCardLoader key={index} />
@@ -348,8 +387,8 @@ const FactoriesPage = () => {
                         </div>
                       ) : null}
 
-                      {!rfqProductsQuery?.data?.data?.length &&
-                      !rfqProductsQuery.isLoading ? (
+                      {!factoriesProductsQuery?.data?.data?.length &&
+                      !factoriesProductsQuery.isLoading ? (
                         <p className="my-10 text-center text-sm font-medium">
                           {t("no_data_found")}
                         </p>
@@ -357,47 +396,50 @@ const FactoriesPage = () => {
 
                       {viewType === "grid" ? (
                         <div className="product_sec_list">
-                          {memoizedRfqProducts.map((item: any) => (
-                            <FactoriesProductCard
-                              key={item.id}
-                              id={item.id}
-                              productType={item?.productType || "-"}
-                              productName={item?.productName || "-"}
-                              productNote={item?.productNote || "-"}
-                              productStatus={item?.status}
-                              productImages={item?.productImages}
-                              productQuantity={cartList.find((el: any) => el.productId == item.id)?.quantity || 0}
-                              customizeProductId={cartList.find((el: any) => el.productId == item.id)?.customizeProductId}
-                              onAdd={() => handleAddToFactories(item?.id)}
-                              onToCart={handleCartPage}
-                              onWishlist={() => handleAddToWishlist(item.id, item?.product_wishlist)}
-                              isCreatedByMe={item?.userId === me.data?.data?.id}
-                              isAddedToCart={item?.isAddedToCart}
-                              inWishlist={
-                                item?.product_wishlist?.find(
-                                  (el: any) => el?.userId === me.data?.data?.id,
-                                )
-                              }
-                              haveAccessToken={haveAccessToken}
-                            />
-                          ))}
+                          {memoizedRfqProducts.map((item: any) => {
+                            return (
+                              <FactoriesProductCard
+                                key={item.id}
+                                id={item.id}
+                                productType={item?.productType || "-"}
+                                productName={item?.productName || "-"}
+                                productNote={item?.productNote || "-"}
+                                productStatus={item?.status}
+                                productImages={item?.productImages}
+                                productQuantity={cartList.find((el: any) => el.productId == item.id)?.quantity || 0}
+                                customizeProductId={factoriesCartList.find((el: any) => el.productId == item.id)?.customizeProductId}
+                                onAdd={() => handleAddToFactories(item.id)}
+                                onWishlist={() => handleAddToWishlist(item.id, item?.product_wishlist)}
+                                isCreatedByMe={item?.userId === me.data?.data?.id}
+                                isAddedToCart={cartList.find((el: any) => el.productId == item.id) ? true : false}
+                                isAddedToFactoryCart={factoriesCartList.find((el: any) => el.productId == item.id) ? true : false}
+                                inWishlist={
+                                  item?.product_wishlist?.find(
+                                    (el: any) => el?.userId === me.data?.data?.id,
+                                  )
+                                }
+                                haveAccessToken={haveAccessToken}
+                                productPrices={item?.product_productPrice}
+                              />
+                            )
+                          })}
                         </div>
                       ) : null}
 
                       {viewType === "list" &&
-                      rfqProductsQuery?.data?.data?.length ? (
+                      factoriesProductsQuery?.data?.data?.length ? (
                         <div className="product_sec_list">
                           <RfqProductTable
-                            list={rfqProductsQuery?.data?.data}
+                            list={factoriesProductsQuery?.data?.data}
                           />
                         </div>
                       ) : null}
 
-                      {rfqProductsQuery.data?.totalCount > 8 ? (
+                      {factoriesProductsQuery.data?.totalCount > 8 ? (
                         <Pagination
                           page={page}
                           setPage={setPage}
-                          totalCount={rfqProductsQuery.data?.totalCount}
+                          totalCount={factoriesProductsQuery.data?.totalCount}
                           limit={limit}
                         />
                       ) : null}
@@ -406,7 +448,7 @@ const FactoriesPage = () => {
                 </div>
               </div>
               <FactoryCartMenu
-                onInitCart={setCartList}
+                onInitCart={setFactoriesCartList}
                 haveAccessToken={haveAccessToken}
               />
             </div>
@@ -443,17 +485,26 @@ const FactoriesPage = () => {
                   rows={6}
                 />
 
-                <ControlledTextInput
-                  label={t("price")}
-                  name="price"
-                  placeholder={t("price")}
-                  type="number"
-                />
+                <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+                  <ControlledTextInput
+                    label={t("from_price")}
+                    name="fromPrice"
+                    placeholder={t("from_price")}
+                    type="number"
+                  />
+
+                  <ControlledTextInput
+                    label={t("to_price")}
+                    name="toPrice"
+                    placeholder={t("to_price")}
+                    type="number"
+                  />
+                </div>
                 
                 <Button
                   disabled={addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending}
                   type="submit"
-                  className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                  className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-2"
                 >
                   {addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending ? (
                     <LoaderWithMessage message={t("please_wait")} />

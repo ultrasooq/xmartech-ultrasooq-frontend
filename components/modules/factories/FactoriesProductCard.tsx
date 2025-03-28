@@ -24,11 +24,11 @@ type RfqProductCardProps = {
   }[];
   productQuantity: number;
   customizeProductId?: number;
-  onAdd: (args0: number) => void;
-  onToCart: () => void;
+  onAdd: () => void;
   onWishlist: () => void;
   isCreatedByMe: boolean;
   isAddedToCart: boolean;
+  isAddedToFactoryCart: boolean;
   inWishlist?: boolean;
   haveAccessToken: boolean;
   productPrices?: any[];
@@ -44,10 +44,10 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   productQuantity,
   customizeProductId,
   onAdd,
-  onToCart,
   onWishlist,
   isCreatedByMe,
   isAddedToCart,
+  isAddedToFactoryCart,
   inWishlist,
   haveAccessToken,
   productPrices,
@@ -211,6 +211,19 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                 className="p-3"
               />
             </Button>
+            {!isAddedToFactoryCart && <Button
+              type="button"
+              variant="ghost"
+              onClick={onAdd}
+            >
+              <div className="relative h-6 w-6">
+                <Image
+                  src="/images/edit-rfq.png"
+                  alt="edit-rfq-icon"
+                  fill
+                />
+              </div>
+            </Button>}
           </div>
         </div>
       </div>

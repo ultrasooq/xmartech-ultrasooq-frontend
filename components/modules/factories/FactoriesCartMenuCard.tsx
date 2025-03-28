@@ -21,7 +21,8 @@ type FactoriesCartMenuCardProps = {
     link: string;
   }[];
   onRemove: (args0: number) => void;
-  offerPrice: number;
+  fromPrice: number;
+  toPrice: number;
   note: string;
 };
 
@@ -34,7 +35,8 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
   productImages,
   customizeProductImages,
   onRemove,
-  offerPrice,
+  fromPrice,
+  toPrice,
   note,
 }) => {
   const t = useTranslations();
@@ -83,7 +85,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
              <Image
              src={
                 customizeProductImages?.[0]?.link &&
-               validator.isURL(customizeProductImages?.[0]?.link)
+                validator.isURL(customizeProductImages?.[0]?.link)
                  ? customizeProductImages[0].link
                  : PlaceholderImage
              }

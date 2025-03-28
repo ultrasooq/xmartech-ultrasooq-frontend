@@ -32,12 +32,14 @@ import Footer from "@/components/shared/Footer";
 import FactoriesCustomizedProductCard from "@/components/modules/factoriesCart/FactoriesCustomizedProductCard";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  address: z.string().trim().min(1, { message: "Address is required" }),
-  factoriesDate: z
-    .date({ required_error: "Delivery Date is required" })
-    .transform((val) => val.toISOString()),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    address: z.string().trim().min(1, { message: t("address_required") }),
+    factoriesDate: z
+      .date({ required_error: t("delivery_date_required") })
+      .transform((val) => val.toISOString()),
+  });
+};
 
 const FactoriesCartPage = () => {
   const t = useTranslations();
@@ -45,7 +47,7 @@ const FactoriesCartPage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       address: "",
       factoriesDate: undefined as unknown as string,
@@ -59,7 +61,7 @@ const FactoriesCartPage = () => {
   });
   const factoriesCartListByUser = useFactoriesCartListByUserId({
     page: 1,
-    limit: 20,
+    limit: 100,
   });
   const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
   const deleteFactoriesCartItem = useDeleteFactoriesCartItem();

@@ -304,7 +304,6 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           </Button>
           <Button
             type="button"
-            // onClick={onToCheckout}
             onClick={onToCart}
             className="h-14 max-w-[205px] flex-1 rounded-none bg-dark-orange text-base"
           >

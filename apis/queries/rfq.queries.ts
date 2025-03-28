@@ -251,7 +251,7 @@ export const useAddCustomizeProduct = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { productId: number, note: string, price: number }
+    { productId: number, note: string, fromPrice: number, toPrice: number }
   >({
     mutationFn: async (payload) => {
       const res = await addCustomizeProductApi(payload);
