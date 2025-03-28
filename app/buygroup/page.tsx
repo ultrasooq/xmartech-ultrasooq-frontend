@@ -48,8 +48,6 @@ import { useMe } from "@/apis/queries/user.queries";
 import {
   useCartListByDevice,
   useCartListByUserId,
-  useUpdateCartByDevice,
-  useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
@@ -80,8 +78,6 @@ const TrendingPage = () => {
   const category = useCategoryStore();
 
   const me = useMe();
-  const updateCartWithLogin = useUpdateCartWithLogin();
-  const updateCartByDevice = useUpdateCartByDevice();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
   const allProductsQuery = useAllBuyGroupProducts({
@@ -216,61 +212,14 @@ const TrendingPage = () => {
     }
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data])
 
-  const handleAddToCart = async (quantity: number, productPriceId?: number) => {
-    if (haveAccessToken) {
-      if (!productPriceId) {
-        toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
-          variant: "danger",
-        });
-        return;
-      }
-      const response = await updateCartWithLogin.mutateAsync({
-        productPriceId,
-        quantity,
-      });
-
-      if (response.status) {
-        toast({
-          title: "Item added to cart",
-          description: "Check your cart for more details",
-          variant: "success",
-        });
-      }
-    } else {
-      if (!productPriceId) {
-        toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
-          variant: "danger",
-        });
-        return;
-      }
-      const response = await updateCartByDevice.mutateAsync({
-        productPriceId,
-        quantity,
-        deviceId,
-      });
-      if (response.status) {
-        toast({
-          title: "Item added to cart",
-          description: "Check your cart for more details",
-          variant: "success",
-        });
-        return response.status;
-      }
-    }
-  };
-
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
       productId,
     });
     if (response.status) {
       toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -281,8 +230,8 @@ const TrendingPage = () => {
       });
     } else {
       toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -306,8 +255,8 @@ const TrendingPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -318,8 +267,8 @@ const TrendingPage = () => {
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -465,7 +414,7 @@ const TrendingPage = () => {
                   {/* <h3></h3> */}
                 </div>
                 <div className="rg-filter">
-                  <p>{allProductsQuery.data?.totalCount} Products found</p>
+                  <p>{t("n_products_found", { n: allProductsQuery.data?.totalCount })}</p>
                   <ul>
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>
@@ -526,22 +475,23 @@ const TrendingPage = () => {
 
               {viewType === "grid" ? (
                 <div className="product-list-s1">
-                  {memoizedProductList.map((item: TrendingProduct) => (
-                    <ProductCard
-                      key={item.id}
-                      item={item}
-                      onAdd={() =>
-                        handleAddToCart(-1, item.productProductPriceId)
-                      }
-                      onWishlist={() =>
-                        handleAddToWishlist(item.id, item?.productWishlist)
-                      }
-                      inWishlist={item?.inWishlist}
-                      haveAccessToken={haveAccessToken}
-                      isInteractive
-                      productQuantity={cartList?.find((el: any) => el.productId == item.id)?.quantity || 0}
-                    />
-                  ))}
+                  {memoizedProductList.map((item: TrendingProduct) => {
+                    const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
+                    return (
+                      <ProductCard
+                        key={item.id}
+                        item={item}
+                        onWishlist={() =>
+                          handleAddToWishlist(item.id, item?.productWishlist)
+                        }
+                        inWishlist={item?.inWishlist}
+                        haveAccessToken={haveAccessToken}
+                        isInteractive
+                        productQuantity={cartQuantity}
+                        isAddedToCart={cartQuantity > 0}
+                      />
+                    )
+                  })}
                 </div>
               ) : null}
 

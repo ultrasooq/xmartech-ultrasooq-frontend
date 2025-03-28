@@ -157,7 +157,7 @@ const ExistingProductsPage = () => {
 
     if (response.status && response.data) {
       toast({
-        title: "Product Price Add Successful",
+        title: t("product_price_add_successful"),
         description: response.message,
         variant: "success",
       });
@@ -165,7 +165,7 @@ const ExistingProductsPage = () => {
       router.push("/manage-products");
     } else {
       toast({
-        title: "Product Price Add Failed",
+        title: t("product_price_add_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -274,7 +274,6 @@ const ExistingProductsPage = () => {
                   <ProductCard
                     key={item.id}
                     item={item}
-                    onAdd={() => { }}
                     onWishlist={() => { }}
                     inWishlist={item?.inWishlist}
                     haveAccessToken={haveAccessToken}

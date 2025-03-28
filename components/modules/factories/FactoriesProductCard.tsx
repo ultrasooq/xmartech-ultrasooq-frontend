@@ -5,12 +5,12 @@ import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import Link from "next/link";
 import { toast } from "@/components/ui/use-toast";
-import { useAddFactoriesProduct, useUpdateFactoriesCartWithLogin } from "@/apis/queries/rfq.queries";
 import { FaCircleCheck } from "react-icons/fa6";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import { useTranslations } from "next-intl";
+import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
 // import Link from "next/link";
 
 type RfqProductCardProps = {
@@ -24,13 +24,14 @@ type RfqProductCardProps = {
   }[];
   productQuantity: number;
   customizeProductId?: number;
-  onAdd: (args0: number) => void;
-  onToCart: () => void;
+  onAdd: () => void;
   onWishlist: () => void;
   isCreatedByMe: boolean;
   isAddedToCart: boolean;
+  isAddedToFactoryCart: boolean;
   inWishlist?: boolean;
   haveAccessToken: boolean;
+  productPrices?: any[];
 };
 
 const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
@@ -43,12 +44,13 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   productQuantity,
   customizeProductId,
   onAdd,
-  onToCart,
   onWishlist,
   isCreatedByMe,
   isAddedToCart,
+  isAddedToFactoryCart,
   inWishlist,
   haveAccessToken,
+  productPrices,
 }) => {
   const t = useTranslations();
   const [quantity, setQuantity] = useState(0);
@@ -57,38 +59,61 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
     setQuantity(productQuantity || 0);
   }, [productQuantity]);
 
-  const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
-  const addFactoriesProduct = useAddFactoriesProduct();
+  const updateCartWithLogin = useUpdateCartWithLogin();
 
   const handleAddToCart = async (
-    newQuantity: number,
+    quantity: number,
     action: "add" | "remove",
-    productId: number,
-    customizeProductId?: number,
   ) => {
-    if (customizeProductId) {
-      const response = await updateFactoriesCartWithLogin.mutateAsync({
-        productId,
-        quantity: newQuantity,
-        customizeProductId
+    const minQuantity = productPrices?.length ? productPrices[0]?.minQuantityPerCustomer : null;
+    if (action == "add" && minQuantity && minQuantity > quantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    const maxQuantity = productPrices?.length ? productPrices[0]?.maxQuantityPerCustomer : null; 
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    if (action == "remove" && minQuantity && minQuantity > quantity) {
+      quantity = 0;
+    }
+
+    if (haveAccessToken) {
+      if (!productPrices?.length || !productPrices?.[0]?.id) {
+        toast({
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
+          variant: "danger",
+        });
+        return;
+      }
+      const response = await updateCartWithLogin.mutateAsync({
+        productPriceId: productPrices?.[0]?.id,
+        quantity,
       });
 
       if (response.status) {
+        if (action === "add" && quantity === 0) {
+          setQuantity(1);
+        } else {
+          setQuantity(quantity);
+        }
         toast({
-          title: `Item ${action == "add" ? "added to" : "removed from"} cart`,
-          description: "Check your cart for more details",
+          title: action == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
-      } else {
-        toast({
-          title: "Oops! Something went wrong",
-          description: response.message,
-          variant: "danger",
-        });
+        return response.status;
       }
-
-    } else {
-      if (action == "add" && onAdd) onAdd(id);
     }
   };
 
@@ -114,7 +139,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
         <Button
           variant="ghost"
           className="relative h-8 w-8 rounded-full p-0 shadow-md"
-          onClick={() => handleAddToCart(quantity + 1, "add", id, customizeProductId)}
+          onClick={() => handleAddToCart(quantity + 1, "add")}
         >
           <ShoppingIcon />
         </Button>
@@ -151,9 +176,11 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
               variant="outline"
               className="relative hover:shadow-sm"
               onClick={() => {
-                const newQuantity = quantity - 1;
-                setQuantity(newQuantity);
-                handleAddToCart(newQuantity, "remove", id, customizeProductId);
+                if (isAddedToCart) {
+                  handleAddToCart(quantity - 1, "remove");
+                } else {
+                  setQuantity(quantity - 1);
+                }
               }}
               disabled={quantity === 0}
             >
@@ -170,9 +197,11 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
               variant="outline"
               className="relative hover:shadow-sm"
               onClick={() => {
-                const newQuantity = quantity + 1;
-                setQuantity(newQuantity);
-                handleAddToCart(newQuantity, "add", id, customizeProductId);
+                if (isAddedToCart) {
+                  handleAddToCart(quantity + 1, "add");
+                } else {
+                  setQuantity(quantity + 1);
+                }
               }}
             >
               <Image
@@ -182,24 +211,36 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                 className="p-3"
               />
             </Button>
+            {!isAddedToFactoryCart && <Button
+              type="button"
+              variant="ghost"
+              onClick={onAdd}
+            >
+              <div className="relative h-6 w-6">
+                <Image
+                  src="/images/edit-rfq.png"
+                  alt="edit-rfq-icon"
+                  fill
+                />
+              </div>
+            </Button>}
           </div>
         </div>
       </div>
 
       <div className="cart_button">
-        {quantity > 0 && <button
+        {isAddedToCart && <button
           type="button"
           className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
         >
           <FaCircleCheck color="#00C48C" />
           {t("added_to_cart")}
         </button>}
-        {quantity == 0 && <button
+        {!isAddedToCart && <button
           type="button"
           className="add_to_cart_button"
-          onClick={() => {
-            if (onAdd) onAdd(id);
-          }}
+          onClick={() => handleAddToCart(quantity, "add")}
+          disabled={quantity == 0}
         >
           {t("add_to_cart")}
         </button>}

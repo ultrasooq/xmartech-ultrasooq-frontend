@@ -37,7 +37,7 @@ const ShareLinksPage = () => {
         document.execCommand('copy')
         textField.remove()
         toast({
-            title: "Copied",
+            title: t("copied"),
             description: '',
             variant: "success",
         });

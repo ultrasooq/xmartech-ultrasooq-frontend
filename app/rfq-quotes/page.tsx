@@ -115,7 +115,7 @@ const RfqQuotesPage = () => {
     }
     if (response.status && response.data) {
       toast({
-        title: "Product Delete Successful",
+        title: t("product_delete_successful"),
         description: response.message,
         variant: "success",
       });
@@ -123,7 +123,7 @@ const RfqQuotesPage = () => {
       setSelectedProductId(undefined);
     } else {
       toast({
-        title: "Product Delete Failed",
+        title: t("product_delete_failed"),
         description: response.message,
         variant: "danger",
       });

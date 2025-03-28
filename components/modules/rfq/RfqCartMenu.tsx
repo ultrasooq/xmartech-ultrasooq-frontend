@@ -13,41 +13,28 @@ type RfqCartMenuProps = {
     args0: number,
     args1: number,
     args2: "add" | "remove",
-    args3: number,
-    args4: string,
+    args3?: number,
+    args4?: number,
+    args5?: string,
   ) => void;
-  haveAccessToken: boolean;
+  cartList: any[];
 };
 
 const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
   onAdd,
-  haveAccessToken,
+  cartList
 }) => {
   const t = useTranslations();
   const { toast } = useToast();
-  const rfqCartListByUser = useRfqCartListByUserId(
-    {
-      page: 1,
-      limit: 20,
-    },
-    haveAccessToken,
-  );
 
   const deleteRfqCartItem = useDeleteRfqCartItem();
-
-  const memoizedRfqCartList = useMemo(() => {
-    if (rfqCartListByUser.data?.data) {
-      return rfqCartListByUser.data?.data || [];
-    }
-    return [];
-  }, [rfqCartListByUser.data?.data]);
 
   const handleRemoveItemFromRfqCart = async (rfqCartId: number) => {
     const response = await deleteRfqCartItem.mutateAsync({ rfqCartId });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -56,7 +43,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
   return (
     <div className="rfq_right">
       <div className="rfq_right_bottom">
-        {memoizedRfqCartList.length ? (
+        {cartList.length ? (
           <div className="mb-4 w-full text-center">
             <Link
               href="/rfq-cart"
@@ -68,16 +55,16 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
         ) : null}
 
         <h4 className="text-center">
-          {t("your_rfq_cart")} ({memoizedRfqCartList.length} items)
+          {t("your_rfq_cart")} ({t("n_items", { n: cartList.length })})
         </h4>
 
-        {!memoizedRfqCartList.length && (
+        {!cartList.length && (
           <div className="my-10 text-center">
             <h4>{t("no_cart_items")}</h4>
           </div>
         )}
 
-        {memoizedRfqCartList.map((item: any) => (
+        {cartList.map((item: any) => (
           <RfqCartMenuCard
             key={item?.id}
             id={item?.id}
@@ -87,7 +74,8 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
             productImages={item?.rfqCart_productDetails?.productImages}
             onAdd={onAdd}
             onRemove={handleRemoveItemFromRfqCart}
-            offerPrice={item?.offerPrice}
+            offerPriceFrom={Number(item?.offerPriceFrom || 0)}
+            offerPriceTo={Number(item?.offerPriceTo || 0)}
             note={item?.note}
           />
         ))}

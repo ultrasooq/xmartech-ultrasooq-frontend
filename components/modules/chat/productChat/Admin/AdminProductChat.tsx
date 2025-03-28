@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import ProductMessage from "./ProductMessage";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { generateUniqueNumber } from "@/utils/helper";
+import { useTranslations } from "next-intl";
 
 interface ProductMessageProps {
   user: {
@@ -34,6 +35,7 @@ interface AdminProductChatProps {
 }
 
 const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productDetails, sellerId }) => {
+  const t = useTranslations();
   const [message, setMessage] = useState<string>('');
   const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
   const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
@@ -72,7 +74,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   useEffect(() => {
     if (errorMessage) {
       toast({
-        title: "Chat",
+        title: t("chat"),
         description: errorMessage,
         variant: "danger",
       });
@@ -111,8 +113,8 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed to update the attachment status",
+        title: t("chat"),
+        description: t("attachment_update_status_failed"),
         variant: "danger",
       });
     }
@@ -131,8 +133,8 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         setProductMessages(res.data.data)
       } else {
         toast({
-          title: "Chat",
-          description: "Failed to get Product Messages",
+          title: t("chat"),
+          description: t("product_messages_fetch_failed"),
           variant: "danger",
         });
       }
@@ -140,8 +142,8 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
     } catch (error) {
       setLoading(false)
       toast({
-        title: "Chat",
-        description: "Failed to get Product Messages",
+        title: t("chat"),
+        description: t("product_messages_fetch_failed"),
         variant: "danger",
       });
     }
@@ -175,15 +177,15 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         setShowEmoji(false);
       } else {
         toast({
-          title: "Chat",
-          description: "Please type your message",
+          title: t("chat"),
+          description: t("please_type_your_message"),
           variant: "danger",
         });
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed!",
+        title: t("chat"),
+        description: t("failed"),
         variant: "danger",
       });
     }

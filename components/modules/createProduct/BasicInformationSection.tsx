@@ -102,7 +102,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
     if (response.status && response.data) {
       toast({
-        title: "Tag Create Successful",
+        title: t("tag_create_successful"),
         description: response.message,
         variant: "success",
       });
@@ -112,7 +112,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       formContext.setValue("productTagList", selected);
     } else {
       toast({
-        title: "Tag Create Failed",
+        title: t("tag_create_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -147,6 +147,15 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [listIds?.length],
   );
+
+  const productConditions = () => {
+    return Object.keys(PRODUCT_CONDITION_LIST).map((value: string, index: number) => {
+      return {
+        label: t(PRODUCT_CONDITION_LIST[index].label),
+        value: PRODUCT_CONDITION_LIST[index].value
+      };
+    });
+  };
 
   return (
     <>
@@ -277,12 +286,13 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             onChange={(newValue) => {
                               field.onChange(newValue?.value);
                             }}
-                            options={PRODUCT_CONDITION_LIST}
-                            value={PRODUCT_CONDITION_LIST.find(
+                            options={productConditions()}
+                            value={productConditions().find(
                               (item: any) => item.value === field.value,
                             )}
                             styles={customStyles}
                             instanceId="productCondition"
+                            placeholder={t("select")}
                           />
                         )}
                       />
@@ -304,8 +314,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     canCreate={true}
                     createOption={handleCreateTag}
                     error={
-                      formContext.formState.errors["productTagList"]
-                        ?.message as string
+                      formContext.formState.errors["productTagList"]?.message as string
                     }
                   />
 
@@ -377,8 +386,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                         .size > 524288000
                                                     ) {
                                                       toast({
-                                                        title:
-                                                          "One of your file size should be less than 500MB",
+                                                        title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -432,8 +440,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                         .size > 524288000
                                                     ) {
                                                       toast({
-                                                        title:
-                                                          "One of your file size should be less than 500MB",
+                                                        title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -490,8 +497,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                     )
                                   ) {
                                     toast({
-                                      title:
-                                        "One of your file size should be less than 500MB",
+                                      title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                       variant: "danger",
                                     });
                                     return;

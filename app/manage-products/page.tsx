@@ -21,6 +21,7 @@ import AddProductContent from "@/components/modules/products/AddProductContent";
 import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
 import { useMe } from "@/apis/queries/user.queries";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "next-intl";
 
 const schema = z
   .object({
@@ -114,6 +115,7 @@ const defaultValues = {
 };
 
 const ManageProductsPage = () => {
+  const t = useTranslations();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_PRODUCTS);
   const { toast } = useToast();
@@ -129,12 +131,18 @@ const ManageProductsPage = () => {
     defaultValues,
   });
 
-  const allManagedProductsQuery = useAllManagedProducts({
-    page,
-    limit,
-    term: searchTerm !== "" ? searchTerm : undefined,
-    selectedAdminId: me?.data?.data?.tradeRole == 'MEMBER' ? me?.data?.data?.addedBy : undefined
-  }, hasPermission);
+  const allManagedProductsQuery = useAllManagedProducts(
+    {
+      page,
+      limit,
+      term: searchTerm !== "" ? searchTerm : undefined,
+      selectedAdminId:
+        me?.data?.data?.tradeRole == "MEMBER"
+          ? me?.data?.data?.addedBy
+          : undefined,
+    },
+    hasPermission,
+  );
 
   const { data, refetch } = allManagedProductsQuery;
   const [products, setProducts] = useState(data?.data || []);
@@ -168,7 +176,8 @@ const ManageProductsPage = () => {
     setSearchTerm(event.target.value);
   }, 1000);
 
-  const handleAddProductModal = () => setIsAddProductModalOpen(!isAddProductModalOpen);
+  const handleAddProductModal = () =>
+    setIsAddProductModalOpen(!isAddProductModalOpen);
 
   const handleProductIds = (checked: boolean | string, id: number) => {
     let tempArr = selectedProductIds || [];
@@ -186,8 +195,8 @@ const ManageProductsPage = () => {
   const onSubmit = async (formData: any) => {
     if (!selectedProductIds.length) {
       toast({
-        title: "Update Failed",
-        description: "Please select at least one product",
+        title: t("update_failed"),
+        description: t("please_select_at_least_one_product"),
         variant: "danger",
       });
       return;
@@ -312,15 +321,15 @@ const ManageProductsPage = () => {
     console.log({
       productPrice: [...finalData],
     });
-    
+
     const response = await updateMultipleProductPrice.mutateAsync({
       productPrice: [...finalData],
     });
 
     if (response.status) {
       toast({
-        title: "Update Successful",
-        description: "Products updated successfully",
+        title: t("update_successful"),
+        description: t("products_updated_successfully"),
         variant: "success",
       });
       // **Trigger refetch to update the product list**
@@ -331,7 +340,7 @@ const ManageProductsPage = () => {
       router.push("/manage-products");
     } else {
       toast({
-        title: "Update Failed",
+        title: t("update_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -340,7 +349,7 @@ const ManageProductsPage = () => {
 
   useEffect(() => {
     if (!hasPermission) router.push("/home");
-  }, [])
+  }, []);
 
   if (!hasPermission) return <div></div>;
 
@@ -349,177 +358,198 @@ const ManageProductsPage = () => {
       <div className="existing-product-add-page">
         <div className="existing-product-add-layout">
           <div className="container m-auto px-3">
-            {/* start: existing-product-add-headerPart */}
-            <div className="existing-product-add-headerPart">
-              <h2 className="text-2xl font-medium capitalize text-color-dark">
-                Products
-              </h2>
-              <ul className="right-filter-lists flex flex-row flex-nowrap gap-x-2">
-                <li>
-                  <Input
-                    type="text"
-                    placeholder="Search Product"
-                    className="search-box h-[40px] w-[200px] sm:w-[160px] lg:w-80"
-                    onChange={handleDebounce}
-                  />
-                </li>
-                <li>
-                  <button
-                    className="theme-primary-btn add-btn p-2"
-                    onClick={handleAddProductModal}
-                  >
-                    <IoMdAdd size={24} />
-                    <span className="d-none-mobile">Add Product</span>
-                  </button>
-                </li>
-              </ul>
-            </div>
-            {/* end: existing-product-add-headerPart */}
-
-            {/* start: existing-product-add-body */}
-            <div className="existing-product-add-body">
-              <FormProvider {...form}>
-                <form
-                  className="existing-product-add-wrapper"
-                  onSubmit={form.handleSubmit(onSubmit)}
-                >
-                  <div className="left-content">
-                    <div className="existing-product-add-lists">
-                      {allManagedProductsQuery.isLoading ? (
-                        <div className="mx-2 grid w-full grid-cols-3 gap-5">
-                          {Array.from({ length: 3 }).map((_, index) => (
-                            <Skeleton key={index} className="h-96 w-full" />
-                          ))}
-                        </div>
-                      ) : null}
-
-                      {!allManagedProductsQuery.data?.data?.length &&
-                      !allManagedProductsQuery.isLoading ? (
-                        <p className="w-full py-10 text-center text-base font-medium">
-                          No product found
-                        </p>
-                      ) : null}
-
-                      {products.map(
-                        (product: {
-                          id: number;
-                          productId: number;
-                          status: string;
-                          askForPrice: string;
-                          askForStock: string;
-                          productPrice_product: {
-                            productImages: {
-                              id: number;
-                              image: string | null;
-                              video: string | null;
-                            }[];
-                            productName: string;
-                          };
-                          productPrice_productSellerImage: {
-                            id: number;
-                            image: string | null;
-                            video: string | null;
-                          }[];
-                          productPrice: string;
-                          offerPrice: string;
-                          productPrice_productLocation: {
-                            locationName: string;
-                          };
-                          stock: number;
-                          consumerType: string;
-                          sellType: string;
-                          deliveryAfter: number;
-                          timeOpen: number | null;
-                          timeClose: number | null;
-                          vendorDiscount: number | null;
-                          consumerDiscount: number | null;
-                          minQuantity: number | null;
-                          maxQuantity: number | null;
-                          minCustomer: number | null;
-                          maxCustomer: number | null;
-                          minQuantityPerCustomer: number | null;
-                          maxQuantityPerCustomer: number | null;
-                          productCondition: string;
-                        }) => (
-                          <ManageProductCard
-                            selectedIds={selectedProductIds}
-                            onSelectedId={handleProductIds}
-                            key={product?.id}
-                            id={product?.id}
-                            productId={product?.productId}
-                            status={product?.status}
-                            askForPrice={product?.askForPrice}
-                            askForStock={product?.askForStock}
-                            // productImage={
-                            //   product?.productPrice_product?.productImages?.[0]
-                            //     ?.image
-                            // }
-                            productImage={
-                              product?.productPrice_productSellerImage?.length
-                                ? product?.productPrice_productSellerImage?.[0]
-                                    ?.image
-                                : product?.productPrice_product
-                                    ?.productImages?.[0]?.image
-                            }
-                            productName={
-                              product?.productPrice_product?.productName
-                            }
-                            productPrice={product?.productPrice}
-                            offerPrice={product?.offerPrice}
-                            deliveryAfter={product?.deliveryAfter}
-                            productLocation={
-                              product?.productPrice_productLocation
-                                ?.locationName
-                            }
-                            stock={product?.stock}
-                            consumerType={product?.consumerType}
-                            sellType={product?.sellType}
-                            timeOpen={product?.timeOpen}
-                            timeClose={product?.timeClose}
-                            vendorDiscount={product?.vendorDiscount}
-                            consumerDiscount={product?.consumerDiscount}
-                            minQuantity={product?.minQuantity}
-                            maxQuantity={product?.maxQuantity}
-                            minCustomer={product?.minCustomer}
-                            maxCustomer={product?.maxCustomer}
-                            minQuantityPerCustomer={
-                              product?.minQuantityPerCustomer
-                            }
-                            maxQuantityPerCustomer={
-                              product?.maxQuantityPerCustomer
-                            }
-                            productCondition={product?.productCondition}
-                            onRemove={handleRemoveFromList} // Pass function to remove product
-                          />
-                        ),
-                      )}
-
-                      {/* {allManagedProductsQuery.data?.totalCount > 6 ? (
-                        <Pagination
-                          page={page}
-                          setPage={setPage}
-                          totalCount={allManagedProductsQuery.data?.totalCount}
-                          limit={limit}
-                        />
-                      ) : null} */}
-                      {totalCount > limit ? (
-                        <Pagination
-                          page={page}
-                          setPage={setPage}
-                          totalCount={totalCount} // Use updated count
-                          limit={limit}
-                        />
-                      ) : null}
-                    </div>
+            <div className="flex">
+              <div className="w-[25%]">
+                <div className="trending-search-sec mt-0">
+                  <div className="all_select_button">
+                    <button type="button">Select All</button>
+                    <button type="button">Clean Select</button>
                   </div>
-                  <ManageProductAside
-                    isLoading={updateMultipleProductPrice.isPending}
-                    // onUpdateProductPrice={handleUpdateProductPrice}
-                  />
-                </form>
-              </FormProvider>
+                </div>
+              </div>
+              <div className="w-[75%]">
+                {/* start: existing-product-add-headerPart */}
+                <div className="existing-product-add-headerPart">
+                  <h2 className="text-2xl font-medium capitalize text-color-dark">
+                    {t("products")}
+                  </h2>
+                  <ul className="right-filter-lists flex flex-row flex-nowrap gap-x-2">
+                    <li>
+                      <Input
+                        type="text"
+                        placeholder={t("search_product")}
+                        className="search-box h-[40px] w-[200px] sm:w-[160px] lg:w-80"
+                        onChange={handleDebounce}
+                      />
+                    </li>
+                    <li>
+                      <button
+                        className="theme-primary-btn add-btn p-2"
+                        onClick={handleAddProductModal}
+                      >
+                        <IoMdAdd size={24} />
+                        <span className="d-none-mobile">
+                          {t("add_product")}
+                        </span>
+                      </button>
+                    </li>
+                    <li>
+                      <button className="theme-primary-btn add-btn p-2">
+                        <span className="d-none-mobile">Go To Cart</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                {/* end: existing-product-add-headerPart */}
+
+                {/* start: existing-product-add-body */}
+                <div className="existing-product-add-body">
+                  <FormProvider {...form}>
+                    <form
+                      className="existing-product-add-wrapper"
+                      onSubmit={form.handleSubmit(onSubmit)}
+                    >
+                      <div className="left-content">
+                        <div className="existing-product-add-lists">
+                          {allManagedProductsQuery.isLoading ? (
+                            <div className="mx-2 grid w-full grid-cols-3 gap-5">
+                              {Array.from({ length: 3 }).map((_, index) => (
+                                <Skeleton key={index} className="h-96 w-full" />
+                              ))}
+                            </div>
+                          ) : null}
+
+                          {!allManagedProductsQuery.data?.data?.length &&
+                          !allManagedProductsQuery.isLoading ? (
+                            <p className="w-full py-10 text-center text-base font-medium">
+                              {t("no_product_found")}
+                            </p>
+                          ) : null}
+
+                          {products.map(
+                            (product: {
+                              id: number;
+                              productId: number;
+                              status: string;
+                              askForPrice: string;
+                              askForStock: string;
+                              productPrice_product: {
+                                productImages: {
+                                  id: number;
+                                  image: string | null;
+                                  video: string | null;
+                                }[];
+                                productName: string;
+                              };
+                              productPrice_productSellerImage: {
+                                id: number;
+                                image: string | null;
+                                video: string | null;
+                              }[];
+                              productPrice: string;
+                              offerPrice: string;
+                              productPrice_productLocation: {
+                                locationName: string;
+                              };
+                              stock: number;
+                              consumerType: string;
+                              sellType: string;
+                              deliveryAfter: number;
+                              timeOpen: number | null;
+                              timeClose: number | null;
+                              vendorDiscount: number | null;
+                              consumerDiscount: number | null;
+                              minQuantity: number | null;
+                              maxQuantity: number | null;
+                              minCustomer: number | null;
+                              maxCustomer: number | null;
+                              minQuantityPerCustomer: number | null;
+                              maxQuantityPerCustomer: number | null;
+                              productCondition: string;
+                            }) => (
+                              <ManageProductCard
+                                selectedIds={selectedProductIds}
+                                onSelectedId={handleProductIds}
+                                key={product?.id}
+                                id={product?.id}
+                                productId={product?.productId}
+                                status={product?.status}
+                                askForPrice={product?.askForPrice}
+                                askForStock={product?.askForStock}
+                                // productImage={
+                                //   product?.productPrice_product?.productImages?.[0]
+                                //     ?.image
+                                // }
+                                productImage={
+                                  product?.productPrice_productSellerImage
+                                    ?.length
+                                    ? product
+                                        ?.productPrice_productSellerImage?.[0]
+                                        ?.image
+                                    : product?.productPrice_product
+                                        ?.productImages?.[0]?.image
+                                }
+                                productName={
+                                  product?.productPrice_product?.productName
+                                }
+                                productPrice={product?.productPrice}
+                                offerPrice={product?.offerPrice}
+                                deliveryAfter={product?.deliveryAfter}
+                                productLocation={
+                                  product?.productPrice_productLocation
+                                    ?.locationName
+                                }
+                                stock={product?.stock}
+                                consumerType={product?.consumerType}
+                                sellType={product?.sellType}
+                                timeOpen={product?.timeOpen}
+                                timeClose={product?.timeClose}
+                                vendorDiscount={product?.vendorDiscount}
+                                consumerDiscount={product?.consumerDiscount}
+                                minQuantity={product?.minQuantity}
+                                maxQuantity={product?.maxQuantity}
+                                minCustomer={product?.minCustomer}
+                                maxCustomer={product?.maxCustomer}
+                                minQuantityPerCustomer={
+                                  product?.minQuantityPerCustomer
+                                }
+                                maxQuantityPerCustomer={
+                                  product?.maxQuantityPerCustomer
+                                }
+                                productCondition={product?.productCondition}
+                                onRemove={handleRemoveFromList} // Pass function to remove product
+                              />
+                            ),
+                          )}
+
+                          {/* {allManagedProductsQuery.data?.totalCount > 6 ? (
+                            <Pagination
+                              page={page}
+                              setPage={setPage}
+                              totalCount={allManagedProductsQuery.data?.totalCount}
+                              limit={limit}
+                            />
+                          ) : null} */}
+                          {totalCount > limit ? (
+                            <Pagination
+                              page={page}
+                              setPage={setPage}
+                              totalCount={totalCount} // Use updated count
+                              limit={limit}
+                            />
+                          ) : null}
+                        </div>
+                      </div>
+                      <ManageProductAside
+                        isLoading={updateMultipleProductPrice.isPending}
+                        // onUpdateProductPrice={handleUpdateProductPrice}
+                      />
+                    </form>
+                  </FormProvider>
+                </div>
+                {/* end: existing-product-add-body */}
+              </div>
             </div>
-            {/* end: existing-product-add-body */}
           </div>
         </div>
       </div>

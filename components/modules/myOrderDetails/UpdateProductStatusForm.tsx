@@ -82,7 +82,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
 
     if (response.status) {
       toast({
-        title: "Status Update Successful",
+        title: t("status_update_successful"),
         description: response.message,
         variant: "success",
       });
@@ -92,7 +92,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
       }
     } else {
       toast({
-        title: "Status Update Failed",
+        title: t("status_update_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -114,16 +114,16 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
 
       if (response.status) {
         toast({
-          title: "Cancel Reason Updated",
-          description: "Cancelled Successfully",
+          title: t("cancel_reason_updated"),
+          description: t("cancelled_successfully"),
           variant: "success",
         });
         form.reset();
         onClose();
       } else {
         toast({
-          title: "Cancel Reason Update Failed",
-          description: "Cancelled Failed",
+          title: t("cancel_reason_update_failed"),
+          description: t("cancelation_failed"),
           variant: "danger",
         });
       }

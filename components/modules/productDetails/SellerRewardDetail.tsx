@@ -24,13 +24,13 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
         if (response.status) {
             onClose();
             toast({
-                title: "Share Link Created Successfully",
+                title: t("share_link_create_success"),
                 description: response.message,
                 variant: "success",
             });
         } else {
             toast({
-                title: "Share Link Create Failed",
+                title: t("share_link_create_failed"),
                 description: response.message,
                 variant: "danger",
             });

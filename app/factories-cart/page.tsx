@@ -32,12 +32,14 @@ import Footer from "@/components/shared/Footer";
 import FactoriesCustomizedProductCard from "@/components/modules/factoriesCart/FactoriesCustomizedProductCard";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  address: z.string().trim().min(1, { message: "Address is required" }),
-  factoriesDate: z
-    .date({ required_error: "Delivery Date is required" })
-    .transform((val) => val.toISOString()),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    address: z.string().trim().min(1, { message: t("address_required") }),
+    factoriesDate: z
+      .date({ required_error: t("delivery_date_required") })
+      .transform((val) => val.toISOString()),
+  });
+};
 
 const FactoriesCartPage = () => {
   const t = useTranslations();
@@ -45,7 +47,7 @@ const FactoriesCartPage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       address: "",
       factoriesDate: undefined as unknown as string,
@@ -59,7 +61,7 @@ const FactoriesCartPage = () => {
   });
   const factoriesCartListByUser = useFactoriesCartListByUserId({
     page: 1,
-    limit: 20,
+    limit: 100,
   });
   const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
   const deleteFactoriesCartItem = useDeleteFactoriesCartItem();
@@ -95,13 +97,13 @@ const FactoriesCartPage = () => {
 
     if (response.status) {
       toast({
-        title: `Item added to cart`,
-        description: "Check your cart for more details",
+        title: t("item_added_to_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }else {
       toast({
-        title: "Oops! Something went wrong",
+        title: t("something_went_wrong"),
         description: response.message,
         variant: "danger",
       });
@@ -112,8 +114,8 @@ const FactoriesCartPage = () => {
     const response = await deleteFactoriesCartItem.mutateAsync({ factoriesCartId });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -143,8 +145,8 @@ const FactoriesCartPage = () => {
     const response = await addFactoriesRequestQuotes.mutateAsync(updatedFormData);
     if (response.status) {
       toast({
-        title: "Quotes added successfully",
-        description: "Check your quotes for more details",
+        title: t("quotes_added_successfully"),
+        description: t("check_your_quotes_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -154,7 +156,7 @@ const FactoriesCartPage = () => {
       // router.push("/rfq-quotes");
     } else {
       toast({
-        title: "Something went wrong",
+        title: t("something_went_wrong"),
         description: response.message,
         variant: "danger",
       });

@@ -25,7 +25,7 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
   const factoriesCartListByUser = useFactoriesCartListByUserId(
     {
       page: 1,
-      limit: 20,
+      limit: 100,
     },
     haveAccessToken,
   );
@@ -45,8 +45,8 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
     });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -71,7 +71,7 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
         ) : null}
 
         <h4 className="text-center">
-          {t("your_factories_cart")} ({memoizedFactoriseCartList.length} items)
+          {t("your_factories_cart")} ({t("n_items", { n: memoizedFactoriseCartList.length })})
         </h4>
 
         {!memoizedFactoriseCartList.length && (
@@ -93,8 +93,9 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
               item?.customizeProductDetail?.customizeProductImageDetail
             }
             onRemove={handleRemoveItemFromFactoriesCart}
-            offerPrice={item?.offerPrice}
-            note={item?.note}
+            fromPrice={item?.customizeProductDetail?.fromPrice}
+            toPrice={item?.customizeProductDetail?.toPrice}
+            note={item?.customizeProductDetail?.note}
           />
         ))}
       </div>

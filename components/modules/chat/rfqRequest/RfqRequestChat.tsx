@@ -151,7 +151,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
   useEffect(() => {
     if (errorMessage) {
       toast({
-        title: "Chat",
+        title: t("chat"),
         description: errorMessage,
         variant: "danger",
       });
@@ -207,8 +207,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed to update the attachment status",
+        title: t("chat"),
+        description: t("attachment_update_status_failed"),
         variant: "danger",
       });
     }
@@ -344,15 +344,15 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         setShowEmoji(false);
       } else {
         toast({
-          title: "Chat",
-          description: "Please type your message",
+          title: t("chat"),
+          description: t("please_type_your_message"),
           variant: "danger",
         });
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed!",
+        title: t("chat"),
+        description: t("failed"),
         variant: "danger",
       });
     }
@@ -688,7 +688,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
       <div className="flex w-full flex-wrap rounded-sm border border-solid border-gray-300">
         <div className="w-full border-r border-solid border-gray-300 lg:w-[15%]">
           <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-base font-normal text-[#333333] md:px-[10px] md:py-[10px]">
-            <span>Request for RFQ</span>
+            <span>{t("request_for_rfq")}</span>
           </div>
           <RequestProductCard
             rfqId={rfqQuoteId}
@@ -699,7 +699,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         </div>
         <div className="w-full border-r border-solid border-gray-300 lg:w-[18%]">
           <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-            <span>Vendor Lists</span>
+            <span>{t("vendor_lists")}</span>
           </div>
           <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]">
             {allRfqQuotesQuery?.isLoading ? (
@@ -750,7 +750,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
               href="#"
               className="inline-block rounded-sm bg-dark-orange px-3 py-2 text-xs font-bold capitalize text-white"
             >
-              checkout
+              {t("checkout")}
             </Link>
           </div>
           <div className="flex w-full flex-wrap p-[20px]">
@@ -758,22 +758,22 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
               <div className="w-full overflow-y-auto rounded-sm border">
                 <div className="flex w-full">
                   <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[25%] md:text-sm">
-                    Product
+                    {t("product")}
                   </div>
                   <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[15%] md:text-sm">
-                    Delivery Date
+                    {t("delivery_date")}
                   </div>
                   <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm">
-                    Brand
+                    {t("brand")}
                   </div>
                   <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm">
-                    Number Of Piece
+                    {t("number_of_piece")}
                   </div>
                   <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm">
-                    Price
+                    {t("price")}
                   </div>
                   <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm">
-                    Address
+                    {t("address")}
                   </div>
                 </div>
                 {rfqQuotesUsersByBuyerIdQuery.isLoading ? (

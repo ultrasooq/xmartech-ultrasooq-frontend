@@ -59,7 +59,7 @@ const QueriesPage = () => {
                 <div className="container relative z-10 m-auto px-3">
                     <div className="flex w-full flex-wrap">
                         <div className="team_members_heading w-full">
-                            <h1>Queries</h1>
+                            <h1>{t("queries")}</h1>
                         </div>
 
                         <div className="team_members_table w-full">

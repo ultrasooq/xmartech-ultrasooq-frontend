@@ -17,39 +17,47 @@ import Ratings from "./Ratings";
 import { useToast } from "../ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type ReviewFormProps = {
   onClose: () => void;
   reviewId?: number;
 };
 
-const formSchema = z.object({
-  description: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Description is required",
-    })
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    }),
-  title: z.string().trim().min(2, { message: "Title is required" }).max(50, {
-    message: "Title must be less than 50 characters",
-  }),
-  rating: z.number(),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    description: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("description_required"),
+      })
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      }),
+    title: z.string()
+      .trim()
+      .min(2, { message: t("title_required") })
+      .max(50, {
+        message: t("title_must_be_less_than_n_chars", { n: 50 }),
+      }),
+    rating: z.number(),
+  });
+};
 
 const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
+  const t = useTranslations();
   const searchParams = useParams();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const defaultValues = {
+    description: "",
+    title: "",
+    rating: 0,
+  };
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      description: "",
-      title: "",
-      rating: 0,
-    },
+    resolver: zodResolver(formSchema(t)),
+    defaultValues: defaultValues,
   });
   const reviewByIdQuery = useReviewById(
     { productReviewId: reviewId ? reviewId : 0 },
@@ -58,7 +66,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
   const addReview = useAddReview();
   const updateReview = useUpdateReview();
 
-  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+  const onSubmit = async (formData: typeof defaultValues) => {
     const updatedFormData = {
       ...formData,
       productId: Number(searchParams?.id),
@@ -92,7 +100,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
       );
       if (response.status) {
         toast({
-          title: "Review Update Successful",
+          title: t("review_update_successful"),
           description: response.message,
           variant: "success",
         });
@@ -100,7 +108,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
         onClose();
       } else {
         toast({
-          title: "Review Update Failed",
+          title: t("review_update_failed"),
           description: response.message,
           variant: "danger",
         });
@@ -119,7 +127,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
 
       if (response.status) {
         toast({
-          title: "Review Add Successful",
+          title: t("review_add_successful"),
           description: response.message,
           variant: "success",
         });
@@ -127,7 +135,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
         onClose();
       } else {
         toast({
-          title: "Review Add Failed",
+          title: t("review_add_failed"),
           description: response.message,
           variant: "danger",
         });

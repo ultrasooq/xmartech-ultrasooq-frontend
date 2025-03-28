@@ -26,6 +26,7 @@ import PriceSection from "../createProduct/PriceSection";
 import DynamicFormViewSection from "../createProduct/DynamicFormViewSection";
 import ReactSelect from "react-select";
 import { isImage, isVideo } from "@/utils/helper";
+import { useTranslations } from "next-intl";
 
 const customStyles = {
   control: (base: any) => ({
@@ -58,6 +59,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   hasId,
 }) => {
   const formContext = useFormContext();
+  const t = useTranslations();
   const { toast } = useToast();
   const photosRef = useRef<HTMLInputElement>(null);
   const [listIds, setListIds] = useState<string[]>([]);
@@ -379,8 +381,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                         .size > 524288000
                                                     ) {
                                                       toast({
-                                                        title:
-                                                          "One of your file size should be less than 500MB",
+                                                        title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -434,8 +435,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                         .size > 524288000
                                                     ) {
                                                       toast({
-                                                        title:
-                                                          "One of your file size should be less than 500MB",
+                                                        title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -492,8 +492,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                     )
                                   ) {
                                     toast({
-                                      title:
-                                        "One of your file size should be less than 500MB",
+                                      title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                       variant: "danger",
                                     });
                                     return;

@@ -17,6 +17,7 @@ import { useToast } from "../ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import LoaderWithMessage from "./LoaderWithMessage";
+import { useTranslations } from "next-intl";
 
 type ReviewFormProps = {
   onClose: () => void;
@@ -26,21 +27,26 @@ type ReviewFormProps = {
   productId?: number;
 };
 
-const formSchema = z.object({
-  description: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Description is required",
-    })
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    }),
-  title: z.string().trim().min(2, { message: "Title is required" }).max(50, {
-    message: "Title must be less than 50 characters",
-  }),
-  rating: z.number(),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    description: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("description_required"),
+      })
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      }),
+    title: z.string()
+      .trim()
+      .min(2, { message: t("title_required") })
+      .max(50, {
+        message: t("title_must_be_less_than_n_chars", { n: 50 }),
+      }),
+    rating: z.number(),
+  });
+};
 
 const SellerReviewForm: React.FC<ReviewFormProps> = ({
   onClose,
@@ -49,21 +55,19 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
   adminId,
   productId,
 }) => {
+  const t = useTranslations();
   const searchParams = useParams();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       description: "",
       title: "",
       rating: 0,
     },
   });
-  //   const reviewByIdQuery = useSellerReviewById(
-  //     { productReviewId: reviewId ? reviewId : 0 },
-  //     !!reviewId,
-  //   );
+
   const addReview = useAddSellerReview();
   const updateReview = useUpdateSellerReview();
 
@@ -75,48 +79,6 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
       productId,
     };
 
-    console.log(updatedFormData);
-    // return;
-
-    // if (reviewId) {
-    //   const response = await updateReview.mutateAsync(
-    //     {
-    //       productReviewId: reviewId,
-    //       ...updatedFormData,
-    //     },
-    //     {
-    //       onSuccess: () => {
-    //         queryClient.invalidateQueries({
-    //           queryKey: ["product-by-id", searchParams?.id],
-    //         });
-    //         queryClient.refetchQueries({
-    //           queryKey: ["existing-products", { page: 1, limit: 40 }],
-    //         });
-    //         queryClient.refetchQueries({
-    //           queryKey: ["seller-review-by-id", { productReviewId: reviewId }],
-    //         });
-    //         queryClient.refetchQueries({
-    //           queryKey: ["seller-reviews"],
-    //         });
-    //       },
-    //     },
-    //   );
-    //   if (response.status) {
-    //     toast({
-    //       title: "Review Update Successful",
-    //       description: response.message,
-    //       variant: "success",
-    //     });
-    //     form.reset();
-    //     onClose();
-    //   } else {
-    //     toast({
-    //       title: "Review Update Failed",
-    //       description: response.message,
-    //       variant: "danger",
-    //     });
-    //   }
-    // } else {
     const response = await addReview.mutateAsync(updatedFormData, {
       onSuccess: () => {
         queryClient.invalidateQueries({
@@ -130,7 +92,7 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
 
     if (response.status) {
       toast({
-        title: "Review Add Successful",
+        title: t("review_add_successful"),
         description: response.message,
         variant: "success",
       });
@@ -138,7 +100,7 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
       onClose();
     } else {
       toast({
-        title: "Review Add Failed",
+        title: t("review_add_failed"),
         description: response.message,
         variant: "danger",
       });

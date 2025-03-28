@@ -21,25 +21,27 @@ type PermissionFormProps = {
   onClose: () => void;
 };
 
-const addFormSchema = z.object({
-  permissionIdList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
+const addFormSchema = (t: any) => {
+  return z.object({
+    permissionIdList: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.number(),
+        }),
+      )
+      .min(1, {
+        message: t("permission_type_required"),
+      })
+      .transform((value) => {
+        let temp: any = [];
+        value.forEach((item) => {
+          temp.push({ permissionId: item.value });
+        });
+        return temp;
       }),
-    )
-    .min(1, {
-      message: "permission Type is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ permissionId: item.value });
-      });
-      return temp;
-    }),
-});
+  });
+};
 
 const PermissionForm: React.FC<PermissionFormProps> = ({
   roleId,
@@ -72,7 +74,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
   }, [getPermissionquery?.data?.data]);
 
   const form = useForm({
-    resolver: zodResolver(addFormSchema),
+    resolver: zodResolver(addFormSchema(t)),
     defaultValues: { permissionIdList: [] },
   });
 
@@ -105,7 +107,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
       });
     } else {
       toast({
-        title: "Permission Set Failed",
+        title: t("permission_set_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -149,11 +151,10 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
               <div>
                 <div className="mb-3.5 w-full">
                   <AccordionMultiSelectV2
-                    label="Permission Type"
+                    label={t("permission_type")}
                     name="permissionIdList"
                     options={memoizedPermissions || []}
                     // value={selectedValues} // Ensure checked state
-                    placeholder="Permission Type"
                     error={
                       form.formState.errors?.permissionIdList?.message !==
                       undefined

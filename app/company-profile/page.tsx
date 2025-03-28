@@ -331,7 +331,7 @@ export default function CompanyProfilePage() {
         data.branchList.filter((item: any) => item.mainOffice === 1).length < 1
       ) {
         toast({
-          title: "Please select atleast one main office",
+          title: t("please_select_atleast_one_main_office"),
           variant: "danger",
         });
         return;
@@ -341,7 +341,7 @@ export default function CompanyProfilePage() {
         data.branchList.filter((item: any) => item.mainOffice === 1).length > 1
       ) {
         toast({
-          title: "Please select only one main office",
+          title: t("please_select_only_one_main_office"),
           variant: "danger",
         });
         return;
@@ -372,7 +372,7 @@ export default function CompanyProfilePage() {
 
     if (response.status && response.data) {
       toast({
-        title: "Profile Create Successful",
+        title: t("profile_create_successful"),
         description: response.message,
         variant: "success",
       });
@@ -380,7 +380,7 @@ export default function CompanyProfilePage() {
       router.push("/company-profile-details");
     } else {
       toast({
-        title: "Profile Create Failed",
+        title: t("profile_create_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -475,8 +475,7 @@ export default function CompanyProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title:
-                                          "Image size should be less than 500MB",
+                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                         variant: "danger",
                                       });
                                       return;
@@ -689,7 +688,7 @@ export default function CompanyProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: "Image size should be less than 500MB",
+                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                         variant: "danger",
                                       });
                                       return;
@@ -767,8 +766,7 @@ export default function CompanyProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title:
-                                          "Image size should be less than 500MB",
+                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                         variant: "danger",
                                       });
                                       return;

@@ -36,8 +36,8 @@ const WishlistPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -48,8 +48,8 @@ const WishlistPage = () => {
       });
     } else {
       toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }

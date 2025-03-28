@@ -218,7 +218,7 @@ export default function EditBranchPage() {
 
     if (response.status && response.data) {
       toast({
-        title: "Profile Edit Successful",
+        title: t("profile_edit_successful"),
         description: response.message,
         variant: "success",
       });
@@ -229,7 +229,7 @@ export default function EditBranchPage() {
       router.push("/freelancer-profile-details");
     } else {
       toast({
-        title: "Profile Edit Failed",
+        title: t("profile_edit_failed"),
         description: response.message,
         variant: "danger",
       });

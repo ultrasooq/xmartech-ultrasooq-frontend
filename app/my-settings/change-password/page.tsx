@@ -82,7 +82,7 @@ export default function ChangePasswordPage() {
     const response = await changePassword.mutateAsync(values, {
       onError: (err) => {
         toast({
-          title: "Password Change Failed",
+          title: t("password_change_failed"),
           description: err?.response?.data?.message,
           variant: "danger",
         });
@@ -93,7 +93,7 @@ export default function ChangePasswordPage() {
 
     if (response?.status && response?.data) {
       toast({
-        title: "Password Change Successful",
+        title: t("password_change_successful"),
         description: response?.message,
         variant: "success",
       });
@@ -106,7 +106,7 @@ export default function ChangePasswordPage() {
       }, 3000);
     } else {
       toast({
-        title: "Password Change Failed",
+        title: t("password_change_failed"),
         description: response?.message,
         variant: "danger",
       });

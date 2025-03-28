@@ -9,8 +9,10 @@ import Link from "next/link";
 import { getInitials } from "@/utils/helper";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
+  const t = useTranslations();
   const pathname = usePathname();
   const isActivePath = (path: string) => path === pathname;
 
@@ -59,7 +61,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                     <span className="icon-container">
                       <PackageIcon />
                     </span>
-                    <span className="text-container">My Orders</span>
+                    <span className="text-container">{t("my_orders")}</span>
                     {/* TODO: commented for now */}
                     {/* <span className="arow">
                       <ChevronDownIcon />
@@ -71,7 +73,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                     <span className="icon-container">
                       <UserIcon />
                     </span>
-                    <span className="text-container">Account Settings</span>
+                    <span className="text-container">{t("account_settings")}</span>
                     <span className="arow">
                       <ChevronDownIcon />
                     </span>
@@ -85,7 +87,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                           isActivePath("/my-settings/address") ? "active" : "",
                         )}
                       >
-                        Manage Address
+                        {t("manage_address")}
                       </Link>
                     </div>
                     {me.data?.data?.loginType === "MANUAL" ? (
@@ -100,7 +102,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                                 : "",
                             )}
                           >
-                            Change Password
+                            {t("change_password")}
                           </Link>
                         </div>
                         <div className="sub-menu-li">
@@ -113,7 +115,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                                 : "",
                             )}
                           >
-                            Change Email
+                            {t("change_email")}
                           </Link>
                         </div>
                       </>

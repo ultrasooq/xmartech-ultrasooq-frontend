@@ -44,8 +44,8 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
     const response = await delteAddress.mutateAsync({ userAddressId });
     if (response.status) {
       toast({
-        title: "Address removed",
-        description: "Check your address for more details",
+        title: t("address_removed"),
+        description: t("check_your_address_for_more_details"),
         variant: "success",
       });
     }

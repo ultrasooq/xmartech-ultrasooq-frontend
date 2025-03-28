@@ -135,11 +135,11 @@ export default function EditProfilePage() {
 
     const response = await updateCompanyProfile.mutateAsync(data);
     if (response.status && response.data) {
-      toast({ title: "Profile Edit Successful", description: response.message, variant: "success", });
+      toast({ title: t("profile_edit_successful"), description: response.message, variant: "success", });
       form.reset();
       router.push("/company-profile-details");
     } else {
-      toast({ title: "Profile Edit Failed", description: response.message, variant: "danger", });
+      toast({ title: t("profile_edit_failed"), description: response.message, variant: "danger", });
     }
   };
 
@@ -265,7 +265,7 @@ export default function EditProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: "Image size should be less than 500MB",
+                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                         variant: "danger",
                                       });
                                       return;
@@ -365,8 +365,8 @@ export default function EditProfilePage() {
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                   {/* TODO: fix submit value type */}
-                  <ControlledSelectInput label="Year Of Establishment" name="yearOfEstablishment" options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))} />
-                  <ControlledSelectInput label="Total Number of Employees" name="totalNoOfEmployee" options={NO_OF_EMPLOYEES_LIST} />
+                  <ControlledSelectInput label={t("year_of_establishment")} name="yearOfEstablishment" options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))} />
+                  <ControlledSelectInput label={t("total_no_of_employees")} name="totalNoOfEmployee" options={NO_OF_EMPLOYEES_LIST} />
                 </div>
 
                 <QuillEditor label={t("about_us")} name="aboutUsJson" />
@@ -381,7 +381,7 @@ export default function EditProfilePage() {
                     {t("please_wait")}
                   </>
                 ) : (
-                  "Edit changes"
+                  t("edit_changes")
                 )
               }
             </Button>

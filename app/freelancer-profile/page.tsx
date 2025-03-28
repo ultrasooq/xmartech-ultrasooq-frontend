@@ -30,6 +30,7 @@ import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTe
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
+import { useTranslations } from "next-intl";
 
 const formSchema = z
   .object({
@@ -134,6 +135,7 @@ const formSchema = z
   });
 
 export default function FreelancerProfilePage() {
+  const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -213,7 +215,7 @@ export default function FreelancerProfilePage() {
 
     if (response.status && response.data) {
       toast({
-        title: "Profile Create Successful",
+        title: t("profile_create_successful"),
         description: response.message,
         variant: "success",
       });
@@ -221,7 +223,7 @@ export default function FreelancerProfilePage() {
       router.push("/freelancer-profile-details");
     } else {
       toast({
-        title: "Profile Create Failed",
+        title: t("profile_create_failed"),
         description: response.message,
         variant: "danger",
       });

@@ -15,6 +15,7 @@ import {
   AccordionTrigger,
 } from "../ui/accordion";
 import { OptionProps } from "@/utils/types/common.types";
+import { useTranslations } from "next-intl";
 
 type AccordionMultiSelectV2Props = {
   label: string;
@@ -35,6 +36,8 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
   createOption = null,
   error,
 }) => {
+  const t = useTranslations();
+  
   const formContext = useFormContext();
 
   const watcher = formContext.watch(name);
@@ -78,7 +81,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
                 </p>
               ))}
               {!(watcher || [])?.length ? (
-                <p className="capitalize">Select {placeholder}</p>
+                <p className="capitalize">{t("select")} {placeholder}</p>
               ) : null}
             </div>
           </AccordionTrigger>

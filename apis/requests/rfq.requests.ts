@@ -129,7 +129,8 @@ export const fetchFactoriesCartByUserId = (payload: {
 export const updateRfqCartWithLogin = (payload: {
   productId: number;
   quantity: number;
-  offerPrice: number;
+  offerPriceFrom: number;
+  offerPriceTo: number;
   note: string;
 }) => {
   return axios({
@@ -179,7 +180,8 @@ export const addFactoriesProductApi = (payload: {
 export const addCustomizeProductApi = (payload: {
   productId: number;
   note: string;
-  price: number;
+  fromPrice: number;
+  toPrice: number
 }) => {
   return axios({
     method: "POST",

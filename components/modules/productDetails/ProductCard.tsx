@@ -85,16 +85,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     [productReview?.length],
   );
 
-  // const copyToClipboard = () => {
-  //   if (!isBrowser()) return;
-  //   navigator.clipboard.writeText(`https://dev.ultrasooq.com/trending/${id}`);
-  //   toast({
-  //     title: "Copied",
-  //     description: "Link copied to clipboard",
-  //     variant: "info",
-  //   });
-  // };
-
   return (
     <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
       <Link href={`/trending/${id}`}>

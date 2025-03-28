@@ -275,7 +275,7 @@ export default function EditBranchPage() {
 
     if (response.status && response.data) {
       toast({
-        title: "Profile Edit Successful",
+        title: t("profile_edit_successful"),
         description: response.message,
         variant: "success",
       });
@@ -286,7 +286,7 @@ export default function EditBranchPage() {
       router.push("/company-profile-details");
     } else {
       toast({
-        title: "Profile Edit Failed",
+        title: t("profile_edit_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -465,7 +465,7 @@ export default function EditBranchPage() {
                                 if (event.target.files?.[0]) {
                                   if (event.target.files[0].size > 524288000) {
                                     toast({
-                                      title: "Image size should be less than 500MB",
+                                      title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                       variant: "danger",
                                     });
                                     return;
@@ -540,8 +540,7 @@ export default function EditBranchPage() {
                                 if (event.target.files?.[0]) {
                                   if (event.target.files[0].size > 524288000) {
                                     toast({
-                                      title:
-                                        "Image size should be less than 500MB",
+                                      title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                       variant: "danger",
                                     });
                                     return;

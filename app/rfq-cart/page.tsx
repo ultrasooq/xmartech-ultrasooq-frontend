@@ -80,20 +80,22 @@ const RfqCartPage = () => {
     quantity: number,
     productId: number,
     actionType: "add" | "remove",
-    offerPrice: number,
-    note: string,
+    offerPriceFrom?: number,
+    offerPriceTo?: number,
+    note?: string,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
-      offerPrice,
-      note,
+      offerPriceFrom: offerPriceFrom || 0,
+      offerPriceTo: offerPriceTo || 0,
+      note: note || '',
     });
 
     if (response.status) {
       toast({
-        title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-        description: "Check your cart for more details",
+        title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -103,8 +105,8 @@ const RfqCartPage = () => {
     const response = await deleteRfqCartItem.mutateAsync({ rfqCartId });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -134,8 +136,8 @@ const RfqCartPage = () => {
     const response = await addQuotes.mutateAsync(updatedFormData);
     if (response.status) {
       toast({
-        title: "Quotes added successfully",
-        description: "Check your quotes for more details",
+        title: t("quotes_added_successfully"),
+        description: t("check_your_quotes_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -145,7 +147,7 @@ const RfqCartPage = () => {
       router.push("/rfq-quotes");
     } else {
       toast({
-        title: "Something went wrong",
+        title: t("something_went_wrong"),
         description: response.message,
         variant: "danger",
       });
@@ -202,7 +204,8 @@ const RfqCartPage = () => {
                       productImages={
                         item?.rfqCart_productDetails?.productImages
                       }
-                      offerPrice={item?.rfqCart_productDetails?.offerPrice}
+                      offerPriceFrom={item?.offerPriceFrom}
+                      offerPriceTo={item?.offerPriceTo}
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromRfqCart}
                       note={item?.note}

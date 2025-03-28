@@ -314,22 +314,26 @@ export const imageExtensions: string[] = [
 
 export const CONSUMER_TYPE_LIST = [
   {
-    label: "Consumer",
+    label: "consumer",
     value: "CONSUMER",
   },
   {
-    label: "Vendors",
+    label: "vendor",
     value: "VENDORS",
+  },
+  {
+    label: "everyone",
+    value: "EVERYONE",
   },
 ];
 
 export const SELL_TYPE_LIST = [
   {
-    label: "Normal Sell",
+    label: "normal_sell",
     value: "NORMALSELL",
   },
   {
-    label: "Buy Group",
+    label: "buy_group",
     value: "BUYGROUP",
   },
 ];
@@ -367,11 +371,11 @@ export const DELIVER_AFTER_LIST = [
 
 export const PRODUCT_CONDITION_LIST = [
   {
-    label: "New",
+    label: "new",
     value: "NEW",
   },
   {
-    label: "Old",
+    label: "old",
     value: "OLD",
   },
 ];
@@ -396,3 +400,8 @@ export const CHAT_REQUEST_MESSAGE = {
     value: "Requested for Offer Price ",
   },
 };
+
+export const STORE_MENU_ID = 188;
+export const BUYGROUP_MENU_ID = 189;
+export const FACTORIES_MENU_ID = 190;
+export const RFQ_MENU_ID = 191;

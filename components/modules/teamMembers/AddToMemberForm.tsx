@@ -38,38 +38,44 @@ type AddToMemberFormProps = {
   memberDetails: any;
 };
 
-const addFormSchema = z.object({
-  firstName: z
-    .string()
-    .trim()
-    .min(2, { message: "First Name is required" })
-    .regex(/^[A-Za-z\s]+$/, {
-      message: "First Name must contain only letters",
-    }),
+const addFormSchema = (t: any) => {
+  return z.object({
+    firstName: z
+      .string()
+      .trim()
+      .min(2, { message: t("first_name_required") })
+      .regex(/^[A-Za-z\s]+$/, {
+        message: t("first_name_must_only_contain_letters"),
+      }),
+  
+    lastName: z
+      .string()
+      .trim()
+      .regex(/^[A-Za-z\s]+$/, { message: t("last_name_must_only_contain_letters") })
+      .optional(), // Apply validation first, then make it optional
+  
+    email: z
+      .string()
+      .trim()
+      .min(2, { message: t("email_is_required") })
+      .email({ message: t("invalid_email_address") }),
 
-  lastName: z
-    .string()
-    .trim()
-    .regex(/^[A-Za-z\s]+$/, { message: "Last Name must contain only letters" })
-    .optional(), // Apply validation first, then make it optional
+    userRoleId: z.number({ required_error: t("user_role_required") })
+      .min(1, { message: t("user_role_required") }), // Ensure it stays a number
 
-  email: z
-    .string()
-    .trim()
-    .min(2, { message: "Email is required" })
-    .email({ message: "Invalid email format" }),
-  userRoleId: z.number().min(1, { message: "User Role is required" }), // Ensure it stays a number
-  tradeRole: z.string().optional(),
-  phoneNumber: z
-    .string()
-    .trim()
-    .regex(/^[0-9]{10,15}$/, { message: "Phone number must be 10-15 digits" })
-    .optional(), // Apply validation first, then make it optional
-
-  status: z.enum(["ACTIVE", "INACTIVE"], {
-    message: "Status must be ACTIVE or INACTIVE",
-  }), // ✅ Added status field
-});
+    tradeRole: z.string().optional(),
+    
+    phoneNumber: z
+      .string()
+      .trim()
+      .regex(/^[0-9]{10,15}$/, { message: t("phone_number_must_be_10_15_digits") })
+      .optional(), // Apply validation first, then make it optional
+  
+    status: z.enum(["ACTIVE", "INACTIVE"], {
+      message: t("status_must_be_active_inactive"),
+    }), // ✅ Added status field
+  })
+};
 
 const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   onClose,
@@ -100,7 +106,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
 
     if (response.status && response.data) {
       toast({
-        title: "User Role Create Successful",
+        title: t("user_role_create_successful"),
         description: response.message,
         variant: "success",
       });
@@ -108,7 +114,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
       form.setValue("userRoleId", response.data.id);
     } else {
       toast({
-        title: "User Role Create Failed",
+        title: t("user_role_create_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -127,7 +133,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   };
 
   const form = useForm({
-    resolver: zodResolver(addFormSchema),
+    resolver: zodResolver(addFormSchema(t)),
     defaultValues: addDefaultValues,
   });
 
@@ -189,7 +195,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
           <ControlledTextInput
             label={t("last_name")}
             name="lastName"
-            placeholder={t("last_name_plceholder")}
+            placeholder={t("last_name_placeholder")}
             type="text"
           />
 
@@ -209,45 +215,13 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
           />
 
           <div className="flex w-full items-center gap-1.5">
-            <Label>User Role</Label>
-            {/* <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-4 w-4 cursor-pointer text-gray-500" />
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  Type a role in the select box and press <strong>Enter</strong>{" "}
-                  to create a new User Role.
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
+            <Label>{t("user_role")}</Label>
           </div>
-
           <Controller
             name="userRoleId"
             control={form.control} // ✅ Use form.control instead
             render={({ field }) => (
               <>
-                {/* <CreatableSelect
-                name={field.name}
-                isClearable
-                isDisabled={createUserRole.isPending}
-                isLoading={createUserRole.isPending}
-                onChange={(newValue) => {
-                  const numericValue = newValue ? Number(newValue.value) : 0; // Ensure it's a number
-                  field.onChange(numericValue); // Pass the correct numeric value
-                  setValue(newValue);
-                }}
-                onCreateOption={handleCreate}
-                options={memoizedUserRole}
-                value={memoizedUserRole.find(
-                  (item: IOption) => Number(item.value) === field.value,
-                )}
-                styles={customStyles}
-                instanceId="userRoleId"
-                className="z-[999]"
-              /> */}
-
                 <Select
                   name={field.name}
                   onChange={(newValue) => {
@@ -269,6 +243,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
                   instanceId="userRoleId"
                   className="z-[9999]"
                   isSearchable={true} // Keep search enabled
+                  placeholder={t("select")}
                 />
                 {/* Validation Error Message */}
                 {form.formState.errors.userRoleId && (
@@ -289,16 +264,16 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             render={({ field }) => (
               <Select
                 options={[
-                  { value: "ACTIVE", label: "ACTIVE" },
-                  { value: "INACTIVE", label: "INACTIVE" },
+                  { value: "ACTIVE", label: t("active").toUpperCase() },
+                  { value: "INACTIVE", label: t("inactive").toUpperCase() },
                 ]}
-                value={{ value: field.value, label: field.value }}
                 onChange={(selectedOption) =>
                   field.onChange(selectedOption?.value)
                 }
                 className="z-[999]"
                 instanceId="status"
                 styles={customStyles}
+                placeholder={t("select")}
               />
             )}
           />

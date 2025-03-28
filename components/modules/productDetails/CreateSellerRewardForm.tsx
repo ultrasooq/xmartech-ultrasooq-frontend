@@ -15,17 +15,19 @@ import { useAllManagedProducts } from "@/apis/queries/product.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import { useTranslations } from "next-intl";
 
-const addFormSchema = z.object({
-    productId: z.string().min(1, "Product is required"),
-    startDate: z.string().min(2, { message: "Start date is required" }),
-    startTime: z.string().min(2, { message: "Start time is required" }),
-    endDate: z.string().min(2, { message: "End date is required" }),
-    endTime: z.string().min(2, { message: "End time is required" }),
-    rewardPercentage: z.coerce.number().min(1, { message: 'Minimum value must be 1' }),
-    rewardFixAmount: z.coerce.number().min(1, { message: 'Minimum value must be 1' }),
-    minimumOrder: z.coerce.number().min(1, { message: 'Minimum order must be 1' }),
-    stock: z.coerce.number().min(1, { message: 'Minimum stock must be 1' })
-});
+const addFormSchema = (t: any) => {
+    return z.object({
+        productId: z.string().min(1, t("product_required")),
+        startDate: z.string().min(2, { message: t("start_date_required") }),
+        startTime: z.string().min(2, { message: t("start_time_required") }),
+        endDate: z.string().min(2, { message: t("end_date_required") }),
+        endTime: z.string().min(2, { message: t("end_time_required") }),
+        rewardPercentage: z.coerce.number().min(1, { message: t("minimum_value_must_be_n", { n: 1 }) }),
+        rewardFixAmount: z.coerce.number().min(1, { message: t("minimum_value_must_be_n", { n: 1 }) }),
+        minimumOrder: z.coerce.number().min(1, { message: t("minimum_order_must_be_n", { n: 1 }) }),
+        stock: z.coerce.number().min(1, { message: t("minimum_stock_must_be_n", { n: 1 }) })
+    });
+};
 
 type CreateSellerRewardFormProps = {
     onClose: () => void;
@@ -51,7 +53,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
     };
 
     const form = useForm({
-        resolver: zodResolver(addFormSchema),
+        resolver: zodResolver(addFormSchema(t)),
         defaultValues: addDefaultValues,
     });
 
@@ -74,14 +76,14 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
         }));
     }, [productsQuery?.data?.data]);
 
-    const onSubmit = async (values: z.infer<typeof addFormSchema>) => {
+    const onSubmit = async (values: typeof addDefaultValues) => {
         let startDateTime = values.startDate + ' ' + values.startTime + ':00';
         let endDateTime = values.endDate + ' ' + values.endTime + ':00';
 
         if (new Date(startDateTime).getTime() < new Date().getTime()) {
             toast({
-                title: "Datetime error",
-                description: 'Start datetime can not be in the past',
+                title: t("datetime_error"),
+                description: t("start_datetime_cant_be_in_past"),
                 variant: "danger",
             });
             return;
@@ -89,8 +91,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
 
         if (new Date(values.startDate).getTime() > new Date(values.endDate).getTime()) {
             toast({
-                title: "Datetime error",
-                description: 'Start date can not be greater than end date',
+                title: t("datetime_error"),
+                description: t("start_date_cant_be_greater_than_end_date"),
                 variant: "danger",
             });
             return;
@@ -98,8 +100,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
 
         if (values.startDate == values.endDate && new Date(startDateTime).getTime() >= new Date(endDateTime).getTime()) {
             toast({
-                title: "Datetime error",
-                description: 'Start time must be less than end time',
+                title: t("datetime_error"),
+                description: t("start_time_must_be_less_than_end_time"),
                 variant: "danger",
             });
             return;
@@ -117,7 +119,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
 
         if (response.status) {
             toast({
-                title: "Seller Reward Added Successfully",
+                title: t("seller_reward_add_successful"),
                 description: response.message,
                 variant: "success",
             });
@@ -126,7 +128,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
             onClose();
         } else {
             toast({
-                title: "Seller Reward Add Failed",
+                title: t("seller_reward_add_failed"),
                 description: response.message,
                 variant: "danger",
             });
@@ -278,7 +280,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         disabled={addSellerReward?.isPending}
                         className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                     >
-                        {!addSellerReward?.isPending ? "Create Reward" : "Processing"}
+                        {!addSellerReward?.isPending ? t("create_reward") : t("processing")}
                     </Button>
                 </form>
             </Form>

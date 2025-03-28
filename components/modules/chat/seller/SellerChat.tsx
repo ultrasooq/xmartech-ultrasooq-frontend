@@ -149,7 +149,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
   useEffect(() => {
     if (errorMessage) {
       toast({
-        title: "Chat",
+        title: t("chat"),
         description: errorMessage,
         variant: "danger",
       });
@@ -197,8 +197,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed to update the attachment status",
+        title: t("chat"),
+        description: t("attachment_update_status_failed"),
         variant: "danger",
       });
     }
@@ -294,15 +294,15 @@ const SellerChat: React.FC<SellerChatProps> = () => {
         setShowEmoji(false);
       } else {
         toast({
-          title: "Chat",
-          description: "Please type your message",
+          title: t("chat"),
+          description: t("please_type_your_message"),
           variant: "danger",
         });
       }
     } catch (error) {
       toast({
-        title: "Chat",
-        description: "Failed!",
+        title: t("chat"),
+        description: t("failed"),
         variant: "danger",
       });
     }

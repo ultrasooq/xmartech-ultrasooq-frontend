@@ -44,60 +44,64 @@ import ClostIcon from "@/public/images/close-white.svg";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  uploadImage: z.any().optional(),
-  uploadIdentityFrontImage: z.any().optional(),
-  uploadIdentityBackImage: z.any().optional(),
-  profilePicture: z.string().trim().optional(),
-  identityProof: z.string().trim().optional(),
-  identityProofBack: z.string().trim().optional(),
-  firstName: z
-    .string()
-    .trim()
-    .min(2, { message: "First Name is required" })
-    .max(50, { message: "First Name must be less than 50 characters" }),
-  lastName: z
-    .string()
-    .trim()
-    .min(2, { message: "Last Name is required" })
-    .max(50, { message: "Last Name must be less than 50 characters" }),
-  gender: z.string().trim().min(2, { message: "Gender is required" }),
-  userName: z.string().trim().min(5, { message: "Username is required" }),
-  email: z
-    .string()
-    .trim()
-    .min(5, { message: "Email is required" })
-    .email({
-      message: "Invalid Email Address",
-    })
-    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
-      message: "Email must be in lower case",
-    }),
-  phoneNumberList: z.array(
-    z.object({
-      cc: z.string().trim(),
-      phoneNumber: z
-        .string()
-        .trim()
-        .min(2, {
-          message: "Phone Number is required",
-        })
-        .min(8, {
-          message: "Phone Number must be minimum of 8 digits",
-        })
-        .max(20, {
-          message: "Phone Number cannot be more than 20 digits",
-        }),
-    }),
-  ),
-  socialLinkList: z.array(
-    z.object({
-      linkType: z.string().trim(),
-      link: z.string().trim(),
-    }),
-  ),
-  dateOfBirth: z.date({ required_error: "Date of Birth is required" }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    uploadImage: z.any().optional(),
+    uploadIdentityFrontImage: z.any().optional(),
+    uploadIdentityBackImage: z.any().optional(),
+    profilePicture: z.string().trim().optional(),
+    identityProof: z.string().trim().optional(),
+    identityProofBack: z.string().trim().optional(),
+    firstName: z
+      .string()
+      .trim()
+      .min(2, { message: t("first_name_required") })
+      .max(50, { message: t("first_name_must_be_50_chars_only") })
+      .regex(/^[A-Za-z\s]+$/, { message: t("first_name_must_only_contain_letters") }),
+    lastName: z
+      .string()
+      .trim()
+      .min(2, { message: t("last_name_requierd") })
+      .max(50, { message: t("last_name_must_be_50_chars_only") })
+      .regex(/^[A-Za-z\s]+$/, { message: t("last_name_must_only_contain_letters") }),
+    gender: z.string().trim().min(2, { message: t("gender_required") }),
+    userName: z.string().trim().min(5, { message: t("username_required") }),
+    email: z
+      .string()
+      .trim()
+      .min(5, { message: t("email_is_required") })
+      .email({
+        message: t("invalid_email_address"),
+      })
+      .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+        message: t("email_must_be_lower_case"),
+      }),
+    phoneNumberList: z.array(
+      z.object({
+        cc: z.string().trim(),
+        phoneNumber: z
+          .string()
+          .trim()
+          .min(2, {
+            message: t("phone_number_required"),
+          })
+          .min(8, {
+            message: t("phone_number_must_be_min_8_digits"),
+          })
+          .max(20, {
+            message: t("phone_number_cant_be_more_than_20_digits"),
+          }),
+      }),
+    ),
+    socialLinkList: z.array(
+      z.object({
+        linkType: z.string().trim(),
+        link: z.string().trim(),
+      }),
+    ),
+    dateOfBirth: z.date({ required_error: t("dob_required") }),
+  });
+};
 
 export default function ProfilePage() {
   const t = useTranslations();
@@ -106,7 +110,7 @@ export default function ProfilePage() {
   const frontIdentityRef = useRef<HTMLInputElement>(null);
   const backIdentityRef = useRef<HTMLInputElement>(null);
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       uploadImage: undefined,
       uploadIdentityFrontImage: undefined,
@@ -183,7 +187,7 @@ export default function ProfilePage() {
     }
   };
 
-  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+  const onSubmit = async (formData: any) => {
     const data = { ...formData, phoneNumber: formData.phoneNumberList[0].phoneNumber, dateOfBirth: formData.dateOfBirth.toISOString(), };
 
     formData.uploadImage = imageFile;
@@ -218,9 +222,9 @@ export default function ProfilePage() {
       data.identityProofBack = getIdentityBackImageUrl;
     }
 
-    data.socialLinkList = data.socialLinkList.filter((link) => link.link.trim() !== "" && link.linkType.trim() !== "",);
+    data.socialLinkList = data.socialLinkList.filter((link: any) => link.link.trim() !== "" && link.linkType.trim() !== "",);
 
-    if (data.socialLinkList.length && data.socialLinkList.some((link) => !validator.isURL(link.link))) {
+    if (data.socialLinkList.length && data.socialLinkList.some((link: any) => !validator.isURL(link.link))) {
       form.setError("socialLinkList", { type: "custom", message: "Invalid URL", });
       return;
     }
@@ -228,7 +232,7 @@ export default function ProfilePage() {
     // return;
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
-      toast({ title: "Profile Updated", description: "Your profile has been updated successfully", variant: "success", });
+      toast({ title: t("profile_updated"), description: t("profile_update_info"), variant: "success", });
       form.reset();
       const tradeRole = response.data?.tradeRole;
       if (tradeRole === "BUYER") {
@@ -249,7 +253,7 @@ export default function ProfilePage() {
         router.push("/member-profile-details");
       }
     } else {
-      toast({ title: "Profile Update Failed", description: response.message, variant: "danger", });
+      toast({ title: t("profile_update_failed"), description: response.message, variant: "danger", });
     }
   };
 
@@ -382,8 +386,7 @@ export default function ProfilePage() {
                                     event.target.files[0].size > 524288000
                                   ) {
                                     toast({
-                                      title:
-                                        "Image size should be less than 500MB",
+                                      title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                       variant: "danger",
                                     });
                                     return;
@@ -630,7 +633,7 @@ export default function ProfilePage() {
                           </FormLabel>
                           <div className="upload-identity-proof-both-side">
                             <div className="upload-identity-proof-both-side-col">
-                              <FormLabel className="block">Front</FormLabel>
+                              <FormLabel className="block">{t("front")}</FormLabel>
                               <FormControl>
                                 <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
@@ -691,8 +694,7 @@ export default function ProfilePage() {
                                             524288000
                                           ) {
                                             toast({
-                                              title:
-                                                "Image size should be less than 500MB",
+                                              title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;
@@ -711,7 +713,7 @@ export default function ProfilePage() {
                               </FormControl>
                             </div>
                             <div className="upload-identity-proof-both-side-col">
-                              <FormLabel className="block">Back</FormLabel>
+                              <FormLabel className="block">{t("back")}</FormLabel>
                               <FormControl>
                                 <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
@@ -775,8 +777,7 @@ export default function ProfilePage() {
                                             524288000
                                           ) {
                                             toast({
-                                              title:
-                                                "Image size should be less than 500MB",
+                                              title: t("image_size_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;

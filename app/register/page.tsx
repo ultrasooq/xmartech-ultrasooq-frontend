@@ -157,8 +157,8 @@ export default function RegisterPage() {
 
     if (response?.status && response?.otp) {
       toast({
-        title: "Verification code sent",
-        description: "OTP has been sent to your email/phone",
+        title: t("verification_code_sent"),
+        description: t("verification_code_info"),
         variant: "success",
       });
       sessionStorage.setItem("email", formData.email.toLowerCase());
@@ -171,7 +171,7 @@ export default function RegisterPage() {
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       });
       toast({
-        title: "Registration Successful",
+        title: t("registration_successful"),
         description: response.message,
         variant: "success",
       });
@@ -179,7 +179,7 @@ export default function RegisterPage() {
       router.push("/profile");
     } else {
       toast({
-        title: "Registration Failed",
+        title: t("registration_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -201,7 +201,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <title>Register | Ultrasooq</title>
+      <title>{t("register")} | Ultrasooq</title>
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
@@ -421,12 +421,12 @@ export default function RegisterPage() {
                 </Form>
                 <div className="mb-4 w-full text-center">
                   <span className="text-sm font-medium leading-4 text-light-gray">
-                    Do you already have an account?{" "}
+                    {t("already_have_an_account")}{" "}
                     <Link
                       href="/login"
                       className="cursor-pointer font-medium text-dark-orange"
                     >
-                      Sign in
+                      {t("sign_in")}
                     </Link>
                   </span>
                 </div>

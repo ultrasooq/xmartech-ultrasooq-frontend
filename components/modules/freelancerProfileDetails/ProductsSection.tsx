@@ -9,12 +9,14 @@ import {
   useAddToWishList,
   useDeleteFromWishList,
 } from "@/apis/queries/wishlist.queries";
+import { useTranslations } from "next-intl";
 
 type ProductsSectionProps = {
   sellerId?: string;
 };
 
 const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
+  const t = useTranslations();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -108,8 +110,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
     });
     if (response.status) {
       toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -120,8 +122,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
       });
     } else {
       toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -130,8 +132,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
   const handleAddToCart = async (quantity: number, productPriceId?: number) => {
     if (!productPriceId) {
       toast({
-        title: `Oops! Something went wrong`,
-        description: "Product Price Id not found",
+        title: t("something_went_wrong"),
+        description: t("product_price_id_not_found"),
         variant: "danger",
       });
       return;
@@ -143,8 +145,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
 
     if (response.status) {
       toast({
-        title: `Item added to cart`,
-        description: "Check your cart for more details",
+        title: t("item_added_to_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     }
@@ -168,8 +170,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
     });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -180,8 +182,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -205,7 +207,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
         </p>
       ) : null}
 
-      <div className="grid grid-cols-5 gap-3">
+      <div className="flex flex-wrap gap-3 md:grid md:grid-cols-5">
         {!sellerId &&
           memoizedProducts.map((item: any) => (
             <ProductCard

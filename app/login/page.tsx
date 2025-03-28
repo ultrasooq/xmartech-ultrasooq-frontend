@@ -28,27 +28,29 @@ import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { fetchUserPermissions } from "@/apis/requests/user.requests";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(5, { message: "Email is required" })
-    .email({
-      message: "Invalid Email Address",
-    })
-    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
-      message: "Email must be in lower case",
-    }),
-  password: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Password is required",
-    })
-    .min(8, {
-      message: "Password must be longer than or equal to 8 characters",
-    }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    email: z
+      .string()
+      .trim()
+      .min(5, { message: t("email_is_required") })
+      .email({
+        message: t("invalid_email_address"),
+      })
+      .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+        message: t("email_must_be_lower_case"),
+      }),
+    password: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("password_is_required"),
+      })
+      .min(8, {
+        message: t("password_characters_limit_n", { n: 8 }),
+      }),
+  });
+};
 
 export default function LoginPage() {
   const t = useTranslations();
@@ -58,12 +60,13 @@ export default function LoginPage() {
   const { setUser, setPermissions } = useAuth();
   const [rememberMe, setRememberMe] = useState<CheckedState>(false);
 
+  const defaultValues = {
+    email: "",
+    password: "",
+  };
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    resolver: zodResolver(formSchema(t)),
+    defaultValues: defaultValues,
   });
   const deviceId = getOrCreateDeviceId() || "";
 
@@ -71,7 +74,7 @@ export default function LoginPage() {
   const login = useLogin();
   const updateCart = useUpdateUserCartByDeviceId();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: typeof defaultValues) => {
     const response: any = await login.mutateAsync(values);
 
     if (response?.status && response?.accessToken) {
@@ -101,8 +104,8 @@ export default function LoginPage() {
       }
 
       toast({
-        title: "Login Successful",
-        description: "You have successfully logged in.",
+        title: t("login_successful"),
+        description: t("you_have_successfully_logged_in"),
         variant: "success",
       });
       form.reset();
@@ -112,7 +115,7 @@ export default function LoginPage() {
 
     if (response?.status && response?.data?.status === "INACTIVE") {
       toast({
-        title: "Login In progress",
+        title: t("login_in_progress"),
         description: response.message,
         variant: "success",
       });
@@ -123,7 +126,7 @@ export default function LoginPage() {
     }
 
     toast({
-      title: "Login Failed",
+      title: t("login_failed"),
       description: response.message,
       variant: "danger",
     });
@@ -145,8 +148,8 @@ export default function LoginPage() {
     });
     if (response?.status && response?.data) {
       toast({
-        title: "Login Successful",
-        description: "You have successfully logged in.",
+        title: t("login_successful"),
+        description: t("you_have_successfully_logged_in"),
         variant: "success",
       });
       setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
@@ -159,7 +162,7 @@ export default function LoginPage() {
       router.push("/home");
     } else {
       toast({
-        title: "Login Failed",
+        title: t("login_failed"),
         description: response?.message,
         variant: "danger",
       });
@@ -254,7 +257,7 @@ export default function LoginPage() {
                         className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                       >
                         {login.isPending ? (
-                          <LoaderWithMessage message="Please wait" />
+                          <LoaderWithMessage message={t("please_wait")} />
                         ) : (
                           t("login")
                         )}
@@ -264,12 +267,12 @@ export default function LoginPage() {
                 </Form>
                 <div className="mb-4 w-full text-center">
                   <span className="text-sm font-medium leading-4 text-light-gray">
-                    Don&apos;t have an account?{" "}
+                    {t("dont_have_an_account")}{" "}
                     <Link
                       href="/register"
                       className="cursor-pointer font-medium text-dark-orange"
                     >
-                      Signup
+                      {t("signup")}
                     </Link>
                   </span>
                 </div>
@@ -301,7 +304,7 @@ export default function LoginPage() {
                             height={20}
                             className="mr-2 animate-spin"
                           />
-                          <span>Please wait</span>
+                          <span>{t("please_wait")}</span>
                         </>
                       ) : (
                         <>
@@ -312,7 +315,7 @@ export default function LoginPage() {
                             height={26}
                             width={26}
                           />
-                          <span>Sign In with Facebook</span>
+                          <span>{t("facebook_sign_in")}</span>
                         </>
                       )}
                     </Button>
@@ -336,7 +339,7 @@ export default function LoginPage() {
                             height={20}
                             className="mr-2 animate-spin"
                           />
-                          <span>Please wait</span>
+                          <span>{t("please_wait")}</span>
                         </>
                       ) : (
                         <>
@@ -347,7 +350,7 @@ export default function LoginPage() {
                             height={26}
                             width={26}
                           />
-                          <span>Sign In with Google</span>
+                          <span>{t("google_sign_in")}</span>
                         </>
                       )}
                     </Button>

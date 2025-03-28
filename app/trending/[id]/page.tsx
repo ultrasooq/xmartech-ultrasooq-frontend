@@ -130,14 +130,14 @@ const ProductDetailsPage = () => {
     const response = await deleteCartItem.mutateAsync({ cartId });
     if (response.status) {
       toast({
-        title: "Item removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     } else {
       toast({
-        title: "Item not removed from cart",
-        description: "Check your cart for more details",
+        title: t("item_not_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "danger",
       });
     }
@@ -168,36 +168,64 @@ const ProductDetailsPage = () => {
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const handleQuantity = async (quantity: number, action: "add" | "remove") => {
-    handleAddToCart(quantity, action);
+    const isAddedToCart = hasItemByUser || hasItemByDevice;
+    if (isAddedToCart) {
+      handleAddToCart(quantity, action);
+    } else {
+      setGlobalQuantity(quantity);
+    }
   };
 
   const handleAddToCart = async (
     quantity: number,
     actionType: "add" | "remove",
   ) => {
+    const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+    if (actionType == "add" && minQuantity && minQuantity > quantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    const maxQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.maxQuantityPerCustomer : null; 
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    if (actionType == "remove" && minQuantity && minQuantity > quantity) {
+      quantity = 0;
+    }
+
     if (haveAccessToken) {
       if (!productDetails?.product_productPrice?.[0]?.id) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
       }
+
+      if (actionType == "add" && quantity == 0) {
+        quantity = minQuantity ?? 1;
+      }
+
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
       });
 
       if (response.status) {
-        if (actionType === "add" && quantity === 0) {
-          setGlobalQuantity(1);
-        } else {
-          setGlobalQuantity(quantity);
-        }
+        setGlobalQuantity(quantity);
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         setIsVisible(true); // Show the div when the button is clicked
@@ -206,8 +234,8 @@ const ProductDetailsPage = () => {
     } else {
       if (!productDetails?.product_productPrice?.[0]?.id) {
         toast({
-          title: `Oops! Something went wrong`,
-          description: "Product Price Id not found",
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
           variant: "danger",
         });
         return;
@@ -218,14 +246,10 @@ const ProductDetailsPage = () => {
         deviceId,
       });
       if (response.status) {
-        if (actionType === "add" && quantity === 0) {
-          setGlobalQuantity(1);
-        } else {
-          setGlobalQuantity(quantity);
-        }
+        setGlobalQuantity(quantity);
         toast({
-          title: `Item ${actionType === "add" ? "added to" : actionType === "remove" ? "removed from" : ""} cart`,
-          description: "Check your cart for more details",
+          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         setIsVisible(true); // Show the div when the button is clicked
@@ -234,14 +258,37 @@ const ProductDetailsPage = () => {
     }
   };
 
-  const handleCartPage = () => router.push("/cart");
+  const handleCartPage = async () => {
+    if ((getProductQuantityByUser || 0) >= 1 || (getProductQuantityByDevice || 0) >= 1) {
+      router.push("/cart");
+      return;
+    }
+
+    let quantity = globalQuantity;
+    if (quantity == 0) {
+      const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+      quantity = minQuantity || 1;
+    }
+    const response = await handleAddToCart(quantity, "add");
+    if (response) {
+      setTimeout(() => {
+        router.push("/cart");
+      }, 2000);
+    }
+  };
+  
   const handleCheckoutPage = async () => {
-    if (getProductQuantityByUser === 1 || getProductQuantityByDevice === 1) {
+    if ((getProductQuantityByUser || 0) >= 1 || (getProductQuantityByDevice || 0) >= 1) {
       router.push("/checkout");
       return;
     }
 
-    const response = await handleAddToCart(globalQuantity, "add");
+    let quantity = globalQuantity;
+    if (quantity == 0) {
+      const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+      quantity = minQuantity || 1;
+    }
+    const response = await handleAddToCart(quantity, "add");
     if (response) {
       setTimeout(() => {
         router.push("/checkout");
@@ -259,8 +306,8 @@ const ProductDetailsPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -271,8 +318,8 @@ const ProductDetailsPage = () => {
       });
     } else {
       toast({
-        title: "Item not removed from wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -289,8 +336,8 @@ const ProductDetailsPage = () => {
     });
     if (response.status) {
       toast({
-        title: "Item added to wishlist",
-        description: "Check your wishlist for more details",
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -301,8 +348,8 @@ const ProductDetailsPage = () => {
       });
     } else {
       toast({
-        title: response.message || "Item not added to wishlist",
-        description: "Check your wishlist for more details",
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
@@ -346,6 +393,8 @@ const ProductDetailsPage = () => {
               askForPrice={
                 productDetails?.product_productPrice?.[0]?.askForPrice
               }
+              isAddedToCart={hasItemByUser || hasItemByDevice}
+              cartQuantity={globalQuantity}
             />
             <ProductDescriptionCard
               productId={searchParams?.id ? (searchParams?.id as string) : ""}
@@ -389,6 +438,12 @@ const ProductDetailsPage = () => {
               }
               askForPrice={
                 productDetails?.product_productPrice?.[0]?.askForPrice
+              }
+              minQuantity={
+                productDetails?.product_productPrice?.[0]?.minQuantityPerCustomer
+              }
+              maxQuantity={
+                productDetails?.product_productPrice?.[0]?.maxQuantityPerCustomer
               }
               otherSellerDetails={otherSellerDetails}
               productPriceArr={productDetails?.product_productPrice}
@@ -589,14 +644,12 @@ const ProductDetailsPage = () => {
                     productId={item.productId}
                     productPriceId={item.productPriceId}
                     productName={
-                      item.productPriceDetails?.productPrice_product
-                        ?.productName
+                      item.productPriceDetails?.productPrice_product?.productName
                     }
                     offerPrice={item.productPriceDetails?.offerPrice}
                     productQuantity={item.quantity}
                     productImages={
-                      item.productPriceDetails?.productPrice_product
-                        ?.productImages
+                      item.productPriceDetails?.productPrice_product?.productImages
                     }
                     consumerDiscount={
                       item.productPriceDetails?.consumerDiscount
@@ -605,6 +658,8 @@ const ProductDetailsPage = () => {
                     onRemove={handleRemoveItemFromCart}
                     onWishlist={handleAddToWishlist}
                     haveAccessToken={haveAccessToken}
+                    minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
+                    maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
                   />
                 ))}
               </div>

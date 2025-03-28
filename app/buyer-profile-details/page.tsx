@@ -43,7 +43,7 @@ const BuyerProfileDetailsPage = () => {
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
       toast({
-        title: "Trade Role Update Successful",
+        title: t("trade_role_update_successful"),
         description: response.message,
         variant: "success",
       });
@@ -60,7 +60,7 @@ const BuyerProfileDetailsPage = () => {
       setIsRoleModalOpen(false);
       setRole(undefined);
       toast({
-        title: "Trade Role Update Failed",
+        title: t("trade_role_update_failed"),
         description: response.message,
         variant: "danger",
       });

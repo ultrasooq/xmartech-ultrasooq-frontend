@@ -18,6 +18,7 @@ interface AuthContextType {
   permissions: any[];
   setPermissions: (permissions: any[]) => void;
   applyTranslation: (locale: string) => void;
+  selectedLocale: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,8 +27,11 @@ export const AuthProvider: React.FC<{
   user: User | null;
   permissions: any[];
   children: React.ReactNode;
-}> = ({ user: initialUser, permissions: initialPermissions, children }) => {
+  locale?: string;
+}> = ({ user: initialUser, permissions: initialPermissions, children, locale }) => {
   const [user, setUser] = useState<User | null>(initialUser);
+
+  const [selectedLocale, setSelectedLocale] = useState<string>(locale || 'en')
 
   const [permissions, setPermissions] = useState<any[]>(initialPermissions);
 
@@ -40,12 +44,12 @@ export const AuthProvider: React.FC<{
   const applyTranslation = async (locale: string) => {
     await setUserLocale(locale);
     startTransition(() => {
-      
+      setSelectedLocale(locale);
     })
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, isAuthenticated, clearUser, permissions, setPermissions, applyTranslation }}>
+    <AuthContext.Provider value={{ user, setUser, isAuthenticated, clearUser, permissions, setPermissions, applyTranslation, selectedLocale }}>
       {children}
     </AuthContext.Provider>
   );

@@ -42,6 +42,8 @@ type ProductImagesCardProps = {
   askForPrice?: string;
   openCartCard: () => void;
   onProductUpdateSuccess: () => void;
+  isAddedToCart?: boolean;
+  cartQuantity?: number;
 };
 
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
@@ -57,6 +59,8 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   askForPrice,
   openCartCard,
   onProductUpdateSuccess,
+  isAddedToCart,
+  cartQuantity = 0,
 }) => {
   const t = useTranslations();
   const [previewImages, setPreviewImages] = useState<any[]>([]);
@@ -294,12 +298,12 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             type="button"
             onClick={onAdd}
             className="h-14 max-w-[205px] flex-1 rounded-none bg-color-yellow text-base"
+            disabled={isAddedToCart || cartQuantity == 0}
           >
-            {t("add_to_cart")}
+            {isAddedToCart ? t("added_to_cart") : t("add_to_cart")}
           </Button>
           <Button
             type="button"
-            // onClick={onToCheckout}
             onClick={onToCart}
             className="h-14 max-w-[205px] flex-1 rounded-none bg-dark-orange text-base"
           >

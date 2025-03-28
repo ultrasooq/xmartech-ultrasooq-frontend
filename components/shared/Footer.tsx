@@ -18,29 +18,33 @@ import { z } from "zod";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 import ControlledTextInput from "./Forms/ControlledTextInput";
 import { Form } from "../ui/form";
+import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(5, { message: "Email is required" })
-    .email({
-      message: "Invalid Email Address",
-    })
-    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
-      message: "Email must be in lower case",
-    }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    email: z
+      .string()
+      .trim()
+      .min(5, { message: t("email_is_required") })
+      .email({
+        message: t("invalid_email_address"),
+      })
+      .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+        message: t("email_must_be_lower_case"),
+      }),
+  });
+};
 
 const defaultValues = {
   email: "",
 };
 
 const Footer = () => {
+  const t = useTranslations();
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues,
   });
 
@@ -48,7 +52,7 @@ const Footer = () => {
   const handleTogglePrivacyModal = () =>
     setIsPrivacyModalOpen(!isPrivacyModalOpen);
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = (data: typeof defaultValues) => {
     console.log(data);
   };
 
@@ -58,7 +62,7 @@ const Footer = () => {
         <div className="flex flex-wrap">
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-3/12 lg:w-3/12">
             <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5">
-              Quick Links
+              {t("quick_links")}
             </h3>
             <ul>
               <li className="w-full py-1.5">
@@ -67,7 +71,7 @@ const Footer = () => {
                   onClick={handleTogglePrivacyModal}
                   className="p-0 text-base font-normal text-light-gray"
                 >
-                  Policy
+                  {t("policy")}
                 </Button>
               </li>
               <li className="w-full py-1.5">
@@ -76,83 +80,83 @@ const Footer = () => {
                   onClick={handleToggleTermsModal}
                   className="p-0 text-base font-normal text-light-gray"
                 >
-                  Term & Condition
+                  {t("term_n_condition")}
                 </Button>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  Shipping
+                  {t("shipping")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  Return
+                  {t("return")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  FAQs
+                  {t("faqs")}
                 </a>
               </li>
             </ul>
           </div>
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-2/12 lg:w-3/12">
             <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5">
-              Company
+              {t("company")}
             </h3>
             <ul>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  About Us
+                  {t("about_us")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  Affilate
+                  {t("affiliate")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  Career
+                  {t("career")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  Contact
+                  {t("contact")}
                 </a>
               </li>
             </ul>
           </div>
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-2/12 lg:w-2/12">
             <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5">
-              Business
+              {t("business")}
             </h3>
             <ul>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  Our Press
+                  {t("our_press")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  Checkout
+                  {t("checkout")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  My Account
+                  {t("my_account")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
                 <a href="#" className="text-light-gray">
-                  Shop
+                  {t("shop")}
                 </a>
               </li>
             </ul>
           </div>
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-5/12 lg:w-4/12">
             <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5">
-              Newsletter
+              {t("newsletter")}
             </h3>
             <Form {...form}>
               <form
@@ -162,14 +166,14 @@ const Footer = () => {
                 <div className="w-3/4">
                   <ControlledTextInput
                     name="email"
-                    placeholder="Email Address"
+                    placeholder={t("email_address")}
                   />
                 </div>
                 <button
                   type="submit"
                   className="mt-2 h-12 w-1/4 rounded-r border border-solid border-dark-orange bg-dark-orange text-xs font-medium text-white md:text-sm"
                 >
-                  Subscribe
+                  {t("subscribe")}
                 </button>
               </form>
             </Form>
@@ -178,11 +182,11 @@ const Footer = () => {
         <div className="flex flex-wrap">
           <div className="flex w-full flex-wrap items-center justify-center border-t border-solid border-gray-200 px-3 py-5 md:px-0 lg:justify-between">
             <div className="mb-3 flex w-auto items-center justify-start text-base font-normal capitalize text-light-gray lg:mb-0">
-              <p>©2021 Ultrasooq All Rights Reserved</p>
+              <p>©2021 Ultrasooq {t("all_rights_reserved")}</p>
             </div>
             <div className="flex w-auto flex-wrap items-center justify-center text-base font-normal capitalize text-light-gray lg:justify-end">
               <p className="w-full text-center sm:w-auto">
-                We Using Safe Payment For:
+                {t("payment_info")}:
               </p>
               <Image
                 src={AllCardsImage}

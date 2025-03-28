@@ -10,6 +10,8 @@ export interface CartItem {
       productImages: { id: number; image: string }[];
     };
     consumerDiscount: number;
+    minQuantityPerCustomer?: number;
+    maxQuantityPerCustomer?: number;
   };
   quantity: number;
 }

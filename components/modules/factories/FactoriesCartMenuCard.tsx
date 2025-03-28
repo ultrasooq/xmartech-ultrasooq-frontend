@@ -21,7 +21,8 @@ type FactoriesCartMenuCardProps = {
     link: string;
   }[];
   onRemove: (args0: number) => void;
-  offerPrice: number;
+  fromPrice: number;
+  toPrice: number;
   note: string;
 };
 
@@ -34,7 +35,8 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
   productImages,
   customizeProductImages,
   onRemove,
-  offerPrice,
+  fromPrice,
+  toPrice,
   note,
 }) => {
   const t = useTranslations();
@@ -62,13 +64,13 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
 
     if (response.status) {
       toast({
-        title: `Item ${action == "add" ? "added to" : "removed from"} cart`,
-        description: "Check your cart for more details",
+        title: action == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
     } else {
       toast({
-        title: "Oops! Something went wrong",
+        title: t("something_went_wrong"),
         description: response.message,
         variant: "danger",
       });
@@ -83,7 +85,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
              <Image
              src={
                 customizeProductImages?.[0]?.link &&
-               validator.isURL(customizeProductImages?.[0]?.link)
+                validator.isURL(customizeProductImages?.[0]?.link)
                  ? customizeProductImages[0].link
                  : PlaceholderImage
              }

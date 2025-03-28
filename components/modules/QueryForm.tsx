@@ -12,26 +12,30 @@ import { useSubmitQuery } from "@/apis/queries/help-center.queries";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { useMe } from "@/apis/queries/user.queries";
+import { useTranslations } from "next-intl";
 
 type QueryFormProps = {
     onClose: () => void;
 };
 
-const queryFormSchema = z.object({
-    email: z.string()
-        .trim()
-        .min(2, { message: "Email is required" })
-        .email({ message: "Invalid email format" }),
-
-    query: z.string()
-        .trim()
-        .min(5, { message: "Query is required" }),
-});
+const queryFormSchema = (t: any) => {
+    return z.object({
+        email: z.string()
+            .trim()
+            .min(2, { message: t("email_is_required") })
+            .email({ message: t("invalid_email_address") }),
+    
+        query: z.string()
+            .trim()
+            .min(5, { message: t("query_is_required") }),
+    })
+};
 
 const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
-    const [email, setEmail] = useState<string>('');
+    const t = useTranslations();
+
     const form = useForm({
-        resolver: zodResolver(queryFormSchema),
+        resolver: zodResolver(queryFormSchema(t)),
         defaultValues: { email: '', query: '' },
     });
 
@@ -43,8 +47,8 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
         if (me?.data?.data?.id) {
             if (formData.email != me?.data?.data?.email) {
                 toast({
-                    title: "Email mismatch",
-                    description: `Email must be equal to ${me?.data?.data?.email}`,
+                    title: t("email_mismatch"),
+                    description: t("email_must_be_equal_to_", { email: me?.data?.data?.email }),
                     variant: "danger"
                 });
                 return;
@@ -58,13 +62,13 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
             onClose();
             form.reset();
             toast({
-                title: "Query submitted successfully",
+                title: t("query_submit_successful"),
                 description: response.message,
                 variant: "success",
             });
         } else {
             toast({
-                title: "Query submit failed",
+                title: t("query_submit_failed"),
                 description: response.message,
                 variant: "danger",
             });
@@ -79,7 +83,7 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
         <>
             <div className="modal-header !justify-between">
                 <DialogTitle className="text-center text-xl font-bold">
-                    Submit Your Query
+                    {t("submit_your_query")}
                 </DialogTitle>
                 <Button
                     onClick={onClose}
@@ -94,19 +98,19 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="card-item card-payment-form px-5 pb-5 pt-3"
                 >
-                    <label className="text-sm font-medium leading-none text-color-dark">Email</label>
+                    <label className="text-sm font-medium leading-none text-color-dark">{t("email")}</label>
                     <ControlledTextInput
-                        label="Email"
+                        label={t("email")}
                         name="email"
-                        placeholder="Enter Email"
+                        placeholder={t("enter_email")}
                         type="email"
                         disabled={!!me?.data?.data?.id}
                     />
 
                     <ControlledTextareaInput
-                        label="Query"
+                        label={t("query")}
                         name="query"
-                        placeholder="Enter Your Query"
+                        placeholder={t("enter_your_query")}
                     />
 
                     <Button
@@ -114,7 +118,7 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                         className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                         disabled={submitQuery?.isPending}
                     >
-                        {submitQuery?.isPending ? "Processing" : "Submit"}
+                        {submitQuery?.isPending ? t("processing") : t("submit")}
                     </Button>
                 </form>
             </Form>

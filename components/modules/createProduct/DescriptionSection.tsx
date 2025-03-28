@@ -47,17 +47,23 @@ const DescriptionSection = () => {
 
           {fieldArrayForShortDescription.fields.map((field, index) => (
             <div key={field.id} className="relative w-full">
-              <ControlledTextInput
-                key={field.id}
-                name={`productShortDescriptionList.${index}.shortDescription`}
-                placeholder="Enter Short Description"
-              />
-
-             {/* <ControlledRichTextEditor
-              key={field.id}
-              label=""
-              name={`productShortDescriptionList.${index}.shortDescription`}
-              /> */}
+              <div className="relative mb-4 w-full">
+                <ControlledRichTextEditor
+                  key={field.id}
+                  label=""
+                  name={`productShortDescriptionList.${index}.shortDescription`}
+                  onChange={(e) => {
+                    formContext.setValue(`productShortDescriptionList.${index}.shortDescription`, e?.[0]?.children?.[0]?.text || '');
+                  }}
+                  value={
+                    formContext.getValues()?.productShortDescriptionList?.[index]?.shortDescriptionJson
+                  }
+                />
+                <p className="text-[13px] font-medium text-red-500">
+                  {/* @ts-ignore */}
+                  {formContext?.formState?.errors?.productShortDescriptionList?.[index]?.shortDescription?.message || ''}
+                </p>
+              </div>
 
               {index !== 0 ? (
                 <Button

@@ -39,39 +39,61 @@ type AddToRfqFormProps = {
   onClose: () => void;
   selectedProductId?: number;
   selectedQuantity?: number;
-  offerPrice?: number;
+  offerPriceFrom?: number;
+  offerPriceTo?: number;
 };
 
-const addFormSchema = z.object({
-  offerPrice: z.coerce
-    .number()
-    .max(1000000, {
-      message: "Offer price must be less than 1000000",
-    })
-    .optional(),
-  note: z
-    .string()
-    .trim()
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    })
-    .optional(),
-  productImagesList: z.any().optional(),
-});
+const addFormSchema = (t: any) => {
+  return z.object({
+    offerPriceFrom: z.coerce
+      .number({ invalid_type_error: t("offer_price_from_required") })
+      .min(1, {
+        message: t("offer_price_from_required")
+      })
+      .max(1000000, {
+        message: t("offer_price_from_must_be_less_than_price", { price: 1000000 }),
+      }),
+    offerPriceTo: z.coerce
+      .number({ invalid_type_error: t("offer_price_to_required") })
+      .min(1, {
+        message: t("offer_price_to_required")
+      })
+      .max(1000000, {
+        message: t("offer_price_to_must_be_less_than_price", { price: 1000000 }),
+      }),
+    note: z
+      .string()
+      .trim()
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      })
+      .optional(),
+    productImagesList: z.any().optional(),
+  }).refine(
+    ({ offerPriceFrom, offerPriceTo }) => {
+      return Number(offerPriceFrom) < Number(offerPriceTo);
+    },
+    {
+      message: t("offer_price_from_must_be_less_than_offer_price_to"),
+      path: ["offerPriceFrom"],
+    }
+  );
+}
 
-const editFormSchema = z.object({
-  note: z
-    .string()
-    .trim()
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    })
-    .optional(),
-  productImagesList: z.any().optional(),
-});
+const editFormSchema = (t: any) => {
+  return z.object({
+    note: z
+      .string()
+      .trim()
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      })
+      .optional(),
+    productImagesList: z.any().optional(),
+  });
+};
 
 const addDefaultValues = {
-  offerPrice: 0,
   note: "",
   productImagesList: undefined,
   productImages: [] as { path: File; id: string }[],
@@ -87,14 +109,21 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   onClose,
   selectedProductId,
   selectedQuantity,
-  offerPrice,
+  offerPriceFrom,
+  offerPriceTo
 }) => {
   const t = useTranslations();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
-    resolver: zodResolver(selectedQuantity ? addFormSchema : editFormSchema),
-    defaultValues: selectedQuantity ? Object.assign(addDefaultValues, { offerPrice: offerPrice || 0}) : editDefaultValues,
+    resolver: zodResolver(selectedQuantity ? addFormSchema(t) : editFormSchema(t)),
+    defaultValues: selectedQuantity ? Object.assign(
+      addDefaultValues, 
+      { 
+        offerPriceFrom: offerPriceFrom,
+        offerPriceTo: offerPriceTo
+      }
+    ) : editDefaultValues,
   }); 
   const photosRef = useRef<HTMLInputElement>(null);
 
@@ -145,20 +174,22 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const handleAddToCart = async (
     quantity: number,
     productId: number,
-    offerPrice: number,
+    offerPriceFrom: number,
+    offerPriceTo: number,
     note: string,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
-      offerPrice,
+      offerPriceFrom,
+      offerPriceTo,
       note,
     });
 
     if (response.status) {
       toast({
-        title: "Item added to cart",
-        description: "Check your cart for more details",
+        title: t("added_to_rfq_cart"),
+        description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
       form.reset();
@@ -169,7 +200,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       onClose();
     } else {
       toast({
-        title: "Oops! Something went wrong",
+        title: t("something_went_wrong"),
         description: response.message,
         variant: "danger",
       });
@@ -258,7 +289,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       });
       if (response.status) {
         toast({
-          title: "RFQ Product Update Successful",
+          title: t("rfq_product_update_successful"),
           description: response.message,
           variant: "success",
         });
@@ -267,7 +298,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           handleAddToCart(
             selectedQuantity ? selectedQuantity : 1,
             selectedProductId,
-            formData?.offerPrice,
+            formData?.offerPriceFrom,
+            formData?.offerPriceTo,
             formData?.note,
           );
         } else {
@@ -280,7 +312,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         }
       } else {
         toast({
-          title: "RFQ Product Update Failed",
+          title: t("rfq_product_update_failed"),
           description: response.message,
           variant: "danger",
         });
@@ -350,7 +382,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       const response = await createProduct.mutateAsync(data);
       if (response.status) {
         toast({
-          title: "RFQ Product Add Successful",
+          title: t("rfq_product_add_successful"),
           description: response.message,
           variant: "success",
         });
@@ -359,7 +391,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         });
         if (dependentResponse.status) {
           toast({
-            title: "Product Duplicate Successful",
+            title: t("product_duplicate_successful"),
             description: dependentResponse.message,
             variant: "success",
           });
@@ -368,7 +400,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             handleAddToCart(
               selectedQuantity ? selectedQuantity : 1,
               response.data.id,
-              formData?.offerPrice,
+              formData?.offerPriceFrom,
+              formData?.offerPriceTo,
               formData?.note,
             );
           } else {
@@ -381,14 +414,14 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           }
         } else {
           toast({
-            title: "Product Duplicate Failed",
+            title: t("product_duplicate_failed"),
             description: dependentResponse.message,
             variant: "danger",
           });
         }
       } else {
         toast({
-          title: "RFQ Product Add Failed",
+          title: t("rfq_product_add_failed"),
           description: response.message,
           variant: "danger",
         });
@@ -527,7 +560,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                           ) {
                                             toast({
                                               title:
-                                                "One of your file size should be less than 500MB",
+                                                t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;
@@ -577,7 +610,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                           ) {
                                             toast({
                                               title:
-                                                "One of your file size should be less than 500MB",
+                                                t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                               variant: "danger",
                                             });
                                             return;
@@ -650,8 +683,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                               filesArray.some((file) => file.size > 524288000)
                             ) {
                               toast({
-                                title:
-                                  "One of your image size should be less than 500MB",
+                                title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
                                 variant: "danger",
                               });
                               return;
@@ -696,13 +728,23 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           />
 
           {selectedQuantity ? (
-            <ControlledTextInput
-              label={t("offer_price")}
-              name="offerPrice"
-              placeholder={t("offer_price")}
-              type="number"
-              value={Number(offerPrice) || 0}
-            />
+            <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+              <ControlledTextInput
+                label={t("offer_price_from")}
+                name="offerPriceFrom"
+                placeholder={t("offer_price_from")}
+                type="number"
+                defaultValue={""}
+              />
+
+              <ControlledTextInput
+                label={t("offer_price_to")}
+                name="offerPriceTo"
+                placeholder={t("offer_price_to")}
+                type="number"
+                defaultValue={""}
+              />
+            </div>
           ) : null}
 
           <Button
@@ -714,7 +756,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
               updateRfqCartWithLogin.isPending
             }
             type="submit"
-            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-2"
           >
             {uploadMultiple.isPending ||
             updateProduct.isPending ||
