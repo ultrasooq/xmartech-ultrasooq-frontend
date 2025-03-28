@@ -21,7 +21,7 @@ import AddProductContent from "@/components/modules/products/AddProductContent";
 import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
 import { useMe } from "@/apis/queries/user.queries";
 import { useAuth } from "@/context/AuthContext";
-import { useTranslations } from "use-intl";
+import { useTranslations } from "next-intl";
 
 const schema = z
   .object({

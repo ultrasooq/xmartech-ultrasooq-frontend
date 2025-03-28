@@ -21,52 +21,55 @@ import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
 
-const baseProductPriceItemSchema = z.object({
-  consumerType: z.string().trim().optional(),
-  sellType: z.string().trim().optional(),
-  consumerDiscount: z.coerce.number().optional().or(z.literal('')),
-  vendorDiscount: z.coerce.number().optional().or(z.literal('')),
-  consumerDiscountType: z.coerce.string().optional(),
-  vendorDiscountType: z.coerce.string().optional(),
-  minCustomer: z.coerce.number().optional().or(z.literal('')),
-  maxCustomer: z.coerce.number().optional().or(z.literal('')),
-  minQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
-  maxQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
-  minQuantity: z.coerce.number().optional().or(z.literal('')),
-  maxQuantity: z.coerce.number().optional().or(z.literal('')),
-  dateOpen: z.coerce.string().optional(),
-  dateClose: z.coerce.string().optional(),
-  startTime: z.coerce.string().optional(),
-  endTime: z.coerce.string().optional().or(z.literal('')),
-  timeOpen: z.coerce.number().optional().or(z.literal('')),
-  timeClose: z.coerce.number().optional(),
-  deliveryAfter: z.coerce.number().optional().or(z.literal('')),
-  stock: z.coerce.number().optional().or(z.literal('')),
-});
+const baseProductPriceItemSchema = (t: any) => {
+  return z.object({
+    consumerType: z.string().trim().optional(),
+    sellType: z.string().trim().optional(),
+    consumerDiscount: z.coerce.number().optional().or(z.literal('')),
+    vendorDiscount: z.coerce.number().optional().or(z.literal('')),
+    consumerDiscountType: z.coerce.string().optional(),
+    vendorDiscountType: z.coerce.string().optional(),
+    minCustomer: z.coerce.number().optional().or(z.literal('')),
+    maxCustomer: z.coerce.number().optional().or(z.literal('')),
+    minQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
+    maxQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
+    minQuantity: z.coerce.number().optional().or(z.literal('')),
+    maxQuantity: z.coerce.number().optional().or(z.literal('')),
+    dateOpen: z.coerce.string().optional(),
+    dateClose: z.coerce.string().optional(),
+    startTime: z.coerce.string().optional(),
+    endTime: z.coerce.string().optional().or(z.literal('')),
+    timeOpen: z.coerce.number().optional().or(z.literal('')),
+    timeClose: z.coerce.number().optional(),
+    deliveryAfter: z.coerce.number().optional().or(z.literal('')),
+    stock: z.coerce.number().optional().or(z.literal('')),
+  });
+};
 
-const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
+const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
+  return baseProductPriceItemSchema(t)
   .extend({
     consumerType: z
       .string()
       .trim()
-      .min(1, { message: "Consumer Type is required" }),
-    sellType: z.string().trim().min(1, { message: "Sell Type is required" }),
+      .min(1, { message: t("consumer_type_is_required") }),
+    sellType: z.string().trim().min(1, { message: t("sell_type_is_required") }),
     consumerDiscount: z.coerce
       .number()
-      .max(100, { message: "Consumer Discount must be less than 100" }),
+      .max(100, { message: t("consumer_discount_must_be_less_than_100") }),
     vendorDiscount: z.coerce
       .number()
-      .max(100, { message: "Vendor Discount must be less than 100" }),
+      .max(100, { message: t("vendor_discount_must_be_less_than_100") }),
     deliveryAfter: z.coerce
       .number()
-      .min(1, { message: "Delivery After is required" }),
+      .min(1, { message: t("delivery_after_is_required") }),
   })
   .refine(
     ({ minQuantity, maxQuantity, sellType }) => sellType != 'BUYGROUP' || 
     (minQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)) || 
     (maxQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)),
     {
-      message: "Min Quantity must be less than Max Quantity",
+      message: t("min_quantity_must_be_less_than_max_quantity"),
       path: ["minQuantity"],
     },
   )
@@ -75,8 +78,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
       (minQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)) || 
       (maxQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)),
     {
-      message:
-        "Min Quantity Per Customer must be less than Max Quantity Per Customer",
+      message: t("min_quantity_per_customer_must_be_less_than_max_quantity_per_customer"),
       path: ["minQuantityPerCustomer"],
     },
   )
@@ -84,12 +86,12 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
     ({ minCustomer, maxCustomer }) =>
       (!minCustomer || minCustomer) <= (!maxCustomer || maxCustomer),
     {
-      message: "Min Customer must be less than or equal to Max Customer",
+      message: t("min_customer_must_be_less_than_or_equal_to_max_customer"),
       path: ["minCustomer"],
     },
   )
   // .refine(({ timeOpen, timeClose }) => (!timeOpen || timeOpen) <= (!timeClose || timeClose), {
-  //   message: "Open Time must be less than or equal to Close Time",
+  //   message: t("open_time_must_be_less_than_or_equal_to_close_time"),
   //   path: ["timeOpen"],
   // },)
   .superRefine((schema, ctx) => {
@@ -108,14 +110,14 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
       if (!minQuantityPerCustomer) {
         ctx.addIssue({
           code: "custom",
-          message: "Quantity Per Customer is required",
+          message: t("quantity_per_customer_is_required"),
           path: ["minQuantityPerCustomer"],
         });
       }
       if (!maxQuantityPerCustomer) {
         ctx.addIssue({
           code: "custom",
-          message: "Quantity Per Customer is required",
+          message: t("quantity_per_customer_is_required"),
           path: ["maxQuantityPerCustomer"],
         });
       }
@@ -124,7 +126,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
       if (!minQuantity) {
         ctx.addIssue({
           code: "custom",
-          message: "Min Quantity is required",
+          message: t("min_quantity_is_required"),
           path: ["minQuantity"],
         });
       }
@@ -133,7 +135,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
       if (!maxQuantity) {
         ctx.addIssue({
           code: "custom",
-          message: "Max Quantity is required",
+          message: t("max_quantity_is_required"),
           path: ["maxQuantity"],
         });
       }
@@ -142,7 +144,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
       if (!minCustomer) {
         ctx.addIssue({
           code: "custom",
-          message: "Min Customer is required",
+          message: t("min_customer_is_required"),
           path: ["minCustomer"],
         });
       }
@@ -151,7 +153,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
       if (!maxCustomer) {
         ctx.addIssue({
           code: "custom",
-          message: "Max Customer is required",
+          message: t("max_customer_is_required"),
           path: ["maxCustomer"],
         });
       }
@@ -160,45 +162,46 @@ const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
       if ((minQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0)) || (maxQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0))) {
         ctx.addIssue({
           code: "custom",
-          message: "test",
+          message: t("min_quantity_must_be_less_than_max_quantity"),
           path: ["maxQuantity"],
         });
       }
     }
     // if (sellType === "BUYGROUP") {
     //   if (!startTime) {
-    //     ctx.addIssue({ code: "custom", message: "Time Open is required", path: ["startTime"], });
+    //     ctx.addIssue({ code: "custom", message: t("time_open_is_required"), path: ["startTime"], });
     //   }
     // }
     // if (sellType === "BUYGROUP") {
     //   if (!endTime) {
-    //     ctx.addIssue({ code: "custom", message: "Time Close is required", path: ["endTime"], });
+    //     ctx.addIssue({ code: "custom", message: t("time_close_is_required"), path: ["endTime"], });
     //   }
     // }
   });
+};
 
-const formSchemaForTypeP = z
-  .object({
+const formSchemaForTypeP = (t: any) => {
+  return z.object({
     productName: z
       .string()
       .trim()
-      .min(2, { message: "Product Name is required" })
-      .max(50, { message: "Product Name must be less than 50 characters" }),
+      .min(2, { message: t("product_name_is_required") })
+      .max(50, { message: t("product_name_must_be_less_than_50_characters") }),
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
     typeOfProduct: z
       .string({
-        required_error: "Provide you product type",
-        message: "Provide you product type",
+        required_error: t("provide_you_product_type"),
+        message: t("provide_you_product_type"),
       })
       .trim(),
-    brandId: z.number().min(1, { message: "Brand is required" }),
-    // productLocationId: z.number().min(1, { message: "Product Location is required" }),
+    brandId: z.number().min(1, { message: t("brand_is_required") }),
+    // productLocationId: z.number().min(1, { message: t("product_location_is_required") }),
     productCountryId: z
       .number()
-      .min(1, { message: "Product Country is required" }),
-    productStateId: z.number().min(1, { message: "Product State is required" }),
-    productCityId: z.number().min(1, { message: "Product City is required" }),
+      .min(1, { message: t("product_country_is_required") }),
+    productStateId: z.number().min(1, { message: t("product_state_is_required") }),
+    productCityId: z.number().min(1, { message: t("product_city_is_required") }),
     productTown: z.string().trim().optional(),
     productLatLng: z.string().trim().optional(),
     sellCountryIds: z.any().optional(),
@@ -208,30 +211,34 @@ const formSchemaForTypeP = z
     productCondition: z
       .string()
       .trim()
-      .min(1, { message: "Product Condition is required" }),
+      .min(1, { message: t("product_condition_is_required") }),
     productTagList: z
       .array(
         z.object({
           label: z.string().trim(),
           value: z.number(),
         }),
+        {
+          invalid_type_error: t("tag_is_required"),
+          required_error: t("tag_is_required")
+        }
       )
-      .min(1, { message: "Tag is required" })
+      .min(1, { message: t("tag_is_required") })
       .transform((value) => value.map((item) => ({ tagId: item.value }))),
     productImagesList: z.any().optional(),
     productPrice: z.coerce.number().optional().or(z.literal('')),
     offerPrice: z.coerce.number().optional().or(z.literal('')),
     placeOfOriginId: z
       .number()
-      .min(1, { message: "Place of Origin is required" }),
+      .min(1, { message: t("place_of_origin_is_required") }),
     productShortDescriptionList: z.array(
       z.object({
         shortDescription: z
           .string()
           .trim()
-          .min(2, { message: "Short Description is required" })
+          .min(2, { message: t("short_description_is_required") })
           .max(20, {
-            message: "Short Description must be less than 20 characters",
+            message: t("short_description_must_be_less_than_20_characters"),
           }),
       }),
     ),
@@ -240,20 +247,20 @@ const formSchemaForTypeP = z
         label: z
           .string()
           .trim()
-          .min(2, { message: "Label is required" })
-          .max(20, { message: "Label must be less than 20 characters" }),
+          .min(2, { message: t("label_is_required") })
+          .max(20, { message: t("label_must_be_less_than_20_characters") }),
         specification: z
           .string()
           .trim()
-          .min(2, { message: "Specification is required" })
+          .min(2, { message: t("specification_is_required") })
           .max(20, {
-            message: "Specification must be less than 20 characters",
+            message: t("specification_must_be_less_than_20_characters"),
           }),
       }),
     ),
     description: z.string().trim().optional(),
     descriptionJson: z.array(z.any()).optional(),
-    productPriceList: z.array(baseProductPriceItemSchema).optional(),
+    productPriceList: z.array(baseProductPriceItemSchema(t)).optional(),
     setUpPrice: z.boolean(),
     isStockRequired: z.boolean().optional(),
     isOfferPriceRequired: z.boolean().optional(),
@@ -262,7 +269,7 @@ const formSchemaForTypeP = z
   .superRefine((data, ctx) => {
     if (data.setUpPrice) {
       const result = z
-        .array(productPriceItemSchemaWhenSetUpPriceTrue)
+        .array(productPriceItemSchemaWhenSetUpPriceTrue(t))
         .safeParse(data.productPriceList);
 
       if (!result.success) {
@@ -272,7 +279,7 @@ const formSchemaForTypeP = z
       // if (data.productPrice === 0) {
       //   ctx.addIssue({
       //     code: "custom",
-      //     message: "Product Price is required",
+      //     message: t("product_price_is_required"),
       //     path: ["productPrice"],
       //   });
       // }
@@ -305,27 +312,28 @@ const formSchemaForTypeP = z
       }
     }
   });
+};
 
-const formSchemaForTypeR = z
-  .object({
+const formSchemaForTypeR = (t: any) => {
+  return z.object({
     productName: z
       .string()
       .trim()
-      .min(2, { message: "Product Name is required" })
-      .max(50, { message: "Product Name must be less than 50 characters" }),
+      .min(2, { message: t("product_name_is_required") })
+      .max(50, { message: t("product_name_must_be_less_than_50_characters") }),
     categoryId: z.number().optional(),
     categoryLocation: z.string().trim().optional(),
     typeOfProduct: z
       .string({
-        required_error: "Provide you product type",
-        message: "Provide you product type",
+        required_error: t("provide_you_product_type"),
+        message: t("provide_you_product_type"),
       })
       .trim(),
-    brandId: z.number().min(1, { message: "Brand is required" }),
+    brandId: z.number().min(1, { message: t("brand_is_required") }),
     productCondition: z
       .string()
       .trim()
-      .min(1, { message: "Product Condition is required" }),
+      .min(1, { message: t("product_condition_is_required") }),
     productTagList: z
       .array(
         z.object({
@@ -333,7 +341,7 @@ const formSchemaForTypeR = z
           value: z.number(),
         }),
       )
-      .min(1, { message: "Tag is required" })
+      .min(1, { message: t("tag_is_required") })
       .transform((value) => {
         let temp: any = [];
         value.forEach((item) => {
@@ -346,15 +354,15 @@ const formSchemaForTypeR = z
     offerPrice: z.coerce.number().optional(),
     placeOfOriginId: z
       .number()
-      .min(1, { message: "Place of Origin is required" }),
+      .min(1, { message: t("place_of_origin_is_required") }),
     productShortDescriptionList: z.array(
       z.object({
         shortDescription: z
           .string()
           .trim()
-          .min(2, { message: "Short Description is required" })
+          .min(2, { message: t("short_description_is_required") })
           .max(20, {
-            message: "Short Description must be less than 20 characters",
+            message: t("short_description_must_be_less_than_20_characters"),
           }),
       }),
     ),
@@ -363,14 +371,14 @@ const formSchemaForTypeR = z
         label: z
           .string()
           .trim()
-          .min(2, { message: "Label is required" })
-          .max(20, { message: "Label must be less than 20 characters" }),
+          .min(2, { message: t("label_is_required") })
+          .max(20, { message: t("label_must_be_less_than_20_characters") }),
         specification: z
           .string()
           .trim()
-          .min(2, { message: "Specification is required" })
+          .min(2, { message: t("specification_is_required") })
           .max(20, {
-            message: "Specification must be less than 20 characters",
+            message: t("specification_must_be_less_than_20_characters"),
           }),
       }),
     ),
@@ -386,12 +394,13 @@ const formSchemaForTypeR = z
       // if (data.offerPrice === 0) {
       //   ctx.addIssue({
       //     code: "custom",
-      //     message: "Offer Price is required",
+      //     message: t("offer_price_is_required"),
       //     path: ["offerPrice"],
       //   });
       // }
     }
   });
+};
 
 const defaultValues: {[key: string]: any} = {
   productName: "",
@@ -466,7 +475,7 @@ const CreateProductPage = () => {
   const [activeProductType, setActiveProductType] = useState<string>();
   const form = useForm({
     resolver: zodResolver(
-      activeProductType === "R" ? formSchemaForTypeR : formSchemaForTypeP,
+      activeProductType === "R" ? formSchemaForTypeR(t) : formSchemaForTypeP(t),
     ),
     defaultValues,
   });
@@ -780,7 +789,7 @@ const CreateProductPage = () => {
                         >
                           {createProduct.isPending ||
                           uploadMultiple.isPending ? (
-                            <LoaderWithMessage message="Please wait" />
+                            <LoaderWithMessage message={t("please_wait")} />
                           ) : (
                             t("continue")
                           )}

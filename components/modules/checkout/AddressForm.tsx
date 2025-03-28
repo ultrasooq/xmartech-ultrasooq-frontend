@@ -25,98 +25,101 @@ type AddressFormProps = {
   onClose: () => void;
 };
 
-const formSchema = z.object({
-  firstName: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "First Name is required",
-    })
-    .max(50, {
-      message: "First Name must be less than 50 characters",
-    }),
-  lastName: z
-    .string()
-    .trim()
-    .min(2, { message: "Last Name is required" })
-    .max(50, {
-      message: "Last Name must be less than 50 characters",
-    }),
-  cc: z.string().trim(),
-  phoneNumber: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Phone Number is required",
-    })
-    .min(8, {
-      message: "Phone Number must be minimum of 8 digits",
-    })
-    .max(20, {
-      message: "Phone Number cannot be more than 20 digits",
-    }),
-  address: z
-    .string()
-    .trim()
-    .min(2, { message: "Address is required" })
-    .max(50, {
-      message: "Address must be less than 50 characters",
-    }),
-  city: z
-    .string()
-    .trim()
-    .min(2, { message: "City is required" })
-    .max(50, {
-      message: "City must be less than 50 characters",
-    })
-    .refine((val) => ALPHABETS_REGEX.test(val), {
-      message: "City must only contain letters",
-    }),
-  province: z
-    .string()
-    .trim()
-    .min(2, { message: "Province is required" })
-    .max(50, {
-      message: "Province must be less than 50 characters",
-    })
-    .refine((val) => ALPHABETS_REGEX.test(val), {
-      message: "Province must only contain letters",
-    }),
-  country: z
-    .string()
-    .trim()
-    .min(2, { message: "Country is required" })
-    .max(50, {
-      message: "Country must be less than 50 characters",
-    })
-    .refine((val) => ALPHABETS_REGEX.test(val), {
-      message: "Country must only contain letters",
-    }),
-  postCode: z
-    .string()
-    .trim()
-    .min(2, { message: "Post Code is required" })
-    .max(50, {
-      message: "Post Code must be less than 50 characters",
-    }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    firstName: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("first_name_required"),
+      })
+      .max(50, {
+        message: t("first_name_must_be_50_chars_only"),
+      }),
+    lastName: z
+      .string()
+      .trim()
+      .min(2, { message: t("last_name_requierd") })
+      .max(50, {
+        message: t("last_name_must_be_50_chars_only"),
+      }),
+    cc: z.string().trim(),
+    phoneNumber: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("phone_number_required"),
+      })
+      .min(8, {
+        message: t("phone_number_must_be_min_8_digits"),
+      })
+      .max(20, {
+        message: t("phone_number_cant_be_more_than_20_digits"),
+      }),
+    address: z
+      .string()
+      .trim()
+      .min(2, { message: t("address_required") })
+      .max(50, {
+        message: t("address_must_be_less_than_n_chars", { n: 50 }),
+      }),
+    city: z
+      .string()
+      .trim()
+      .min(2, { message: t("city_required") })
+      .max(50, {
+        message: t("city_must_be_less_than_n_chars", { n: 50 }),
+      })
+      .refine((val) => ALPHABETS_REGEX.test(val), {
+        message: t("city_must_contain_only_letters"),
+      }),
+    province: z
+      .string()
+      .trim()
+      .min(2, { message: t("province_required") })
+      .max(50, {
+        message: t("province_must_be_less_than_n_chars", { n: 50 }),
+      })
+      .refine((val) => ALPHABETS_REGEX.test(val), {
+        message: t("province_must_contain_only_letters")
+      }),
+    country: z
+      .string()
+      .trim()
+      .min(2, { message: t("country_required") })
+      .max(50, {
+        message: t("country_must_be_less_than_n_chars", { n: 50 }),
+      })
+      .refine((val) => ALPHABETS_REGEX.test(val), {
+        message: t("country_must_contain_only_letters"),
+      }),
+    postCode: z
+      .string()
+      .trim()
+      .min(2, { message: t("postcode_required") })
+      .max(50, {
+        message: t("postcode_must_be_less_than_n_chars", { n: 50 }),
+      }),
+  });
+};
 
 const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   const t = useTranslations();
   const { toast } = useToast();
+  const defaultValues = {
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    cc: "",
+    address: "",
+    city: "",
+    province: "",
+    country: "",
+    postCode: "",
+  };
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-      cc: "",
-      address: "",
-      city: "",
-      province: "",
-      country: "",
-      postCode: "",
-    },
+    resolver: zodResolver(formSchema(t)),
+    defaultValues: defaultValues,
   });
 
   const createAddress = useAddAddress();
@@ -127,7 +130,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   );
   const countriesQuery = useCountries();
 
-  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+  const onSubmit = async (formData: typeof defaultValues) => {
     if (addressId) {
       const updatedFormData = {
         ...formData,

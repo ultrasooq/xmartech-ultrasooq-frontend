@@ -17,31 +17,34 @@ type AnswerFormProps = {
   onReplySuccess?: (answer: string) => void;
 };
 
-const formSchema = z.object({
-  answer: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Answer is required",
-    })
-    .max(200, {
-      message: "Answer must be less than 200 characters",
-    }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    answer: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("answer_required"),
+      })
+      .max(200, {
+        message: t("answer_must_be_less_than_n_chars", { n: 200 }),
+      }),
+  });
+};
 
 const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuccess }) => {
   const t = useTranslations();
   const { toast } = useToast();
+  const defaultValues = {
+    answer: "",
+  }
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      answer: "",
-    },
+    resolver: zodResolver(formSchema(t)),
+    defaultValues: defaultValues,
   });
 
   const updateAnswer = useUpdateAnswer();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: typeof defaultValues) => {
     const response = await updateAnswer.mutateAsync({
       productQuestionId: questionId,
       answer: values.answer,

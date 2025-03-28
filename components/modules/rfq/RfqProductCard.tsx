@@ -111,13 +111,13 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         {/* price For P type product */}
         {productType === "P" ? (
           <>
-            <label>Price:</label>
+            <label>{t("price")}:</label>
             <p>${productPrice?.[0]?.offerPrice}</p>
           </>
         ) : null}
         {haveAccessToken ? (
           <div className="quantity_wrap mb-2">
-            <label>Quantity</label>
+            <label>{t("quantity")}</label>
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-3 md:gap-x-4">
                 <Button

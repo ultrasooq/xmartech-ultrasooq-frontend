@@ -365,8 +365,8 @@ export default function EditProfilePage() {
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                   {/* TODO: fix submit value type */}
-                  <ControlledSelectInput label="Year Of Establishment" name="yearOfEstablishment" options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))} />
-                  <ControlledSelectInput label="Total Number of Employees" name="totalNoOfEmployee" options={NO_OF_EMPLOYEES_LIST} />
+                  <ControlledSelectInput label={t("year_of_establishment")} name="yearOfEstablishment" options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))} />
+                  <ControlledSelectInput label={t("total_no_of_employees")} name="totalNoOfEmployee" options={NO_OF_EMPLOYEES_LIST} />
                 </div>
 
                 <QuillEditor label={t("about_us")} name="aboutUsJson" />
@@ -381,7 +381,7 @@ export default function EditProfilePage() {
                     {t("please_wait")}
                   </>
                 ) : (
-                  "Edit changes"
+                  t("edit_changes")
                 )
               }
             </Button>

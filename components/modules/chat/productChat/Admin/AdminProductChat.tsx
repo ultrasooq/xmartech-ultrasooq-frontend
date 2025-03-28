@@ -12,7 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import ProductMessage from "./ProductMessage";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { generateUniqueNumber } from "@/utils/helper";
-import { useTranslations } from "use-intl";
+import { useTranslations } from "next-intl";
 
 interface ProductMessageProps {
   user: {

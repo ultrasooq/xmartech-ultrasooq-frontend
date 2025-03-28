@@ -38,38 +38,44 @@ type AddToMemberFormProps = {
   memberDetails: any;
 };
 
-const addFormSchema = z.object({
-  firstName: z
-    .string()
-    .trim()
-    .min(2, { message: "First Name is required" })
-    .regex(/^[A-Za-z\s]+$/, {
-      message: "First Name must contain only letters",
-    }),
+const addFormSchema = (t: any) => {
+  return z.object({
+    firstName: z
+      .string()
+      .trim()
+      .min(2, { message: t("first_name_required") })
+      .regex(/^[A-Za-z\s]+$/, {
+        message: t("first_name_must_only_contain_letters"),
+      }),
+  
+    lastName: z
+      .string()
+      .trim()
+      .regex(/^[A-Za-z\s]+$/, { message: t("last_name_must_only_contain_letters") })
+      .optional(), // Apply validation first, then make it optional
+  
+    email: z
+      .string()
+      .trim()
+      .min(2, { message: t("email_is_required") })
+      .email({ message: t("invalid_email_address") }),
 
-  lastName: z
-    .string()
-    .trim()
-    .regex(/^[A-Za-z\s]+$/, { message: "Last Name must contain only letters" })
-    .optional(), // Apply validation first, then make it optional
+    userRoleId: z.number({ required_error: t("user_role_required") })
+      .min(1, { message: t("user_role_required") }), // Ensure it stays a number
 
-  email: z
-    .string()
-    .trim()
-    .min(2, { message: "Email is required" })
-    .email({ message: "Invalid email format" }),
-  userRoleId: z.number().min(1, { message: "User Role is required" }), // Ensure it stays a number
-  tradeRole: z.string().optional(),
-  phoneNumber: z
-    .string()
-    .trim()
-    .regex(/^[0-9]{10,15}$/, { message: "Phone number must be 10-15 digits" })
-    .optional(), // Apply validation first, then make it optional
-
-  status: z.enum([("active"), "INACTIVE"], {
-    message: "Status must be ACTIVE or INACTIVE",
-  }), // ✅ Added status field
-});
+    tradeRole: z.string().optional(),
+    
+    phoneNumber: z
+      .string()
+      .trim()
+      .regex(/^[0-9]{10,15}$/, { message: t("phone_number_must_be_10_15_digits") })
+      .optional(), // Apply validation first, then make it optional
+  
+    status: z.enum(["ACTIVE", "INACTIVE"], {
+      message: t("status_must_be_active_inactive"),
+    }), // ✅ Added status field
+  })
+};
 
 const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   onClose,
@@ -127,7 +133,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   };
 
   const form = useForm({
-    resolver: zodResolver(addFormSchema),
+    resolver: zodResolver(addFormSchema(t)),
     defaultValues: addDefaultValues,
   });
 
@@ -237,6 +243,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
                   instanceId="userRoleId"
                   className="z-[9999]"
                   isSearchable={true} // Keep search enabled
+                  placeholder={t("select")}
                 />
                 {/* Validation Error Message */}
                 {form.formState.errors.userRoleId && (
@@ -260,13 +267,13 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
                   { value: "ACTIVE", label: t("active").toUpperCase() },
                   { value: "INACTIVE", label: t("inactive").toUpperCase() },
                 ]}
-                value={{ value: field.value, label: field.value }}
                 onChange={(selectedOption) =>
                   field.onChange(selectedOption?.value)
                 }
                 className="z-[999]"
                 instanceId="status"
                 styles={customStyles}
+                placeholder={t("select")}
               />
             )}
           />

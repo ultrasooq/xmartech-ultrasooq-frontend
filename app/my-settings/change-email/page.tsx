@@ -21,32 +21,34 @@ import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(5, { message: "Email is required" })
-    .email({
-      message: "Invalid Email Address",
-    })
-    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
-      message: "Email must be in lower case",
-    }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    email: z
+      .string()
+      .trim()
+      .min(5, { message: t("email_is_required") })
+      .email({
+        message: t("invalid_email_address"),
+      })
+      .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+        message: t("email_must_be_lower_case"),
+      }),
+  });
+};
 
 export default function ChangeEmailPage() {
   const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       email: "",
     },
   });
   const changeEmail = useChangeEmail();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: any) => {
     const response = await changeEmail.mutateAsync(values);
 
     if (response?.status && response?.otp) {
@@ -99,7 +101,7 @@ export default function ChangeEmailPage() {
                         <FormLabel>{t("new_email")}</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter Your Email"
+                            placeholder={t("enter_email")}
                             className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                           />
