@@ -20,13 +20,15 @@ type AddToRoleFormProps = {
   roleDetails: any;
 };
 
-const addFormSchema = z.object({
-  userRoleName: z
-    .string()
-    .trim()
-    .min(2, { message: "Role Name is required" })
-    .regex(/^[A-Za-z\s]+$/, { message: "Role Name must contain only letters" }),
-});
+const addFormSchema = (t: any) => {
+  return z.object({
+    userRoleName: z
+      .string()
+      .trim()
+      .min(2, { message: t("role_name_required") })
+      .regex(/^[A-Za-z\s]+$/, { message: t("role_number_must_only_contain_letters") }),
+  });
+};
 
 
 const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission, roleDetails }) => {
@@ -40,7 +42,7 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission
   };
 
   const form = useForm({
-    resolver: zodResolver(addFormSchema),
+    resolver: zodResolver(addFormSchema(t)),
     defaultValues: addDefaultValues,
   });
 

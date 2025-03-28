@@ -305,8 +305,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     canCreate={true}
                     createOption={handleCreateTag}
                     error={
-                      formContext.formState.errors["productTagList"]
-                        ?.message as string
+                      formContext.formState.errors["productTagList"]?.message as string
                     }
                   />
 

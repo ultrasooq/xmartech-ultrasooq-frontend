@@ -39,16 +39,27 @@ type AddToRfqFormProps = {
   onClose: () => void;
   selectedProductId?: number;
   selectedQuantity?: number;
-  offerPrice?: number;
+  offerPriceFrom?: number;
+  offerPriceTo?: number;
 };
 
 const addFormSchema = z.object({
-  offerPrice: z.coerce
-    .number()
-    .max(1000000, {
-      message: "Offer price must be less than 1000000",
+  offerPriceFrom: z.coerce
+    .number({ invalid_type_error: 'Offer price from is required' })
+    .min(1, {
+      message: "Offer price from is required"
     })
-    .optional(),
+    .max(1000000, {
+      message: "Offer price from must be less than 1000000",
+    }),
+  offerPriceTo: z.coerce
+    .number({ invalid_type_error: 'Offer price to is required' })
+    .min(1, {
+      message: "Offer price to is required"
+    })
+    .max(1000000, {
+      message: "Offer price to must be less than 1000000",
+    }),
   note: z
     .string()
     .trim()
@@ -57,7 +68,15 @@ const addFormSchema = z.object({
     })
     .optional(),
   productImagesList: z.any().optional(),
-});
+}).refine(
+  ({ offerPriceFrom, offerPriceTo }) => {
+    return Number(offerPriceFrom) < Number(offerPriceTo);
+  },
+  {
+    message: "Offer Price From must be less than Offer Price To",
+    path: ["offerPriceFrom"],
+  }
+);
 
 const editFormSchema = z.object({
   note: z
@@ -71,7 +90,6 @@ const editFormSchema = z.object({
 });
 
 const addDefaultValues = {
-  offerPrice: 0,
   note: "",
   productImagesList: undefined,
   productImages: [] as { path: File; id: string }[],
@@ -87,14 +105,21 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   onClose,
   selectedProductId,
   selectedQuantity,
-  offerPrice,
+  offerPriceFrom,
+  offerPriceTo
 }) => {
   const t = useTranslations();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
     resolver: zodResolver(selectedQuantity ? addFormSchema : editFormSchema),
-    defaultValues: selectedQuantity ? Object.assign(addDefaultValues, { offerPrice: offerPrice || 0}) : editDefaultValues,
+    defaultValues: selectedQuantity ? Object.assign(
+      addDefaultValues, 
+      { 
+        offerPriceFrom: offerPriceFrom,
+        offerPriceTo: offerPriceTo
+      }
+    ) : editDefaultValues,
   }); 
   const photosRef = useRef<HTMLInputElement>(null);
 
@@ -145,19 +170,21 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const handleAddToCart = async (
     quantity: number,
     productId: number,
-    offerPrice: number,
+    offerPriceFrom: number,
+    offerPriceTo: number,
     note: string,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
-      offerPrice,
+      offerPriceFrom,
+      offerPriceTo,
       note,
     });
 
     if (response.status) {
       toast({
-        title: t("something_went_wrong"),
+        title: t("added_to_rfq_cart"),
         description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
@@ -267,7 +294,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           handleAddToCart(
             selectedQuantity ? selectedQuantity : 1,
             selectedProductId,
-            formData?.offerPrice,
+            formData?.offerPriceFrom,
+            formData?.offerPriceTo,
             formData?.note,
           );
         } else {
@@ -368,7 +396,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             handleAddToCart(
               selectedQuantity ? selectedQuantity : 1,
               response.data.id,
-              formData?.offerPrice,
+              formData?.offerPriceFrom,
+              formData?.offerPriceTo,
               formData?.note,
             );
           } else {
@@ -695,13 +724,23 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           />
 
           {selectedQuantity ? (
-            <ControlledTextInput
-              label={t("offer_price")}
-              name="offerPrice"
-              placeholder={t("offer_price")}
-              type="number"
-              value={Number(offerPrice) || 0}
-            />
+            <>
+              <ControlledTextInput
+                label={t("offer_price_from")}
+                name="offerPriceFrom"
+                placeholder={t("offer_price_from")}
+                type="number"
+                defaultValue={""}
+              />
+
+              <ControlledTextInput
+                label={t("offer_price_to")}
+                name="offerPriceTo"
+                placeholder={t("offer_price_to")}
+                type="number"
+                defaultValue={""}
+              />
+            </>
           ) : null}
 
           <Button
@@ -713,7 +752,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
               updateRfqCartWithLogin.isPending
             }
             type="submit"
-            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-2"
           >
             {uploadMultiple.isPending ||
             updateProduct.isPending ||

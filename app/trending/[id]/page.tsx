@@ -168,13 +168,40 @@ const ProductDetailsPage = () => {
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const handleQuantity = async (quantity: number, action: "add" | "remove") => {
-    handleAddToCart(quantity, action);
+    const isAddedToCart = hasItemByUser || hasItemByDevice;
+    if (isAddedToCart) {
+      handleAddToCart(quantity, action);
+    } else {
+      setGlobalQuantity(quantity);
+    }
   };
 
   const handleAddToCart = async (
     quantity: number,
     actionType: "add" | "remove",
   ) => {
+    const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+    if (actionType == "add" && minQuantity && minQuantity > quantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    const maxQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.maxQuantityPerCustomer : null; 
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    if (actionType == "remove" && minQuantity && minQuantity > quantity) {
+      quantity = 0;
+    }
+
     if (haveAccessToken) {
       if (!productDetails?.product_productPrice?.[0]?.id) {
         toast({
@@ -184,17 +211,18 @@ const ProductDetailsPage = () => {
         });
         return;
       }
+
+      if (actionType == "add" && quantity == 0) {
+        quantity = minQuantity ?? 1;
+      }
+
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
       });
 
       if (response.status) {
-        if (actionType === "add" && quantity === 0) {
-          setGlobalQuantity(1);
-        } else {
-          setGlobalQuantity(quantity);
-        }
+        setGlobalQuantity(quantity);
         toast({
           title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
@@ -218,11 +246,7 @@ const ProductDetailsPage = () => {
         deviceId,
       });
       if (response.status) {
-        if (actionType === "add" && quantity === 0) {
-          setGlobalQuantity(1);
-        } else {
-          setGlobalQuantity(quantity);
-        }
+        setGlobalQuantity(quantity);
         toast({
           title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
@@ -346,6 +370,8 @@ const ProductDetailsPage = () => {
               askForPrice={
                 productDetails?.product_productPrice?.[0]?.askForPrice
               }
+              isAddedToCart={hasItemByUser || hasItemByDevice}
+              cartQuantity={globalQuantity}
             />
             <ProductDescriptionCard
               productId={searchParams?.id ? (searchParams?.id as string) : ""}
@@ -389,6 +415,12 @@ const ProductDetailsPage = () => {
               }
               askForPrice={
                 productDetails?.product_productPrice?.[0]?.askForPrice
+              }
+              minQuantity={
+                productDetails?.product_productPrice?.[0]?.minQuantityPerCustomer
+              }
+              maxQuantity={
+                productDetails?.product_productPrice?.[0]?.maxQuantityPerCustomer
               }
               otherSellerDetails={otherSellerDetails}
               productPriceArr={productDetails?.product_productPrice}
@@ -589,14 +621,12 @@ const ProductDetailsPage = () => {
                     productId={item.productId}
                     productPriceId={item.productPriceId}
                     productName={
-                      item.productPriceDetails?.productPrice_product
-                        ?.productName
+                      item.productPriceDetails?.productPrice_product?.productName
                     }
                     offerPrice={item.productPriceDetails?.offerPrice}
                     productQuantity={item.quantity}
                     productImages={
-                      item.productPriceDetails?.productPrice_product
-                        ?.productImages
+                      item.productPriceDetails?.productPrice_product?.productImages
                     }
                     consumerDiscount={
                       item.productPriceDetails?.consumerDiscount
@@ -605,6 +635,8 @@ const ProductDetailsPage = () => {
                     onRemove={handleRemoveItemFromCart}
                     onWishlist={handleAddToWishlist}
                     haveAccessToken={haveAccessToken}
+                    minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
+                    maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
                   />
                 ))}
               </div>

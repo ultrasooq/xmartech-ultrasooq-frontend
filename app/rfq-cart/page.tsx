@@ -80,14 +80,16 @@ const RfqCartPage = () => {
     quantity: number,
     productId: number,
     actionType: "add" | "remove",
-    offerPrice: number,
-    note: string,
+    offerPriceFrom?: number,
+    offerPriceTo?: number,
+    note?: string,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
-      offerPrice,
-      note,
+      offerPriceFrom: offerPriceFrom || 0,
+      offerPriceTo: offerPriceTo || 0,
+      note: note || '',
     });
 
     if (response.status) {
@@ -202,7 +204,8 @@ const RfqCartPage = () => {
                       productImages={
                         item?.rfqCart_productDetails?.productImages
                       }
-                      offerPrice={item?.rfqCart_productDetails?.offerPrice}
+                      offerPriceFrom={item?.offerPriceFrom}
+                      offerPriceTo={item?.offerPriceTo}
                       onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromRfqCart}
                       note={item?.note}

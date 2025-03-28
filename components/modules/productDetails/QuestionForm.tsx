@@ -16,32 +16,35 @@ type QuestionFormProps = {
   onClose: () => void;
 };
 
-const formSchema = z.object({
-  question: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Question is required",
-    })
-    .max(200, {
-      message: "Question must be less than 200 characters",
-    }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    question: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("question_required"),
+      })
+      .max(200, {
+        message: t("question_must_be_less_than_n_chars", { n: 200 }),
+      }),
+  });
+};
 
 const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
   const t = useTranslations();
   const searchParams = useParams();
   const { toast } = useToast();
+  const defaultValues = {
+    question: "",
+  }
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      question: "",
-    },
+    resolver: zodResolver(formSchema(t)),
+    defaultValues: defaultValues,
   });
 
   const addQuestion = useAddQuestion();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: typeof defaultValues) => {
     const response = await addQuestion.mutateAsync({
       productId: Number(searchParams?.id),
       question: values.question,

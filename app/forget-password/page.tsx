@@ -15,32 +15,35 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(5, { message: "Email is required" })
-    .email({
-      message: "Invalid Email Address",
-    })
-    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
-      message: "Email must be in lower case",
-    }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    email: z
+      .string()
+      .trim()
+      .min(5, { message: t("email_is_required") })
+      .email({
+        message: t("invalid_email_address"),
+      })
+      .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+        message: t("email_must_be_lower_case"),
+      }),
+  });
+};
 
 export default function ForgetPasswordPage() {
   const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
+  const defaultValues = {
+    email: "",
+  };
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-    },
+    resolver: zodResolver(formSchema(t)),
+    defaultValues: defaultValues,
   });
   const forgotPassword = useForgotPassword();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: typeof defaultValues) => {
     const response = await forgotPassword.mutateAsync(values);
 
     if (response?.status && response?.otp) {

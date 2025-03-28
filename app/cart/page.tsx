@@ -114,6 +114,28 @@ const CartListPage = () => {
     actionType: "add" | "remove",
     productPriceId: number,
   ) => {
+    const minQuantity = memoizedCartList.find((item: any) => item.productPriceId == productPriceId)?.productPriceDetails?.minQuantityPerCustomer;
+    if (actionType == "add" && minQuantity && minQuantity > quantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    const maxQuantity = memoizedCartList.find((item: any) => item.productPriceId == productPriceId)?.productPriceDetails?.minQuantityPerCustomer;
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      })
+      return;
+    }
+
+    if (actionType == "remove" && minQuantity && minQuantity > quantity) {
+      quantity = 0;
+    }
+
     if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId,
@@ -244,14 +266,12 @@ const CartListPage = () => {
                       productId={item.productId}
                       productPriceId={item.productPriceId}
                       productName={
-                        item.productPriceDetails?.productPrice_product
-                          ?.productName
+                        item.productPriceDetails?.productPrice_product?.productName
                       }
                       offerPrice={item.productPriceDetails?.offerPrice}
                       productQuantity={item.quantity}
                       productImages={
-                        item.productPriceDetails?.productPrice_product
-                          ?.productImages
+                        item.productPriceDetails?.productPrice_product?.productImages
                       }
                       consumerDiscount={
                         item.productPriceDetails?.consumerDiscount
@@ -260,6 +280,8 @@ const CartListPage = () => {
                       onRemove={handleRemoveItemFromCart}
                       onWishlist={handleAddToWishlist}
                       haveAccessToken={haveAccessToken}
+                      minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
+                      maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
                     />
                   ))}
                 </div>

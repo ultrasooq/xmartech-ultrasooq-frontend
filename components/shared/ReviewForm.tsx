@@ -24,34 +24,40 @@ type ReviewFormProps = {
   reviewId?: number;
 };
 
-const formSchema = z.object({
-  description: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Description is required",
-    })
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    }),
-  title: z.string().trim().min(2, { message: "Title is required" }).max(50, {
-    message: "Title must be less than 50 characters",
-  }),
-  rating: z.number(),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    description: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("description_required"),
+      })
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      }),
+    title: z.string()
+      .trim()
+      .min(2, { message: t("title_required") })
+      .max(50, {
+        message: t("title_must_be_less_than_n_chars", { n: 50 }),
+      }),
+    rating: z.number(),
+  });
+};
 
 const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
   const t = useTranslations();
   const searchParams = useParams();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const defaultValues = {
+    description: "",
+    title: "",
+    rating: 0,
+  };
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      description: "",
-      title: "",
-      rating: 0,
-    },
+    resolver: zodResolver(formSchema(t)),
+    defaultValues: defaultValues,
   });
   const reviewByIdQuery = useReviewById(
     { productReviewId: reviewId ? reviewId : 0 },
@@ -60,7 +66,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
   const addReview = useAddReview();
   const updateReview = useUpdateReview();
 
-  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+  const onSubmit = async (formData: typeof defaultValues) => {
     const updatedFormData = {
       ...formData,
       productId: Number(searchParams?.id),

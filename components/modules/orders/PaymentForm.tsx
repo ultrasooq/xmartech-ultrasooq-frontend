@@ -137,7 +137,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         <Accordion>
           <AccordionItem>
             <AccordionItemHeading>
-              <AccordionItemButton>Cash</AccordionItemButton>
+              <AccordionItemButton>{t("cash")}</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
               <div className="w-full bg-white">
@@ -157,7 +157,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                       >
-                        Confirm Order
+                        {t("confirm_order")}
                       </Button>
                     </div>
                   </div>
@@ -168,7 +168,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
           <AccordionItem>
             <AccordionItemHeading onClick={() => handleCardPayment('direct')}>
-              <AccordionItemButton>direct payment</AccordionItemButton>
+              <AccordionItemButton>{t("direct_payment")}</AccordionItemButton>
             </AccordionItemHeading>
             {selectedPaymentType === 'direct' ? 
             <AccordionItemPanel>
@@ -181,14 +181,14 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         className="text-sm font-medium 
         leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        Card Holder name
+                        {t("card_holder_name")}
                       </label>
                       <div className="relative">
                         <input
                          type="text"
                          value={name}
                          onChange={(e) => setName(e.target.value)}
-                         placeholder="Card Holder Name"
+                         placeholder={t("card_holder_name")}
                           className="theme-form-control-s1 flex h-9 w-full rounded-md border
            border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors 
            file:border-0 file:bg-transparent file:text-sm file:font-medium 
@@ -199,7 +199,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                     </div>
                     
                      <div className="mb-4 w-full space-y-2" style={{width: '650px'}}>
-              <label className="text-sm font-medium">Card Details</label>
+              <label className="text-sm font-medium">{t("card_details")}</label>
               <div className="theme-form-control-s1 border p-2">
                 <CardElement options={{ hidePostalCode: true }} onChange={handleCardChange} />
               </div>
@@ -207,7 +207,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                   </div>
                   <div className="order-action-btn">
                   <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete} className="theme-primary-btn order-btn">
-                {isLoading ? "Processing..." : "Confirm Payment"}
+                {isLoading ? t("processing") : t("confirm_payment")}
               </Button>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           
           <AccordionItem>
             <AccordionItemHeading onClick={() => handleCardPayment('advance')}>
-              <AccordionItemButton>advance % payment</AccordionItemButton>
+              <AccordionItemButton>{t("advance_payment")}(%)</AccordionItemButton>
             </AccordionItemHeading>
             {selectedPaymentType === 'advance' ? 
             <AccordionItemPanel>
@@ -229,12 +229,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                   <div className="card-item card-payment-form px-5 pb-5 pt-3">
                   <div className="w-full">
                       <Button className="theme-primary-btn order-btn mt-2 h-14 w-full p-4">
-                        attached transaction receipt
+                        {t("attached_transaction_receipt")}
                       </Button>
                       <div className="mt-3 flex w-auto flex-wrap rounded-sm bg-[#B3B3B3] px-10 py-7">
                         <div className="relative mb-3 w-[80%]">
                           <label className="mb-2 text-lg font-semibold text-black">
-                            Payment Amount($):
+                            {t("payment_amount")}($):
                           </label>
                           <input
                             type="number"
@@ -265,7 +265,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                             disabled={!inputValue} // Disable if inputValue is empty
                             className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
                           >
-                            Save
+                            {t("save")}
                           </button>
                           <button
                             type="button"
@@ -277,7 +277,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                             disabled={!inputValue} // Disable if inputValue is empty
                             className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
                           >
-                            Cancel
+                            {t("cancel")}
                           </button>
                         </div>
                       </div>
@@ -290,20 +290,20 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                           className="text-sm font-medium 
           leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
-                          Card Holder name
+                          {t("card_holder_name")}
                         </label>
                         <div className="relative">
                         <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Card Holder Name"
+                      placeholder={t("card_holder_name")}
                       className="theme-form-control-s1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1"
                     />
                         </div>
                       </div>
                       <div className="mb-4 w-full space-y-2" style={{width: '650px'}}>
-                        <label className="text-sm font-medium">Card Details</label>
+                        <label className="text-sm font-medium">{t("card_details")}</label>
                         <div className="theme-form-control-s1 border p-2">
                         <CardElement options={{ hidePostalCode: true }} onChange={handleCardChange} />
                         </div>
@@ -311,14 +311,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                     </div>
                     <div className="order-action-btn">
                     <div className="order-action-btn">
-                    {/* <Button onClick={handleSubmit} disabled={isLoading || !stripe} className="theme-primary-btn order-btn">
-                  {isLoading ? "Processing..." : "Confirm Payment"}
-                </Button> */}
                 <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete || advanceAmount === ''} className="theme-primary-btn order-btn">
-                      {isLoading ? "Processing..." : "Confirm Payment"}
+                      {isLoading ? t("processing") : t("confirm_payment")}
                     </Button> &nbsp;&nbsp;
                     <Button onClick={handleAttachment} className="theme-primary-btn order-btn">
-                      {isLoading ? "Processing..." : "Send Attachment"}
+                      {isLoading ? t("processing") : t("send_attachment")}
                     </Button>
                     </div>
                     </div>
@@ -332,7 +329,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
           <AccordionItem>
             <AccordionItemHeading>
-              <AccordionItemButton>pay it for me</AccordionItemButton>
+              <AccordionItemButton>{t("pay_it_for_me")}</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
               <div className="w-full bg-white">
@@ -352,7 +349,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                       >
-                        Confirm Order
+                        {t("confirm_order")}
                       </Button>
                     </div>
                   </div>
@@ -363,7 +360,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
           <AccordionItem>
             <AccordionItemHeading>
-              <AccordionItemButton>Installments</AccordionItemButton>
+              <AccordionItemButton>{t("installments")}</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
               <div className="w-full bg-white">
@@ -383,7 +380,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                       >
-                        Confirm Order
+                        {t("confirm_order")}
                       </Button>
                     </div>
                   </div>

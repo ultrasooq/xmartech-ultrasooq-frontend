@@ -49,8 +49,6 @@ import { useMe } from "@/apis/queries/user.queries";
 import {
   useCartListByDevice,
   useCartListByUserId,
-  useUpdateCartByDevice,
-  useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
@@ -110,8 +108,6 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   // }, [searchParams]); // ✅ Only runs on the client
   
   const me = useMe();
-  const updateCartWithLogin = useUpdateCartWithLogin();
-  const updateCartByDevice = useUpdateCartByDevice();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
   const allProductsQuery = useAllProducts({
@@ -202,6 +198,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
         askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -246,53 +243,6 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
       setCartList((cartListByDeviceQuery.data?.data || []).map((item: any) => item));
     }
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
-
-  const handleAddToCart = async (quantity: number, productPriceId?: number) => {
-    if (haveAccessToken) {
-      if (!productPriceId) {
-        toast({
-          title: t("something_went_wrong"),
-          description: t("product_price_id_not_found"),
-          variant: "danger",
-        });
-        return;
-      }
-      const response = await updateCartWithLogin.mutateAsync({
-        productPriceId,
-        quantity,
-      });
-
-      if (response.status) {
-        toast({
-          title: t("something_went_wrong"),
-          description: t("check_your_cart_for_more_details"),
-          variant: "success",
-        });
-      }
-    } else {
-      if (!productPriceId) {
-        toast({
-          title: t("something_went_wrong"),
-          description: t("product_price_id_not_found"),
-          variant: "danger",
-        });
-        return;
-      }
-      const response = await updateCartByDevice.mutateAsync({
-        productPriceId,
-        quantity,
-        deviceId,
-      });
-      if (response.status) {
-        toast({
-          title: t("something_went_wrong"),
-          description: t("check_your_cart_for_more_details"),
-          variant: "success",
-        });
-        return response.status;
-      }
-    }
-  };
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -557,22 +507,23 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
 
               {viewType === "grid" ? (
                 <div className="product-list-s1">
-                  {memoizedProductList.map((item: TrendingProduct) => (
-                    <ProductCard
-                      key={item.id}
-                      item={item}
-                      onAdd={() =>
-                        handleAddToCart(-1, item.productProductPriceId)
-                      }
-                      onWishlist={() =>
-                        handleAddToWishlist(item.id, item?.productWishlist)
-                      }
-                      inWishlist={item?.inWishlist}
-                      haveAccessToken={haveAccessToken}
-                      isInteractive
-                      productQuantity={cartList?.find((el: any) => el.productId == item.id)?.quantity || 0}
-                    />
-                  ))}
+                  {memoizedProductList.map((item: TrendingProduct) => {
+                    const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
+                    return (
+                      <ProductCard
+                        key={item.id}
+                        item={item}
+                        onWishlist={() =>
+                          handleAddToWishlist(item.id, item?.productWishlist)
+                        }
+                        inWishlist={item?.inWishlist}
+                        haveAccessToken={haveAccessToken}
+                        isInteractive
+                        productQuantity={cartQuantity}
+                        isAddedToCart={cartQuantity > 0}
+                      />
+                    )
+                  })}
                 </div>
               ) : null}
 

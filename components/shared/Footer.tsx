@@ -20,18 +20,20 @@ import ControlledTextInput from "./Forms/ControlledTextInput";
 import { Form } from "../ui/form";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(5, { message: "Email is required" })
-    .email({
-      message: "Invalid Email Address",
-    })
-    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
-      message: "Email must be in lower case",
-    }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    email: z
+      .string()
+      .trim()
+      .min(5, { message: t("email_is_required") })
+      .email({
+        message: t("invalid_email_address"),
+      })
+      .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+        message: t("email_must_be_lower_case"),
+      }),
+  });
+};
 
 const defaultValues = {
   email: "",
@@ -42,7 +44,7 @@ const Footer = () => {
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues,
   });
 
@@ -50,7 +52,7 @@ const Footer = () => {
   const handleTogglePrivacyModal = () =>
     setIsPrivacyModalOpen(!isPrivacyModalOpen);
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = (data: typeof defaultValues) => {
     console.log(data);
   };
 

@@ -5,6 +5,7 @@ import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
+import { toast } from "@/components/ui/use-toast";
 
 type ProductCardProps = {
   cartId: number;
@@ -19,6 +20,8 @@ type ProductCardProps = {
   onWishlist: (args0: number) => void;
   haveAccessToken: boolean;
   consumerDiscount: number;
+  minQuantity?: number;
+  maxQuantity?: number;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -34,6 +37,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onWishlist,
   haveAccessToken,
   consumerDiscount,
+  minQuantity,
+  maxQuantity
 }) => {
   const t = useTranslations();
   const [quantity, setQuantity] = useState(1);
@@ -86,6 +91,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   variant="outline"
                   className="relative border border-solid border-gray-300 hover:shadow-sm"
                   onClick={() => {
+                    if (maxQuantity && maxQuantity < quantity + 1) {
+                      toast({
+                        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+                        variant: "danger"
+                      })
+                      return;
+                    }
                     setQuantity(quantity + 1);
                     onAdd(quantity + 1, "add", productPriceId);
                   }}

@@ -319,7 +319,11 @@ export const CONSUMER_TYPE_LIST = [
   },
   {
     label: "vendor",
-    value: "VENDOR",
+    value: "VENDORS",
+  },
+  {
+    label: "everyone",
+    value: "EVERYONE",
   },
 ];
 
@@ -396,3 +400,8 @@ export const CHAT_REQUEST_MESSAGE = {
     value: "Requested for Offer Price ",
   },
 };
+
+export const STORE_MENU_ID = 188;
+export const BUYGROUP_MENU_ID = 189;
+export const FACTORIES_MENU_ID = 190;
+export const RFQ_MENU_ID = 191;

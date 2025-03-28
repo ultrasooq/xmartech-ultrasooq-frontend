@@ -225,7 +225,7 @@ const SellerOrdersPage = () => {
                 <input
                   type="text"
                   className="custom-form-control-s1 !w-full"
-                  placeholder="Search..."
+                  placeholder={t("search")}
                   onChange={handleDebounce}
                   ref={searchRef}
                 />

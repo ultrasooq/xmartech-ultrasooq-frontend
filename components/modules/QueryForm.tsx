@@ -18,22 +18,24 @@ type QueryFormProps = {
     onClose: () => void;
 };
 
-const queryFormSchema = z.object({
-    email: z.string()
-        .trim()
-        .min(2, { message: "Email is required" })
-        .email({ message: "Invalid email format" }),
-
-    query: z.string()
-        .trim()
-        .min(5, { message: "Query is required" }),
-});
+const queryFormSchema = (t: any) => {
+    return z.object({
+        email: z.string()
+            .trim()
+            .min(2, { message: t("email_is_required") })
+            .email({ message: t("invalid_email_address") }),
+    
+        query: z.string()
+            .trim()
+            .min(5, { message: t("query_is_required") }),
+    })
+};
 
 const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
     const t = useTranslations();
 
     const form = useForm({
-        resolver: zodResolver(queryFormSchema),
+        resolver: zodResolver(queryFormSchema(t)),
         defaultValues: { email: '', query: '' },
     });
 

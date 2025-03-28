@@ -27,21 +27,26 @@ type ReviewFormProps = {
   productId?: number;
 };
 
-const formSchema = z.object({
-  description: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Description is required",
-    })
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    }),
-  title: z.string().trim().min(2, { message: "Title is required" }).max(50, {
-    message: "Title must be less than 50 characters",
-  }),
-  rating: z.number(),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    description: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("description_required"),
+      })
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      }),
+    title: z.string()
+      .trim()
+      .min(2, { message: t("title_required") })
+      .max(50, {
+        message: t("title_must_be_less_than_n_chars", { n: 50 }),
+      }),
+    rating: z.number(),
+  });
+};
 
 const SellerReviewForm: React.FC<ReviewFormProps> = ({
   onClose,
@@ -55,17 +60,14 @@ const SellerReviewForm: React.FC<ReviewFormProps> = ({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       description: "",
       title: "",
       rating: 0,
     },
   });
-  //   const reviewByIdQuery = useSellerReviewById(
-  //     { productReviewId: reviewId ? reviewId : 0 },
-  //     !!reviewId,
-  //   );
+
   const addReview = useAddSellerReview();
   const updateReview = useUpdateSellerReview();
 

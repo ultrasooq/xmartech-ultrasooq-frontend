@@ -28,27 +28,29 @@ import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { fetchUserPermissions } from "@/apis/requests/user.requests";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(5, { message: "Email is required" })
-    .email({
-      message: "Invalid Email Address",
-    })
-    .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
-      message: "Email must be in lower case",
-    }),
-  password: z
-    .string()
-    .trim()
-    .min(2, {
-      message: "Password is required",
-    })
-    .min(8, {
-      message: "Password must be longer than or equal to 8 characters",
-    }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    email: z
+      .string()
+      .trim()
+      .min(5, { message: t("email_is_required") })
+      .email({
+        message: t("invalid_email_address"),
+      })
+      .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
+        message: t("email_must_be_lower_case"),
+      }),
+    password: z
+      .string()
+      .trim()
+      .min(2, {
+        message: t("password_is_required"),
+      })
+      .min(8, {
+        message: t("password_characters_limit_n", { n: 8 }),
+      }),
+  });
+};
 
 export default function LoginPage() {
   const t = useTranslations();
@@ -58,12 +60,13 @@ export default function LoginPage() {
   const { setUser, setPermissions } = useAuth();
   const [rememberMe, setRememberMe] = useState<CheckedState>(false);
 
+  const defaultValues = {
+    email: "",
+    password: "",
+  };
   const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    resolver: zodResolver(formSchema(t)),
+    defaultValues: defaultValues,
   });
   const deviceId = getOrCreateDeviceId() || "";
 
@@ -71,7 +74,7 @@ export default function LoginPage() {
   const login = useLogin();
   const updateCart = useUpdateUserCartByDeviceId();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: typeof defaultValues) => {
     const response: any = await login.mutateAsync(values);
 
     if (response?.status && response?.accessToken) {

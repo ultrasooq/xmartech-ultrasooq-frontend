@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "lodash";
 import {
+  useRfqCartListByUserId,
   useRfqProducts,
   useUpdateRfqCartWithLogin,
 } from "@/apis/queries/rfq.queries";
@@ -57,14 +58,15 @@ const RfqPage = () => {
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [quantity, setQuantity] = useState<number | undefined>();
-  const [offerPrice, setOfferPrice] = useState<number | undefined>();
+  const [offerPriceFrom, setOfferPriceFrom] = useState<number | undefined>();
+  const [offerPriceTo, setOfferPriceTo] = useState<number | undefined>();
+  const [cartList, setCartList] = useState<any[]>([]);
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const handleToggleAddModal = () =>
-    setIsAddToCartModalOpen(!isAddToCartModalOpen);
+  const handleToggleAddModal = () => setIsAddToCartModalOpen(!isAddToCartModalOpen);
 
   const me = useMe(haveAccessToken);
   const rfqProductsQuery = useRfqProducts({
@@ -74,20 +76,37 @@ const RfqPage = () => {
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
   });
+
+  const rfqCartListByUser = useRfqCartListByUserId(
+    {
+      page: 1,
+      limit: 100,
+    },
+    haveAccessToken,
+  );
+
   const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
 
   const handleRfqDebounce = debounce((event: any) => {
     setSearchRfqTerm(event.target.value);
   }, 1000);
 
-  const handleRFQCart = (quantity: number, productId: number, action: "add" | "remove", price?: number) => {
+  const handleRFQCart = (
+    quantity: number,
+    productId: number,
+    action: "add" | "remove",
+    offerPriceFrom?: number,
+    offerPriceTo?: number,
+    note?: string
+  ) => {
     if (action == "remove" && quantity == 0) {
-      handleAddToCart(quantity, productId, "remove", 0, '');
+      handleAddToCart(quantity, productId, "remove", 0, 0, '');
     } else {
       handleToggleAddModal();
       setSelectedProductId(productId);
       setQuantity(quantity);
-      setOfferPrice(price || 0);
+      setOfferPriceFrom(offerPriceFrom);
+      setOfferPriceTo(offerPriceTo);
     }
   };
 
@@ -95,14 +114,16 @@ const RfqPage = () => {
     quantity: number,
     productId: number,
     actionType: "add" | "remove",
-    offerPrice: number,
-    note: string,
+    offerPriceFrom?: number,
+    offerPriceTo?: number,
+    note?: string,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
-      offerPrice,
-      note,
+      offerPriceFrom: offerPriceFrom || 0,
+      offerPriceTo: offerPriceTo || 0,
+      note: note || '',
     });
 
     if (response.status) {
@@ -122,12 +143,8 @@ const RfqPage = () => {
         rfqProductsQuery.data?.data.map((item: any) => {
           return {
             ...item,
-            isAddedToCart:
-              item?.product_rfqCart?.length &&
-              item?.product_rfqCart[0]?.quantity > 0,
-            quantity:
-              item?.product_rfqCart?.length &&
-              item?.product_rfqCart[0]?.quantity,
+            isAddedToCart: item?.product_rfqCart?.length && item?.product_rfqCart[0]?.quantity > 0,
+            quantity: item?.product_rfqCart?.length && item?.product_rfqCart[0]?.quantity,
           };
         }) || []
       );
@@ -137,6 +154,12 @@ const RfqPage = () => {
   }, [
     rfqProductsQuery.data?.data,
   ]);
+
+  useEffect(() => {
+    if (rfqCartListByUser.data?.data) {
+      setCartList(rfqCartListByUser.data?.data?.map((item: any) => item) || []);
+    }
+  }, [rfqCartListByUser.data?.data]);
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -336,7 +359,12 @@ const RfqPage = () => {
                               productImages={item?.productImages}
                               productQuantity={item?.quantity || 0}
                               productPrice={item?.product_productPrice}
-                              offerPrice={item?.offerPrice}
+                              offerPriceFrom={
+                                cartList?.find((el: any) => el.productId == item.id)?.offerPriceFrom
+                              }
+                              offerPriceTo={
+                                cartList?.find((el: any) => el.productId == item.id)?.offerPriceTo
+                              }
                               onAdd={handleRFQCart}
                               onToCart={handleCartPage}
                               onEdit={() => {
@@ -379,8 +407,8 @@ const RfqPage = () => {
                 </div>
               </div>
               <RfqCartMenu
-                onAdd={handleAddToCart}
-                haveAccessToken={haveAccessToken}
+                onAdd={handleRFQCart}
+                cartList={cartList || []}
               />
             </div>
           </div>
@@ -398,7 +426,8 @@ const RfqPage = () => {
               }}
               selectedProductId={selectedProductId}
               selectedQuantity={quantity}
-              offerPrice={Number(offerPrice) || 0}
+              offerPriceFrom={offerPriceFrom}
+              offerPriceTo={offerPriceTo}
             />
           </DialogContent>
         </Dialog>

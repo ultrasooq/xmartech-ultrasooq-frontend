@@ -35,7 +35,10 @@ export default function PlateEditor({
   readOnly,
 }: PlateEditorProps) {
   const containerRef = useRef(null);
-
+  if (typeof window !== "undefined") {
+    {/* @ts-ignore */}
+    window.__isReactDndBackendSetUp = false;
+  }
   return (
     <TooltipProvider>
       <DndProvider backend={HTML5Backend}>
