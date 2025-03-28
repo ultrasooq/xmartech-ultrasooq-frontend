@@ -87,8 +87,12 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     "productPriceList.[0].consumerType",
   );
   const watchSellType = formContext.watch("productPriceList.[0].sellType");
-  const watchConsumerDiscount = formContext.watch("productPriceList.[0].consumerDiscount");
-  const watchVendorDiscount = formContext.watch("productPriceList.[0].vendorDiscount");
+  const watchConsumerDiscount = formContext.watch(
+    "productPriceList.[0].consumerDiscount",
+  );
+  const watchVendorDiscount = formContext.watch(
+    "productPriceList.[0].vendorDiscount",
+  );
   // TODO: validation remove when user types
   // const watchMinCustomer = formContext.watch(
   //   "productPriceList.[0].minCustomer",
@@ -398,7 +402,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   return (
     <div className="form-groups-common-sec-s1">
-      <h3 className={cn(activeProductType === "R" ? "!mb-0" : "")}>{t("price")}</h3>
+      <h3 className={cn(activeProductType === "R" ? "!mb-0" : "")}>
+        {t("price")}
+      </h3>
       {activeProductType !== "R" ? (
         <div className="mb-4 flex w-full flex-row items-center gap-x-5">
           <div className="text-with-checkagree">
@@ -497,20 +503,29 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     name="productPriceList.[0].consumerDiscount"
                     placeholder={t("discount")}
                   />
-                  {watchConsumerDiscount > 0 && <div className="flex w-full flex-col gap-y-2">
-                    <Label>{t("discount_type")}</Label>
-                    <Controller
+                  {watchConsumerDiscount > 0 && (
+                    <div className="flex w-full flex-col gap-y-2">
+                      <Label>{t("discount_type")}</Label>
+                      <Controller
                         name="productPriceList.[0].consumerDiscountType"
                         control={formContext.control}
                         render={({ field }) => (
-                          <select {...field} className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
+                          <select
+                            {...field}
+                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          >
                             <option value=""></option>
-                            <option value="FLAT">{t("flat").toUpperCase()}</option>
-                            <option value="PERCENTAGE">{t("percentage").toUpperCase()}</option>
+                            <option value="FLAT">
+                              {t("flat").toUpperCase()}
+                            </option>
+                            <option value="PERCENTAGE">
+                              {t("percentage").toUpperCase()}
+                            </option>
                           </select>
                         )}
-                    />
-                  </div>}
+                      />
+                    </div>
+                  )}
                 </>
               ) : null}
 
@@ -522,20 +537,29 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     name="productPriceList.[0].vendorDiscount"
                     placeholder={t("discount")}
                   />
-                  {watchVendorDiscount > 0 && <div className="flex w-full flex-col gap-y-2">
-                    <Label>{t("discount_type")}</Label>
-                    <Controller
-                      name="productPriceList.[0].vendorDiscountType"
-                      control={formContext.control}
-                      render={({ field }) => (
-                        <select {...field} className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0">
-                          <option value=""></option>
-                          <option value="FLAT">{t("flat").toUpperCase()}</option>
-                          <option value="PERCENTAGE">{t("percentage").toUpperCase()}</option>
-                        </select>
-                      )}
-                    />
-                  </div>}
+                  {watchVendorDiscount > 0 && (
+                    <div className="flex w-full flex-col gap-y-2">
+                      <Label>{t("discount_type")}</Label>
+                      <Controller
+                        name="productPriceList.[0].vendorDiscountType"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <select
+                            {...field}
+                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                          >
+                            <option value=""></option>
+                            <option value="FLAT">
+                              {t("flat").toUpperCase()}
+                            </option>
+                            <option value="PERCENTAGE">
+                              {t("percentage").toUpperCase()}
+                            </option>
+                          </select>
+                        )}
+                      />
+                    </div>
+                  )}
                 </>
               ) : null}
             </div>
@@ -691,7 +715,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           {activeProductType !== "R" &&
           watchSetUpPrice &&
           watchSellType !== "BUYGROUP" ? (
-            <div className="mb-4 flex w-full flex-row items-center gap-x-5">
+            <div className="mb-4 flex w-full flex-col items-start gap-5 md:flex-row md:items-center">
               <>
                 <div className="flex flex-row items-center gap-x-3">
                   <Controller
@@ -982,7 +1006,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         ) : null}
       </div>
       <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-1">
-        <Label className="text-[16px] font-semibold">{t("where_to_sell")}</Label>
+        <Label className="text-[16px] font-semibold">
+          {t("where_to_sell")}
+        </Label>
       </div>
       <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
         <div className="mt-2 flex flex-col gap-y-3">

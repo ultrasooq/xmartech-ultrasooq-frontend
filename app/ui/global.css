@@ -2213,7 +2213,7 @@
   }
 
   .time_wrap {
-    @apply flex items-center justify-center p-[20px];
+    @apply flex items-center justify-center p-[20px] gap-[30px];
   }
 
   .time_field {
@@ -2221,11 +2221,11 @@
   }
 
   .time_field h3 {
-    @apply text-[#666] font-medium !important;
+    @apply text-[#db2302] font-bold text-[40px] !important;
   }
 
   .time_field h6 {
-    @apply text-[#666] font-normal;
+    @apply text-[#333] font-normal;
   }
 
   @media only screen and (min-width: 768px) and (max-width: 991px) {
@@ -5223,6 +5223,10 @@ input::-ms-clear {
 
   .custom-inner-banner-s1 {
     @apply w-full;
+  }
+
+  .team_members_table table tbody tr td svg {
+    @apply w-[24px] h-[24px];
   }
 
 }
