@@ -148,6 +148,15 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     [listIds?.length],
   );
 
+  const productConditions = () => {
+    return Object.keys(PRODUCT_CONDITION_LIST).map((value: string, index: number) => {
+      return {
+        label: t(PRODUCT_CONDITION_LIST[index].label),
+        value: PRODUCT_CONDITION_LIST[index].value
+      };
+    });
+  };
+
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
@@ -277,8 +286,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             onChange={(newValue) => {
                               field.onChange(newValue?.value);
                             }}
-                            options={PRODUCT_CONDITION_LIST}
-                            value={PRODUCT_CONDITION_LIST.find(
+                            options={productConditions()}
+                            value={productConditions().find(
                               (item: any) => item.value === field.value,
                             )}
                             styles={customStyles}

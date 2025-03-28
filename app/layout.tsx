@@ -97,6 +97,7 @@ export default async function RootLayout({
             <AuthProvider
               user={{ id: userData?.data?.id, firstName: userData?.data?.firstName, lastName: userData?.data?.lastName, tradeRole: userData?.data?.tradeRole }}
               permissions={[...(permissions?.data?.userRoleDetail?.userRolePermission || [])]}
+              locale={locale}
             >
               <SocketProvider>
                 <main className="overflow-x-visible">

@@ -795,7 +795,6 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       >
                         <option value={"NORMALSELL"}>{t("normal_sell")}</option>
                         <option value={"BUYGROUP"}>{t("buy_group")}</option>
-                        <option value={"OTHERS"}>{t("others")}</option>
                         <option value={"EVERYONE"}>{t("everyone")}</option>
                       </select>
                     </div>

@@ -99,6 +99,33 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   const consumerTypeMessage = errors?.consumerType?.message;
   const sellTypeMessage = errors?.sellType?.message;
 
+  const productConditions = () => {
+    return Object.keys(PRODUCT_CONDITION_LIST).map((value: string, index: number) => {
+      return {
+        label: t(PRODUCT_CONDITION_LIST[index].label),
+        value: PRODUCT_CONDITION_LIST[index].value
+      };
+    });
+  };
+
+  const sellTypes = () => {
+    return Object.keys(SELL_TYPE_LIST).map((value: string, index: number) => {
+      return {
+        label: t(SELL_TYPE_LIST[index].label),
+        value: SELL_TYPE_LIST[index].value
+      };
+    });
+  };
+
+  const consumerTypes = () => {
+    return Object.keys(CONSUMER_TYPE_LIST).map((value: string, index: number) => {
+      return {
+        label: t(CONSUMER_TYPE_LIST[index].label),
+        value: CONSUMER_TYPE_LIST[index].value
+      };
+    });
+  };
+
   return (
     <aside className="manage_product_list h-fit">
       <div className="manage_product_list_wrap">
@@ -209,12 +236,9 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                       onChange={(newValue) => {
                         field.onChange(newValue?.value);
                       }}
-                      options={PRODUCT_CONDITION_LIST.map((condition) => {
-                        condition.label = t(condition.label);
-                        return condition;
-                      })}
+                      options={productConditions()}
                       value={
-                        PRODUCT_CONDITION_LIST.find(
+                        productConditions().find(
                           (item: any) => item.value === field.value,
                         ) || null
                       }
@@ -435,11 +459,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                       onChange={(newValue) => {
                         field.onChange(newValue?.value);
                       }}
-                      options={CONSUMER_TYPE_LIST.map((option) => {
-                        option.label = t(option.label);
-                        return option;
-                      })}
-                      value={CONSUMER_TYPE_LIST.find(
+                      options={consumerTypes()}
+                      value={consumerTypes().find(
                         (item: Option) => item.value === field.value,
                       )}
                       styles={customStyles}
@@ -483,11 +504,8 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                       onChange={(newValue) => {
                         field.onChange(newValue?.value);
                       }}
-                      options={SELL_TYPE_LIST.map((option) => {
-                        option.label = t(option.label);
-                        return option;
-                      })}
-                      value={SELL_TYPE_LIST.find(
+                      options={sellTypes()}
+                      value={sellTypes().find(
                         (item: Option) => item.value === field.value,
                       )}
                       styles={customStyles}

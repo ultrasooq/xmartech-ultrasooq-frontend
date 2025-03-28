@@ -378,6 +378,24 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     setLocalTime(currentLocalTime); // Update local time state
   }, []);
 
+  const sellTypes = () => {
+    return Object.keys(SELL_TYPE_LIST).map((value: string, index: number) => {
+      return {
+        label: t(SELL_TYPE_LIST[index].label),
+        value: SELL_TYPE_LIST[index].value
+      };
+    });
+  };
+
+  const consumerTypes = () => {
+    return Object.keys(CONSUMER_TYPE_LIST).map((value: string, index: number) => {
+      return {
+        label: t(CONSUMER_TYPE_LIST[index].label),
+        value: CONSUMER_TYPE_LIST[index].value
+      };
+    });
+  };
+
   return (
     <div className="form-groups-common-sec-s1">
       <h3 className={cn(activeProductType === "R" ? "!mb-0" : "")}>{t("price")}</h3>
@@ -421,8 +439,8 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       onChange={(newValue) => {
                         field.onChange(newValue?.value);
                       }}
-                      options={CONSUMER_TYPE_LIST}
-                      value={CONSUMER_TYPE_LIST.find(
+                      options={consumerTypes()}
+                      value={consumerTypes().find(
                         (item: Option) => item.value === field.value,
                       )}
                       styles={customStyles}
@@ -449,8 +467,8 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       onChange={(newValue) => {
                         field.onChange(newValue?.value);
                       }}
-                      options={SELL_TYPE_LIST}
-                      value={SELL_TYPE_LIST.find(
+                      options={sellTypes()}
+                      value={sellTypes().find(
                         (item: Option) => item.value === field.value,
                       )}
                       styles={customStyles}
