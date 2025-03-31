@@ -299,8 +299,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                       <p className="text-[13px] text-red-500">
                         {
-                          formContext.formState.errors["productCondition"]
-                            ?.message as string
+                          formContext.formState.errors["productCondition"]?.message as string
                         }
                       </p>
                     </div>

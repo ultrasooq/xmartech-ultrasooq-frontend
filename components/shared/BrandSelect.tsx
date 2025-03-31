@@ -7,7 +7,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Label } from "../ui/label";
 import { useAuth } from "@/context/AuthContext";
 import Select from "react-select/dist/declarations/src/Select";
-import { GroupBase } from "react-select";
+import ReactSelect, { GroupBase } from "react-select";
 import {
   Tooltip,
   TooltipTrigger,
@@ -47,7 +47,7 @@ const ReactSelectInput = () => {
   // Set default product type in the form
   useEffect(() => {
     formContext.setValue("typeOfProduct", "OWNBRAND");
-  }, [formContext]);
+  }, []);
 
   const handleCreate = async (inputValue: string) => {
     const response = await createBrand.mutateAsync({ brandName: inputValue });
@@ -85,15 +85,14 @@ const ReactSelectInput = () => {
           name="typeOfProduct"
           control={formContext.control}
           render={({ field }) => (
-            <CreatableSelect
+            <ReactSelect
               {...field}
-              isClearable
               options={brandType}
-              styles={customStyles}
-              instanceId="typeOfProduct"
               value={brandType.find(
                 (item: IOption) => item.value === field.value,
               )}
+              styles={customStyles}
+              instanceId="typeOfProduct"
               onChange={(newValue) => {
                 field.onChange(newValue?.value);
                 if (newValue?.value) {

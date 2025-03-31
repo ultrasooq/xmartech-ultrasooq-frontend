@@ -200,7 +200,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   }, [selectedState]);
 
   useEffect(() => {
-    let ipInfo = JSON.parse(window.localStorage.ipInfo);
+    let ipInfo = JSON.parse(window.localStorage.ipInfo ?? "{}");
     if (ipInfo.country_name) {
       let country = countriesQuery?.data?.data?.find((item: any) => item.countryName.toLowerCase() == ipInfo.country_name.toLowerCase());
       formContext.setValue('placeOfOriginId', country?.id);
@@ -208,7 +208,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   }, [countriesQuery?.data?.data]);
 
   useEffect(() => {
-    let ipInfo = JSON.parse(window.localStorage.ipInfo);
+    let ipInfo = JSON.parse(window.localStorage.ipInfo ?? "{}");
     if (ipInfo.country_name) {
       let country = countriesNewQuery?.data?.data?.find((item: any) => item.name.toLowerCase() == ipInfo.country_name.toLowerCase());
       if (activeProductType != "R") {
