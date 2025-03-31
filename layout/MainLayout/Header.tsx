@@ -10,7 +10,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { deleteCookie, getCookie } from "cookies-next";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DialogTitle } from "@/components/ui/dialog";
-import { PUREMOON_TOKEN_KEY, menuBarIconList } from "@/utils/constants";
+import { CURRENCIES, LANGUAGES, PUREMOON_TOKEN_KEY, menuBarIconList } from "@/utils/constants";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,6 +61,7 @@ import QueryForm from "@/components/modules/QueryForm";
 import { useTranslations } from "next-intl";
 import { cookies } from "next/headers";
 import { setUserLocale } from "@/src/services/locale";
+import { fetchIpInfo } from "@/apis/requests/ip.requests";
 
 type CategoryProps = {
   id: number;
@@ -101,7 +102,6 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
 
 const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const t = useTranslations();
-  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -141,6 +141,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const handleClick = () => {
     setIsActive(!isActive);
   };
+
+  const languages = [...LANGUAGES];
+
+  const [currency, setCurrency] = useState<string>('USD');
+  const currencies = [...CURRENCIES];
 
   // Debounced function to update URL
   const updateURL = debounce((newTerm) => {
@@ -299,6 +304,36 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     }
   }, [isClickedOutside]);
 
+  useEffect(() => {
+    const getIpInfo = async () => {
+      try {
+        if (!window?.localStorage?.ipInfo) {
+          const response = await fetchIpInfo();
+          window.localStorage.setItem('ipInfo', JSON.stringify(response.data));
+
+          let localeKey = response.data.languages.split(',')[0];
+          if (localeKey.substr(0, 2)) {
+            localeKey = 'en';
+          }
+          window.localStorage.setItem('locale', localeKey);
+          applyTranslation(localeKey);
+
+          setCurrency(response.data.currency || 'USD');
+          window.localStorage.setItem('currency', response.data.currency || 'USD');
+
+        } else {
+          setCurrency(window.localStorage.currency || 'USD');
+        }
+      } catch (error) {
+
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      getIpInfo();
+    }
+  }, [])
+
   const hideMenu = (permissionName: string): boolean => {
     if (
       me?.data?.data?.tradeRole === "MEMBER" &&
@@ -329,25 +364,29 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </li>
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <select className="border-0 bg-transparent text-white focus:outline-none">
-                      <option className="bg-dark-cyan">USD</option>
-                      <option className="bg-dark-cyan">INR</option>
-                      <option className="bg-dark-cyan">AUD</option>
+                    <select className="border-0 bg-transparent text-white focus:outline-none" value={currency} 
+                      onChange={(e: any) => {
+                        setCurrency(e.target?.value || 'USD');
+                        window.localStorage.setItem('currency', e.target?.value || 'USD')
+                      }}
+                    >
+                      {currencies.map((item: { code: string }) => {
+                        return <option className="bg-dark-cyan" value={item.code} key={item.code}>
+                          {item.code}
+                        </option>
+                      })}
                     </select>
                   </li>
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
                     {/* <GoogleTranslate /> */}
-                    <select
-                      className="border-0 bg-transparent text-white focus:outline-none"
-                      defaultValue={locale}
+                    <select className="border-0 bg-transparent text-white focus:outline-none" value={locale}
                       onChange={(e) => applyTranslation(e.target.value)}
                     >
-                      <option className="bg-dark-cyan" value="en">
-                        English
-                      </option>
-                      <option className="bg-dark-cyan" value="ar">
-                        Arabic
-                      </option>
+                      {languages.map((language: { locale: string, name: string }) => {
+                        return <option className="bg-dark-cyan" key={language.locale} value={language.locale}>
+                          {language.name}
+                        </option>
+                      })}
                       {/* <option className="bg-dark-cyan">German</option>
                       <option className="bg-dark-cyan">French</option> */}
                     </select>

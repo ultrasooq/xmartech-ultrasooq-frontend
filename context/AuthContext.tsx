@@ -43,6 +43,7 @@ export const AuthProvider: React.FC<{
 
   const applyTranslation = async (locale: string) => {
     await setUserLocale(locale);
+    window.localStorage.setItem('locale', locale);
     startTransition(() => {
       setSelectedLocale(locale);
     })

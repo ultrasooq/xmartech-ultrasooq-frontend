@@ -405,3 +405,26 @@ export const STORE_MENU_ID = 188;
 export const BUYGROUP_MENU_ID = 189;
 export const FACTORIES_MENU_ID = 190;
 export const RFQ_MENU_ID = 191;
+
+export const LANGUAGES = [
+  {
+    locale: 'en',
+    name: 'English'
+  },
+  {
+    locale: 'ar',
+    name: 'Arabic'
+  }
+];
+
+export const CURRENCIES = [
+  {
+    code: 'INR'
+  },
+  {
+    code: 'USD'
+  },
+  {
+    code: 'AUD'
+  }
+];
