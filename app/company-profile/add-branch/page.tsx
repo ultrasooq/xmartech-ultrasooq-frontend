@@ -300,7 +300,9 @@ const AddBranchPage = () => {
                     name="businessTypeList"
                     options={memoizedTags || []}
                     placeholder={t("business_type")}
-                    error={String(form.formState.errors?.businessTypeList?.message)}
+                    error={String(
+                      form.formState.errors?.businessTypeList?.message,
+                    )}
                   />
 
                   <FormField
@@ -359,7 +361,10 @@ const AddBranchPage = () => {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
+                                        title: t(
+                                          "image_size_should_be_less_than_size",
+                                          { size: "500MB" },
+                                        ),
                                         variant: "danger",
                                       });
                                       return;
@@ -410,9 +415,7 @@ const AddBranchPage = () => {
                                       height={30}
                                       alt="camera"
                                     />
-                                    <span>
-                                      {t("drop_your_address_proof")}{" "}
-                                    </span>
+                                    <span>{t("drop_your_address_proof")} </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
@@ -435,7 +438,10 @@ const AddBranchPage = () => {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
+                                        title: t(
+                                          "image_size_should_be_less_than_size",
+                                          { size: "500MB" },
+                                        ),
                                         variant: "danger",
                                       });
                                       return;
@@ -478,7 +484,7 @@ const AddBranchPage = () => {
                         alt="location-icon"
                         height={16}
                         width={16}
-                        className="absolute right-6 top-[50px]"
+                        className="absolute bottom-0 right-6 top-[8px] m-auto"
                       />
                     </div>
 
