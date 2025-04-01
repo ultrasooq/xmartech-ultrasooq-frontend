@@ -1,11 +1,14 @@
 import React from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 type AddImageContentProps = {
   description: string;
 };
 
 const AddImageContent: React.FC<AddImageContentProps> = ({ description }) => {
+  const t = useTranslations();
+
   return (
     <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
       <div className="flex h-full flex-col items-center justify-center">
@@ -19,7 +22,7 @@ const AddImageContent: React.FC<AddImageContentProps> = ({ description }) => {
         <span>{description}</span>
         <span className="text-blue-500">browse</span>
         <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
-          (.jpg or .png only. Up to 1mb)
+          ({t("company_logo_spec")})
         </p>
       </div>
     </div>

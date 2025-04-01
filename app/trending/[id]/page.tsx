@@ -654,7 +654,6 @@ const ProductDetailsPage = () => {
                     consumerDiscount={
                       item.productPriceDetails?.consumerDiscount
                     }
-                    onAdd={handleAddToCart}
                     onRemove={handleRemoveItemFromCart}
                     onWishlist={handleAddToWishlist}
                     haveAccessToken={haveAccessToken}

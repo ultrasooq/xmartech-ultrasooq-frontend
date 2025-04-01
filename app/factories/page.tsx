@@ -49,42 +49,7 @@ import { useCartListByUserId, useUpdateCartWithLogin } from "@/apis/queries/cart
 import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-
-const addFormSchema = (t: any) => {
-  return z.object({
-    fromPrice: z.coerce
-      .number({ invalid_type_error: t("from_price_required") })
-      .min(1, {
-        message: t("from_price_required")
-      })
-      .max(1000000, {
-        message: t("from_price_must_be_less_than_price", { price: 1000000 }),
-      }),
-    toPrice: z.coerce
-      .number({ invalid_type_error: t("to_price_required") })
-      .min(1, {
-        message: t("to_price_required")
-      })
-      .max(1000000, {
-        message: t("to_price_must_be_less_than_price", { price: 1000000 }),
-      }),
-    note: z
-      .string()
-      .trim()
-      .max(100, {
-        message: t("description_must_be_less_than_n_chars", { n: 100 }),
-      })
-      .optional(),
-  }).refine(
-    ({ fromPrice, toPrice }) => {
-      return Number(fromPrice) < Number(toPrice);
-    },
-    {
-      message: t("from_price_must_be_less_than_to_price"),
-      path: ["fromPrice"],
-    }
-  )
-};
+import AddToCustomizeForm from "@/components/modules/factories/AddToCustomizeForm";
 
 const FactoriesPage = () => {
   const t = useTranslations();
@@ -134,11 +99,6 @@ const FactoriesPage = () => {
   const addCustomizeProduct = useAddCustomizeProduct();
   const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
 
-  const form = useForm({
-    resolver: zodResolver(addFormSchema(t)),
-    defaultValues: { note: "" },
-  });
-
   const handleRfqDebounce = debounce((event: any) => {
     setSearchRfqTerm(event.target.value);
   }, 1000);
@@ -155,57 +115,6 @@ const FactoriesPage = () => {
     });
     handleToggleAddModal();
   };
-
-  const addToFactories = async (formData: any) => {
-    try {
-      if (!selectedCustomizedProduct?.customizedProductId) {
-        const response = await addCustomizeProduct.mutateAsync({
-          productId: Number(selectedCustomizedProduct?.id),
-          note: formData.note,
-          fromPrice: Number(formData.fromPrice) || 0,
-          toPrice: Number(formData.toPrice) || 0
-        });
-
-        if (response.status) {
-          handleToggleAddModal();
-          toast({
-            title: t("item_added"),
-            description: t("item_added_successfully"),
-            variant: "success",
-          });
-
-          // Refetch the listing API after a successful response
-          queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
-
-          const resp = await updateFactoriesCartWithLogin.mutateAsync({
-            productId: Number(selectedCustomizedProduct?.id),
-            customizeProductId: response?.data?.id,
-            quantity: 1
-          })
-
-          if (resp.status) {
-            toast({
-              title: t("item_added_to_cart"),
-              description: t("check_your_cart_for_more_details"),
-              variant: "success",
-            });
-          } else {
-            toast({
-              title: t("something_went_wrong"),
-              description: response.message,
-              variant: "danger",
-            });
-          }
-        }
-      }
-    } catch (error) {
-      toast({
-        title: t("error"),
-        description: t("failed_to_add_item"),
-        variant: "destructive",
-      });
-    }
-  }
 
   const memoizedRfqProducts = useMemo(() => {
     if (factoriesProductsQuery.data?.data) {
@@ -504,64 +413,24 @@ const FactoriesPage = () => {
         </div>
 
         {/* add to factories modal */}
-        <Dialog open={isAddToFactoryModalOpen} onOpenChange={handleToggleAddModal}>
+        {selectedCustomizedProduct?.id && <Dialog open={isAddToFactoryModalOpen} onOpenChange={handleToggleAddModal}>
           <DialogContent
             className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
             ref={wrapperRef}
           >
-            <div className="modal-header !justify-between">
-              <DialogTitle className="text-center text-xl font-bold">
-                {t("add_to_factories")}
-              </DialogTitle>
-              <Button
-                onClick={handleToggleAddModal}
-                className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
-              >
-                <IoCloseSharp size={20} />
-              </Button>
-            </div>
-
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(addToFactories)}
-                className="card-item card-payment-form px-5 pb-5 pt-3"
-              >
-                <ControlledTextareaInput
-                  label={t("write_a_note")}
-                  name="note"
-                  placeholder=""
-                  rows={6}
-                />
-
-                <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                  <ControlledTextInput
-                    label={t("from_price")}
-                    name="fromPrice"
-                    placeholder={t("from_price")}
-                    type="number"
-                  />
-
-                  <ControlledTextInput
-                    label={t("to_price")}
-                    name="toPrice"
-                    placeholder={t("to_price")}
-                    type="number"
-                  />
-                </div>
-
-                <Button
-                  disabled={addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending}
-                  type="submit"
-                  className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-2"
-                >
-                  {addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending ? (
-                    <LoaderWithMessage message={t("please_wait")} />
-                  ) : t("add")}
-                </Button>
-              </form>
-            </Form>
+            <AddToCustomizeForm
+              selectedProductId={selectedCustomizedProduct?.id}
+              onClose={() => {
+                setIsAddToFactoryModalOpen(false);
+                setSelectedCustomizedProduct(undefined);
+              }}
+              onAddToFactory={() => {
+                // Refetch the listing API after a successful response
+                queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
+              }}
+            />
           </DialogContent>
-        </Dialog>
+        </Dialog>}
 
       </section>
       <Footer />

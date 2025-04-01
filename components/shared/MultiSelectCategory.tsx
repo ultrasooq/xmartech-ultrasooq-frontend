@@ -6,6 +6,7 @@ import { useCategory } from "@/apis/queries/category.queries";
 import { Checkbox } from "../ui/checkbox";
 import { useFormContext } from "react-hook-form";
 import { Label } from "../ui/label";
+import { useTranslations } from "use-intl";
 
 type CategoryProps = {
   id: number;
@@ -29,6 +30,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
   name,
   branchId,
 }) => {
+  const t = useTranslations();
   const formContext = useFormContext();
   const [categoryId, setCategoryId] = useState<number | undefined>();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
@@ -136,7 +138,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
 
   return (
     <div className="my-3 space-y-2">
-      <Label>Tags</Label>
+      <Label>{t("categories")}</Label>
 
       <div className="flex flex-wrap md:grid md:grid-cols-3">
         {memoizedMenu?.length ? (

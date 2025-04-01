@@ -28,6 +28,7 @@ import AddToCustomizeForm from "../factories/AddToCustomizeForm";
 import { useSellerRewards } from "@/apis/queries/seller-reward.queries";
 import SellerRewardDetail from "./SellerRewardDetail";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -63,6 +64,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   cartQuantity = 0,
 }) => {
   const t = useTranslations();
+  const router = useRouter();
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -345,13 +347,11 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           ref={wrapperRef}
         >
           <AddToCustomizeForm
+            selectedProductId={productDetails?.id}
             onClose={() => {
               setIsCustomizeModalOpen(false);
-              // setSelectedProductId(undefined);
-              // setQuantity(undefined);
             }}
-            selectedProductId={productDetails?.id}
-            // selectedQuantity={quantity}
+            onAddToCart={() => router.push(`/factories-cart`)}
           />
         </DialogContent>
       </Dialog>
