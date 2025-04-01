@@ -43,9 +43,15 @@ import { Form } from "@/components/ui/form";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
-import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
-import { useCartListByUserId, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import {
+  useCartListByUserId,
+  useUpdateCartWithLogin,
+} from "@/apis/queries/cart.queries";
 import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -61,7 +67,7 @@ const FactoriesPage = () => {
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
-  const [displayMyProducts, setDisplayMyProducts] = useState('0');
+  const [displayMyProducts, setDisplayMyProducts] = useState("0");
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
@@ -74,10 +80,13 @@ const FactoriesPage = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [isAddToFactoryModalOpen, setIsAddToFactoryModalOpen] = useState(false);
-  const [selectedCustomizedProduct, setSelectedCustomizedProduct] = useState<{ [key: string]: any }>();
+  const [selectedCustomizedProduct, setSelectedCustomizedProduct] = useState<{
+    [key: string]: any;
+  }>();
 
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
-  const handleToggleAddModal = () => setIsAddToFactoryModalOpen(!isAddToFactoryModalOpen);
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const handleToggleAddModal = () =>
+    setIsAddToFactoryModalOpen(!isAddToFactoryModalOpen);
 
   const me = useMe(haveAccessToken);
   const factoriesProductsQuery = useFactoriesProducts({
@@ -86,8 +95,8 @@ const FactoriesPage = () => {
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
-    brandIds: selectedBrandIds.join(','),
-    isOwner: displayMyProducts == '1' ? 'me' : ''
+    brandIds: selectedBrandIds.join(","),
+    isOwner: displayMyProducts == "1" ? "me" : "",
   });
   const cartListByUser = useCartListByUserId(
     {
@@ -104,14 +113,14 @@ const FactoriesPage = () => {
   }, 1000);
 
   const handleAddToFactories = (productId: number) => {
-    const item = factoriesCartList.find((el: any) => el.productId == productId)
+    const item = factoriesCartList.find((el: any) => el.productId == productId);
     setSelectedCustomizedProduct({
       id: productId,
       customizedProductId: item?.customizeProductId,
       quantity: item?.quantity,
       fromPrice: item?.customizeProductDetail?.fromPrice,
       toPrice: item?.customizeProductDetail?.toPrice,
-      note: item?.customizeProductDetail?.note
+      note: item?.customizeProductDetail?.note,
     });
     handleToggleAddModal();
   };
@@ -122,17 +131,19 @@ const FactoriesPage = () => {
         factoriesProductsQuery.data?.data.map((item: any) => {
           return {
             ...item,
-            isAddedToFactoryCart: item?.product_rfqCart?.length && item?.product_rfqCart[0]?.quantity > 0,
-            factoryCartQuantity: item?.product_rfqCart?.length ? item.product_rfqCart[0].quantity : 0,
+            isAddedToFactoryCart:
+              item?.product_rfqCart?.length &&
+              item?.product_rfqCart[0]?.quantity > 0,
+            factoryCartQuantity: item?.product_rfqCart?.length
+              ? item.product_rfqCart[0].quantity
+              : 0,
           };
         }) || []
       );
     } else {
       return [];
     }
-  }, [
-    factoriesProductsQuery.data?.data,
-  ]);
+  }, [factoriesProductsQuery.data?.data]);
 
   useEffect(() => {
     if (cartListByUser.data?.data) {
@@ -151,9 +162,7 @@ const FactoriesPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          "factoriesProducts",
-        ],
+        queryKey: ["factoriesProducts"],
       });
     } else {
       toast({
@@ -187,9 +196,7 @@ const FactoriesPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          "factoriesProducts",
-        ],
+        queryKey: ["factoriesProducts"],
       });
     } else {
       toast({
@@ -212,11 +219,11 @@ const FactoriesPage = () => {
 
   const clearFilter = () => {
     setSelectAllBrands(false);
-    setSearchRfqTerm('');
+    setSearchRfqTerm("");
     setSelectedBrandIds([]);
-    setDisplayMyProducts('0');
+    setDisplayMyProducts("0");
 
-    if (searchInputRef?.current) searchInputRef.current.value = '';
+    if (searchInputRef?.current) searchInputRef.current.value = "";
   };
 
   useEffect(() => {
@@ -239,15 +246,47 @@ const FactoriesPage = () => {
             <div className="rfq_main_box !justify-center">
               <div className="rfq_left">
                 <div className="all_select_button">
-                  <button type="button" onClick={selectAll}>{t("select_all")}</button>
-                  <button type="button" onClick={clearFilter}>{t("clean_select")}</button>
+                  <button type="button" onClick={selectAll}>
+                    {t("select_all")}
+                  </button>
+                  <button type="button" onClick={clearFilter}>
+                    {t("clean_select")}
+                  </button>
                 </div>
                 <BrandFilterList
                   selectAllBrands={selectAllBrands}
-                  onSelectBrands={(brandIds: number[]) => setSelectedBrandIds(brandIds)}
+                  onSelectBrands={(brandIds: number[]) =>
+                    setSelectedBrandIds(brandIds)
+                  }
                 />
               </div>
               <div className="rfq_middle">
+                <RadioGroup
+                  className="mb-3 flex flex-row gap-y-3"
+                  value={displayMyProducts}
+                  onValueChange={setDisplayMyProducts}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="0"
+                      id="all_products"
+                      checked={displayMyProducts == "0"}
+                    />
+                    <Label htmlFor="all_products" className="text-base">
+                      {t("all_products")}
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="1"
+                      id="my_products"
+                      checked={displayMyProducts == "1"}
+                    />
+                    <Label htmlFor="my_products" className="text-base">
+                      {t("my_products")}
+                    </Label>
+                  </div>
+                </RadioGroup>
                 <div className="rfq_middle_top">
                   <div className="rfq_search">
                     <input
@@ -275,24 +314,6 @@ const FactoriesPage = () => {
                           <h4>{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
-                          <RadioGroup
-                            className="flex flex-col gap-y-3"
-                            value={displayMyProducts}
-                            onValueChange={setDisplayMyProducts}
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="0" id="all_products" checked={displayMyProducts == '0'} />
-                              <Label htmlFor="all_products" className="text-base">
-                                {t("all_products")}
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="1" id="my_products" checked={displayMyProducts == '1'} />
-                              <Label htmlFor="my_products" className="text-base">
-                                {t("my_products")}
-                              </Label>
-                            </div>
-                          </RadioGroup>
                           <div className="trending_filter">
                             <Select
                               onValueChange={(e: any) => setSortBy(e)}
@@ -336,7 +357,8 @@ const FactoriesPage = () => {
                         </div>
                       </div>
 
-                      {factoriesProductsQuery.isLoading && viewType === "grid" ? (
+                      {factoriesProductsQuery.isLoading &&
+                      viewType === "grid" ? (
                         <div className="mt-5 grid grid-cols-4 gap-5">
                           {Array.from({ length: 8 }).map((_, index) => (
                             <SkeletonProductCardLoader key={index} />
@@ -345,7 +367,7 @@ const FactoriesPage = () => {
                       ) : null}
 
                       {!factoriesProductsQuery?.data?.data?.length &&
-                        !factoriesProductsQuery.isLoading ? (
+                      !factoriesProductsQuery.isLoading ? (
                         <p className="my-10 text-center text-sm font-medium">
                           {t("no_data_found")}
                         </p>
@@ -363,28 +385,53 @@ const FactoriesPage = () => {
                                 productNote={item?.productNote || "-"}
                                 productStatus={item?.status}
                                 productImages={item?.productImages}
-                                productQuantity={cartList.find((el: any) => el.productId == item.id)?.quantity || 0}
-                                customizeProductId={factoriesCartList.find((el: any) => el.productId == item.id)?.customizeProductId}
+                                productQuantity={
+                                  cartList.find(
+                                    (el: any) => el.productId == item.id,
+                                  )?.quantity || 0
+                                }
+                                customizeProductId={
+                                  factoriesCartList.find(
+                                    (el: any) => el.productId == item.id,
+                                  )?.customizeProductId
+                                }
                                 onAdd={() => handleAddToFactories(item.id)}
-                                onWishlist={() => handleAddToWishlist(item.id, item?.product_wishlist)}
-                                isCreatedByMe={item?.userId === me.data?.data?.id}
-                                isAddedToCart={cartList.find((el: any) => el.productId == item.id) ? true : false}
-                                isAddedToFactoryCart={factoriesCartList.find((el: any) => el.productId == item.id) ? true : false}
-                                inWishlist={
-                                  item?.product_wishlist?.find(
-                                    (el: any) => el?.userId === me.data?.data?.id,
+                                onWishlist={() =>
+                                  handleAddToWishlist(
+                                    item.id,
+                                    item?.product_wishlist,
                                   )
                                 }
+                                isCreatedByMe={
+                                  item?.userId === me.data?.data?.id
+                                }
+                                isAddedToCart={
+                                  cartList.find(
+                                    (el: any) => el.productId == item.id,
+                                  )
+                                    ? true
+                                    : false
+                                }
+                                isAddedToFactoryCart={
+                                  factoriesCartList.find(
+                                    (el: any) => el.productId == item.id,
+                                  )
+                                    ? true
+                                    : false
+                                }
+                                inWishlist={item?.product_wishlist?.find(
+                                  (el: any) => el?.userId === me.data?.data?.id,
+                                )}
                                 haveAccessToken={haveAccessToken}
                                 productPrices={item?.product_productPrice}
                               />
-                            )
+                            );
                           })}
                         </div>
                       ) : null}
 
                       {viewType === "list" &&
-                        factoriesProductsQuery?.data?.data?.length ? (
+                      factoriesProductsQuery?.data?.data?.length ? (
                         <div className="product_sec_list">
                           <RfqProductTable
                             list={factoriesProductsQuery?.data?.data}

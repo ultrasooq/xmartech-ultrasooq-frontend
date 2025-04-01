@@ -14,10 +14,13 @@ import { useTranslations } from "next-intl";
 
 type BrandFilterListTypes = {
   selectAllBrands?: boolean;
-  onSelectBrands?: (brandIds: number[]) => void; 
+  onSelectBrands?: (brandIds: number[]) => void;
 };
 
-const BrandFilterList: React.FC<BrandFilterListTypes> = ({ selectAllBrands = false, onSelectBrands }) => {
+const BrandFilterList: React.FC<BrandFilterListTypes> = ({
+  selectAllBrands = false,
+  onSelectBrands,
+}) => {
   const t = useTranslations();
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,21 +58,25 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({ selectAllBrands = fal
 
   useEffect(() => {
     if (selectAllBrands) {
-      setSelectedBrandIds(brandsQuery?.data?.data.map((item: IBrands) => {
-        return item.id;
-      }) || []);
+      setSelectedBrandIds(
+        brandsQuery?.data?.data.map((item: IBrands) => {
+          return item.id;
+        }) || [],
+      );
 
-      onSelectBrands && onSelectBrands(brandsQuery?.data?.data.map((item: IBrands) => {
-        return item.id;
-      }) || []);
-      
+      onSelectBrands &&
+        onSelectBrands(
+          brandsQuery?.data?.data.map((item: IBrands) => {
+            return item.id;
+          }) || [],
+        );
     } else {
       setSelectedBrandIds([]);
     }
-  }, [selectAllBrands])
+  }, [selectAllBrands]);
 
   return (
-    <div className="trending-search-sec">
+    <div className="trending-search-sec mt-0">
       <div className="container m-auto">
         <div className="left-filter">
           <Accordion

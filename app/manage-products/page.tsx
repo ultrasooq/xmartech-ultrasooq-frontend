@@ -23,7 +23,12 @@ import { useMe } from "@/apis/queries/user.queries";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { IBrands, ISelectOptions } from "@/utils/types/common.types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useBrands } from "@/apis/queries/masters.queries";
@@ -131,14 +136,15 @@ const ManageProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const me = useMe();
 
-  const searchInputRef = useRef<HTMLInputElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [displayStoreProducts, setDisplayStoreProducts] = useState(false);
   const [displayBuyGroupProducts, setDisplayBuyGroupProducts] = useState(false);
   const [displayExpiredProducts, setDisplayExpiredProducts] = useState(false);
   const [displayHiddenProducts, setDisplayHiddenProducts] = useState(false);
-  const [displayDiscountedProducts, setDisplayDiscountedProducts] = useState(false);
+  const [displayDiscountedProducts, setDisplayDiscountedProducts] =
+    useState(false);
 
   const [searchTermBrand, setSearchTermBrand] = useState("");
 
@@ -184,11 +190,18 @@ const ManageProductsPage = () => {
       page,
       limit,
       term: searchTerm !== "" ? searchTerm : undefined,
-      selectedAdminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : undefined,
-      brandIds: selectedBrandIds.join(','),
-      status: displayHiddenProducts ? 'INACTIVE': '',
-      expireDate: displayExpiredProducts ? 'expired' : '',
-      sellType: displayStoreProducts ? 'NORMALSELL' : (displayBuyGroupProducts ? 'BUYGROUP' : ''),
+      selectedAdminId:
+        me?.data?.data?.tradeRole == "MEMBER"
+          ? me?.data?.data?.addedBy
+          : undefined,
+      brandIds: selectedBrandIds.join(","),
+      status: displayHiddenProducts ? "INACTIVE" : "",
+      expireDate: displayExpiredProducts ? "expired" : "",
+      sellType: displayStoreProducts
+        ? "NORMALSELL"
+        : displayBuyGroupProducts
+          ? "BUYGROUP"
+          : "",
       discount: displayDiscountedProducts,
     },
     hasPermission,
@@ -202,7 +215,7 @@ const ManageProductsPage = () => {
     setSelectedBrandIds(
       brandsQuery?.data?.data?.map((item: any) => {
         return item.id;
-      }) || []
+      }) || [],
     );
     setDisplayStoreProducts(true);
     setDisplayBuyGroupProducts(true);
@@ -219,7 +232,7 @@ const ManageProductsPage = () => {
     setDisplayHiddenProducts(false);
     setDisplayDiscountedProducts(false);
 
-    if (searchInputRef?.current) searchInputRef.current.value = '';
+    if (searchInputRef?.current) searchInputRef.current.value = "";
   };
 
   // Update state when new data is available
@@ -333,12 +346,12 @@ const ManageProductsPage = () => {
             : undefined,
         minQuantityPerCustomer:
           updatedFormData.minQuantityPerCustomer &&
-            updatedFormData.minQuantityPerCustomer !== 0
+          updatedFormData.minQuantityPerCustomer !== 0
             ? updatedFormData.minQuantityPerCustomer
             : undefined,
         maxQuantityPerCustomer:
           updatedFormData.maxQuantityPerCustomer &&
-            updatedFormData.maxQuantityPerCustomer !== 0
+          updatedFormData.maxQuantityPerCustomer !== 0
             ? updatedFormData.maxQuantityPerCustomer
             : undefined,
         vendorDiscount:
@@ -347,12 +360,12 @@ const ManageProductsPage = () => {
             : undefined,
         consumerDiscount:
           updatedFormData.consumerDiscount &&
-            updatedFormData.consumerDiscount !== 0
+          updatedFormData.consumerDiscount !== 0
             ? updatedFormData.consumerDiscount
             : undefined,
         productCondition:
           updatedFormData.productCondition &&
-            updatedFormData.productCondition !== ""
+          updatedFormData.productCondition !== ""
             ? updatedFormData.productCondition
             : undefined,
         consumerType:
@@ -436,10 +449,14 @@ const ManageProductsPage = () => {
               <div className="w-[25%]">
                 <div className="trending-search-sec mt-0">
                   <div className="all_select_button">
-                    <button type="button" onClick={selectAll}>{t("select_all")}</button>
-                    <button type="button" onClick={clearFilter}>{t("clean_select")}</button>
+                    <button type="button" onClick={selectAll}>
+                      {t("select_all")}
+                    </button>
+                    <button type="button" onClick={clearFilter}>
+                      {t("clean_select")}
+                    </button>
                   </div>
-                  <div className="container m-auto px-3">
+                  <div className="container m-auto pr-3">
                     <div className="left-filter">
                       <Accordion
                         type="multiple"
@@ -474,7 +491,9 @@ const ManageProductsPage = () => {
                                       onCheckedChange={(checked) =>
                                         handleBrandChange(checked, item)
                                       }
-                                      checked={selectedBrandIds.includes(item.value)}
+                                      checked={selectedBrandIds.includes(
+                                        item.value,
+                                      )}
                                     />
                                     <div className="grid gap-1.5 leading-none">
                                       <label
@@ -508,7 +527,9 @@ const ManageProductsPage = () => {
                                   <Checkbox
                                     id="displayStoreProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) => setDisplayStoreProducts(checked)}
+                                    onCheckedChange={(checked: boolean) =>
+                                      setDisplayStoreProducts(checked)
+                                    }
                                     checked={displayStoreProducts}
                                   />
                                   <div className="grid gap-1.5 leading-none">
@@ -524,7 +545,9 @@ const ManageProductsPage = () => {
                                   <Checkbox
                                     id="displayBuyGroupProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) => setDisplayBuyGroupProducts(checked)}
+                                    onCheckedChange={(checked: boolean) =>
+                                      setDisplayBuyGroupProducts(checked)
+                                    }
                                     checked={displayBuyGroupProducts}
                                   />
                                   <div className="grid gap-1.5 leading-none">
@@ -540,7 +563,9 @@ const ManageProductsPage = () => {
                                   <Checkbox
                                     id="displayExpiredProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) => setDisplayExpiredProducts(checked)}
+                                    onCheckedChange={(checked: boolean) =>
+                                      setDisplayExpiredProducts(checked)
+                                    }
                                     checked={displayExpiredProducts}
                                   />
                                   <div className="grid gap-1.5 leading-none">
@@ -556,7 +581,9 @@ const ManageProductsPage = () => {
                                   <Checkbox
                                     id="displayHiddenProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) => setDisplayHiddenProducts(checked)}
+                                    onCheckedChange={(checked: boolean) =>
+                                      setDisplayHiddenProducts(checked)
+                                    }
                                     checked={displayHiddenProducts}
                                   />
                                   <div className="grid gap-1.5 leading-none">
@@ -572,7 +599,9 @@ const ManageProductsPage = () => {
                                   <Checkbox
                                     id="displayDiscountedProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) => setDisplayDiscountedProducts(checked)}
+                                    onCheckedChange={(checked: boolean) =>
+                                      setDisplayDiscountedProducts(checked)
+                                    }
                                     checked={displayDiscountedProducts}
                                   />
                                   <div className="grid gap-1.5 leading-none">
@@ -621,7 +650,10 @@ const ManageProductsPage = () => {
                       </button>
                     </li>
                     <li>
-                      <button className="theme-primary-btn add-btn p-2" onClick={() => router.replace("/cart")}>
+                      <button
+                        className="theme-primary-btn add-btn p-2"
+                        onClick={() => router.replace("/cart")}
+                      >
                         <span className="d-none-mobile">{t("go_to_cart")}</span>
                       </button>
                     </li>
@@ -647,7 +679,7 @@ const ManageProductsPage = () => {
                           ) : null}
 
                           {!allManagedProductsQuery.data?.data?.length &&
-                            !allManagedProductsQuery.isLoading ? (
+                          !allManagedProductsQuery.isLoading ? (
                             <p className="w-full py-10 text-center text-base font-medium">
                               {t("no_product_found")}
                             </p>
@@ -711,10 +743,10 @@ const ManageProductsPage = () => {
                                   product?.productPrice_productSellerImage
                                     ?.length
                                     ? product
-                                      ?.productPrice_productSellerImage?.[0]
-                                      ?.image
+                                        ?.productPrice_productSellerImage?.[0]
+                                        ?.image
                                     : product?.productPrice_product
-                                      ?.productImages?.[0]?.image
+                                        ?.productImages?.[0]?.image
                                 }
                                 productName={
                                   product?.productPrice_product?.productName
@@ -769,7 +801,7 @@ const ManageProductsPage = () => {
                       </div>
                       <ManageProductAside
                         isLoading={updateMultipleProductPrice.isPending}
-                      // onUpdateProductPrice={handleUpdateProductPrice}
+                        // onUpdateProductPrice={handleUpdateProductPrice}
                       />
                     </form>
                   </FormProvider>
