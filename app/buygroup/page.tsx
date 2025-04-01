@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   IBrands,
   ISelectOptions,
@@ -57,6 +57,8 @@ import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLo
 import { useCategoryStore } from "@/lib/categoryStore";
 import TrendingCategories from "@/components/modules/trending/TrendingCategories";
 import { useTranslations } from "next-intl";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const TrendingPage = () => {
   const t = useTranslations();
@@ -71,11 +73,15 @@ const TrendingPage = () => {
   const [maxPriceInput, setMaxPriceInput] = useState("");
   const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
+  const [displayMyProducts, setDisplayMyProducts] = useState('0');
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
+
+  const minPriceInputRef = useRef<HTMLInputElement>(null);
+  const maxPriceInputRef = useRef<HTMLInputElement>(null);
 
   const me = useMe();
   const addToWishlist = useAddToWishList();
@@ -84,15 +90,12 @@ const TrendingPage = () => {
     page,
     limit,
     sort: sortBy,
-    priceMin:
-      priceRange[0] === 0
-        ? 0
-        : (priceRange[0] || Number(minPriceInput)) ?? undefined,
+    priceMin: priceRange[0] === 0 ? 0 : (priceRange[0] || Number(minPriceInput)) ?? undefined,
     priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
-    brandIds:
-      selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    brandIds: selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
     userId: me.data?.data?.id,
     categoryIds: category.categoryId ? category.categoryId : undefined,
+    isOwner: displayMyProducts == '1' ? 'me' : ''
   });
   const brandsQuery = useBrands({
     term: searchTerm,
@@ -183,6 +186,7 @@ const TrendingPage = () => {
     limit,
     searchTerm,
     selectedBrandIds,
+    displayMyProducts,
   ]);
 
   const [cartList, setCartList] = useState<any[]>([]); 
@@ -274,6 +278,25 @@ const TrendingPage = () => {
     }
   };
 
+  const selectAll = () => {
+    setSelectedBrandIds(
+      brandsQuery?.data?.data?.map((item: any) => {
+        return item.id;
+      }) || []
+    );
+  };
+
+  const clearFilter = () => {
+    setSelectedBrandIds([]);
+    setMaxPriceInput("");
+    setMinPriceInput("");
+    setPriceRange([]);
+    setDisplayMyProducts('0');
+
+    if (minPriceInputRef.current) minPriceInputRef.current.value = '';
+    if (maxPriceInputRef.current) maxPriceInputRef.current.value = '';
+  };
+
   useEffect(() => {
     if (accessToken) {
       setHaveAccessToken(true);
@@ -291,6 +314,10 @@ const TrendingPage = () => {
         <BannerSection />
 
         <div className="trending-search-sec">
+          <div className="all_select_button">
+            <button type="button" onClick={selectAll}>{t("select_all")}</button>
+            <button type="button" onClick={clearFilter}>{t("clean_select")}</button>
+          </div>
           <div className="container m-auto px-3">
             <div className={productFilter ? "left-filter show" : "left-filter"}>
               <Accordion
@@ -367,7 +394,6 @@ const TrendingPage = () => {
                           pearling
                           minDistance={10}
                           onChange={(value) => handlePriceDebounce(value)}
-                          // value={priceRange}
                           max={500}
                           min={0}
                         />
@@ -388,6 +414,7 @@ const TrendingPage = () => {
                           className="custom-form-control-s1 rounded-none"
                           onChange={handleMinPriceChange}
                           onWheel={(e) => e.currentTarget.blur()}
+                          ref={minPriceInputRef}
                         />
                         <div className="center-divider"></div>
                         <Input
@@ -396,6 +423,7 @@ const TrendingPage = () => {
                           className="custom-form-control-s1 rounded-none"
                           onChange={handleMaxPriceChange}
                           onWheel={(e) => e.currentTarget.blur()}
+                          ref={maxPriceInputRef}
                         />
                       </div>
                     </div>
@@ -408,6 +436,24 @@ const TrendingPage = () => {
               onClick={() => setProductFilter(false)}
             ></div>
             <div className="right-products">
+              <RadioGroup
+                className="flex flex-col gap-y-3"
+                value={displayMyProducts}
+                onValueChange={setDisplayMyProducts}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="0" id="all_products" checked={displayMyProducts == '0'} />
+                  <Label htmlFor="all_products" className="text-base">
+                    {t("all_products")}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="1" id="my_products" checked={displayMyProducts == '1'} />
+                  <Label htmlFor="my_products" className="text-base">
+                    {t("my_products")}
+                  </Label>
+                </div>
+              </RadioGroup>
               <div className="products-header-filter">
                 <div className="le-info">
                   {/* TODO: need name here */}

@@ -46,6 +46,9 @@ import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
 import { useCartListByUserId, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const addFormSchema = (t: any) => {
   return z.object({
@@ -91,6 +94,9 @@ const FactoriesPage = () => {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
+  const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
+  const [displayMyProducts, setDisplayMyProducts] = useState('0');
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
@@ -100,10 +106,12 @@ const FactoriesPage = () => {
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
 
-  const [isAddToFactoryModalOpen, setIsAddToFactoryModalOpen] = useState(false);
-  const [selectedCustomizedProduct, setSelectedCustomizedProduct] = useState<{[key: string]: any}>();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const [isAddToFactoryModalOpen, setIsAddToFactoryModalOpen] = useState(false);
+  const [selectedCustomizedProduct, setSelectedCustomizedProduct] = useState<{ [key: string]: any }>();
+
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
   const handleToggleAddModal = () => setIsAddToFactoryModalOpen(!isAddToFactoryModalOpen);
 
   const me = useMe(haveAccessToken);
@@ -113,6 +121,8 @@ const FactoriesPage = () => {
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
+    brandIds: selectedBrandIds.join(','),
+    isOwner: displayMyProducts == '1' ? 'me' : ''
   });
   const cartListByUser = useCartListByUserId(
     {
@@ -155,7 +165,7 @@ const FactoriesPage = () => {
           fromPrice: Number(formData.fromPrice) || 0,
           toPrice: Number(formData.toPrice) || 0
         });
-    
+
         if (response.status) {
           handleToggleAddModal();
           toast({
@@ -163,16 +173,16 @@ const FactoriesPage = () => {
             description: t("item_added_successfully"),
             variant: "success",
           });
-  
+
           // Refetch the listing API after a successful response
           queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
-  
+
           const resp = await updateFactoriesCartWithLogin.mutateAsync({
             productId: Number(selectedCustomizedProduct?.id),
             customizeProductId: response?.data?.id,
             quantity: 1
           })
-  
+
           if (resp.status) {
             toast({
               title: t("item_added_to_cart"),
@@ -287,6 +297,19 @@ const FactoriesPage = () => {
     }
   }, [isClickedOutside]);
 
+  const selectAll = () => {
+    setSelectAllBrands(true);
+  };
+
+  const clearFilter = () => {
+    setSelectAllBrands(false);
+    setSearchRfqTerm('');
+    setSelectedBrandIds([]);
+    setDisplayMyProducts('0');
+
+    if (searchInputRef?.current) searchInputRef.current.value = '';
+  };
+
   useEffect(() => {
     if (accessToken) {
       setHaveAccessToken(true);
@@ -306,8 +329,14 @@ const FactoriesPage = () => {
           <div className="row">
             <div className="rfq_main_box !justify-center">
               <div className="rfq_left">
-                {/* <CategoryFilterList /> */}
-                {/* <BrandFilterList /> */}
+                <div className="all_select_button">
+                  <button type="button" onClick={selectAll}>{t("select_all")}</button>
+                  <button type="button" onClick={clearFilter}>{t("clean_select")}</button>
+                </div>
+                <BrandFilterList
+                  selectAllBrands={selectAllBrands}
+                  onSelectBrands={(brandIds: number[]) => setSelectedBrandIds(brandIds)}
+                />
               </div>
               <div className="rfq_middle">
                 <div className="rfq_middle_top">
@@ -317,6 +346,7 @@ const FactoriesPage = () => {
                       className="form-control"
                       placeholder={t("search_product")}
                       onChange={handleRfqDebounce}
+                      ref={searchInputRef}
                     />
                     <button type="button">
                       <Image
@@ -336,6 +366,24 @@ const FactoriesPage = () => {
                           <h4>{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
+                          <RadioGroup
+                            className="flex flex-col gap-y-3"
+                            value={displayMyProducts}
+                            onValueChange={setDisplayMyProducts}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="0" id="all_products" checked={displayMyProducts == '0'} />
+                              <Label htmlFor="all_products" className="text-base">
+                                {t("all_products")}
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="1" id="my_products" checked={displayMyProducts == '1'} />
+                              <Label htmlFor="my_products" className="text-base">
+                                {t("my_products")}
+                              </Label>
+                            </div>
+                          </RadioGroup>
                           <div className="trending_filter">
                             <Select
                               onValueChange={(e: any) => setSortBy(e)}
@@ -388,7 +436,7 @@ const FactoriesPage = () => {
                       ) : null}
 
                       {!factoriesProductsQuery?.data?.data?.length &&
-                      !factoriesProductsQuery.isLoading ? (
+                        !factoriesProductsQuery.isLoading ? (
                         <p className="my-10 text-center text-sm font-medium">
                           {t("no_data_found")}
                         </p>
@@ -427,7 +475,7 @@ const FactoriesPage = () => {
                       ) : null}
 
                       {viewType === "list" &&
-                      factoriesProductsQuery?.data?.data?.length ? (
+                        factoriesProductsQuery?.data?.data?.length ? (
                         <div className="product_sec_list">
                           <RfqProductTable
                             list={factoriesProductsQuery?.data?.data}
@@ -500,7 +548,7 @@ const FactoriesPage = () => {
                     type="number"
                   />
                 </div>
-                
+
                 <Button
                   disabled={addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending}
                   type="submit"

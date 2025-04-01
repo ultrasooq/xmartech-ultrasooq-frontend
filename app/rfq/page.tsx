@@ -41,6 +41,9 @@ import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLo
 import { useQueryClient } from "@tanstack/react-query";
 import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
+import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const RfqPage = () => {
   const t = useTranslations();
@@ -51,6 +54,9 @@ const RfqPage = () => {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
+  const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
+  const [displayMyProducts, setDisplayMyProducts] = useState('0');
   const [selectedProductId, setSelectedProductId] = useState<number>();
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -64,7 +70,9 @@ const RfqPage = () => {
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
 
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
 
   const handleToggleAddModal = () => setIsAddToCartModalOpen(!isAddToCartModalOpen);
 
@@ -75,6 +83,8 @@ const RfqPage = () => {
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
+    brandIds: selectedBrandIds.join(','),
+    isOwner: displayMyProducts == '1' ? 'me' : ''
   });
 
   const rfqCartListByUser = useRfqCartListByUserId(
@@ -228,6 +238,19 @@ const RfqPage = () => {
     }
   }, [isClickedOutside]);
 
+  const selectAll = () => {
+    setSelectAllBrands(true);
+  };
+
+  const clearFilter = () => {
+    setSelectAllBrands(false);
+    setSearchRfqTerm('');
+    setSelectedBrandIds([]);
+    setDisplayMyProducts('0');
+
+    if (searchInputRef?.current) searchInputRef.current.value = '';
+  };
+
   useEffect(() => {
     if (accessToken) {
       setHaveAccessToken(true);
@@ -247,8 +270,14 @@ const RfqPage = () => {
           <div className="row">
             <div className="rfq_main_box !justify-center">
               <div className="rfq_left">
-                {/* <CategoryFilterList /> */}
-                {/* <BrandFilterList /> */}
+                <div className="all_select_button">
+                  <button type="button" onClick={selectAll}>{t("select_all")}</button>
+                  <button type="button" onClick={clearFilter}>{t("clean_select")}</button>
+                </div>
+                <BrandFilterList
+                  selectAllBrands={selectAllBrands}
+                  onSelectBrands={(brandIds: number[]) => setSelectedBrandIds(brandIds)}
+                />
               </div>
               <div className="rfq_middle">
                 <div className="rfq_middle_top">
@@ -258,6 +287,7 @@ const RfqPage = () => {
                       className="form-control"
                       placeholder={t("search_product")}
                       onChange={handleRfqDebounce}
+                      ref={searchInputRef}
                     />
                     <button type="button">
                       <Image
@@ -288,6 +318,24 @@ const RfqPage = () => {
                           <h4>{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
+                          <RadioGroup
+                            className="flex flex-col gap-y-3"
+                            value={displayMyProducts}
+                            onValueChange={setDisplayMyProducts}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="0" id="all_products" checked={displayMyProducts == '0'} />
+                              <Label htmlFor="all_products" className="text-base">
+                                {t("all_products")}
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="1" id="my_products" checked={displayMyProducts == '1'} />
+                              <Label htmlFor="my_products" className="text-base">
+                                {t("my_products")}
+                              </Label>
+                            </div>
+                          </RadioGroup>
                           <div className="trending_filter">
                             <Select
                               onValueChange={(e: any) => setSortBy(e)}
@@ -340,7 +388,7 @@ const RfqPage = () => {
                       ) : null}
 
                       {!rfqProductsQuery?.data?.data?.length &&
-                      !rfqProductsQuery.isLoading ? (
+                        !rfqProductsQuery.isLoading ? (
                         <p className="my-10 text-center text-sm font-medium">
                           {t("no_data_found")}
                         </p>
@@ -386,7 +434,7 @@ const RfqPage = () => {
                       ) : null}
 
                       {viewType === "list" &&
-                      rfqProductsQuery?.data?.data?.length ? (
+                        rfqProductsQuery?.data?.data?.length ? (
                         <div className="product_sec_list">
                           <RfqProductTable
                             list={rfqProductsQuery?.data?.data}

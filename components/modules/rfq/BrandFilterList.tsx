@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -12,7 +12,12 @@ import { useBrands } from "@/apis/queries/masters.queries";
 import { debounce } from "lodash";
 import { useTranslations } from "next-intl";
 
-const BrandFilterList = () => {
+type BrandFilterListTypes = {
+  selectAllBrands?: boolean;
+  onSelectBrands?: (brandIds: number[]) => void; 
+};
+
+const BrandFilterList: React.FC<BrandFilterListTypes> = ({ selectAllBrands = false, onSelectBrands }) => {
   const t = useTranslations();
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,6 +52,21 @@ const BrandFilterList = () => {
     }
     setSelectedBrandIds(tempArr);
   };
+
+  useEffect(() => {
+    if (selectAllBrands) {
+      setSelectedBrandIds(brandsQuery?.data?.data.map((item: IBrands) => {
+        return item.id;
+      }) || []);
+
+      onSelectBrands && onSelectBrands(brandsQuery?.data?.data.map((item: IBrands) => {
+        return item.id;
+      }) || []);
+      
+    } else {
+      setSelectedBrandIds([]);
+    }
+  }, [selectAllBrands])
 
   return (
     <div className="trending-search-sec">

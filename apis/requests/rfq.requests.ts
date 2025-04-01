@@ -10,6 +10,8 @@ export const fetchRfqProducts = (payload: {
   term?: string;
   adminId?: string;
   sortType?: "newest" | "oldest";
+  brandIds?: string;
+  isOwner?: string;
 }) => {
   return axios({
     method: "GET",
@@ -31,6 +33,8 @@ export const fetchFactoriesProducts = (payload: {
   term?: string;
   adminId?: string;
   sortType?: "newest" | "oldest";
+  brandIds?: string;
+  isOwner?: string;
 }) => {
   return axios({
     method: "GET",

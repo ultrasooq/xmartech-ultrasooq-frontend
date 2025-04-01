@@ -119,14 +119,14 @@ export const fetchExistingProducts = (payload: { page: number; limit: number; te
 };
 
 
-export const fetchAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; }) => {
+export const fetchAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string }) => {
   return axios({
     method: "GET",
     url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/getAllProduct`, payload,),
   });
 };
 
-export const fetchAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; }) => {
+export const fetchAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string }) => {
   return axios({
     method: "GET",
     url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/getAllBuyGroupProduct`, payload,),
@@ -196,6 +196,11 @@ export const getAllManagedProducts = (payload: {
   limit: number;
   term?: string;
   selectedAdminId?: number;
+  brandIds?: string;
+  status?: string;
+  expireDate?: string;
+  sellType?: string;
+  discount?: boolean;
 }) => {
   return axios({
     method: "GET",

@@ -32,6 +32,8 @@ export const useRfqProducts = (
     term?: string;
     adminId?: string;
     sortType?: "newest" | "oldest";
+    brandIds?: string;
+    isOwner?: string;
   },
   enabled = true,
 ) =>
@@ -54,6 +56,8 @@ export const useRfqProducts = (
       term?: string;
       adminId?: string;
       sortType?: "newest" | "oldest";
+      brandIds?: string;
+      isOwner?: string;
     },
     enabled = true,
   ) =>
