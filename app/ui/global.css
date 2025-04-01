@@ -5229,6 +5229,11 @@ input::-ms-clear {
     @apply w-[24px] h-[24px];
   }
 
+
+  .qty-up-down-s1-with-rgMenuAction .rgMenuAction-lists li button {
+    @apply w-auto;
+  }
+
 }
 
 
