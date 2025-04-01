@@ -39,7 +39,10 @@ import Footer from "@/components/shared/Footer";
 import { FaPlus } from "react-icons/fa";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
 import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -56,7 +59,7 @@ const RfqPage = () => {
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
-  const [displayMyProducts, setDisplayMyProducts] = useState('0');
+  const [displayMyProducts, setDisplayMyProducts] = useState("0");
   const [selectedProductId, setSelectedProductId] = useState<number>();
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -72,9 +75,10 @@ const RfqPage = () => {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const handleToggleAddModal = () => setIsAddToCartModalOpen(!isAddToCartModalOpen);
+  const handleToggleAddModal = () =>
+    setIsAddToCartModalOpen(!isAddToCartModalOpen);
 
   const me = useMe(haveAccessToken);
   const rfqProductsQuery = useRfqProducts({
@@ -83,8 +87,8 @@ const RfqPage = () => {
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
-    brandIds: selectedBrandIds.join(','),
-    isOwner: displayMyProducts == '1' ? 'me' : ''
+    brandIds: selectedBrandIds.join(","),
+    isOwner: displayMyProducts == "1" ? "me" : "",
   });
 
   const rfqCartListByUser = useRfqCartListByUserId(
@@ -107,10 +111,10 @@ const RfqPage = () => {
     action: "add" | "remove",
     offerPriceFrom?: number,
     offerPriceTo?: number,
-    note?: string
+    note?: string,
   ) => {
     if (action == "remove" && quantity == 0) {
-      handleAddToCart(quantity, productId, "remove", 0, 0, '');
+      handleAddToCart(quantity, productId, "remove", 0, 0, "");
     } else {
       handleToggleAddModal();
       setSelectedProductId(productId);
@@ -133,12 +137,15 @@ const RfqPage = () => {
       quantity,
       offerPriceFrom: offerPriceFrom || 0,
       offerPriceTo: offerPriceTo || 0,
-      note: note || '',
+      note: note || "",
     });
 
     if (response.status) {
       toast({
-        title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+        title:
+          actionType == "add"
+            ? t("item_added_to_cart")
+            : t("item_removed_from_cart"),
         description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
@@ -153,17 +160,19 @@ const RfqPage = () => {
         rfqProductsQuery.data?.data.map((item: any) => {
           return {
             ...item,
-            isAddedToCart: item?.product_rfqCart?.length && item?.product_rfqCart[0]?.quantity > 0,
-            quantity: item?.product_rfqCart?.length && item?.product_rfqCart[0]?.quantity,
+            isAddedToCart:
+              item?.product_rfqCart?.length &&
+              item?.product_rfqCart[0]?.quantity > 0,
+            quantity:
+              item?.product_rfqCart?.length &&
+              item?.product_rfqCart[0]?.quantity,
           };
         }) || []
       );
     } else {
       return [];
     }
-  }, [
-    rfqProductsQuery.data?.data,
-  ]);
+  }, [rfqProductsQuery.data?.data]);
 
   useEffect(() => {
     if (rfqCartListByUser.data?.data) {
@@ -182,9 +191,7 @@ const RfqPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          "rfq-products",
-        ],
+        queryKey: ["rfq-products"],
       });
     } else {
       toast({
@@ -218,9 +225,7 @@ const RfqPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          "rfq-products",
-        ],
+        queryKey: ["rfq-products"],
       });
     } else {
       toast({
@@ -244,11 +249,11 @@ const RfqPage = () => {
 
   const clearFilter = () => {
     setSelectAllBrands(false);
-    setSearchRfqTerm('');
+    setSearchRfqTerm("");
     setSelectedBrandIds([]);
-    setDisplayMyProducts('0');
+    setDisplayMyProducts("0");
 
-    if (searchInputRef?.current) searchInputRef.current.value = '';
+    if (searchInputRef?.current) searchInputRef.current.value = "";
   };
 
   useEffect(() => {
@@ -271,15 +276,47 @@ const RfqPage = () => {
             <div className="rfq_main_box !justify-center">
               <div className="rfq_left">
                 <div className="all_select_button">
-                  <button type="button" onClick={selectAll}>{t("select_all")}</button>
-                  <button type="button" onClick={clearFilter}>{t("clean_select")}</button>
+                  <button type="button" onClick={selectAll}>
+                    {t("select_all")}
+                  </button>
+                  <button type="button" onClick={clearFilter}>
+                    {t("clean_select")}
+                  </button>
                 </div>
                 <BrandFilterList
                   selectAllBrands={selectAllBrands}
-                  onSelectBrands={(brandIds: number[]) => setSelectedBrandIds(brandIds)}
+                  onSelectBrands={(brandIds: number[]) =>
+                    setSelectedBrandIds(brandIds)
+                  }
                 />
               </div>
               <div className="rfq_middle">
+                <RadioGroup
+                  className="mb-3 flex flex-row gap-y-3"
+                  value={displayMyProducts}
+                  onValueChange={setDisplayMyProducts}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="0"
+                      id="all_products"
+                      checked={displayMyProducts == "0"}
+                    />
+                    <Label htmlFor="all_products" className="text-base">
+                      {t("all_products")}
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="1"
+                      id="my_products"
+                      checked={displayMyProducts == "1"}
+                    />
+                    <Label htmlFor="my_products" className="text-base">
+                      {t("my_products")}
+                    </Label>
+                  </div>
+                </RadioGroup>
                 <div className="rfq_middle_top">
                   <div className="rfq_search">
                     <input
@@ -318,24 +355,6 @@ const RfqPage = () => {
                           <h4>{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
-                          <RadioGroup
-                            className="flex flex-col gap-y-3"
-                            value={displayMyProducts}
-                            onValueChange={setDisplayMyProducts}
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="0" id="all_products" checked={displayMyProducts == '0'} />
-                              <Label htmlFor="all_products" className="text-base">
-                                {t("all_products")}
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="1" id="my_products" checked={displayMyProducts == '1'} />
-                              <Label htmlFor="my_products" className="text-base">
-                                {t("my_products")}
-                              </Label>
-                            </div>
-                          </RadioGroup>
                           <div className="trending_filter">
                             <Select
                               onValueChange={(e: any) => setSortBy(e)}
@@ -388,7 +407,7 @@ const RfqPage = () => {
                       ) : null}
 
                       {!rfqProductsQuery?.data?.data?.length &&
-                        !rfqProductsQuery.isLoading ? (
+                      !rfqProductsQuery.isLoading ? (
                         <p className="my-10 text-center text-sm font-medium">
                           {t("no_data_found")}
                         </p>
@@ -408,10 +427,14 @@ const RfqPage = () => {
                               productQuantity={item?.quantity || 0}
                               productPrice={item?.product_productPrice}
                               offerPriceFrom={
-                                cartList?.find((el: any) => el.productId == item.id)?.offerPriceFrom
+                                cartList?.find(
+                                  (el: any) => el.productId == item.id,
+                                )?.offerPriceFrom
                               }
                               offerPriceTo={
-                                cartList?.find((el: any) => el.productId == item.id)?.offerPriceTo
+                                cartList?.find(
+                                  (el: any) => el.productId == item.id,
+                                )?.offerPriceTo
                               }
                               onAdd={handleRFQCart}
                               onToCart={handleCartPage}
@@ -419,14 +442,17 @@ const RfqPage = () => {
                                 handleToggleAddModal();
                                 setSelectedProductId(item?.id);
                               }}
-                              onWishlist={() => handleAddToWishlist(item.id, item?.product_wishlist)}
-                              isCreatedByMe={item?.userId === me.data?.data?.id}
-                              isAddedToCart={item?.isAddedToCart}
-                              inWishlist={
-                                item?.product_wishlist?.find(
-                                  (el: any) => el?.userId === me.data?.data?.id,
+                              onWishlist={() =>
+                                handleAddToWishlist(
+                                  item.id,
+                                  item?.product_wishlist,
                                 )
                               }
+                              isCreatedByMe={item?.userId === me.data?.data?.id}
+                              isAddedToCart={item?.isAddedToCart}
+                              inWishlist={item?.product_wishlist?.find(
+                                (el: any) => el?.userId === me.data?.data?.id,
+                              )}
                               haveAccessToken={haveAccessToken}
                             />
                           ))}
@@ -434,7 +460,7 @@ const RfqPage = () => {
                       ) : null}
 
                       {viewType === "list" &&
-                        rfqProductsQuery?.data?.data?.length ? (
+                      rfqProductsQuery?.data?.data?.length ? (
                         <div className="product_sec_list">
                           <RfqProductTable
                             list={rfqProductsQuery?.data?.data}
@@ -454,10 +480,7 @@ const RfqPage = () => {
                   </div>
                 </div>
               </div>
-              <RfqCartMenu
-                onAdd={handleRFQCart}
-                cartList={cartList || []}
-              />
+              <RfqCartMenu onAdd={handleRFQCart} cartList={cartList || []} />
             </div>
           </div>
         </div>

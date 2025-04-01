@@ -43,47 +43,55 @@ import { Form } from "@/components/ui/form";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
-import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
-import { useCartListByUserId, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import {
+  useCartListByUserId,
+  useUpdateCartWithLogin,
+} from "@/apis/queries/cart.queries";
 import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
 const addFormSchema = (t: any) => {
-  return z.object({
-    fromPrice: z.coerce
-      .number({ invalid_type_error: t("from_price_required") })
-      .min(1, {
-        message: t("from_price_required")
-      })
-      .max(1000000, {
-        message: t("from_price_must_be_less_than_price", { price: 1000000 }),
-      }),
-    toPrice: z.coerce
-      .number({ invalid_type_error: t("to_price_required") })
-      .min(1, {
-        message: t("to_price_required")
-      })
-      .max(1000000, {
-        message: t("to_price_must_be_less_than_price", { price: 1000000 }),
-      }),
-    note: z
-      .string()
-      .trim()
-      .max(100, {
-        message: t("description_must_be_less_than_n_chars", { n: 100 }),
-      })
-      .optional(),
-  }).refine(
-    ({ fromPrice, toPrice }) => {
-      return Number(fromPrice) < Number(toPrice);
-    },
-    {
-      message: t("from_price_must_be_less_than_to_price"),
-      path: ["fromPrice"],
-    }
-  )
+  return z
+    .object({
+      fromPrice: z.coerce
+        .number({ invalid_type_error: t("from_price_required") })
+        .min(1, {
+          message: t("from_price_required"),
+        })
+        .max(1000000, {
+          message: t("from_price_must_be_less_than_price", { price: 1000000 }),
+        }),
+      toPrice: z.coerce
+        .number({ invalid_type_error: t("to_price_required") })
+        .min(1, {
+          message: t("to_price_required"),
+        })
+        .max(1000000, {
+          message: t("to_price_must_be_less_than_price", { price: 1000000 }),
+        }),
+      note: z
+        .string()
+        .trim()
+        .max(100, {
+          message: t("description_must_be_less_than_n_chars", { n: 100 }),
+        })
+        .optional(),
+    })
+    .refine(
+      ({ fromPrice, toPrice }) => {
+        return Number(fromPrice) < Number(toPrice);
+      },
+      {
+        message: t("from_price_must_be_less_than_to_price"),
+        path: ["fromPrice"],
+      },
+    );
 };
 
 const FactoriesPage = () => {
@@ -96,7 +104,7 @@ const FactoriesPage = () => {
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
-  const [displayMyProducts, setDisplayMyProducts] = useState('0');
+  const [displayMyProducts, setDisplayMyProducts] = useState("0");
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
@@ -109,10 +117,13 @@ const FactoriesPage = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [isAddToFactoryModalOpen, setIsAddToFactoryModalOpen] = useState(false);
-  const [selectedCustomizedProduct, setSelectedCustomizedProduct] = useState<{ [key: string]: any }>();
+  const [selectedCustomizedProduct, setSelectedCustomizedProduct] = useState<{
+    [key: string]: any;
+  }>();
 
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
-  const handleToggleAddModal = () => setIsAddToFactoryModalOpen(!isAddToFactoryModalOpen);
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const handleToggleAddModal = () =>
+    setIsAddToFactoryModalOpen(!isAddToFactoryModalOpen);
 
   const me = useMe(haveAccessToken);
   const factoriesProductsQuery = useFactoriesProducts({
@@ -121,8 +132,8 @@ const FactoriesPage = () => {
     term: searchRfqTerm,
     adminId: me?.data?.data?.id || undefined,
     sortType: sortBy,
-    brandIds: selectedBrandIds.join(','),
-    isOwner: displayMyProducts == '1' ? 'me' : ''
+    brandIds: selectedBrandIds.join(","),
+    isOwner: displayMyProducts == "1" ? "me" : "",
   });
   const cartListByUser = useCartListByUserId(
     {
@@ -144,14 +155,14 @@ const FactoriesPage = () => {
   }, 1000);
 
   const handleAddToFactories = (productId: number) => {
-    const item = factoriesCartList.find((el: any) => el.productId == productId)
+    const item = factoriesCartList.find((el: any) => el.productId == productId);
     setSelectedCustomizedProduct({
       id: productId,
       customizedProductId: item?.customizeProductId,
       quantity: item?.quantity,
       fromPrice: item?.customizeProductDetail?.fromPrice,
       toPrice: item?.customizeProductDetail?.toPrice,
-      note: item?.customizeProductDetail?.note
+      note: item?.customizeProductDetail?.note,
     });
     handleToggleAddModal();
   };
@@ -163,7 +174,7 @@ const FactoriesPage = () => {
           productId: Number(selectedCustomizedProduct?.id),
           note: formData.note,
           fromPrice: Number(formData.fromPrice) || 0,
-          toPrice: Number(formData.toPrice) || 0
+          toPrice: Number(formData.toPrice) || 0,
         });
 
         if (response.status) {
@@ -175,13 +186,16 @@ const FactoriesPage = () => {
           });
 
           // Refetch the listing API after a successful response
-          queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
+          queryClient.invalidateQueries({
+            queryKey: ["factoriesProducts"],
+            exact: false,
+          });
 
           const resp = await updateFactoriesCartWithLogin.mutateAsync({
             productId: Number(selectedCustomizedProduct?.id),
             customizeProductId: response?.data?.id,
-            quantity: 1
-          })
+            quantity: 1,
+          });
 
           if (resp.status) {
             toast({
@@ -205,7 +219,7 @@ const FactoriesPage = () => {
         variant: "destructive",
       });
     }
-  }
+  };
 
   const memoizedRfqProducts = useMemo(() => {
     if (factoriesProductsQuery.data?.data) {
@@ -213,17 +227,19 @@ const FactoriesPage = () => {
         factoriesProductsQuery.data?.data.map((item: any) => {
           return {
             ...item,
-            isAddedToFactoryCart: item?.product_rfqCart?.length && item?.product_rfqCart[0]?.quantity > 0,
-            factoryCartQuantity: item?.product_rfqCart?.length ? item.product_rfqCart[0].quantity : 0,
+            isAddedToFactoryCart:
+              item?.product_rfqCart?.length &&
+              item?.product_rfqCart[0]?.quantity > 0,
+            factoryCartQuantity: item?.product_rfqCart?.length
+              ? item.product_rfqCart[0].quantity
+              : 0,
           };
         }) || []
       );
     } else {
       return [];
     }
-  }, [
-    factoriesProductsQuery.data?.data,
-  ]);
+  }, [factoriesProductsQuery.data?.data]);
 
   useEffect(() => {
     if (cartListByUser.data?.data) {
@@ -242,9 +258,7 @@ const FactoriesPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          "factoriesProducts",
-        ],
+        queryKey: ["factoriesProducts"],
       });
     } else {
       toast({
@@ -278,9 +292,7 @@ const FactoriesPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          "factoriesProducts",
-        ],
+        queryKey: ["factoriesProducts"],
       });
     } else {
       toast({
@@ -303,11 +315,11 @@ const FactoriesPage = () => {
 
   const clearFilter = () => {
     setSelectAllBrands(false);
-    setSearchRfqTerm('');
+    setSearchRfqTerm("");
     setSelectedBrandIds([]);
-    setDisplayMyProducts('0');
+    setDisplayMyProducts("0");
 
-    if (searchInputRef?.current) searchInputRef.current.value = '';
+    if (searchInputRef?.current) searchInputRef.current.value = "";
   };
 
   useEffect(() => {
@@ -330,15 +342,47 @@ const FactoriesPage = () => {
             <div className="rfq_main_box !justify-center">
               <div className="rfq_left">
                 <div className="all_select_button">
-                  <button type="button" onClick={selectAll}>{t("select_all")}</button>
-                  <button type="button" onClick={clearFilter}>{t("clean_select")}</button>
+                  <button type="button" onClick={selectAll}>
+                    {t("select_all")}
+                  </button>
+                  <button type="button" onClick={clearFilter}>
+                    {t("clean_select")}
+                  </button>
                 </div>
                 <BrandFilterList
                   selectAllBrands={selectAllBrands}
-                  onSelectBrands={(brandIds: number[]) => setSelectedBrandIds(brandIds)}
+                  onSelectBrands={(brandIds: number[]) =>
+                    setSelectedBrandIds(brandIds)
+                  }
                 />
               </div>
               <div className="rfq_middle">
+                <RadioGroup
+                  className="mb-3 flex flex-row gap-y-3"
+                  value={displayMyProducts}
+                  onValueChange={setDisplayMyProducts}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="0"
+                      id="all_products"
+                      checked={displayMyProducts == "0"}
+                    />
+                    <Label htmlFor="all_products" className="text-base">
+                      {t("all_products")}
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="1"
+                      id="my_products"
+                      checked={displayMyProducts == "1"}
+                    />
+                    <Label htmlFor="my_products" className="text-base">
+                      {t("my_products")}
+                    </Label>
+                  </div>
+                </RadioGroup>
                 <div className="rfq_middle_top">
                   <div className="rfq_search">
                     <input
@@ -366,24 +410,6 @@ const FactoriesPage = () => {
                           <h4>{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
-                          <RadioGroup
-                            className="flex flex-col gap-y-3"
-                            value={displayMyProducts}
-                            onValueChange={setDisplayMyProducts}
-                          >
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="0" id="all_products" checked={displayMyProducts == '0'} />
-                              <Label htmlFor="all_products" className="text-base">
-                                {t("all_products")}
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="1" id="my_products" checked={displayMyProducts == '1'} />
-                              <Label htmlFor="my_products" className="text-base">
-                                {t("my_products")}
-                              </Label>
-                            </div>
-                          </RadioGroup>
                           <div className="trending_filter">
                             <Select
                               onValueChange={(e: any) => setSortBy(e)}
@@ -427,7 +453,8 @@ const FactoriesPage = () => {
                         </div>
                       </div>
 
-                      {factoriesProductsQuery.isLoading && viewType === "grid" ? (
+                      {factoriesProductsQuery.isLoading &&
+                      viewType === "grid" ? (
                         <div className="mt-5 grid grid-cols-4 gap-5">
                           {Array.from({ length: 8 }).map((_, index) => (
                             <SkeletonProductCardLoader key={index} />
@@ -436,7 +463,7 @@ const FactoriesPage = () => {
                       ) : null}
 
                       {!factoriesProductsQuery?.data?.data?.length &&
-                        !factoriesProductsQuery.isLoading ? (
+                      !factoriesProductsQuery.isLoading ? (
                         <p className="my-10 text-center text-sm font-medium">
                           {t("no_data_found")}
                         </p>
@@ -454,28 +481,53 @@ const FactoriesPage = () => {
                                 productNote={item?.productNote || "-"}
                                 productStatus={item?.status}
                                 productImages={item?.productImages}
-                                productQuantity={cartList.find((el: any) => el.productId == item.id)?.quantity || 0}
-                                customizeProductId={factoriesCartList.find((el: any) => el.productId == item.id)?.customizeProductId}
+                                productQuantity={
+                                  cartList.find(
+                                    (el: any) => el.productId == item.id,
+                                  )?.quantity || 0
+                                }
+                                customizeProductId={
+                                  factoriesCartList.find(
+                                    (el: any) => el.productId == item.id,
+                                  )?.customizeProductId
+                                }
                                 onAdd={() => handleAddToFactories(item.id)}
-                                onWishlist={() => handleAddToWishlist(item.id, item?.product_wishlist)}
-                                isCreatedByMe={item?.userId === me.data?.data?.id}
-                                isAddedToCart={cartList.find((el: any) => el.productId == item.id) ? true : false}
-                                isAddedToFactoryCart={factoriesCartList.find((el: any) => el.productId == item.id) ? true : false}
-                                inWishlist={
-                                  item?.product_wishlist?.find(
-                                    (el: any) => el?.userId === me.data?.data?.id,
+                                onWishlist={() =>
+                                  handleAddToWishlist(
+                                    item.id,
+                                    item?.product_wishlist,
                                   )
                                 }
+                                isCreatedByMe={
+                                  item?.userId === me.data?.data?.id
+                                }
+                                isAddedToCart={
+                                  cartList.find(
+                                    (el: any) => el.productId == item.id,
+                                  )
+                                    ? true
+                                    : false
+                                }
+                                isAddedToFactoryCart={
+                                  factoriesCartList.find(
+                                    (el: any) => el.productId == item.id,
+                                  )
+                                    ? true
+                                    : false
+                                }
+                                inWishlist={item?.product_wishlist?.find(
+                                  (el: any) => el?.userId === me.data?.data?.id,
+                                )}
                                 haveAccessToken={haveAccessToken}
                                 productPrices={item?.product_productPrice}
                               />
-                            )
+                            );
                           })}
                         </div>
                       ) : null}
 
                       {viewType === "list" &&
-                        factoriesProductsQuery?.data?.data?.length ? (
+                      factoriesProductsQuery?.data?.data?.length ? (
                         <div className="product_sec_list">
                           <RfqProductTable
                             list={factoriesProductsQuery?.data?.data}
@@ -504,7 +556,10 @@ const FactoriesPage = () => {
         </div>
 
         {/* add to factories modal */}
-        <Dialog open={isAddToFactoryModalOpen} onOpenChange={handleToggleAddModal}>
+        <Dialog
+          open={isAddToFactoryModalOpen}
+          onOpenChange={handleToggleAddModal}
+        >
           <DialogContent
             className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
             ref={wrapperRef}
@@ -550,19 +605,24 @@ const FactoriesPage = () => {
                 </div>
 
                 <Button
-                  disabled={addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending}
+                  disabled={
+                    addCustomizeProduct.isPending ||
+                    updateFactoriesCartWithLogin.isPending
+                  }
                   type="submit"
-                  className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-2"
+                  className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                 >
-                  {addCustomizeProduct.isPending || updateFactoriesCartWithLogin.isPending ? (
+                  {addCustomizeProduct.isPending ||
+                  updateFactoriesCartWithLogin.isPending ? (
                     <LoaderWithMessage message={t("please_wait")} />
-                  ) : t("add")}
+                  ) : (
+                    t("add")
+                  )}
                 </Button>
               </form>
             </Form>
           </DialogContent>
         </Dialog>
-
       </section>
       <Footer />
     </>

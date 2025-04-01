@@ -575,7 +575,7 @@
   }
 
   .trending-search-sec .left-filter {
-    @apply flex w-full max-w-[225px] flex-col gap-y-[30px];
+    @apply flex w-full max-w-[225px] flex-col gap-y-[10px];
   }
 
   .trending-search-sec .left-filter-overlay {
@@ -3924,7 +3924,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin-top: 10px;
+    margin-top: 0;
     margin-bottom: 10px;
   }
 

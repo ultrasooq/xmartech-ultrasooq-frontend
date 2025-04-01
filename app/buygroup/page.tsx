@@ -73,7 +73,7 @@ const TrendingPage = () => {
   const [maxPriceInput, setMaxPriceInput] = useState("");
   const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
-  const [displayMyProducts, setDisplayMyProducts] = useState('0');
+  const [displayMyProducts, setDisplayMyProducts] = useState("0");
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -90,12 +90,16 @@ const TrendingPage = () => {
     page,
     limit,
     sort: sortBy,
-    priceMin: priceRange[0] === 0 ? 0 : (priceRange[0] || Number(minPriceInput)) ?? undefined,
+    priceMin:
+      priceRange[0] === 0
+        ? 0
+        : ((priceRange[0] || Number(minPriceInput)) ?? undefined),
     priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
-    brandIds: selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    brandIds:
+      selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
     userId: me.data?.data?.id,
     categoryIds: category.categoryId ? category.categoryId : undefined,
-    isOwner: displayMyProducts == '1' ? 'me' : ''
+    isOwner: displayMyProducts == "1" ? "me" : "",
   });
   const brandsQuery = useBrands({
     term: searchTerm,
@@ -170,7 +174,7 @@ const TrendingPage = () => {
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
         askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-        productPrices: item?.product_productPrice
+        productPrices: item?.product_productPrice,
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -189,7 +193,7 @@ const TrendingPage = () => {
     displayMyProducts,
   ]);
 
-  const [cartList, setCartList] = useState<any[]>([]); 
+  const [cartList, setCartList] = useState<any[]>([]);
 
   const cartListByDeviceQuery = useCartListByDevice(
     {
@@ -212,9 +216,11 @@ const TrendingPage = () => {
     if (cartListByUser.data?.data) {
       setCartList((cartListByUser.data?.data || []).map((item: any) => item));
     } else if (cartListByDeviceQuery.data?.data) {
-      setCartList((cartListByDeviceQuery.data?.data || []).map((item: any) => item));
+      setCartList(
+        (cartListByDeviceQuery.data?.data || []).map((item: any) => item),
+      );
     }
-  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data])
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -282,7 +288,7 @@ const TrendingPage = () => {
     setSelectedBrandIds(
       brandsQuery?.data?.data?.map((item: any) => {
         return item.id;
-      }) || []
+      }) || [],
     );
   };
 
@@ -291,10 +297,10 @@ const TrendingPage = () => {
     setMaxPriceInput("");
     setMinPriceInput("");
     setPriceRange([]);
-    setDisplayMyProducts('0');
+    setDisplayMyProducts("0");
 
-    if (minPriceInputRef.current) minPriceInputRef.current.value = '';
-    if (maxPriceInputRef.current) maxPriceInputRef.current.value = '';
+    if (minPriceInputRef.current) minPriceInputRef.current.value = "";
+    if (maxPriceInputRef.current) maxPriceInputRef.current.value = "";
   };
 
   useEffect(() => {
@@ -314,12 +320,16 @@ const TrendingPage = () => {
         <BannerSection />
 
         <div className="trending-search-sec">
-          <div className="all_select_button">
-            <button type="button" onClick={selectAll}>{t("select_all")}</button>
-            <button type="button" onClick={clearFilter}>{t("clean_select")}</button>
-          </div>
           <div className="container m-auto px-3">
             <div className={productFilter ? "left-filter show" : "left-filter"}>
+              <div className="all_select_button">
+                <button type="button" onClick={selectAll}>
+                  {t("select_all")}
+                </button>
+                <button type="button" onClick={clearFilter}>
+                  {t("clean_select")}
+                </button>
+              </div>
               <Accordion
                 type="multiple"
                 defaultValue={["brand"]}
@@ -437,18 +447,26 @@ const TrendingPage = () => {
             ></div>
             <div className="right-products">
               <RadioGroup
-                className="flex flex-col gap-y-3"
+                className="mb-3 flex flex-row gap-y-3"
                 value={displayMyProducts}
                 onValueChange={setDisplayMyProducts}
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="0" id="all_products" checked={displayMyProducts == '0'} />
+                  <RadioGroupItem
+                    value="0"
+                    id="all_products"
+                    checked={displayMyProducts == "0"}
+                  />
                   <Label htmlFor="all_products" className="text-base">
                     {t("all_products")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="1" id="my_products" checked={displayMyProducts == '1'} />
+                  <RadioGroupItem
+                    value="1"
+                    id="my_products"
+                    checked={displayMyProducts == "1"}
+                  />
                   <Label htmlFor="my_products" className="text-base">
                     {t("my_products")}
                   </Label>
@@ -460,7 +478,11 @@ const TrendingPage = () => {
                   {/* <h3></h3> */}
                 </div>
                 <div className="rg-filter">
-                  <p>{t("n_products_found", { n: allProductsQuery.data?.totalCount })}</p>
+                  <p>
+                    {t("n_products_found", {
+                      n: allProductsQuery.data?.totalCount,
+                    })}
+                  </p>
                   <ul>
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>
@@ -469,8 +491,12 @@ const TrendingPage = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="desc">{t("sort_by_latest")}</SelectItem>
-                            <SelectItem value="asc">{t("sort_by_oldest")}</SelectItem>
+                            <SelectItem value="desc">
+                              {t("sort_by_latest")}
+                            </SelectItem>
+                            <SelectItem value="asc">
+                              {t("sort_by_oldest")}
+                            </SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -516,13 +542,17 @@ const TrendingPage = () => {
               ) : null}
 
               {!memoizedProductList.length && !allProductsQuery.isLoading ? (
-                <p className="text-center text-sm font-medium">{t("no_data_found")}</p>
+                <p className="text-center text-sm font-medium">
+                  {t("no_data_found")}
+                </p>
               ) : null}
 
               {viewType === "grid" ? (
                 <div className="product-list-s1">
                   {memoizedProductList.map((item: TrendingProduct) => {
-                    const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
+                    const cartQuantity =
+                      cartList?.find((el: any) => el.productId == item.id)
+                        ?.quantity || 0;
                     return (
                       <ProductCard
                         key={item.id}
@@ -536,7 +566,7 @@ const TrendingPage = () => {
                         productQuantity={cartQuantity}
                         isAddedToCart={cartQuantity > 0}
                       />
-                    )
+                    );
                   })}
                 </div>
               ) : null}

@@ -79,7 +79,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const [maxPriceInput, setMaxPriceInput] = useState("");
   const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
-  const [displayMyProducts, setDisplayMyProducts] = useState('0');
+  const [displayMyProducts, setDisplayMyProducts] = useState("0");
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -88,10 +88,10 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
 
   const minPriceInputRef = useRef<HTMLInputElement>(null);
   const maxPriceInputRef = useRef<HTMLInputElement>(null);
-  
+
   // const [searchUrlTerm, setSearchUrlTerm] = useState("");
   const searchUrlTerm = searchParams?.term || "";
-  
+
   const me = useMe();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
@@ -100,12 +100,16 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     limit,
     sort: sortBy,
     term: searchUrlTerm,
-    priceMin: priceRange[0] === 0 ? 0 : (priceRange[0] || Number(minPriceInput)) ?? undefined,
+    priceMin:
+      priceRange[0] === 0
+        ? 0
+        : ((priceRange[0] || Number(minPriceInput)) ?? undefined),
     priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
-    brandIds: selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    brandIds:
+      selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
     userId: me.data?.data?.id,
     categoryIds: category.categoryId ? category.categoryId : undefined,
-    isOwner: displayMyProducts == '1' ? 'me' : ''
+    isOwner: displayMyProducts == "1" ? "me" : "",
   });
   const brandsQuery = useBrands({
     term: searchTerm,
@@ -163,7 +167,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         productImage: item?.product_productPrice?.[0]
           ?.productPrice_productSellerImage?.length
           ? item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.[0]?.image
+              ?.productPrice_productSellerImage?.[0]?.image
           : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
@@ -200,7 +204,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     displayMyProducts,
   ]);
 
-  const [cartList, setCartList] = useState<any[]>([]); 
+  const [cartList, setCartList] = useState<any[]>([]);
 
   const cartListByDeviceQuery = useCartListByDevice(
     {
@@ -223,7 +227,9 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     if (cartListByUser.data?.data) {
       setCartList((cartListByUser.data?.data || []).map((item: any) => item));
     } else if (cartListByDeviceQuery.data?.data) {
-      setCartList((cartListByDeviceQuery.data?.data || []).map((item: any) => item));
+      setCartList(
+        (cartListByDeviceQuery.data?.data || []).map((item: any) => item),
+      );
     }
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
@@ -293,7 +299,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     setSelectedBrandIds(
       brandsQuery?.data?.data?.map((item: any) => {
         return item.id;
-      }) || []
+      }) || [],
     );
   };
 
@@ -302,10 +308,10 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     setMaxPriceInput("");
     setMinPriceInput("");
     setPriceRange([]);
-    setDisplayMyProducts('0');
+    setDisplayMyProducts("0");
 
-    if (minPriceInputRef.current) minPriceInputRef.current.value = '';
-    if (maxPriceInputRef.current) maxPriceInputRef.current.value = '';
+    if (minPriceInputRef.current) minPriceInputRef.current.value = "";
+    if (maxPriceInputRef.current) maxPriceInputRef.current.value = "";
   };
 
   useEffect(() => {
@@ -325,12 +331,16 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         <BannerSection />
 
         <div className="trending-search-sec">
-          <div className="all_select_button">
-            <button type="button" onClick={selectAll}>{t("select_all")}</button>
-            <button type="button" onClick={clearFilter}>{t("clean_select")}</button>
-          </div>
           <div className="container m-auto px-3">
             <div className={productFilter ? "left-filter show" : "left-filter"}>
+              <div className="all_select_button">
+                <button type="button" onClick={selectAll}>
+                  {t("select_all")}
+                </button>
+                <button type="button" onClick={clearFilter}>
+                  {t("clean_select")}
+                </button>
+              </div>
               <Accordion
                 type="multiple"
                 defaultValue={["brand"]}
@@ -448,18 +458,26 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
             ></div>
             <div className="right-products">
               <RadioGroup
-                className="flex flex-col gap-y-3"
+                className="mb-3 flex flex-row gap-y-3"
                 value={displayMyProducts}
                 onValueChange={setDisplayMyProducts}
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="0" id="all_products" checked={displayMyProducts == '0'} />
+                  <RadioGroupItem
+                    value="0"
+                    id="all_products"
+                    checked={displayMyProducts == "0"}
+                  />
                   <Label htmlFor="all_products" className="text-base">
                     {t("all_products")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="1" id="my_products" checked={displayMyProducts == '1'} />
+                  <RadioGroupItem
+                    value="1"
+                    id="my_products"
+                    checked={displayMyProducts == "1"}
+                  />
                   <Label htmlFor="my_products" className="text-base">
                     {t("my_products")}
                   </Label>
@@ -471,7 +489,11 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                   {/* <h3></h3> */}
                 </div>
                 <div className="rg-filter">
-                  <p>{t("n_products_found", { n: allProductsQuery.data?.totalCount })}</p>
+                  <p>
+                    {t("n_products_found", {
+                      n: allProductsQuery.data?.totalCount,
+                    })}
+                  </p>
                   <ul>
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>
@@ -480,8 +502,12 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="desc">{t("sort_by_latest")}</SelectItem>
-                            <SelectItem value="asc">{t("sort_by_oldest")}</SelectItem>
+                            <SelectItem value="desc">
+                              {t("sort_by_latest")}
+                            </SelectItem>
+                            <SelectItem value="asc">
+                              {t("sort_by_oldest")}
+                            </SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -527,13 +553,17 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
               ) : null}
 
               {!memoizedProductList.length && !allProductsQuery.isLoading ? (
-                <p className="text-center text-sm font-medium">{t("no_data_found")}</p>
+                <p className="text-center text-sm font-medium">
+                  {t("no_data_found")}
+                </p>
               ) : null}
 
               {viewType === "grid" ? (
                 <div className="product-list-s1">
                   {memoizedProductList.map((item: TrendingProduct) => {
-                    const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
+                    const cartQuantity =
+                      cartList?.find((el: any) => el.productId == item.id)
+                        ?.quantity || 0;
                     return (
                       <ProductCard
                         key={item.id}
@@ -547,7 +577,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                         productQuantity={cartQuantity}
                         isAddedToCart={cartQuantity > 0}
                       />
-                    )
+                    );
                   })}
                 </div>
               ) : null}
