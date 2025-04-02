@@ -27,12 +27,14 @@ import BannerImage from "@/public/images/rfq-sec-bg.png";
 import Footer from "@/components/shared/Footer";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  address: z.string().trim().min(1, { message: "Address is required" }),
-  rfqDate: z
-    .date({ required_error: "Delivery Date is required" })
-    .transform((val) => val.toISOString()),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    address: z.string().trim().min(1, { message: t("address_required") }),
+    rfqDate: z
+      .date({ required_error: t("delivery_date_required") })
+      .transform((val) => val.toISOString()),
+  });
+};
 
 const RfqCartPage = () => {
   const t = useTranslations();
@@ -40,7 +42,7 @@ const RfqCartPage = () => {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       address: "",
       rfqDate: undefined as unknown as string,
@@ -181,11 +183,12 @@ const RfqCartPage = () => {
                       label={t("address")}
                       name="address"
                       options={memoziedAddressList}
+                      placeholder={t("select_address")}
                     />
 
                     <div>
                       <Label>{t("date")}</Label>
-                      <ControlledDatePicker name="rfqDate" isFuture />
+                      <ControlledDatePicker name="rfqDate" isFuture placeholder={t("enter_date")} />
                     </div>
                   </form>
                 </Form>

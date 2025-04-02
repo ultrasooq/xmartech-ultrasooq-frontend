@@ -57,7 +57,7 @@ const WishlistPage = () => {
 
   return (
     <>
-      <title>Wishlist | Ultrasooq</title>
+      <title>{t("wishlist")} | Ultrasooq</title>
       <section className="w-full py-[50px]">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image src={BannerImage} alt="background-banner" fill />

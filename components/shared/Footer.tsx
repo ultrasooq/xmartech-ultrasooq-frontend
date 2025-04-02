@@ -203,7 +203,7 @@ const Footer = () => {
       <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
         <DialogContent className="md:!max-w-4xl">
           <DialogHeader className="border-b border-light-gray pb-3">
-            <DialogTitle className="text-center">Terms Of Use</DialogTitle>
+            <DialogTitle className="text-center">{t("terms_of_use")}</DialogTitle>
           </DialogHeader>
           <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark">
             <TermsContent />
@@ -214,7 +214,7 @@ const Footer = () => {
       <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
         <DialogContent className="md:!max-w-4xl">
           <DialogHeader className="border-b border-light-gray pb-3">
-            <DialogTitle className="text-center">Privacy Policy</DialogTitle>
+            <DialogTitle className="text-center">{t("privacy_policy")}</DialogTitle>
           </DialogHeader>
           <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark">
             <PolicyContent />

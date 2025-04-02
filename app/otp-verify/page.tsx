@@ -224,7 +224,6 @@ export default function OtpVerifyPage() {
                       {otp?.map((value, index) => (
                         <Input
                           value={value}
-                          // ref={(el) => el && (refs.current[index] = el)}
                           ref={(el) => {
                             if (el) refs.current[index] = el;
                           }}
@@ -246,7 +245,7 @@ export default function OtpVerifyPage() {
                       className="theme-primary-btn m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6"
                     >
                       {verifyOtp.isPending ? (
-                        <LoaderWithMessage message="Please wait" />
+                        <LoaderWithMessage message={t("please_wait")} />
                       ) : (
                         t("verify")
                       )}
@@ -256,7 +255,7 @@ export default function OtpVerifyPage() {
               </Form>
               <div className="mb-4 w-full space-x-2 text-center">
                 <span className="text-sm font-medium leading-4 text-light-gray">
-                  Didn&apos;t receive OTP?
+                  {t("didnt_receive_otp")}
                 </span>
                 <Button
                   type="button"
@@ -272,7 +271,7 @@ export default function OtpVerifyPage() {
               </div>
               {count !== 0 ? (
                 <p className="text-center text-sm font-medium leading-4 text-dark-orange">
-                  OTP will expire in {formatTime(count)} minutes
+                  {t("otp_will_expire_in_min_minutes", { min: formatTime(count) })}
                 </p>
               ) : null}
             </div>

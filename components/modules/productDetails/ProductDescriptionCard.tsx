@@ -176,7 +176,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   // For CountDown
 
   useEffect(() => {
-    if (!productPriceArr?.length || productPriceArr[0]?.sellType !== "BUYGROUP")
+    if (!productPriceArr?.length || productPriceArr?.[0]?.sellType !== "BUYGROUP")
       return;
 
     const product = productPriceArr[0];
@@ -334,7 +334,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
       {isLoading ? (
         <Skeleton className="h-44 w-full" />
-      ) : productPriceArr[0]?.sellType === "BUYGROUP" ? (
+      ) : productPriceArr?.[0]?.sellType === "BUYGROUP" ? (
         <div className="info-col">
           <div className="row">
             <div className="col-12 col-md-12">
@@ -370,8 +370,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     {t("group_buy_deal_ends")} :
                   </span>{" "}
                   {formatDateTimeWithTimezone(
-                    productPriceArr[0]?.dateClose,
-                    productPriceArr[0]?.endTime,
+                    productPriceArr?.[0]?.dateClose,
+                    productPriceArr?.[0]?.endTime,
                   )}
                 </p>
                 <p>
@@ -381,11 +381,11 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
                 <p>
                   <span className="color-text">{t("min_quantity")}:</span>{" "}
-                  <b>{productPriceArr[0]?.minQuantity}</b>
+                  <b>{productPriceArr?.[0]?.minQuantity}</b>
                 </p>
                 <p>
                   <span className="color-text">{(t("max_quantity"))}:</span>{" "}
-                  <b>{productPriceArr[0]?.maxQuantity}</b>
+                  <b>{productPriceArr?.[0]?.maxQuantity}</b>
                 </p>
                 <p>
                   <span className="color-text">{t("deals_sold")}:</span>
@@ -395,13 +395,13 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   <span className="color-text">
                     {t("min_quantity_per_customer")}:
                   </span>{" "}
-                  <b>{productPriceArr[0]?.minQuantityPerCustomer}</b>
+                  <b>{productPriceArr?.[0]?.minQuantityPerCustomer}</b>
                 </p>
                 <p>
                   <span className="color-text">
                     {t("max_quantity_per_customer")}:
                   </span>{" "}
-                  <b>{productPriceArr[0]?.maxQuantityPerCustomer}</b>
+                  <b>{productPriceArr?.[0]?.maxQuantityPerCustomer}</b>
                 </p>
               </div>
             </div>

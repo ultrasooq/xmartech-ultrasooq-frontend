@@ -217,7 +217,7 @@ export default function PasswordResetVerifyPage() {
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
                 {t("verify_otp")}
               </h2>
-              <p>Enter the OTP which you received via email</p>
+              <p>{t("enter_otp_text")}</p>
             </div>
             <div className="w-full">
               <Form {...form}>
@@ -230,7 +230,6 @@ export default function PasswordResetVerifyPage() {
                       {otp?.map((value, index) => (
                         <Input
                           value={value}
-                          // ref={(el) => el && (refs.current[index] = el)}
                           ref={(el) => {
                             if (el) refs.current[index] = el;
                           }}
@@ -254,9 +253,9 @@ export default function PasswordResetVerifyPage() {
                       className="theme-primary-btn m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6"
                     >
                       {passwordResetVerify.isPending ? (
-                        <LoaderWithMessage message="Please wait" />
+                        <LoaderWithMessage message={t("please_wait")} />
                       ) : (
-                        "Verify"
+                        t("verify")
                       )}
                     </Button>
                   </div>

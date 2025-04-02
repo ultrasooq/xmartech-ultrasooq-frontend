@@ -35,110 +35,115 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  uploadBranchImage: z.any().optional(),
-  uploadProofOfAddress: z.any().optional(),
-  branchFrontPicture: z.string().trim().optional(),
-  proofOfAddress: z.string().trim().optional(),
-  businessTypeList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
+const formSchema = (t: any) => {
+  return z.object({
+    uploadBranchImage: z.any().optional(),
+    uploadProofOfAddress: z.any().optional(),
+    branchFrontPicture: z.string().trim().optional(),
+    proofOfAddress: z.string().trim().optional(),
+    businessTypeList: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.number(),
+        }),
+        {
+          required_error: t("business_type_required")
+        }
+      )
+      .min(1, {
+        message: t("business_type_required"),
+      })
+      .transform((value) => {
+        let temp: any = [];
+        value.forEach((item) => {
+          temp.push({ businessTypeId: item.value });
+        });
+        return temp;
       }),
-    )
-    .min(1, {
-      message: "Business Type is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ businessTypeId: item.value });
-      });
-      return temp;
+    address: z
+      .string()
+      .trim()
+      .min(2, { message: t("address_required") })
+      .max(50, {
+        message: t("address_must_be_less_than_n_chars", { n: 50 }),
+      }),
+    city: z.string().trim().min(2, { message: t("city_required") }),
+    province: z.string().trim().min(2, { message: t("province_required") }),
+    country: z.string().trim().min(2, { message: t("country_required") }),
+    cc: z.string().trim(),
+    contactNumber: z
+      .string()
+      .trim()
+      .min(2, { message: t("branch_contact_number_required") })
+      .min(8, {
+        message: t("branch_contact_number_must_be_min_n_digits", { n: 8 }),
+      })
+      .max(20, {
+        message: t("branch_contact_number_cant_be_nore_than_n_digits", { n: 20 }),
+      }),
+    contactName: z
+      .string()
+      .trim()
+      .min(2, { message: t("branch_contact_name_required") }),
+    startTime: z.string().trim().min(1, {
+      message: t("start_time_required"),
     }),
-  address: z
-    .string()
-    .trim()
-    .min(2, { message: "Address is required" })
-    .max(50, {
-      message: "Address must be less than 50 characters",
+    endTime: z.string().trim().min(1, {
+      message: t("end_time_required"),
     }),
-  city: z.string().trim().min(2, { message: "City is required" }),
-  province: z.string().trim().min(2, { message: "Province is required" }),
-  country: z.string().trim().min(2, { message: "Country is required" }),
-  cc: z.string().trim(),
-  contactNumber: z
-    .string()
-    .trim()
-    .min(2, { message: "Branch Contact Number is required" })
-    .min(8, {
-      message: "Branch Contact Number must be minimum of 8 digits",
-    })
-    .max(20, {
-      message: "Branch Contact Number cannot be more than 20 digits",
-    }),
-  contactName: z
-    .string()
-    .trim()
-    .min(2, { message: "Branch Contact Name is required" }),
-  startTime: z.string().trim().min(1, {
-    message: "Start Time is required",
-  }),
-  endTime: z.string().trim().min(1, {
-    message: "End Time is required",
-  }),
-  workingDays: z
-    .object({
-      sun: z.number(),
-      mon: z.number(),
-      tue: z.number(),
-      wed: z.number(),
-      thu: z.number(),
-      fri: z.number(),
-      sat: z.number(),
-    })
-    .refine((value) => {
-      return (
-        value.sun !== 0 ||
-        value.mon !== 0 ||
-        value.tue !== 0 ||
-        value.wed !== 0 ||
-        value.thu !== 0 ||
-        value.fri !== 0 ||
-        value.sat !== 0
-      );
-    }),
-  // tagList: z
-  //   .array(
-  //     z.object({
-  //       label: z.string().trim(),
-  //       value: z.number(),
-  //     }),
-  //   )
-  //   .min(1, {
-  //     message: "Tag is required",
-  //   })
-  //   .transform((value) => {
-  //     let temp: any = [];
-  //     value.forEach((item) => {
-  //       temp.push({ tagId: item.value });
-  //     });
-  //     return temp;
-  //   }),
-  categoryList: z.any().optional(),
-  mainOffice: z
-    .boolean()
-    .transform((value) => (value ? 1 : 0))
-    .optional(),
-});
+    workingDays: z
+      .object({
+        sun: z.number(),
+        mon: z.number(),
+        tue: z.number(),
+        wed: z.number(),
+        thu: z.number(),
+        fri: z.number(),
+        sat: z.number(),
+      })
+      .refine((value) => {
+        return (
+          value.sun !== 0 ||
+          value.mon !== 0 ||
+          value.tue !== 0 ||
+          value.wed !== 0 ||
+          value.thu !== 0 ||
+          value.fri !== 0 ||
+          value.sat !== 0
+        );
+      }),
+    // tagList: z
+    //   .array(
+    //     z.object({
+    //       label: z.string().trim(),
+    //       value: z.number(),
+    //     }),
+    //   )
+    //   .min(1, {
+    //     message: "Tag is required",
+    //   })
+    //   .transform((value) => {
+    //     let temp: any = [];
+    //     value.forEach((item) => {
+    //       temp.push({ tagId: item.value });
+    //     });
+    //     return temp;
+    //   }),
+    categoryList: z.any().optional(),
+    mainOffice: z
+      .boolean()
+      .transform((value) => (value ? 1 : 0))
+      .optional(),
+  });
+}
 
 const AddBranchPage = () => {
   const t = useTranslations();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       uploadBranchImage: undefined,
       uploadProofOfAddress: undefined,
@@ -300,9 +305,7 @@ const AddBranchPage = () => {
                     name="businessTypeList"
                     options={memoizedTags || []}
                     placeholder={t("business_type")}
-                    error={String(
-                      form.formState.errors?.businessTypeList?.message,
-                    )}
+                    error={String(form.formState.errors?.businessTypeList?.message || '')}
                   />
 
                   <FormField

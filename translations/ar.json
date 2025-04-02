@@ -42,6 +42,7 @@
     "view": "منظر",
     "tags": "العلامات",
     "category": "فئة",
+    "sub_category": "الفئة الفرعية",
     "brand": "ماركة",
     "spare_part": "قطعة غيار",
     "own_brand": "العلامة التجارية الخاصة",
@@ -98,6 +99,7 @@
     "last": "آخر",
     "everyone": "الجميع",
     "others": "آحرون",
+    "enter_date": "أدخل التاريخ",
 
     "login_to_your_account": "تسجيل الدخول إلى حسابك",
     "remember_me": "تذكرنى",
@@ -137,7 +139,9 @@
     "verify": "يؤكد",
     "verify_otp": "تحقق من OTP",
     "didnt_receive_otp": "لم يستلم OTP؟",
+    "enter_otp": "أدخل OTP",
     "enter_otp_text": "أدخل OTP الذي تلقيته عبر البريد الإلكتروني",
+    "otp_will_expire_in_min_minutes": "سوف تنتهي صلاحية OTP في {min} دقيقة",
     "resend": "إعادة الالتحاق",
 
     "front": "أمام",
@@ -171,6 +175,7 @@
     "add_new_branch": "أضف فرعًا جديدًا",
     "add_branch": "أضف فرع",
     "edit_branch": "تحرير الفرع",
+    "no_branch_exists": "لا يوجد فرع",
     "upload_branch_front_picture": "تحميل الصورة الأمامية الفرع",
     "drop_your_branch_front_picture": "إسقاط صورتك الأمامية الفرعية هنا ، أو",
     "branch_front_picture_spec": ".jpg أو .png فقط. ",
@@ -185,6 +190,7 @@
     "profile_info": "معلومات الملف الشخصي",
     "account_settings": "إعدادات الحساب",
     "ratings_n_reviews": "التصنيفات والمراجعات",
+    "based_on_n_reviews": "استنادا إلى الاستعراضات {n}",
     "select_your_preferred_role": "يرجى تحديد دورك المفضل",
     "buyer": "المشتري",
     "freelancer": "مستقل",
@@ -375,6 +381,7 @@
     "enter_your_answer_here": "أدخل إجابتك هنا",
     "no_answer_yet": "لا إجابة بعد",
 
+    "wishlist": "قائمة الرغبات",
     "my_wishlist": "قائمة أمنياتي",
     "move_to_wishlist": "الانتقال إلى قائمة الأمنيات",
     "no_wishlist_items": "لا توجد عناصر في قائمة الأمنيات",
@@ -388,6 +395,7 @@
     "go_to_cart_page": "انتقل إلى صفحة عربة التسوق",
     "go_to_cart": "اذهب إلى سلة التسوق",
     "your_informations": "معلوماتك",
+    "select_address": "حدد العنوان",
     "add_delivery_address_date": "إضافة عنوان التسليم والتاريخ",
     "buy_now": "اشتري الآن",
 
@@ -395,6 +403,7 @@
     "customize_cart_items": "تخصيص عناصر العربة",
 
     "rfq": "RFQ",
+    "rfq_product": "منتج RFQ",
     "add_new_rfq_product": "أضف منتجًا جديدًا في RFQ",
     "request_for_rfq": "طلب RFQ",
     "go_to_rfq_cart": "انتقل إلى عربة RFQ",

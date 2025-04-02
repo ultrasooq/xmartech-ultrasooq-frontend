@@ -144,7 +144,7 @@ const RfqQuotesPage = () => {
         </div>
         <div className="container m-auto px-3">
           <div className="headerpart">
-            <h2>RFQ Product</h2>
+            <h2>{t("rfq_product")}</h2>
           </div>
           <div className="rfq-product-list-card">
             <div className="table-responsive theme-table-s1 min-h-[400px]">

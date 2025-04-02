@@ -369,7 +369,7 @@ const ProductDetailsPage = () => {
 
   return (
     <>
-      <title>Store | Ultrasooq</title>
+      <title>{t("store")} | Ultrasooq</title>
       <div className="body-content-s1 relative">
         <div className="product-view-s1-left-right type2">
           <div className="container m-auto px-3">

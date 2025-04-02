@@ -324,7 +324,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
 
   return (
     <>
-      <title>Store | Ultrasooq</title>
+      <title>{t("store")} | Ultrasooq</title>
       <div className="body-content-s1">
         <TrendingCategories />
 
@@ -588,7 +588,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                 </div>
               ) : null}
 
-              {allProductsQuery.data?.totalCount > 8 ? (
+              {allProductsQuery.data?.totalCount > page ? (
                 <Pagination
                   page={page}
                   setPage={setPage}

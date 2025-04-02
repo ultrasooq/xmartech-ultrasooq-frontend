@@ -109,7 +109,7 @@ export default function FreelancerProfileDetailsPage() {
                     {!me.data?.data?.userBranch?.length ? (
                       <>
                         <p className="pt-5 text-center text-lg font-medium text-color-dark">
-                          No Branch Exists
+                          {t("no_branch_exists")}
                         </p>
                         {!activeSellerId ? (
                           <div className="mb-5 flex w-full items-center justify-end pt-4">

@@ -223,7 +223,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
                         >
                           <div className="flex w-full flex-col justify-between gap-y-2">
-                            <Label>{"Sub ".repeat(index + 1)} Category</Label>
+                            <Label>{t("sub_category")}</Label>
                             <select
                               className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                               onChange={(e) => {

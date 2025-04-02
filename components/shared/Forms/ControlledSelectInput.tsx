@@ -16,19 +16,23 @@ import {
 import { useFormContext } from "react-hook-form";
 import Image from "next/image";
 import { ControlledSelectOptions } from "@/utils/types/common.types";
+import { useTranslations } from "next-intl";
 
 interface ControlledSelectInputProps {
   label: string;
   name: string;
   options: ControlledSelectOptions[];
+  placeholder?: string
 }
 
 const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
   label,
   name,
   options,
+  placeholder,
   ...props
 }) => {
+  const t = useTranslations();
   const formContext = useFormContext();
 
   return (
@@ -41,7 +45,7 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
           <Select onValueChange={field.onChange} value={field.value} {...props}>
             <FormControl>
               <SelectTrigger className="theme-form-control-s1 data-[placeholder]:text-muted-foreground">
-                <SelectValue placeholder={`Select ${label}`} />
+                <SelectValue placeholder={placeholder || `${t('select')} ${label}`} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>

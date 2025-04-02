@@ -42,6 +42,7 @@
     "view": "View",
     "tags": "Tags",
     "category": "Category",
+    "sub_category": "Sub Category",
     "brand": "Brand",
     "spare_part": "Spare Part",
     "own_brand": "Own Brand",
@@ -98,6 +99,7 @@
     "last": "Last",
     "everyone": "Everyone",
     "others": "Others",
+    "enter_date": "Enter Date",
 
     "login_to_your_account": "Login to your account",
     "remember_me": "Remember me",
@@ -136,8 +138,10 @@
 
     "verify": "Verify",
     "verify_otp": "Verify OTP",
-    "didnt_receive_otp": "Didn&apos;t receive OTP?",
+    "didnt_receive_otp": "Didn't receive OTP?",
+    "enter_otp": "Enter OTP",
     "enter_otp_text": "Enter the OTP which you received via email",
+    "otp_will_expire_in_min_minutes": "OTP will expire in {min} minutes",
     "resend": "Resend",
 
     "front": "Front",
@@ -171,6 +175,7 @@
     "add_new_branch": "Add new branch",
     "add_branch": "Add Branch",
     "edit_branch": "Edit Branch",
+    "no_branch_exists": "No Branch Exists",
     "upload_branch_front_picture": "Upload Branch Front Picture",
     "drop_your_branch_front_picture": "Drop your Branch Front Picture here, or",
     "branch_front_picture_spec": ".jpg or .png only. Up to 1mb",
@@ -185,6 +190,7 @@
     "profile_info": "Profile Info",
     "account_settings": "Account Settings",
     "ratings_n_reviews": "Ratings & Reviews",
+    "based_on_n_reviews": "Based on {n} reviews",
     "select_your_preferred_role": "Kindly select your preferred role",
     "buyer": "Buyer",
     "freelancer": "Freelancer",
@@ -375,6 +381,7 @@
     "enter_your_answer_here": "Enter your answer here",
     "no_answer_yet": "No answer yet",
 
+    "wishlist": "Wishlist",
     "my_wishlist": "My Wishlist",
     "move_to_wishlist": "Move to wishlist",
     "no_wishlist_items": "No items in wishlist",
@@ -388,6 +395,7 @@
     "go_to_cart_page": "Go To Cart Page",
     "go_to_cart": "Go To Cart",
     "your_informations": "Your Informations",
+    "select_address": "Select Address",
     "add_delivery_address_date": "Add Delivery Address & Date",
     "buy_now": "Buy Now",
 
@@ -395,6 +403,7 @@
     "customize_cart_items": "Customize Cart Items",
 
     "rfq": "RFQ",
+    "rfq_product": "RFQ Product",
     "add_new_rfq_product": "Add new product in RFQ",
     "request_for_rfq": "Request For RFQ",
     "go_to_rfq_cart": "Go To RFQ Cart",

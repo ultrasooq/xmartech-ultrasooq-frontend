@@ -110,7 +110,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [menuId, setMenuId] = useState();
+  const [menuId, setMenuId] = useState<string | number>();
   const [categoryId, setCategoryId] = useState();
   const [assignedToId, setAssignedToId] = useState();
   // const [subCategoryId, setSubCategoryId] = useState();
@@ -142,6 +142,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     setIsActive(!isActive);
   };
 
+  const [selectedLocale, setSelectedLocale] = useState<string>(locale || "en");
   const languages = [...LANGUAGES];
 
   const [currency, setCurrency] = useState<string>('USD');
@@ -189,11 +190,6 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
         },
       );
     }
-    tempArr.unshift({
-      name: t("home"),
-      id: 0,
-      icon: menuBarIconList[0],
-    });
 
     return tempArr || [];
   }, [categoryQuery.data?.data]);
@@ -379,8 +375,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </li>
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
                     {/* <GoogleTranslate /> */}
-                    <select className="border-0 bg-transparent text-white focus:outline-none" value={locale}
-                      onChange={(e) => applyTranslation(e.target.value)}
+                    <select className="border-0 bg-transparent text-white focus:outline-none" value={selectedLocale}
+                      onChange={(e) => {
+                        setSelectedLocale(e.target.value);
+                        applyTranslation(e.target.value)
+                      }}
                     >
                       {languages.map((language: { locale: string, name: string }) => {
                         return <option className="bg-dark-cyan" key={language.locale} value={language.locale}>
@@ -617,6 +616,25 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 <IoCloseOutline />
               </div>
               <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-between">
+                <ButtonLink
+                  key={0}
+                  onClick={() => {
+                    setMenuId(0);
+                    router.push('/home')
+                  }}
+                  href="/home"
+                >
+                  <div className="flex gap-x-3" onClick={handleClick}>
+                    <Image
+                      src={menuBarIconList[0]}
+                      alt={t("home")}
+                      height={0}
+                      width={0}
+                      className="h-7 w-7"
+                    />{" "}
+                    {t("home")}
+                  </div>
+                </ButtonLink>
                 {memoizedMenu.map((item: any) => (
                   <>
                     <ButtonLink

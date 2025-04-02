@@ -46,269 +46,60 @@ const baseProductPriceItemSchema = z.object({
 
 
 type EditFormProps = {
-    onClose: () => void;
-    selectedProductId?: number;
-  //   selectedQuantity?: number;
+  onClose: () => void;
+  selectedProductId?: number;
   onProductUpdateSuccess: () => void;
-  };
+};
 
-// const productPriceItemSchemaWhenSetUpPriceTrue = baseProductPriceItemSchema
-//   .extend({
-//     consumerType: z
-//       .string()
-//       .trim()
-//       .min(1, { message: "Consumer Type is required" }),
-//     sellType: z.string().trim().min(1, { message: "Sell Type is required" }),
-//     consumerDiscount: z.coerce
-//       .number()
-//       .max(100, { message: "Consumer Discount must be less than 100" }),
-//     vendorDiscount: z.coerce
-//       .number()
-//       .max(100, { message: "Vendor Discount must be less than 100" }),
-//     deliveryAfter: z.coerce
-//       .number()
-//       .min(1, { message: "Delivery After is required" }),
-//   })
-//   .refine(
-//     ({ minQuantity, maxQuantity }) =>
-//       (!minQuantity || minQuantity) <= (!maxQuantity || maxQuantity),
-//     {
-//       message: "Min Quantity must be less than or equal to Max Quantity",
-//       path: ["minQuantity"],
-//     },
-//   )
-//   .refine(
-//     ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
-//       (!minQuantityPerCustomer || minQuantityPerCustomer) <=
-//       (!maxQuantityPerCustomer || maxQuantityPerCustomer),
-//     {
-//       message:
-//         "Min Quantity Per Customer must be less than or equal to Max Quantity Per Customer",
-//       path: ["minQuantityPerCustomer"],
-//     },
-//   )
-//   .refine(
-//     ({ minCustomer, maxCustomer }) =>
-//       (!minCustomer || minCustomer) <= (!maxCustomer || maxCustomer),
-//     {
-//       message: "Min Customer must be less than or equal to Max Customer",
-//       path: ["minCustomer"],
-//     },
-//   )
-//   .refine(
-//     ({ timeOpen, timeClose }) =>
-//       (!timeOpen || timeOpen) <= (!timeClose || timeClose),
-//     {
-//       message: "Open Time must be less than or equal to Close Time",
-//       path: ["timeOpen"],
-//     },
-//   )
-//   .superRefine((schema, ctx) => {
-//     const {
-//       sellType,
-//       minQuantityPerCustomer,
-//       maxQuantityPerCustomer,
-//       minQuantity,
-//       maxQuantity,
-//       minCustomer,
-//       maxCustomer,
-//       timeOpen,
-//       timeClose,
-//     } = schema;
-//     if (sellType === "NORMALSELL" || sellType === "BUYGROUP") {
-//       if (!minQuantityPerCustomer) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: "Quantity Per Customer is required",
-//           path: ["minQuantityPerCustomer"],
-//         });
-//       }
-//       if (!maxQuantityPerCustomer) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: "Quantity Per Customer is required",
-//           path: ["maxQuantityPerCustomer"],
-//         });
-//       }
-//     }
-//     if (sellType === "BUYGROUP") {
-//       if (!minQuantity) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: "Min Quantity is required",
-//           path: ["minQuantity"],
-//         });
-//       }
-//     }
-//     if (sellType === "BUYGROUP") {
-//       if (!maxQuantity) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: "Max Quantity is required",
-//           path: ["maxQuantity"],
-//         });
-//       }
-//     }
-//     if (sellType === "BUYGROUP") {
-//       if (!minCustomer) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: "Min Customer is required",
-//           path: ["minCustomer"],
-//         });
-//       }
-//     }
-//     if (sellType === "BUYGROUP") {
-//       if (!maxCustomer) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: "Max Customer is required",
-//           path: ["maxCustomer"],
-//         });
-//       }
-//     }
-//     if (sellType === "BUYGROUP") {
-//       if (!timeOpen) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: "Time Open is required",
-//           path: ["timeOpen"],
-//         });
-//       }
-//     }
-//     if (sellType === "BUYGROUP") {
-//       if (!timeClose) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: "Time Close is required",
-//           path: ["timeClose"],
-//         });
-//       }
-//     }
-//   });
-
-const formSchema = z.object({
-  productName: z
-    .string()
-    .trim()
-    .min(2, { message: "Product Name is required" })
-    .max(50, { message: "Product Name must be less than 50 characters" }),
-  // categoryId: z.number().optional(),
-  // categoryLocation: z.string().trim().optional(),
-  // brandId: z.number().min(1, { message: "Brand is required" }),
-  // productLocationId: z.number().optional(),
-  // skuNo: z.string().trim().optional(),
-  // productCondition: z.string().trim().optional(),
-  // productTagList: z
-  //   .array(
-  //     z.object({
-  //       label: z.string().trim(),
-  //       value: z.number(),
-  //     }),
-  //   )
-  //   .min(1, { message: "Tag is required" })
-  //   .transform((value) => {
-  //     let temp: any = [];
-  //     value.forEach((item) => {
-  //       temp.push({ tagId: item.value });
-  //     });
-  //     return temp;
-  //   }),
-  productImagesList: z.any().optional(),
-  // productPrice: z.coerce.number().optional(),
-  // offerPrice: z.coerce.number().optional(),
-  // placeOfOriginId: z
-  //   .number()
-  //   .min(1, { message: "Place of Origin is required" }),
-  productShortDescriptionList: z.array(
-    z.object({
-      shortDescription: z
-        .string()
-        .trim()
-        .min(2, {
-          message: "Short Description is required",
-        })
-        .max(20, {
-          message: "Short Description must be less than 20 characters",
-        }),
-    }),
-  ),
-  productSpecificationList: z.array(
-    z.object({
-      label: z
-        .string()
-        .trim()
-        .min(2, { message: "Label is required" })
-        .max(20, {
-          message: "Label must be less than 20 characters",
-        }),
-      specification: z
-        .string()
-        .trim()
-        .min(2, { message: "Specification is required" })
-        .max(20, {
-          message: "Specification must be less than 20 characters",
-        }),
-    }),
-  ),
-  description: z.string().trim().optional(),
-  descriptionJson: z.array(z.any()).optional(),
-  productPriceList: z.array(baseProductPriceItemSchema).optional(),
-  setUpPrice: z.boolean().optional(),
-});
-// .superRefine((data, ctx) => {
-//   if (data.setUpPrice) {
-//     const result = z
-//       .array(productPriceItemSchemaWhenSetUpPriceTrue)
-//       .safeParse(data.productPriceList);
-
-//     if (!result.success) {
-//       result.error.issues.forEach((issue) => ctx.addIssue(issue));
-//     }
-
-//     if (data.productPrice === 0) {
-//       ctx.addIssue({
-//         code: "custom",
-//         message: "Product Price is required",
-//         path: ["productPrice"],
-//       });
-//     }
-//   } else {
-//     data.productPrice = 0;
-//     data.offerPrice = 0;
-//     if (Array.isArray(data.productPriceList)) {
-//       data.productPriceList = data.productPriceList.map((item) => ({
-//         consumerType: "",
-//         sellType: "",
-//         consumerDiscount: 0,
-//         vendorDiscount: 0,
-//         minCustomer: 0,
-//         maxCustomer: 0,
-//         minQuantityPerCustomer: 0,
-//         maxQuantityPerCustomer: 0,
-//         minQuantity: 0,
-//         maxQuantity: 0,
-//         timeOpen: 0,
-//         timeClose: 0,
-//         deliveryAfter: 0,
-//       }));
-//     }
-//   }
-// });
+const formSchema = (t: any) => {
+  return z.object({
+    productName: z
+      .string()
+      .trim()
+      .min(2, { message: t("product_name_is_required") })
+      .max(50, { message: t("product_name_must_be_less_than_50_characters") }),
+    productImagesList: z.any().optional(),
+    productShortDescriptionList: z.array(
+      z.object({
+        shortDescription: z
+          .string()
+          .trim()
+          .min(2, {
+            message: t("short_description_is_required"),
+          })
+          .max(20, {
+            message: t("short_description_must_be_less_than_20_characters"),
+          }),
+      }),
+    ),
+    productSpecificationList: z.array(
+      z.object({
+        label: z
+          .string()
+          .trim()
+          .min(2, { message: t("label_is_required") })
+          .max(20, {
+            message: t("label_must_be_less_than_20_characters"),
+          }),
+        specification: z
+          .string()
+          .trim()
+          .min(2, { message: t("specification_is_required") })
+          .max(20, {
+            message: t("specification_must_be_less_than_20_characters"),
+          }),
+      }),
+    ),
+    description: z.string().trim().optional(),
+    descriptionJson: z.array(z.any()).optional(),
+    productPriceList: z.array(baseProductPriceItemSchema).optional(),
+    setUpPrice: z.boolean().optional(),
+  });
+};
 
 const defaultValues = {
   productName: "",
-  // categoryId: 0,
-  // categoryLocation: "",
-  // brandId: 0,
-  // skuNo: "",
-  // productCondition: "",
-  // productTagList: undefined,
   productImagesList: undefined,
-  // productPrice: 0,
-  // offerPrice: 0,
-  // placeOfOriginId: 0,
-  // productLocationId: 0,
   productShortDescriptionList: [
     {
       shortDescription: "",
@@ -323,24 +114,6 @@ const defaultValues = {
   description: "",
   descriptionJson: undefined,
   productImages: [],
-  // productPriceList: [
-  //   {
-  //     consumerType: "",
-  //     sellType: "",
-  //     consumerDiscount: 0,
-  //     vendorDiscount: 0,
-  //     minCustomer: 0,
-  //     maxCustomer: 0,
-  //     minQuantityPerCustomer: 0,
-  //     maxQuantityPerCustomer: 0,
-  //     minQuantity: 0,
-  //     maxQuantity: 0,
-  //     timeOpen: 0,
-  //     timeClose: 0,
-  //     deliveryAfter: 0,
-  //   },
-  // ],
-  // setUpPrice: false,
   productSellerImageList: [
     {
       productPriceId: "",
@@ -352,14 +125,11 @@ const defaultValues = {
   ],
 };
 
-
-
 const ProductEditForm: React.FC<EditFormProps> = ({
-    onClose,
-    selectedProductId,
-  //   selectedQuantity,
+  onClose,
+  selectedProductId,
   onProductUpdateSuccess
-  }) => {
+}) => {
   const t = useTranslations();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -367,7 +137,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
   const searchQuery = useSearchParams();
   const { toast } = useToast();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues,
   });
   const productPriceId = selectedProductId;
@@ -383,7 +153,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
   // );
   const updateProductPriceByProductCondition =
     useUpdateProductPriceByProductCondition();
-    const updateProduct = useUpdateProduct();
+  const updateProduct = useUpdateProduct();
   const productByConditionQuery = useOneProductByProductCondition(
     {
       productId: searchParams?.id ? Number(searchParams?.id) : 0,
@@ -545,10 +315,10 @@ const ProductEditForm: React.FC<EditFormProps> = ({
 
       // router.push(`/trending/${Number(searchParams?.id)}` );
 
-//Refetch Parent Id Data
-       // ✅ Refetch product details after update
-       onProductUpdateSuccess();
-    
+      //Refetch Parent Id Data
+      // ✅ Refetch product details after update
+      onProductUpdateSuccess();
+
       onClose();
     } else {
       toast({
@@ -601,26 +371,26 @@ const ProductEditForm: React.FC<EditFormProps> = ({
       const productShortDescriptionList = product
         ?.product_productShortDescription?.length
         ? product?.product_productShortDescription.map((item: any) => ({
-            shortDescription: item?.shortDescription,
-          }))
+          shortDescription: item?.shortDescription,
+        }))
         : [
-            {
-              shortDescription: "",
-            },
-          ];
+          {
+            shortDescription: "",
+          },
+        ];
 
       const productSpecificationList = product?.product_productSpecification
         ?.length
         ? product?.product_productSpecification.map((item: any) => ({
-            label: item?.label,
-            specification: item?.specification,
-          }))
+          label: item?.label,
+          specification: item?.specification,
+        }))
         : [
-            {
-              label: "",
-              specification: "",
-            },
-          ];
+          {
+            label: "",
+            specification: "",
+          },
+        ];
 
       form.reset({
         productName: product?.productName,
@@ -639,11 +409,11 @@ const ProductEditForm: React.FC<EditFormProps> = ({
 
 
 
-  
+
 
   return (
     <>
-    <div className="modal-header !justify-between">
+      <div className="modal-header !justify-between">
         <DialogTitle className="text-center text-xl font-bold">
           {t("edit_product")}
         </DialogTitle>
@@ -654,7 +424,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
           <IoCloseSharp size={20} />
         </Button>
       </div>
-      
+
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
@@ -697,7 +467,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
                         className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                       >
                         {updateProduct.isPending ||
-                        uploadMultiple.isPending ? (
+                          uploadMultiple.isPending ? (
                           <LoaderWithMessage message={t("please_wait")} />
                         ) : (
                           t("update")

@@ -8,6 +8,7 @@ import { useReviews } from "@/apis/queries/review.queries";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import { useMe } from "@/apis/queries/user.queries";
+import { useTranslations } from "next-intl";
 
 type ReviewSectionProps = {
   productId?: string;
@@ -22,6 +23,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   productReview,
   isCreator,
 }) => {
+  const t = useTranslations();
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [sortType, setSortType] = useState<"highest" | "lowest" | "newest">(
     "newest",
@@ -76,7 +78,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       <div className="flex w-full flex-wrap items-center justify-between">
         <div className="flex w-auto flex-wrap items-start justify-start">
           <h2 className="mb-0 mr-7 text-2xl font-semibold leading-7 text-color-dark">
-            Ratings &amp; Reviews
+            {t("ratings_n_reviews")}
           </h2>
           <div className="flex w-auto flex-col">
             <div className="flex w-auto items-center justify-start">
@@ -86,7 +88,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
               {calculateRatings(calculateAvgRating)}
             </div>
             <div className="mt-1.5 w-auto text-sm font-medium leading-5 text-gray-500">
-              <p>Based on {reviewsQuery.data?.data?.length} Reviews</p>
+              <p>{t("based_on_n_reviews", { n: reviewsQuery.data?.data?.length })}</p>
             </div>
           </div>
         </div>
@@ -104,7 +106,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                 className="mr-2"
                 alt="pen-icon"
               />
-              <span>Write A Review</span>
+              <span>{t("write_a_review")}</span>
             </button>
           ) : null}
         </div>
@@ -118,7 +120,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
               onClick={() => setSortType("newest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
-              Newest
+              {t("newest")}
             </Button>
           </li>
           <li className="ml-2">
@@ -127,7 +129,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
               onClick={() => setSortType("highest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
-              Highest
+              {t("highest")}
             </Button>
           </li>
           <li className="ml-2">
@@ -136,7 +138,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
               onClick={() => setSortType("lowest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
             >
-              Lowest
+              {t("lowest")}
             </Button>
           </li>
         </ul>
@@ -144,7 +146,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       <div className="flex w-full border-t-2 border-dashed border-gray-300 py-5">
         {!reviewsQuery?.data?.data?.length ? (
           <div className="w-full text-center text-sm font-bold text-dark-orange">
-            No reviews found
+            {t("no_reviews_found")}
           </div>
         ) : null}
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">

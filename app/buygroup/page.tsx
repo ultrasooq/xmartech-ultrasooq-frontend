@@ -313,7 +313,7 @@ const TrendingPage = () => {
 
   return (
     <>
-      <title>Store | Ultrasooq</title>
+      <title>{t("store")} | Ultrasooq</title>
       <div className="body-content-s1">
         <TrendingCategories />
 

@@ -119,7 +119,7 @@ export default function CompanyProfileDetailsPage() {
                     {/* Branch Section */}
                     {!me.data?.data?.userBranch?.length ? (
                       <p className="pt-5 text-center text-lg font-medium text-color-dark">
-                        No Branch Exists
+                        {t("no_branch_exists")}
                       </p>
                     ) : null}
                     <div className="mb-4 w-full pt-4">
@@ -134,7 +134,7 @@ export default function CompanyProfileDetailsPage() {
                             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-xs font-medium capitalize leading-6 text-white sm:text-sm"
                           >
                             <PlusIcon className="mr-1 h-5 w-5" />
-                            Add
+                            {t("add")}
                           </Link>
                         </div>
                       ) : null}

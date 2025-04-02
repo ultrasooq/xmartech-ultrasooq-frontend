@@ -25,23 +25,36 @@ import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput
 import QuillEditor from "@/components/shared/Quill/QuillEditor";
 import { useTranslations } from "next-intl";
 
-const formSchema = z.object({
-  uploadImage: z.any().optional(),
-  logo: z.string().trim().optional(),
-  companyName: z.string().trim().min(2, { message: "Company Name is required" }).max(50, { message: "Company Name must be less than 50 characters" }),
-  businessTypeList: z.string().transform((value) => [{ businessTypeId: Number(value) }]),
-  annualPurchasingVolume: z.string().trim().min(2, { message: "Annual Purchasing Volume is required" }).max(50, { message: "Annual Purchasing Volume must be less than 20 characters", }),
-  address: z.string().trim().min(2, { message: "Address is required" }).max(50, { message: "Address must be less than 50 characters", }),
-  city: z.string().trim().min(2, { message: "City is required" }),
-  province: z.string().trim().min(2, { message: "Province is required" }),
-  country: z.string().trim().min(2, { message: "Country is required" }),
-  yearOfEstablishment: z.string().trim().min(2, { message: "Year Of Establishment is required" }).transform((value) => Number(value)),
-  totalNoOfEmployee: z.string().trim().min(2, { message: "Total No Of Employee is required" }),
-  aboutUs: z.string().trim().optional(),
-  aboutUsJson: z.string().optional(),
-  cc: z.string().trim(),
-  phoneNumber: z.string().trim().min(2, { message: "Phone Number is required", }).min(8, { message: "Phone Number must be minimum of 8 digits", }).max(20, { message: "Phone Number cannot be more than 20 digits", }),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    uploadImage: z.any().optional(),
+    logo: z.string().trim().optional(),
+    companyName: z.string().trim()
+      .min(2, { message: t("company_name_required") })
+      .max(50, { message: t("company_name_must_be_less_than_50_chars") }),
+    businessTypeList: z.string().transform((value) => [{ businessTypeId: Number(value) }]),
+    annualPurchasingVolume: z.string().trim()
+      .min(2, { message: t("annual_purchasing_volume_required") })
+      .max(50, { message: t("annual_purchasing_volume_must_be_less_than_20_digits") }),
+    address: z.string().trim()
+      .min(2, { message: t("address_required") })
+      .max(50, { message: t("address_must_be_less_than_n_chars", { n: 50 }) }),
+    city: z.string().trim().min(2, { message: t("city_required") }),
+    province: z.string().trim().min(2, { message: t("province_required") }),
+    country: z.string().trim().min(2, { message: t("country_required") }),
+    yearOfEstablishment: z.string().trim()
+      .min(2, { message: t("year_of_establishment_required") })
+      .transform((value) => Number(value)),
+    totalNoOfEmployee: z.string().trim().min(2, { message: t("total_no_of_employees_required") }),
+    aboutUs: z.string().trim().optional(),
+    aboutUsJson: z.string().optional(),
+    cc: z.string().trim(),
+    phoneNumber: z.string().trim()
+      .min(2, { message: t("phone_number_required"), })
+      .min(8, { message: t("phone_number_must_be_min_8_digits"), })
+      .max(20, { message: t("phone_number_cant_be_more_than_20_digits"), }),
+  });
+};
 
 export default function EditProfilePage() {
   const t = useTranslations();
@@ -50,7 +63,7 @@ export default function EditProfilePage() {
 
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       cc: "",
       phoneNumber: "",

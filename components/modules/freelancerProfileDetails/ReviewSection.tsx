@@ -61,7 +61,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
               {/* {calculateRatings(calculateAvgRating)} */}
             </div>
             <div className="mt-1.5 w-auto text-sm font-medium leading-5 text-gray-500">
-              <p>Based on {reviewsQuery.data?.data?.length} Reviews</p>
+              <p>{t("based_on_n_reviews", { n: reviewsQuery.data?.data?.length })}</p>
             </div>
           </div>
         </div>

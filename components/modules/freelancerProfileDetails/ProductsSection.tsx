@@ -192,18 +192,18 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
   return (
     <div>
       <h2 className="left-8 mb-7 text-2xl font-semibold text-color-dark">
-        Products
+        {t("products")}
       </h2>
 
       {!sellerId && !memoizedProducts.length ? (
         <p className="p-4 text-center text-base font-medium text-color-dark">
-          No Products Found
+          {t("no_product_found")}
         </p>
       ) : null}
 
       {sellerId && !memoizedVendorProducts.length ? (
         <p className="p-4 text-center text-base font-medium text-color-dark">
-          No Products Found
+          {t("no_product_found")}
         </p>
       ) : null}
 

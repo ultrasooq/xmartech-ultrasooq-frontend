@@ -23,13 +23,15 @@ interface ControlledDatePickerProps {
   name: string;
   isFuture?: boolean;
   minDate?: Date;
+  placeholder?: string
 }
 
 const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
   label,
   name,
   isFuture,
-  minDate
+  minDate,
+  placeholder
 }) => {
   const formContext = useFormContext();
 
@@ -53,7 +55,7 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
                   {field.value ? (
                     format(field.value, "PPP")
                   ) : (
-                    <span>Enter {label || "Date"}</span>
+                    <span>{placeholder || "Enter " + (label || "Date")}</span>
                   )}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
