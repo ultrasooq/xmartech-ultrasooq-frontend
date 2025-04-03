@@ -193,23 +193,32 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
 
   return (
     <div>
-      <h2 className="left-8 mb-7 text-2xl font-semibold text-color-dark" dir={langDir}>
+      <h2
+        className="left-8 mb-7 text-2xl font-semibold text-color-dark"
+        dir={langDir}
+      >
         {t("products")}
       </h2>
 
       {!sellerId && !memoizedProducts.length ? (
-        <p className="p-4 text-center text-base font-medium text-color-dark" dir={langDir}>
+        <p
+          className="p-4 text-center text-base font-medium text-color-dark"
+          dir={langDir}
+        >
           {t("no_product_found")}
         </p>
       ) : null}
 
       {sellerId && !memoizedVendorProducts.length ? (
-        <p className="p-4 text-center text-base font-medium text-color-dark" dir={langDir}>
+        <p
+          className="p-4 text-center text-base font-medium text-color-dark"
+          dir={langDir}
+        >
           {t("no_product_found")}
         </p>
       ) : null}
 
-      <div className="flex flex-wrap gap-3 md:grid md:grid-cols-5">
+      <div className="profile_details_product flex flex-wrap gap-3 md:grid md:grid-cols-5">
         {!sellerId &&
           memoizedProducts.map((item: any) => (
             <ProductCard
