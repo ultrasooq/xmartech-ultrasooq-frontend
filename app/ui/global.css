@@ -4903,8 +4903,6 @@ input::-ms-clear {
   height: 200px !important;
 }
 
-
-
 .order_accordion .accordion {
   @apply w-full;
 }
@@ -5354,3 +5352,6 @@ input::-ms-clear {
   }
 
 }
+
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";

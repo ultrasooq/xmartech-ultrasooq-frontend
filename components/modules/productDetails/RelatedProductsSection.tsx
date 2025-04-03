@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import Slider from "react-slick";
 import ProductCard from "./ProductCard";
 import {
   Carousel,
@@ -205,6 +206,41 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     }
   }, [accessToken]);
 
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 4,
+    initialSlide: 0,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          initialSlide: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  };
+
   return (
     <section className="w-full py-8">
       <div className="container m-auto">
@@ -216,51 +252,39 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
 
         {relatedProductsQuery?.isFetched &&
         memoizedRelatedProductList?.length ? (
-          <Carousel
+          <Slider
             className="related_slider w-full"
-            opts={{
-              align: "start",
-              loop: true,
-            }}
+            {...settings}
           >
-            <CarouselContent className="-ml-1">
-              {memoizedRelatedProductList?.map((item: any) => (
-                <CarouselItem
-                  key={item?.id}
-                  className="max-w-[260px] pl-1 md:basis-1/2 lg:basis-1/3"
-                >
-                  <div className="p-1">
-                    <ProductCard
-                      id={item?.id}
-                      productName={item?.productName}
-                      productImages={item?.productImages}
-                      shortDescription={
-                        item?.shortDescription
-                          ? stripHTML(item?.shortDescription)
-                          : "-"
-                      }
-                      offerPrice={item?.offerPrice}
-                      productProductPrice={item?.productProductPrice}
-                      productPrice={item?.productPrice}
-                      productReview={item?.productReview}
-                      onAdd={() =>
-                        handleAddToCart(-1, item?.productProductPriceId)
-                      }
-                      onWishlist={() =>
-                        handleAddToWishlist(item.id, item?.productWishlist)
-                      }
-                      inWishlist={item?.inWishlist}
-                      haveAccessToken={haveAccessToken}
-                      consumerDiscount={item?.consumerDiscount}
-                      askForPrice={item?.askForPrice}
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+            {memoizedRelatedProductList?.map((item: any) => (
+              <div className="p-1">
+                <ProductCard
+                  id={item?.id}
+                  productName={item?.productName}
+                  productImages={item?.productImages}
+                  shortDescription={
+                    item?.shortDescription
+                      ? stripHTML(item?.shortDescription)
+                      : "-"
+                  }
+                  offerPrice={item?.offerPrice}
+                  productProductPrice={item?.productProductPrice}
+                  productPrice={item?.productPrice}
+                  productReview={item?.productReview}
+                  onAdd={() =>
+                    handleAddToCart(-1, item?.productProductPriceId)
+                  }
+                  onWishlist={() =>
+                    handleAddToWishlist(item.id, item?.productWishlist)
+                  }
+                  inWishlist={item?.inWishlist}
+                  haveAccessToken={haveAccessToken}
+                  consumerDiscount={item?.consumerDiscount}
+                  askForPrice={item?.askForPrice}
+                />
+              </div>
+            ))}
+          </Slider>
         ) : null}
       </div>
     </section>
