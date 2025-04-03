@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type AddImageContentProps = {
   description: string;
@@ -8,6 +9,7 @@ type AddImageContentProps = {
 
 const AddImageContent: React.FC<AddImageContentProps> = ({ description }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
 
   return (
     <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
@@ -21,7 +23,7 @@ const AddImageContent: React.FC<AddImageContentProps> = ({ description }) => {
         />
         <span>{description}</span>
         <span className="text-blue-500">browse</span>
-        <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+        <p className="text-normal mt-3 text-xs leading-4 text-gray-300" dir={langDir}>
           ({t("company_logo_spec")})
         </p>
       </div>

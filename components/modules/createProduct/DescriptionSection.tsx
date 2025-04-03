@@ -7,9 +7,11 @@ import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const DescriptionSection = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const formContext = useFormContext();
 
   const fieldArrayForShortDescription = useFieldArray({
@@ -27,11 +29,11 @@ const DescriptionSection = () => {
 
   return (
     <div className="form-groups-common-sec-s1">
-      <h3>{t("description")}</h3>
+      <h3 dir={langDir}>{t("description")}</h3>
       <div className="grid w-full grid-cols-1">
         <div>
           <div className="flex w-full items-center justify-between">
-            <label className="text-sm font-medium leading-none text-color-dark">
+            <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
               {t("short_description")}
             </label>
 
@@ -39,6 +41,7 @@ const DescriptionSection = () => {
               type="button"
               onClick={appendShortDescription}
               className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+              dir={langDir}
             >
               <Image src={AddIcon} className="mr-1" alt="add-icon" />
               <span>{t("add_short_description")}</span>

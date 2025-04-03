@@ -11,6 +11,7 @@ import { IBrands, ISelectOptions } from "@/utils/types/common.types";
 import { useBrands } from "@/apis/queries/masters.queries";
 import { debounce } from "lodash";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type BrandFilterListTypes = {
   selectAllBrands?: boolean;
@@ -22,6 +23,7 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({
   onSelectBrands,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const brandsQuery = useBrands({
@@ -85,7 +87,7 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({
             className="filter-col"
           >
             <AccordionItem value="brand">
-              <AccordionTrigger className="px-3 text-base hover:!no-underline">
+              <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
                 {t("by_brand")}
               </AccordionTrigger>
               <AccordionContent>
@@ -95,12 +97,13 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({
                     placeholder={t("search_brand")}
                     className="custom-form-control-s1 searchInput rounded-none"
                     onChange={handleDebounce}
+                    dir={langDir}
                   />
                 </div>
                 <div className="filter-body-part">
                   <div className="filter-checklists">
                     {!memoizedBrands.length ? (
-                      <p className="text-center text-sm font-medium">
+                      <p className="text-center text-sm font-medium" dir={langDir}>
                         {t("no_data_found")}
                       </p>
                     ) : null}

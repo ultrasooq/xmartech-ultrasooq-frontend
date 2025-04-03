@@ -23,6 +23,7 @@ const customStyles = {
 
 const ReactSelectInput = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const formContext = useFormContext();
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
@@ -80,13 +81,13 @@ const ReactSelectInput = () => {
   return (
     <>
       <div className="mt-2 flex flex-col gap-y-3">
-        <Label>{t("product_type")}</Label>
+        <Label dir={langDir}>{t("product_type")}</Label>
         <Controller
           name="typeOfProduct"
           control={formContext.control}
           render={({ field }) => (
             <ReactSelect
-              {...field}
+              // {...field}
               options={brandType}
               value={brandType.find(
                 (item: IOption) => item.value === field.value,
@@ -106,19 +107,19 @@ const ReactSelectInput = () => {
             />
           )}
         />
-        <p className="text-[13px] text-red-500">
+        <p className="text-[13px] text-red-500" dir={langDir}>
           {formContext.formState.errors["typeOfProduct"]?.message as string}
         </p>
       </div>
       <div className="mt-2 flex flex-col gap-y-3">
         <div className="flex w-full items-center gap-1.5">
-          <Label>{t("brand")}</Label>
+          <Label dir={langDir}>{t("brand")}</Label>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="h-4 w-4 cursor-pointer text-gray-500" />
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipContent side="right" dir={langDir}>
                 {t("brand_input_info")}{" "}
               </TooltipContent>
             </Tooltip>
@@ -150,7 +151,7 @@ const ReactSelectInput = () => {
             />
           )}
         />
-        <p className="text-[13px] text-red-500">
+        <p className="text-[13px] text-red-500" dir={langDir}>
           {formContext.formState.errors["brandId"]?.message as string}
         </p>
       </div>

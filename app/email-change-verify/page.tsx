@@ -19,9 +19,11 @@ import { useToast } from "@/components/ui/use-toast";
 import Image from "next/image";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 export default function EmailChangeVerifyPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
@@ -205,10 +207,10 @@ export default function EmailChangeVerifyPage() {
         <div className="flex">
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
                 {t("verify_otp")}
               </h2>
-              <p>{t("enter_otp_text")}</p>
+              <p dir={langDir}>{t("enter_otp_text")}</p>
             </div>
             <div className="w-full">
               <Form {...form}>
@@ -244,6 +246,7 @@ export default function EmailChangeVerifyPage() {
                       }
                       type="submit"
                       className="m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                      dir={langDir}
                     >
                       {changeEmailVerify.isPending ||
                       resendChangeEmailVerify.isPending ? (
@@ -265,7 +268,7 @@ export default function EmailChangeVerifyPage() {
                 </form>
               </Form>
               <div className="mb-4 w-full space-x-2 text-center">
-                <span className="text-sm font-medium leading-4 text-light-gray">
+                <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir}>
                   {t("didnt_receive_otp")}
                 </span>
                 <Button
@@ -278,6 +281,7 @@ export default function EmailChangeVerifyPage() {
                   }
                   onClick={handleChangeEmailResendVerify}
                   className="cursor-pointer p-0 font-medium text-dark-orange"
+                  dir={langDir}
                 >
                   {t("resend")}
                 </Button>

@@ -5,6 +5,7 @@ import { SELLER_DELIVERY_STATUS, formattedDate } from "@/utils/constants";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type OrderCardProps = {
   id: number;
@@ -40,10 +41,11 @@ const OrderCard: React.FC<OrderCardProps> = ({
   productId,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
 
   return (
     <div className="my-order-card">
-      <h5 className="mb-2">
+      <h5 className="mb-2" dir={langDir}>
         {t("order_id")}: <span className="font-semibold">{sellerOrderId}</span>
       </h5>
       <div className="my-order-box">
@@ -70,7 +72,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
           <p className="text-gray-500">Quantity x {orderQuantity || 0}</p>
         </div>
         <div className="right-info">
-          <h4>
+          <h4 dir={langDir}>
             {orderStatus === "CONFIRMED" ? (
               <>
                 <BiCircle color="green" />

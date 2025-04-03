@@ -5,6 +5,7 @@ import React from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type OtherItemCardProps = {
   id: number;
@@ -32,11 +33,13 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   updatedAt,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
+
   return (
     <div className="my-order-item">
       <div className="my-order-card">
         <div className="cardTitle !mb-2">Other Items in this order</div>
-        <h5 className="mb-2">
+        <h5 className="mb-2" dir={langDir}>
           {t("order_id")}: <span className="font-semibold">{orderNo}</span>
         </h5>
         <div className="my-order-box">
@@ -64,7 +67,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
             </figure>
           </Link>
           <div className="right-info">
-            <h4 className="mb-2">
+            <h4 className="mb-2" dir={langDir}>
               {orderProductStatus === "CONFIRMED" ? (
                 <>
                   <BiCircle color="green" />

@@ -39,9 +39,11 @@ import GuestAddressForm from "@/components/modules/checkout/GuestAddressForm";
 import AddIcon from "@/public/images/addbtn.svg";
 import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const CheckoutPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const wrapperRef = useRef(null);
   const { toast } = useToast();
@@ -489,7 +491,7 @@ useEffect(() => {
               <div className="card-item cart-items">
                 <div className="card-inner-headerPart">
                   <div className="lediv">
-                    <h3>{t("cart_items")}</h3>
+                    <h3 dir={langDir}>{t("cart_items")}</h3>
                   </div>
                 </div>
 
@@ -543,18 +545,19 @@ useEffect(() => {
                 <div className="card-item selected-address">
                   <div className="card-inner-headerPart">
                     <div className="lediv">
-                      <h3>{t("your_informations")}</h3>
+                      <h3 dir={langDir}>{t("your_informations")}</h3>
                     </div>
                   </div>
 
                   <div className="selected-address-lists">
                     <div className="space-y-2 p-3">
-                      <Label>{t("email")}</Label>
+                      <Label dir={langDir}>{t("email")}</Label>
                       <Input
                         className="theme-form-control-s1"
                         placeholder={t("enter_email")}
                         onChange={(e) => setGuestEmail(e.target.value)}
                         value={guestEmail}
+                        dir={langDir}
                       />
                     </div>
                   </div>
@@ -651,6 +654,7 @@ useEffect(() => {
                           setAddressType("shipping");
                           handleToggleAddModal();
                         }}
+                        dir={langDir}
                       >
                         <Image
                           src={AddIcon}
@@ -696,7 +700,7 @@ useEffect(() => {
                           }}
                           checked={sameAsShipping}
                         />
-                        <Label htmlFor="same_as_shipping">
+                        <Label htmlFor="same_as_shipping" dir={langDir}>
                           {t("same_as_shipping_address")}
                         </Label>
                       </div>
@@ -754,7 +758,7 @@ useEffect(() => {
                     </RadioGroup>
                   ) : (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center">
+                      <p className="my-3 text-center" dir={langDir}>
                         {t("same_as_shipping_address")}
                       </p>
                     </div>
@@ -790,6 +794,7 @@ useEffect(() => {
                           setAddressType("billing");
                           handleToggleAddModal();
                         }}
+                        dir={langDir}
                       >
                         <Image
                           src={AddIcon}
@@ -812,6 +817,7 @@ useEffect(() => {
                       type="button"
                       className="add-new-address-btn border-none p-0 !normal-case shadow-none"
                       onClick={handleToggleAddModal}
+                      dir={langDir}
                     >
                       <Image
                         src={AddIcon}
@@ -830,22 +836,22 @@ useEffect(() => {
             <div className="card-item priceDetails">
               <div className="card-inner-headerPart">
                 <div className="lediv">
-                  <h3>{t("price_details")}</h3>
+                  <h3 dir={langDir}>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
-                  <li>
+                  <li dir={langDir}>
                     <p>{t("subtotal")}</p>
                     <h5>${calculateTotalAmount() || 0}</h5>
                   </li>
-                  <li>
+                  <li dir={langDir}>
                     <p>{t("shipping")}</p>
                     <h5>{t("free")}</h5>
                   </li>
                 </ul>
               </div>
-              <div className="priceDetails-footer">
+              <div className="priceDetails-footer" dir={langDir}>
                 <h4>{t("total_amount")}</h4>
                 <h4 className="amount-value">${calculateTotalAmount() || 0}</h4>
               </div>

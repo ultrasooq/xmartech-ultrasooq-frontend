@@ -34,6 +34,7 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -140,6 +141,7 @@ const formSchema = (t: any) => {
 
 const AddBranchPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -285,14 +287,14 @@ const AddBranchPage = () => {
               className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-10"
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
                   {t("add_branch")}
                 </h2>
               </div>
 
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                     {t("branch_information")}
                   </label>
                 </div>
@@ -331,7 +333,7 @@ const AddBranchPage = () => {
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                  <div className="flex h-full flex-col items-center justify-center">
+                                  <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
                                     <Image
                                       src="/images/upload.png"
                                       className="mb-3"
@@ -410,7 +412,7 @@ const AddBranchPage = () => {
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                  <div className="flex h-full flex-col items-center justify-center">
+                                  <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
                                     <Image
                                       src="/images/upload.png"
                                       className="mb-3"
@@ -468,7 +470,7 @@ const AddBranchPage = () => {
                 <div className="flex w-full flex-wrap">
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                      <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                      <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                         {t("branch_location")}
                       </label>
                     </div>
@@ -480,6 +482,7 @@ const AddBranchPage = () => {
                         label={t("address")}
                         name="address"
                         placeholder={t("address")}
+                        dir={langDir}
                       />
 
                       <Image
@@ -495,6 +498,7 @@ const AddBranchPage = () => {
                       label={t("city")}
                       name="city"
                       placeholder={t("city")}
+                      dir={langDir}
                     />
                   </div>
 
@@ -503,6 +507,7 @@ const AddBranchPage = () => {
                       label={t("province")}
                       name="province"
                       placeholder={t("province")}
+                      dir={langDir}
                     />
 
                     <ControlledSelectInput
@@ -524,6 +529,7 @@ const AddBranchPage = () => {
                       label={t("branch_contact_name")}
                       name="contactName"
                       placeholder={t("branch_contact_name")}
+                      dir={langDir}
                     />
                   </div>
                 </div>
@@ -539,7 +545,7 @@ const AddBranchPage = () => {
                   <div className="w-full">
                     <div className="flex flex-wrap">
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
-                        <Label htmlFor="startTime" className="text-color-dark">
+                        <Label htmlFor="startTime" className="text-color-dark" dir={langDir}>
                           {t("start_time")}
                         </Label>
                         <Controller
@@ -550,10 +556,10 @@ const AddBranchPage = () => {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="">Select</option>
+                              <option value="" dir={langDir}>{t("select")}</option>
                               {HOURS_24_FORMAT.map(
                                 (hour: string, index: number) => (
-                                  <option key={index} value={hour}>
+                                  <option key={index} value={hour} dir={langDir}>
                                     {getAmPm(hour)}
                                   </option>
                                 ),
@@ -567,7 +573,7 @@ const AddBranchPage = () => {
                       </div>
 
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
-                        <Label htmlFor="endTime" className="text-color-dark">
+                        <Label htmlFor="endTime" className="text-color-dark" dir={langDir}>
                           {t("end_time")}
                         </Label>
                         <Controller
@@ -578,10 +584,10 @@ const AddBranchPage = () => {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="">Select</option>
+                              <option value="" dir={langDir}>{t("select")}</option>
                               {HOURS_24_FORMAT.map(
                                 (hour: string, index: number) => (
-                                  <option key={index} value={hour}>
+                                  <option key={index} value={hour} dir={langDir}>
                                     {getAmPm(hour)}
                                   </option>
                                 ),
@@ -631,7 +637,7 @@ const AddBranchPage = () => {
                       ))}
                     </div>
                     {form.formState.errors.workingDays?.message ? (
-                      <p className="text-[13px] text-red-500">
+                      <p className="text-[13px] text-red-500" dir={langDir}>
                         {t("working_day_required")}
                       </p>
                     ) : null}
@@ -654,7 +660,7 @@ const AddBranchPage = () => {
                     name="mainOffice"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
-                        <FormLabel>{t("main_branch")}:</FormLabel>
+                        <FormLabel dir={langDir}>{t("main_branch")}:</FormLabel>
                         <FormControl>
                           <Switch
                             checked={!!field.value}
@@ -672,6 +678,7 @@ const AddBranchPage = () => {
                 disabled={createCompanyBranch.isPending || upload.isPending}
                 type="submit"
                 className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                dir={langDir}
               >
                 {createCompanyBranch.isPending || upload.isPending ? (
                   <>

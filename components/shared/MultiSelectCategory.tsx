@@ -7,6 +7,7 @@ import { Checkbox } from "../ui/checkbox";
 import { useFormContext } from "react-hook-form";
 import { Label } from "../ui/label";
 import { useTranslations } from "use-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type CategoryProps = {
   id: number;
@@ -31,6 +32,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
   branchId,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const formContext = useFormContext();
   const [categoryId, setCategoryId] = useState<number | undefined>();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
@@ -128,17 +130,9 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
     multiSubSubCategoryList,
   ]);
 
-  // console.log(multiSubCategoryList);
-  // console.log(multiSubSubCategoryList);
-  // console.log(multiSubSubSubCategoryList);
-  // console.log(watcher);
-  // console.log(memoizedMenu);
-  // console.log(categoryId);
-  // console.log(memoizedSubCategory);
-
   return (
     <div className="my-3 space-y-2">
-      <Label>{t("categories")}</Label>
+      <Label dir={langDir}>{t("categories")}</Label>
 
       <div className="flex flex-wrap md:grid md:grid-cols-3">
         {memoizedMenu?.length ? (

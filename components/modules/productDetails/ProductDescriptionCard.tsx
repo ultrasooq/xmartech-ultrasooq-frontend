@@ -19,6 +19,7 @@ import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -78,6 +79,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   onQuantityChange, // Callback to update productQuantity outside
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [quantity, setQuantity] = useState(productQuantity);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
@@ -304,7 +306,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                       ))}
                     </ul>
                   ) : (
-                    <p>{t("no_description")}</p>
+                    <p dir={langDir}>{t("no_description")}</p>
                   )}
                 </div>
               </div>
@@ -342,7 +344,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 {/* <label>Report Abuse</label> */}
                 <p>
                   {timeLeft !== "NotStarted" && timeLeft !== "Expired" && (
-                    <div className="">
+                    <div className="" dir={langDir}>
                       {t("time_left")}
                       <div className="time_wrap">
                         <div className="time_field">
@@ -366,7 +368,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   )}
                 </p>
                 <p>
-                  <span className="color-text">
+                  <span className="color-text" dir={langDir}>
                     {t("group_buy_deal_ends")} :
                   </span>{" "}
                   {formatDateTimeWithTimezone(
@@ -375,30 +377,30 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   )}
                 </p>
                 <p>
-                  <span className="color-text">{t("timezone")}:</span>{" "}
+                  <span className="color-text" dir={langDir}>{t("timezone")}:</span>{" "}
                   {getUTCOffset()} ({userTimezone})
                 </p>
 
                 <p>
-                  <span className="color-text">{t("min_quantity")}:</span>{" "}
+                  <span className="color-text" dir={langDir}>{t("min_quantity")}:</span>{" "}
                   <b>{productPriceArr?.[0]?.minQuantity}</b>
                 </p>
                 <p>
-                  <span className="color-text">{(t("max_quantity"))}:</span>{" "}
+                  <span className="color-text" dir={langDir}>{(t("max_quantity"))}:</span>{" "}
                   <b>{productPriceArr?.[0]?.maxQuantity}</b>
                 </p>
                 <p>
-                  <span className="color-text">{t("deals_sold")}:</span>
+                  <span className="color-text" dir={langDir}>{t("deals_sold")}:</span>
                   {0}
                 </p>
                 <p>
-                  <span className="color-text">
+                  <span className="color-text" dir={langDir}>
                     {t("min_quantity_per_customer")}:
                   </span>{" "}
                   <b>{productPriceArr?.[0]?.minQuantityPerCustomer}</b>
                 </p>
                 <p>
-                  <span className="color-text">
+                  <span className="color-text" dir={langDir}>
                     {t("max_quantity_per_customer")}:
                   </span>{" "}
                   <b>{productPriceArr?.[0]?.maxQuantityPerCustomer}</b>
@@ -421,7 +423,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     width={28}
                     height={22}
                   />
-                  <span>{t("secure_payment")}</span>
+                  <span dir={langDir}>{t("secure_payment")}</span>
                 </li>
                 <li>
                   <Image
@@ -430,7 +432,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     width={28}
                     height={28}
                   />
-                  <span>{t("secure_payment")}</span>
+                  <span dir={langDir}>{t("secure_payment")}</span>
                 </li>
               </ul>
             </div>
@@ -445,16 +447,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           <div className="row">
             <div className="col-12 col-md-12">
               <div className="form-group mb-0">
-                <label>{t("report_abuse")}</label>
+                <label dir={langDir}>{t("report_abuse")}</label>
                 <p>
-                  <span className="color-text">{t("sku")}:</span> {skuNo}
+                  <span className="color-text" dir={langDir}>{t("sku")}:</span> {skuNo}
                 </p>
                 <p>
-                  <span className="color-text">{t("categories")}:</span>{" "}
+                  <span className="color-text" dir={langDir}>{t("categories")}:</span>{" "}
                   {category}
                 </p>
                 <p>
-                  <span className="color-text">{t("tags")}:</span>{" "}
+                  <span className="color-text"> dir={langDir}{t("tags")}:</span>{" "}
                   {productTags
                     ?.map((item) => item.productTagsTag?.tagName)
                     .join(", ")}
@@ -478,7 +480,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                       <ScrollArea className="h-screen">
                         <div className="mx-auto w-full p-2">
                           <DrawerHeader>
-                            <DrawerTitle>{t("all_sellers")}</DrawerTitle>
+                            <DrawerTitle dir={langDir}>{t("all_sellers")}</DrawerTitle>
                           </DrawerHeader>
                           <OtherSellerSection
                             setIsDrawerOpen={setIsDrawerOpen}

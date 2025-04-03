@@ -38,6 +38,7 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -177,6 +178,7 @@ const formSchema = (t: any) => {
 
 export default function CompanyProfilePage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -387,14 +389,14 @@ export default function CompanyProfilePage() {
             className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
                 {t("company_profile")}
               </h2>
             </div>
             <div className="flex w-full flex-wrap">
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                     {t("company_information")}
                   </label>
                 </div>
@@ -406,7 +408,7 @@ export default function CompanyProfilePage() {
                     name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5">
-                        <FormLabel>{t("upload_company_logo")}</FormLabel>
+                        <FormLabel dir={langDir}>{t("upload_company_logo")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -432,13 +434,13 @@ export default function CompanyProfilePage() {
                                       height={30}
                                       alt="camera"
                                     />
-                                    <span>
+                                    <span dir={langDir}>
                                       {t("drop_your_company_logo")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
-                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300" dir={langDir}>
                                       ({t("company_logo_spec")})
                                     </p>
                                   </div>
@@ -480,6 +482,7 @@ export default function CompanyProfilePage() {
                       label={t("company_name")}
                       name="companyName"
                       placeholder={t("company_name")}
+                      dir={langDir}
                     />
 
                     {/* TODO:fix this */}
@@ -498,6 +501,7 @@ export default function CompanyProfilePage() {
                       placeholder={t("annual_purchasing_volume")}
                       type="number"
                       onWheel={(e) => e.currentTarget.blur()}
+                      dir={langDir}
                     />
                   </div>
                 </div>
@@ -505,7 +509,7 @@ export default function CompanyProfilePage() {
 
               <div className="mb-3.5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
-                  <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
+                  <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark" dir={langDir}>
                     {t("registration_address")}
                   </label>
                 </div>
@@ -516,6 +520,7 @@ export default function CompanyProfilePage() {
                         label={t("address")}
                         name="address"
                         placeholder={t("address")}
+                        dir={langDir}
                       />
 
                       <Image
@@ -531,6 +536,7 @@ export default function CompanyProfilePage() {
                       label={t("city")}
                       name="city"
                       placeholder={t("city")}
+                      dir={langDir}
                     />
                   </div>
 
@@ -539,6 +545,7 @@ export default function CompanyProfilePage() {
                       label={t("province")}
                       name="province"
                       placeholder={t("province")}
+                      dir={langDir}
                     />
 
                     <ControlledSelectInput
@@ -552,7 +559,7 @@ export default function CompanyProfilePage() {
 
               <div className="mb-5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
-                  <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
+                  <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark" dir={langDir}>
                     {t("more_information")}
                   </label>
                 </div>
@@ -581,13 +588,14 @@ export default function CompanyProfilePage() {
 
             <div className="mb-3.5 w-full">
               <div className="mb-4 flex w-full items-center justify-between border-y border-solid border-gray-200 py-2.5">
-                <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark">
+                <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark" dir={langDir}>
                   {t("branch")}
                 </label>
                 <Button
                   type="button"
                   onClick={appendBranchList}
                   className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                  dir={langDir}
                 >
                   <Image
                     src="/images/add-icon.svg"
@@ -617,7 +625,7 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.branchFrontPicture`}
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full">
-                        <FormLabel>{t("upload_branch_front_picture")}</FormLabel>
+                        <FormLabel dir={langDir}>{t("upload_branch_front_picture")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -636,7 +644,7 @@ export default function CompanyProfilePage() {
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                  <div className="flex h-full flex-col items-center justify-center">
+                                  <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
                                     <Image
                                       src="/images/upload.png"
                                       className="mb-3"
@@ -696,7 +704,7 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.proofOfAddress`}
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full">
-                        <FormLabel>{t("proof_of_address")}</FormLabel>
+                        <FormLabel dir={langDir}>{t("proof_of_address")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -714,7 +722,7 @@ export default function CompanyProfilePage() {
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                  <div className="flex h-full flex-col items-center justify-center">
+                                  <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
                                     <Image
                                       src="/images/upload.png"
                                       className="mb-3"
@@ -774,7 +782,7 @@ export default function CompanyProfilePage() {
                 <div className="flex w-full flex-wrap">
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                      <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                      <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                         {t("branch_location")}
                       </label>
                     </div>
@@ -786,6 +794,7 @@ export default function CompanyProfilePage() {
                         label={t("address")}
                         name={`branchList.${index}.address`}
                         placeholder={t("address")}
+                        dir={langDir}
                       />
 
                       <Image
@@ -801,6 +810,7 @@ export default function CompanyProfilePage() {
                       label={t("city")}
                       name={`branchList.${index}.city`}
                       placeholder={t("city")}
+                      dir={langDir}
                     />
                   </div>
 
@@ -809,6 +819,7 @@ export default function CompanyProfilePage() {
                       label={t("province")}
                       name={`branchList.${index}.province`}
                       placeholder={t("province")}
+                      dir={langDir}
                     />
 
                     <ControlledSelectInput
@@ -830,6 +841,7 @@ export default function CompanyProfilePage() {
                       label={t("branch_contact_name")}
                       name={`branchList.${index}.contactName`}
                       placeholder={t("branch_contact_name")}
+                      dir={langDir}
                     />
                   </div>
                 </div>
@@ -837,7 +849,7 @@ export default function CompanyProfilePage() {
                 <div className="flex w-full flex-wrap">
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                      <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                      <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                         {t("branch_working_hours")}
                       </label>
                     </div>
@@ -845,7 +857,7 @@ export default function CompanyProfilePage() {
                   <div className="w-full">
                     <div className="flex flex-wrap">
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
-                        <Label htmlFor="startTime" className="text-color-dark">
+                        <Label htmlFor="startTime" className="text-color-dark" dir={langDir}>
                           {t("start_time")}
                         </Label>
                         <Controller
@@ -856,10 +868,10 @@ export default function CompanyProfilePage() {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="">{t("select")}</option>
+                              <option value="" dir={langDir}>{t("select")}</option>
                               {HOURS_24_FORMAT.map(
                                 (hour: string, index: number) => (
-                                  <option key={index} value={hour}>
+                                  <option key={index} value={hour} dir={langDir}>
                                     {getAmPm(hour)}
                                   </option>
                                 ),
@@ -876,7 +888,7 @@ export default function CompanyProfilePage() {
                       </div>
 
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
-                        <Label htmlFor="endTime" className="text-color-dark">
+                        <Label htmlFor="endTime" className="text-color-dark" dir={langDir}>
                           {t("end_time")}
                         </Label>
                         <Controller
@@ -887,10 +899,10 @@ export default function CompanyProfilePage() {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="">{t("select")}</option>
+                              <option value="" dir={langDir}>{t("select")}</option>
                               {HOURS_24_FORMAT.map(
                                 (hour: string, index: number) => (
-                                  <option key={index} value={hour}>
+                                  <option key={index} value={hour} dir={langDir}>
                                     {getAmPm(hour)}
                                   </option>
                                 ),
@@ -972,7 +984,7 @@ export default function CompanyProfilePage() {
                       name={`branchList.${index}.mainOffice`}
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
-                          <FormLabel>{t("main_office")}:</FormLabel>
+                          <FormLabel dir={langDir}>{t("main_office")}:</FormLabel>
                           <FormControl>
                             <Switch
                               checked={!!field.value}
@@ -1007,6 +1019,7 @@ export default function CompanyProfilePage() {
               disabled={createCompanyProfile.isPending || upload.isPending}
               type="submit"
               className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+              dir={langDir}
             >
               {createCompanyProfile.isPending || upload.isPending ? (
                 <>

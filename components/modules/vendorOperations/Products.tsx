@@ -5,6 +5,7 @@ import { useAllManagedProducts, useAllProducts } from "@/apis/queries/product.qu
 import { cn } from "@/lib/utils";
 import { useMe } from "@/apis/queries/user.queries";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductsProps = {
   onSelect?: (item: {[key: string]: any}) => void;
@@ -12,6 +13,7 @@ type ProductsProps = {
 
 const Products: React.FC<ProductsProps> = ({ onSelect }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const me = useMe();
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(10);
@@ -55,7 +57,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
   return (
     <div className="w-full border-r border-solid border-gray-300 lg:w-[18%]">
       <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-        <span>{t("product")}</span>
+        <span dir={langDir}>{t("product")}</span>
       </div>
       <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]" onScroll={(e) => handleScroll(e.target)}>
         {productsQuery?.isLoading ? (
@@ -68,7 +70,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
 
         {!productsQuery?.isLoading && !productList?.length ? (
           <div className="my-2 space-y-2">
-            <p className="text-center text-sm font-normal text-gray-500">
+            <p className="text-center text-sm font-normal text-gray-500" dir={langDir}>
               {t("no_data_found")}
             </p>
           </div>

@@ -17,6 +17,7 @@ import { useFormContext } from "react-hook-form";
 import Image from "next/image";
 import { ControlledSelectOptions } from "@/utils/types/common.types";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 interface ControlledSelectInputProps {
   label: string;
@@ -33,6 +34,7 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
   ...props
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const formContext = useFormContext();
 
   return (
@@ -51,7 +53,7 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
             <SelectContent>
               {options.map((item) => (
                 <SelectItem key={item.value} value={item.value}>
-                  <div className="flex flex-row items-center py-2">
+                  <div className="flex flex-row items-center py-2" dir={langDir}>
                     {item.icon ? (
                       <Image
                         src={item.icon}

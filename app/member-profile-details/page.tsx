@@ -17,9 +17,11 @@ import VendorMoreInformationSection from "@/components/modules/freelancerProfile
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 export default function MemberProfileDetailsPage() {
     const t = useTranslations();
+    const { langDir } = useAuth();
     const [activeTab, setActiveTab] = useState("profile-info");
 
     const me = useMe();
@@ -58,7 +60,7 @@ export default function MemberProfileDetailsPage() {
                 <div className="container relative z-10 m-auto px-3">
                     <div className="flex flex-wrap">
                         <div className="mb-7 w-full">
-                            <h2 className="text-4xl font-semibold leading-10 text-color-dark">
+                            <h2 className="text-4xl font-semibold leading-10 text-color-dark" dir={langDir}>
                                 {t("my_profile")}
                             </h2>
                         </div>
@@ -78,6 +80,7 @@ export default function MemberProfileDetailsPage() {
                                     <TabsTrigger
                                         value="profile-info"
                                         className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
+                                        dir={langDir}
                                     >
                                         {t("profile_info")}
                                     </TabsTrigger>
@@ -85,6 +88,7 @@ export default function MemberProfileDetailsPage() {
                                     <TabsTrigger
                                         value="ratings"
                                         className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
+                                        dir={langDir}
                                     >
                                         {t("ratings_n_reviews")}
                                     </TabsTrigger>
@@ -92,6 +96,7 @@ export default function MemberProfileDetailsPage() {
                                     <TabsTrigger
                                         value="products"
                                         className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
+                                        dir={langDir}
                                     >
                                         {t("products")}
                                     </TabsTrigger>

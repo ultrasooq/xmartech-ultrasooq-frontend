@@ -29,6 +29,7 @@ import { useSellerRewards } from "@/apis/queries/seller-reward.queries";
 import SellerRewardDetail from "./SellerRewardDetail";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -64,6 +65,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   cartQuantity = 0,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
@@ -258,6 +260,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 type="button"
                 onClick={handleToCustomizeModal}
                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
+                dir={langDir}
               >
                 {t("send_to_customize")}
               </Button>
@@ -266,6 +269,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 // onClick={onToCheckout}
                 onClick={onToCart}
                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
+                dir={langDir}
               >
                 {t("message_vendor")}
               </Button>
@@ -289,6 +293,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           <Button
             type="button"
             className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
+            dir={langDir}
           >
             {t("ask_vendor_for_price")}
           </Button>
@@ -308,6 +313,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             type="button"
             onClick={onToCart}
             className="h-14 max-w-[205px] flex-1 rounded-none bg-dark-orange text-base"
+            dir={langDir}
           >
             {t("buy_now")}
           </Button>
@@ -316,6 +322,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               type="button"
               onClick={() => setIsSellerRewardDetailModalOpen(true)}
               className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+              dir={langDir}
             >
               {t("generate_share_link")}
             </Button>

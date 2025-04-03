@@ -409,11 +409,13 @@ export const RFQ_MENU_ID = 191;
 export const LANGUAGES = [
   {
     locale: 'en',
-    name: 'English'
+    name: 'English',
+    direction: 'ltr',
   },
   {
     locale: 'ar',
-    name: 'Arabic'
+    name: 'Arabic',
+    direction: 'rtl',
   }
 ];
 

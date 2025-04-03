@@ -27,6 +27,7 @@ import DynamicFormViewSection from "../createProduct/DynamicFormViewSection";
 import ReactSelect from "react-select";
 import { isImage, isVideo } from "@/utils/helper";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const customStyles = {
   control: (base: any) => ({
@@ -60,6 +61,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 }) => {
   const formContext = useFormContext();
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
   const photosRef = useRef<HTMLInputElement>(null);
   const [listIds, setListIds] = useState<string[]>([]);
@@ -155,7 +157,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             <div className=" w-full">
               <div className="flex flex-wrap">
                 <div className="form-groups-common-sec-s1">
-                  <h3>{t("basic_information")}</h3>
+                  <h3 dir={langDir}>{t("basic_information")}</h3>
                   {!hasId ? (
                     <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
                       <div className="flex w-full flex-col justify-between gap-y-2">

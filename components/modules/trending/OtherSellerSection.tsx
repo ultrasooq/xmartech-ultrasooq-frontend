@@ -21,6 +21,7 @@ import {
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type OtherSellerSectionProps = {
   setIsDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,6 +33,7 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
   otherSellerDetails,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const searchParams = useParams();
   // const searchQuery = useSearchParams();
@@ -231,7 +233,7 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
         </div>
 
         {!otherSellerDetails?.length && !productQueryById.isLoading ? (
-          <p className="py-10 text-center text-sm font-medium">
+          <p className="py-10 text-center text-sm font-medium" dir={langDir}>
             {t("no_sellers_found")}
           </p>
         ) : null}

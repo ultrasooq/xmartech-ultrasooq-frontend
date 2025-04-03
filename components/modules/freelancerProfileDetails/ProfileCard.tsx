@@ -14,6 +14,7 @@ import { useToast } from "@/components/ui/use-toast";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type ProfileCardProps = {
   userDetails: any;
@@ -21,6 +22,7 @@ type ProfileCardProps = {
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
   const updateFeelancerAvailabilityStatus = useUpdatFreelancerActiveStatus();
 
@@ -123,6 +125,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
             <Link
               href="/profile"
               className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+              dir={langDir}
             >
               <Image
                 src={EditIcon}
@@ -164,12 +167,13 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
           </ul>
         </div>
         <div className="text-normal mt-5 w-full text-sm font-normal leading-4 text-gray-500">
-          <p>{t("business_type")}</p>
+          <p dir={langDir}>{t("business_type")}</p>
           {userDetails?.userBranch?.[0]?.userBranchBusinessType?.map(
             (item: any) => (
               <span
                 key={item?.id}
                 className="mr-3 mt-4 inline-block rounded bg-gray-300 p-4 py-2.5 text-base font-medium leading-5 text-dark-cyan"
+                dir={langDir}
               >
                 {item?.userBranch_BusinessType_Tag?.tagName}
               </span>
@@ -178,9 +182,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
         </div>
         <div className="mt-5 flex w-full flex-wrap items-center justify-between">
           <div className="my-2 text-sm font-normal leading-4 text-gray-500">
-            <p>
+            <p dir={langDir}>
               {t("freelancer_id")}:
-              <span className="text-base font-medium leading-4 text-gray-600">
+              <span className="text-base font-medium leading-4 text-gray-600" dir={langDir}>
                 {userDetails?.uniqueId
                   ? `${FREELANCER_UNIQUE_ID}${userDetails?.uniqueId}`
                   : "NA"}
@@ -203,11 +207,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
               onChange={handleTimeChange}
               value={userDetails?.onlineOffline || "0"}
             >
-              <option value="">{t("select")}</option>
-              <option value="0" disabled={userDetails?.onlineOffline === "0"}>
+              <option value="" dir={langDir}>{t("select")}</option>
+              <option value="0" disabled={userDetails?.onlineOffline === "0"} dir={langDir}>
                 Offline
               </option>
-              <option value="1" disabled={userDetails?.onlineOffline === "1"}>
+              <option value="1" disabled={userDetails?.onlineOffline === "1"} dir={langDir}>
                 Online
               </option>
               {/* <option value="">{isOnlineToday ? "Offline" : "Online"}</option>

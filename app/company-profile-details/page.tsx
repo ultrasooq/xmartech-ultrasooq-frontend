@@ -19,9 +19,11 @@ import VendorMoreInformationSection from "@/components/modules/companyProfileDet
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CompanyProfileDetailsPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [activeTab, setActiveTab] = useState("profile-info");
   const [activeSellerId, setActiveSellerId] = useState<string | null>();
 
@@ -61,7 +63,7 @@ export default function CompanyProfileDetailsPage() {
         <div className="container relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
-              <h2 className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl">
+              <h2 className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl" dir={langDir}>
                 {t("my_profile")}
               </h2>
             </div>
@@ -80,6 +82,7 @@ export default function CompanyProfileDetailsPage() {
                   <TabsTrigger
                     value="profile-info"
                     className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:px-3 md:py-4 md:text-base"
+                    dir={langDir}
                   >
                     {t("profile_info")}
                   </TabsTrigger>
@@ -87,6 +90,7 @@ export default function CompanyProfileDetailsPage() {
                   <TabsTrigger
                     value="ratings"
                     className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:py-4 md:text-base"
+                    dir={langDir}
                   >
                     {t("ratings_n_reviews")}
                   </TabsTrigger>
@@ -94,6 +98,7 @@ export default function CompanyProfileDetailsPage() {
                   <TabsTrigger
                     value="products"
                     className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:py-4 md:text-base"
+                    dir={langDir}
                   >
                     {t("products")}
                   </TabsTrigger>
@@ -118,7 +123,7 @@ export default function CompanyProfileDetailsPage() {
 
                     {/* Branch Section */}
                     {!me.data?.data?.userBranch?.length ? (
-                      <p className="pt-5 text-center text-lg font-medium text-color-dark">
+                      <p className="pt-5 text-center text-lg font-medium text-color-dark" dir={langDir}>
                         {t("no_branch_exists")}
                       </p>
                     ) : null}
@@ -132,6 +137,7 @@ export default function CompanyProfileDetailsPage() {
                                 : "/company-profile/add-branch"
                             }
                             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-xs font-medium capitalize leading-6 text-white sm:text-sm"
+                            dir={langDir}
                           >
                             <PlusIcon className="mr-1 h-5 w-5" />
                             {t("add")}

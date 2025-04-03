@@ -33,9 +33,11 @@ import Image from "next/image";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const ExistingProductsPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [searchProductTerm, setSearchProductTerm] = useState("");
@@ -187,7 +189,7 @@ const ExistingProductsPage = () => {
           <div className="container m-auto flex flex-wrap px-3">
             <div className="mb-5 flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
               <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" dir={langDir}>
                   {t("choose_products")}
                 </h4>
               </div>
@@ -199,6 +201,7 @@ const ExistingProductsPage = () => {
                   placeholder={t("search_product")}
                   className="border-color-[rgb(232 232 232 / var(--tw-border-opacity))] h-[45px] w-full rounded-none border border-solid px-3 py-0 text-sm font-normal"
                   onChange={handleProductDebounce}
+                  dir={langDir}
                 />
               </div>
               <Accordion
@@ -217,12 +220,13 @@ const ExistingProductsPage = () => {
                         placeholder={t("search_brand")}
                         className="custom-form-control-s1 searchInput rounded-none"
                         onChange={handleBrandDebounce}
+                        dir={langDir}
                       />
                     </div>
                     <div className="filter-body-part">
                       <div className="filter-checklists">
                         {!memoizedBrands.length ? (
-                          <p className="text-center text-sm font-medium">
+                          <p className="text-center text-sm font-medium" dir={langDir}>
                             {t("no_data_found")}
                           </p>
                         ) : null}
@@ -266,7 +270,7 @@ const ExistingProductsPage = () => {
               ) : null}
 
               {!memoizedProductList.length && !allProductsQuery.isLoading ? (
-                <p className="text-center text-sm font-medium">{t("no_data_found")}</p>
+                <p className="text-center text-sm font-medium" dir={langDir}>{t("no_data_found")}</p>
               ) : null}
 
               <div className="product-list-s1">
@@ -308,6 +312,7 @@ const ExistingProductsPage = () => {
             size="lg"
             className="flex items-center rounded-sm bg-white text-sm font-bold text-dark-orange"
             disabled={addMultiplePriceForProductIds.isPending}
+            dir={langDir}
           >
             {addMultiplePriceForProductIds.isPending ? (
               <>

@@ -8,6 +8,7 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import TrashIcon from "@/public/images/td-trash-icon.svg";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type WishlistCardProps = {
   productId: number;
@@ -23,6 +24,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   id,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   
   const calculateDiscountedPrice = () => {
     const price = wishlistData?.product_productPrice?.[0]?.productProductPrice
@@ -131,6 +133,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
               <button
                 type="button"
                 className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+                dir={langDir}
               >
                 {t("ask_vendor_for_price")}
               </button>

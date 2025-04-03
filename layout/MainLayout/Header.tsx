@@ -119,7 +119,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
-  const { clearUser, applyTranslation } = useAuth();
+  const { clearUser, applyTranslation, langDir } = useAuth();
   const wishlistCount = useWishlistCount(hasAccessToken);
   const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
   const cartCountWithoutLogin = useCartCountWithoutLogin(
@@ -212,28 +212,6 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     return tempArr || [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subCategoryQuery.data?.data, categoryId]);
-
-  // const memoizedSubCategory = useMemo(() => {
-  //   let tempArr: any = [];
-  //   if (memoizedCategory.length) {
-  //     tempArr = memoizedCategory?.find(
-  //       (item: any) => item.id === categoryId,
-  //     )?.children;
-  //   }
-  //   return tempArr || [];
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [categoryId, menuId]);
-
-  // const memoizedSubSubCategory = useMemo(() => {
-  //   let tempArr: any = [];
-  //   if (memoizedSubCategory.length) {
-  //     tempArr = memoizedSubCategory?.find(
-  //       (item: any) => item.id === subCategoryId,
-  //     )?.children;
-  //   }
-  //   return tempArr || [];
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [subCategoryId, categoryId, menuId]);
 
   const handleProfile = () => {
     switch (me?.data?.data?.tradeRole) {
@@ -347,16 +325,16 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           <div className="container m-auto px-3 pt-3">
             <div className="hidden sm:hidden md:flex md:gap-x-2.5">
               <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
-                <p>{t("welcome")}</p>
+                <p dir={langDir}>{t("welcome")}</p>
               </div>
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <a href="#">{t("store_location")}</a>
+                    <a href="#" dir={langDir}>{t("store_location")}</a>
                   </li>
                   {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <Link href="/my-orders">{t("track_your_order")}</Link>
+                    <Link href="/my-orders" dir={langDir}>{t("track_your_order")}</Link>
                   </li>
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
@@ -421,6 +399,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={handleKeyDown} // Calls search when Enter is pressed
+                    dir={langDir}
                   />
                 </div>
                 <div className="h-11 w-1/4 md:w-1/6">
@@ -428,6 +407,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     type="button"
                     className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
                     onClick={() => updateURL(searchTerm)} // Update URL when clicking search
+                    dir={langDir}
                   >
                     {t("search")}
                   </button>
@@ -494,7 +474,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                           <Link href={handleProfile()}>
-                            <DropdownMenuItem className="cursor-pointer">
+                            <DropdownMenuItem className="cursor-pointer" dir={langDir}>
                               {t("profile_information")}
                             </DropdownMenuItem>
                           </Link>
@@ -503,14 +483,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             <>
                               {hideMenu(PERMISSION_TEAM_MEMBERS) && (
                                 <Link href="/team-members">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("team_members")}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_PRODUCTS) && (
                                 <Link href="/manage-products">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("products")}
                                   </DropdownMenuItem>
                                 </Link>
@@ -518,7 +498,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_ORDERS) && (
                                 <Link href="/seller-orders">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("orders")}
                                   </DropdownMenuItem>
                                 </Link>
@@ -526,7 +506,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_QUOTES) && (
                                 <Link href="/rfq-quotes">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("rfq_quotes")}
                                   </DropdownMenuItem>
                                 </Link>
@@ -534,14 +514,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
                                 <Link href="/seller-rfq-request">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("rfq_seller_requests")}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_SELLER_REWARDS) && (
                                 <Link href="/seller-rewards">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("seller_rewards")}
                                   </DropdownMenuItem>
                                 </Link>
@@ -551,24 +531,25 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           ) : null}
                           {hideMenu(PERMISSION_SHARE_LINKS) && (
                             <Link href="/share-links">
-                              <DropdownMenuItem>
+                              <DropdownMenuItem dir={langDir}>
                                 {t("share_links")}
                               </DropdownMenuItem>
                             </Link>
                           )}
                           <Link href="/my-settings/address">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem dir={langDir}>
                               {t("my_settings")}
                             </DropdownMenuItem>
                           </Link>
                           <Link href="/queries">
-                            <DropdownMenuItem>{t("queries")}</DropdownMenuItem>
+                            <DropdownMenuItem dir={langDir}>{t("queries")}</DropdownMenuItem>
                           </Link>
                           <DropdownMenuSeparator />
                           {/* <DropdownMenuSeparator /> */}
                           <DropdownMenuItem
                             onClick={handleLogout}
                             className="cursor-pointer"
+                            dir={langDir}
                           >
                             {t("logout")}
                           </DropdownMenuItem>
@@ -586,12 +567,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           <Link
                             href="/login"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
+                            dir={langDir}
                           >
                             {t("login")}
                           </Link>
                           <Link
                             href="/register"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
+                            dir={langDir}
                           >
                             {t("register")}
                           </Link>

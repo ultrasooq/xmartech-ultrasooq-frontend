@@ -18,6 +18,7 @@ import { INPUT_TYPE_LIST, SIZE_LIST } from "@/utils/constants";
 import ControlledRadioInput from "@/components/shared/Forms/ControlledRadioInput";
 import ControlledCheckboxInput from "@/components/shared/Forms/ControlledCheckboxInput";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductDetailsSectionProps = {};
 
@@ -31,6 +32,7 @@ type Field = {
 
 const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [selectOption, setSelectOption] = useState<string>();
   const [isCustomFieldModalOpen, setIsCustomFieldModalOpen] = useState(false);
   const [customfields, setCustomFields] = useState<Field[]>([]);
@@ -201,7 +203,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
       <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
         <div className="flex w-full flex-wrap">
           <div className="form-groups-common-sec-s1">
-            <h3>{t("product_details")}</h3>
+            <h3 dir={langDir}>{t("product_details")}</h3>
 
             <div className="mb-3.5 w-full">
               <div className="flex flex-wrap">
@@ -256,6 +258,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                     type="button"
                     onClick={handleToggleCustomFieldModal}
                     className="border-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:text-dark-orange"
+                    dir={langDir}
                   >
                     <Image
                       src="/images/plus-orange.png"
@@ -290,7 +293,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">{t("label")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -335,11 +338,11 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">{t("required")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>{t("size")}</Label>
+                <Label dir={langDir}>{t("size")}</Label>
                 <SelectInput
                   label={t("size")}
                   options={SIZE_LIST}
@@ -348,7 +351,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>{t("input_type")}</Label>
+                <Label dir={langDir}>{t("input_type")}</Label>
                 <SelectInput
                   label={t("input_type")}
                   options={INPUT_TYPE_LIST}
@@ -357,7 +360,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
               </div>
 
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">{t("placeholder")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("placeholder")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -403,7 +406,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">{t("label")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -452,7 +455,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>{t("size")}</Label>
+                <Label dir={langDir}>{t("size")}</Label>
                 <SelectInput
                   label={t("size")}
                   options={SIZE_LIST}
@@ -461,7 +464,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
               </div>
 
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">{t("placeholder")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("placeholder")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -502,7 +505,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">{t("label")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -539,11 +542,11 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">{t("required")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>{t("size")}</Label>
+                <Label dir={langDir}>{t("size")}</Label>
                 <SelectInput
                   label={t("size")}
                   options={SIZE_LIST}
@@ -593,6 +596,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                       setSelectOption("");
                     }
                   }}
+                  dir={langDir}
                 >
                   {t("add")}
                 </Button>
@@ -679,7 +683,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">{t("label")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -716,7 +720,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">{t("required")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex flex-row">
@@ -775,7 +779,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">{t("label")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -812,7 +816,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">{t("required")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex flex-row">
@@ -861,6 +865,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                       setSelectOption("");
                     }
                   }}
+                  dir={langDir}
                 >
                   {t("add")}
                 </Button>
@@ -947,7 +952,7 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
           <Card className="w-full pt-6">
             <CardContent>
               <div className="mb-4 space-y-2">
-                <Label className="text-sm font-normal">{t("label")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("label")}</Label>
                 <Input
                   onChange={(e) => {
                     const fieldIndex = customfields.findIndex(
@@ -983,11 +988,11 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                   onCheckedChange={handleRequiredField}
                 />
-                <Label className="text-sm font-normal">{t("required")}</Label>
+                <Label className="text-sm font-normal" dir={langDir}>{t("required")}</Label>
               </div>
 
               <div className="mb-4 flex w-full flex-col gap-y-2">
-                <Label>{t("size")}</Label>
+                <Label dir={langDir}>{t("size")}</Label>
                 <SelectInput
                   label={t("size")}
                   options={SIZE_LIST}

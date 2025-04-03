@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type OperationsProps = {
   onSelect: (operation: string) => void;
@@ -13,6 +14,7 @@ type Operation = {
 
 const Operations: React.FC<OperationsProps> = ({ onSelect }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [selectedOperation, setSelectedOperation] = useState<string>(
     "questions_n_comments",
   );
@@ -44,7 +46,7 @@ const Operations: React.FC<OperationsProps> = ({ onSelect }) => {
   return (
     <div className="w-full border-r border-solid border-gray-300 lg:w-[15%]">
       <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-        <span>{t("vendor_operations")}</span>
+        <span dir={langDir}>{t("vendor_operations")}</span>
       </div>
 
       <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]">

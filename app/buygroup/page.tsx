@@ -59,9 +59,11 @@ import TrendingCategories from "@/components/modules/trending/TrendingCategories
 import { useTranslations } from "next-intl";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
 
 const TrendingPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
@@ -313,7 +315,7 @@ const TrendingPage = () => {
 
   return (
     <>
-      <title>{t("store")} | Ultrasooq</title>
+      <title dir={langDir}>{t("store")} | Ultrasooq</title>
       <div className="body-content-s1">
         <TrendingCategories />
 
@@ -323,10 +325,10 @@ const TrendingPage = () => {
           <div className="container m-auto px-3">
             <div className={productFilter ? "left-filter show" : "left-filter"}>
               <div className="all_select_button">
-                <button type="button" onClick={selectAll}>
+                <button type="button" onClick={selectAll} dir={langDir}>
                   {t("select_all")}
                 </button>
-                <button type="button" onClick={clearFilter}>
+                <button type="button" onClick={clearFilter} dir={langDir}>
                   {t("clean_select")}
                 </button>
               </div>
@@ -336,7 +338,7 @@ const TrendingPage = () => {
                 className="filter-col"
               >
                 <AccordionItem value="brand">
-                  <AccordionTrigger className="px-3 text-base hover:!no-underline">
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
                     {t("by_brand")}
                   </AccordionTrigger>
                   <AccordionContent>
@@ -346,6 +348,7 @@ const TrendingPage = () => {
                         placeholder={t("search_brand")}
                         className="custom-form-control-s1 searchInput rounded-none"
                         onChange={handleDebounce}
+                        dir={langDir}
                       />
                     </div>
                     <div className="filter-body-part">
@@ -381,7 +384,7 @@ const TrendingPage = () => {
                 </AccordionItem>
 
                 <AccordionItem value="price">
-                  <AccordionTrigger className="px-3 text-base hover:!no-underline">
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
                     {t("price")}
                   </AccordionTrigger>
                   <AccordionContent>
@@ -413,6 +416,7 @@ const TrendingPage = () => {
                           variant="outline"
                           className="mb-4"
                           onClick={() => setPriceRange([])}
+                          dir={langDir}
                         >
                           {t("clear")}
                         </Button>
@@ -457,7 +461,7 @@ const TrendingPage = () => {
                     id="all_products"
                     checked={displayMyProducts == "0"}
                   />
-                  <Label htmlFor="all_products" className="text-base">
+                  <Label htmlFor="all_products" className="text-base" dir={langDir}>
                     {t("all_products")}
                   </Label>
                 </div>
@@ -467,7 +471,7 @@ const TrendingPage = () => {
                     id="my_products"
                     checked={displayMyProducts == "1"}
                   />
-                  <Label htmlFor="my_products" className="text-base">
+                  <Label htmlFor="my_products" className="text-base" dir={langDir}>
                     {t("my_products")}
                   </Label>
                 </div>
@@ -478,7 +482,7 @@ const TrendingPage = () => {
                   {/* <h3></h3> */}
                 </div>
                 <div className="rg-filter">
-                  <p>
+                  <p dir={langDir}>
                     {t("n_products_found", {
                       n: allProductsQuery.data?.totalCount,
                     })}
@@ -487,14 +491,14 @@ const TrendingPage = () => {
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>
                         <SelectTrigger className="custom-form-control-s1 bg-white">
-                          <SelectValue placeholder={t("sort_by")} />
+                          <SelectValue placeholder={t("sort_by")} dir={langDir} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="desc">
+                            <SelectItem value="desc" dir={langDir}>
                               {t("sort_by_latest")}
                             </SelectItem>
-                            <SelectItem value="asc">
+                            <SelectItem value="asc" dir={langDir}>
                               {t("sort_by_oldest")}
                             </SelectItem>
                           </SelectGroup>
@@ -542,7 +546,7 @@ const TrendingPage = () => {
               ) : null}
 
               {!memoizedProductList.length && !allProductsQuery.isLoading ? (
-                <p className="text-center text-sm font-medium">
+                <p className="text-center text-sm font-medium" dir={langDir}>
                   {t("no_data_found")}
                 </p>
               ) : null}

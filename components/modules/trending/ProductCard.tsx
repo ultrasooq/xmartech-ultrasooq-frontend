@@ -24,6 +24,7 @@ import {
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -51,6 +52,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isAddedToCart,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
 
   const [timeLeft, setTimeLeft] = useState("");
 
@@ -350,6 +352,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <button
                 type="button"
                 className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+                dir={langDir}
               >
                 {t("ask_vendor_for_price")}
               </button>
@@ -364,7 +367,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
         <div className="quantity_wrap mb-2">
-          <label>{t("quantity")}</label>
+          <label dir={langDir}>{t("quantity")}</label>
           <div className="qty-up-down-s1-with-rgMenuAction">
             <div className="flex items-center gap-x-3 md:gap-x-4">
               <Button
@@ -416,6 +419,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             type="button"
             className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
             disabled={false}
+            dir={langDir}
           >
             <FaCircleCheck color="#00C48C" />
             {t("added_to_cart")}
@@ -425,6 +429,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             className="add_to_cart_button"
             onClick={() => handleAddToCart(quantity, "add")}
             disabled={quantity == 0}
+            dir={langDir}
           >
             {t("add_to_cart")}
           </button>}

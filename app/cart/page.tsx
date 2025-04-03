@@ -11,6 +11,7 @@ import ProductCard from "@/components/modules/cartList/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/context/AuthContext";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { CartItem } from "@/utils/types/cart.types";
@@ -21,6 +22,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 const CartListPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth()
   const router = useRouter();
   const { toast } = useToast();
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -212,7 +214,7 @@ const CartListPage = () => {
       <div className="container m-auto px-3">
         <div className="headerPart">
           <div className="lediv">
-            <h3>{t("my_cart")}</h3>
+            <h3 dir={langDir}>{t("my_cart")}</h3>
           </div>
         </div>
         <div className="cart-page-wrapper">
@@ -221,7 +223,7 @@ const CartListPage = () => {
               <div className="card-item cart-items">
                 <div className="card-inner-headerPart">
                   <div className="lediv">
-                    <h3>{t("cart_items")}</h3>
+                    <h3 dir={langDir}>{t("cart_items")}</h3>
                   </div>
                 </div>
                 <div className="cart-item-lists">
@@ -229,7 +231,7 @@ const CartListPage = () => {
                   !cartListByUser.data?.data?.length &&
                   !cartListByUser.isLoading ? (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center">{t("no_cart_items")}</p>
+                      <p className="my-3 text-center" dir={langDir}>{t("no_cart_items")}</p>
                     </div>
                   ) : null}
 
@@ -237,7 +239,7 @@ const CartListPage = () => {
                   !cartListByDeviceQuery.data?.data?.length &&
                   !cartListByDeviceQuery.isLoading ? (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center">{t("no_cart_items")}</p>
+                      <p className="my-3 text-center" dir={langDir}>{t("no_cart_items")}</p>
                     </div>
                   ) : null}
 
@@ -291,22 +293,22 @@ const CartListPage = () => {
             <div className="card-item priceDetails">
               <div className="card-inner-headerPart">
                 <div className="lediv">
-                  <h3>{t("price_details")}</h3>
+                  <h3 dir={langDir}>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
-                  <li>
+                  <li dir={langDir}>
                     <p>{t("subtotal")}</p>
                     <h5>${calculateTotalAmount() || 0}</h5>
                   </li>
-                  <li>
+                  <li dir={langDir}>
                     <p>{t("shipping")}</p>
                     <h5>{t("free")}</h5>
                   </li>
                 </ul>
               </div>
-              <div className="priceDetails-footer">
+              <div className="priceDetails-footer" dir={langDir}>
                 <h4>{t("total_amount")}</h4>
                 <h4 className="amount-value">${calculateTotalAmount() || 0}</h4>
               </div>
@@ -316,6 +318,7 @@ const CartListPage = () => {
                 onClick={() => router.push("/checkout")}
                 disabled={!memoizedCartList?.length}
                 className="theme-primary-btn order-btn"
+                dir={langDir}
               >
                 {t("place_order")}
               </Button>

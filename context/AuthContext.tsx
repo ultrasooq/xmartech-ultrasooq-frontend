@@ -1,6 +1,7 @@
 "use client";
 
 import { setUserLocale } from "@/src/services/locale";
+import { LANGUAGES } from "@/utils/constants";
 import React, { createContext, startTransition, useContext, useState } from "react";
 
 interface User {
@@ -19,6 +20,7 @@ interface AuthContextType {
   setPermissions: (permissions: any[]) => void;
   applyTranslation: (locale: string) => void;
   selectedLocale: string;
+  langDir: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,8 +33,6 @@ export const AuthProvider: React.FC<{
 }> = ({ user: initialUser, permissions: initialPermissions, children, locale }) => {
   const [user, setUser] = useState<User | null>(initialUser);
 
-  const [selectedLocale, setSelectedLocale] = useState<string>(locale || 'en')
-
   const [permissions, setPermissions] = useState<any[]>(initialPermissions);
 
   const isAuthenticated = !!user;
@@ -40,6 +40,8 @@ export const AuthProvider: React.FC<{
   const clearUser = () => {
     setUser(null);
   };
+
+  const [selectedLocale, setSelectedLocale] = useState<string>(locale || 'en');
 
   const applyTranslation = async (locale: string) => {
     await setUserLocale(locale);
@@ -49,8 +51,20 @@ export const AuthProvider: React.FC<{
     })
   };
 
+  let data = { 
+    user, 
+    setUser, 
+    isAuthenticated, 
+    clearUser, 
+    permissions, 
+    setPermissions, 
+    applyTranslation, 
+    selectedLocale, 
+    langDir: LANGUAGES.find(language => language.locale == selectedLocale)?.direction || 'ltr'
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, isAuthenticated, clearUser, permissions, setPermissions, applyTranslation, selectedLocale }}>
+    <AuthContext.Provider value={data}>
       {children}
     </AuthContext.Provider>
   );

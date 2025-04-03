@@ -8,6 +8,7 @@ import { PiStarFill } from "react-icons/pi";
 // import ReviewForm from "@/components/shared/ReviewForm";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type OrderCardProps = {
   id: number;
@@ -51,11 +52,12 @@ const OrderCard: React.FC<OrderCardProps> = ({
   // }, [productReview?.length, id]);
 
   const t = useTranslations();
+  const { langDir } = useAuth();
 
   return (
     <div className="my-order-card">
       <h5 className="mb-2">
-        {t("order_id")}: <span className="font-semibold">{orderId}</span>
+        {t("order_id")}: <span className="font-semibold" dir={langDir}>{orderId}</span>
       </h5>
       <div className="my-order-box">
         <Link href={`/my-orders/${id}`}>
@@ -80,7 +82,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
           <h4>${Number(purchasePrice) * (orderQuantity ?? 0)}</h4>
           <p className="text-gray-500">Quantity x {orderQuantity || 0}</p>
         </div>
-        <div className="right-info">
+        <div className="right-info" dir={langDir}>
           <h4>
             {orderStatus === "CONFIRMED" ? (
               <>
@@ -120,6 +122,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
             <Link
               href={`/trending/${productId}?type=reviews`}
               className="ratingLink"
+              dir={langDir}
             >
               <PiStarFill />
               {t("rate_n_review_product")}

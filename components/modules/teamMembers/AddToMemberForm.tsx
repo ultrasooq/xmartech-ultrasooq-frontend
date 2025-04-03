@@ -28,6 +28,7 @@ import {
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
@@ -82,6 +83,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   memberDetails,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const createUserRole = useCreateUserRole();
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
@@ -169,7 +171,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   return (
     <>
       <div className="modal-header !justify-between">
-        <DialogTitle className="text-center text-xl font-bold">
+        <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
           {memberDetails ? t("edit_member") : t("add_member")}
         </DialogTitle>
         <Button
@@ -190,6 +192,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             name="firstName"
             placeholder={t("first_name_placeholder")}
             type="text"
+            dir={langDir}
           />
 
           <ControlledTextInput
@@ -197,6 +200,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             name="lastName"
             placeholder={t("last_name_placeholder")}
             type="text"
+            dir={langDir}
           />
 
           <ControlledTextInput
@@ -205,6 +209,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             placeholder={t("email_placeholder")}
             type="text"
             readOnly={memberDetails}
+            dir={langDir}
           />
 
           <ControlledTextInput
@@ -212,10 +217,11 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             name="phoneNumber"
             placeholder={t("phone_number_placeholder")}
             type="number"
+            dir={langDir}
           />
 
           <div className="flex w-full items-center gap-1.5">
-            <Label>{t("user_role")}</Label>
+            <Label  dir={langDir}>{t("user_role")}</Label>
           </div>
           <Controller
             name="userRoleId"
@@ -256,7 +262,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
           />
 
           <div className="flex w-full items-center gap-1.5">
-            <Label>{t("status")}</Label>
+            <Label dir={langDir}>{t("status")}</Label>
           </div>
           <Controller
             name="status"
@@ -281,6 +287,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
           <Button
             type="submit"
             className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+            dir={langDir}
           >
             {memberDetails ? t("edit_member") : t("add_member")}
           </Button>

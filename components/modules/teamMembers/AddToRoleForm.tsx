@@ -13,6 +13,7 @@ import {
   useUpdateUserRole
 } from "@/apis/queries/masters.queries";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type AddToRoleFormProps = {
   onClose: () => void;
@@ -33,6 +34,7 @@ const addFormSchema = (t: any) => {
 
 const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission, roleDetails }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const createUserRole = useCreateUserRole();
   const updateUserRole = useUpdateUserRole();
   const { toast } = useToast();
@@ -90,10 +92,11 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission
           className="card-item card-payment-form px-5 pb-5 pt-3"
         >
           <ControlledTextInput
+            type="text"
             label={t("role_name")}
             name="userRoleName"
             placeholder={t("name_placeholder")}
-            type="text"
+            dir={langDir}
           />
 
           <Button

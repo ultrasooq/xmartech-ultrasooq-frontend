@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useCreateShareLink } from "@/apis/queries/seller-reward.queries";
 import { toast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type SellerRewardDetailProps = {
     reward: { [key: string]: string };
@@ -14,6 +15,7 @@ type SellerRewardDetailProps = {
 
 const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose }) => {
     const t = useTranslations();
+    const { langDir } = useAuth();
     const createShareLink = useCreateShareLink();
 
     const generateShareLink = async () => {
@@ -39,7 +41,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
     return (
         <>
             <div className="modal-header !justify-between">
-                <DialogTitle className="text-center text-xl font-bold">
+                <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
                     {t("seller_reward")}
                 </DialogTitle>
                 <Button
@@ -50,7 +52,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                 </Button>
             </div>
             <div className="card-item card-payment-form px-5 pb-5">
-                <label className="text-sm font-medium leading-none text-color-dark">
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                     {t("start_time")}
                 </label>
                 <Input
@@ -58,7 +60,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark">
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                     {t("end_time")}
                 </label>
                 <Input
@@ -66,7 +68,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark">
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                     {t("reward_percentage")}
                 </label>
                 <Input
@@ -74,7 +76,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark">
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                     {t("reward_fix_amount")}
                 </label>
                 <Input
@@ -82,7 +84,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark">
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                     {t("minimum_order")}
                 </label>
                 <Input
@@ -90,7 +92,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark">
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                     {t("stock")}
                 </label>
                 <Input
@@ -103,6 +105,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={createShareLink?.isPending}
                     className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                     onClick={generateShareLink}
+                    dir={langDir}
                 >
                     {!createShareLink?.isPending ? t("generate_link") : t("processing")}
                 </Button>

@@ -7,6 +7,7 @@ import RfqCartMenuCard from "./RfqCartMenuCard";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type RfqCartMenuProps = {
   onAdd: (
@@ -25,6 +26,7 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
   cartList
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
 
   const deleteRfqCartItem = useDeleteRfqCartItem();
@@ -48,18 +50,19 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
             <Link
               href="/rfq-cart"
               className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
+              dir={langDir}
             >
               {t("go_to_rfq_cart")}
             </Link>
           </div>
         ) : null}
 
-        <h4 className="text-center">
+        <h4 className="text-center" dir={langDir}>
           {t("your_rfq_cart")} ({t("n_items", { n: cartList.length })})
         </h4>
 
         {!cartList.length && (
-          <div className="my-10 text-center">
+          <div className="my-10 text-center" dir={langDir}>
             <h4>{t("no_cart_items")}</h4>
           </div>
         )}

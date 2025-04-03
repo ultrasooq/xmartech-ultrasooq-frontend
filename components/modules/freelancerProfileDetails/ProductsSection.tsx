@@ -10,6 +10,7 @@ import {
   useDeleteFromWishList,
 } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductsSectionProps = {
   sellerId?: string;
@@ -17,6 +18,7 @@ type ProductsSectionProps = {
 
 const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -191,18 +193,18 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
 
   return (
     <div>
-      <h2 className="left-8 mb-7 text-2xl font-semibold text-color-dark">
+      <h2 className="left-8 mb-7 text-2xl font-semibold text-color-dark" dir={langDir}>
         {t("products")}
       </h2>
 
       {!sellerId && !memoizedProducts.length ? (
-        <p className="p-4 text-center text-base font-medium text-color-dark">
+        <p className="p-4 text-center text-base font-medium text-color-dark" dir={langDir}>
           {t("no_product_found")}
         </p>
       ) : null}
 
       {sellerId && !memoizedVendorProducts.length ? (
-        <p className="p-4 text-center text-base font-medium text-color-dark">
+        <p className="p-4 text-center text-base font-medium text-color-dark" dir={langDir}>
           {t("no_product_found")}
         </p>
       ) : null}

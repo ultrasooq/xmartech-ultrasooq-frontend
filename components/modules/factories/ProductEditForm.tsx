@@ -27,6 +27,7 @@ import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const baseProductPriceItemSchema = z.object({
   consumerType: z.string().trim().optional(),
@@ -131,6 +132,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
   onProductUpdateSuccess
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useParams();
@@ -414,7 +416,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
   return (
     <>
       <div className="modal-header !justify-between">
-        <DialogTitle className="text-center text-xl font-bold">
+        <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
           {t("edit_product")}
         </DialogTitle>
         <Button
@@ -465,6 +467,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
                         }
                         type="submit"
                         className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                        dir={langDir}
                       >
                         {updateProduct.isPending ||
                           uploadMultiple.isPending ? (

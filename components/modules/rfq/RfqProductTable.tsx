@@ -13,6 +13,7 @@ import validator from "validator";
 import { TrendingProduct } from "@/utils/types/common.types";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type ProducTableProps = {
   list: TrendingProduct[];
@@ -20,6 +21,7 @@ type ProducTableProps = {
 
 const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
 
   return (
     <CardContent className="main-content w-full">
@@ -28,11 +30,11 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{t("product")}</TableHead>
-                <TableHead>{t("category")}</TableHead>
+                <TableHead dir={langDir}>{t("product")}</TableHead>
+                <TableHead dir={langDir}>{t("category")}</TableHead>
                 {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
                 {/* <TableHead>SKU No</TableHead> */}
-                <TableHead>{t("brand")}</TableHead>
+                <TableHead dir={langDir}>{t("brand")}</TableHead>
                 {/* <TableHead>Price</TableHead> */}
               </TableRow>
             </TableHeader>

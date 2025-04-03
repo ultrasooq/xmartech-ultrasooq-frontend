@@ -16,6 +16,7 @@ import {
 } from "../ui/accordion";
 import { OptionProps } from "@/utils/types/common.types";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type AccordionMultiSelectV2Props = {
   label: string;
@@ -37,6 +38,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
   error,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   
   const formContext = useFormContext();
 
@@ -81,7 +83,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
                 </p>
               ))}
               {!(watcher || [])?.length ? (
-                <p className="capitalize">{t("select")} {placeholder}</p>
+                <p className="capitalize" dir={langDir}>{t("select")} {placeholder}</p>
               ) : null}
             </div>
           </AccordionTrigger>
