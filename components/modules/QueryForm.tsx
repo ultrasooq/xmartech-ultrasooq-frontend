@@ -33,6 +33,7 @@ const queryFormSchema = (t: any) => {
 
 const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
     const t = useTranslations();
+    const { langDir } = useAuth();
 
     const form = useForm({
         resolver: zodResolver(queryFormSchema(t)),
@@ -82,7 +83,7 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
     return (
         <>
             <div className="modal-header !justify-between">
-                <DialogTitle className="text-center text-xl font-bold">
+                <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
                     {t("submit_your_query")}
                 </DialogTitle>
                 <Button
@@ -105,18 +106,21 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                         placeholder={t("enter_email")}
                         type="email"
                         disabled={!!me?.data?.data?.id}
+                        dir={langDir}
                     />
 
                     <ControlledTextareaInput
                         label={t("query")}
                         name="query"
                         placeholder={t("enter_your_query")}
+                        dir={langDir}
                     />
 
                     <Button
                         type="submit"
                         className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                         disabled={submitQuery?.isPending}
+                        dir={langDir}
                     >
                         {submitQuery?.isPending ? t("processing") : t("submit")}
                     </Button>

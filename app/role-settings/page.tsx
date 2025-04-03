@@ -18,9 +18,11 @@ import { Button } from "@/components/ui/button";
 import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const RoleSettingsPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
 
@@ -114,20 +116,22 @@ const RoleSettingsPage = () => {
               <Link
                 href={"/team-members"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                dir={langDir}
               >
                 {t("team_members")}
               </Link>
               <Link
                 href={"/role-settings"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                dir={langDir}
               >
                 {t("role")}
               </Link>
             </ul>
           </div>
           <div className="team_members_heading w-full">
-            <h1>{t("role_settings")}</h1>
-            <button type="button" onClick={handleToggleAddModal}>
+            <h1 dir={langDir}>{t("role_settings")}</h1>
+            <button type="button" onClick={handleToggleAddModal} dir={langDir}>
               <IoMdAdd /> {t("add_new_role")}
             </button>
           </div>
@@ -137,9 +141,9 @@ const RoleSettingsPage = () => {
                 <table cellPadding={0} cellSpacing={0} border={0}>
                   <thead>
                     <tr>
-                      <th>{t("role_name")}</th>
-                      <th>{t("permission")}</th>
-                      <th>{t("action")}</th>
+                      <th dir={langDir}>{t("role_name")}</th>
+                      <th dir={langDir}>{t("permission")}</th>
+                      <th dir={langDir}>{t("action")}</th>
                     </tr>
                   </thead>
 
@@ -154,6 +158,7 @@ const RoleSettingsPage = () => {
                             onClick={() =>
                               handleOpenPermissionModal(item?.value)
                             }
+                            dir={langDir}
                           >
                             {t("setup_permission")}
                           </button>

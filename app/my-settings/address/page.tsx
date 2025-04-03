@@ -14,11 +14,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { v4 as uuidv4 } from "uuid";
 import { IoMdAdd } from "react-icons/io";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type AddressPageProps = {};
 
 const AddressPage: React.FC<AddressPageProps> = ({}) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
   const wrapperRef = useRef(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -59,7 +61,7 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
 
   return (
     <div className="my-settings-content">
-      <h2>{t("manage_address")}</h2>
+      <h2 dir={langDir}>{t("manage_address")}</h2>
       <div className="my-address-sec">
         <div className="card-item cart-items for-add">
           <div className="top-heading">
@@ -67,6 +69,7 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
               className="add-new-address-btn inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md border border-none border-input bg-background p-0 text-sm font-medium !normal-case shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               type="button"
               onClick={() => handleToggleAddModal()}
+              dir={langDir}
             >
               <IoMdAdd size={24} /> {t("add_new_address")}{" "}
             </button>
@@ -86,7 +89,7 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
         <div className="card-item selected-address">
           <div className="selected-address-lists">
             {!allUserAddressQuery.isLoading && !memoziedAddressList?.length ? (
-              <p className="py-10 text-center">{t("no_address_found")}</p>
+              <p className="py-10 text-center" dir={langDir}>{t("no_address_found")}</p>
             ) : null}
 
             {memoziedAddressList?.map((item: AddressItem) => (

@@ -24,9 +24,11 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { PERMISSION_ORDERS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const MyOrderDetailsPage = ({}) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_ORDERS);
   const searchParams = useParams();
@@ -98,10 +100,10 @@ const MyOrderDetailsPage = ({}) => {
               <div className="my-order-lists for-delivery-address">
                 <ul className="page-indicator-s1 !mb-0">
                   <li>
-                    <Link href="/home">{t("home")}</Link>
+                    <Link href="/home" dir={langDir}>{t("home")}</Link>
                   </li>
                   <li>
-                    <Link href="/seller-orders">{t("my_orders")}</Link>
+                    <Link href="/seller-orders" dir={langDir}>{t("my_orders")}</Link>
                   </li>
                   <li>
                     <h5>
@@ -119,16 +121,16 @@ const MyOrderDetailsPage = ({}) => {
                     <div className="my-order-card">
                       <div className="delivery-address">
                         <div className="delivery-address-col deliveryAddress">
-                          <h2>{t("delivery_address")}</h2>
-                          <h3>
+                          <h2 dir={langDir}>{t("delivery_address")}</h2>
+                          <h3 dir={langDir}>
                             {shippingDetails?.firstName}{" "}
                             {shippingDetails?.lastName}
                           </h3>
-                          <address>
+                          <address dir={langDir}>
                             {shippingDetails?.address}, <br /> pin -{" "}
                             {shippingDetails?.postCode}
                           </address>
-                          <p>
+                          <p dir={langDir}>
                             {t("phone_number")}{" "}
                             <span className="!text-red-500">
                               {shippingDetails?.phone}
@@ -156,10 +158,10 @@ const MyOrderDetailsPage = ({}) => {
                         <h2>Your Rewards</h2>
                       </div> */}
                         <div className="delivery-address-col moreActions">
-                          <h2>{t("more_actions")}</h2>
+                          <h2 dir={langDir}>{t("more_actions")}</h2>
                           <figure className="downloadInvoice">
                             <figcaption>
-                              <Button className="downloadInvoice-btn theme-primary-btn">
+                              <Button className="downloadInvoice-btn theme-primary-btn" dir={langDir}>
                                 <LiaFileInvoiceSolid /> {t("download_invoice")}
                               </Button>
                             </figcaption>
@@ -208,7 +210,7 @@ const MyOrderDetailsPage = ({}) => {
                                 }
                               </h3>
                               {/* <p>Color: B.A.E Black</p> */}
-                              <p className="mt-1">
+                              <p className="mt-1" dir={langDir}>
                                 {t("seller")}:{" "}
                                 {
                                   orderDetails?.orderProduct_productPrice
@@ -219,7 +221,7 @@ const MyOrderDetailsPage = ({}) => {
                                     ?.adminDetail?.lastName
                                 }
                               </p>
-                              <h4 className="mt-1">
+                              <h4 className="mt-1" dir={langDir}>
                                 $
                                 {orderDetails?.orderProduct_productPrice
                                   ?.offerPrice
@@ -230,7 +232,7 @@ const MyOrderDetailsPage = ({}) => {
                                     )
                                   : 0}
                               </h4>
-                              <p className="text-gray-500">
+                              <p className="text-gray-500" dir={langDir}>
                                 {t("quantity")} x {orderDetails?.orderQuantity || 0}
                               </p>
                             </figcaption>
@@ -240,7 +242,7 @@ const MyOrderDetailsPage = ({}) => {
                           <div className="order-delivery-progess-s1">
                             <ul>
                               <li className="complted">
-                                <div className="orderStatusText">
+                                <div className="orderStatusText" dir={langDir}>
                                   {t("order_received")}
                                 </div>
                                 <div className="dot">
@@ -267,7 +269,7 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText">
+                                <div className="orderStatusText" dir={langDir}>
                                   {t("order_confirmed")}
                                 </div>
                                 <div className="dot">
@@ -290,6 +292,7 @@ const MyOrderDetailsPage = ({}) => {
                                       ? "current"
                                       : "",
                                 )}
+                                dir={langDir}
                               >
                                 <div className="orderStatusText">{t("shipped")}</div>
                                 <div className="dot">
@@ -313,8 +316,9 @@ const MyOrderDetailsPage = ({}) => {
                                       ? "current"
                                       : "",
                                 )}
+                                dir={langDir}
                               >
-                                <div className="orderStatusText">
+                                <div className="orderStatusText" dir={langDir}>
                                   {t("out_for_delivery")}
                                 </div>
                                 <div className="dot">
@@ -336,6 +340,7 @@ const MyOrderDetailsPage = ({}) => {
                                       ? "complted"
                                       : "",
                                 )}
+                                dir={langDir}
                               >
                                 <div
                                   className={cn(
@@ -373,7 +378,7 @@ const MyOrderDetailsPage = ({}) => {
                           </div>
                         </div>
                         <div className="right-info">
-                          <h4 className="mb-2">
+                          <h4 className="mb-2"dir={langDir}>
                             {orderDetails?.orderProductStatus ===
                             "CONFIRMED" ? (
                               <>
@@ -425,7 +430,7 @@ const MyOrderDetailsPage = ({}) => {
                             ) : null}
                           </h4>
 
-                          <a href="#" className="ratingLink">
+                          <a href="#" className="ratingLink"dir={langDir}>
                             <MdHelpCenter />
                             {t("need_help")}
                           </a>
@@ -435,6 +440,7 @@ const MyOrderDetailsPage = ({}) => {
                               type="button"
                               className="theme-primary-btn update-status-btn"
                               onClick={handleToggleStatusModal}
+                              dir={langDir}
                             >
                               {t("update_status")}
                             </button>

@@ -23,9 +23,11 @@ import { PUREMOON_TEMP_TOKEN_KEY } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PasswordResetVerifyPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
@@ -251,6 +253,7 @@ export default function PasswordResetVerifyPage() {
                       }
                       type="submit"
                       className="theme-primary-btn m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6"
+                      dir={langDir}
                     >
                       {passwordResetVerify.isPending ? (
                         <LoaderWithMessage message={t("please_wait")} />
@@ -262,7 +265,7 @@ export default function PasswordResetVerifyPage() {
                 </form>
               </Form>
               <div className="mb-4 w-full space-x-2 text-center">
-                <span className="text-sm font-medium leading-4 text-light-gray">
+                <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir}>
                   {t("didnt_receive_otp")}
                 </span>
                 <Button
@@ -275,6 +278,7 @@ export default function PasswordResetVerifyPage() {
                   }
                   onClick={handlePasswordResendVerify}
                   className="cursor-pointer p-0 font-medium text-dark-orange"
+                  dir={langDir}
                 >
                   {t("resend")}
                 </Button>

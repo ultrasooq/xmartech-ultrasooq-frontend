@@ -43,6 +43,7 @@ import { getLoginType } from "@/utils/helper";
 import Link from "next/link";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = z
   .object({
@@ -122,6 +123,7 @@ const formSchema = z
 
 export default function RegisterPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
@@ -201,7 +203,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <title>{t("register")} | Ultrasooq</title>
+      <title dir={langDir}>{t("register")} | Ultrasooq</title>
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
@@ -216,10 +218,10 @@ export default function RegisterPage() {
           <div className="flex">
             <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
                   {t("registration")}
                 </h2>
-                <p>{t("create_your_account")}</p>
+                <p dir={langDir}>{t("create_your_account")}</p>
               </div>
               <div className="w-full">
                 <ul className="flex w-full flex-wrap items-center justify-between">
@@ -231,6 +233,7 @@ export default function RegisterPage() {
                         localStorage.setItem("loginType", "FACEBOOK");
                         signIn("facebook");
                       }}
+                      dir={langDir}
                     >
                       <Image
                         src={FacebookIcon}
@@ -250,6 +253,7 @@ export default function RegisterPage() {
                         localStorage.setItem("loginType", "GOOGLE");
                         signIn("google");
                       }}
+                      dir={langDir}
                     >
                       <Image
                         src={GoogleIcon}
@@ -279,7 +283,7 @@ export default function RegisterPage() {
                       name="tradeRole"
                       render={({ field }) => (
                         <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row md:items-start">
-                          <FormLabel className="mb-3 mr-6 capitalize md:mb-0">
+                          <FormLabel className="mb-3 mr-6 capitalize md:mb-0" dir={langDir}>
                             {t("select_trade_role")}:
                           </FormLabel>
                           <div className="!mt-0">
@@ -321,12 +325,14 @@ export default function RegisterPage() {
                       label={t("first_name")}
                       name="firstName"
                       placeholder={t("enter_first_name")}
+                      dir={langDir}
                     />
 
                     <ControlledTextInput
                       label={t("last_name")}
                       name="lastName"
                       placeholder={t("enter_last_name")}
+                      dir={langDir}
                     />
 
                     <ControlledTextInput
@@ -339,6 +345,7 @@ export default function RegisterPage() {
                           ? !!session?.user?.email
                           : false
                       }
+                      dir={langDir}
                     />
 
                     <ControlledTextInput
@@ -346,6 +353,7 @@ export default function RegisterPage() {
                       name="initialPassword"
                       placeholder={t("enter_login_password")}
                       type="password"
+                      dir={langDir}
                     />
 
                     <ControlledTextInput
@@ -353,6 +361,7 @@ export default function RegisterPage() {
                       name="password"
                       placeholder={t("enter_login_password_again")}
                       type="password"
+                      dir={langDir}
                     />
 
                     <ControlledPhoneInput
@@ -376,11 +385,12 @@ export default function RegisterPage() {
                           </FormControl>
                           <div className="flex flex-col leading-none">
                             <div className="agreeText text-xs text-light-gray md:text-sm">
-                              <span>{t("i_agree")}</span>
+                              <span dir={langDir}>{t("i_agree")}</span>
                               <Button
                                 onClick={handleToggleTermsModal}
                                 type="button"
                                 className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
+                                dir={langDir}
                               >
                                 <span className="text-xs text-light-gray underline md:text-sm">
                                   {t("terms_of_use")}
@@ -393,6 +403,7 @@ export default function RegisterPage() {
                                 onClick={handleTogglePrivacyModal}
                                 type="button"
                                 className="ml-1 bg-transparent p-0 text-xs shadow-none hover:bg-transparent md:text-sm"
+                                dir={langDir}
                               >
                                 <span className="text-light-gray underline">
                                   {t("privacy_policy")}
@@ -420,7 +431,7 @@ export default function RegisterPage() {
                   </form>
                 </Form>
                 <div className="mb-4 w-full text-center">
-                  <span className="text-sm font-medium leading-4 text-light-gray">
+                  <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir}>
                     {t("already_have_an_account")}{" "}
                     <Link
                       href="/login"
@@ -438,7 +449,7 @@ export default function RegisterPage() {
         <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
           <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
             <DialogHeader className="border-b border-light-gray py-4">
-              <DialogTitle className="text-center text-xl font-bold">
+              <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
                 {t("terms_of_use")}
               </DialogTitle>
             </DialogHeader>
@@ -454,8 +465,8 @@ export default function RegisterPage() {
         >
           <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
             <DialogHeader className="border-b border-light-gray py-4">
-              <DialogTitle className="text-center text-xl font-bold">
-              {t("privacy_policy")}
+              <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+                {t("privacy_policy")}
               </DialogTitle>
             </DialogHeader>
             <DialogDescription className="term-policy-modal-content max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">

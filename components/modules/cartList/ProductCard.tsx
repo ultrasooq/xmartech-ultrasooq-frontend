@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "@/components/ui/use-toast";
 import { useUpdateCartByDevice, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductCardProps = {
   cartId: number;
@@ -41,6 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   maxQuantity
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const deviceId = getOrCreateDeviceId() || "";
   const updateCartWithLogin = useUpdateCartWithLogin();
@@ -149,7 +151,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <figcaption>
           <h4 className="!text-lg !font-bold">{productName}</h4>
           <div className="custom-form-group">
-            <label>{t("quantity")}</label>
+            <label dir={langDir}>{t("quantity")}</label>
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-4">
                 <Button
@@ -186,6 +188,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     variant="ghost"
                     className="px-2 underline"
                     onClick={() => onRemove(cartId)}
+                    dir={langDir}
                   >
                     {t("remove")}
                   </Button>
@@ -196,6 +199,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                       variant="ghost"
                       className="px-2 underline"
                       onClick={() => onWishlist(productId)}
+                      dir={langDir}
                     >
                       {t("move_to_wishlist")}
                     </Button>
@@ -207,8 +211,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </figcaption>
       </figure>
       <div className="right-info">
-        <h6>{t("price")}</h6>
-        <h5>${quantity * calculateDiscountedPrice()}</h5>
+        <h6 dir={langDir}>{t("price")}</h6>
+        <h5 dir={langDir}>${quantity * calculateDiscountedPrice()}</h5>
       </div>
     </div>
   );

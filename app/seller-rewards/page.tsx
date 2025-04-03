@@ -11,9 +11,11 @@ import Link from "next/link";
 import { PERMISSION_SELLER_REWARDS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const SellerRewardsPage = () => {
     const t = useTranslations();
+    const { langDir } = useAuth();
     const router = useRouter();
     const hasPermission = checkPermission(PERMISSION_SELLER_REWARDS);
     const [page, setPage] = useState(1);
@@ -49,9 +51,9 @@ const SellerRewardsPage = () => {
             <div className="container relative z-10 m-auto px-3">
                 <div className="flex w-full flex-wrap">
                     <div className="team_members_heading w-full">
-                        <h1>{t("seller_rewards")}</h1>
+                        <h1 dir={langDir}>{t("seller_rewards")}</h1>
                         <div className="flex justify-end gap-3">
-                            <button type="button" onClick={() => setIsSellerRewardFormModalOpen(true)}>
+                            <button type="button" onClick={() => setIsSellerRewardFormModalOpen(true)} dir={langDir}>
                                 {t("create_seller_reward")}
                             </button>
                         </div>
@@ -63,14 +65,14 @@ const SellerRewardsPage = () => {
                                 <table cellPadding={0} cellSpacing={0} border={0}>
                                     <thead>
                                         <tr>
-                                            <th>{t("product")}</th>
-                                            <th>{t("start_time")}</th>
-                                            <th>{t("end_time")}</th>
-                                            <th>{t("reward_amount")}</th>
-                                            <th>{t("reward_percentage")}</th>
-                                            <th>{t("minimum_order")}</th>
-                                            <th>{t("stock")}</th>
-                                            <th>{t("action")}</th>
+                                            <th dir={langDir}>{t("product")}</th>
+                                            <th dir={langDir}>{t("start_time")}</th>
+                                            <th dir={langDir}>{t("end_time")}</th>
+                                            <th dir={langDir}>{t("reward_amount")}</th>
+                                            <th dir={langDir}>{t("reward_percentage")}</th>
+                                            <th dir={langDir}>{t("minimum_order")}</th>
+                                            <th dir={langDir}>{t("stock")}</th>
+                                            <th dir={langDir}>{t("action")}</th>
                                         </tr>
                                     </thead>
 
@@ -107,7 +109,7 @@ const SellerRewardsPage = () => {
                         ) : null}
 
                         {!sellerRewardsQuery?.isLoading && !sellerRewards.length ? (
-                            <p className="py-10 text-center text-sm font-medium">
+                            <p className="py-10 text-center text-sm font-medium" dir={langDir}>
                                 {t("no_data_found")}
                             </p>
                         ) : null}

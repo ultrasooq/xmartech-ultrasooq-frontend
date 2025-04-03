@@ -26,6 +26,7 @@ import { z } from "zod";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
 import Footer from "@/components/shared/Footer";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -38,6 +39,7 @@ const formSchema = (t: any) => {
 
 const RfqCartPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
@@ -172,11 +174,11 @@ const RfqCartPage = () => {
               >
                 <MdOutlineChevronLeft />
               </button>
-              <h3>{t("rfq_cart_items")}</h3>
+              <h3 dir={langDir}>{t("rfq_cart_items")}</h3>
             </div>
             <div className="bodyPart">
               <div className="add-delivery-card">
-                <h3>{t("add_delivery_address_date")}</h3>
+                <h3 dir={langDir}>{t("add_delivery_address_date")}</h3>
                 <Form {...form}>
                   <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
                     <ControlledSelectInput
@@ -187,7 +189,7 @@ const RfqCartPage = () => {
                     />
 
                     <div>
-                      <Label>{t("date")}</Label>
+                      <Label dir={langDir}>{t("date")}</Label>
                       <ControlledDatePicker name="rfqDate" isFuture placeholder={t("enter_date")} />
                     </div>
                   </form>
@@ -195,7 +197,7 @@ const RfqCartPage = () => {
               </div>
 
               <div className="rfq-cart-item-lists">
-                <h4>{t("rfq_cart_items")}</h4>
+                <h4 dir={langDir}>{t("rfq_cart_items")}</h4>
                 <div className="rfq-cart-item-ul">
                   {memoizedRfqCartList.map((item: any) => (
                     <RfqProductCard
@@ -217,7 +219,7 @@ const RfqCartPage = () => {
 
                   {!memoizedRfqCartList.length ? (
                     <div className="my-10 text-center">
-                      <h4>{t("no_cart_items")}</h4>
+                      <h4 dir={langDir}>{t("no_cart_items")}</h4>
                     </div>
                   ) : null}
                 </div>

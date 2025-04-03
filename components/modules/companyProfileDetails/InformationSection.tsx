@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type InformationSectionProps = {
   userDetails: any;
@@ -12,6 +13,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
   userDetails,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const getSocialLinks = useMemo(() => {
     if (userDetails?.userSocialLink?.length > 0) {
       const socialLinks = userDetails?.userSocialLink?.map(
@@ -40,13 +42,14 @@ const InformationSection: React.FC<InformationSectionProps> = ({
   return (
     <div className="w-full border-b-2 border-dashed border-gray-200 pb-4 sm:py-4">
       <div className="flex w-full flex-wrap items-center justify-between gap-2 pb-5 sm:gap-0">
-        <h2 className="left-8 text-xl font-semibold text-color-dark sm:text-2xl">
+        <h2 className="left-8 text-xl font-semibold text-color-dark sm:text-2xl" dir={langDir}>
           {t("company_information")}
         </h2>
         <div className="w-auto">
           <Link
             href="/profile"
             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+            dir={langDir}
           >
             <Image
               src={EditIcon}
@@ -62,7 +65,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
       <div className="w-full">
         <div className="w-full">
           <div className="mb-4 w-full">
-            <label className="text-lg font-bold text-color-dark">
+            <label className="text-lg font-bold text-color-dark" dir={langDir}>
               {t("registration_address")}
             </label>
           </div>
@@ -70,12 +73,12 @@ const InformationSection: React.FC<InformationSectionProps> = ({
             <div className="w-full sm:w-7/12">
               <div className="flex w-full flex-wrap py-4">
                 <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                  <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+                  <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                     {t("email")}:
                   </span>
                 </div>
                 <div className="mr-1 flex w-8/12  items-center justify-start sm:mr-0">
-                  <p className="text-base font-medium leading-4 text-color-dark">
+                  <p className="text-base font-medium leading-4 text-color-dark" dir={langDir}>
                     {userDetails?.email || "N/A"}
                   </p>
                 </div>
@@ -84,11 +87,11 @@ const InformationSection: React.FC<InformationSectionProps> = ({
             <div className="w-full sm:w-5/12">
               <div className="flex w-full flex-wrap py-4">
                 <div className="mr-1 flex w-5/12 items-center justify-start sm:mr-0">
-                  <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+                  <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                     {t("phone")}:
                   </span>
                 </div>
-                <div className="mr-1 flex w-7/12  items-center justify-start sm:mr-0">
+                <div className="mr-1 flex w-7/12  items-center justify-start sm:mr-0" dir={langDir}>
                   <p className="text-base font-medium leading-4 text-color-dark">
                     {userDetails?.phoneNumber || "N/A"}
                   </p>
@@ -98,12 +101,12 @@ const InformationSection: React.FC<InformationSectionProps> = ({
             <div className="w-full sm:w-7/12">
               <div className="flex w-full flex-wrap py-4">
                 <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                  <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+                  <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                     {t("social_links")}:
                   </span>
                 </div>
                 <div className="mr-1 flex w-8/12  items-center justify-start sm:mr-0">
-                  <div className="flex gap-x-3 text-base font-medium capitalize leading-4 text-color-dark">
+                  <div className="flex gap-x-3 text-base font-medium capitalize leading-4 text-color-dark" dir={langDir}>
                     {getSocialLinks}
                   </div>
                 </div>

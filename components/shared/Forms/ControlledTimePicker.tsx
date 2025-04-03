@@ -10,6 +10,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 interface ControlledTimePickerProps {
   label?: string;
@@ -31,6 +32,7 @@ const timeOptions = generateTimeOptions();
 
 const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name }) => {
   const { control, setValue, watch } = useFormContext();
+  const { langDir } = useAuth();
 
   return (
     <Controller
@@ -38,7 +40,7 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name
       control={control}
       render={({ field }) => (
         <FormItem className="mb-4 flex w-full flex-col">
-          <FormLabel>{label}</FormLabel>
+          <FormLabel dir={langDir}>{label}</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
               <FormControl>

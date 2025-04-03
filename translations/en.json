@@ -101,6 +101,8 @@
     "others": "Others",
     "enter_date": "Enter Date",
     "after": "After",
+    "online": "Online",
+    "offline": "Offline",
 
     "login_to_your_account": "Login to your account",
     "remember_me": "Remember me",
@@ -165,6 +167,7 @@
     "add_phone_number": "Add Phone Number",
     "add_link": "Add Link",
     "link": "Link",
+    "enter_your_link": "Enter Your Link",
     "select_type": "Select Type",
     "type": "Type",
     "upload_identity_proof": "Upload Identity Proof",

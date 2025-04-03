@@ -47,9 +47,11 @@ import { useTranslations } from "next-intl";
 import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
 
 const RfqPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
@@ -266,7 +268,7 @@ const RfqPage = () => {
 
   return (
     <>
-      <title>{t("rfq")} | Ultrasooq</title>
+      <title dir={langDir}>{t("rfq")} | Ultrasooq</title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
@@ -276,10 +278,10 @@ const RfqPage = () => {
             <div className="rfq_main_box !justify-center">
               <div className="rfq_left">
                 <div className="all_select_button">
-                  <button type="button" onClick={selectAll}>
+                  <button type="button" onClick={selectAll} dir={langDir}>
                     {t("select_all")}
                   </button>
-                  <button type="button" onClick={clearFilter}>
+                  <button type="button" onClick={clearFilter} dir={langDir}>
                     {t("clean_select")}
                   </button>
                 </div>
@@ -302,7 +304,7 @@ const RfqPage = () => {
                       id="all_products"
                       checked={displayMyProducts == "0"}
                     />
-                    <Label htmlFor="all_products" className="text-base">
+                    <Label htmlFor="all_products" className="text-base" dir={langDir}>
                       {t("all_products")}
                     </Label>
                   </div>
@@ -312,7 +314,7 @@ const RfqPage = () => {
                       id="my_products"
                       checked={displayMyProducts == "1"}
                     />
-                    <Label htmlFor="my_products" className="text-base">
+                    <Label htmlFor="my_products" className="text-base" dir={langDir}>
                       {t("my_products")}
                     </Label>
                   </div>
@@ -325,6 +327,7 @@ const RfqPage = () => {
                       placeholder={t("search_product")}
                       onChange={handleRfqDebounce}
                       ref={searchInputRef}
+                      dir={langDir}
                     />
                     <button type="button">
                       <Image
@@ -340,6 +343,7 @@ const RfqPage = () => {
                       <Link
                         href="/product?productType=R"
                         className="flex items-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
+                        dir={langDir}
                       >
                         <FaPlus />
                         {t("add_new_rfq_product")}
@@ -351,7 +355,7 @@ const RfqPage = () => {
                   <div className="row">
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
-                        <div className="products_sec_top_left">
+                        <div className="products_sec_top_left" dir={langDir}>
                           <h4>{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
@@ -361,14 +365,14 @@ const RfqPage = () => {
                               defaultValue={sortBy}
                             >
                               <SelectTrigger className="custom-form-control-s1 bg-white">
-                                <SelectValue placeholder={t("sort_by")} />
+                                <SelectValue placeholder={t("sort_by")} dir={langDir} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectItem value="newest">
+                                  <SelectItem value="newest" dir={langDir}>
                                     {t("sort_by_latest")}
                                   </SelectItem>
-                                  <SelectItem value="oldest">
+                                  <SelectItem value="oldest" dir={langDir}>
                                     {t("sort_by_oldest")}
                                   </SelectItem>
                                 </SelectGroup>
@@ -408,7 +412,7 @@ const RfqPage = () => {
 
                       {!rfqProductsQuery?.data?.data?.length &&
                       !rfqProductsQuery.isLoading ? (
-                        <p className="my-10 text-center text-sm font-medium">
+                        <p className="my-10 text-center text-sm font-medium" dir={langDir}>
                           {t("no_data_found")}
                         </p>
                       ) : null}

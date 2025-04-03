@@ -101,6 +101,8 @@
     "others": "آحرون",
     "enter_date": "أدخل التاريخ",
     "after": "بعد",
+    "online": "متصل",
+    "offline": "غير متصل",
 
     "login_to_your_account": "تسجيل الدخول إلى حسابك",
     "remember_me": "تذكرنى",
@@ -165,6 +167,7 @@
     "add_phone_number": "أضف رقم الهاتف",
     "add_link": "أضف الرابط",
     "link": "وصلة",
+    "enter_your_link": "أدخل الرابط الخاص بك",
     "select_type": "حدد النوع",
     "type": "يكتب",
     "upload_identity_proof": "تحميل إثبات الهوية",

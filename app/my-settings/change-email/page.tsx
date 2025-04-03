@@ -20,6 +20,7 @@ import Image from "next/image";
 import { EMAIL_REGEX_LOWERCASE } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -38,6 +39,7 @@ const formSchema = (t: any) => {
 
 export default function ChangeEmailPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -84,7 +86,7 @@ export default function ChangeEmailPage() {
       <div className="container relative z-10 m-auto">
         <div className="flex">
           <div className="w-full rounded-lg border border-solid border-gray-300 bg-white p-4 shadow-sm">
-            <h2 className="mb-4  text-[18px] font-semibold md:text-[22px]">
+            <h2 className="mb-4  text-[18px] font-semibold md:text-[22px]" dir={langDir}>
               {t("change_email")}
             </h2>
             <div className="w-full">
@@ -98,12 +100,13 @@ export default function ChangeEmailPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem className="mb-4 w-full">
-                        <FormLabel>{t("new_email")}</FormLabel>
+                        <FormLabel dir={langDir}>{t("new_email")}</FormLabel>
                         <FormControl>
                           <Input
                             placeholder={t("enter_email")}
                             className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
+                            dir={langDir}
                           />
                         </FormControl>
                         <FormMessage />
@@ -115,6 +118,7 @@ export default function ChangeEmailPage() {
                       disabled={changeEmail.isPending}
                       type="submit"
                       className="h-12 w-full rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:text-lg"
+                      dir={langDir}
                     >
                       {changeEmail.isPending ? (
                         <>

@@ -40,9 +40,11 @@ import ProductCard from "@/components/modules/cartList/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CartItem } from "@/utils/types/cart.types";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const ProductDetailsPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const searchParams = useParams();
   const searchQuery = useSearchParams();
@@ -369,7 +371,7 @@ const ProductDetailsPage = () => {
 
   return (
     <>
-      <title>{t("store")} | Ultrasooq</title>
+      <title dir={langDir}>{t("store")} | Ultrasooq</title>
       <div className="body-content-s1 relative">
         <div className="product-view-s1-left-right type2">
           <div className="container m-auto px-3">
@@ -459,36 +461,42 @@ const ProductDetailsPage = () => {
                     <TabsTrigger
                       value="description"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("description")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="specification"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("specification")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="vendor"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("vendor")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="reviews"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("reviews")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="qanda"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("questions")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="offers"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("more_offers")}
                     </TabsTrigger>
@@ -513,7 +521,7 @@ const ProductDetailsPage = () => {
                       ) : null}
                       {productDetails?.product_productSpecification?.length ? (
                         <div className="specification-sec">
-                          <h2>{t("specification")}</h2>
+                          <h2 dir={langDir}>{t("specification")}</h2>
                           <table className="specification-table">
                             <tbody>
                               <tr className="grid grid-cols-2">
@@ -598,6 +606,7 @@ const ProductDetailsPage = () => {
                   href="javascript:void(0)"
                   className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
                   onClick={handleCartPage}
+                  dir={langDir}
                 >
                   {t("go_to_cart_page")}
                 </a>
@@ -607,7 +616,7 @@ const ProductDetailsPage = () => {
                 !cartListByUser.data?.data?.length &&
                 !cartListByUser.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center">{t("no_cart_items")}</p>
+                    <p className="my-3 text-center" dir={langDir}>{t("no_cart_items")}</p>
                   </div>
                 ) : null}
 
@@ -615,7 +624,7 @@ const ProductDetailsPage = () => {
                 !cartListByDeviceQuery.data?.data?.length &&
                 !cartListByDeviceQuery.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center">{t("no_cart_items")}</p>
+                    <p className="my-3 text-center" dir={langDir}>{t("no_cart_items")}</p>
                   </div>
                 ) : null}
 

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
 import { useTranslations } from "next-intl";
 import { ALPHABETS_REGEX } from "@/utils/constants";
+import { useAuth } from "@/context/AuthContext";
 
 type GuestAddressFormProps = {
   onClose: () => void;
@@ -102,6 +103,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
   guestBillingAddress,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const defaultValues = {
     firstName: "",
     lastName: "",
@@ -160,12 +162,14 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
               label={t("first_name")}
               name="firstName"
               placeholder={t("enter_first_name")}
+              dir={langDir}
             />
 
             <ControlledTextInput
               label={t("last_name")}
               name="lastName"
               placeholder={t("enter_last_name")}
+              dir={langDir}
             />
           </div>
 
@@ -183,16 +187,18 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
               label={t("address")}
               name="address"
               placeholder={t("address")}
+              dir={langDir}
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-            <ControlledTextInput label={t("city")} name="city" placeholder={t("city")} />
+            <ControlledTextInput label={t("city")} name="city" placeholder={t("city")} dir={langDir} />
 
             <ControlledTextInput
               label={t("province")}
               name="province"
               placeholder={t("province")}
+              dir={langDir}
             />
           </div>
 
@@ -203,12 +209,14 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
               name="postCode"
               placeholder={t("postcode")}
               onWheel={(e) => e.currentTarget.blur()}
+              dir={langDir}
             />
 
             <ControlledTextInput
               label={t("country")}
               name="country"
               placeholder={t("country")}
+              dir={langDir}
             />
 
             {/* <ControlledSelectInput
@@ -221,6 +229,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
           <Button
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+            dir={langDir}
           >
             {(addressType === "shipping" && guestShippingAddress) ||
             (addressType === "billing" && guestBillingAddress)

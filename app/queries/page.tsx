@@ -10,9 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { query } from "urlcat";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const QueriesPage = () => {
     const t = useTranslations();
+    const { langDir } = useAuth();
     const [isQueryModalOpen, setIsQueryModalOpen] = useState<boolean>(false);
     const [selectedQuery, setSelectedQuery] = useState<any>();
     const [page, setPage] = useState(1);
@@ -59,7 +61,7 @@ const QueriesPage = () => {
                 <div className="container relative z-10 m-auto px-3">
                     <div className="flex w-full flex-wrap">
                         <div className="team_members_heading w-full">
-                            <h1>{t("queries")}</h1>
+                            <h1 dir={langDir}>{t("queries")}</h1>
                         </div>
 
                         <div className="team_members_table w-full">
@@ -68,10 +70,10 @@ const QueriesPage = () => {
                                     <table cellPadding={0} cellSpacing={0} border={0}>
                                         <thead>
                                             <tr>
-                                                <th>{t("query")}</th>
-                                                <th>{t("response")}</th>
-                                                <th>{t("date_n_time")}</th>
-                                                <th>{t("action")}</th>
+                                                <th dir={langDir}>{t("query")}</th>
+                                                <th dir={langDir}>{t("response")}</th>
+                                                <th dir={langDir}>{t("date_n_time")}</th>
+                                                <th dir={langDir}>{t("action")}</th>
                                             </tr>
                                         </thead>
 
@@ -102,7 +104,7 @@ const QueriesPage = () => {
                             ) : null}
 
                             {!helpCenterQueriesQuery?.isLoading && !helpCenterQueries.length ? (
-                                <p className="py-10 text-center text-sm font-medium">
+                                <p className="py-10 text-center text-sm font-medium" dir={langDir}>
                                     {t("no_data_found")}
                                 </p>
                             ) : null}
@@ -125,7 +127,7 @@ const QueriesPage = () => {
                         ref={wrapperRef}
                     >
                         <div className="modal-header !justify-between">
-                            <DialogTitle className="text-center text-xl font-bold">
+                            <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
                                 {t("query")}
                             </DialogTitle>
                             <Button
@@ -137,7 +139,7 @@ const QueriesPage = () => {
                         </div>
                         <form className="card-item card-payment-form px-5 pb-5 pt-3">
                             <div>
-                                <Label htmlFor="query">{t("query")}</Label>
+                                <Label htmlFor="query" dir={langDir}>{t("query")}</Label>
                                 <Textarea
                                     disabled={true}
                                     defaultValue={selectedQuery.query}
@@ -145,7 +147,7 @@ const QueriesPage = () => {
                                 />
                             </div>
                             <div className="pt-3">
-                                <Label htmlFor="reply">{t("reply")}</Label>
+                                <Label htmlFor="reply" dir={langDir}>{t("reply")}</Label>
                                 <Textarea
                                     disabled={true}
                                     defaultValue={selectedQuery.response}

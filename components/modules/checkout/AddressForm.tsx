@@ -19,6 +19,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import { ALPHABETS_REGEX } from "@/utils/constants";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type AddressFormProps = {
   addressId?: number;
@@ -105,6 +106,7 @@ const formSchema = (t: any) => {
 
 const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
   const defaultValues = {
     firstName: "",
@@ -219,12 +221,14 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
               label={t("first_name")}
               name="firstName"
               placeholder={t("enter_first_name")}
+              dir={langDir}
             />
 
             <ControlledTextInput
               label={t("last_name")}
               name="lastName"
               placeholder={t("enter_last_name")}
+              dir={langDir}
             />
           </div>
 
@@ -242,16 +246,18 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
               label={t("address")}
               name="address"
               placeholder={t("address")}
+              dir={langDir}
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-            <ControlledTextInput label="City" name="city" placeholder="City" />
+            <ControlledTextInput label="City" name="city" placeholder="City" dir={langDir} />
 
             <ControlledTextInput
               label={t("province")}
               name="province"
               placeholder={t("province")}
+              dir={langDir}
             />
           </div>
 
@@ -262,12 +268,14 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
               name="postCode"
               placeholder={t("postcode")}
               onWheel={(e) => e.currentTarget.blur()}
+              dir={langDir}
             />
 
             <ControlledTextInput
               label={t("country")}
               name="country"
               placeholder={t("country")}
+              dir={langDir}
             />
 
             {/* <ControlledSelectInput
@@ -281,6 +289,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             disabled={createAddress.isPending || updateAddress.isPending}
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+            dir={langDir}
           >
             {createAddress.isPending || updateAddress.isPending ? (
               <LoaderWithMessage message="Please wait" />

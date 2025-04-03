@@ -5,6 +5,7 @@ import { handleDescriptionParse } from "@/utils/helper";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type MoreInformationSectionProps = {
   userDetails: any;
@@ -14,12 +15,13 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
   userDetails,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
 
   return (
     <div className="w-full py-4">
       <div className="flex w-full flex-wrap items-center justify-between pb-5">
         <div className="mb-4 flex w-full items-center justify-between">
-          <h2 className="text-lg font-bold text-color-dark">
+          <h2 className="text-lg font-bold text-color-dark" dir={langDir}>
             {t("more_information")}
           </h2>
           {userDetails?.userBranch?.length ? (
@@ -46,7 +48,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
           <div className="w-7/12">
             <div className="flex w-full flex-wrap py-4">
               <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+                <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                   {t("year_of_establishment")}:
                 </span>
               </div>
@@ -60,7 +62,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
           <div className="w-5/12">
             <div className="flex w-full flex-wrap py-4">
               <div className="mr-1 flex w-5/12 items-center justify-start sm:mr-0">
-                <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+                <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                   {t("no_of_employees")}:
                 </span>
               </div>
@@ -74,7 +76,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
           <div className="w-full">
             <div className="flex w-full flex-wrap items-start py-4">
               <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0">
-                <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+                <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                   {t("about_us")}:
                 </span>
               </div>

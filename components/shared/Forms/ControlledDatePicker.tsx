@@ -17,6 +17,7 @@ import { CalendarIcon } from "@radix-ui/react-icons";
 import { useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useAuth } from "@/context/AuthContext";
 
 interface ControlledDatePickerProps {
   label?: string;
@@ -34,6 +35,7 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
   placeholder
 }) => {
   const formContext = useFormContext();
+  const { langDir } = useAuth();
 
   return (
     <FormField
@@ -41,7 +43,7 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
       name={name}
       render={({ field }) => (
         <FormItem className="mb-4 flex w-full flex-col">
-          <FormLabel>{label}</FormLabel>
+          <FormLabel dir={langDir}>{label}</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
               <FormControl>

@@ -10,9 +10,11 @@ import VendorOperations from "@/components/modules/vendorOperations/VendorOperat
 import { PERMISSION_RFQ_SELLER_REQUESTS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const SellerRfqRequestPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_RFQ_SELLER_REQUESTS);
   const [currentTab, setCurrentTab] = useState<string>("RFQ");
@@ -69,7 +71,7 @@ const SellerRfqRequestPage = () => {
                     className="brightness-0 invert"
                   />
                 </div>
-                <div className="pl-1 text-sm font-medium">{t("rfq")}</div>
+                <div className="pl-1 text-sm font-medium" dir={langDir}>{t("rfq")}</div>
               </button>
             </li>
             <li
@@ -89,7 +91,7 @@ const SellerRfqRequestPage = () => {
                     className="brightness-0 invert"
                   />
                 </div>
-                <div className="pl-1 text-sm font-medium">
+                <div className="pl-1 text-sm font-medium" dir={langDir}>
                   {t("vendor_operations")}
                 </div>
               </button>

@@ -22,6 +22,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = z
   .object({
@@ -65,6 +66,7 @@ const formSchema = z
 
 export default function ChangePasswordPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -133,7 +135,7 @@ export default function ChangePasswordPage() {
               </div>
             ) : (
               <>
-                <h2 className="mb-4 text-[18px] font-semibold md:text-[22px]">
+                <h2 className="mb-4 text-[18px] font-semibold md:text-[22px]" dir={langDir}>
                   {t("change_password")}
                 </h2>
                 <div className="w-full">
@@ -147,13 +149,14 @@ export default function ChangePasswordPage() {
                         name="password"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full">
-                            <FormLabel>{t("old_password")}</FormLabel>
+                            <FormLabel dir={langDir}>{t("old_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
                                 placeholder="**********"
                                 className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                                 {...field}
+                                dir={langDir}
                               />
                             </FormControl>
                             <FormMessage />
@@ -166,13 +169,14 @@ export default function ChangePasswordPage() {
                         name="newPassword"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full">
-                            <FormLabel>{t("new_password")}</FormLabel>
+                            <FormLabel dir={langDir}>{t("new_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
                                 placeholder="**********"
                                 className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                                 {...field}
+                                dir={langDir}
                               />
                             </FormControl>
                             <FormMessage />
@@ -185,13 +189,14 @@ export default function ChangePasswordPage() {
                         name="confirmPassword"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full">
-                            <FormLabel>{t("reenter_new_password")}</FormLabel>
+                            <FormLabel dir={langDir}>{t("reenter_new_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
                                 placeholder="**********"
                                 className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                                 {...field}
+                                dir={langDir}
                               />
                             </FormControl>
                             <FormMessage />
@@ -204,6 +209,7 @@ export default function ChangePasswordPage() {
                           disabled={changePassword.isPending}
                           type="submit"
                           className="h-12 w-full rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:text-lg"
+                          dir={langDir}
                         >
                           {changePassword.isPending ? (
                             <>

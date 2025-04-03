@@ -33,7 +33,8 @@ import { IBrands, ISelectOptions } from "@/utils/types/common.types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useBrands } from "@/apis/queries/masters.queries";
 
-const schema = z
+const schema = (t: any) => {
+  return z
   .object({
     productPrice: z.number().optional(),
     offerPrice: z.coerce.number().optional(),
@@ -85,17 +86,18 @@ const schema = z
   //   path: ["offerPrice"],
   // })
   .refine((data) => !data.isDeliveryAfterRequired || !!data.deliveryAfter, {
-    message: "Delivery After is required",
+    message: t("delivery_after_is_required"),
     path: ["deliveryAfter"],
   })
   .refine((data) => !data.isConsumerTypeRequired || !!data.consumerType, {
-    message: "Consumer Type is required",
+    message: t("consumer_type_is_required"),
     path: ["consumerType"],
   })
   .refine((data) => !data.isSellTypeRequired || !!data.sellType, {
-    message: "Sell Type is required",
+    message: t("sell_type_is_required"),
     path: ["sellType"],
   });
+}
 
 const defaultValues = {
   productPrice: 0,
@@ -126,6 +128,7 @@ const defaultValues = {
 
 const ManageProductsPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_PRODUCTS);
   const { toast } = useToast();
@@ -181,7 +184,7 @@ const ManageProductsPage = () => {
   };
 
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema(t)),
     defaultValues,
   });
 
@@ -449,10 +452,10 @@ const ManageProductsPage = () => {
               <div className="w-[25%]">
                 <div className="trending-search-sec mt-0">
                   <div className="all_select_button">
-                    <button type="button" onClick={selectAll}>
+                    <button type="button" onClick={selectAll} dir={langDir}>
                       {t("select_all")}
                     </button>
-                    <button type="button" onClick={clearFilter}>
+                    <button type="button" onClick={clearFilter} dir={langDir}>
                       {t("clean_select")}
                     </button>
                   </div>
@@ -464,7 +467,7 @@ const ManageProductsPage = () => {
                         className="filter-col"
                       >
                         <AccordionItem value="brand">
-                          <AccordionTrigger className="px-3 text-base hover:!no-underline">
+                          <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
                             {t("by_brand")}
                           </AccordionTrigger>
                           <AccordionContent>
@@ -474,12 +477,13 @@ const ManageProductsPage = () => {
                                 placeholder={t("search_brand")}
                                 className="custom-form-control-s1 searchInput rounded-none"
                                 onChange={handleDebounceBrandSearch}
+                                dir={langDir}
                               />
                             </div>
                             <div className="filter-body-part">
                               <div className="filter-checklists">
                                 {!memoizedBrands.length ? (
-                                  <p className="text-center text-sm font-medium">
+                                  <p className="text-center text-sm font-medium" dir={langDir}>
                                     {t("no_data_found")}
                                   </p>
                                 ) : null}
@@ -536,6 +540,7 @@ const ManageProductsPage = () => {
                                     <label
                                       htmlFor="displayStoreProducts"
                                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      dir={langDir}
                                     >
                                       {t("store")}
                                     </label>
@@ -554,6 +559,7 @@ const ManageProductsPage = () => {
                                     <label
                                       htmlFor="displayBuyGroupProducts"
                                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      dir={langDir}
                                     >
                                       {t("buy_group")}
                                     </label>
@@ -572,6 +578,7 @@ const ManageProductsPage = () => {
                                     <label
                                       htmlFor="displayExpiredProducts"
                                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      dir={langDir}
                                     >
                                       {t("expired")}
                                     </label>
@@ -590,6 +597,7 @@ const ManageProductsPage = () => {
                                     <label
                                       htmlFor="displayHiddenProducts"
                                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      dir={langDir}
                                     >
                                       {t("hidden")}
                                     </label>
@@ -608,6 +616,7 @@ const ManageProductsPage = () => {
                                     <label
                                       htmlFor="displayDiscountedProducts"
                                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      dir={langDir}
                                     >
                                       {t("discounted")}
                                     </label>
@@ -625,7 +634,7 @@ const ManageProductsPage = () => {
               <div className="w-[75%]">
                 {/* start: existing-product-add-headerPart */}
                 <div className="existing-product-add-headerPart">
-                  <h2 className="text-2xl font-medium capitalize text-color-dark">
+                  <h2 className="text-2xl font-medium capitalize text-color-dark" dir={langDir}>
                     {t("products")}
                   </h2>
                   <ul className="right-filter-lists flex flex-row flex-nowrap gap-x-2">
@@ -636,12 +645,14 @@ const ManageProductsPage = () => {
                         className="search-box h-[40px] w-[200px] sm:w-[160px] lg:w-80"
                         onChange={handleDebounce}
                         ref={searchInputRef}
+                        dir={langDir}
                       />
                     </li>
                     <li>
                       <button
                         className="theme-primary-btn add-btn p-2"
                         onClick={handleAddProductModal}
+                        dir={langDir}
                       >
                         <IoMdAdd size={24} />
                         <span className="d-none-mobile">
@@ -653,6 +664,7 @@ const ManageProductsPage = () => {
                       <button
                         className="theme-primary-btn add-btn p-2"
                         onClick={() => router.replace("/cart")}
+                        dir={langDir}
                       >
                         <span className="d-none-mobile">{t("go_to_cart")}</span>
                       </button>
@@ -680,7 +692,7 @@ const ManageProductsPage = () => {
 
                           {!allManagedProductsQuery.data?.data?.length &&
                           !allManagedProductsQuery.isLoading ? (
-                            <p className="w-full py-10 text-center text-base font-medium">
+                            <p className="w-full py-10 text-center text-base font-medium" dir={langDir}>
                               {t("no_product_found")}
                             </p>
                           ) : null}

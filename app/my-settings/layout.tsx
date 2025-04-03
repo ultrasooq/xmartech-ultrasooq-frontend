@@ -10,9 +10,11 @@ import { getInitials } from "@/utils/helper";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const pathname = usePathname();
   const isActivePath = (path: string) => path === pathname;
 
@@ -61,7 +63,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                     <span className="icon-container">
                       <PackageIcon />
                     </span>
-                    <span className="text-container">{t("my_orders")}</span>
+                    <span className="text-container" dir={langDir}>{t("my_orders")}</span>
                     {/* TODO: commented for now */}
                     {/* <span className="arow">
                       <ChevronDownIcon />
@@ -73,7 +75,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                     <span className="icon-container">
                       <UserIcon />
                     </span>
-                    <span className="text-container">{t("account_settings")}</span>
+                    <span className="text-container" dir={langDir}>{t("account_settings")}</span>
                     <span className="arow">
                       <ChevronDownIcon />
                     </span>
@@ -86,6 +88,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                           "sub-menu-links",
                           isActivePath("/my-settings/address") ? "active" : "",
                         )}
+                        dir={langDir}
                       >
                         {t("manage_address")}
                       </Link>
@@ -101,6 +104,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                                 ? "active"
                                 : "",
                             )}
+                            dir={langDir}
                           >
                             {t("change_password")}
                           </Link>
@@ -114,6 +118,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                                 ? "active"
                                 : "",
                             )}
+                            dir={langDir}
                           >
                             {t("change_email")}
                           </Link>

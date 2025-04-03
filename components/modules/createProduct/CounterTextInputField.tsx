@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/AuthContext";
 
 type CounterTextInputFieldProps = {
   name: string;
@@ -24,6 +25,7 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
 }) => {
   const formContext = useFormContext();
   const [counter, setCounter] = useState(0);
+  const { langDir } = useAuth();
 
   useEffect(() => {
     setCounter(formContext.watch(name));
@@ -36,7 +38,7 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
       name={name}
       render={({ field }) => (
         <FormItem className="flex flex-col">
-          <FormLabel>{label}</FormLabel>
+          <FormLabel dir={langDir}>{label}</FormLabel>
           <FormControl>
             <div className="relative">
               <button
