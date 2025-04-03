@@ -257,7 +257,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
             {...settings}
           >
             {memoizedRelatedProductList?.map((item: any) => (
-              <div className="p-1">
+              <div className="p-1" key={item?.id}>
                 <ProductCard
                   id={item?.id}
                   productName={item?.productName}
