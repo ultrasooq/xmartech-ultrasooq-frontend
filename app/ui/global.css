@@ -1806,7 +1806,7 @@
   }
 
   .my-order-lists .my-order-box {
-    @apply flex items-start justify-between gap-x-6;
+    @apply flex items-start justify-between gap-x-6 flex-wrap;
   }
 
   .my-order-lists .my-order-box ~ .my-order-box {
