@@ -82,7 +82,7 @@ const formSchema = (t: any) => {
         message: t("province_must_be_less_than_n_chars", { n: 50 }),
       })
       .refine((val) => ALPHABETS_REGEX.test(val), {
-        message: t("province_must_contain_only_letters")
+        message: t("province_must_contain_only_letters"),
       }),
     country: z
       .string()
@@ -216,7 +216,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="card-item card-payment-form px-5 pb-5 pt-3"
         >
-          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2">
             <ControlledTextInput
               label={t("first_name")}
               name="firstName"
@@ -232,7 +232,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             />
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-1">
+          <div className="mt-2 grid w-full grid-cols-1 gap-1 md:grid-cols-1">
             <ControlledPhoneInput
               label={t("phone_number")}
               name="phoneNumber"
@@ -241,7 +241,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             />
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-1">
+          <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-1">
             <ControlledTextInput
               label={t("address")}
               name="address"
@@ -250,8 +250,13 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             />
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-            <ControlledTextInput label="City" name="city" placeholder="City" dir={langDir} />
+          <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2">
+            <ControlledTextInput
+              label="City"
+              name="city"
+              placeholder="City"
+              dir={langDir}
+            />
 
             <ControlledTextInput
               label={t("province")}
@@ -261,7 +266,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             />
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2">
             <ControlledTextInput
               label={t("postcode")}
               type="number"

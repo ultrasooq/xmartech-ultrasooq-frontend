@@ -252,7 +252,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
       {/* For factories type */}
       {!isLoading &&
-      productDetails?.product_productPrice[0]?.isCustomProduct === "true" ? (
+      productDetails?.product_productPrice?.[0]?.isCustomProduct === "true" ? (
         <div className="my-2 flex w-full flex-wrap justify-end gap-3 self-end pb-2">
           {productDetails?.adminId !== loginUserId ? (
             <>

@@ -34,70 +34,72 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useBrands } from "@/apis/queries/masters.queries";
 
 const schema = (t: any) => {
-  return z
-  .object({
-    productPrice: z.number().optional(),
-    offerPrice: z.coerce.number().optional(),
-    productLocationId: z.number().optional(),
-    stock: z.coerce.number().optional(),
-    deliveryAfter: z.coerce.number().optional(),
-    timeOpen: z.coerce.number().optional(),
-    timeClose: z.coerce.number().optional(),
-    consumerType: z.string().trim().optional(),
-    sellType: z.string().trim().optional(),
-    vendorDiscount: z.coerce.number().optional(),
-    consumerDiscount: z.coerce.number().optional(),
-    minQuantity: z.coerce.number().optional(),
-    maxQuantity: z.coerce.number().optional(),
-    minCustomer: z.coerce.number().optional(),
-    maxCustomer: z.coerce.number().optional(),
-    minQuantityPerCustomer: z.coerce.number().optional(),
-    maxQuantityPerCustomer: z.coerce.number().optional(),
-    productCondition: z.string().optional(),
-    isProductConditionRequired: z.boolean().optional(),
-    isHiddenRequired: z.boolean().optional(),
-    isStockRequired: z.boolean().optional(),
-    isOfferPriceRequired: z.boolean().optional(),
-    isDeliveryAfterRequired: z.boolean().optional(),
-    isConsumerTypeRequired: z.boolean().optional(),
-    isSellTypeRequired: z.boolean().optional(),
-    isVendorDiscountRequired: z.boolean().optional(),
-    isConsumerDiscountRequired: z.boolean().optional(),
-    isMinQuantityRequired: z.boolean().optional(),
-    isMaxQuantityRequired: z.boolean().optional(),
-    isMinCustomerRequired: z.boolean().optional(),
-    isMaxCustomerRequired: z.boolean().optional(),
-    isMinQuantityPerCustomerRequired: z.boolean().optional(),
-    isMaxQuantityPerCustomerRequired: z.boolean().optional(),
-  })
-  .refine(
-    (data) => !data.isProductConditionRequired || !!data.productCondition,
-    {
-      message: "Product Condition is required",
-      path: ["productCondition"],
-    },
-  )
-  // .refine((data) => data.isStockRequired || !!data.stock, {
-  //   message: "Stock is required",
-  //   path: ["stock"],
-  // })
-  // .refine((data) => data.isOfferPriceRequired || !!data.offerPrice, {
-  //   message: "Offer Price is required",
-  //   path: ["offerPrice"],
-  // })
-  .refine((data) => !data.isDeliveryAfterRequired || !!data.deliveryAfter, {
-    message: t("delivery_after_is_required"),
-    path: ["deliveryAfter"],
-  })
-  .refine((data) => !data.isConsumerTypeRequired || !!data.consumerType, {
-    message: t("consumer_type_is_required"),
-    path: ["consumerType"],
-  })
-  .refine((data) => !data.isSellTypeRequired || !!data.sellType, {
-    message: t("sell_type_is_required"),
-    path: ["sellType"],
-  });
-}
+  return (
+    z
+      .object({
+        productPrice: z.number().optional(),
+        offerPrice: z.coerce.number().optional(),
+        productLocationId: z.number().optional(),
+        stock: z.coerce.number().optional(),
+        deliveryAfter: z.coerce.number().optional(),
+        timeOpen: z.coerce.number().optional(),
+        timeClose: z.coerce.number().optional(),
+        consumerType: z.string().trim().optional(),
+        sellType: z.string().trim().optional(),
+        vendorDiscount: z.coerce.number().optional(),
+        consumerDiscount: z.coerce.number().optional(),
+        minQuantity: z.coerce.number().optional(),
+        maxQuantity: z.coerce.number().optional(),
+        minCustomer: z.coerce.number().optional(),
+        maxCustomer: z.coerce.number().optional(),
+        minQuantityPerCustomer: z.coerce.number().optional(),
+        maxQuantityPerCustomer: z.coerce.number().optional(),
+        productCondition: z.string().optional(),
+        isProductConditionRequired: z.boolean().optional(),
+        isHiddenRequired: z.boolean().optional(),
+        isStockRequired: z.boolean().optional(),
+        isOfferPriceRequired: z.boolean().optional(),
+        isDeliveryAfterRequired: z.boolean().optional(),
+        isConsumerTypeRequired: z.boolean().optional(),
+        isSellTypeRequired: z.boolean().optional(),
+        isVendorDiscountRequired: z.boolean().optional(),
+        isConsumerDiscountRequired: z.boolean().optional(),
+        isMinQuantityRequired: z.boolean().optional(),
+        isMaxQuantityRequired: z.boolean().optional(),
+        isMinCustomerRequired: z.boolean().optional(),
+        isMaxCustomerRequired: z.boolean().optional(),
+        isMinQuantityPerCustomerRequired: z.boolean().optional(),
+        isMaxQuantityPerCustomerRequired: z.boolean().optional(),
+      })
+      .refine(
+        (data) => !data.isProductConditionRequired || !!data.productCondition,
+        {
+          message: "Product Condition is required",
+          path: ["productCondition"],
+        },
+      )
+      // .refine((data) => data.isStockRequired || !!data.stock, {
+      //   message: "Stock is required",
+      //   path: ["stock"],
+      // })
+      // .refine((data) => data.isOfferPriceRequired || !!data.offerPrice, {
+      //   message: "Offer Price is required",
+      //   path: ["offerPrice"],
+      // })
+      .refine((data) => !data.isDeliveryAfterRequired || !!data.deliveryAfter, {
+        message: t("delivery_after_is_required"),
+        path: ["deliveryAfter"],
+      })
+      .refine((data) => !data.isConsumerTypeRequired || !!data.consumerType, {
+        message: t("consumer_type_is_required"),
+        path: ["consumerType"],
+      })
+      .refine((data) => !data.isSellTypeRequired || !!data.sellType, {
+        message: t("sell_type_is_required"),
+        path: ["sellType"],
+      })
+  );
+};
 
 const defaultValues = {
   productPrice: 0,
@@ -457,8 +459,8 @@ const ManageProductsPage = () => {
       <div className="existing-product-add-page">
         <div className="existing-product-add-layout">
           <div className="container m-auto px-3">
-            <div className="flex">
-              <div className="w-[25%]">
+            <div className="flex flex-wrap md:flex-nowrap">
+              <div className="w-full md:w-[25%]">
                 <div className="trending-search-sec mt-0" dir={langDir}>
                   <div className="all_select_button">
                     <button type="button" onClick={selectAll}>
@@ -476,7 +478,10 @@ const ManageProductsPage = () => {
                         className="filter-col"
                       >
                         <AccordionItem value="brand">
-                          <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+                          <AccordionTrigger
+                            className="px-3 text-base hover:!no-underline"
+                            dir={langDir}
+                          >
                             {t("by_brand")}
                           </AccordionTrigger>
                           <AccordionContent>
@@ -492,7 +497,10 @@ const ManageProductsPage = () => {
                             <div className="filter-body-part">
                               <div className="filter-checklists">
                                 {!memoizedBrands.length ? (
-                                  <p className="text-center text-sm font-medium" dir={langDir}>
+                                  <p
+                                    className="text-center text-sm font-medium"
+                                    dir={langDir}
+                                  >
                                     {t("no_data_found")}
                                   </p>
                                 ) : null}
@@ -641,13 +649,16 @@ const ManageProductsPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="w-[75%]">
+              <div className="w-full md:w-[75%]">
                 {/* start: existing-product-add-headerPart */}
                 <div className="existing-product-add-headerPart">
-                  <h2 className="text-2xl font-medium capitalize text-color-dark" dir={langDir}>
+                  <h2
+                    className="text-2xl font-medium capitalize text-color-dark"
+                    dir={langDir}
+                  >
                     {t("products")}
                   </h2>
-                  <ul className="right-filter-lists flex flex-row flex-nowrap gap-x-2">
+                  <ul className="right-filter-lists flex flex-row flex-wrap gap-x-2 md:flex-nowrap">
                     <li>
                       <Input
                         type="text"
@@ -702,7 +713,10 @@ const ManageProductsPage = () => {
 
                           {!allManagedProductsQuery.data?.data?.length &&
                           !allManagedProductsQuery.isLoading ? (
-                            <p className="w-full py-10 text-center text-base font-medium" dir={langDir}>
+                            <p
+                              className="w-full py-10 text-center text-base font-medium"
+                              dir={langDir}
+                            >
                               {t("no_product_found")}
                             </p>
                           ) : null}

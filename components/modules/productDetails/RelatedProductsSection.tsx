@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Slider from "react-slick";
 import ProductCard from "./ProductCard";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import {
   Carousel,
   CarouselContent,
@@ -220,25 +222,25 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
           slidesToShow: 3,
           slidesToScroll: 3,
           infinite: true,
-          dots: true
-        }
+          dots: true,
+        },
       },
       {
         breakpoint: 600,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 2,
-          initialSlide: 2
-        }
+          initialSlide: 2,
+        },
       },
       {
         breakpoint: 480,
         settings: {
           slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
 
   return (
@@ -252,10 +254,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
 
         {relatedProductsQuery?.isFetched &&
         memoizedRelatedProductList?.length ? (
-          <Slider
-            className="related_slider w-full"
-            {...settings}
-          >
+          <Slider className="related_slider w-full" {...settings}>
             {memoizedRelatedProductList?.map((item: any) => (
               <div className="p-1" key={item?.id}>
                 <ProductCard
@@ -271,9 +270,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
                   productProductPrice={item?.productProductPrice}
                   productPrice={item?.productPrice}
                   productReview={item?.productReview}
-                  onAdd={() =>
-                    handleAddToCart(-1, item?.productProductPriceId)
-                  }
+                  onAdd={() => handleAddToCart(-1, item?.productProductPriceId)}
                   onWishlist={() =>
                     handleAddToWishlist(item.id, item?.productWishlist)
                   }

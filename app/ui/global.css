@@ -4635,7 +4635,7 @@
     }
 
     .add-new-address-modal .card-payment-form {
-      max-height: calc(100vh - 58px);
+      max-height: calc(100vh - 118px);
     }
 
     .add-new-address-modal .modal-header h2 {
@@ -5230,6 +5230,20 @@ input::-ms-clear {
 
   .qty-up-down-s1-with-rgMenuAction .rgMenuAction-lists li button {
     @apply w-auto;
+  }
+
+
+  .product-view-s1-details-more-suggestion-sliders .slick-slider,
+  .product-view-s1-details-more-suggestion-sliders .slick-slider .slick-list {
+    @apply w-full;
+  }
+
+  .product-view-s1-details-more-suggestion-sliders .slick-slider .slick-list .slick-track {
+    @apply w-full flex !important;
+  }
+
+  .profile_details_product .product-list-s1-col {
+    @apply w-[48.5%];
   }
 
 }
