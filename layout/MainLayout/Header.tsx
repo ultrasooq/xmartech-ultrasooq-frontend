@@ -7,7 +7,7 @@ import React, {
   useTransition,
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { deleteCookie, getCookie } from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DialogTitle } from "@/components/ui/dialog";
 import { CURRENCIES, LANGUAGES, PUREMOON_TOKEN_KEY, menuBarIconList } from "@/utils/constants";
@@ -281,19 +281,28 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   useEffect(() => {
     const getIpInfo = async () => {
       try {
-        if (!window?.localStorage?.ipInfo) {
+        if (!window?.localStorage?.ipInfo || getCookie('ipInfoLoaded') != '1') {
           const response = await fetchIpInfo();
-          window.localStorage.setItem('ipInfo', JSON.stringify(response.data));
 
-          let localeKey = response.data.languages.split(',')[0];
-          if (localeKey.substr(0, 2)) {
-            localeKey = 'en';
+          const ip = response.data.ip;
+          if (ip) {
+            let savedIpInfo = JSON.parse(window.localStorage.getItem('ipInfo') || "{}");
+            if (!savedIpInfo.ip || (savedIpInfo.ip && savedIpInfo.ip != ip)) {
+              window.localStorage.setItem('ipInfo', JSON.stringify(response.data));
+
+              let localeKey = response.data.languages.split(',')[0];
+              if (localeKey.substr(0, 2)) {
+                localeKey = 'en';
+              }
+              window.localStorage.setItem('locale', localeKey);
+              applyTranslation(localeKey);
+    
+              setCurrency(response.data.currency || 'USD');
+              window.localStorage.setItem('currency', response.data.currency || 'USD');
+            }
+
+            setCookie('ipInfoLoaded', '1');
           }
-          window.localStorage.setItem('locale', localeKey);
-          applyTranslation(localeKey);
-
-          setCurrency(response.data.currency || 'USD');
-          window.localStorage.setItem('currency', response.data.currency || 'USD');
 
         } else {
           setCurrency(window.localStorage.currency || 'USD');
