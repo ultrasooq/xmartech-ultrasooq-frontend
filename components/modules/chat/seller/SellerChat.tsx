@@ -57,7 +57,7 @@ interface SellerChatProps {}
 
 const SellerChat: React.FC<SellerChatProps> = () => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
   const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
   const [rfqQuotes, setRfqQuotes] = useState<any[]>([]);
@@ -711,7 +711,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
               {t("offering_price")}{" "}
               <b className="text-[#679A03]">
                 {selectedRfqQuote?.offerPrice
-                  ? `$${selectedRfqQuote?.offerPrice}`
+                  ? `${currency.symbol}${selectedRfqQuote?.offerPrice}`
                   : "-"}
               </b>
             </span>

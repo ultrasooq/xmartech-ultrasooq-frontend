@@ -119,7 +119,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
-  const { clearUser, applyTranslation, langDir } = useAuth();
+  const { clearUser, applyTranslation, langDir, changeCurrency } = useAuth();
   const wishlistCount = useWishlistCount(hasAccessToken);
   const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
   const cartCountWithoutLogin = useCartCountWithoutLogin(
@@ -145,7 +145,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [selectedLocale, setSelectedLocale] = useState<string>(locale || "en");
   const languages = [...LANGUAGES];
 
-  const [currency, setCurrency] = useState<string>('USD');
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
   const currencies = [...CURRENCIES];
 
   // Debounced function to update URL
@@ -297,15 +297,17 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               window.localStorage.setItem('locale', localeKey);
               applyTranslation(localeKey);
     
-              setCurrency(response.data.currency || 'USD');
+              setSelectedCurrency(response.data.currency || 'USD');
               window.localStorage.setItem('currency', response.data.currency || 'USD');
+              changeCurrency(response.data.currency || 'USD');
             }
 
             setCookie('ipInfoLoaded', '1');
           }
 
         } else {
-          setCurrency(window.localStorage.currency || 'USD');
+          setSelectedCurrency(window.localStorage.currency || 'USD');
+          changeCurrency(window.localStorage.currency || 'USD');
         }
       } catch (error) {
 
@@ -347,10 +349,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </li>
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <select className="border-0 bg-transparent text-white focus:outline-none" value={currency} 
+                    <select className="border-0 bg-transparent text-white focus:outline-none" value={selectedCurrency} 
                       onChange={(e: any) => {
-                        setCurrency(e.target?.value || 'USD');
-                        window.localStorage.setItem('currency', e.target?.value || 'USD')
+                        setSelectedCurrency(e.target?.value || 'USD');
+                        window.localStorage.setItem('currency', e.target?.value || 'USD');
+                        changeCurrency(e.target.value || 'USD');
                       }}
                     >
                       {currencies.map((item: { code: string }) => {

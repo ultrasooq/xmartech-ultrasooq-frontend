@@ -68,7 +68,7 @@ interface TrendingPageProps {
 
 const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const queryClient = useQueryClient();
   // const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -435,7 +435,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                       <div className="range-price-left-right-info">
                         <Input
                           type="number"
-                          placeholder="$0"
+                          placeholder={`${currency.symbol}0`}
                           className="custom-form-control-s1 rounded-none"
                           onChange={handleMinPriceChange}
                           onWheel={(e) => e.currentTarget.blur()}
@@ -444,7 +444,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                         <div className="center-divider"></div>
                         <Input
                           type="number"
-                          placeholder="$500"
+                          placeholder={`${currency.symbol}500`}
                           className="custom-form-control-s1 rounded-none"
                           onChange={handleMaxPriceChange}
                           onWheel={(e) => e.currentTarget.blur()}

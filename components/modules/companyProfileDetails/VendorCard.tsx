@@ -12,7 +12,7 @@ type VendorCardProps = {
 
 const VendorCard: React.FC<VendorCardProps> = ({ vendor }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
 
   return (
     <div className="flex w-full flex-wrap rounded-3xl border border-solid border-gray-300 bg-white p-4 shadow-md md:p-9">
@@ -40,7 +40,7 @@ const VendorCard: React.FC<VendorCardProps> = ({ vendor }) => {
             {t("annual_purchasing_volume")}:{" "}
             <span className="font-bold text-dark-cyan">
               {vendor?.userProfile?.[0]?.annualPurchasingVolume
-                ? `$${vendor.userProfile[0].annualPurchasingVolume}`
+                ? `${currency.symbol}${vendor.userProfile[0].annualPurchasingVolume}`
                 : "NA"}
             </span>
           </p>

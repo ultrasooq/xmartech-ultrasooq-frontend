@@ -22,7 +22,7 @@ type ProducTableProps = {
 
 const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const calculateDiscountedPrice = ({ item }: { item: any }) => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
@@ -83,7 +83,7 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
                         </button>
                       </Link>
                     ) : (
-                      `$${calculateDiscountedPrice({ item })}`
+                      `${currency.symbol}${calculateDiscountedPrice({ item })}`
                     )}
                   </TableCell>
                 </TableRow>

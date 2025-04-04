@@ -23,7 +23,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const MyOrderDetailsPage = ({}) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const searchParams = useParams();
   // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   // const [reviewId, setReviewId] = useState<number>();
@@ -218,7 +218,7 @@ const MyOrderDetailsPage = ({}) => {
                                 }
                               </p>
                               <h4 className="mt-1">
-                                $
+                                {currency.symbol}
                                 {orderDetails?.orderProduct_productPrice
                                   ?.offerPrice
                                   ? Number(

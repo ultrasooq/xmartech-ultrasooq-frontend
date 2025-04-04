@@ -29,7 +29,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
   isUploadingCompleted,
 }) => {
   const t = useTranslations();
-  const { user } = useAuth();
+  const { user, currency } = useAuth();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { updateRfqRequestStatus } = useSocket();
 
@@ -141,7 +141,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                             {chat?.rfqProductPriceRequest && (
                               <div>
                                 <p>
-                                  Requested Price: $
+                                  Requested Price: {currency.symbol}
                                   {chat.rfqProductPriceRequest?.requestedPrice}
                                 </p>
                                 <p>
@@ -256,7 +256,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                               {chat?.rfqProductPriceRequest && (
                                 <div>
                                   <p>
-                                    Requested Price: $
+                                    Requested Price: {currency.symbol}
                                     {
                                       chat.rfqProductPriceRequest
                                         ?.requestedPrice

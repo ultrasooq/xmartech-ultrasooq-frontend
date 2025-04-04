@@ -65,7 +65,7 @@ type PriceSectionProps = {
 
 const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const formContext = useFormContext();
 
   const countriesQuery = useCountries();
@@ -805,7 +805,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     <FormControl>
                       <div className="relative">
                         <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
-                          $
+                          {currency.symbol}
                         </div>
                         <Input
                           type="number"
@@ -833,7 +833,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     <FormControl>
                       <div className="relative">
                         <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
-                          $
+                          {currency.symbol}
                         </div>
                         <Input
                           type="number"

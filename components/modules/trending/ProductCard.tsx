@@ -52,7 +52,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isAddedToCart,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
 
   const [timeLeft, setTimeLeft] = useState("");
 
@@ -359,9 +359,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </Link>
           ) : (
             <h5 className="py-1 text-[#1D77D1]">
-              ${calculateDiscountedPrice()}{" "}
+              {currency.symbol}{calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
-                ${item.productProductPrice}
+                {currency.symbol}{item.productProductPrice}
               </span>
             </h5>
           )}

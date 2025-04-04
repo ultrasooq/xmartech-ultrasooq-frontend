@@ -39,7 +39,7 @@ const SellerCard: React.FC<SellerCardProps> = ({
   onChooseSeller,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
     const discount = consumerDiscount || 0;
@@ -83,11 +83,11 @@ const SellerCard: React.FC<SellerCardProps> = ({
               <div className="flex w-full items-end">
                 <span className="text-md font-medium text-black">
                   {calculateDiscountedPrice
-                    ? `$${calculateDiscountedPrice()}`
-                    : `$${0}`}
+                    ? `${currency.symbol}${calculateDiscountedPrice()}`
+                    : `${currency.symbol}${0}`}
                 </span>
                 <span className="ml-2 text-sm font-medium text-light-gray line-through">
-                  {productProductPrice ? `$${productProductPrice}` : `$${0}`}
+                  {productProductPrice ? `${currency.symbol}${productProductPrice}` : `${currency.symbol}${0}`}
                 </span>
               </div>
             </div>

@@ -45,7 +45,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
   note,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(1);
   // const cart = useCartStore();
 
@@ -151,7 +151,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
       <div className="price-info">
         <h5 dir={langDir}>{t("price")}</h5>
         {/* <p>${offerFromPrice ? Number(offerFromPrice) * quantity : 0}</p> */}
-        <p dir={langDir}> ${offerFromPrice ? `${Number(offerFromPrice)} - ${Number(offerToPrice)}` : '0'}</p>
+        <p dir={langDir}> {offerFromPrice ? `${currency.symbol}${Number(offerFromPrice)} - ${currency.symbol}${Number(offerToPrice)}` : '0'}</p>
       </div>
     </div>
   );

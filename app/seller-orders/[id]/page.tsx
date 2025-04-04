@@ -28,7 +28,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const MyOrderDetailsPage = ({}) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_ORDERS);
   const searchParams = useParams();
@@ -222,7 +222,7 @@ const MyOrderDetailsPage = ({}) => {
                                 }
                               </p>
                               <h4 className="mt-1" dir={langDir}>
-                                $
+                                {currency.symbol}
                                 {orderDetails?.orderProduct_productPrice
                                   ?.offerPrice
                                   ? Number(

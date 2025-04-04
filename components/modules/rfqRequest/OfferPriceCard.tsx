@@ -3,6 +3,7 @@ import Image from "next/image";
 import moment from "moment";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { capitalizeWord, formatDate, formatPrice } from "@/utils/helper";
+import { useAuth } from "@/context/AuthContext";
 
 type OfferPriceCardProps = {
   offerPrice: string;
@@ -29,6 +30,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   onRequestPrice,
   priceRequest
 }) => {
+  const { currency } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editedOfferPrice, setEditedOfferPrice] = useState("");
 
@@ -90,7 +92,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
             </div>
           ) : (
             <div>
-              {editedOfferPrice ? `$${editedOfferPrice}` : "-"}
+              {editedOfferPrice ? `${currency.symbol}${editedOfferPrice}` : "-"}
               <button onClick={handleEditClick} className="ml-2 text-blue-500">Edit</button>
             </div>
           )}
@@ -103,7 +105,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
         <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4">
           <p className="mb-2 text-sm font-normal text-gray-500">
             Requested for Offer Price change:
-            <span className="mx-7">Requested Price: {formatPrice(priceRequest?.requestedPrice)}</span>
+            <span className="mx-7">Requested Price: {formatPrice(priceRequest?.requestedPrice, currency.symbol)}</span>
             <span className="mr-7">Status: {capitalizeWord(priceRequest?.status)}</span>
             <span>Date: {moment(priceRequest?.updatedAt).format('YYYY-MM-DD HH:mm A')}</span>
           </p>

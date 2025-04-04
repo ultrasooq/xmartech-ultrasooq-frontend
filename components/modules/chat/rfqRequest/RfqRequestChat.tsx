@@ -51,7 +51,7 @@ interface RfqRequestVendorDetailsProps {
 
 const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const [activeSellerId, setActiveSellerId] = useState<number>();
   const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
   const [rfqQuotesUserId, setRfqQuotesUserId] = useState<number>();
@@ -743,7 +743,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
               {t("offering_price")}{" "}
               <b className="text-[#679A03]">
                 {selectedVendor?.offerPrice
-                  ? `$${selectedVendor?.offerPrice}`
+                  ? `${currency.symbol}${selectedVendor?.offerPrice}`
                   : "-"}
               </b>
             </span>

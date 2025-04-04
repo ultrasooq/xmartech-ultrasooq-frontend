@@ -1,12 +1,15 @@
 import React from "react";
 import Image from "next/image";
 import StarIcon from "@/public/images/star.png";
+import { useAuth } from "@/context/AuthContext";
 
 type DealsCardProps = {
   item: any;
 };
 
 const DealsCard: React.FC<DealsCardProps> = ({ item }) => {
+  const { currency } = useAuth();
+
   return (
     <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
       {item?.discount ? (
@@ -29,7 +32,7 @@ const DealsCard: React.FC<DealsCardProps> = ({ item }) => {
         </h6>
         <div className="mt-2.5 w-full">
           <h4 className="font-lg font-normal uppercase text-olive-green">
-            ${item?.offerPrice}
+            {currency.symbol}{item?.offerPrice}
           </h4>
         </div>
         <p>

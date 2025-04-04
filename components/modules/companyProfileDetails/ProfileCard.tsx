@@ -14,7 +14,7 @@ type ProfileCardProps = {
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
 
   const isOnlineToday = useMemo(() => {
     const getActiveDays = userDetails?.userBranch
@@ -94,7 +94,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
             {t("annual_purchasing_volume")}:{" "}
             <span className="font-bold text-dark-cyan">
               {userDetails?.userProfile?.[0]?.annualPurchasingVolume
-                ? `$${userDetails.userProfile[0].annualPurchasingVolume}`
+                ? `${currency.symbol}${userDetails.userProfile[0].annualPurchasingVolume}`
                 : "NA"}
             </span>
           </p>

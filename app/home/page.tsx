@@ -1,3 +1,4 @@
+"use client";
 import DealsCard from "@/components/modules/home/DealsCard";
 import ProductCard from "@/components/modules/home/ProductCard";
 import TrendingCard from "@/components/modules/home/TrendingCard";
@@ -18,13 +19,15 @@ import HeadphoneImage from "@/public/images/big-headphone.png";
 import AdBannerOne from "@/public/images/hs-1.png";
 import AdBannerTwo from "@/public/images/hs-2.png";
 import AdBannerThree from "@/public/images/hs-3.png";
-import { Metadata } from "next";
+import { useAuth } from "@/context/AuthContext";
+// import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Home",
-};
+// export const metadata: Metadata = {
+//   title: "Home",
+// };
 
 function HomePage() {
+  const { currency } = useAuth();
   return (
     <>
       <section className="w-full py-8">
@@ -76,7 +79,7 @@ function HomePage() {
                     </h3>
                     <p>Just Price</p>
                     <h5 className="mb-5 text-lg font-semibold text-olive-green">
-                      $159.99
+                      {currency.symbol}159.99
                     </h5>
                   </div>
                 </div>
@@ -101,7 +104,7 @@ function HomePage() {
                     </span>
                     <p>Just Price</p>
                     <h5 className="mb-5 text-lg font-semibold text-olive-green">
-                      $159.99
+                      {currency.symbol}159.99
                     </h5>
                   </div>
                 </div>
@@ -231,10 +234,10 @@ function HomePage() {
               </div>
               <div className="w-12/12 flex flex-wrap content-center items-center px-3.5 sm:w-4/12 md:w-3/12">
                 <h6 className="mb-1.5 text-base font-medium uppercase text-color-dark line-through">
-                  $332.38
+                  {currency.symbol}332.38
                 </h6>
                 <h4 className="w-full text-3xl font-medium uppercase text-olive-green">
-                  <span className="line-through">$</span>219.05
+                  <span className="line-through">{currency.symbol}</span>219.05
                 </h4>
                 <div className="mt-5">
                   <a

@@ -421,12 +421,15 @@ export const LANGUAGES = [
 
 export const CURRENCIES = [
   {
-    code: 'INR'
+    code: 'INR',
+    symbol: '₹'
   },
   {
-    code: 'USD'
+    code: 'USD',
+    symbol: '$'
   },
   {
-    code: 'AUD'
+    code: 'AUD',
+    symbol: '$'
   }
 ];

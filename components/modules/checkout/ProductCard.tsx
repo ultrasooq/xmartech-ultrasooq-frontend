@@ -37,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   consumerDiscount,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(1);
 
   const calculateDiscountedPrice = () => {
@@ -125,7 +125,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </figure>
       <div className="right-info">
         <h6 dir={langDir}>{t("price")}</h6>
-        <h5 dir={langDir}>${quantity * calculateDiscountedPrice()}</h5>
+        <h5 dir={langDir}>{currency.symbol}{quantity * calculateDiscountedPrice()}</h5>
       </div>
     </div>
   );

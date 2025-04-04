@@ -42,7 +42,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   note,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(1);
   // const cart = useCartStore();
 
@@ -137,11 +137,11 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       </p>
       <div className="price-info" dir={langDir}>
         <h5>{t("offer_price_from")}</h5>
-        <p>${offerPriceFrom}</p>
+        <p>{currency.symbol}{offerPriceFrom}</p>
       </div>
       <div className="price-info" dir={langDir}>
         <h5>{t("offer_price_to")}</h5>
-        <p>${offerPriceTo}</p>
+        <p>{currency.symbol}{offerPriceTo}</p>
       </div>
     </div>
   );

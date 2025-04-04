@@ -33,7 +33,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   updatedAt,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
 
   return (
     <div className="my-order-item">
@@ -60,7 +60,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
                 {/* <p>Color: B.A.E Black</p> */}
                 <p className="mt-1">Seller: {sellerName}</p>
                 <h4 className="mt-1">
-                  ${Number(offerPrice) * (orderQuantity ?? 0)}
+                  {currency.symbol}{Number(offerPrice) * (orderQuantity ?? 0)}
                 </h4>
                 <p className="text-gray-500">Quantity x {orderQuantity || 0}</p>
               </figcaption>

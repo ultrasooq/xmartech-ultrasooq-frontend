@@ -3,6 +3,7 @@ import Image from "next/image";
 import moment from "moment";
 import { cn } from "@/lib/utils";
 import AvatarPlaceholder from "@/public/images/no-user-image.png";
+import { useAuth } from "@/context/AuthContext";
 
 type VendorCardProps = {
   offerPrice: string;
@@ -32,6 +33,8 @@ const VendorCard: React.FC<VendorCardProps> = ({
   isSelected,
   vendor
 }) => {
+  const { currency } = useAuth();
+
   return (
     <button
       type="button"
@@ -58,7 +61,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
         <div className="flex w-full text-xs font-normal">
           <span className="text-[#7F818D]">Offer Price :</span>
           <span className="font-semibold text-[#679A03]">
-            {offerPrice ? `$${offerPrice}` : "-"}
+            {offerPrice ? `${currency.symbol}${offerPrice}` : "-"}
           </span>
         </div>
 

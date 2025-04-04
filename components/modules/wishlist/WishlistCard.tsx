@@ -24,7 +24,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   id,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   
   const calculateDiscountedPrice = () => {
     const price = wishlistData?.product_productPrice?.[0]?.productProductPrice
@@ -140,9 +140,9 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
             </Link>
           ) : (
             <h5 className="py-1 text-[#1D77D1]">
-              ${calculateDiscountedPrice()}{" "}
+              {currency.symbol}{calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
-                ${wishlistData?.product_productPrice?.[0]?.offerPrice}
+                {currency.symbol}{wishlistData?.product_productPrice?.[0]?.offerPrice}
               </span>
             </h5>
           )}

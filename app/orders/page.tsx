@@ -26,7 +26,7 @@ const stripePromise = loadStripe("pk_test_51QuptGPQ2VnoEyMPay2u4FyltporIQfMh9hWc
 
 const OrdersPage = () => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
@@ -211,13 +211,13 @@ const OrdersPage = () => {
                 <ul>
                   <li>
                     <p dir={langDir}>{t("subtotal")}</p>
-                    <h5>${calculateTotalAmount() || 0}</h5>
+                    <h5>{currency.symbol}{calculateTotalAmount() || 0}</h5>
                   </li>
                   {advanceAmount !== "" ? 
                   <>
                     <li>
                       <p dir={langDir}>{t("advance_payment")}</p>
-                      <h5>${advanceAmount || 0}</h5>
+                      <h5>{currency.symbol}{advanceAmount || 0}</h5>
                     </li>
                     <li>
                         <p dir={langDir}>{t("shipping")}</p>

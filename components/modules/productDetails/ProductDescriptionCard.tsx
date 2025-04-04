@@ -79,7 +79,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   onQuantityChange, // Callback to update productQuantity outside
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(productQuantity);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
@@ -280,12 +280,12 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           </div>
           {askForPrice === "true" ? (
             <h3 className="w-fit rounded !bg-dark-orange px-4 py-2 !font-semibold !normal-case !text-white !no-underline shadow-md">
-              Ask for price
+              {t("ask_for_price")}
             </h3>
           ) : (
             <h3>
-              ${calculateDiscountedPrice()}{" "}
-              <span>${Number(productProductPrice)}</span>
+              {currency.symbol}{calculateDiscountedPrice()}{" "}
+              <span>{currency.symbol}{Number(productProductPrice)}</span>
             </h3>
           )}
         </div>

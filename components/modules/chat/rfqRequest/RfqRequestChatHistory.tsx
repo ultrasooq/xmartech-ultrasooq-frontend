@@ -20,7 +20,7 @@ interface RfqRequestChatHistoryProps {
 
 const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, selectedChatHistory, chatHistoryLoading, activeSellerId, unreadMsgCount, updateVendorMessageCount, rfqUserId, isUploadingCompleted }) => {
     const t = useTranslations();
-    const { user } = useAuth();
+    const { user, currency } = useAuth();
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const { updateRfqRequestStatus } = useSocket();
 
@@ -114,7 +114,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
 
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
-                                                        <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>
+                                                        <p>Requested Price: {currency.symbol}{chat.rfqProductPriceRequest?.requestedPrice}</p>
                                                         <p>status:
                                                             {chat.rfqProductPriceRequest?.status === "APPROVED" ?
                                                                 <span className="text-white bg-blue-700 p-0.5 rounded-sm">Approved</span>
@@ -194,7 +194,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
 
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
-                                                        <p>Requested Price: ${chat.rfqProductPriceRequest?.requestedPrice}</p>
+                                                        <p>Requested Price: {currency.symbol}{chat.rfqProductPriceRequest?.requestedPrice}</p>
                                                         <p>status:
                                                             {chat.rfqProductPriceRequest?.status === "APPROVED" ?
                                                                 <span className="text-white bg-blue-700 p-0.5 rounded-sm">Approved</span>

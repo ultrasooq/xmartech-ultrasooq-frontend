@@ -51,7 +51,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   askForPrice,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
 
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
@@ -177,9 +177,9 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
             </Link>
           ) : (
             <h5 className="py-1 text-[#1D77D1]">
-              ${calculateDiscountedPrice()}{" "}
+              {currency.symbol}{calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
-                ${productProductPrice}
+                {currency.symbol}{productProductPrice}
               </span>
             </h5>
           )}

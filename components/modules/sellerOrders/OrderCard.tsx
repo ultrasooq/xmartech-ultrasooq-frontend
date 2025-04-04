@@ -41,7 +41,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   productId,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
 
   return (
     <div className="my-order-card">
@@ -68,7 +68,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
           </figure>
         </Link>
         <div className="center-price-info">
-          <h4>${Number(purchasePrice) * (orderQuantity ?? 0)}</h4>
+          <h4>{currency.symbol}{Number(purchasePrice) * (orderQuantity ?? 0)}</h4>
           <p className="text-gray-500">Quantity x {orderQuantity || 0}</p>
         </div>
         <div className="right-info">

@@ -57,7 +57,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   offerPriceTo
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
@@ -114,7 +114,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         {productType === "P" ? (
           <>
             <label dir={langDir}>{t("price")}:</label>
-            <p>${productPrice?.[0]?.offerPrice}</p>
+            <p>{currency.symbol}{productPrice?.[0]?.offerPrice}</p>
           </>
         ) : null}
         {haveAccessToken ? (

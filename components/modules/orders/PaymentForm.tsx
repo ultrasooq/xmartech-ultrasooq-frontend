@@ -36,7 +36,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   clearCardElement
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const { toast } = useToast();
   const stripe = useStripe();
   const elements = useElements();
@@ -238,7 +238,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         <div className="mt-3 flex w-auto flex-wrap rounded-sm bg-[#B3B3B3] px-10 py-7">
                           <div className="relative mb-3 w-[80%]">
                             <label className="mb-2 text-lg font-semibold text-black" dir={langDir}>
-                              {t("payment_amount")}($):
+                              {t("payment_amount")}({currency.symbol}):
                             </label>
                             <input
                               type="number"

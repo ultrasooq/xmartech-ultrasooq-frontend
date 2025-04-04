@@ -22,7 +22,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 const CartListPage = () => {
   const t = useTranslations();
-  const { langDir } = useAuth()
+  const { langDir, currency } = useAuth()
   const router = useRouter();
   const { toast } = useToast();
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -300,7 +300,7 @@ const CartListPage = () => {
                 <ul>
                   <li dir={langDir}>
                     <p>{t("subtotal")}</p>
-                    <h5>${calculateTotalAmount() || 0}</h5>
+                    <h5>{currency.symbol}{calculateTotalAmount() || 0}</h5>
                   </li>
                   <li dir={langDir}>
                     <p>{t("shipping")}</p>
@@ -310,7 +310,7 @@ const CartListPage = () => {
               </div>
               <div className="priceDetails-footer" dir={langDir}>
                 <h4>{t("total_amount")}</h4>
-                <h4 className="amount-value">${calculateTotalAmount() || 0}</h4>
+                <h4 className="amount-value">{currency.symbol}{calculateTotalAmount() || 0}</h4>
               </div>
             </div>
             <div className="order-action-btn">

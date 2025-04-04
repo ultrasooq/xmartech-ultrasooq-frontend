@@ -36,7 +36,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isSeller,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
@@ -184,9 +184,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         ) : (
           <Link href={`/trending/${item.id}`}>
             <h5 className="py-1 text-[#1D77D1]">
-              ${calculateDiscountedPrice()}{" "}
+              {currency.symbol}{calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
-                ${item.productProductPrice}
+                {currency.symbol}{item.productProductPrice}
               </span>
             </h5>
           </Link>

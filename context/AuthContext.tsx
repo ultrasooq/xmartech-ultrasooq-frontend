@@ -1,7 +1,7 @@
 "use client";
 
 import { setUserLocale } from "@/src/services/locale";
-import { LANGUAGES } from "@/utils/constants";
+import { CURRENCIES, LANGUAGES } from "@/utils/constants";
 import React, { createContext, startTransition, useContext, useState } from "react";
 
 interface User {
@@ -21,6 +21,8 @@ interface AuthContextType {
   applyTranslation: (locale: string) => void;
   selectedLocale: string;
   langDir: string;
+  currency: typeof CURRENCIES[0];
+  changeCurrency: (code: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,6 +50,15 @@ export const AuthProvider: React.FC<{
     window.localStorage.setItem('locale', locale);
     startTransition(() => {
       setSelectedLocale(locale);
+    });
+  };
+
+  const [currency, setCurrency] = useState<typeof CURRENCIES[0]>(CURRENCIES.find(item => item.code == 'USD') || CURRENCIES[0]);
+
+  const changeCurrency = (code: string) => {
+    setCurrency(CURRENCIES.find(item => item.code == code) || CURRENCIES[0]);
+    startTransition(() => {
+      
     })
   };
 
@@ -60,7 +71,9 @@ export const AuthProvider: React.FC<{
     setPermissions, 
     applyTranslation, 
     selectedLocale, 
-    langDir: LANGUAGES.find(language => language.locale == selectedLocale)?.direction || 'ltr'
+    langDir: LANGUAGES.find(language => language.locale == selectedLocale)?.direction || 'ltr', 
+    currency, 
+    changeCurrency
   };
 
   return (
