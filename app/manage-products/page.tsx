@@ -200,10 +200,10 @@ const ManageProductsPage = () => {
     }
 
     if (displayBuyGroupProducts) {
-      return "BUYGROUP"
+      return "BUYGROUP";
     }
 
-    return '';
+    return "";
   };
 
   const allManagedProductsQuery = useAllManagedProducts(
@@ -211,11 +211,15 @@ const ManageProductsPage = () => {
       page,
       limit,
       term: searchTerm !== "" ? searchTerm : undefined,
-      selectedAdminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : undefined,
+      selectedAdminId:
+        me?.data?.data?.tradeRole == "MEMBER"
+          ? me?.data?.data?.addedBy
+          : undefined,
       brandIds: selectedBrandIds.join(","),
       status: displayHiddenProducts ? "INACTIVE" : "",
       expireDate: displayExpiredProducts ? "expired" : "",
-      sellType: displayStoreProducts || displayBuyGroupProducts ? sellType() : '',
+      sellType:
+        displayStoreProducts || displayBuyGroupProducts ? sellType() : "",
       discount: displayDiscountedProducts,
     },
     hasPermission,
@@ -569,7 +573,11 @@ const ManageProductsPage = () => {
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
                                     onCheckedChange={(checked: boolean) => {
                                       setDisplayBuyGroupProducts(checked);
-                                      setDisplayExpiredProducts(checked ? displayExpiredProducts : false);
+                                      setDisplayExpiredProducts(
+                                        checked
+                                          ? displayExpiredProducts
+                                          : false,
+                                      );
                                     }}
                                     checked={displayBuyGroupProducts}
                                   />
@@ -583,30 +591,32 @@ const ManageProductsPage = () => {
                                     </label>
                                   </div>
                                 </div>
-                                {displayBuyGroupProducts && <div className="div-li">
-                                  <Checkbox
-                                    id="displayExpiredProducts"
-                                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) => 
-                                      setDisplayExpiredProducts(checked)
-                                    }
-                                    checked={displayExpiredProducts}
-                                  />
-                                  <div className="grid gap-1.5 leading-none">
-                                    <label
-                                      htmlFor="displayExpiredProducts"
-                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                      dir={langDir}
-                                    >
-                                      {t("expired")}
-                                    </label>
+                                {displayBuyGroupProducts && (
+                                  <div className="div-li">
+                                    <Checkbox
+                                      id="displayExpiredProducts"
+                                      className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                                      onCheckedChange={(checked: boolean) =>
+                                        setDisplayExpiredProducts(checked)
+                                      }
+                                      checked={displayExpiredProducts}
+                                    />
+                                    <div className="grid gap-1.5 leading-none">
+                                      <label
+                                        htmlFor="displayExpiredProducts"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                        dir={langDir}
+                                      >
+                                        {t("expired")}
+                                      </label>
+                                    </div>
                                   </div>
-                                </div>}
+                                )}
                                 <div className="div-li">
                                   <Checkbox
                                     id="displayHiddenProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) => 
+                                    onCheckedChange={(checked: boolean) =>
                                       setDisplayHiddenProducts(checked)
                                     }
                                     checked={displayHiddenProducts}
@@ -625,7 +635,7 @@ const ManageProductsPage = () => {
                                   <Checkbox
                                     id="displayDiscountedProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) => 
+                                    onCheckedChange={(checked: boolean) =>
                                       setDisplayDiscountedProducts(checked)
                                     }
                                     checked={displayDiscountedProducts}
@@ -658,30 +668,30 @@ const ManageProductsPage = () => {
                   >
                     {t("products")}
                   </h2>
-                  <ul className="right-filter-lists flex flex-row flex-wrap gap-x-2 md:flex-nowrap">
-                    <li>
+                  <ul className="right-filter-lists flex flex-row flex-wrap gap-2 md:flex-nowrap">
+                    <li className="w-full sm:w-auto">
                       <Input
                         type="text"
                         placeholder={t("search_product")}
-                        className="search-box h-[40px] w-[200px] sm:w-[160px] lg:w-80"
+                        className="search-box h-[40px] w-full sm:w-[160px] lg:w-80"
                         onChange={handleDebounce}
                         ref={searchInputRef}
                         dir={langDir}
                       />
                     </li>
-                    <li>
+                    <li className="flex">
                       <button
                         className="theme-primary-btn add-btn p-2"
                         onClick={handleAddProductModal}
                         dir={langDir}
                       >
-                        <IoMdAdd size={24} />
+                        <IoMdAdd size={20} />
                         <span className="d-none-mobile">
                           {t("add_product")}
                         </span>
                       </button>
                     </li>
-                    <li>
+                    <li className="flex">
                       <button
                         className="theme-primary-btn add-btn p-2"
                         onClick={() => router.replace("/cart")}

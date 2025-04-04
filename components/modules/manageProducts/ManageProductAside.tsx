@@ -102,30 +102,34 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   const sellTypeMessage = errors?.sellType?.message;
 
   const productConditions = () => {
-    return Object.keys(PRODUCT_CONDITION_LIST).map((value: string, index: number) => {
-      return {
-        label: t(PRODUCT_CONDITION_LIST[index].label),
-        value: PRODUCT_CONDITION_LIST[index].value
-      };
-    });
+    return Object.keys(PRODUCT_CONDITION_LIST).map(
+      (value: string, index: number) => {
+        return {
+          label: t(PRODUCT_CONDITION_LIST[index].label),
+          value: PRODUCT_CONDITION_LIST[index].value,
+        };
+      },
+    );
   };
 
   const sellTypes = () => {
     return Object.keys(SELL_TYPE_LIST).map((value: string, index: number) => {
       return {
         label: t(SELL_TYPE_LIST[index].label),
-        value: SELL_TYPE_LIST[index].value
+        value: SELL_TYPE_LIST[index].value,
       };
     });
   };
 
   const consumerTypes = () => {
-    return Object.keys(CONSUMER_TYPE_LIST).map((value: string, index: number) => {
-      return {
-        label: t(CONSUMER_TYPE_LIST[index].label),
-        value: CONSUMER_TYPE_LIST[index].value
-      };
-    });
+    return Object.keys(CONSUMER_TYPE_LIST).map(
+      (value: string, index: number) => {
+        return {
+          label: t(CONSUMER_TYPE_LIST[index].label),
+          value: CONSUMER_TYPE_LIST[index].value,
+        };
+      },
+    );
   };
 
   return (
@@ -544,7 +548,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 )}
               />
               {/* </div> */}
-              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label dir={langDir}>{t("vendor_discount")}</Label>
                 <div className="flex w-full gap-2 space-y-2">
                   <CounterTextInputField
@@ -573,7 +577,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 )}
               />
               {/* </div> */}
-              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label dir={langDir}>{t("consumer_discount")}</Label>
                 {watchIsConsumerDiscountRequired ? (
                   <CounterTextInputField
@@ -601,9 +605,12 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 )}
               />
               {/* </div> */}
-              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label dir={langDir}>{t("min_quantity")}</Label>
-                <CounterTextInputField name="minQuantity" placeholder={t("min")} />
+                <CounterTextInputField
+                  name="minQuantity"
+                  placeholder={t("min")}
+                />
               </div>
             </div>
           ) : null}
@@ -622,9 +629,12 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   />
                 )}
               />
-              <div className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label dir={langDir}>{t("max_quantity")}</Label>
-                <CounterTextInputField name="maxQuantity" placeholder={t("max")} />
+                <CounterTextInputField
+                  name="maxQuantity"
+                  placeholder={t("max")}
+                />
               </div>
             </div>
           ) : null}
@@ -643,10 +653,13 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   />
                 )}
               />
-              <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label dir={langDir}>{t("min_customer")}</Label>
                 <div className="flex w-full gap-2 space-y-2">
-                  <CounterTextInputField name="minCustomer" placeholder={t("min")} />
+                  <CounterTextInputField
+                    name="minCustomer"
+                    placeholder={t("min")}
+                  />
                 </div>
               </div>
             </div>
@@ -666,10 +679,13 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   />
                 )}
               />
-              <div className="flex w-[calc(100%_-_40px)] flex-wrap flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
+              <div className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2">
                 <Label dir={langDir}>{t("max_customer")}</Label>
                 <div className="flex w-full gap-2 space-y-2">
-                  <CounterTextInputField name="maxCustomer" placeholder={t("max")} />
+                  <CounterTextInputField
+                    name="maxCustomer"
+                    placeholder={t("max")}
+                  />
                 </div>
               </div>
             </div>
