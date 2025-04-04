@@ -188,23 +188,32 @@ const ManageProductsPage = () => {
     defaultValues,
   });
 
+  const sellType = () => {
+    if (displayStoreProducts && displayBuyGroupProducts) {
+      return "NORMALSELL,BUYGROUP";
+    }
+
+    if (displayStoreProducts) {
+      return "NORMALSELL";
+    }
+
+    if (displayBuyGroupProducts) {
+      return "BUYGROUP"
+    }
+
+    return '';
+  };
+
   const allManagedProductsQuery = useAllManagedProducts(
     {
       page,
       limit,
       term: searchTerm !== "" ? searchTerm : undefined,
-      selectedAdminId:
-        me?.data?.data?.tradeRole == "MEMBER"
-          ? me?.data?.data?.addedBy
-          : undefined,
+      selectedAdminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : undefined,
       brandIds: selectedBrandIds.join(","),
       status: displayHiddenProducts ? "INACTIVE" : "",
       expireDate: displayExpiredProducts ? "expired" : "",
-      sellType: displayStoreProducts
-        ? "NORMALSELL"
-        : displayBuyGroupProducts
-          ? "BUYGROUP"
-          : "",
+      sellType: displayStoreProducts || displayBuyGroupProducts ? sellType() : '',
       discount: displayDiscountedProducts,
     },
     hasPermission,
@@ -450,12 +459,12 @@ const ManageProductsPage = () => {
           <div className="container m-auto px-3">
             <div className="flex">
               <div className="w-[25%]">
-                <div className="trending-search-sec mt-0">
+                <div className="trending-search-sec mt-0" dir={langDir}>
                   <div className="all_select_button">
-                    <button type="button" onClick={selectAll} dir={langDir}>
+                    <button type="button" onClick={selectAll}>
                       {t("select_all")}
                     </button>
-                    <button type="button" onClick={clearFilter} dir={langDir}>
+                    <button type="button" onClick={clearFilter}>
                       {t("clean_select")}
                     </button>
                   </div>
@@ -550,9 +559,10 @@ const ManageProductsPage = () => {
                                   <Checkbox
                                     id="displayBuyGroupProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) =>
-                                      setDisplayBuyGroupProducts(checked)
-                                    }
+                                    onCheckedChange={(checked: boolean) => {
+                                      setDisplayBuyGroupProducts(checked);
+                                      setDisplayExpiredProducts(checked ? displayExpiredProducts : false);
+                                    }}
                                     checked={displayBuyGroupProducts}
                                   />
                                   <div className="grid gap-1.5 leading-none">
@@ -565,11 +575,11 @@ const ManageProductsPage = () => {
                                     </label>
                                   </div>
                                 </div>
-                                <div className="div-li">
+                                {displayBuyGroupProducts && <div className="div-li">
                                   <Checkbox
                                     id="displayExpiredProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) =>
+                                    onCheckedChange={(checked: boolean) => 
                                       setDisplayExpiredProducts(checked)
                                     }
                                     checked={displayExpiredProducts}
@@ -583,12 +593,12 @@ const ManageProductsPage = () => {
                                       {t("expired")}
                                     </label>
                                   </div>
-                                </div>
+                                </div>}
                                 <div className="div-li">
                                   <Checkbox
                                     id="displayHiddenProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) =>
+                                    onCheckedChange={(checked: boolean) => 
                                       setDisplayHiddenProducts(checked)
                                     }
                                     checked={displayHiddenProducts}
@@ -607,7 +617,7 @@ const ManageProductsPage = () => {
                                   <Checkbox
                                     id="displayDiscountedProducts"
                                     className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                                    onCheckedChange={(checked: boolean) =>
+                                    onCheckedChange={(checked: boolean) => 
                                       setDisplayDiscountedProducts(checked)
                                     }
                                     checked={displayDiscountedProducts}

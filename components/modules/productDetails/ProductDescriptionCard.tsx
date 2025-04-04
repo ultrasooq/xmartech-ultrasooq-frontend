@@ -456,7 +456,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   {category}
                 </p>
                 <p>
-                  <span className="color-text"> dir={langDir}{t("tags")}:</span>{" "}
+                  <span className="color-text" dir={langDir}>{t("tags")}:</span>{" "}
                   {productTags
                     ?.map((item) => item.productTagsTag?.tagName)
                     .join(", ")}

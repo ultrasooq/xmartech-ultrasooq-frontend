@@ -15,11 +15,13 @@ import { useAuth } from "@/context/AuthContext";
 
 type BrandFilterListTypes = {
   selectAllBrands?: boolean;
+  selectedBrandsCount?: number;
   onSelectBrands?: (brandIds: number[]) => void;
 };
 
 const BrandFilterList: React.FC<BrandFilterListTypes> = ({
   selectAllBrands = false,
+  selectedBrandsCount,
   onSelectBrands,
 }) => {
   const t = useTranslations();
@@ -56,6 +58,7 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({
       tempArr = tempArr.filter((ele: number) => ele !== item.value);
     }
     setSelectedBrandIds(tempArr);
+    onSelectBrands && onSelectBrands(tempArr);
   };
 
   useEffect(() => {
@@ -76,6 +79,12 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({
       setSelectedBrandIds([]);
     }
   }, [selectAllBrands]);
+
+  useEffect(() => {
+    if (selectedBrandsCount == 0 && !selectAllBrands) {
+      setSelectedBrandIds([]);
+    }
+  }, [selectedBrandsCount]);
 
   return (
     <div className="trending-search-sec mt-0">

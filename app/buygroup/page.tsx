@@ -92,14 +92,10 @@ const TrendingPage = () => {
     page,
     limit,
     sort: sortBy,
-    priceMin:
-      priceRange[0] === 0
-        ? 0
-        : ((priceRange[0] || Number(minPriceInput)) ?? undefined),
+    priceMin: priceRange[0] === 0 ? 0 : ((priceRange[0] || Number(minPriceInput)) ?? undefined),
     priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
-    brandIds:
-      selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
-    userId: me.data?.data?.id,
+    brandIds: selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    userId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
     categoryIds: category.categoryId ? category.categoryId : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
   });
@@ -323,12 +319,12 @@ const TrendingPage = () => {
 
         <div className="trending-search-sec">
           <div className="container m-auto px-3">
-            <div className={productFilter ? "left-filter show" : "left-filter"}>
+            <div className={productFilter ? "left-filter show" : "left-filter"} dir={langDir}>
               <div className="all_select_button">
-                <button type="button" onClick={selectAll} dir={langDir}>
+                <button type="button" onClick={selectAll}>
                   {t("select_all")}
                 </button>
-                <button type="button" onClick={clearFilter} dir={langDir}>
+                <button type="button" onClick={clearFilter}>
                   {t("clean_select")}
                 </button>
               </div>

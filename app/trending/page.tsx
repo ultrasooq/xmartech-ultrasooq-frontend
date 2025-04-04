@@ -109,7 +109,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
     brandIds:
       selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
-    userId: me.data?.data?.id,
+    userId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
     categoryIds: category.categoryId ? category.categoryId : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
   });
@@ -169,7 +169,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         productImage: item?.product_productPrice?.[0]
           ?.productPrice_productSellerImage?.length
           ? item?.product_productPrice?.[0]
-              ?.productPrice_productSellerImage?.[0]?.image
+            ?.productPrice_productSellerImage?.[0]?.image
           : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
@@ -334,12 +334,12 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
 
         <div className="trending-search-sec">
           <div className="container m-auto px-3">
-            <div className={productFilter ? "left-filter show" : "left-filter"}>
+            <div className={productFilter ? "left-filter show" : "left-filter"} dir={langDir}>
               <div className="all_select_button">
-                <button type="button" onClick={selectAll} dir={langDir}>
+                <button type="button" onClick={selectAll}>
                   {t("select_all")}
                 </button>
-                <button type="button" onClick={clearFilter} dir={langDir}>
+                <button type="button" onClick={clearFilter}>
                   {t("clean_select")}
                 </button>
               </div>

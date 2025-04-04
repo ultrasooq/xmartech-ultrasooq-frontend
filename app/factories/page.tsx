@@ -95,7 +95,7 @@ const FactoriesPage = () => {
     page,
     limit,
     term: searchRfqTerm,
-    adminId: me?.data?.data?.id || undefined,
+    adminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
     sortType: sortBy,
     brandIds: selectedBrandIds.join(","),
     isOwner: displayMyProducts == "1" ? "me" : "",
@@ -246,17 +246,18 @@ const FactoriesPage = () => {
         <div className="rfq-container px-3">
           <div className="row">
             <div className="rfq_main_box !justify-center">
-              <div className="rfq_left">
+              <div className="rfq_left" dir={langDir}>
                 <div className="all_select_button">
-                  <button type="button" onClick={selectAll} dir={langDir}>
+                  <button type="button" onClick={selectAll}>
                     {t("select_all")}
                   </button>
-                  <button type="button" onClick={clearFilter} dir={langDir}>
+                  <button type="button" onClick={clearFilter}>
                     {t("clean_select")}
                   </button>
                 </div>
                 <BrandFilterList
                   selectAllBrands={selectAllBrands}
+                  selectedBrandsCount={selectedBrandIds.length}
                   onSelectBrands={(brandIds: number[]) =>
                     setSelectedBrandIds(brandIds)
                   }

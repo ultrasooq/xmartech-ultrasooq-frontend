@@ -132,7 +132,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
     <aside className="manage_product_list h-fit">
       <div className="manage_product_list_wrap">
         <h2 dir={langDir}>{t("manage_product")}</h2>
-        <div className="all_select_button">
+        <div className="all_select_button" dir={langDir}>
           <button
             type="button"
             onClick={() => {
@@ -154,7 +154,6 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               formContext.setValue("isMinQuantityPerCustomerRequired", true);
               formContext.setValue("isMaxQuantityPerCustomerRequired", true);
             }}
-            dir={langDir}
           >
             {t("select_all")}
           </button>
@@ -181,7 +180,6 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               formContext.setValue("isMinQuantityPerCustomerRequired", false);
               formContext.setValue("isMaxQuantityPerCustomerRequired", false);
             }}
-            dir={langDir}
           >
             {t("clean_select")}
           </button>
