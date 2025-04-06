@@ -26,7 +26,12 @@ export const fetchProducts = (payload: {
   limit: number;
   userId: string;
   term?: string;
+  brandIds?: string;
   status?: string;
+  expireDate?: string;
+  sellType?: string;
+  discount?: boolean;
+  sort?: string;
 }) => {
   return axios({
     method: "GET",
@@ -253,6 +258,13 @@ export const getVendorProducts = (payload: {
   adminId: string;
   page: number;
   limit: number;
+  term?: string;
+  brandIds?: string;
+  status?: string;
+  expireDate?: string;
+  sellType?: string;
+  discount?: boolean;
+  sort?: string;
 }) => {
   return axios({
     method: "GET",

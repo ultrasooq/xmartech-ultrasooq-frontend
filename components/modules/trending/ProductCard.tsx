@@ -161,7 +161,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
           variant: "success",
         });
         return response.status;
+
+      } else {
+        toast({
+          title: t("something_went_wrong"),
+          description: response.message,
+          variant: "danger",
+        });
       }
+
     } else {
       if (!item?.productProductPriceId) {
         toast({
@@ -188,7 +196,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
           variant: "success",
         });
         return response.status;
+
+      } else {
+        toast({
+          title: t("something_went_wrong"),
+          description: response.message,
+          variant: "danger",
+        });
       }
+      
     }
   }
 

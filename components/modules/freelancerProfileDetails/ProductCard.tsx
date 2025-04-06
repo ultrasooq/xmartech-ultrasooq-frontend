@@ -1,7 +1,7 @@
 import { TrendingProduct } from "@/utils/types/common.types";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import validator from "validator";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
@@ -17,26 +17,35 @@ import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { FaCircleCheck } from "react-icons/fa6";
+import { toast } from "@/components/ui/use-toast";
+import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
 
 type ProductCardProps = {
   item: TrendingProduct;
-  onAdd?: () => void;
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
   isSeller?: boolean;
+  isAddedToCart?: boolean;
+  cartQuantity?: number;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
   item,
-  onAdd,
   onWishlist,
   inWishlist,
   haveAccessToken,
   isSeller,
+  isAddedToCart,
+  cartQuantity = 0,
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
+
+  const [quantity, setQuantity] = useState<number>(cartQuantity);
+  const updateCartWithLogin = useUpdateCartWithLogin();
+
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
@@ -73,6 +82,73 @@ const ProductCard: React.FC<ProductCardProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [item.productReview?.length],
   );
+
+  const handleAddToCart = async (
+    newQuantity: number,
+    actionType: "add" | "remove",
+  ) => {
+    const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
+    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
+
+    if (actionType == 'add' && newQuantity == -1) {
+      newQuantity = minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
+    }
+
+    if (actionType == "add" && minQuantity && minQuantity > newQuantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      });
+      return;
+    }
+
+    if (maxQuantity && maxQuantity < newQuantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      });
+      return;
+    }
+
+    if (actionType == "remove" && minQuantity && minQuantity > newQuantity) {
+      newQuantity = 0;
+    }
+
+    if (!item?.productProductPriceId) {
+      toast({
+        title: t("something_went_wrong"),
+        description: t("product_price_id_not_found"),
+        variant: "danger",
+      });
+      return;
+    }
+    const response = await updateCartWithLogin.mutateAsync({
+      productPriceId: item?.productProductPriceId,
+      quantity: newQuantity,
+    });
+
+    if (response.status) {
+      if (actionType === "add" && newQuantity === 0) {
+        setQuantity(1);
+      } else {
+        setQuantity(newQuantity);
+      }
+      toast({
+        title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "success"
+      });
+      return response.status;
+
+    } else {
+      toast({
+        title: t("something_went_wrong"),
+        description: response.message,
+        variant: "danger",
+      });
+    }
+    
+  }
 
   return (
     <div
@@ -115,7 +191,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <Button
                 variant="ghost"
                 className="relative h-8 w-8 rounded-full p-0 shadow-md"
-                onClick={onAdd}
+                onClick={() => handleAddToCart(-1, "add")}
+                disabled={item.status === "INACTIVE"}
               >
                 <ShoppingIcon />
               </Button>
@@ -133,6 +210,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 variant="ghost"
                 className="relative h-8 w-8 rounded-full p-0 shadow-md"
                 onClick={onWishlist}
+                disabled={item.status === "INACTIVE"}
               >
                 {inWishlist ? (
                   <FaHeart color="red" size={16} />
@@ -191,6 +269,76 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </h5>
           </Link>
         )}
+      </div>
+
+      <div className="quantity_wrap mb-2">
+        <label dir={langDir}>{t("quantity")}</label>
+        <div className="qty-up-down-s1-with-rgMenuAction">
+          <div className="flex items-center gap-x-3 md:gap-x-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="relative hover:shadow-sm"
+              onClick={() => {
+                if (isAddedToCart) {
+                  handleAddToCart(quantity - 1, "remove");
+                } else {
+                  setQuantity(quantity - 1);
+                }
+              }}
+              disabled={quantity === 0 || item.status === "INACTIVE"}
+            >
+              <Image
+                src="/images/upDownBtn-minus.svg"
+                alt="minus-icon"
+                fill
+                className="p-3"
+              />
+            </Button>
+            <p className="!mb-0 !text-black">{quantity}</p>
+            <Button
+              type="button"
+              variant="outline"
+              className="relative hover:shadow-sm"
+              onClick={() => {
+                if (isAddedToCart) {
+                  handleAddToCart(quantity + 1, "add");
+                } else {
+                  setQuantity(quantity + 1);
+                }
+              }}
+              disabled={item.status === "INACTIVE"}
+            >
+              <Image
+                src="/images/upDownBtn-plus.svg"
+                alt="plus-icon"
+                fill
+                className="p-3"
+              />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="cart_button">
+        {isAddedToCart && <button
+          type="button"
+          className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
+          disabled={false}
+          dir={langDir}
+        >
+          <FaCircleCheck color="#00C48C" />
+          {t("added_to_cart")}
+        </button>}
+        {!isAddedToCart && <button
+          type="button"
+          className="add_to_cart_button"
+          onClick={() => handleAddToCart(quantity, "add")}
+          disabled={quantity == 0 || item.status === "INACTIVE"}
+          dir={langDir}
+        >
+          {t("add_to_cart")}
+        </button>}
       </div>
     </div>
   );

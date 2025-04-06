@@ -252,14 +252,14 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           <div className="brand_sold_info !items-start">
             <div className="lediv w-full sm:w-1/2">
               <h5>
-                <span className="inline-block w-20 sm:!w-20">Brand:</span>{" "}
+                <span className="inline-block w-20 sm:!w-20">{t("brand")}:</span>{" "}
                 {brand}
               </h5>
             </div>
 
             <div className="rgdiv flex w-full gap-x-2 sm:w-1/2">
               <h5 className="w-20 !capitalize !text-dark-orange sm:!w-20">
-                Sold By:
+                {t("sold_by")}:
               </h5>
               <Link
                 href={

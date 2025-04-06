@@ -67,7 +67,12 @@ export const useProducts = (
     page: number;
     limit: number;
     term?: string;
+    brandIds?: string;
     status?: string;
+    expireDate?: string;
+    sellType?: string;
+    discount?: boolean;
+    sort?: string;
   },
   enabled = true,
 ) =>
@@ -369,6 +374,13 @@ export const useVendorProducts = (
     adminId: string;
     page: number;
     limit: number;
+    term?: string;
+    brandIds?: string;
+    status?: string;
+    expireDate?: string;
+    sellType?: string;
+    discount?: boolean;
+    sort?: string;
   },
   enabled = true,
 ) =>

@@ -115,6 +115,12 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           variant: "success",
         });
         return response.status;
+      } else {
+        toast({
+          title: t("something_went_wrong"),
+          description: response.message,
+          variant: "danger",
+        });
       }
     }
   };
@@ -213,7 +219,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                 className="p-3"
               />
             </Button>
-            {!isAddedToFactoryCart && <Button
+            {/* {!isAddedToFactoryCart && <Button
               type="button"
               variant="ghost"
               onClick={onAdd}
@@ -225,7 +231,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                   fill
                 />
               </div>
-            </Button>}
+            </Button>} */}
           </div>
         </div>
       </div>
