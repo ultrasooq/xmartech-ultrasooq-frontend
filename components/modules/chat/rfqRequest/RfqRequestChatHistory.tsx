@@ -90,7 +90,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                                                     )}
                                                                     <p className="mr-2 truncate">{file.fileName}</p>
                                                                     <p className="mr-2 truncate text-xs italic">
-                                                                        {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
+                                                                        {file?.status === "UPLOADING" ? t("uploading") : file?.status}
                                                                     </p>
                                                                 </div>
                                                                 <DownloadIconButton
@@ -101,7 +101,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                                         ))}
                                                     </div>
                                                 )}
-                                                {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
+                                                {isUploadingCompleted ? t("attachments_uploading") : ""}
                                                 {chat?.content && (
                                                     <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
                                                         <p
@@ -114,12 +114,12 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
 
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
-                                                        <p>Requested Price: {currency.symbol}{chat.rfqProductPriceRequest?.requestedPrice}</p>
+                                                        <p>{t("requested_price")}: {currency.symbol}{chat.rfqProductPriceRequest?.requestedPrice}</p>
                                                         <p>status:
                                                             {chat.rfqProductPriceRequest?.status === "APPROVED" ?
-                                                                <span className="text-white bg-blue-700 p-0.5 rounded-sm">Approved</span>
+                                                                <span className="text-white bg-blue-700 p-0.5 rounded-sm">{t("approved")}</span>
                                                                 : chat.rfqProductPriceRequest?.status === "REJECTED" ?
-                                                                    <span className="text-white bg-red-600 p-0.5 rounded-sm">Rejected</span> : <span className="text-white bg-yellow-700 p-0.5 rounded-sm">Pending</span>
+                                                                    <span className="text-white bg-red-600 p-0.5 rounded-sm">{t("rejected")}</span> : <span className="text-white bg-yellow-700 p-0.5 rounded-sm">{t("pending")}</span>
                                                             }
                                                         </p>
                                                     </div>
@@ -128,7 +128,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
 
                                             <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
                                                 {chat?.status === "SD" ?
-                                                    <span>Sending...</span> :
+                                                    <span>{t("sending")}</span> :
                                                     <span>
                                                         {chat.createdAt
                                                             ? moment(chat.createdAt)
@@ -170,7 +170,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                                                     )}
                                                                     <p className="mr-2 truncate">{file.fileName}</p>
                                                                     <p className="mr-2 truncate text-xs italic">
-                                                                        {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
+                                                                        {file?.status === "UPLOADING" ? t("uploading") : file?.status}
                                                                     </p>
                                                                 </div>
                                                                 <DownloadIconButton
@@ -181,7 +181,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                                         ))}
                                                     </div>
                                                 )}
-                                                {isUploadingCompleted ? "Attachment(s) uploading..." : ""}
+                                                {isUploadingCompleted ? t("attachments_uploading") : ""}
                                                 {chat?.content && (
                                                     <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
                                                         <p
@@ -194,12 +194,12 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
 
                                                 {chat?.rfqProductPriceRequest && (
                                                     <div>
-                                                        <p>Requested Price: {currency.symbol}{chat.rfqProductPriceRequest?.requestedPrice}</p>
+                                                        <p>{t("requested_price")}: {currency.symbol}{chat.rfqProductPriceRequest?.requestedPrice}</p>
                                                         <p>status:
                                                             {chat.rfqProductPriceRequest?.status === "APPROVED" ?
-                                                                <span className="text-white bg-blue-700 p-0.5 rounded-sm">Approved</span>
+                                                                <span className="text-white bg-blue-700 p-0.5 rounded-sm">{t("approved")}</span>
                                                                 : chat.rfqProductPriceRequest?.status === "REJECTED" ?
-                                                                    <span className="text-white bg-red-600 p-0.5 rounded-sm">Rejected</span> : <span className="text-white bg-yellow-700 p-0.5 rounded-sm">Pending</span>
+                                                                    <span className="text-white bg-red-600 p-0.5 rounded-sm">{t("rejected")}</span> : <span className="text-white bg-yellow-700 p-0.5 rounded-sm">{t("pending")}</span>
                                                             }
                                                         </p>
                                                         {chat.rfqProductPriceRequest?.status === "PENDING" && (
@@ -213,7 +213,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                             </div>
                                             <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
                                                 {chat?.status === "SD" ?
-                                                    <span>Sending...</span> :
+                                                    <span>{t("sending")}</span> :
                                                     <span>
                                                         {chat.createdAt
                                                             ? moment(chat.createdAt)
@@ -234,7 +234,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                     </div>
                 ) : (
                     <div className="mt-5 flex w-full flex-wrap items-end">
-                        {chatHistoryLoading ? "Loading..." : t("no_chat_history_found")}
+                        {chatHistoryLoading ? t("loading") : t("no_chat_history_found")}
                     </div>
                 )}
 

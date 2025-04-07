@@ -4,6 +4,7 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { cn } from "@/lib/utils";
 import validator from "validator";
 import moment from "moment";
+import { useTranslations } from "next-intl";
 
 type RequestProductCardProps = {
   rfqId?: number;
@@ -29,6 +30,8 @@ const RequestProductCard: React.FC<RequestProductCardProps> = ({
   productImages,
   messageInfo,
 }) => {
+  const t = useTranslations();
+  
   return (
     <button
       type="button"
@@ -59,7 +62,7 @@ const RequestProductCard: React.FC<RequestProductCardProps> = ({
         </div>
       </div>
       <div className="flex w-full flex-col items-center justify-start text-sm font-normal text-[#1D77D1] lg:w-[calc(100%-4rem)] lg:flex-row">
-        <span className="text-[#828593]">RFQ ID: </span> RFQ000{rfqId}
+        <span className="text-[#828593]">{t("rfq_id")}: </span> RFQ000{rfqId}
       </div>
 
       {messageInfo?.lastUnreadMessage?.createdAt && (
