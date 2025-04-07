@@ -218,7 +218,10 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         setSelectedCountry(country?.id);
       }
       if(country?.id) {
-        formContext.setValue('sellCountryIds', [country?.id]);
+        formContext.setValue('sellCountryIds', [{
+          label: country.name,
+          value: country.id
+        }]);
         setSelectedCountries([{
           label: country.name,
           value: country.id
