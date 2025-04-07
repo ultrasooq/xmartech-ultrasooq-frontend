@@ -126,7 +126,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
       limit: 10,
       term: searchTerm,
       brandIds: selectedBrandIds.join(","),
-      status: displayHiddenProducts ? "INACTIVE" : "ALL",
+      status: "ALL",
       expireDate: displayExpiredProducts ? "expired" : "",
       sellType: displayStoreProducts || displayBuyGroupProducts ? sellType() : "",
       discount: displayDiscountedProducts,
@@ -460,7 +460,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                         </div>
                       </div>
                     )}
-                    <div className="div-li">
+                    {!sellerId && <div className="div-li">
                       <Checkbox
                         id="displayHiddenProducts"
                         className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
@@ -478,7 +478,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                           {t("hidden")}
                         </label>
                       </div>
-                    </div>
+                    </div>}
                     <div className="div-li">
                       <Checkbox
                         id="displayDiscountedProducts"
