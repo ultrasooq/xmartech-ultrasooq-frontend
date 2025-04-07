@@ -508,7 +508,8 @@ const ProductDetailsPage = () => {
                           handleDescriptionParse(productDetails?.description) ||
                           undefined
                         }
-                        readOnly
+                        readOnly={true}
+                        fixedToolbar={false}
                       />
                     </div>
                   </TabsContent>

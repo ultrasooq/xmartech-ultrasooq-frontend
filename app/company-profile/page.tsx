@@ -308,7 +308,7 @@ export default function CompanyProfilePage() {
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
-      aboutUs: formData.aboutUsJson?.trim().length ? JSON.stringify(formData.aboutUsJson) : undefined,
+      aboutUs: formData.aboutUsJson?.length ? JSON.stringify(formData.aboutUsJson) : undefined,
       profileType: "COMPANY",
     };
 
