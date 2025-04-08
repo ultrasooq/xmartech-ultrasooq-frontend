@@ -541,9 +541,9 @@ const ManageProductsPage = () => {
                         defaultValue={["product_conditions"]}
                         className="filter-col"
                       >
-                        <AccordionItem value="brand">
+                        <AccordionItem value="product_conditions">
                           <AccordionTrigger className="px-3 text-base hover:!no-underline">
-                            &nbsp;&nbsp;
+                            {t("by_menu")}
                           </AccordionTrigger>
                           <AccordionContent>
                             <div className="filter-body-part">

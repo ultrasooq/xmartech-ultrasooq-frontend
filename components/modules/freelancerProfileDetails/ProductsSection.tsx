@@ -91,7 +91,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
       limit: 10,
       term: searchTerm,
       brandIds: selectedBrandIds.join(","),
-      status: displayHiddenProducts ? "INACTIVE" : "ALL",
+      status: displayHiddenProducts ? "INACTIVE" : "",
       expireDate: displayExpiredProducts ? "expired" : "",
       sellType: displayStoreProducts || displayBuyGroupProducts ? sellType() : "",
       discount: displayDiscountedProducts,
@@ -126,7 +126,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
       limit: 10,
       term: searchTerm,
       brandIds: selectedBrandIds.join(","),
-      status: "ALL",
+      status: "",
       expireDate: displayExpiredProducts ? "expired" : "",
       sellType: displayStoreProducts || displayBuyGroupProducts ? sellType() : "",
       discount: displayDiscountedProducts,
@@ -391,7 +391,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           >
             <AccordionItem value="brand">
               <AccordionTrigger className="px-3 text-base hover:!no-underline">
-                &nbsp;&nbsp;
+                {t("by_menu")}
               </AccordionTrigger>
               <AccordionContent>
                 <div className="filter-body-part">

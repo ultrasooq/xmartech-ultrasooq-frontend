@@ -111,12 +111,12 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       <div className="product_list_content">
         <p>{productName}</p>
         {/* price For P type product */}
-        {productType === "P" ? (
+        {/* {productType === "P" ? (
           <>
             <label dir={langDir}>{t("price")}:</label>
             <p>{currency.symbol}{productPrice?.[0]?.offerPrice}</p>
           </>
-        ) : null}
+        ) : null} */}
         {haveAccessToken ? (
           <div className="quantity_wrap mb-2">
             <label dir={langDir}>{t("quantity")}</label>
