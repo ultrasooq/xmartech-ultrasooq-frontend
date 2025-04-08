@@ -174,6 +174,12 @@ const ProductDetailsPage = () => {
     if (isAddedToCart) {
       handleAddToCart(quantity, action);
     } else {
+      if (action == "add") {
+        const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+        if (!minQuantity || minQuantity === 0 || (minQuantity && quantity == minQuantity)) {
+          handleAddToCart(quantity, action);
+        }
+      }
       setGlobalQuantity(quantity);
     }
   };

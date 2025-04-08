@@ -294,7 +294,7 @@ const RfqPage = () => {
                 />
               </div>
               <div className="rfq_middle">
-                <RadioGroup
+                {me?.data?.data?.tradeRole != 'BUYER' && <RadioGroup
                   className="mb-3 flex flex-row gap-y-3"
                   value={displayMyProducts}
                   onValueChange={setDisplayMyProducts}
@@ -319,7 +319,7 @@ const RfqPage = () => {
                       {t("my_products")}
                     </Label>
                   </div>
-                </RadioGroup>
+                </RadioGroup>}
                 <div className="rfq_middle_top">
                   <div className="rfq_search">
                     <input

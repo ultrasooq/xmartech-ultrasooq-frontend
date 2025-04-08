@@ -174,7 +174,6 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           <p>{productName}</p>
         </Link>
       </div>
-
       <div className="quantity_wrap mb-2">
         <label dir={langDir}>{t("quantity")}</label>
         <div className="qty-up-down-s1-with-rgMenuAction">
@@ -205,9 +204,13 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
               variant="outline"
               className="relative hover:shadow-sm"
               onClick={() => {
+                const minQuantity = productPrices?.length ? productPrices[0]?.minQuantityPerCustomer : null;
                 if (isAddedToCart) {
                   handleAddToCart(quantity + 1, "add");
                 } else {
+                  if (!minQuantity || minQuantity === 0 || (minQuantity && quantity + 1 == minQuantity)) {
+                    handleAddToCart(quantity + 1, "add");
+                  }
                   setQuantity(quantity + 1);
                 }
               }}
@@ -249,7 +252,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           type="button"
           className="add_to_cart_button"
           onClick={() => handleAddToCart(quantity, "add")}
-          disabled={quantity == 0}
+          disabled={quantity == 0 || updateCartWithLogin?.isPending}
           dir={langDir}
         >
           {t("add_to_cart")}

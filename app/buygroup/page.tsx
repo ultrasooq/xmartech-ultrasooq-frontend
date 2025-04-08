@@ -446,7 +446,7 @@ const TrendingPage = () => {
               onClick={() => setProductFilter(false)}
             ></div>
             <div className="right-products">
-              <RadioGroup
+              {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' && <RadioGroup
                 className="mb-3 flex flex-row gap-y-3"
                 value={displayMyProducts}
                 onValueChange={setDisplayMyProducts}
@@ -471,7 +471,7 @@ const TrendingPage = () => {
                     {t("my_products")}
                   </Label>
                 </div>
-              </RadioGroup>
+              </RadioGroup>}
               <div className="products-header-filter">
                 <div className="le-info">
                   {/* TODO: need name here */}

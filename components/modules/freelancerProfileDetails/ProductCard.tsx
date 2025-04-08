@@ -304,6 +304,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 if (isAddedToCart) {
                   handleAddToCart(quantity + 1, "add");
                 } else {
+                  const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
+                  if (!minQuantity || minQuantity === 0 || (minQuantity && quantity + 1 == minQuantity)) {
+                    handleAddToCart(quantity + 1, "add");
+                  }
                   setQuantity(quantity + 1);
                 }
               }}
