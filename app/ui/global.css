@@ -5418,5 +5418,16 @@ input::-ms-clear {
 
 }
 
+
+
+@media only screen and (min-width: 1024px) and (max-width: 1200px) {
+
+.rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .product_sec_list .product_list_part {
+  width: 50%
+}
+
+}
+
+
 @import "slick-carousel/slick/slick.css";
 @import "slick-carousel/slick/slick-theme.css";
