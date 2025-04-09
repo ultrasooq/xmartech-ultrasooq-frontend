@@ -79,7 +79,7 @@ const formSchema = (t: any) => {
         specification: z
           .string()
           .trim()
-          .min(2, { message: t("specification_is_required") })
+          .min(1, { message: t("specification_is_required") })
           .max(20, {
             message: t("specification_must_be_less_than_20_characters"),
           }),

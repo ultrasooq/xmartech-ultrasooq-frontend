@@ -208,6 +208,42 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   }
 
+  const handleQuantityChange = () => {
+    if (quantity == 0) {
+      if (productQuantity != 0) {
+        toast({
+          description: t('quantity_can_not_be_0'),
+          variant: "danger"
+        });
+      }
+      setQuantity(productQuantity);
+      return;
+    }
+
+    const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
+    if (minQuantity && minQuantity > quantity) {
+      toast({
+        description: t('min_quantity_must_be_n', { n: minQuantity }),
+        variant: "danger"
+      });
+      setQuantity(productQuantity);
+      return;
+    }
+
+    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t('max_quantity_must_be_n', { n: maxQuantity }),
+        variant: "danger"
+      });
+      setQuantity(productQuantity);
+      return;
+    }
+
+    const action = quantity > productQuantity ? 'add' : 'remove';
+    if (quantity != productQuantity) handleAddToCart(quantity, action);
+  };
+
   const getLocalTimestamp = (dateStr: any, timeStr: any) => {
     const date = new Date(dateStr); // Parse date part only
     const [hours, minutes] = (timeStr || "").split(":").map(Number); // Extract hours/minutes
@@ -397,7 +433,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     setQuantity(quantity - 1);
                   }
                 }}
-                disabled={quantity === 0}
+                disabled={quantity === 0 || updateCartWithLogin?.isPending || updateCartByDevice?.isPending}
               >
                 <Image
                   src="/images/upDownBtn-minus.svg"
@@ -406,7 +442,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   className="p-3"
                 />
               </Button>
-              <p className="!mb-0 !text-black">{quantity}</p>
+              <input 
+                type="text" 
+                value={quantity} 
+                className="w-[50px] h-auto border-none bg-transparent text-center focus:border-none focus:outline-none" 
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                onBlur={handleQuantityChange}
+              />
               <Button
                 type="button"
                 variant="outline"
@@ -422,6 +464,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     setQuantity(quantity + 1);
                   }
                 }}
+                disabled={updateCartWithLogin?.isPending || updateCartByDevice?.isPending}
               >
                 <Image
                   src="/images/upDownBtn-plus.svg"

@@ -137,6 +137,40 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
+  const handleQuantityChange = () => {
+    if (quantity == 0 && productQuantity != 0) {
+      if (productQuantity != 0) {
+        toast({
+          description: t('quantity_can_not_be_0'),
+          variant: "danger"
+        });
+      }
+      setQuantity(productQuantity);
+      return;
+    }
+
+    if (minQuantity && minQuantity > quantity) {
+      toast({
+        description: t('min_quantity_must_be_n', { n: minQuantity }),
+        variant: "danger"
+      });
+      setQuantity(productQuantity);
+      return;
+    }
+
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t('max_quantity_must_be_n', { n: maxQuantity }),
+        variant: "danger"
+      });
+      setQuantity(productQuantity);
+      return;
+    }
+
+    const action = quantity > productQuantity ? 'add' : 'remove';
+    if (quantity != productQuantity) handleAddToCart(quantity, action);
+  };
+
   return (
     <div className="cart-item-list-col">
       <figure>
@@ -161,7 +195,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     setQuantity(quantity - 1);
                     handleAddToCart(quantity - 1, "remove");
                   }}
-                  disabled={quantity === 0}
+                  disabled={quantity === 0 || updateCartByDevice?.isPending || updateCartWithLogin?.isPending}
                 >
                   <Image
                     src={MinusIcon}
@@ -170,7 +204,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-                <p>{quantity}</p>
+                <input 
+                  type="text" 
+                  value={quantity} 
+                  className="w-[50px] h-auto border-none bg-transparent text-center focus:border-none focus:outline-none" 
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  onBlur={handleQuantityChange}
+                />
                 <Button
                   variant="outline"
                   className="relative border border-solid border-gray-300 hover:shadow-sm"
@@ -178,6 +218,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     setQuantity(quantity + 1);
                     handleAddToCart(quantity + 1, "add");
                   }}
+                  disabled={updateCartByDevice?.isPending || updateCartWithLogin?.isPending}
                 >
                   <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
                 </Button>

@@ -564,6 +564,7 @@
     "trade_role_update_failed": "فشل تحديث الدور التجاري",
     "something_went_wrong": "أُووبس! ",
     "product_price_id_not_found": "لم يتم العثور على معرف سعر المنتج",
+    "quantity_can_not_be_0": "لا يمكن أن تكون الكمية 0",
     "min_quantity_must_be_n": "يجب أن يكون الحد الأدنى الكمية {n}",
     "max_quantity_must_be_n": "يجب أن تكون الكمية القصوى {n}",
     "item_added_to_cart": "العنصر المضافة إلى العربة",

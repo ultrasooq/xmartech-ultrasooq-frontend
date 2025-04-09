@@ -564,6 +564,7 @@
     "trade_role_update_failed": "Trade Role Update Failed",
     "something_went_wrong": "Oops! Something went wrong",
     "product_price_id_not_found": "Product Price Id not found",
+    "quantity_can_not_be_0": "Quantity can not be 0",
     "min_quantity_must_be_n": "Minimum quantity must be {n}",
     "max_quantity_must_be_n": "Maximum quantity must be {n}",
     "item_added_to_cart": "Item added to cart",

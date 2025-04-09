@@ -54,7 +54,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   productPrices,
 }) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
@@ -125,6 +125,48 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
     }
   };
 
+  const handleQuantityChange = () => {
+    if (quantity == 0) {
+      if (productQuantity != 0) {
+        toast({
+          description: t('quantity_can_not_be_0'),
+          variant: "danger"
+        });
+      }
+      setQuantity(productQuantity);
+      return;
+    }
+
+    const minQuantity = productPrices?.length ? productPrices[0]?.minQuantityPerCustomer : null;
+    if (minQuantity && minQuantity > quantity) {
+      toast({
+        description: t('min_quantity_must_be_n', { n: minQuantity }),
+        variant: "danger"
+      });
+      setQuantity(productQuantity);
+      return;
+    }
+
+    const maxQuantity = productPrices?.length ? productPrices[0]?.maxQuantityPerCustomer : null;
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t('max_quantity_must_be_n', { n: maxQuantity }),
+        variant: "danger"
+      });
+      setQuantity(productQuantity);
+      return;
+    }
+
+    const action = quantity > productQuantity ? 'add' : 'remove';
+    if (quantity != productQuantity) handleAddToCart(quantity, action);
+  };
+
+  const calculateDiscountedPrice = () => {
+    const price = productPrices?.[0]?.offerPrice ? Number(productPrices[0]?.offerPrice) : 0;
+    const discount = productPrices?.[0]?.consumerDiscount || 0;
+    return price - (price * discount) / 100;
+  };
+
   return (
     <div className="product_list_part">
       {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
@@ -174,6 +216,12 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           <p>{productName}</p>
         </Link>
       </div>
+      {productPrices?.[0]?.offerPrice && <h5 className="py-1 text-[#1D77D1]">
+        {currency.symbol}{calculateDiscountedPrice()}{" "}
+        <span className="text-gray-500 !line-through">
+          {currency.symbol}{productPrices?.[0]?.offerPrice}
+        </span>
+      </h5>}
       <div className="quantity_wrap mb-2">
         <label dir={langDir}>{t("quantity")}</label>
         <div className="qty-up-down-s1-with-rgMenuAction">
@@ -189,7 +237,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                   setQuantity(quantity - 1);
                 }
               }}
-              disabled={quantity === 0}
+              disabled={quantity === 0 || updateCartWithLogin?.isPending}
             >
               <Image
                 src="/images/upDownBtn-minus.svg"
@@ -198,7 +246,13 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                 className="p-3"
               />
             </Button>
-            <p className="!mb-0 !text-black">{quantity}</p>
+            <input 
+              type="text" 
+              value={quantity} 
+              className="w-[50px] h-auto border-none bg-transparent text-center focus:border-none focus:outline-none" 
+              onChange={(e) => setQuantity(Number(e.target.value))}
+              onBlur={handleQuantityChange}
+            />
             <Button
               type="button"
               variant="outline"
@@ -214,6 +268,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                   setQuantity(quantity + 1);
                 }
               }}
+              disabled={updateCartWithLogin?.isPending}
             >
               <Image
                 src="/images/upDownBtn-plus.svg"
