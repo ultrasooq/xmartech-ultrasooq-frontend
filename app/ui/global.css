@@ -5216,7 +5216,7 @@ input::-ms-clear {
   }
 
   .product-view-s1-details-more-suggestion-sliders {
-    @apply flex order-4;
+    @apply flex order-4 w-full;
   }
 
   .custom-inner-banner-s1 {
@@ -5246,6 +5246,10 @@ input::-ms-clear {
 
   .profile_details_product .product-list-s1-col {
     @apply w-[48.5%];
+  }
+
+  .vendor-information-card-ui .vendor-info {
+    width: calc(100% - 90px);
   }
 
 }
