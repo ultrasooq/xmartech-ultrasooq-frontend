@@ -148,8 +148,8 @@ export default function ChangePasswordPage() {
                         control={form.control}
                         name="password"
                         render={({ field }) => (
-                          <FormItem className="mb-4 w-full">
-                            <FormLabel dir={langDir}>{t("old_password")}</FormLabel>
+                          <FormItem className="mb-4 w-full" dir={langDir}>
+                            <FormLabel>{t("old_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
@@ -168,8 +168,8 @@ export default function ChangePasswordPage() {
                         control={form.control}
                         name="newPassword"
                         render={({ field }) => (
-                          <FormItem className="mb-4 w-full">
-                            <FormLabel dir={langDir}>{t("new_password")}</FormLabel>
+                          <FormItem className="mb-4 w-full" dir={langDir}>
+                            <FormLabel>{t("new_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
@@ -188,8 +188,8 @@ export default function ChangePasswordPage() {
                         control={form.control}
                         name="confirmPassword"
                         render={({ field }) => (
-                          <FormItem className="mb-4 w-full">
-                            <FormLabel dir={langDir}>{t("reenter_new_password")}</FormLabel>
+                          <FormItem className="mb-4 w-full" dir={langDir}>
+                            <FormLabel>{t("reenter_new_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
@@ -209,7 +209,6 @@ export default function ChangePasswordPage() {
                           disabled={changePassword.isPending}
                           type="submit"
                           className="h-12 w-full rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:text-lg"
-                          dir={langDir}
                         >
                           {changePassword.isPending ? (
                             <>

@@ -131,8 +131,8 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
   ]);
 
   return (
-    <div className="my-3 space-y-2">
-      <Label dir={langDir}>{t("categories")}</Label>
+    <div className="my-3 space-y-2"dir={langDir}>
+      <Label>{t("categories")}</Label>
 
       <div className="flex flex-wrap md:grid md:grid-cols-3">
         {memoizedMenu?.length ? (

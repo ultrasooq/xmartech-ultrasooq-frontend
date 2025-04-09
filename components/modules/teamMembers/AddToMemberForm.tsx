@@ -170,13 +170,13 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   };
   return (
     <>
-      <div className="modal-header !justify-between">
-        <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+      <div className="modal-header !justify-between" dir={langDir}>
+        <DialogTitle className="text-center text-xl font-bold">
           {memberDetails ? t("edit_member") : t("add_member")}
         </DialogTitle>
         <Button
           onClick={onClose}
-          className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+          className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
         >
           <IoCloseSharp size={20} />
         </Button>
@@ -220,7 +220,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             dir={langDir}
           />
 
-          <div className="flex w-full items-center gap-1.5">
+          <div className="flex w-full items-center gap-1.5" dir={langDir}>
             <Label  dir={langDir}>{t("user_role")}</Label>
           </div>
           <Controller
@@ -250,6 +250,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
                   className="z-[9999]"
                   isSearchable={true} // Keep search enabled
                   placeholder={t("select")}
+                  isRtl={langDir == 'rtl'}
                 />
                 {/* Validation Error Message */}
                 {form.formState.errors.userRoleId && (
@@ -261,7 +262,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             )}
           />
 
-          <div className="flex w-full items-center gap-1.5">
+          <div className="flex w-full items-center gap-1.5" dir={langDir}>
             <Label dir={langDir}>{t("status")}</Label>
           </div>
           <Controller
@@ -270,7 +271,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             render={({ field }) => (
               <Select
                 options={[
-                  { value: "ACTIVE", label: t("active").toUpperCase() },
+                  { value: "ACTIVE", label: t("active").toUpperCase(), },
                   { value: "INACTIVE", label: t("inactive").toUpperCase() },
                 ]}
                 onChange={(selectedOption) =>
@@ -280,6 +281,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
                 instanceId="status"
                 styles={customStyles}
                 placeholder={t("select")}
+                isRtl={langDir == 'rtl'}
               />
             )}
           />

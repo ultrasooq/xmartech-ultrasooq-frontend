@@ -82,13 +82,13 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
 
     return (
         <>
-            <div className="modal-header !justify-between">
+            <div className="modal-header !justify-between" dir={langDir}>
                 <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
                     {t("submit_your_query")}
                 </DialogTitle>
                 <Button
                     onClick={onClose}
-                    className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+                    className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
                 >
                     <IoCloseSharp size={20} />
                 </Button>
@@ -99,7 +99,11 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="card-item card-payment-form px-5 pb-5 pt-3"
                 >
-                    <label className="text-sm font-medium leading-none text-color-dark">{t("email")}</label>
+                    <div dir={langDir}>
+                        <label className="text-sm font-medium leading-none text-color-dark">
+                            {t("email")}
+                        </label>
+                    </div>
                     <ControlledTextInput
                         label={t("email")}
                         name="email"

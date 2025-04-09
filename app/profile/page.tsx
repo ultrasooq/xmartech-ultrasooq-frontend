@@ -492,10 +492,9 @@ export default function ProfilePage() {
                     control={form.control}
                     name="gender"
                     render={({ field }) => (
-                      <FormItem className="mb-5 mt-3 flex w-full flex-col items-start">
+                      <FormItem className="mb-5 mt-3 flex w-full flex-col items-start" dir={langDir}>
                         <FormLabel
                           className="mb-3 mr-6 capitalize"
-                          dir={langDir}
                         >
                           {t("gender")}
                         </FormLabel>
@@ -555,7 +554,7 @@ export default function ProfilePage() {
                   />
 
                   <div className="w-full">
-                    <div className="flex w-full items-center justify-between">
+                    <div className="flex w-full items-center justify-between" dir={langDir}>
                       <label
                         className={cn(
                           "block text-left text-sm font-medium capitalize leading-4 text-color-dark",
@@ -563,7 +562,6 @@ export default function ProfilePage() {
                             ? "!text-red-500"
                             : "",
                         )}
-                        dir={langDir}
                       >
                         {t("phone_number")}
                       </label>
@@ -572,7 +570,6 @@ export default function ProfilePage() {
                         type="button"
                         onClick={appendPhoneNumber}
                         className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                        dir={langDir}
                       >
                         <Image
                           src="/images/add-icon.svg"
@@ -612,10 +609,9 @@ export default function ProfilePage() {
                   ))}
 
                   <div className="mb-1 w-full">
-                    <div className="flex w-full items-center justify-between">
+                    <div className="flex w-full items-center justify-between" dir={langDir}>
                       <label
                         className="block text-left text-sm font-medium capitalize leading-4 text-color-dark"
-                        dir={langDir}
                       >
                         {t("social_links")}
                       </label>
@@ -624,7 +620,6 @@ export default function ProfilePage() {
                         type="button"
                         onClick={appendSocialLinks}
                         className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
-                        dir={langDir}
                       >
                         <Image
                           src="/images/add-icon.svg"
@@ -647,6 +642,7 @@ export default function ProfilePage() {
                         <AccordionItem
                           value="item-1"
                           className="mt-2 border-b-0"
+                          dir={langDir}
                         >
                           <AccordionTrigger className="flex justify-between py-0 hover:!no-underline">
                             <div className="mb-2 flex items-center text-sm font-normal leading-4 text-color-dark">
@@ -663,7 +659,7 @@ export default function ProfilePage() {
                                   alt="social-facebook-icon"
                                 />
                               ) : (
-                                <span className="capitalize" dir={langDir}>
+                                <span className="capitalize">
                                   {t("select_type")}
                                 </span>
                               )}
@@ -712,7 +708,7 @@ export default function ProfilePage() {
                       <Button
                         type="button"
                         onClick={() => removeSocialLinks(index)}
-                        className="absolute right-11 top-3.5 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                        className={`absolute ${langDir == 'rtl' ? 'ml-2' : 'right-11'} top-3.5 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent`}
                       >
                         <Image
                           src="/images/social-delete-icon.svg"

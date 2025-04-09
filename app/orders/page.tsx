@@ -184,9 +184,9 @@ const OrdersPage = () => {
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
-        <div className="headerPart">
+        <div className="headerPart" dir={langDir}>
           <div className="lediv">
-            <h3 dir={langDir}>{t("make_payment")}</h3>
+            <h3>{t("make_payment")}</h3>
           </div>
         </div>
         <div className="cart-page-wrapper">
@@ -202,7 +202,7 @@ const OrdersPage = () => {
 
           <div className="cart-page-right">
             <div className="card-item priceDetails">
-              <div className="card-inner-headerPart">
+              <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
                   <h3 dir={langDir}>{t("price_details")}</h3>
                 </div>

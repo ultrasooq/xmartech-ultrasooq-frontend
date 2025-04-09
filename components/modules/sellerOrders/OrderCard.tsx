@@ -69,7 +69,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
         </Link>
         <div className="center-price-info">
           <h4>{currency.symbol}{Number(purchasePrice) * (orderQuantity ?? 0)}</h4>
-          <p className="text-gray-500">Quantity x {orderQuantity || 0}</p>
+          <p className="text-gray-500">{t("quantity")} x {orderQuantity || 0}</p>
         </div>
         <div className="right-info">
           <h4 dir={langDir}>
@@ -105,7 +105,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
               </>
             ) : null}
           </h4>
-          <p>{SELLER_DELIVERY_STATUS[orderStatus]}</p>
+          <p dir={langDir}>{t(SELLER_DELIVERY_STATUS[orderStatus])}</p>
 
           {/* {orderStatus === "DELIVERED" ? (
             <Link

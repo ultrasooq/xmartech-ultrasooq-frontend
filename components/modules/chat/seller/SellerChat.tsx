@@ -661,8 +661,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     <div>
       <div className="flex w-full flex-wrap rounded-sm border border-solid border-gray-300">
         <div className="w-full border-r border-solid border-gray-300 md:w-[20%]">
-          <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-sm font-normal text-[#333333] md:px-[10px] md:py-[10px] md:text-base">
-            <span dir={langDir}>{t("request_for_rfq")}</span>
+          <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-sm font-normal text-[#333333] md:px-[10px] md:py-[10px] md:text-base" dir={langDir}>
+            <span>{t("request_for_rfq")}</span>
           </div>
           <div className="max-h-[720px] w-full overflow-y-auto p-2">
             {allRfqQuotesQuery?.isLoading ? (
@@ -706,8 +706,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
           </div>
         </div>
         <div className="w-full border-r border-solid border-gray-300 md:w-[80%]">
-          <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-            <span dir={langDir}>
+          <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]" dir={langDir}>
+            <span>
               {t("offering_price")}{" "}
               <b className="text-[#679A03]">
                 {selectedRfqQuote?.offerPrice
@@ -718,7 +718,6 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             <Link
               href="#"
               className="inline-block rounded-sm bg-dark-orange px-3 py-2 text-xs font-bold capitalize text-white"
-              dir={langDir}
             >
               {t("checkout")}
             </Link>

@@ -468,13 +468,13 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                   {/* For Stock */}
                   <div className="flex flex-wrap space-y-1">
-                    <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="flex items-center justify-start gap-2 text-black" dir={langDir}>
                       <input
                         type="checkbox"
                         className="h-[20px] w-[20px]"
                         defaultChecked={askForStock === "false"} // Checkbox is checked when askForStock is false
                       />
-                      <div className="text-[12px] font-semibold" dir={langDir}>{t("stock")}</div>
+                      <div className="text-[12px] font-semibold">{t("stock")}</div>
                     </div>
                     {askForStock === "false" ? (
                       <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -501,14 +501,14 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         </a>
                       </div>
                     ) : (
-                      <div className="text-center text-[16px] font-semibold text-gray-500" dir={langDir}>
+                      <div className="text-center text-[16px] font-semibold text-gray-500">
                         {t("ask_for_the_stock")}
                       </div>
                     )}
                   </div>
 
                   <div className="flex flex-wrap space-y-1">
-                    <div className="flex items-center justify-start gap-2 text-black">
+                    <div className="flex items-center justify-start gap-2 text-black" dir={langDir}>
                       <input
                         type="checkbox"
                         className="h-[20px] w-[20px]"
@@ -540,7 +540,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         </a>
                       </div>
                     ) : (
-                      <div className="text-center text-[16px] font-semibold text-gray-500" dir={langDir}>
+                      <div className="text-center text-[16px] font-semibold text-gray-500">
                         {t("ask_for_the_price")}
                       </div>
                     )}
@@ -578,9 +578,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div> */}
                 </div>
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("product_condition")}
                       </div>
                     </div>
@@ -595,7 +595,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </select>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold" dir={langDir}>
                         {t("deliver_after")}
@@ -644,7 +644,6 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       type="button"
                       className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
                       onClick={handleUpdate} // Attach the handleUpdate function here
-                      dir={langDir}
                     >
                       {t("update")}
                     </button>
@@ -687,9 +686,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
             <div className="rightdiv">
               <div className="form-container">
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>{t("time_open")}</div>
+                      <div className="text-[12px] font-semibold">{t("time_open")}</div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                       <a
@@ -714,7 +713,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold" dir={langDir}>
                         {t("time_close")}
@@ -760,9 +759,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex w-full items-center justify-start gap-2 text-black md:w-[40%]">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("consumer_type")}
                       </div>
                     </div>
@@ -794,9 +793,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex w-[40%] items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>{t("sell_type")}</div>
+                      <div className="text-[12px] font-semibold">{t("sell_type")}</div>
                     </div>
                     <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                       <select
@@ -813,9 +812,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("vendor_discount")}
                       </div>
                     </div>
@@ -842,9 +841,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("consumer_discount")}
                       </div>
                     </div>
@@ -874,9 +873,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("min_quantity")}
                       </div>
                     </div>
@@ -903,9 +902,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("max_quantity")}
                       </div>
                     </div>
@@ -935,9 +934,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("min_customer")}
                       </div>
                     </div>
@@ -964,9 +963,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("max_customer")}
                       </div>
                     </div>
@@ -996,9 +995,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("min_quantity_per_customer")}
                       </div>
                     </div>
@@ -1025,9 +1024,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" dir={langDir}>
+                      <div className="text-[12px] font-semibold">
                         {t("max_quantity_per_customer")}
                       </div>
                     </div>

@@ -19,7 +19,7 @@ const AddProductContent: React.FC<AddProductContentProps> = () => {
         <DialogTitle dir={langDir}>{t("choose_add_product_type")}</DialogTitle>
       </div>
       <div className="modal-bodypart">
-        <div className="import-pickup-type-selector-lists">
+        <div className="import-pickup-type-selector-lists" dir={langDir}>
           <div className="import-pickup-type-selector-item">
             <Link
               href="/product"

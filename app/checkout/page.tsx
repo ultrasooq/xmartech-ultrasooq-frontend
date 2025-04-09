@@ -489,9 +489,9 @@ useEffect(() => {
           <div className="cart-page-left">
             <div className="bodyPart">
               <div className="card-item cart-items">
-                <div className="card-inner-headerPart">
+                <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
-                    <h3 dir={langDir}>{t("cart_items")}</h3>
+                    <h3>{t("cart_items")}</h3>
                   </div>
                 </div>
 
@@ -543,9 +543,9 @@ useEffect(() => {
 
               {!me.data ? (
                 <div className="card-item selected-address">
-                  <div className="card-inner-headerPart">
+                  <div className="card-inner-headerPart" dir={langDir}>
                     <div className="lediv">
-                      <h3 dir={langDir}>{t("your_informations")}</h3>
+                      <h3>{t("your_informations")}</h3>
                     </div>
                   </div>
 
@@ -565,7 +565,7 @@ useEffect(() => {
               ) : null}
 
               <div className="card-item selected-address">
-                <div className="card-inner-headerPart">
+                <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
                     <h3>
                       {me?.data
@@ -645,7 +645,7 @@ useEffect(() => {
 
                 {!me.data && !guestShippingAddress ? (
                   <div className="card-item cart-items for-add">
-                    <div className="top-heading">
+                    <div className="top-heading" dir={langDir}>
                       <Button
                         variant="outline"
                         type="button"
@@ -654,7 +654,6 @@ useEffect(() => {
                           setAddressType("shipping");
                           handleToggleAddModal();
                         }}
-                        dir={langDir}
                       >
                         <Image
                           src={AddIcon}
@@ -670,7 +669,7 @@ useEffect(() => {
               </div>
 
               <div className="card-item selected-address">
-                <div className="card-inner-headerPart">
+                <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
                     <h3>
                       {me?.data ? t("select_billing_address") : t("billing_address")}
@@ -785,7 +784,7 @@ useEffect(() => {
 
                 {!me.data && !guestBillingAddress ? (
                   <div className="card-item cart-items for-add">
-                    <div className="top-heading">
+                    <div className="top-heading" dir={langDir}>
                       <Button
                         variant="outline"
                         type="button"
@@ -794,7 +793,6 @@ useEffect(() => {
                           setAddressType("billing");
                           handleToggleAddModal();
                         }}
-                        dir={langDir}
                       >
                         <Image
                           src={AddIcon}
@@ -811,7 +809,7 @@ useEffect(() => {
 
               {me.data ? (
                 <div className="card-item cart-items for-add">
-                  <div className="top-heading">
+                  <div className="top-heading" dir={langDir}>
                     <Button
                       variant="outline"
                       type="button"
@@ -834,9 +832,9 @@ useEffect(() => {
           </div>
           <div className="cart-page-right">
             <div className="card-item priceDetails">
-              <div className="card-inner-headerPart">
+              <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
-                  <h3 dir={langDir}>{t("price_details")}</h3>
+                  <h3>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">

@@ -18,6 +18,7 @@ import { useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "next-intl";
 
 interface ControlledDatePickerProps {
   label?: string;
@@ -34,6 +35,7 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
   minDate,
   placeholder
 }) => {
+  const t = useTranslations();
   const formContext = useFormContext();
   const { langDir } = useAuth();
 
@@ -46,7 +48,7 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
           <FormLabel dir={langDir}>{label}</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
-              <FormControl>
+              <FormControl dir={langDir}>
                 <Button
                   variant={"outline"}
                   className={cn(
@@ -57,13 +59,13 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
                   {field.value ? (
                     format(field.value, "PPP")
                   ) : (
-                    <span>{placeholder || "Enter " + (label || "Date")}</span>
+                    <span>{placeholder || t("enter") + " " + (label || "Date")}</span>
                   )}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0" align={langDir == 'rtl' ? 'end' : 'start'}>
               <Calendar
                 mode="single"
                 selected={field.value}

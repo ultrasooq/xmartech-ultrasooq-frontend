@@ -50,10 +50,10 @@ const SellerRewardsPage = () => {
         <section className="team_members_section">
             <div className="container relative z-10 m-auto px-3">
                 <div className="flex w-full flex-wrap">
-                    <div className="team_members_heading w-full">
-                        <h1 dir={langDir}>{t("seller_rewards")}</h1>
+                    <div className="team_members_heading w-full" dir={langDir}>
+                        <h1>{t("seller_rewards")}</h1>
                         <div className="flex justify-end gap-3">
-                            <button type="button" onClick={() => setIsSellerRewardFormModalOpen(true)} dir={langDir}>
+                            <button type="button" onClick={() => setIsSellerRewardFormModalOpen(true)}>
                                 {t("create_seller_reward")}
                             </button>
                         </div>
@@ -65,14 +65,14 @@ const SellerRewardsPage = () => {
                                 <table cellPadding={0} cellSpacing={0} border={0}>
                                     <thead>
                                         <tr>
-                                            <th dir={langDir}>{t("product")}</th>
-                                            <th dir={langDir}>{t("start_time")}</th>
-                                            <th dir={langDir}>{t("end_time")}</th>
-                                            <th dir={langDir}>{t("reward_amount")}</th>
-                                            <th dir={langDir}>{t("reward_percentage")}</th>
-                                            <th dir={langDir}>{t("minimum_order")}</th>
-                                            <th dir={langDir}>{t("stock")}</th>
-                                            <th dir={langDir}>{t("action")}</th>
+                                            <th>{t("product")}</th>
+                                            <th>{t("start_time")}</th>
+                                            <th>{t("end_time")}</th>
+                                            <th>{t("reward_amount")}</th>
+                                            <th>{t("reward_percentage")}</th>
+                                            <th>{t("minimum_order")}</th>
+                                            <th>{t("stock")}</th>
+                                            <th>{t("action")}</th>
                                         </tr>
                                     </thead>
 

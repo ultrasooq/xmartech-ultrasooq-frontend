@@ -106,8 +106,8 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
 
   return (
     <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
-      <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-        <span dir={langDir}>{t("question_n_comments")}</span>
+      <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]" dir={langDir}>
+        <span>{t("question_n_comments")}</span>
         <select onChange={(e) => setUserType(e.target.value)} value={userType}>
           <option value="CUSTOMER" dir={langDir}>{t("customer").toUpperCase()}</option>
           <option value="VENDOR" dir={langDir}>{t("vendor").toUpperCase()}</option>

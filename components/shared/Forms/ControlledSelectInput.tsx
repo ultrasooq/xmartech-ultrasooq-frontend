@@ -42,9 +42,15 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
       control={formContext.control}
       name={name}
       render={({ field }) => (
-        <FormItem className="mb-4">
+        <FormItem className="mb-4" dir={langDir}>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value} {...props}>
+          <Select 
+            onValueChange={field.onChange} 
+            value={field.value} 
+            {...props} 
+            // @ts-ignore
+            dir={langDir}
+          >
             <FormControl>
               <SelectTrigger className="theme-form-control-s1 data-[placeholder]:text-muted-foreground">
                 <SelectValue placeholder={placeholder || `${t('select')} ${label}`} />
@@ -52,7 +58,7 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
             </FormControl>
             <SelectContent>
               {options.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
+                <SelectItem key={item.value} value={item.value} dir={langDir}>
                   <div className="flex flex-row items-center py-2" dir={langDir}>
                     {item.icon ? (
                       <Image

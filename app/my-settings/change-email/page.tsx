@@ -99,8 +99,8 @@ export default function ChangeEmailPage() {
                     control={form.control}
                     name="email"
                     render={({ field }) => (
-                      <FormItem className="mb-4 w-full">
-                        <FormLabel dir={langDir}>{t("new_email")}</FormLabel>
+                      <FormItem className="mb-4 w-full" dir={langDir}>
+                        <FormLabel>{t("new_email")}</FormLabel>
                         <FormControl>
                           <Input
                             placeholder={t("enter_email")}
@@ -118,7 +118,6 @@ export default function ChangeEmailPage() {
                       disabled={changeEmail.isPending}
                       type="submit"
                       className="h-12 w-full rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:text-lg"
-                      dir={langDir}
                     >
                       {changeEmail.isPending ? (
                         <>

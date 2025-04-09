@@ -465,6 +465,8 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                 className="mb-3 flex flex-row gap-y-3"
                 value={displayMyProducts}
                 onValueChange={setDisplayMyProducts}
+                // @ts-ignore
+                dir={langDir}
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem

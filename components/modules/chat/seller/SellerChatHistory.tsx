@@ -29,7 +29,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
   isUploadingCompleted,
 }) => {
   const t = useTranslations();
-  const { user, currency } = useAuth();
+  const { user, currency, langDir } = useAuth();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { updateRfqRequestStatus } = useSocket();
 
@@ -336,7 +336,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
             ))}
           </div>
         ) : (
-          <div className="mt-5 flex w-full flex-wrap items-end">
+          <div className="mt-5 flex w-full flex-wrap items-end" dir={langDir}>
             {chatHistoryLoading ? t("loading") : t("no_chat_history_found")}
           </div>
         )}

@@ -37,7 +37,7 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
                   className="mr-1"
                   alt="edit-icon"
                 />
-                edit
+                {t("edit")}
               </Link>
             </div>
           ) : null}

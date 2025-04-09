@@ -41,7 +41,7 @@ const SellerRfqRequestPage = () => {
       <div className="w-full px-2 lg:w-[15%]">
         <div className="w-full px-0 py-0 shadow-lg">
           <ul>
-            <li className="w-full py-1">
+            <li className="w-full py-1" dir={langDir}>
               <Link
                 href="#"
                 className="flex items-center justify-start rounded-xl p-2"
@@ -62,6 +62,7 @@ const SellerRfqRequestPage = () => {
                   : "bg-gray-50 text-black",
                 "w-full py-1",
               )}
+              dir={langDir}
             >
               <button className="flex items-center justify-start rounded-xl p-2">
                 <div className="flex h-[20px] w-[20px] items-center justify-center">
@@ -82,6 +83,7 @@ const SellerRfqRequestPage = () => {
                   : "bg-gray-50 text-black",
                 "w-full py-1",
               )}
+              dir={langDir}
             >
               <button className="flex items-center justify-start rounded-xl p-2">
                 <div className="flex h-[20px] w-[20px] items-center justify-center">

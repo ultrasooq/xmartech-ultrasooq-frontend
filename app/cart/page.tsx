@@ -212,18 +212,18 @@ const CartListPage = () => {
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
-        <div className="headerPart">
+        <div className="headerPart" dir={langDir}>
           <div className="lediv">
-            <h3 dir={langDir}>{t("my_cart")}</h3>
+            <h3>{t("my_cart")}</h3>
           </div>
         </div>
         <div className="cart-page-wrapper">
           <div className="cart-page-left">
             <div className="bodyPart">
               <div className="card-item cart-items">
-                <div className="card-inner-headerPart">
+                <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
-                    <h3 dir={langDir}>{t("cart_items")}</h3>
+                    <h3>{t("cart_items")}</h3>
                   </div>
                 </div>
                 <div className="cart-item-lists">
@@ -231,7 +231,7 @@ const CartListPage = () => {
                   !cartListByUser.data?.data?.length &&
                   !cartListByUser.isLoading ? (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center" dir={langDir}>{t("no_cart_items")}</p>
+                      <p className="my-3 text-center">{t("no_cart_items")}</p>
                     </div>
                   ) : null}
 
@@ -239,7 +239,7 @@ const CartListPage = () => {
                   !cartListByDeviceQuery.data?.data?.length &&
                   !cartListByDeviceQuery.isLoading ? (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center" dir={langDir}>{t("no_cart_items")}</p>
+                      <p className="my-3 text-center">{t("no_cart_items")}</p>
                     </div>
                   ) : null}
 
@@ -291,9 +291,9 @@ const CartListPage = () => {
           </div>
           <div className="cart-page-right">
             <div className="card-item priceDetails">
-              <div className="card-inner-headerPart">
+              <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
-                  <h3 dir={langDir}>{t("price_details")}</h3>
+                  <h3>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">

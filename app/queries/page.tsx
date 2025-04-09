@@ -60,7 +60,7 @@ const QueriesPage = () => {
             <section className="team_members_section">
                 <div className="container relative z-10 m-auto px-3">
                     <div className="flex w-full flex-wrap">
-                        <div className="team_members_heading w-full">
+                        <div className="team_members_heading w-full" dir={langDir}>
                             <h1 dir={langDir}>{t("queries")}</h1>
                         </div>
 

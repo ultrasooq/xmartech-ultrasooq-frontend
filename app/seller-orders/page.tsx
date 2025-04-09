@@ -160,7 +160,7 @@ const SellerOrdersPage = () => {
 
               <div className="divider"></div>
 
-              <h3>{t("order_time")}</h3>
+              <h3 dir={langDir}>{t("order_time")}</h3>
 
               <RadioGroup
                 className="flex flex-col gap-y-3"

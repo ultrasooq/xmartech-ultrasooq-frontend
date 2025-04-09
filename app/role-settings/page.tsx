@@ -111,25 +111,23 @@ const RoleSettingsPage = () => {
     <section className="team_members_section">
       <div className="container relative z-10 m-auto px-3">
         <div className="flex w-full flex-wrap">
-          <div className="mb-5 w-full">
+          <div className="mb-5 w-full" dir={langDir}>
             <ul className="flex w-full items-center justify-start gap-1">
               <Link
                 href={"/team-members"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
-                dir={langDir}
               >
                 {t("team_members")}
               </Link>
               <Link
                 href={"/role-settings"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
-                dir={langDir}
               >
                 {t("role")}
               </Link>
             </ul>
           </div>
-          <div className="team_members_heading w-full">
+          <div className="team_members_heading w-full" dir={langDir}>
             <h1 dir={langDir}>{t("role_settings")}</h1>
             <button type="button" onClick={handleToggleAddModal} dir={langDir}>
               <IoMdAdd /> {t("add_new_role")}

@@ -1377,6 +1377,10 @@
     @apply ml-auto;
   }
 
+  .card-item .card-inner-headerPart[dir="rtl"] .rgdiv {
+    margin-left: initial;
+  }
+
   .card-item .card-inner-headerPart .rgdiv .textwithcheckbox {
     @apply flex items-center gap-x-2;
   }

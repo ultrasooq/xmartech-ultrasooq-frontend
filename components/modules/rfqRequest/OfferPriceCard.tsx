@@ -32,7 +32,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   priceRequest
 }) => {
   const t = useTranslations();
-  const { currency } = useAuth();
+  const { currency, langDir } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editedOfferPrice, setEditedOfferPrice] = useState("");
 
@@ -113,7 +113,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
           </p>
         </div>
       )}
-      <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4">
+      <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4" dir={langDir}>
         <span className="mb-2 text-sm font-normal text-gray-500">
           {t("vendor_note")}:
         </span>

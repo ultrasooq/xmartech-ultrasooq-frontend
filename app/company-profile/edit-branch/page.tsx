@@ -39,6 +39,7 @@ import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import ReactSelect from "react-select";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 
 const customStyles = {
   control: (base: any) => ({
@@ -388,14 +389,20 @@ export default function EditBranchPage() {
             className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
                 {t("edit_branch")}
               </h2>
             </div>
 
             <div className="mb-4 w-full">
               <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                <label 
+                  className={cn(
+                    "mb-3.5 block",
+                    langDir == "rtl" ? "text-right" : "text-left",
+                    "text-lg font-medium capitalize leading-5 text-color-dark"
+                  )}
+                >
                   {t("branch_information")}
                 </label>
               </div>
@@ -404,19 +411,19 @@ export default function EditBranchPage() {
             <div>
               <div className="mb-3.5 w-full">
                 <AccordionMultiSelectV2
-                  label="Business Type"
+                  label={t("business_type")}
                   name="businessTypeList"
                   options={memoizedTags || []}
-                  placeholder="Business Type"
-                  error={String(form.formState.errors?.businessTypeList?.message)}
+                  placeholder={t("business_type")}
+                  error={String(form.formState.errors?.businessTypeList?.message || '')}
                 />
 
                 <FormField
                   control={form.control}
                   name="uploadBranchImage"
                   render={({ field }) => (
-                    <FormItem className="mb-3.5 w-full">
-                      <FormLabel dir={langDir}>{t("upload_branch_front_picture")}</FormLabel>
+                    <FormItem className="mb-3.5 w-full" dir={langDir}>
+                      <FormLabel>{t("upload_branch_front_picture")}</FormLabel>
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                           <div className="relative h-full w-full">
@@ -489,8 +496,8 @@ export default function EditBranchPage() {
                   control={form.control}
                   name="uploadProofOfAddress"
                   render={({ field }) => (
-                    <FormItem className="mb-3.5 w-full">
-                      <FormLabel dir={langDir}>{t("address_proof")}</FormLabel>
+                    <FormItem className="mb-3.5 w-full" dir={langDir}>
+                      <FormLabel>{t("address_proof")}</FormLabel>
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                           <div className="relative h-full w-full">
@@ -566,7 +573,13 @@ export default function EditBranchPage() {
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                    <label 
+                      className={cn(
+                        "mb-3.5 block",
+                        langDir == 'rtl' ? 'text-right' : 'text-left',
+                        "text-lg font-medium capitalize leading-5 text-color-dark"
+                      )}
+                    >
                       {t("branch_location")}
                     </label>
                   </div>
@@ -579,14 +592,6 @@ export default function EditBranchPage() {
                       name="address"
                       placeholder={t("address")}
                       dir={langDir}
-                    />
-
-                    <Image
-                      src="/images/location.svg"
-                      alt="location-icon"
-                      height={16}
-                      width={16}
-                      className="absolute right-6 top-[50px]"
                     />
                   </div>
 
@@ -629,6 +634,7 @@ export default function EditBranchPage() {
                           )}
                           styles={customStyles}
                           instanceId="country"
+                          isRtl={langDir == 'rtl'}
                         />
                       )}
                     />
@@ -775,13 +781,13 @@ export default function EditBranchPage() {
                 branchId={activeBranchId}
               />
 
-              <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
+              <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4" dir={langDir}>
                 <FormField
                   control={form.control}
                   name="mainOffice"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
-                      <FormLabel>Main Office:</FormLabel>
+                      <FormLabel>{t("main_branch")}:</FormLabel>
                       <FormControl>
                         <Switch
                           checked={!!field.value}

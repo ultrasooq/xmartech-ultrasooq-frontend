@@ -1,3 +1,4 @@
+import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
 import { Controller, useFormContext } from 'react-hook-form';
 import 'react-quill/dist/quill.snow.css';
@@ -5,10 +6,11 @@ import 'react-quill/dist/quill.snow.css';
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 export default function QuillEditor({ label, name, }: { label: string; name: string; }) {
+    const { langDir } = useAuth();
     const formContext = useFormContext();
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-2" dir={langDir}>
             <label className="text-sm font-medium leading-none text-color-dark">
                 {label}
             </label>
@@ -32,7 +34,8 @@ export default function QuillEditor({ label, name, }: { label: string; name: str
                                 [{ 'color': [] }, { 'background': [] }],
                                 [{ 'font': [] }],
                                 [{ 'align': [] }],
-                                ['clean']
+                                ['clean'],
+                                [{ 'direction': langDir || 'ltr' }]
                             ]
                         }}
                         onChange={field.onChange} value={field.value}

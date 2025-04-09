@@ -15,6 +15,8 @@ import { useAllManagedProducts } from "@/apis/queries/product.queries";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
+import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
 
 const addFormSchema = (t: any) => {
     return z.object({
@@ -165,56 +167,34 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                       }))}
                     />
                     
-                    <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
-                        {t("start_date")}
-                    </label>
-                    <ControlledTextInput
-                        type="date"
+                    <ControlledDatePicker
                         label={t("start_date")}
                         name="startDate"
-                        placeholder={t("start_date")}
-                        dir={langDir}
+                        isFuture
                     />
 
-                    <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
-                        {t("start_time")}
-                    </label>
-                    <ControlledTextInput
-                        type="time"
+                    <ControlledTimePicker
                         label={t("start_time")}
                         name="startTime"
-                        placeholder={t("start_time")}
-                        dir={langDir}
                     />
 
-                    <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
-                        {t("end_date")}
-                    </label>
-                    <ControlledTextInput
-                        type="date"
+                    <ControlledDatePicker
                         label={t("end_date")}
                         name="endDate"
-                        placeholder={t("end_date")}
-                        dir={langDir}
+                        isFuture
                     />
 
-                    <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
-                        {t("end_time")}
-                    </label>
-                    <ControlledTextInput
-                        type="time"
+                    <ControlledTimePicker
                         label={t("end_time")}
                         name="endTime"
-                        placeholder={t("end_time")}
-                        dir={langDir}
                     />
 
                     <FormField
                         control={form.control}
                         name="rewardPercentage"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel dir={langDir}>{t("reward_percentage")}</FormLabel>
+                            <FormItem dir={langDir}>
+                                <FormLabel>{t("reward_percentage")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -232,8 +212,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         control={form.control}
                         name="rewardFixAmount"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel dir={langDir}>{t("reward_fix_amount")}</FormLabel>
+                            <FormItem dir={langDir}>
+                                <FormLabel>{t("reward_fix_amount")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -251,8 +231,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         control={form.control}
                         name="minimumOrder"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel dir={langDir}>{t("minimum_order")}</FormLabel>
+                            <FormItem dir={langDir}>
+                                <FormLabel>{t("minimum_order")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -270,8 +250,8 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         control={form.control}
                         name="stock"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel dir={langDir}>{t("stock")}</FormLabel>
+                            <FormItem dir={langDir}>
+                                <FormLabel>{t("stock")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"

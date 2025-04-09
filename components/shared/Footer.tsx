@@ -63,7 +63,7 @@ const Footer = () => {
       <div className="container m-auto">
         <div className="flex flex-wrap">
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-3/12 lg:w-3/12">
-            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5" dir={langDir}>
+            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5">
               {t("quick_links")}
             </h3>
             <ul>
@@ -82,77 +82,76 @@ const Footer = () => {
                   variant="link"
                   onClick={handleToggleTermsModal}
                   className="p-0 text-base font-normal text-light-gray"
-                  dir={langDir}
                 >
                   {t("term_n_condition")}
                 </Button>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("shipping")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("return")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("faqs")}
                 </a>
               </li>
             </ul>
           </div>
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-2/12 lg:w-3/12">
-            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5" dir={langDir}>
+            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5">
               {t("company")}
             </h3>
             <ul>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("about_us")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("affiliate")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("career")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("contact")}
                 </a>
               </li>
             </ul>
           </div>
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-2/12 lg:w-2/12">
-            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5" dir={langDir}>
+            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5">
               {t("business")}
             </h3>
             <ul>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("our_press")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("checkout")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("my_account")}
                 </a>
               </li>
               <li className="w-full py-1.5 text-base font-normal capitalize text-light-gray">
-                <a href="#" className="text-light-gray" dir={langDir}>
+                <a href="#" className="text-light-gray">
                   {t("shop")}
                 </a>
               </li>

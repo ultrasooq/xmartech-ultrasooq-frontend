@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import validator from "validator";
 import moment from "moment";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type RequestProductCardProps = {
   rfqId?: number;
@@ -31,6 +32,7 @@ const RequestProductCard: React.FC<RequestProductCardProps> = ({
   messageInfo,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   
   return (
     <button
@@ -40,6 +42,7 @@ const RequestProductCard: React.FC<RequestProductCardProps> = ({
         "flex w-full flex-col gap-y-2 bg-white px-[10px] py-[15px] shadow-lg",
         isSelected ? "bg-[#F8F8F8]" : "",
       )}
+      dir={langDir}
     >
       <div className="border-color-[#DBDBDB] h-auto w-full">
         <div className="flex flex-wrap gap-2 p-1">

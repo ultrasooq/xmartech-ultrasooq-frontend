@@ -257,19 +257,19 @@ export const SIZE_LIST: { label: string; value: string }[] = [
 ];
 
 export const DELIVERY_STATUS: { [key: string]: string } = {
-  CONFIRMED: "Your order has been placed",
-  SHIPPED: "Your order has been shipped",
-  OFD: "Your order is out for delivery",
-  DELIVERED: "Your order has been delivered",
-  CANCELLED: "Your order has been cancelled",
+  CONFIRMED: "order_placed",
+  SHIPPED: "order_shipped",
+  OFD: "order_out_for_delivery",
+  DELIVERED: "order_delivered",
+  CANCELLED: "order_cancelled",
 };
 
 export const SELLER_DELIVERY_STATUS: { [key: string]: string } = {
-  CONFIRMED: "The order has been placed",
-  SHIPPED: "The order has been shipped",
-  OFD: "The order is out for delivery",
-  DELIVERED: "The order has been delivered",
-  CANCELLED: "The order has been cancelled",
+  CONFIRMED: "order_placed",
+  SHIPPED: "order_shipped",
+  OFD: "order_out_for_delivery",
+  DELIVERED: "order_delivered",
+  CANCELLED: "order_cancelled",
 };
 
 export const STATUS_LIST: { label: string; value: string }[] = [
