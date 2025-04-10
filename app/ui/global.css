@@ -5391,6 +5391,18 @@ input::-ms-clear {
 
 }
 
+
+
+
+@media only screen and (min-width: 1024px) and (max-width: 1200px) {
+
+.rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .product_sec_list .product_list_part {
+  width: 50%
+}
+
+}
+
+
 @media only screen and (min-width: 768px) and (max-width: 991px) {
 
   .body-content-s1 {
@@ -5423,16 +5435,6 @@ input::-ms-clear {
   .product-view-s1-left-right.type2 .product-view-s1-right {
     @apply max-w-[50%]
   }
-
-}
-
-
-
-@media only screen and (min-width: 1024px) and (max-width: 1200px) {
-
-.rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .product_sec_list .product_list_part {
-  width: 50%
-}
 
 }
 
