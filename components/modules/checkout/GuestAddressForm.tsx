@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
@@ -10,6 +10,13 @@ import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput
 import { useTranslations } from "next-intl";
 import { ALPHABETS_REGEX } from "@/utils/constants";
 import { useAuth } from "@/context/AuthContext";
+import Select, { SingleValue } from "react-select";
+import { Label } from "@/components/ui/label";
+import { useAllCountries, useFetchCitiesByState, useFetchStatesByCountry } from "@/apis/queries/masters.queries";
+
+const customStyles = {
+  control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
+};
 
 type GuestAddressFormProps = {
   onClose: () => void;
@@ -58,31 +65,24 @@ const formSchema = (t: any) => {
       .max(50, {
         message: t("address_must_be_less_than_n_chars", { n: 50 }),
       }),
-    city: z.string().trim().min(2, { message: t("city_required") }).max(50, {
-      message: t("city_must_be_less_than_n_chars", { n: 50 }),
-    })
-    .refine((val) => ALPHABETS_REGEX.test(val), {
-      message: t("city_must_contain_only_letters"),
-    }),
-    province: z
+    countryId: z.coerce
+      .number()
+      .min(1, { message: t("country_required") }),
+    stateId: z.coerce
+      .number()
+      .min(1, { message: t("province_required") }),
+    cityId: z.coerce
+      .number()
+      .min(1, { message: t("city_required") }),
+    town: z
       .string()
       .trim()
-      .min(2, { message: t("province_required") })
+      .min(2, { message: t("town_required") })
       .max(50, {
-        message: t("province_must_be_less_than_n_chars", { n: 50 }),
+        message: t("town_must_be_less_than_n_chars", { n: 50 }),
       })
       .refine((val) => ALPHABETS_REGEX.test(val), {
-        message: t("province_must_contain_only_letters"),
-      }),
-    country: z
-      .string()
-      .trim()
-      .min(2, { message: t("country_required") })
-      .max(50, {
-        message: t("country_must_be_less_than_n_chars", { n: 50 }),
-      })
-      .refine((val) => ALPHABETS_REGEX.test(val), {
-        message: t("country_must_contain_only_letters"),
+        message: t("town_must_contain_only_letters"),
       }),
     postCode: z
       .string()
@@ -110,9 +110,10 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
     phoneNumber: "",
     cc: "",
     address: "",
-    city: "",
-    province: "",
-    country: "",
+    countryId: "",
+    stateId: "",
+    cityId: "",
+    town: "",
     postCode: "",
   };
   const form = useForm({
@@ -120,11 +121,65 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
     defaultValues: defaultValues,
   });
 
+  const [states, setStates] = useState<{ label: string; value: number; }[]>([]);
+  const [cities, setCities] = useState<{ label: string; value: number; }[]>([]);
+  const [selectedCountryId, setSelectedCountryId] = useState<number>();
+  const [selectedStateId, setSelectedStateId] = useState<number>();
+  const countriesQuery = useAllCountries();
+  const statesQuery = useFetchStatesByCountry();
+  const citiesQuery = useFetchCitiesByState();
+
+  const memoizedCountries = useMemo(() => {
+    return countriesQuery?.data?.data?.map((country: any) => {
+      return { label: country.name, value: country.id }
+    }) || [];
+  }, [countriesQuery?.data?.data]);
+
+  const fetchStatesByCountry = async () => {
+    if (selectedCountryId) {
+      let data = await statesQuery.mutateAsync({ countryId: selectedCountryId });
+      setStates(data?.data?.map((state: any) => {
+        return { label: state.name, value: state.id };
+      }) || []);
+    }
+  };
+
+  useEffect(() => {
+    fetchStatesByCountry();
+  }, [selectedCountryId]);
+
+  const fetchCitiesByState = async () => {
+    if (selectedStateId) {
+      let data = await citiesQuery.mutateAsync({ stateId: selectedStateId });
+      setCities(data?.data?.map((city: any) => {
+        return { label: city.name, value: city.id };
+      }) || []);
+    }
+  };
+
+  useEffect(() => {
+    fetchCitiesByState();
+  }, [selectedStateId]);
+
+  useEffect(() => {
+    if (guestBillingAddress?.countryId || guestShippingAddress?.countryId) {
+      setSelectedCountryId(guestBillingAddress?.countryId || guestShippingAddress?.countryId)
+    }
+    if (guestBillingAddress?.stateId || guestShippingAddress?.stateId) {
+      setSelectedStateId(guestBillingAddress?.stateId || guestShippingAddress?.stateId)
+    }
+  }, []);
+
   const onSubmit = async (formData: typeof defaultValues) => {
+    let data: {[key: string]: any} = formData;
+    data.country = memoizedCountries.find((country: any) => country.value == formData.countryId)?.label || '';
+    data.state = states.find((state: any) => state.value == formData.stateId)?.label || '';
+    data.city = cities.find((city: any) => city.value == formData.cityId)?.label || '';
+
     if (addressType === "shipping") {
-      setGuestShippingAddress(formData);
+      setGuestShippingAddress(data);
     } else if (addressType === "billing") {
-      setGuestBillingAddress(formData);
+      setGuestBillingAddress(data);
     }
 
     form.reset();
@@ -191,48 +246,129 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
             />
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-            <ControlledTextInput label={t("city")} name="city" placeholder={t("city")} dir={langDir} />
+          <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 mt-3">
+            <div style={{ zIndex: 9999999 }}>
+              <Label>{t("country")}</Label>
+              <Controller
+                name="countryId"
+                control={form.control}
+                render={({ field }) => (
+                  <Select
+                    options={memoizedCountries}
+                    value={memoizedCountries.find((country: any) => country.value == field.value)}
+                    onChange={(selectedOption: SingleValue<{ label: string, value: string }>) => {
+                      field.onChange(selectedOption?.value);
+                      setSelectedCountryId(Number(selectedOption?.value));
+                    }}
+                    instanceId="countryId"
+                    placeholder={t("select")}
+                    styles={customStyles}
+                    isRtl={langDir == 'rtl'}
+                    // @ts-ignore
+                    onFocus={(e) => e.target.autocomplete = 'none'}
+                  />
+                )}
+              />
+              <p className="text-[13px] text-red-500">
+                {form.formState.errors?.countryId?.message || ''}
+              </p>
+            </div>
 
-            <ControlledTextInput
-              label={t("province")}
-              name="province"
-              placeholder={t("province")}
-              dir={langDir}
-            />
+            <div style={{ zIndex: 999999 }}>
+              <Label>{t("state")}</Label>
+              <Controller
+                name="stateId"
+                control={form.control}
+                render={({ field }) => (
+                  <Select
+                    // @ts-ignore
+                    options={states}
+                    // @ts-ignore
+                    value={states.find(state => state.value == field.value)}
+                    onChange={(selectedOption: SingleValue<{ label: string, value: string }>) => {
+                      field.onChange(selectedOption?.value);
+                      setSelectedStateId(Number(selectedOption?.value));
+                    }}
+                    instanceId="stateId"
+                    placeholder={t("select")}
+                    styles={customStyles}
+                    isRtl={langDir == 'rtl'}
+                    // @ts-ignore
+                    onFocus={(e) => e.target.autocomplete = 'none'}
+                  />
+                )}
+              />
+              <p className="text-[13px] text-red-500">
+                {form.formState.errors?.stateId?.message || ''}
+              </p>
+            </div>
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-            <ControlledTextInput
-              label={t("postcode")}
-              type="number"
-              name="postCode"
-              placeholder={t("postcode")}
-              onWheel={(e) => e.currentTarget.blur()}
-              dir={langDir}
-            />
+          <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 mt-3">
+            <div style={{ zIndex: 99999 }}>
+              <Label>{t("city")}</Label>
+              <Controller
+                name="cityId"
+                control={form.control}
+                render={({ field }) => (
+                  <Select
+                    // @ts-ignore
+                    options={cities}
+                    // @ts-ignore
+                    value={cities.find(city => city.value == field.value)}
+                    onChange={(selectedOption: SingleValue<{ label: string, value: string }>) =>
+                      field.onChange(selectedOption?.value)
+                    }
+                    instanceId="cityId"
+                    placeholder={t("select")}
+                    styles={customStyles}
+                    isRtl={langDir == 'rtl'}
+                    // @ts-ignore
+                    onFocus={(e) => e.target.autocomplete = 'none'}
+                  />
+                )}
+              />
+              <p className="text-[13px] text-red-500">
+                {form.formState.errors?.cityId?.message || ''}
+              </p>
+            </div>
 
-            <ControlledTextInput
-              label={t("country")}
-              name="country"
-              placeholder={t("country")}
-              dir={langDir}
-            />
+            <div>
+              <Label>{t("town")}</Label>
+              <ControlledTextInput
+                className="mt-0"
+                label={t("town")}
+                type="text"
+                name="town"
+                placeholder={t("town")}
+                onWheel={(e) => e.currentTarget.blur()}
+                dir={langDir}
+              />
+            </div>
+          </div>
 
-            {/* <ControlledSelectInput
-              label="Country"
-              name="country"
-              options={memoizedCountries}
-            /> */}
+          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2 mt-2">
+            <div>
+              <Label>{t("postcode")}</Label>
+              <ControlledTextInput
+                className="mt-0"
+                label={t("postcode")}
+                type="number"
+                name="postCode"
+                placeholder={t("postcode")}
+                onWheel={(e) => e.currentTarget.blur()}
+                dir={langDir}
+              />
+            </div>
           </div>
 
           <Button
             type="submit"
-            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-3"
             dir={langDir}
           >
             {(addressType === "shipping" && guestShippingAddress) ||
-            (addressType === "billing" && guestBillingAddress)
+              (addressType === "billing" && guestBillingAddress)
               ? t("edit_address")
               : t("add_address")}
           </Button>

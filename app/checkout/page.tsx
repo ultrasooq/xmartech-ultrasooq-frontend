@@ -63,9 +63,13 @@ const CheckoutPage = () => {
       cc: string;
       phoneNumber: string;
       address: string;
+      town: string;
       city: string;
+      cityId: string;
+      state: string;
+      stateId: string;
       country: string;
-      province: string;
+      countryId: string;
       postCode: string;
     }
     | undefined
@@ -77,9 +81,13 @@ const CheckoutPage = () => {
       cc: string;
       phoneNumber: string;
       address: string;
+      town: string;
       city: string;
+      cityId: string;
+      state: string;
+      stateId: string;
       country: string;
-      province: string;
+      countryId: string;
       postCode: string;
     }
     | undefined
@@ -280,9 +288,10 @@ const CheckoutPage = () => {
         cc: item.cc,
         phone: item.phoneNumber,
         shippingAddress: item.address,
-        shippingCity: item.city,
-        shippingProvince: item.province,
-        shippingCountry: item.country,
+        shippingTown: item.town,
+        shippingCity: item.cityDetail?.name,
+        shippingProvince: item.stateDetail?.name,
+        shippingCountry: item.countryDetail?.name,
         shippingPostCode: item.postCode,
       }));
     } else if (addresszType === "billing") {
@@ -294,9 +303,10 @@ const CheckoutPage = () => {
         cc: item.cc,
         phone: item.phoneNumber,
         billingAddress: item.address,
-        billingCity: item.city,
-        billingProvince: item.province,
-        billingCountry: item.country,
+        billingTown: item.town,
+        billingCity: item.cityDetail?.name,
+        billingProvince: item.stateDetail?.name,
+        billingCountry: item.countryDetail?.name,
         billingPostCode: item.postCode,
       }));
     }
@@ -415,8 +425,9 @@ useEffect(() => {
           cc: guestShippingAddress.cc,
           phone: guestShippingAddress.phoneNumber,
           shippingAddress: guestShippingAddress.address,
+          shippingTown: guestShippingAddress.town,
           shippingCity: guestShippingAddress.city,
-          shippingProvince: guestShippingAddress.province,
+          shippingProvince: guestShippingAddress.state,
           shippingCountry: guestShippingAddress.country,
           shippingPostCode: guestShippingAddress.postCode,
         };
@@ -435,7 +446,8 @@ useEffect(() => {
           ...guestOrderDetails,
           billingAddress: guestBillingAddress.address,
           billingCity: guestBillingAddress.city,
-          billingProvince: guestBillingAddress.province,
+          billingTown: guestBillingAddress.town,
+          billingProvince: guestBillingAddress.state,
           billingCountry: guestBillingAddress.country,
           billingPostCode: guestBillingAddress.postCode,
         };
@@ -608,9 +620,10 @@ useEffect(() => {
                         cc={item.cc}
                         phoneNumber={item.phoneNumber}
                         address={item.address}
-                        city={item.city}
-                        country={item.country}
-                        province={item.province}
+                        town={item.town}
+                        city={item.cityDetail}
+                        country={item.countryDetail}
+                        state={item.stateDetail}
                         postCode={item.postCode}
                         onEdit={() => {
                           setSelectedAddressId(item.id);
@@ -632,8 +645,9 @@ useEffect(() => {
                       phoneNumber={guestShippingAddress?.phoneNumber}
                       address={guestShippingAddress?.address}
                       city={guestShippingAddress?.city}
+                      town={guestShippingAddress?.town}
+                      state={guestShippingAddress?.state}
                       country={guestShippingAddress?.country}
-                      province={guestShippingAddress?.province}
                       postCode={guestShippingAddress?.postCode}
                       onEdit={() => {
                         setAddressType("shipping");
@@ -740,9 +754,10 @@ useEffect(() => {
                           cc={item.cc}
                           phoneNumber={item.phoneNumber}
                           address={item.address}
-                          city={item.city}
-                          country={item.country}
-                          province={item.province}
+                          town={item.town}
+                          city={item.cityDetail}
+                          country={item.countryDetail}
+                          state={item.stateDetail}
                           postCode={item.postCode}
                           onEdit={() => {
                             setSelectedAddressId(item.id);
@@ -771,8 +786,9 @@ useEffect(() => {
                       phoneNumber={guestBillingAddress?.phoneNumber}
                       address={guestBillingAddress?.address}
                       city={guestBillingAddress?.city}
+                      town={guestBillingAddress?.town}
+                      state={guestBillingAddress?.state}
                       country={guestBillingAddress?.country}
-                      province={guestBillingAddress?.province}
                       postCode={guestBillingAddress?.postCode}
                       onEdit={() => {
                         setAddressType("billing");

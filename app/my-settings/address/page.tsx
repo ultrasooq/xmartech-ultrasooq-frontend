@@ -100,9 +100,10 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
                 cc={item.cc}
                 phoneNumber={item.phoneNumber}
                 address={item.address}
-                city={item.city}
-                country={item.country}
-                province={item.province}
+                town={item.town}
+                city={item.cityDetail}
+                country={item.countryDetail}
+                state={item.stateDetail}
                 postCode={item.postCode}
                 onEdit={() => {
                   setSelectedAddressId(item.id);

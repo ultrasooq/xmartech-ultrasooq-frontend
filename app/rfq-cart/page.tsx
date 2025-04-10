@@ -67,8 +67,8 @@ const RfqCartPage = () => {
   const memoziedAddressList = useMemo(() => {
     return (
       allUserAddressQuery.data?.data.map((item: AddressItem) => ({
-        label: `${item.address} ${item.city} ${item.province} ${item.postCode} ${item.country}`,
-        value: `${item.address};${item.city};${item.province};${item.postCode};${item.country}`,
+        label: [item.address, item.town, item.cityDetail?.name, item?.stateDetail?.name, item.postCode, item.countryDetail?.name].filter(el => el).join(', '),
+        value: [item.address, item.town, item.cityDetail?.name, item?.stateDetail?.name, item.postCode, item.countryDetail?.name].filter(el => el).join(', '),
       })) || []
     );
   }, [allUserAddressQuery.data?.data]);
