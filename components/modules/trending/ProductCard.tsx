@@ -37,6 +37,7 @@ type ProductCardProps = {
   onSelectedId?: (args0: boolean | string, args1: number) => void;
   productQuantity?: number;
   isAddedToCart?: boolean;
+  sold?: number;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -50,6 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onSelectedId,
   productQuantity = 0,
   isAddedToCart,
+  sold,
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
@@ -500,6 +502,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {t("add_to_cart")}
           </button>}
         </div>
+
+        {(sold && sold > 0) && (
+          <>
+            <div className="mt-3 h-3 w-full bg-gray-300">
+              <div className="h-full w-4/5 bg-color-yellow"></div>
+            </div>
+            <span className="w-full text-sm font-normal capitalize text-light-gray">
+              Sold: 10
+            </span>
+          </>
+        )}
       </div>
     </div>
   );

@@ -243,7 +243,6 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       variant: "success",
     });
 
-    // router.push(data?.url || "/home");
     router.push("/home");
   };
 

@@ -41,6 +41,7 @@
     "remove": "يزيل",
     "delete": "يمسح",
     "view": "منظر",
+    "view_all": "عرض الكل",
     "tags": "العلامات",
     "category": "فئة",
     "sub_category": "الفئة الفرعية",
@@ -51,6 +52,7 @@
     "by_menu": "حسب القائمة",
     "search_brand": "البحث العلامة التجارية",
     "sold_by": "تباع بواسطة",
+    "sold": "مُباع",
     "enter": "يدخل",
     "select": "يختار",
     "select_all": "حدد الكل",
@@ -118,6 +120,11 @@
     "reject": "يرفض",
     "sending": "إرسال...",
     "loading": "تحميل...",
+
+    "deal_of_the_day": "صفقة اليوم",
+    "home_decor": "ديكور المنزل",
+    "fashion_n_beauty": "الموضة والجمال",
+    "consumer_electronics": "إلكترونيات المستهلك",
 
     "login_to_your_account": "تسجيل الدخول إلى حسابك",
     "remember_me": "تذكرنى",

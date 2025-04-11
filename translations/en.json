@@ -41,6 +41,7 @@
     "remove": "Remove",
     "delete": "Delete",
     "view": "View",
+    "view_all": "View All",
     "tags": "Tags",
     "category": "Category",
     "sub_category": "Sub Category",
@@ -51,6 +52,7 @@
     "by_menu": "By Menu",
     "search_brand": "Search Brand",
     "sold_by": "Sold By",
+    "sold": "Sold",
     "enter": "Enter",
     "select": "Select",
     "select_all": "Select All",
@@ -118,6 +120,11 @@
     "reject": "Reject",
     "sending": "Sending...",
     "loading": "Loading...",
+
+    "deal_of_the_day": "Deal of the day",
+    "home_decor": "Home Decor",
+    "fashion_n_beauty": "Fashion & Beauty",
+    "consumer_electronics": "Consumer Electronics",
 
     "login_to_your_account": "Login to your account",
     "remember_me": "Remember me",
