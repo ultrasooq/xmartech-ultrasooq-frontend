@@ -81,7 +81,7 @@ function HomePage() {
 
   const buyGroupProductsQuery = useAllBuyGroupProducts({
     page: 1,
-    limit: 5,
+    limit: 4,
     sort: "desc",
   });
 
@@ -119,7 +119,7 @@ function HomePage() {
 
   const homeDecorProductsQuery = useAllProducts({
     page: 1,
-    limit: 5,
+    limit: 4,
     sort: "desc",
     categoryIds: "203"
   });
@@ -158,7 +158,7 @@ function HomePage() {
 
   const fashionBeautyProductsQuery = useAllProducts({
     page: 1,
-    limit: 5,
+    limit: 4,
     sort: "desc",
     categoryIds: "258"
   });
@@ -197,7 +197,7 @@ function HomePage() {
 
   const consumerElectronicsProductsQuery = useAllProducts({
     page: 1,
-    limit: 5,
+    limit: 4,
     sort: "desc",
     categoryIds: "269,270"
   });
@@ -460,7 +460,7 @@ function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="product-list-s1 w-full">
               {memoizedBuyGroupProducts.map((item: TrendingProduct) => {
                 const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
                 return (
@@ -639,7 +639,7 @@ function HomePage() {
                 </a>
               </div>
             </div>
-            <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="product-list-s1 w-full">
               {memoizedHomeDecorProducts.map((item: TrendingProduct) => {
                 const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
                 return (
@@ -723,7 +723,7 @@ function HomePage() {
                 </a>
               </div>
             </div>
-            <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="product-list-s1 w-full">
               {memoizedFashionBeautyProducts.map((item: TrendingProduct) => {
                 const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
                 return (
@@ -789,8 +789,8 @@ function HomePage() {
                 <a
                   onClick={() => {
                     const categoryId = 269;
-                    const subCategoryId = 271;
-                    const categoryIds = '269,271';
+                    const subCategoryId = 270;
+                    const categoryIds = '269,270';
                     const subCategoryIndex = memoizedCategories.findIndex((item: any) => item.id == categoryId);
                     const item = memoizedCategories.find((item: any) => item.id == categoryId)
                     const children = memoizedCategories?.[subCategoryIndex]?.children || [];
@@ -811,7 +811,7 @@ function HomePage() {
                 </a>
               </div>
             </div>
-            <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div className="product-list-s1 w-full">
               {memoizedConsumerElectronicsProducts.map((item: TrendingProduct) => {
                 const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
                 return (
