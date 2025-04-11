@@ -110,7 +110,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     brandIds:
       selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
     userId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
-    categoryIds: category.categoryId ? category.categoryId : undefined,
+    categoryIds: category.categoryIds ? category.categoryIds : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
   });
   const brandsQuery = useBrands({

@@ -51,7 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const calculateDiscountedPrice = () => {
     const price = offerPrice ? Number(offerPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   useEffect(() => {
@@ -138,7 +138,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const handleQuantityChange = () => {
-    if (quantity == 0 && productQuantity != 0) {
+    if (quantity == 0) {
       if (productQuantity != 0) {
         toast({
           description: t('quantity_can_not_be_0'),
@@ -208,7 +208,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   type="text" 
                   value={quantity} 
                   className="w-[50px] h-auto border-none bg-transparent text-center focus:border-none focus:outline-none" 
-                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  onChange={(e) =>  {
+                    const value = Number(e.target.value);
+                    setQuantity(isNaN(value) ? productQuantity : value);
+                  }}
                   onBlur={handleQuantityChange}
                 />
                 <Button

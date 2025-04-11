@@ -291,7 +291,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               window.localStorage.setItem('ipInfo', JSON.stringify(response.data));
 
               let localeKey = response.data.languages.split(',')[0];
-              if (localeKey.substr(0, 2)) {
+              if (localeKey.substr(0, 2) == 'en') {
                 localeKey = 'en';
               }
               window.localStorage.setItem('locale', localeKey);
@@ -751,6 +751,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
                               //reset for second level category active index
                               category.setSecondLevelCategoryIndex(0);
+
+                              category.setCategoryIds(item?.id.toString())
                             }}
                           >
                             {item?.icon ? (
@@ -807,6 +809,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 category.setSubCategories([]);
                                 category.setSubCategoryParentName("");
                               }
+                              category.setCategoryIds([
+                                memoizedSubCategory?.[subCategoryIndex]?.id.toString(),
+                                item?.id.toString()
+                              ].join(','))
                             }}
                           >
                             {item?.icon ? (
@@ -863,7 +869,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               onClick={() => {
                                 setSubSubSubCategoryIndex(index);
                                 category.setCategoryId(item?.id.toString());
+                                category.setCategoryIds([
+                                  memoizedSubCategory?.[subCategoryIndex]?.id.toString(),
+                                  memoizedSubCategory?.[subCategoryIndex]?.children?.[subSubCategoryIndex]?.id.toString(),
+                                  item?.id.toString()
+                                ].join(','))
                               }}
+
                             >
                               <div className="relative h-8 w-8">
                                 {item?.icon ? (

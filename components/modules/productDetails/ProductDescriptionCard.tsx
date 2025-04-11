@@ -24,6 +24,7 @@ import { useAuth } from "@/context/AuthContext";
 type ProductDescriptionCardProps = {
   productId: string;
   productName: string;
+  productType?: string;
   brand: string;
   productPrice: string;
   offerPrice: string;
@@ -53,6 +54,7 @@ type ProductDescriptionCardProps = {
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   productId,
   productName,
+  productType,
   brand,
   productPrice,
   offerPrice,
@@ -87,7 +89,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {
@@ -137,7 +139,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   };
 
   const handleQuantityChange = () => {
-    if (quantity == 0 && productQuantity != 0) {
+    if (quantity == 0) {
       if (productQuantity != 0) {
         toast({
           description: t('quantity_can_not_be_0'),
@@ -317,10 +319,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
               {t("ask_for_price")}
             </h3>
           ) : (
-            <h3>
+            productType != 'R' ? (<h3>
               {currency.symbol}{calculateDiscountedPrice()}{" "}
               <span>{currency.symbol}{Number(productProductPrice)}</span>
-            </h3>
+            </h3>) : null
           )}
         </div>
       )}
@@ -362,7 +364,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           type="text" 
           value={quantity} 
           className="w-[50px] h-auto border-none bg-transparent text-center focus:border-none focus:outline-none" 
-          onChange={(e) => setQuantity(Number(e.target.value))}
+          onChange={(e) =>  {
+            const value = Number(e.target.value);
+            setQuantity(isNaN(value) ? productQuantity : value);
+          }}
           onBlur={handleQuantityChange}
         />
         <Button

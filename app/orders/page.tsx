@@ -63,7 +63,7 @@ const OrdersPage = () => {
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateTotalAmount = () => {
@@ -79,11 +79,11 @@ const OrdersPage = () => {
             quantity: number;
           },
         ) => {
-          // console.log(curr.productPriceDetails.offerPrice)
-          return acc + +calculateDiscountedPrice(
+          const discount = calculateDiscountedPrice(
             curr.productPriceDetails?.offerPrice ?? 0,
             curr?.productPriceDetails?.consumerDiscount,
-          ) * curr.quantity;
+          );
+          return Number((acc + discount * curr.quantity).toFixed(2));
         },
         0,
       );
@@ -99,10 +99,11 @@ const OrdersPage = () => {
             quantity: number;
           },
         ) => {
-          return acc + +calculateDiscountedPrice(
+          const discount = calculateDiscountedPrice(
             curr.productPriceDetails?.offerPrice ?? 0,
             curr?.productPriceDetails?.consumerDiscount,
-          ) * curr.quantity;
+          );
+          return Number((acc + discount * curr.quantity).toFixed(2));
         },
         0,
       );

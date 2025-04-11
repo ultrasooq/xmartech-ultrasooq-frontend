@@ -28,7 +28,7 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
       ? Number(item.productProductPrice)
       : 0;
     const discount = item.consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   return (

@@ -63,7 +63,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       ? Number(item.productProductPrice)
       : 0;
     const discount = item.consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {
@@ -446,7 +446,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 type="text" 
                 value={quantity} 
                 className="w-[50px] h-auto border-none bg-transparent text-center focus:border-none focus:outline-none" 
-                onChange={(e) => setQuantity(Number(e.target.value))}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  setQuantity(isNaN(value) ? productQuantity : value);
+                }}
                 onBlur={handleQuantityChange}
               />
               <Button

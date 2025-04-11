@@ -43,7 +43,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const calculateDiscountedPrice = () => {
     const price = offerPrice ? Number(offerPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   useEffect(() => {

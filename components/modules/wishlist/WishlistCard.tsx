@@ -27,12 +27,11 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   const { langDir, currency } = useAuth();
   
   const calculateDiscountedPrice = () => {
-    const price = wishlistData?.product_productPrice?.[0]?.productProductPrice
-      ? Number(wishlistData.product_productPrice?.[0]?.productProductPrice)
+    const price = wishlistData?.product_productPrice?.[0]?.offerPrice
+      ? Number(wishlistData.product_productPrice?.[0]?.offerPrice)
       : 0;
-    const discount =
-      wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    const discount = wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {

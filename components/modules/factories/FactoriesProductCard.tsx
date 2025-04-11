@@ -164,7 +164,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   const calculateDiscountedPrice = () => {
     const price = productPrices?.[0]?.offerPrice ? Number(productPrices[0]?.offerPrice) : 0;
     const discount = productPrices?.[0]?.consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   return (
@@ -250,7 +250,10 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
               type="text" 
               value={quantity} 
               className="w-[50px] h-auto border-none bg-transparent text-center focus:border-none focus:outline-none" 
-              onChange={(e) => setQuantity(Number(e.target.value))}
+              onChange={(e) =>  {
+                const value = Number(e.target.value);
+                setQuantity(isNaN(value) ? productQuantity : value);
+              }}
               onBlur={handleQuantityChange}
             />
             <Button

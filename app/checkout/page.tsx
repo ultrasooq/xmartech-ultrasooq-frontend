@@ -145,7 +145,7 @@ const CheckoutPage = () => {
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateTotalAmount = () => {
@@ -161,13 +161,13 @@ const CheckoutPage = () => {
             quantity: number;
           },
         ) => {
+          let discount = calculateDiscountedPrice(
+            curr.productPriceDetails?.offerPrice ?? 0,
+            curr?.productPriceDetails?.consumerDiscount,
+          );
+
           return (
-            acc +
-            +calculateDiscountedPrice(
-              curr.productPriceDetails?.offerPrice ?? 0,
-              curr?.productPriceDetails?.consumerDiscount,
-            ) *
-            curr.quantity
+            Number((acc + discount * curr.quantity).toFixed(2))
           );
         },
         0,
@@ -184,7 +184,7 @@ const CheckoutPage = () => {
           },
         ) => {
           return (
-            acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
+            Number((acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity).toFixed(2))
           );
         },
         0,

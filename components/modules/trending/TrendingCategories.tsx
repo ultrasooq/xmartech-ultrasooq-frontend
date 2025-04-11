@@ -5,10 +5,8 @@ import TrendingCard from "../home/TrendingCard";
 
 const TrendingCategories = () => {
   const category = useCategoryStore();
-  const [activeSecondLevelCategoryIndex, setActiveSecondLevelCategoryIndex] =
-    useState(0);
-  const [activeThirdLevelCategoryIndex, setActiveThirdLevelCategoryIndex] =
-    useState(0);
+  const [activeSecondLevelCategoryIndex, setActiveSecondLevelCategoryIndex] = useState(0);
+  const [activeThirdLevelCategoryIndex, setActiveThirdLevelCategoryIndex] = useState(0);
 
   useEffect(() => {
     setActiveSecondLevelCategoryIndex(category.secondLevelCategoryIndex || 0);
