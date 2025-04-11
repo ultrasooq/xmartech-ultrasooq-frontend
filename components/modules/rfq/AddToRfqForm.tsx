@@ -714,7 +714,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                 </div>
               </div>
 
-              <p className="text-[13px] !text-red-500">
+              <p className="text-[13px] !text-red-500" dir={langDir}>
                 {!watchProductImages?.length
                   ? form.formState.errors?.productImages?.message
                   : ""}

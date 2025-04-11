@@ -128,7 +128,7 @@ const MyOrderDetailsPage = ({}) => {
                           </address>
                           <p dir={langDir}>
                             {t("phone_number")}{" "}
-                            <span className="!text-red-500">
+                            <span className="!text-red-500" dir={langDir}>
                               {shippingDetails?.phone}
                             </span>
                           </p>
@@ -145,7 +145,7 @@ const MyOrderDetailsPage = ({}) => {
                           </address>
                           <p dir={langDir}>
                             {t("phone_number")}{" "}
-                            <span className="!text-red-500">
+                            <span className="!text-red-500" dir={langDir}>
                               {billingDetails?.phone}
                             </span>
                           </p>

@@ -918,7 +918,7 @@ export default function ProfilePage() {
                     />
                   ) : null}
 
-                  <p className="mb-3 text-[13px] text-red-500">
+                  <p className="mb-3 text-[13px] text-red-500" dir={langDir}>
                     {form.formState.errors.socialLinkList?.message}
                   </p>
 

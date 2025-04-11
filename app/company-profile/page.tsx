@@ -879,7 +879,7 @@ export default function CompanyProfilePage() {
                             </select>
                           )}
                         />
-                        <p className="text-[13px] text-red-500">
+                        <p className="text-[13px] text-red-500" dir={langDir}>
                           {
                             form.formState.errors.branchList?.[index]?.startTime
                               ?.message
@@ -910,7 +910,7 @@ export default function CompanyProfilePage() {
                             </select>
                           )}
                         />
-                        <p className="text-[13px] text-red-500">
+                        <p className="text-[13px] text-red-500" dir={langDir}>
                           {
                             form.formState.errors.branchList?.[index]?.endTime?.message
                           }
@@ -955,7 +955,7 @@ export default function CompanyProfilePage() {
                     </div>
                     {form.formState.errors.branchList?.[index]?.workingDays
                       ?.message ? (
-                      <p className="text-[13px] text-red-500">
+                      <p className="text-[13px] text-red-500" dir={langDir}>
                         {t("working_day_required")}
                       </p>
                     ) : null}

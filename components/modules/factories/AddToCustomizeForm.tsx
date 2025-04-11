@@ -562,7 +562,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                 </div>
               </div>
 
-              <p className="text-[13px] !text-red-500">
+              <p className="text-[13px] !text-red-500" dir={langDir}>
                 {!watchProductImages?.length
                   ? form.formState.errors?.productImages?.message
                   : ""}

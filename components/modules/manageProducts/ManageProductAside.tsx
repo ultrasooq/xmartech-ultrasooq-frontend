@@ -317,7 +317,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   />
                 ) : null}
                 {stockMessage ? (
-                  <p className="text-[13px] text-red-500">
+                  <p className="text-[13px] text-red-500" dir={langDir}>
                     {stockMessage.toString()}
                   </p>
                 ) : null}
@@ -360,7 +360,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 />
               ) : null}
               {offerPriceMessage ? (
-                <p className="text-[13px] text-red-500">
+                <p className="text-[13px] text-red-500" dir={langDir}>
                   {offerPriceMessage.toString()}
                 </p>
               ) : null}
@@ -482,7 +482,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   )}
                 />
                 {consumerTypeMessage ? (
-                  <p className="text-[13px] text-red-500">
+                  <p className="text-[13px] text-red-500" dir={langDir}>
                     {consumerTypeMessage.toString()}
                   </p>
                 ) : null}
@@ -528,7 +528,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                   )}
                 />
                 {sellTypeMessage ? (
-                  <p className="text-[13px] text-red-500">
+                  <p className="text-[13px] text-red-500" dir={langDir}>
                     {sellTypeMessage.toString()}
                   </p>
                 ) : null}

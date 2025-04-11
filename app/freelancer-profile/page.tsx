@@ -31,6 +31,7 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = z
   .object({
@@ -136,6 +137,7 @@ const formSchema = z
 
 export default function FreelancerProfilePage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -442,7 +444,7 @@ export default function FreelancerProfilePage() {
                         </select>
                       )}
                     />
-                    <p className="text-[13px] text-red-500">
+                    <p className="text-[13px] text-red-500" dir={langDir}>
                       {form.formState.errors.startTime?.message}
                     </p>
                   </div>
@@ -469,7 +471,7 @@ export default function FreelancerProfilePage() {
                         </select>
                       )}
                     />
-                    <p className="text-[13px] text-red-500">
+                    <p className="text-[13px] text-red-500" dir={langDir}>
                       {form.formState.errors.endTime?.message}
                     </p>
                   </div>
@@ -511,7 +513,7 @@ export default function FreelancerProfilePage() {
                   </div>
 
                   {form.formState.errors.workingDays?.message ? (
-                    <p className="text-[13px] text-red-500">
+                    <p className="text-[13px] text-red-500" dir={langDir}>
                       Working Day is required
                     </p>
                   ) : null}

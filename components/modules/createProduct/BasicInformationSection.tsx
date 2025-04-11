@@ -211,7 +211,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           </select>
                         )}
                       />
-                      <p className="text-[13px] font-medium text-red-500">
+                      <p className="text-[13px] font-medium text-red-500" dir={langDir}>
                         {
                           formContext.formState.errors["categoryId"]
                             ?.message as string
@@ -302,7 +302,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         )}
                       />
 
-                      <p className="text-[13px] text-red-500">
+                      <p className="text-[13px] text-red-500" dir={langDir}>
                         {
                           formContext.formState.errors["productCondition"]?.message as string
                         }

@@ -487,7 +487,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   )}
                 />
                 {!watchConsumerType && consumerTypeMessage ? (
-                  <p className="text-[13px] text-red-500">
+                  <p className="text-[13px] text-red-500" dir={langDir}>
                     {consumerTypeMessage.toString()}
                   </p>
                 ) : null}
@@ -516,7 +516,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 />
 
                 {!watchSellType && sellTypeMessage ? (
-                  <p className="text-[13px] text-red-500">
+                  <p className="text-[13px] text-red-500" dir={langDir}>
                     {sellTypeMessage.toString()}
                   </p>
                 ) : null}
@@ -905,7 +905,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           //     )}
           //   />
 
-          //   <p className="text-[13px] text-red-500">
+          //   <p className="text-[13px] text-red-500" dir={langDir}>
           //     {
           //       formContext.formState.errors["productLocationId"]
           //         ?.message as string

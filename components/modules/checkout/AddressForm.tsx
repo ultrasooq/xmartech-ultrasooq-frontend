@@ -313,7 +313,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
                   />
                 )}
               />
-              <p className="text-[13px] text-red-500">
+              <p className="text-[13px] text-red-500" dir={langDir}>
                 {form.formState.errors?.countryId?.message || ''}
               </p>
             </div>
@@ -342,7 +342,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
                   />
                 )}
               />
-              <p className="text-[13px] text-red-500">
+              <p className="text-[13px] text-red-500" dir={langDir}>
                 {form.formState.errors?.stateId?.message || ''}
               </p>
             </div>
@@ -372,7 +372,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
                   />
                 )}
               />
-              <p className="text-[13px] text-red-500">
+              <p className="text-[13px] text-red-500" dir={langDir}>
                 {form.formState.errors?.cityId?.message || ''}
               </p>
             </div>

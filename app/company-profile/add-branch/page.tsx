@@ -572,7 +572,7 @@ const AddBranchPage = () => {
                             </select>
                           )}
                         />
-                        <p className="text-[13px] text-red-500">
+                        <p className="text-[13px] text-red-500" dir={langDir}>
                           {form.formState.errors.startTime?.message}
                         </p>
                       </div>
@@ -600,7 +600,7 @@ const AddBranchPage = () => {
                             </select>
                           )}
                         />
-                        <p className="text-[13px] text-red-500">
+                        <p className="text-[13px] text-red-500" dir={langDir}>
                           {form.formState.errors.endTime?.message}
                         </p>
                       </div>

@@ -277,6 +277,7 @@
     "not_started": "Not Started",
     "seller": "Seller",
     "choose_seller": "Choose Seller",
+    "see_other_sellers": "See other sellers",
     "product_location": "Product Location",
     "no_delivery_days": "No delivery days provided",
     "delivery_days_after": "Delivery after {after} days",

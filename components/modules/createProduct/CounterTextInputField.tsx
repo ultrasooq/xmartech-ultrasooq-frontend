@@ -77,7 +77,7 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
             </div>
           </FormControl>
           <FormMessage />
-          <p className="text-[13px] text-red-500">{errorMessage}</p>
+          <p className="text-[13px] text-red-500" dir={langDir}>{errorMessage}</p>
         </FormItem>
       )}
     />

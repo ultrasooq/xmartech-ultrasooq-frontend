@@ -518,7 +518,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                       className="font-bold text-red-500"
                       onClick={() => setIsDrawerOpen(true)}
                     >
-                      See other sellers
+                      {t("see_other_sellers")}
                     </Button>
                     {/* </DrawerTrigger> */}
                     <DrawerContent className="left-auto right-0 top-0 mt-0 w-[600px] rounded-none">
