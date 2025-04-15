@@ -92,7 +92,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <Link href={`/trending/${id}`}>
         {askForPrice !== "true" ? (
           consumerDiscount ? (
-            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
               <span>{consumerDiscount}%</span>
             </div>
           ) : null
@@ -101,7 +101,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <Image
             src={
               productImages?.[0]?.image &&
-                validator.isURL(productImages[0].image)
+              validator.isURL(productImages[0].image)
                 ? productImages[0].image
                 : PlaceholderImage
             }
@@ -186,9 +186,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </Link>
         ) : (
           <h5 className="py-1 text-[#1D77D1]">
-            {currency.symbol}{calculateDiscountedPrice()}{" "}
+            {currency.symbol}
+            {calculateDiscountedPrice()}{" "}
             <span className="text-gray-500 !line-through">
-              {currency.symbol}{productProductPrice}
+              {currency.symbol}
+              {productProductPrice}
             </span>
           </h5>
         )}

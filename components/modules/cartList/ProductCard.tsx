@@ -6,7 +6,10 @@ import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/ui/use-toast";
-import { useUpdateCartByDevice, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import {
+  useUpdateCartByDevice,
+  useUpdateCartWithLogin,
+} from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { useAuth } from "@/context/AuthContext";
 
@@ -39,7 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   haveAccessToken,
   consumerDiscount,
   minQuantity,
-  maxQuantity
+  maxQuantity,
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
@@ -66,7 +69,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
         variant: "danger",
-      })
+      });
       return;
     }
 
@@ -74,7 +77,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
         variant: "danger",
-      })
+      });
       setQuantity(maxQuantity);
       return;
     }
@@ -105,7 +108,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
       if (response.status) {
         setQuantity(newQuantity);
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -128,7 +134,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
       if (response.status) {
         setQuantity(quantity);
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -141,8 +150,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     if (quantity == 0) {
       if (productQuantity != 0) {
         toast({
-          description: t('quantity_can_not_be_0'),
-          variant: "danger"
+          description: t("quantity_can_not_be_0"),
+          variant: "danger",
         });
       }
       setQuantity(productQuantity);
@@ -151,8 +160,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     if (minQuantity && minQuantity > quantity) {
       toast({
-        description: t('min_quantity_must_be_n', { n: minQuantity }),
-        variant: "danger"
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
       });
       setQuantity(productQuantity);
       return;
@@ -160,14 +169,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     if (maxQuantity && maxQuantity < quantity) {
       toast({
-        description: t('max_quantity_must_be_n', { n: maxQuantity }),
-        variant: "danger"
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
       });
       setQuantity(productQuantity);
       return;
     }
 
-    const action = quantity > productQuantity ? 'add' : 'remove';
+    const action = quantity > productQuantity ? "add" : "remove";
     if (quantity != productQuantity) handleAddToCart(quantity, action);
   };
 
@@ -187,7 +196,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="custom-form-group">
             <label dir={langDir}>{t("quantity")}</label>
             <div className="qty-up-down-s1-with-rgMenuAction">
-              <div className="flex items-center gap-x-4">
+              <div className="flex items-center gap-x-1">
                 <Button
                   variant="outline"
                   className="relative border border-solid border-gray-300 hover:shadow-sm"
@@ -195,7 +204,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     setQuantity(quantity - 1);
                     handleAddToCart(quantity - 1, "remove");
                   }}
-                  disabled={quantity === 0 || updateCartByDevice?.isPending || updateCartWithLogin?.isPending}
+                  disabled={
+                    quantity === 0 ||
+                    updateCartByDevice?.isPending ||
+                    updateCartWithLogin?.isPending
+                  }
                 >
                   <Image
                     src={MinusIcon}
@@ -204,11 +217,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-                <input 
-                  type="text" 
-                  value={quantity} 
-                  className="w-[50px] h-auto border-none bg-transparent text-center focus:border-none focus:outline-none" 
-                  onChange={(e) =>  {
+                <input
+                  type="text"
+                  value={quantity}
+                  className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-none"
+                  onChange={(e) => {
                     const value = Number(e.target.value);
                     setQuantity(isNaN(value) ? productQuantity : value);
                   }}
@@ -221,7 +234,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     setQuantity(quantity + 1);
                     handleAddToCart(quantity + 1, "add");
                   }}
-                  disabled={updateCartByDevice?.isPending || updateCartWithLogin?.isPending}
+                  disabled={
+                    updateCartByDevice?.isPending ||
+                    updateCartWithLogin?.isPending
+                  }
                 >
                   <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
                 </Button>
@@ -256,7 +272,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </figure>
       <div className="right-info">
         <h6 dir={langDir}>{t("price")}</h6>
-        <h5 dir={langDir}>{currency.symbol}{quantity * calculateDiscountedPrice()}</h5>
+        <h5 dir={langDir}>
+          {currency.symbol}
+          {quantity * calculateDiscountedPrice()}
+        </h5>
       </div>
     </div>
   );
