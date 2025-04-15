@@ -581,6 +581,7 @@ const TrendingPage = () => {
                         isInteractive
                         productQuantity={cartQuantity}
                         isAddedToCart={cartQuantity > 0}
+                        sold={item.sold}
                       />
                     );
                   })}
