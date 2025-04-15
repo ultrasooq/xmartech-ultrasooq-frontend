@@ -12,7 +12,7 @@ import {
   AccordionItemButton,
   AccordionItemPanel,
 } from "react-accessible-accordion";
-import { useCreateIntent } from "@/apis/queries/orders.queries";
+import { useCreatePaymentIntent } from "@/apis/queries/orders.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
@@ -40,7 +40,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const { toast } = useToast();
   const stripe = useStripe();
   const elements = useElements();
-  const createIntent = useCreateIntent();
+  const createIntent = useCreatePaymentIntent();
   const [name, setName] = useState("");
   const [clientSecret, setClientSecret] = useState(""); // State to store response data 
   // const [paymentIntentId, setPaymentIntentId] = useState(null); // State to store response data 

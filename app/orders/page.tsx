@@ -13,7 +13,7 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   useCreateOrder,
   useCreateOrderUnAuth,
-  useCreateIntent
+  useCreatePaymentIntent
 } from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";

@@ -40,6 +40,8 @@ import AddIcon from "@/public/images/addbtn.svg";
 import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { usePreOrderCalculation } from "@/apis/queries/orders.queries";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 
 const CheckoutPage = () => {
   const t = useTranslations();
@@ -93,10 +95,16 @@ const CheckoutPage = () => {
     | undefined
   >();
   const [guestEmail, setGuestEmail] = useState("");
+  const [itemsTotal, setItemsTotal] = useState<number>(0);
+  const [fee, setFee] = useState<number>(0);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   const deviceId = getOrCreateDeviceId() || "";
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
-  const orders = useOrderStore();
+
+  const orderStore = useOrderStore();
+  const preOrderCalculation = usePreOrderCalculation();
+  
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
 
   const me = useMe(haveAccessToken);
@@ -150,44 +158,49 @@ const CheckoutPage = () => {
 
   const calculateTotalAmount = () => {
     if (cartListByUser.data?.data?.length) {
-      return cartListByUser.data?.data?.reduce(
-        (
-          acc: number,
-          curr: {
-            productPriceDetails: {
-              offerPrice: string;
-              consumerDiscount: number;
-            };
-            quantity: number;
+      setItemsTotal(
+        cartListByUser.data?.data?.reduce(
+          (
+            acc: number,
+            curr: {
+              productPriceDetails: {
+                offerPrice: string;
+                consumerDiscount: number;
+              };
+              quantity: number;
+            },
+          ) => {
+            let discount = calculateDiscountedPrice(
+              curr.productPriceDetails?.offerPrice ?? 0,
+              curr?.productPriceDetails?.consumerDiscount,
+            );
+  
+            return (
+              Number((acc + discount * curr.quantity).toFixed(2))
+            );
           },
-        ) => {
-          let discount = calculateDiscountedPrice(
-            curr.productPriceDetails?.offerPrice ?? 0,
-            curr?.productPriceDetails?.consumerDiscount,
-          );
-
-          return (
-            Number((acc + discount * curr.quantity).toFixed(2))
-          );
-        },
-        0,
+          0,
+        )
       );
+
     } else if (cartListByDeviceQuery.data?.data?.length) {
-      return cartListByDeviceQuery.data?.data?.reduce(
-        (
-          acc: number,
-          curr: {
-            productPriceDetails: {
-              offerPrice: string;
-            };
-            quantity: number;
+      setItemsTotal(
+        cartListByDeviceQuery.data?.data?.reduce(
+          (
+            acc: number,
+            curr: {
+              productPriceDetails: {
+                offerPrice: string;
+              };
+              quantity: number;
+            },
+          ) => {
+            return (
+              Number((acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity).toFixed(2))
+            );
           },
-        ) => {
-          return (
-            Number((acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity).toFixed(2))
-          );
-        },
-        0,
+          0,
+        )
       );
     }
   };
@@ -288,11 +301,12 @@ const CheckoutPage = () => {
         cc: item.cc,
         phone: item.phoneNumber,
         shippingAddress: item.address,
-        shippingTown: item.town,
+        // shippingTown: item.town,
         shippingCity: item.cityDetail?.name,
         shippingProvince: item.stateDetail?.name,
         shippingCountry: item.countryDetail?.name,
         shippingPostCode: item.postCode,
+
       }));
     } else if (addresszType === "billing") {
       setSelectedOrderDetails((prevState) => ({
@@ -303,7 +317,7 @@ const CheckoutPage = () => {
         cc: item.cc,
         phone: item.phoneNumber,
         billingAddress: item.address,
-        billingTown: item.town,
+        // billingTown: item.town,
         billingCity: item.cityDetail?.name,
         billingProvince: item.stateDetail?.name,
         billingCountry: item.countryDetail?.name,
@@ -313,39 +327,66 @@ const CheckoutPage = () => {
   };
 
   // State for selected addresses
-const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(null);
-const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(null);
+  const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(null);
+  const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(null);
 
-//  Set default selected address when addresses are loaded
-useEffect(() => {
-  if (memoziedAddressList.length > 0) {
-    setSelectedShippingAddressId(memoziedAddressList[0].id.toString());
-    setSelectedBillingAddressId(memoziedAddressList[0].id.toString());
+  //  Set default selected address when addresses are loaded
+  useEffect(() => {
+    if (memoziedAddressList.length > 0) {
+      setSelectedShippingAddressId(memoziedAddressList[0].id.toString());
+      setSelectedBillingAddressId(memoziedAddressList[0].id.toString());
 
-    // Call handleOrderDetails for both shipping and billing
-    handleOrderDetails(memoziedAddressList[0], "shipping");
-    handleOrderDetails(memoziedAddressList[0], "billing");
+      // Call handleOrderDetails for both shipping and billing
+      handleOrderDetails(memoziedAddressList[0], "shipping");
+      handleOrderDetails(memoziedAddressList[0], "billing");
+    }
+  }, [memoziedAddressList]);
 
+  const [invalidProducts, setInvalidProducts] = useState<number[]>([]);
+  const [notAvailableProducts, setNotAvailableProducts] = useState<number[]>([]);
+
+  const calculateFees = async () => {
+    const response = await preOrderCalculation.mutateAsync({
+      cartIds: memoizedCartList.map((item: any) => item.id),
+      userAddressId: Number(selectedShippingAddressId)
+    });
+    setInvalidProducts(response?.invalidProducts?.map((productId: number) => productId) || []);
+    setNotAvailableProducts(response?.productCannotBuy?.map((item: any) => item.productId) || []);
+    setFee(response.totalCustomerPay - response.totalPurchasedPrice);
   }
-}, [memoziedAddressList]);
 
+  useEffect(() => {
+    if (memoizedCartList.length && selectedShippingAddressId) {
+      calculateFees();
+    }
+  }, [
+    cartListByUser.data?.data,
+    cartListByDeviceQuery?.data?.data,
+    allUserAddressQuery?.data?.data,
+    selectedBillingAddressId
+  ]);
+
+  useEffect(() => {
+    calculateTotalAmount();
+  }, [
+    cartListByUser.data?.data,
+    cartListByDeviceQuery?.data?.data
+  ]);
+
+  useEffect(() => {
+    setTotalAmount(itemsTotal + fee);
+  }, [itemsTotal, fee]);
 
   const onSaveOrder = () => {
+    if (invalidProducts.length > 0 || notAvailableProducts.length > 0) {
+      toast({
+        description: t("remove_n_items_from_cart", { n: invalidProducts.length + notAvailableProducts.length }),
+        variant: "danger"
+      });
+      // return;
+    }
+
     if (haveAccessToken) {
-
-
-      // console.log("Selected Order Details:", selectedOrderDetails);
-
-      const payload = {
-        shippingAddress: selectedOrderDetails?.shippingAddress,
-        billingAddress: sameAsShipping
-          ? selectedOrderDetails?.shippingAddress
-          : selectedOrderDetails?.billingAddress,
-      };
-    
-      // console.log("Final Payload:", payload);
-
-
       if (!selectedOrderDetails?.shippingAddress) {
         toast({
           title: t("please_select_a_shipping_address"),
@@ -356,7 +397,6 @@ useEffect(() => {
 
       const data = {
         ...selectedOrderDetails,
-        // paymentMethod: "cash",
         cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
       };
 
@@ -368,9 +408,6 @@ useEffect(() => {
         data.billingPostCode = data.shippingPostCode;
       }
 
-      // console.log(data);
-      // return
-
       if (!data.billingAddress) {
         toast({
           title: t("please_select_a_billing_address"),
@@ -378,105 +415,119 @@ useEffect(() => {
         });
         return;
       }
+      
+      const address = memoziedAddressList.find((item: any) => item.id == selectedShippingAddressId);
 
-      orders.setOrders(data);
-      router.push("/orders");
+      orderStore.setOrders({
+        ...data,
+        ...{
+          countryId: address?.countryId,
+          stateId: address?.stateId,
+          cityId: address?.cityId,
+          town: address?.town,
+          userAddressId: Number(selectedShippingAddressId)
+        }
+      });
+      orderStore.setTotal(totalAmount);
+      router.push("/complete-order");
+
     } else {
-      if (!guestEmail) {
-        toast({
-          title: t("please_enter_email_address"),
-          variant: "danger",
-        });
-        return;
-      }
+      // if (!guestEmail) {
+      //   toast({
+      //     title: t("please_enter_email_address"),
+      //     variant: "danger",
+      //   });
+      //   return;
+      // }
 
-      if (!validator.isEmail(guestEmail)) {
-        toast({
-          title: t("please_enter_valid_email_address"),
-          variant: "danger",
-        });
-        return;
-      }
+      // if (!validator.isEmail(guestEmail)) {
+      //   toast({
+      //     title: t("please_enter_valid_email_address"),
+      //     variant: "danger",
+      //   });
+      //   return;
+      // }
 
-      let guestOrderDetails: any = {
-        guestUser: {
-          firstName: "",
-          lastName: "",
-          email: "",
-          cc: "",
-          phoneNumber: "",
-        },
-      };
+      // let guestOrderDetails: any = {
+      //   guestUser: {
+      //     firstName: "",
+      //     lastName: "",
+      //     email: "",
+      //     cc: "",
+      //     phoneNumber: "",
+      //   },
+      // };
 
-      if (!guestShippingAddress) {
-        toast({
-          title: t("please_add_a_shipping_address"),
-          variant: "danger",
-        });
-        return;
-      }
+      // if (!guestShippingAddress) {
+      //   toast({
+      //     title: t("please_add_a_shipping_address"),
+      //     variant: "danger",
+      //   });
+      //   return;
+      // }
 
-      if (guestShippingAddress) {
-        guestOrderDetails = {
-          ...guestOrderDetails,
-          firstName: guestShippingAddress.firstName,
-          lastName: guestShippingAddress.lastName,
-          email: "",
-          cc: guestShippingAddress.cc,
-          phone: guestShippingAddress.phoneNumber,
-          shippingAddress: guestShippingAddress.address,
-          shippingTown: guestShippingAddress.town,
-          shippingCity: guestShippingAddress.city,
-          shippingProvince: guestShippingAddress.state,
-          shippingCountry: guestShippingAddress.country,
-          shippingPostCode: guestShippingAddress.postCode,
-        };
-      }
+      // if (guestShippingAddress) {
+      //   guestOrderDetails = {
+      //     ...guestOrderDetails,
+      //     firstName: guestShippingAddress.firstName,
+      //     lastName: guestShippingAddress.lastName,
+      //     email: "",
+      //     cc: guestShippingAddress.cc,
+      //     phone: guestShippingAddress.phoneNumber,
+      //     shippingAddress: guestShippingAddress.address,
+      //     shippingTown: guestShippingAddress.town,
+      //     shippingCity: guestShippingAddress.city,
+      //     shippingProvince: guestShippingAddress.state,
+      //     shippingCountry: guestShippingAddress.country,
+      //     shippingPostCode: guestShippingAddress.postCode,
+      //   };
+      // }
 
-      if (!guestBillingAddress) {
-        toast({
-          title: t("please_add_a_billing_address"),
-          variant: "danger",
-        });
-        return;
-      }
+      // if (!guestBillingAddress) {
+      //   toast({
+      //     title: t("please_add_a_billing_address"),
+      //     variant: "danger",
+      //   });
+      //   return;
+      // }
 
-      if (guestBillingAddress) {
-        guestOrderDetails = {
-          ...guestOrderDetails,
-          billingAddress: guestBillingAddress.address,
-          billingCity: guestBillingAddress.city,
-          billingTown: guestBillingAddress.town,
-          billingProvince: guestBillingAddress.state,
-          billingCountry: guestBillingAddress.country,
-          billingPostCode: guestBillingAddress.postCode,
-        };
-      }
+      // if (guestBillingAddress) {
+      //   guestOrderDetails = {
+      //     ...guestOrderDetails,
+      //     billingAddress: guestBillingAddress.address,
+      //     billingCity: guestBillingAddress.city,
+      //     billingTown: guestBillingAddress.town,
+      //     billingProvince: guestBillingAddress.state,
+      //     billingCountry: guestBillingAddress.country,
+      //     billingPostCode: guestBillingAddress.postCode,
+      //   };
+      // }
 
-      const data = {
-        ...guestOrderDetails,
-        email: guestEmail,
-        paymentMethod: "cash",
-        cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
-      };
+      // const data = {
+      //   ...guestOrderDetails,
+      //   email: guestEmail,
+      //   paymentMethod: "cash",
+      //   cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
+      // };
 
-      if (
-        data.firstName !== "" &&
-        data.lastName !== "" &&
-        data.cc != "" &&
-        data.phone !== ""
-      ) {
-        data.guestUser = {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: guestEmail,
-          cc: data.cc,
-          phoneNumber: data.phone,
-        };
-      }
+      // if (
+      //   data.firstName !== "" &&
+      //   data.lastName !== "" &&
+      //   data.cc != "" &&
+      //   data.phone !== ""
+      // ) {
+      //   data.guestUser = {
+      //     firstName: data.firstName,
+      //     lastName: data.lastName,
+      //     email: guestEmail,
+      //     cc: data.cc,
+      //     phoneNumber: data.phone,
+      //   };
+      // }
 
-      orders.setOrders(data);
-      router.push("/orders");
+      // orderStore.setOrders(data);
+      // orderStore.setTotal(totalAmount);
+      // router.push("/complete-order");
     }
   };
 
@@ -548,6 +599,8 @@ useEffect(() => {
                       onRemove={handleRemoveItemFromCart}
                       onWishlist={handleAddToWishlist}
                       haveAccessToken={haveAccessToken}
+                      invalidProduct={invalidProducts.includes(item.productId)}
+                      cannotBuy={notAvailableProducts.includes(item.productId)}
                     />
                   ))}
                 </div>
@@ -857,26 +910,38 @@ useEffect(() => {
                 <ul>
                   <li dir={langDir}>
                     <p>{t("subtotal")}</p>
-                    <h5>{currency.symbol}{calculateTotalAmount() || 0}</h5>
+                    <h5>{currency.symbol}{itemsTotal}</h5>
                   </li>
                   <li dir={langDir}>
                     <p>{t("shipping")}</p>
                     <h5>{t("free")}</h5>
                   </li>
+                  <li dir={langDir}>
+                    <p>{t("fee")}</p>
+                    <h5>{currency.symbol}{fee}</h5>
+                  </li>
                 </ul>
               </div>
               <div className="priceDetails-footer" dir={langDir}>
                 <h4>{t("total_amount")}</h4>
-                <h4 className="amount-value">{currency.symbol}{calculateTotalAmount() || 0}</h4>
+                <h4 className="amount-value">{currency.symbol}{totalAmount}</h4>
               </div>
             </div>
             <div className="order-action-btn">
               <Button
                 onClick={onSaveOrder}
-                disabled={!memoizedCartList?.length}
+                disabled={!memoizedCartList?.length
+                  || updateCartByDevice?.isPending
+                  || updateCartWithLogin?.isPending
+                  || cartListByDeviceQuery?.isFetching
+                  || cartListByUser?.isFetching
+                  || allUserAddressQuery?.isLoading
+                  || preOrderCalculation?.isPending}
                 className="theme-primary-btn order-btn"
               >
-                {t("continue")}
+                {preOrderCalculation?.isPending ? (
+                  <LoaderWithMessage message={t("please_wait")} />
+                ) : t("continue")}
               </Button>
             </div>
           </div>
