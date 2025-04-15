@@ -175,8 +175,14 @@ const ProductDetailsPage = () => {
       handleAddToCart(quantity, action);
     } else {
       if (action == "add") {
-        const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
-        if (!minQuantity || minQuantity === 0 || (minQuantity && quantity == minQuantity)) {
+        const minQuantity = productDetails?.product_productPrice?.length
+          ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+          : null;
+        if (
+          !minQuantity ||
+          minQuantity === 0 ||
+          (minQuantity && quantity == minQuantity)
+        ) {
           handleAddToCart(quantity, action);
         }
       }
@@ -188,21 +194,25 @@ const ProductDetailsPage = () => {
     quantity: number,
     actionType: "add" | "remove",
   ) => {
-    const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+    const minQuantity = productDetails?.product_productPrice?.length
+      ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+      : null;
     if (actionType == "add" && minQuantity && minQuantity > quantity) {
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
         variant: "danger",
-      })
+      });
       return;
     }
 
-    const maxQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.maxQuantityPerCustomer : null; 
+    const maxQuantity = productDetails?.product_productPrice?.length
+      ? productDetails.product_productPrice[0]?.maxQuantityPerCustomer
+      : null;
     if (maxQuantity && maxQuantity < quantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
         variant: "danger",
-      })
+      });
       return;
     }
 
@@ -232,7 +242,10 @@ const ProductDetailsPage = () => {
       if (response.status) {
         setGlobalQuantity(quantity);
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -256,7 +269,10 @@ const ProductDetailsPage = () => {
       if (response.status) {
         setGlobalQuantity(quantity);
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -267,14 +283,19 @@ const ProductDetailsPage = () => {
   };
 
   const handleCartPage = async () => {
-    if ((getProductQuantityByUser || 0) >= 1 || (getProductQuantityByDevice || 0) >= 1) {
+    if (
+      (getProductQuantityByUser || 0) >= 1 ||
+      (getProductQuantityByDevice || 0) >= 1
+    ) {
       router.push("/cart");
       return;
     }
 
     let quantity = globalQuantity;
     if (quantity == 0) {
-      const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+      const minQuantity = productDetails?.product_productPrice?.length
+        ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+        : null;
       quantity = minQuantity || 1;
     }
     const response = await handleAddToCart(quantity, "add");
@@ -284,16 +305,21 @@ const ProductDetailsPage = () => {
       }, 2000);
     }
   };
-  
+
   const handleCheckoutPage = async () => {
-    if ((getProductQuantityByUser || 0) >= 1 || (getProductQuantityByDevice || 0) >= 1) {
+    if (
+      (getProductQuantityByUser || 0) >= 1 ||
+      (getProductQuantityByDevice || 0) >= 1
+    ) {
       router.push("/checkout");
       return;
     }
 
     let quantity = globalQuantity;
     if (quantity == 0) {
-      const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+      const minQuantity = productDetails?.product_productPrice?.length
+        ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+        : null;
       quantity = minQuantity || 1;
     }
     const response = await handleAddToCart(quantity, "add");
@@ -407,7 +433,7 @@ const ProductDetailsPage = () => {
             <ProductDescriptionCard
               productId={searchParams?.id ? (searchParams?.id as string) : ""}
               productName={productDetails?.productName}
-              productType={productDetails.productType}
+              productType={productDetails?.productType}
               brand={productDetails?.brand?.brandName}
               productPrice={productDetails?.productPrice}
               offerPrice={productDetails?.product_productPrice?.[0]?.offerPrice}
@@ -449,10 +475,12 @@ const ProductDetailsPage = () => {
                 productDetails?.product_productPrice?.[0]?.askForPrice
               }
               minQuantity={
-                productDetails?.product_productPrice?.[0]?.minQuantityPerCustomer
+                productDetails?.product_productPrice?.[0]
+                  ?.minQuantityPerCustomer
               }
               maxQuantity={
-                productDetails?.product_productPrice?.[0]?.maxQuantityPerCustomer
+                productDetails?.product_productPrice?.[0]
+                  ?.maxQuantityPerCustomer
               }
               otherSellerDetails={otherSellerDetails}
               productPriceArr={productDetails?.product_productPrice}
@@ -624,7 +652,9 @@ const ProductDetailsPage = () => {
                 !cartListByUser.data?.data?.length &&
                 !cartListByUser.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center" dir={langDir}>{t("no_cart_items")}</p>
+                    <p className="my-3 text-center" dir={langDir}>
+                      {t("no_cart_items")}
+                    </p>
                   </div>
                 ) : null}
 
@@ -632,7 +662,9 @@ const ProductDetailsPage = () => {
                 !cartListByDeviceQuery.data?.data?.length &&
                 !cartListByDeviceQuery.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center" dir={langDir}>{t("no_cart_items")}</p>
+                    <p className="my-3 text-center" dir={langDir}>
+                      {t("no_cart_items")}
+                    </p>
                   </div>
                 ) : null}
 
@@ -661,12 +693,14 @@ const ProductDetailsPage = () => {
                     productId={item.productId}
                     productPriceId={item.productPriceId}
                     productName={
-                      item.productPriceDetails?.productPrice_product?.productName
+                      item.productPriceDetails?.productPrice_product
+                        ?.productName
                     }
                     offerPrice={item.productPriceDetails?.offerPrice}
                     productQuantity={item.quantity}
                     productImages={
-                      item.productPriceDetails?.productPrice_product?.productImages
+                      item.productPriceDetails?.productPrice_product
+                        ?.productImages
                     }
                     consumerDiscount={
                       item.productPriceDetails?.consumerDiscount
@@ -674,8 +708,12 @@ const ProductDetailsPage = () => {
                     onRemove={handleRemoveItemFromCart}
                     onWishlist={handleAddToWishlist}
                     haveAccessToken={haveAccessToken}
-                    minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
-                    maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                    minQuantity={
+                      item?.productPriceDetails?.minQuantityPerCustomer
+                    }
+                    maxQuantity={
+                      item?.productPriceDetails?.maxQuantityPerCustomer
+                    }
                   />
                 ))}
               </div>

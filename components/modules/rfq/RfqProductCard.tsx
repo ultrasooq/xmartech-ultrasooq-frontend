@@ -23,7 +23,14 @@ type RfqProductCardProps = {
     image: string;
   }[];
   productQuantity: number;
-  onAdd: (args0: number, args1: number, args2: "add" | "remove", args3?: number, args4?: number, args5?: string) => void;
+  onAdd: (
+    args0: number,
+    args1: number,
+    args2: "add" | "remove",
+    args3?: number,
+    args4?: number,
+    args5?: string,
+  ) => void;
   onToCart: () => void;
   onEdit: (args0: number) => void;
   onWishlist: () => void;
@@ -54,7 +61,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   haveAccessToken,
   productPrice,
   offerPriceFrom,
-  offerPriceTo
+  offerPriceTo,
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
@@ -85,7 +92,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         <Button
           variant="ghost"
           className="relative h-8 w-8 rounded-full p-0 shadow-md"
-          onClick={() => onAdd(quantity + 1, id, "add", undefined, undefined, '')}
+          onClick={() =>
+            onAdd(quantity + 1, id, "add", undefined, undefined, "")
+          }
         >
           <ShoppingIcon />
         </Button>
@@ -121,14 +130,21 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
           <div className="quantity_wrap mb-2">
             <label dir={langDir}>{t("quantity")}</label>
             <div className="qty-up-down-s1-with-rgMenuAction">
-              <div className="flex items-center gap-x-3 md:gap-x-4">
+              <div className="flex items-center gap-x-3 md:gap-x-3">
                 <Button
                   type="button"
                   variant="outline"
-                  className="relative hover:shadow-sm"
+                  className="relative px-4 hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity - 1);
-                    onAdd(quantity - 1, id, "remove", offerPriceFrom, offerPriceTo, '');
+                    onAdd(
+                      quantity - 1,
+                      id,
+                      "remove",
+                      offerPriceFrom,
+                      offerPriceTo,
+                      "",
+                    );
                   }}
                   disabled={quantity === 0}
                 >
@@ -143,10 +159,17 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 <Button
                   type="button"
                   variant="outline"
-                  className="relative hover:shadow-sm"
+                  className="relative px-4 hover:shadow-sm"
                   onClick={() => {
                     setQuantity(quantity + 1);
-                    onAdd(quantity + 1, id, "add", offerPriceFrom, offerPriceTo, '');
+                    onAdd(
+                      quantity + 1,
+                      id,
+                      "add",
+                      offerPriceFrom,
+                      offerPriceTo,
+                      "",
+                    );
                   }}
                 >
                   <Image
@@ -160,6 +183,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   type="button"
                   variant="ghost"
                   onClick={() => onEdit(id)}
+                  className="p-1"
                 >
                   <div className="relative h-6 w-6">
                     <Image
@@ -192,7 +216,14 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 className="add_to_cart_button"
                 disabled={quantity > 0}
                 onClick={() => {
-                  onAdd(quantity + 1, id, "add", offerPriceFrom, offerPriceTo, '');
+                  onAdd(
+                    quantity + 1,
+                    id,
+                    "add",
+                    offerPriceFrom,
+                    offerPriceTo,
+                    "",
+                  );
                 }}
                 dir={langDir}
               >

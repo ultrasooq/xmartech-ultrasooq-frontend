@@ -2213,7 +2213,7 @@
   }
 
   .time_left {
-    @apply bg-dark-orange absolute top-3 left-4 text-white px-3 py-1 rounded-sm text-xs;
+    @apply bg-dark-orange absolute top-3 left-2 text-white px-3 py-1 rounded-sm text-xs;
   }
 
   .time_wrap {
@@ -2764,7 +2764,7 @@
     .product_list_content
     .cart_button
     button.add_to_cart_button {
-    @apply w-full rounded-sm border border-solid border-[#E8E8E8] p-2.5 text-[15px] font-bold leading-5 text-[#7F818D];
+    @apply w-full rounded-sm border border-solid border-[#E8E8E8] p-2.5 text-[13px] font-bold leading-5 text-[#7F818D];
     background: #fff;
   }
 
