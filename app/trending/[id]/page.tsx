@@ -407,7 +407,7 @@ const ProductDetailsPage = () => {
             <ProductDescriptionCard
               productId={searchParams?.id ? (searchParams?.id as string) : ""}
               productName={productDetails?.productName}
-              productType={productDetails.productType}
+              productType={productDetails?.productType}
               brand={productDetails?.brand?.brandName}
               productPrice={productDetails?.productPrice}
               offerPrice={productDetails?.product_productPrice?.[0]?.offerPrice}

@@ -316,6 +316,22 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     if (typeof window !== 'undefined') {
       getIpInfo();
     }
+
+    let elem = document.querySelector('.goog-te-combo');
+    if (elem) {
+      // @ts-ignore
+      elem.value = e.target.value;
+      elem.dispatchEvent(new Event('change'));
+      setTimeout(() => {
+        let elem = document.querySelector('.goog-te-combo');
+        // @ts-ignore
+        if (elem && !elem.value) {
+          // @ts-ignore
+          elem.value = 'ar';
+          elem.dispatchEvent(new Event('change'));
+        }
+      }, 1000)
+    }
   }, [])
 
   const hideMenu = (permissionName: string): boolean => {
@@ -363,11 +379,26 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </select>
                   </li>
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
-                    {/* <GoogleTranslate /> */}
+                    <GoogleTranslate />
                     <select className="border-0 bg-transparent text-white focus:outline-none" value={selectedLocale}
                       onChange={(e) => {
                         setSelectedLocale(e.target.value);
                         applyTranslation(e.target.value)
+                        let elem = document.querySelector('.goog-te-combo');
+                        if (elem) {
+                          // @ts-ignore
+                          elem.value = e.target.value;
+                          elem.dispatchEvent(new Event('change'));
+                          setTimeout(() => {
+                            let elem = document.querySelector('.goog-te-combo');
+                            // @ts-ignore
+                            if (elem && !elem.value) {
+                              // @ts-ignore
+                              elem.value = 'ar';
+                              elem.dispatchEvent(new Event('change'));
+                            }
+                          }, 1000)
+                        }
                       }}
                     >
                       {languages.map((language: { locale: string, name: string }) => {
