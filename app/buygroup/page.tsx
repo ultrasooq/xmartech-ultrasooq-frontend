@@ -174,6 +174,7 @@ const TrendingPage = () => {
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
         askForPrice: item?.product_productPrice?.[0]?.askForPrice,
         productPrices: item?.product_productPrice,
+        sold: item.orderProducts?.length,
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps

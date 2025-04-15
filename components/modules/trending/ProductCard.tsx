@@ -542,16 +542,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        {sold && sold > 0 && (
+        {sold !== undefined ? (
           <>
             <div className="mt-3 h-3 w-full bg-gray-300">
               <div className="h-full w-4/5 bg-color-yellow"></div>
             </div>
             <span className="w-full text-sm font-normal capitalize text-light-gray">
-              Sold: 10
+              {t("sold")}: {sold}
             </span>
           </>
-        )}
+        ) : null}
       </div>
     </div>
   );

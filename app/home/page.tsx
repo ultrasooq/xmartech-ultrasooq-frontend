@@ -112,6 +112,7 @@ function HomePage() {
       consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
       askForPrice: item?.product_productPrice?.[0]?.askForPrice,
       productPrices: item?.product_productPrice,
+      sold: item.orderProducts?.length,
     })) || [];
   }, [
     buyGroupProductsQuery?.data?.data
@@ -475,7 +476,7 @@ function HomePage() {
                     isInteractive
                     productQuantity={cartQuantity}
                     isAddedToCart={cartQuantity > 0}
-                    sold={10}
+                    sold={item.sold}
                   />
                 );
               })}

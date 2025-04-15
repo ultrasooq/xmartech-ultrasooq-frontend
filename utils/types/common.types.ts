@@ -121,6 +121,7 @@ export interface TrendingProduct {
   consumerDiscount?: number;
   askForPrice?: string;
   productPrices?: any[];
+  sold?: number;
 }
 
 export type ProductImageProps = {
