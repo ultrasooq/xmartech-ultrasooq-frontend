@@ -65,6 +65,7 @@ const TrendingPage = () => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const queryClient = useQueryClient();
+  const categoryStore = useCategoryStore();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
@@ -309,6 +310,18 @@ const TrendingPage = () => {
     }
   }, [accessToken]);
 
+  useEffect(() => {
+    return () => {
+      categoryStore.setSubCategories([]);
+      categoryStore.setSubSubCategories([]);
+      categoryStore.setCategoryId('');
+      categoryStore.setCategoryIds('');
+      categoryStore.setSubCategoryIndex(0);
+      categoryStore.setSecondLevelCategoryIndex(0);
+      categoryStore.setSubCategoryParentName('');
+      categoryStore.setSubSubCategoryParentName('');
+    };
+  }, []);
   return (
     <>
       <title dir={langDir}>{t("store")} | Ultrasooq</title>

@@ -70,6 +70,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const queryClient = useQueryClient();
+  const categoryStore = useCategoryStore();
   // const searchParams = useSearchParams();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
@@ -323,6 +324,19 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
       setHaveAccessToken(false);
     }
   }, [accessToken]);
+
+  useEffect(() => {
+    return () => {
+      categoryStore.setSubCategories([]);
+      categoryStore.setSubSubCategories([]);
+      categoryStore.setCategoryId('');
+      categoryStore.setCategoryIds('');
+      categoryStore.setSubCategoryIndex(0);
+      categoryStore.setSecondLevelCategoryIndex(0);
+      categoryStore.setSubCategoryParentName('');
+      categoryStore.setSubSubCategoryParentName('');
+    };
+  }, []);
 
   return (
     <>

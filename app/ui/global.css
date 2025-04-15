@@ -5438,6 +5438,12 @@ input::-ms-clear {
 
 }
 
+.skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
 
 @import "slick-carousel/slick/slick.css";
 @import "slick-carousel/slick/slick-theme.css";

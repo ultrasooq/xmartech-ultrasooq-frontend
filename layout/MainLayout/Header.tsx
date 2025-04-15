@@ -105,7 +105,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
-  //  const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
   const permissions: string[] = getPermissions();
   const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
@@ -134,7 +134,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     !!categoryId,
   );
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(searchParams?.get('term') || '');
 
   const [isActive, setIsActive] = useState(false);
 
@@ -333,6 +333,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       }, 1000)
     }
   }, [])
+
+  useEffect(() => {
+    setSearchTerm(searchParams?.get('term') || '');
+  }, [searchParams]);
 
   const hideMenu = (permissionName: string): boolean => {
     if (
