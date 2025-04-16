@@ -57,12 +57,15 @@ const ProductDetailsPage = () => {
   const type = searchQuery?.get("type");
   const otherSellerId = searchQuery?.get("sellerId");
   const otherProductId = searchQuery?.get("productId");
+  const sharedLinkId = searchQuery?.get("sharedLinkId") || '';
+  const [isShareLinkProcessed, setIsShareLinkProcessed] = useState<boolean>(false);
 
   const me = useMe();
   const productQueryById = useProductById(
     {
       productId: searchParams?.id ? (searchParams?.id as string) : "",
       userId: me.data?.data?.id,
+      sharedLinkId: sharedLinkId,
     },
     !!searchParams?.id && !otherSellerId && !otherProductId,
   );
@@ -145,6 +148,25 @@ const ProductDetailsPage = () => {
     }
   };
 
+  const addToCartFromSharedLink = async () => {
+    if (isShareLinkProcessed) return;
+
+    if (productQueryById?.data?.generatedLinkDetail && !cartListByUser?.isLoading && !cartListByDeviceQuery?.isLoading) {
+      const item = memoizedCartList.find((item: any) => item.productId == Number(searchParams?.id || ''));
+      if (!item || (item && item.sharedLinkId != productQueryById.data.generatedLinkDetail.id)) {
+        if (item) {
+          await handleRemoveItemFromCart(item.id);
+        }
+        const minQuantity = productDetails?.product_productPrice?.length
+          ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+          : null;
+        let quantity = item?.quantity || minQuantity || 1;
+        handleAddToCart(quantity, "add");
+        setIsShareLinkProcessed(true);
+      }
+    }
+  }
+
   const productDetails = !otherSellerId
     ? productQueryById.data?.data
     : productQueryByOtherSeller.data?.data;
@@ -162,6 +184,13 @@ const ProductDetailsPage = () => {
   );
 
   const [globalQuantity, setGlobalQuantity] = useState(0); // Global state
+
+  useEffect(() => {
+    addToCartFromSharedLink();
+  }, [
+    productQueryById?.data?.generatedLinkDetail, 
+    memoizedCartList
+  ]);
 
   useEffect(() => {
     setGlobalQuantity(
@@ -220,6 +249,8 @@ const ProductDetailsPage = () => {
       quantity = 0;
     }
 
+    const sharedLinkId = productQueryById?.data?.generatedLinkDetail?.id;
+
     if (haveAccessToken) {
       if (!productDetails?.product_productPrice?.[0]?.id) {
         toast({
@@ -237,6 +268,7 @@ const ProductDetailsPage = () => {
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
+        sharedLinkId,
       });
 
       if (response.status) {
@@ -265,6 +297,7 @@ const ProductDetailsPage = () => {
         productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
         deviceId,
+        sharedLinkId,
       });
       if (response.status) {
         setGlobalQuantity(quantity);

@@ -42,13 +42,8 @@ export const fetchProducts = (payload: {
 export const fetchProductById = (payload: {
   productId: string;
   userId?: number;
+  sharedLinkId?: string;
 }) => {
-  // const query = new URLSearchParams();
-
-  // if (!isEmpty(payload.productId)) {
-  //   query.append("productId", String(payload.productId));
-  // }
-
   return axios({
     method: "GET",
     url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/findOne`, payload),

@@ -33,8 +33,8 @@ const ShareLinksPage = () => {
     const copyShareLink = (id: number, productId: number) => {
         // navigator.clipboard.writeText();
         var textField = document.createElement('textarea')
-        textField.innerText = `${location.origin}/share/${productId}?share=${id}`;
-        document.body.appendChild(textField)
+        textField.innerText = `${location.origin}/trending/${productId}?sharedLinkId=${id}`;
+        document.body.appendChild(textField);
         textField.select()
         document.execCommand('copy')
         textField.remove()

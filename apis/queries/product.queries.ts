@@ -89,7 +89,7 @@ export const useProducts = (
   });
 
 export const useProductById = (
-  payload: { productId: string; userId?: number },
+  payload: { productId: string; userId?: number, sharedLinkId?: string },
   enabled = true,
 ) =>
   useQuery({
