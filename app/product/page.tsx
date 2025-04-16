@@ -49,136 +49,132 @@ const baseProductPriceItemSchema = (t: any) => {
 
 const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
   return baseProductPriceItemSchema(t)
-  .extend({
-    consumerType: z
-      .string()
-      .trim()
-      .min(1, { message: t("consumer_type_is_required") }),
-    sellType: z.string().trim().min(1, { message: t("sell_type_is_required") }),
-    consumerDiscount: z.coerce
-      .number()
-      .max(100, { message: t("consumer_discount_must_be_less_than_100") }),
-    vendorDiscount: z.coerce
-      .number()
-      .max(100, { message: t("vendor_discount_must_be_less_than_100") }),
-    deliveryAfter: z.coerce
-      .number()
-      .min(1, { message: t("delivery_after_is_required") }),
-  })
-  .refine(
-    ({ minQuantity, maxQuantity, sellType }) => sellType != 'BUYGROUP' || 
-    (minQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)) || 
-    (maxQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)),
-    {
-      message: t("min_quantity_must_be_less_than_max_quantity"),
-      path: ["minQuantity"],
-    },
-  )
-  .refine(
-    ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
-      (minQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)) || 
-      (maxQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)),
-    {
-      message: t("min_quantity_per_customer_must_be_less_than_max_quantity_per_customer"),
-      path: ["minQuantityPerCustomer"],
-    },
-  )
-  .refine(
-    ({ minCustomer, maxCustomer }) =>
-      (!minCustomer || minCustomer) <= (!maxCustomer || maxCustomer),
-    {
-      message: t("min_customer_must_be_less_than_or_equal_to_max_customer"),
-      path: ["minCustomer"],
-    },
-  )
-  // .refine(({ timeOpen, timeClose }) => (!timeOpen || timeOpen) <= (!timeClose || timeClose), {
-  //   message: t("open_time_must_be_less_than_or_equal_to_close_time"),
-  //   path: ["timeOpen"],
-  // },)
-  .superRefine((schema, ctx) => {
-    const {
-      sellType,
-      minQuantityPerCustomer,
-      maxQuantityPerCustomer,
-      minQuantity,
-      maxQuantity,
-      minCustomer,
-      maxCustomer,
-      startTime,
-      endTime,
-    } = schema;
-    if (sellType === "NORMALSELL" || sellType === "BUYGROUP") {
-      if (!minQuantityPerCustomer) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("quantity_per_customer_is_required"),
-          path: ["minQuantityPerCustomer"],
-        });
+    .extend({
+      consumerType: z
+        .string()
+        .trim()
+        .min(1, { message: t("consumer_type_is_required") }),
+      sellType: z.string().trim().min(1, { message: t("sell_type_is_required") }),
+      consumerDiscount: z.coerce
+        .number()
+        .max(100, { message: t("consumer_discount_must_be_less_than_100") }),
+      vendorDiscount: z.coerce
+        .number()
+        .max(100, { message: t("vendor_discount_must_be_less_than_100") }),
+      deliveryAfter: z.coerce
+        .number()
+        .min(1, { message: t("delivery_after_is_required") }),
+    })
+    .refine(
+      ({ minQuantity, maxQuantity, sellType }) => sellType != 'BUYGROUP' ||
+        (minQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)) ||
+        (maxQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)),
+      {
+        message: t("min_quantity_must_be_less_than_max_quantity"),
+        path: ["minQuantity"],
+      },
+    )
+    .refine(
+      ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
+        (minQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)) ||
+        (maxQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)),
+      {
+        message: t("min_quantity_per_customer_must_be_less_than_max_quantity_per_customer"),
+        path: ["minQuantityPerCustomer"],
+      },
+    )
+    .refine(
+      ({ minCustomer, maxCustomer }) =>
+        (!minCustomer || minCustomer) <= (!maxCustomer || maxCustomer),
+      {
+        message: t("min_customer_must_be_less_than_or_equal_to_max_customer"),
+        path: ["minCustomer"],
+      },
+    )
+    .superRefine((schema, ctx) => {
+      const {
+        sellType,
+        minQuantityPerCustomer,
+        maxQuantityPerCustomer,
+        minQuantity,
+        maxQuantity,
+        minCustomer,
+        maxCustomer,
+        startTime,
+        endTime,
+      } = schema;
+      if (sellType === "NORMALSELL" || sellType === "BUYGROUP") {
+        if (!minQuantityPerCustomer) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("quantity_per_customer_is_required"),
+            path: ["minQuantityPerCustomer"],
+          });
+        }
+        if (!maxQuantityPerCustomer) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("quantity_per_customer_is_required"),
+            path: ["maxQuantityPerCustomer"],
+          });
+        }
       }
-      if (!maxQuantityPerCustomer) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("quantity_per_customer_is_required"),
-          path: ["maxQuantityPerCustomer"],
-        });
+      if (sellType === "BUYGROUP") {
+        if (!minQuantity) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("min_quantity_is_required"),
+            path: ["minQuantity"],
+          });
+        }
       }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!minQuantity) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("min_quantity_is_required"),
-          path: ["minQuantity"],
-        });
+      if (sellType === "BUYGROUP") {
+        if (!maxQuantity) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("max_quantity_is_required"),
+            path: ["maxQuantity"],
+          });
+        }
       }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!maxQuantity) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("max_quantity_is_required"),
-          path: ["maxQuantity"],
-        });
+      if (sellType === "BUYGROUP") {
+        if (!minCustomer) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("min_customer_is_required"),
+            path: ["minCustomer"],
+          });
+        }
       }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!minCustomer) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("min_customer_is_required"),
-          path: ["minCustomer"],
-        });
+      if (sellType === "BUYGROUP") {
+        if (!maxCustomer) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("max_customer_is_required"),
+            path: ["maxCustomer"],
+          });
+        }
       }
-    }
-    if (sellType === "BUYGROUP") {
-      if (!maxCustomer) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("max_customer_is_required"),
-          path: ["maxCustomer"],
-        });
+      if (sellType == "BUYGROUP") {
+        if ((minQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0)) || (maxQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0))) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("min_quantity_must_be_less_than_max_quantity"),
+            path: ["maxQuantity"],
+          });
+        }
       }
-    }
-    if (sellType == "BUYGROUP") {
-      if ((minQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0)) || (maxQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0))) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("min_quantity_must_be_less_than_max_quantity"),
-          path: ["maxQuantity"],
-        });
-      }
-    }
-    // if (sellType === "BUYGROUP") {
-    //   if (!startTime) {
-    //     ctx.addIssue({ code: "custom", message: t("time_open_is_required"), path: ["startTime"], });
-    //   }
-    // }
-    // if (sellType === "BUYGROUP") {
-    //   if (!endTime) {
-    //     ctx.addIssue({ code: "custom", message: t("time_close_is_required"), path: ["endTime"], });
-    //   }
-    // }
-  });
+      // if (sellType === "BUYGROUP") {
+      //   if (!startTime) {
+      //     ctx.addIssue({ code: "custom", message: t("time_open_is_required"), path: ["startTime"], });
+      //   }
+      // }
+      // if (sellType === "BUYGROUP") {
+      //   if (!endTime) {
+      //     ctx.addIssue({ code: "custom", message: t("time_close_is_required"), path: ["endTime"], });
+      //   }
+      // }
+    });
 };
 
 const formSchemaForTypeP = (t: any) => {
@@ -266,53 +262,79 @@ const formSchemaForTypeP = (t: any) => {
     isStockRequired: z.boolean().optional(),
     isOfferPriceRequired: z.boolean().optional(),
     isCustomProduct: z.boolean().optional(),
+    productVariantType: z.string()
+      .trim()
+      .min(3, { message: t("variant_type_must_be_equal_greater_than_2_characters") })
+      .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
+      .optional()
+      .or(z.literal('')),
+    productVariants: z.array(
+      z.object({
+        value: z
+          .string()
+          .trim()
+          .min(1, { message: t("value_is_required") })
+          .max(20, { message: t("value_must_be_less_than_n_characters", { n: 20 }) })
+          .optional()
+          .or(z.literal('')),
+      }),
+    ),
   })
-  .superRefine((data, ctx) => {
-    if (data.setUpPrice) {
-      const result = z
-        .array(productPriceItemSchemaWhenSetUpPriceTrue(t))
-        .safeParse(data.productPriceList);
-
-      if (!result.success) {
-        result.error.issues.forEach((issue) => ctx.addIssue(issue));
+    .superRefine((data, ctx) => {
+      const variantsCount = data.productVariants.filter(el => el.value?.trim()).length;
+      if (data.productVariantType?.trim() && variantsCount == 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("value_is_required"),
+          path: ["productVariants.0.value"],
+        });
+      }
+      if (variantsCount > 0 && !data.productVariantType?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("variant_type_is_required"),
+          path: ["productVariantType"],
+        });
       }
 
-      // if (data.productPrice === 0) {
-      //   ctx.addIssue({
-      //     code: "custom",
-      //     message: t("product_price_is_required"),
-      //     path: ["productPrice"],
-      //   });
-      // }
-    } else {
-      data.productPrice = 0;
-      data.offerPrice = 0;
-      if (Array.isArray(data.productPriceList)) {
-        data.productPriceList = data.productPriceList.map((item) => ({
-          consumerType: "",
-          sellType: "",
-          consumerDiscount: 0,
-          vendorDiscount: 0,
-          consumerDiscountType: "",
-          vendorDiscountType: "",
-          minCustomer: 0,
-          maxCustomer: 0,
-          minQuantityPerCustomer: 0,
-          maxQuantityPerCustomer: 0,
-          minQuantity: 0,
-          maxQuantity: 0,
-          dateOpen: "",
-          dateClose: "",
-          timeOpen: 0,
-          timeClose: 0,
-          startTime: "",
-          endTime: "",
-          deliveryAfter: 0,
-          stock: 0,
-        }));
+      if (data.setUpPrice) {
+        const result = z
+          .array(productPriceItemSchemaWhenSetUpPriceTrue(t))
+          .safeParse(data.productPriceList);
+
+        if (!result.success) {
+          result.error.issues.forEach((issue) => ctx.addIssue(issue));
+        }
+
+      } else {
+        data.productPrice = 0;
+        data.offerPrice = 0;
+        if (Array.isArray(data.productPriceList)) {
+          data.productPriceList = data.productPriceList.map((item) => ({
+            consumerType: "",
+            sellType: "",
+            consumerDiscount: 0,
+            vendorDiscount: 0,
+            consumerDiscountType: "",
+            vendorDiscountType: "",
+            minCustomer: 0,
+            maxCustomer: 0,
+            minQuantityPerCustomer: 0,
+            maxQuantityPerCustomer: 0,
+            minQuantity: 0,
+            maxQuantity: 0,
+            dateOpen: "",
+            dateClose: "",
+            timeOpen: 0,
+            timeClose: 0,
+            startTime: "",
+            endTime: "",
+            deliveryAfter: 0,
+            stock: 0,
+          }));
+        }
       }
-    }
-  });
+    });
 };
 
 const formSchemaForTypeR = (t: any) => {
@@ -390,20 +412,20 @@ const formSchemaForTypeR = (t: any) => {
     isOfferPriceRequired: z.boolean().optional(),
     isCustomProduct: z.boolean().optional(),
   })
-  .superRefine((data, ctx) => {
-    if (data.setUpPrice) {
-      // if (data.offerPrice === 0) {
-      //   ctx.addIssue({
-      //     code: "custom",
-      //     message: t("offer_price_is_required"),
-      //     path: ["offerPrice"],
-      //   });
-      // }
-    }
-  });
+    .superRefine((data, ctx) => {
+      if (data.setUpPrice) {
+        // if (data.offerPrice === 0) {
+        //   ctx.addIssue({
+        //     code: "custom",
+        //     message: t("offer_price_is_required"),
+        //     path: ["offerPrice"],
+        //   });
+        // }
+      }
+    });
 };
 
-const defaultValues: {[key: string]: any} = {
+const defaultValues: { [key: string]: any } = {
   productName: "",
   categoryId: 0,
   categoryLocation: "",
@@ -467,6 +489,11 @@ const defaultValues: {[key: string]: any} = {
   isStockRequired: false,
   isOfferPriceRequired: false,
   isCustomProduct: false,
+  productVariants: [
+    {
+      value: ""
+    }
+  ]
 };
 
 const CreateProductPage = () => {
@@ -512,8 +539,6 @@ const CreateProductPage = () => {
   };
 
   const onSubmit = async (formData: any) => {
-    // console.log(formData)
-    // return
     const updatedFormData = {
       ...formData,
       productType: activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
@@ -590,7 +615,7 @@ const CreateProductPage = () => {
               ? "ACTIVE"
               : "INACTIVE"
             : updatedFormData.productPrice ||
-                updatedFormData.isOfferPriceRequired
+              updatedFormData.isOfferPriceRequired
               ? "ACTIVE"
               : "INACTIVE",
       },
@@ -679,10 +704,20 @@ const CreateProductPage = () => {
       return;
     }
 
-    (updatedFormData.description = updatedFormData?.descriptionJson
+    updatedFormData.description = updatedFormData?.descriptionJson
       ? JSON.stringify(updatedFormData?.descriptionJson)
-      : ""),
+      : "",
       delete updatedFormData.descriptionJson;
+
+    updatedFormData.productVariant = updatedFormData.productVariants.filter((el: any) => el.value?.trim())
+      .map((el: any) => {
+        return {
+          type: updatedFormData.productVariantType,
+          value: el.value
+        }
+      });
+    delete updatedFormData.productVariantType;
+    delete updatedFormData.productVariants;
 
     const response = await createProduct.mutateAsync(updatedFormData);
 
@@ -791,7 +826,7 @@ const CreateProductPage = () => {
                           dir={langDir}
                         >
                           {createProduct.isPending ||
-                          uploadMultiple.isPending ? (
+                            uploadMultiple.isPending ? (
                             <LoaderWithMessage message={t("please_wait")} />
                           ) : (
                             t("continue")
