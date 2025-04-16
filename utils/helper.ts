@@ -162,9 +162,26 @@ export const isImage = (path: any) => {
   }
 };
 
-
 export const generateUniqueNumber = () => {
   const timestamp = Date.now();
   const randomNum = Math.floor(Math.random() * 10000);
   return timestamp + randomNum;
 }
+
+export const convertDateTime = (dateString: string) => {
+  if (!dateString) {
+    return "-";
+  }
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    minute: "numeric",
+    hour: "numeric",
+    hour12: true,
+    second: "numeric",
+  };
+  const formattedDate = date.toLocaleDateString("en-GB", options);
+  return formattedDate;
+};

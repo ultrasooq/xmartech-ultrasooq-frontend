@@ -587,6 +587,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {t("my_settings")}
                             </DropdownMenuItem>
                           </Link>
+                          <Link href="/transactions">
+                            <DropdownMenuItem dir={langDir}>{t("transactions")}</DropdownMenuItem>
+                          </Link>
                           <Link href="/queries">
                             <DropdownMenuItem dir={langDir}>{t("queries")}</DropdownMenuItem>
                           </Link>

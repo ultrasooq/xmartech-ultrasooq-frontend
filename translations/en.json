@@ -490,7 +490,13 @@
     "shipping": "Shipping",
     "free": "Free",
     "total_amount": "Total Amount",
+    "amount": "Amount",
     "return": "Return",
+    "transactions": "Transactions",
+    "transaction": "Transaction",
+    "transaction_type": "Transaction Type",
+    "transaction_reference_number": "Transaction Reference Number",
+    "order_reference_number": "Order Reference Number",
 
     "placing_order": "Placing Order...",
     "initiating_payment": "Initiating Payment...",

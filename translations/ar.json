@@ -490,7 +490,13 @@
     "shipping": "شحن",
     "free": "حر",
     "total_amount": "المبلغ الإجمالي",
+    "amount": "كمية",
     "return": "يعود",
+    "transactions": "المعاملات",
+    "transaction": "عملية",
+    "transaction_type": "نوع المعاملة",
+    "transaction_reference_number": "رقم مرجع المعاملة",
+    "order_reference_number": "ترتيب رقم المرجع",
 
     "place_order": "ترتيب مكان",
     "placing_order": "وضع الطلب ...",
