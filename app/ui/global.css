@@ -4896,44 +4896,6 @@ input::-ms-clear {
   display: block;
 }
 
-.text-beat {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.ql-container {
-  height: 200px !important;
-}
-
-.order_accordion .accordion {
-  @apply w-full;
-}
-
-.order_accordion .accordion .accordion__item {
-  @apply w-full mb-4;
-}
-
-.order_accordion .accordion .accordion__item .accordion__heading {
-  @apply w-[50%];
-}
-
-.order_accordion .accordion .accordion__item .accordion__heading .accordion__button {
-  @apply w-full bg-[#db2302] rounded-md p-3 text-center text-white capitalize font-medium;
-}
-
-.order_accordion .accordion .accordion__item .accordion__panel {
-  @apply w-full mt-3;
-}
-
-.cart-page .accordion .order-action-btn.half_button {
-  @apply justify-start !important;
-}
-
-.cart-page .accordion .order-action-btn.half_button .order-btn {
-  @apply w-auto !important;
-}
 
 .team_members_section {
   @apply w-full py-7;
@@ -4984,6 +4946,46 @@ input::-ms-clear {
 
 .humberger, .close {
   @apply hidden;
+}
+
+
+.text-beat {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.ql-container {
+  height: 200px !important;
+}
+
+.order_accordion .accordion {
+  @apply w-full;
+}
+
+.order_accordion .accordion .accordion__item {
+  @apply w-full mb-4;
+}
+
+.order_accordion .accordion .accordion__item .accordion__heading {
+  @apply w-[50%];
+}
+
+.order_accordion .accordion .accordion__item .accordion__heading .accordion__button {
+  @apply w-full bg-[#db2302] rounded-md p-3 text-center text-white capitalize font-medium;
+}
+
+.order_accordion .accordion .accordion__item .accordion__panel {
+  @apply w-full mt-3;
+}
+
+.cart-page .accordion .order-action-btn.half_button {
+  @apply justify-start !important;
+}
+
+.cart-page .accordion .order-action-btn.half_button .order-btn {
+  @apply w-auto !important;
 }
 
 
