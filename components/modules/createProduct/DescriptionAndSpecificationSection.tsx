@@ -129,6 +129,7 @@ const DescriptionAndSpecificationSection = () => {
 
               {fieldArrayForVariants.fields.map((field, index) => (
                 <div
+                  key={field.id}
                   className="relative grid w-full grid-cols-1 gap-5 md:grid-cols-2"
                 >
                   <ControlledTextInput
