@@ -736,7 +736,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             <div className="relative flex flex-row flex-wrap md:flex-nowrap">
               <div className="flex w-full flex-1 flex-wrap gap-x-3 md:w-auto md:gap-x-5">
                 <div className="dropdown">
-                  <button className="dropbtn flex items-center">
+                  {(pathname == '/trending' || pathname == '/buygroup') && <button className="dropbtn flex items-center">
                     <div>
                       <Image src={HamburgerIcon} alt="hamburger-icon" />
                     </div>
@@ -749,9 +749,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         alt="hamburger-down-icon"
                       />
                     </div>
-                  </button>
+                  </button>}
 
-                  {memoizedSubCategory?.length ? (
+                  {(pathname == '/trending' || pathname == '/buygroup') && memoizedSubCategory?.length ? (
                     <div className="dropdown-content">
                       {memoizedSubCategory?.map(
                         (item: CategoryProps, index: number) => (
@@ -814,7 +814,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </div>
                   ) : null}
 
-                  {memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
+                  {(pathname == '/trending' || pathname == '/buygroup') && memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                     <div className="dropdown-content-second">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
                         (item: CategoryProps, index: number) => (
@@ -874,7 +874,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </div>
                   ) : null}
 
-                  {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                  {(pathname == '/trending' || pathname == '/buygroup') && memoizedSubCategory?.[subCategoryIndex]?.children?.[
                     subSubCategoryIndex
                   ]?.children?.length ? (
                     <div className="dropdown-content-third p-3">
@@ -942,7 +942,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   ) : null}
                 </div>
 
-                <div className="flex items-center gap-x-1 md:gap-x-5">
+                {(pathname == '/trending' || pathname == '/buygroup') && <div className="flex items-center gap-x-1 md:gap-x-5">
                   {memoizedCategory.map((item: any) => (
                     <Button
                       type="button"
@@ -967,7 +967,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       <p>{item.name}</p>
                     </Button>
                   ))}
-                </div>
+                </div>}
               </div>
 
               <div className="flex w-full items-center justify-end md:w-auto">
