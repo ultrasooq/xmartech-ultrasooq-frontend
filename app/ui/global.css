@@ -739,7 +739,7 @@
   }
 
   .product-list-s1 .product-list-s1-box {
-    @apply relative p-[8px] pt-[42px];
+    @apply relative p-[8px] pt-[50px];
     @apply border border-solid border-transparent;
     transition: 0.5s;
   }
@@ -2213,7 +2213,7 @@
   }
 
   .time_left {
-    @apply bg-dark-orange absolute top-3 left-2 text-white px-3 py-1 rounded-sm text-xs;
+    @apply bg-dark-orange absolute top-3 left-2 text-white px-3 py-1 rounded-sm text-xs z-20;
   }
 
   .time_wrap {
@@ -5256,6 +5256,22 @@ input::-ms-clear {
 
   .vendor-information-card-ui .vendor-info {
     width: calc(100% - 90px);
+  }
+
+  .time_left {
+    @apply top-11;
+  }
+
+  .slate-SelectionArea {
+    @apply hidden;
+  }
+
+  .form-groups-common-sec-s1 .flex button {
+    @apply px-1 h-6;
+  }
+
+  .form-groups-common-sec-s1 .flex button svg {
+    @apply w-[16px] h-[16px];
   }
 
 }

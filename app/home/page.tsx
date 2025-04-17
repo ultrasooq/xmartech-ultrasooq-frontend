@@ -23,16 +23,25 @@ import AdBannerThree from "@/public/images/hs-3.png";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useAllBuyGroupProducts, useAllProducts } from "@/apis/queries/product.queries";
+import {
+  useAllBuyGroupProducts,
+  useAllProducts,
+} from "@/apis/queries/product.queries";
 import { useEffect, useMemo, useState } from "react";
 import { useMe } from "@/apis/queries/user.queries";
 import { TrendingProduct } from "@/utils/types/common.types";
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
-import { useCartListByDevice, useCartListByUserId } from "@/apis/queries/cart.queries";
+import {
+  useCartListByDevice,
+  useCartListByUserId,
+} from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { useCategoryStore } from "@/lib/categoryStore";
 import { useRouter } from "next/navigation";
@@ -75,9 +84,7 @@ function HomePage() {
       tempArr = categoryQuery.data.data?.children;
     }
     return tempArr || [];
-  }, [
-    categoryQuery?.data?.data
-  ]);
+  }, [categoryQuery?.data?.data]);
 
   const buyGroupProductsQuery = useAllBuyGroupProducts({
     page: 1,
@@ -86,154 +93,154 @@ function HomePage() {
   });
 
   const memoizedBuyGroupProducts = useMemo(() => {
-    return buyGroupProductsQuery?.data?.data?.map((item: any) => ({
-      id: item.id,
-      productName: item?.productName || "-",
-      productPrice: item?.productPrice || 0,
-      offerPrice: item?.offerPrice || 0,
-      productImage: item?.product_productPrice?.[0]
-        ?.productPrice_productSellerImage?.length
-        ? item?.product_productPrice?.[0]
-            ?.productPrice_productSellerImage?.[0]?.image
-        : item?.productImages?.[0]?.image,
-      categoryName: item?.category?.name || "-",
-      skuNo: item?.skuNo,
-      brandName: item?.brand?.brandName || "-",
-      productReview: item?.productReview || [],
-      productWishlist: item?.product_wishlist || [],
-      inWishlist: item?.product_wishlist?.find(
-        (ele: any) => ele?.userId === me.data?.data?.id,
-      ),
-      shortDescription: item?.product_productShortDescription?.length
-        ? item?.product_productShortDescription?.[0]?.shortDescription
-        : "-",
-      productProductPriceId: item?.product_productPrice?.[0]?.id,
-      productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-      consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-      askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-      productPrices: item?.product_productPrice,
-      sold: item.orderProducts?.length,
-    })) || [];
-  }, [
-    buyGroupProductsQuery?.data?.data
-  ]);
+    return (
+      buyGroupProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
+        sold: item.orderProducts?.length,
+      })) || []
+    );
+  }, [buyGroupProductsQuery?.data?.data]);
 
   const homeDecorProductsQuery = useAllProducts({
     page: 1,
     limit: 4,
     sort: "desc",
-    categoryIds: "203"
+    categoryIds: "203",
   });
 
   const memoizedHomeDecorProducts = useMemo(() => {
-    return homeDecorProductsQuery?.data?.data?.map((item: any) => ({
-      id: item.id,
-      productName: item?.productName || "-",
-      productPrice: item?.productPrice || 0,
-      offerPrice: item?.offerPrice || 0,
-      productImage: item?.product_productPrice?.[0]
-        ?.productPrice_productSellerImage?.length
-        ? item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.[0]?.image
-        : item?.productImages?.[0]?.image,
-      categoryName: item?.category?.name || "-",
-      skuNo: item?.skuNo,
-      brandName: item?.brand?.brandName || "-",
-      productReview: item?.productReview || [],
-      productWishlist: item?.product_wishlist || [],
-      inWishlist: item?.product_wishlist?.find(
-        (ele: any) => ele?.userId === me.data?.data?.id,
-      ),
-      shortDescription: item?.product_productShortDescription?.length
-        ? item?.product_productShortDescription?.[0]?.shortDescription
-        : "-",
-      productProductPriceId: item?.product_productPrice?.[0]?.id,
-      productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-      consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-      askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-      productPrices: item?.product_productPrice,
-    })) || [];
-  }, [
-    homeDecorProductsQuery?.data?.data
-  ]);
+    return (
+      homeDecorProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
+      })) || []
+    );
+  }, [homeDecorProductsQuery?.data?.data]);
 
   const fashionBeautyProductsQuery = useAllProducts({
     page: 1,
     limit: 4,
     sort: "desc",
-    categoryIds: "258"
+    categoryIds: "258",
   });
 
   const memoizedFashionBeautyProducts = useMemo(() => {
-    return fashionBeautyProductsQuery?.data?.data?.map((item: any) => ({
-      id: item.id,
-      productName: item?.productName || "-",
-      productPrice: item?.productPrice || 0,
-      offerPrice: item?.offerPrice || 0,
-      productImage: item?.product_productPrice?.[0]
-        ?.productPrice_productSellerImage?.length
-        ? item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.[0]?.image
-        : item?.productImages?.[0]?.image,
-      categoryName: item?.category?.name || "-",
-      skuNo: item?.skuNo,
-      brandName: item?.brand?.brandName || "-",
-      productReview: item?.productReview || [],
-      productWishlist: item?.product_wishlist || [],
-      inWishlist: item?.product_wishlist?.find(
-        (ele: any) => ele?.userId === me.data?.data?.id,
-      ),
-      shortDescription: item?.product_productShortDescription?.length
-        ? item?.product_productShortDescription?.[0]?.shortDescription
-        : "-",
-      productProductPriceId: item?.product_productPrice?.[0]?.id,
-      productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-      consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-      askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-      productPrices: item?.product_productPrice,
-    })) || [];
-  }, [
-    fashionBeautyProductsQuery?.data?.data
-  ]);
+    return (
+      fashionBeautyProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
+      })) || []
+    );
+  }, [fashionBeautyProductsQuery?.data?.data]);
 
   const consumerElectronicsProductsQuery = useAllProducts({
     page: 1,
     limit: 4,
     sort: "desc",
-    categoryIds: "269,270"
+    categoryIds: "269,270",
   });
 
   const memoizedConsumerElectronicsProducts = useMemo(() => {
-    return consumerElectronicsProductsQuery?.data?.data?.map((item: any) => ({
-      id: item.id,
-      productName: item?.productName || "-",
-      productPrice: item?.productPrice || 0,
-      offerPrice: item?.offerPrice || 0,
-      productImage: item?.product_productPrice?.[0]
-        ?.productPrice_productSellerImage?.length
-        ? item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.[0]?.image
-        : item?.productImages?.[0]?.image,
-      categoryName: item?.category?.name || "-",
-      skuNo: item?.skuNo,
-      brandName: item?.brand?.brandName || "-",
-      productReview: item?.productReview || [],
-      productWishlist: item?.product_wishlist || [],
-      inWishlist: item?.product_wishlist?.find(
-        (ele: any) => ele?.userId === me.data?.data?.id,
-      ),
-      shortDescription: item?.product_productShortDescription?.length
-        ? item?.product_productShortDescription?.[0]?.shortDescription
-        : "-",
-      productProductPriceId: item?.product_productPrice?.[0]?.id,
-      productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-      consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-      askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-      productPrices: item?.product_productPrice,
-    })) || [];
-  }, [
-    consumerElectronicsProductsQuery?.data?.data
-  ]);
+    return (
+      consumerElectronicsProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
+      })) || []
+    );
+  }, [consumerElectronicsProductsQuery?.data?.data]);
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({
@@ -410,7 +417,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="w-full py-8">
+      <section className="w-full pb-4 pt-8">
         <div className="container m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-5 w-full">
@@ -440,50 +447,54 @@ function HomePage() {
         </div>
       </section>
 
-      {memoizedBuyGroupProducts?.length > 0 && <section className="w-full py-8">
-        <div className="container m-auto px-3">
-          <div className="flex flex-wrap">
-            <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
-              <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
-                  {t("deal_of_the_day")}
-                </h4>
-                {/* <span className="rounded bg-dark-orange px-3 py-1.5 text-sm font-medium capitalize text-white md:px-5 md:py-2.5 md:text-lg">
+      {memoizedBuyGroupProducts?.length > 0 && (
+        <section className="w-full pb-8 pt-0">
+          <div className="container m-auto px-3">
+            <div className="flex flex-wrap">
+              <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
+                <div className="flex flex-wrap items-center justify-start">
+                  <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                    {t("deal_of_the_day")}
+                  </h4>
+                  {/* <span className="rounded bg-dark-orange px-3 py-1.5 text-sm font-medium capitalize text-white md:px-5 md:py-2.5 md:text-lg">
                   End in: 26:22:00:19
                 </span> */}
+                </div>
+                <div className="flex flex-wrap items-center justify-end">
+                  <Link
+                    href="/buygroup"
+                    className="mr-3.5 text-sm font-normal text-black underline sm:mr-0"
+                  >
+                    {t("view_all")}
+                  </Link>
+                </div>
               </div>
-              <div className="flex flex-wrap items-center justify-end">
-                <Link
-                  href="/buygroup"
-                  className="mr-3.5 text-sm font-normal text-black underline sm:mr-0"
-                >
-                  {t("view_all")}
-                </Link>
+              <div className="product-list-s1 w-full">
+                {memoizedBuyGroupProducts.map((item: TrendingProduct) => {
+                  const cartQuantity =
+                    cartList?.find((el: any) => el.productId == item.id)
+                      ?.quantity || 0;
+                  return (
+                    <ProductCard
+                      key={item.id}
+                      item={item}
+                      onWishlist={() =>
+                        handleAddToWishlist(item.id, item?.productWishlist)
+                      }
+                      inWishlist={item?.inWishlist}
+                      haveAccessToken={haveAccessToken}
+                      isInteractive
+                      productQuantity={cartQuantity}
+                      isAddedToCart={cartQuantity > 0}
+                      sold={item.sold}
+                    />
+                  );
+                })}
               </div>
-            </div>
-            <div className="product-list-s1 w-full">
-              {memoizedBuyGroupProducts.map((item: TrendingProduct) => {
-                const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
-                return (
-                  <ProductCard
-                    key={item.id}
-                    item={item}
-                    onWishlist={() =>
-                      handleAddToWishlist(item.id, item?.productWishlist)
-                    }
-                    inWishlist={item?.inWishlist}
-                    haveAccessToken={haveAccessToken}
-                    isInteractive
-                    productQuantity={cartQuantity}
-                    isAddedToCart={cartQuantity > 0}
-                    sold={item.sold}
-                  />
-                );
-              })}
             </div>
           </div>
-        </div>
-      </section>}
+        </section>
+      )}
 
       {/* <section className="w-full py-8">
         <div className="container m-auto px-3">
@@ -573,17 +584,18 @@ function HomePage() {
         </div>
       </section>
 
-      {memoizedHomeDecorProducts?.length > 0 && <section className="w-full py-8">
-        <div className="container m-auto">
-          <div className="flex flex-wrap">
-            <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
-              <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
-                  {t("home_decor")}
-                </h4>
-              </div>
-              <div className="flex flex-wrap items-center justify-start sm:justify-end">
-                {/* <a
+      {memoizedHomeDecorProducts?.length > 0 && (
+        <section className="w-full py-8">
+          <div className="container m-auto">
+            <div className="flex flex-wrap">
+              <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
+                <div className="flex flex-wrap items-center justify-start">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                    {t("home_decor")}
+                  </h4>
+                </div>
+                <div className="flex flex-wrap items-center justify-start sm:justify-end">
+                  {/* <a
                   href="#"
                   className="mr-3.5 text-sm font-normal text-black sm:mr-0"
                 >
@@ -619,61 +631,77 @@ function HomePage() {
                 >
                   Accessories
                 </a> */}
-                <a
-                  onClick={() => {
-                    const categoryId = 203;
-                    const subCategoryIndex = memoizedCategories.findIndex((item: any) => item.id == categoryId);
-                    const item = memoizedCategories.find((item: any) => item.id == categoryId)
-                    categoryStore.setSubCategories(memoizedCategories?.[subCategoryIndex]?.children);
-                    categoryStore.setCategoryId(categoryId.toString());
-                    categoryStore.setSubCategoryIndex(subCategoryIndex);
-                    categoryStore.setSubCategoryParentName(item?.name);
-                    categoryStore.setSubSubCategoryParentName(memoizedCategories?.[subCategoryIndex]?.children?.[0]?.name);
-                    categoryStore.setSubSubCategories(memoizedCategories?.[subCategoryIndex]?.children?.[0]?.children);
-                    categoryStore.setSecondLevelCategoryIndex(0);
-                    categoryStore.setCategoryIds(categoryId.toString())
-                    router.push("/trending");
-                  }}
-                  className="mr-3.5 text-sm font-normal text-black sm:ml-3.5 sm:mr-0 cursor-pointer"
-                >
-                  {t("view_all")}
-                </a>
+                  <a
+                    onClick={() => {
+                      const categoryId = 203;
+                      const subCategoryIndex = memoizedCategories.findIndex(
+                        (item: any) => item.id == categoryId,
+                      );
+                      const item = memoizedCategories.find(
+                        (item: any) => item.id == categoryId,
+                      );
+                      categoryStore.setSubCategories(
+                        memoizedCategories?.[subCategoryIndex]?.children,
+                      );
+                      categoryStore.setCategoryId(categoryId.toString());
+                      categoryStore.setSubCategoryIndex(subCategoryIndex);
+                      categoryStore.setSubCategoryParentName(item?.name);
+                      categoryStore.setSubSubCategoryParentName(
+                        memoizedCategories?.[subCategoryIndex]?.children?.[0]
+                          ?.name,
+                      );
+                      categoryStore.setSubSubCategories(
+                        memoizedCategories?.[subCategoryIndex]?.children?.[0]
+                          ?.children,
+                      );
+                      categoryStore.setSecondLevelCategoryIndex(0);
+                      categoryStore.setCategoryIds(categoryId.toString());
+                      router.push("/trending");
+                    }}
+                    className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                  >
+                    {t("view_all")}
+                  </a>
+                </div>
               </div>
-            </div>
-            <div className="product-list-s1 w-full">
-              {memoizedHomeDecorProducts.map((item: TrendingProduct) => {
-                const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
-                return (
-                  <ProductCard
-                    key={item.id}
-                    item={item}
-                    onWishlist={() =>
-                      handleAddToWishlist(item.id, item?.productWishlist)
-                    }
-                    inWishlist={item?.inWishlist}
-                    haveAccessToken={haveAccessToken}
-                    isInteractive
-                    productQuantity={cartQuantity}
-                    isAddedToCart={cartQuantity > 0}
-                  />
-                );
-              })}
+              <div className="product-list-s1 w-full">
+                {memoizedHomeDecorProducts.map((item: TrendingProduct) => {
+                  const cartQuantity =
+                    cartList?.find((el: any) => el.productId == item.id)
+                      ?.quantity || 0;
+                  return (
+                    <ProductCard
+                      key={item.id}
+                      item={item}
+                      onWishlist={() =>
+                        handleAddToWishlist(item.id, item?.productWishlist)
+                      }
+                      inWishlist={item?.inWishlist}
+                      haveAccessToken={haveAccessToken}
+                      isInteractive
+                      productQuantity={cartQuantity}
+                      isAddedToCart={cartQuantity > 0}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      </section>}
+        </section>
+      )}
 
-      {memoizedFashionBeautyProducts?.length > 0 && <section className="w-full py-8">
-        <div className="container m-auto">
-          <div className="flex flex-wrap">
-            <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
-              <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
-                  {t("fashion_n_beauty")}
-                </h4>
-              </div>
-              <div className="flex flex-wrap items-center justify-start sm:justify-end">
-                {/* <a
+      {memoizedFashionBeautyProducts?.length > 0 && (
+        <section className="w-full py-8">
+          <div className="container m-auto">
+            <div className="flex flex-wrap">
+              <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
+                <div className="flex flex-wrap items-center justify-start">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                    {t("fashion_n_beauty")}
+                  </h4>
+                </div>
+                <div className="flex flex-wrap items-center justify-start sm:justify-end">
+                  {/* <a
                   href="#"
                   className="mr-3.5 text-sm font-normal text-black sm:mr-0"
                 >
@@ -703,61 +731,77 @@ function HomePage() {
                 >
                   Panasonic Refrigerations
                 </a> */}
-                <a
-                  onClick={() => {
-                    const categoryId = 258;
-                    const subCategoryIndex = memoizedCategories.findIndex((item: any) => item.id == categoryId);
-                    const item = memoizedCategories.find((item: any) => item.id == categoryId)
-                    categoryStore.setSubCategories(memoizedCategories?.[subCategoryIndex]?.children);
-                    categoryStore.setCategoryId(categoryId.toString());
-                    categoryStore.setSubCategoryIndex(subCategoryIndex);
-                    categoryStore.setSubCategoryParentName(item?.name);
-                    categoryStore.setSubSubCategoryParentName(memoizedCategories?.[subCategoryIndex]?.children?.[0]?.name);
-                    categoryStore.setSubSubCategories(memoizedCategories?.[subCategoryIndex]?.children?.[0]?.children);
-                    categoryStore.setSecondLevelCategoryIndex(0);
-                    categoryStore.setCategoryIds(categoryId.toString())
-                    router.push("/trending");
-                  }}
-                  className="mr-3.5 text-sm font-normal text-black sm:ml-3.5 sm:mr-0 cursor-pointer"
-                >
-                  {t("view_all")}
-                </a>
+                  <a
+                    onClick={() => {
+                      const categoryId = 258;
+                      const subCategoryIndex = memoizedCategories.findIndex(
+                        (item: any) => item.id == categoryId,
+                      );
+                      const item = memoizedCategories.find(
+                        (item: any) => item.id == categoryId,
+                      );
+                      categoryStore.setSubCategories(
+                        memoizedCategories?.[subCategoryIndex]?.children,
+                      );
+                      categoryStore.setCategoryId(categoryId.toString());
+                      categoryStore.setSubCategoryIndex(subCategoryIndex);
+                      categoryStore.setSubCategoryParentName(item?.name);
+                      categoryStore.setSubSubCategoryParentName(
+                        memoizedCategories?.[subCategoryIndex]?.children?.[0]
+                          ?.name,
+                      );
+                      categoryStore.setSubSubCategories(
+                        memoizedCategories?.[subCategoryIndex]?.children?.[0]
+                          ?.children,
+                      );
+                      categoryStore.setSecondLevelCategoryIndex(0);
+                      categoryStore.setCategoryIds(categoryId.toString());
+                      router.push("/trending");
+                    }}
+                    className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                  >
+                    {t("view_all")}
+                  </a>
+                </div>
               </div>
-            </div>
-            <div className="product-list-s1 w-full">
-              {memoizedFashionBeautyProducts.map((item: TrendingProduct) => {
-                const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
-                return (
-                  <ProductCard
-                    key={item.id}
-                    item={item}
-                    onWishlist={() =>
-                      handleAddToWishlist(item.id, item?.productWishlist)
-                    }
-                    inWishlist={item?.inWishlist}
-                    haveAccessToken={haveAccessToken}
-                    isInteractive
-                    productQuantity={cartQuantity}
-                    isAddedToCart={cartQuantity > 0}
-                  />
-                );
-              })}
+              <div className="product-list-s1 w-full">
+                {memoizedFashionBeautyProducts.map((item: TrendingProduct) => {
+                  const cartQuantity =
+                    cartList?.find((el: any) => el.productId == item.id)
+                      ?.quantity || 0;
+                  return (
+                    <ProductCard
+                      key={item.id}
+                      item={item}
+                      onWishlist={() =>
+                        handleAddToWishlist(item.id, item?.productWishlist)
+                      }
+                      inWishlist={item?.inWishlist}
+                      haveAccessToken={haveAccessToken}
+                      isInteractive
+                      productQuantity={cartQuantity}
+                      isAddedToCart={cartQuantity > 0}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      </section>}
+        </section>
+      )}
 
-      {memoizedConsumerElectronicsProducts.length > 0 && <section className="w-full py-8">
-        <div className="container m-auto">
-          <div className="flex flex-wrap">
-            <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
-              <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
-                  {t("consumer_electronics")}
-                </h4>
-              </div>
-              <div className="flex flex-wrap items-center justify-start sm:justify-end">
-                {/* <a
+      {memoizedConsumerElectronicsProducts.length > 0 && (
+        <section className="w-full py-8">
+          <div className="container m-auto">
+            <div className="flex flex-wrap">
+              <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
+                <div className="flex flex-wrap items-center justify-start">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                    {t("consumer_electronics")}
+                  </h4>
+                </div>
+                <div className="flex flex-wrap items-center justify-start sm:justify-end">
+                  {/* <a
                   href="#"
                   className="mr-3.5 text-sm font-normal text-black sm:mr-0"
                 >
@@ -787,53 +831,73 @@ function HomePage() {
                 >
                   Accessories
                 </a> */}
-                <a
-                  onClick={() => {
-                    const categoryId = 269;
-                    const subCategoryId = 270;
-                    const categoryIds = '269,270';
-                    const subCategoryIndex = memoizedCategories.findIndex((item: any) => item.id == categoryId);
-                    const item = memoizedCategories.find((item: any) => item.id == categoryId)
-                    const children = memoizedCategories?.[subCategoryIndex]?.children || [];
-                    categoryStore.setSubCategories(children);
-                    categoryStore.setSubCategoryIndex(subCategoryIndex);
-                    categoryStore.setSubCategoryParentName(item?.name);
-                    const itemSubCategory = children.find((item: any) => item.id == subCategoryId);
-                    categoryStore.setSubSubCategoryParentName(itemSubCategory?.name);
-                    categoryStore.setSubSubCategories(itemSubCategory?.children);
-                    categoryStore.setSecondLevelCategoryIndex(children.findIndex((item: any) => item.id == subCategoryId));
-                    categoryStore.setCategoryId(subCategoryId.toString());
-                    categoryStore.setCategoryIds(categoryIds);
-                    router.push("/trending");
-                  }}
-                  className="mr-3.5 text-sm font-normal text-black sm:ml-3.5 sm:mr-0 cursor-pointer"
-                >
-                  {t("view_all")}
-                </a>
+                  <a
+                    onClick={() => {
+                      const categoryId = 269;
+                      const subCategoryId = 270;
+                      const categoryIds = "269,270";
+                      const subCategoryIndex = memoizedCategories.findIndex(
+                        (item: any) => item.id == categoryId,
+                      );
+                      const item = memoizedCategories.find(
+                        (item: any) => item.id == categoryId,
+                      );
+                      const children =
+                        memoizedCategories?.[subCategoryIndex]?.children || [];
+                      categoryStore.setSubCategories(children);
+                      categoryStore.setSubCategoryIndex(subCategoryIndex);
+                      categoryStore.setSubCategoryParentName(item?.name);
+                      const itemSubCategory = children.find(
+                        (item: any) => item.id == subCategoryId,
+                      );
+                      categoryStore.setSubSubCategoryParentName(
+                        itemSubCategory?.name,
+                      );
+                      categoryStore.setSubSubCategories(
+                        itemSubCategory?.children,
+                      );
+                      categoryStore.setSecondLevelCategoryIndex(
+                        children.findIndex(
+                          (item: any) => item.id == subCategoryId,
+                        ),
+                      );
+                      categoryStore.setCategoryId(subCategoryId.toString());
+                      categoryStore.setCategoryIds(categoryIds);
+                      router.push("/trending");
+                    }}
+                    className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                  >
+                    {t("view_all")}
+                  </a>
+                </div>
+              </div>
+              <div className="product-list-s1 w-full">
+                {memoizedConsumerElectronicsProducts.map(
+                  (item: TrendingProduct) => {
+                    const cartQuantity =
+                      cartList?.find((el: any) => el.productId == item.id)
+                        ?.quantity || 0;
+                    return (
+                      <ProductCard
+                        key={item.id}
+                        item={item}
+                        onWishlist={() =>
+                          handleAddToWishlist(item.id, item?.productWishlist)
+                        }
+                        inWishlist={item?.inWishlist}
+                        haveAccessToken={haveAccessToken}
+                        isInteractive
+                        productQuantity={cartQuantity}
+                        isAddedToCart={cartQuantity > 0}
+                      />
+                    );
+                  },
+                )}
               </div>
             </div>
-            <div className="product-list-s1 w-full">
-              {memoizedConsumerElectronicsProducts.map((item: TrendingProduct) => {
-                const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
-                return (
-                  <ProductCard
-                    key={item.id}
-                    item={item}
-                    onWishlist={() =>
-                      handleAddToWishlist(item.id, item?.productWishlist)
-                    }
-                    inWishlist={item?.inWishlist}
-                    haveAccessToken={haveAccessToken}
-                    isInteractive
-                    productQuantity={cartQuantity}
-                    isAddedToCart={cartQuantity > 0}
-                  />
-                );
-              })}
-            </div>
           </div>
-        </div>
-      </section>}
+        </section>
+      )}
 
       <Footer />
     </>
