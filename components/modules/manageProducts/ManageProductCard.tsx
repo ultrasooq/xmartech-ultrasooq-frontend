@@ -468,13 +468,18 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                   {/* For Stock */}
                   <div className="flex flex-wrap space-y-1">
-                    <div className="flex items-center justify-start gap-2 text-black" dir={langDir}>
+                    <div
+                      className="flex items-center justify-start gap-2 text-black"
+                      dir={langDir}
+                    >
                       <input
                         type="checkbox"
                         className="h-[20px] w-[20px]"
                         defaultChecked={askForStock === "false"} // Checkbox is checked when askForStock is false
                       />
-                      <div className="text-[12px] font-semibold">{t("stock")}</div>
+                      <div className="text-[12px] font-semibold">
+                        {t("stock")}
+                      </div>
                     </div>
                     {askForStock === "false" ? (
                       <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -508,13 +513,18 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
 
                   <div className="flex flex-wrap space-y-1">
-                    <div className="flex items-center justify-start gap-2 text-black" dir={langDir}>
+                    <div
+                      className="flex items-center justify-start gap-2 text-black"
+                      dir={langDir}
+                    >
                       <input
                         type="checkbox"
                         className="h-[20px] w-[20px]"
                         defaultChecked={askForPrice === "false"} // Checkbox is checked when askForStock is false
                       />
-                      <div className="text-[12px] font-semibold" dir={langDir}>{t("price")}</div>
+                      <div className="text-[12px] font-semibold" dir={langDir}>
+                        {t("price")}
+                      </div>
                     </div>
                     {askForStock === "false" ? (
                       <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -529,7 +539,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                           type="text"
                           value={productPrice}
                           className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                          onChange={(e) => setProductPrice(Number(e.target.value))}
+                          onChange={(e) =>
+                            setProductPrice(Number(e.target.value))
+                          }
                         />
                         <a
                           href="javascript:void(0)"
@@ -590,8 +602,12 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         defaultValue={initialCondition} // Bind the selected value to the state
                         onChange={(e) => setCondition(e.target.value)} // Update the state when the value changes
                       >
-                        <option value={"NEW"} dir={langDir}>{t("new")}</option>
-                        <option value={"OLD"} dir={langDir}>{t("old")}</option>
+                        <option value={"NEW"} dir={langDir}>
+                          {t("new")}
+                        </option>
+                        <option value={"OLD"} dir={langDir}>
+                          {t("old")}
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -688,7 +704,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                   <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold">{t("time_open")}</div>
+                      <div className="text-[12px] font-semibold">
+                        {t("time_open")}
+                      </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                       <a
@@ -765,15 +783,21 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         {t("consumer_type")}
                       </div>
                     </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2 md:w-[60%]">
+                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2 text-sm md:w-[60%]">
                       <select
                         className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
                         defaultValue={initialConsumerType} // Bind the selected value to the state
                         onChange={(e) => setConsumer(e.target.value)} // Update the state when the value changes
                       >
-                        <option value={"CONSUMER"} dir={langDir}>{t("consumer")}</option>
-                        <option value={"VENDORS"} dir={langDir}>{t("vendor")}</option>
-                        <option value={"EVERYONE"} dir={langDir}>{t("everyone")}</option>
+                        <option value={"CONSUMER"} dir={langDir}>
+                          {t("consumer")}
+                        </option>
+                        <option value={"VENDORS"} dir={langDir}>
+                          {t("vendor")}
+                        </option>
+                        <option value={"EVERYONE"} dir={langDir}>
+                          {t("everyone")}
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -795,17 +819,25 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
                   <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex w-[40%] items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold">{t("sell_type")}</div>
+                      <div className="text-[12px] font-semibold">
+                        {t("sell_type")}
+                      </div>
                     </div>
-                    <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2 text-sm">
                       <select
                         className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
                         defaultValue={initialSellType} // Bind the selected value to the state
                         onChange={(e) => setSell(e.target.value)} // Update the state when the value changes
                       >
-                        <option value={"NORMALSELL"} dir={langDir}>{t("normal_sell")}</option>
-                        <option value={"BUYGROUP"} dir={langDir}>{t("buy_group")}</option>
-                        <option value={"EVERYONE"} dir={langDir}>{t("everyone")}</option>
+                        <option value={"NORMALSELL"} dir={langDir}>
+                          {t("normal_sell")}
+                        </option>
+                        <option value={"BUYGROUP"} dir={langDir}>
+                          {t("buy_group")}
+                        </option>
+                        <option value={"EVERYONE"} dir={langDir}>
+                          {t("everyone")}
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -859,7 +891,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         type="text"
                         value={consumerDiscount}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setConsumerDiscount(Number(e.target.value))}
+                        onChange={(e) =>
+                          setConsumerDiscount(Number(e.target.value))
+                        }
                       />
                       <a
                         href="javascript:void(0)"
@@ -1013,7 +1047,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         type="text"
                         value={minQuantityPerCustomer}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setMinQuantityCustomer(Number(e.target.value))}
+                        onChange={(e) =>
+                          setMinQuantityCustomer(Number(e.target.value))
+                        }
                       />
                       <a
                         href="javascript:void(0)"
@@ -1042,7 +1078,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         type="text"
                         value={maxQuantityPerCustomer}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setMaxQuantityCustomer(Number(e.target.value))}
+                        onChange={(e) =>
+                          setMaxQuantityCustomer(Number(e.target.value))
+                        }
                       />
                       <a
                         href="javascript:void(0)"

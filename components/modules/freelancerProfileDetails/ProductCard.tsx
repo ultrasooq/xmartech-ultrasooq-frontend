@@ -212,7 +212,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </div>
             ) : null
           ) : null}
-          <div className="relative mx-auto mb-4 h-36 w-36">
+          <div className="relative mx-auto mb-4 h-[110px] w-full md:h-36 md:w-36">
             <Image
               src={
                 item?.productImage && validator.isURL(item.productImage)
@@ -224,7 +224,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               sizes="(max-width: 768px) 100vw,
               (max-width: 1200px) 50vw,
               33vw"
-              className="object-contain"
+              className="object-cover"
               blurDataURL="/images/product-placeholder.png"
               placeholder="blur"
             />
