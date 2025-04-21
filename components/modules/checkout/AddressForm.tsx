@@ -8,7 +8,12 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
-import { useAllCountries, useCountries, useFetchCitiesByState, useFetchStatesByCountry } from "@/apis/queries/masters.queries";
+import {
+  useAllCountries,
+  useCountries,
+  useFetchCitiesByState,
+  useFetchStatesByCountry,
+} from "@/apis/queries/masters.queries";
 import { useToast } from "@/components/ui/use-toast";
 import {
   useAddAddress,
@@ -121,8 +126,8 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
     defaultValues: defaultValues,
   });
 
-  const [states, setStates] = useState<{ label: string; value: number; }[]>([]);
-  const [cities, setCities] = useState<{ label: string; value: number; }[]>([]);
+  const [states, setStates] = useState<{ label: string; value: number }[]>([]);
+  const [cities, setCities] = useState<{ label: string; value: number }[]>([]);
   const [selectedCountryId, setSelectedCountryId] = useState<number>();
   const [selectedStateId, setSelectedStateId] = useState<number>();
   const countriesQuery = useAllCountries();
@@ -137,17 +142,23 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   );
 
   const memoizedCountries = useMemo(() => {
-    return countriesQuery?.data?.data?.map((country: any) => {
-      return { label: country.name, value: country.id }
-    }) || [];
+    return (
+      countriesQuery?.data?.data?.map((country: any) => {
+        return { label: country.name, value: country.id };
+      }) || []
+    );
   }, [countriesQuery?.data?.data]);
 
   const fetchStatesByCountry = async () => {
     if (selectedCountryId) {
-      let data = await statesQuery.mutateAsync({ countryId: selectedCountryId });
-      setStates(data?.data?.map((state: any) => {
-        return { label: state.name, value: state.id };
-      }) || []);
+      let data = await statesQuery.mutateAsync({
+        countryId: selectedCountryId,
+      });
+      setStates(
+        data?.data?.map((state: any) => {
+          return { label: state.name, value: state.id };
+        }) || [],
+      );
     }
   };
 
@@ -158,9 +169,11 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   const fetchCitiesByState = async () => {
     if (selectedStateId) {
       let data = await citiesQuery.mutateAsync({ stateId: selectedStateId });
-      setCities(data?.data?.map((city: any) => {
-        return { label: city.name, value: city.id };
-      }) || []);
+      setCities(
+        data?.data?.map((city: any) => {
+          return { label: city.name, value: city.id };
+        }) || [],
+      );
     }
   };
 
@@ -227,7 +240,8 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
         town: addressDetails?.town,
         postCode: addressDetails?.postCode,
       });
-      if (addressDetails?.countryId) setSelectedCountryId(addressDetails.countryId);
+      if (addressDetails?.countryId)
+        setSelectedCountryId(addressDetails.countryId);
       if (addressDetails?.stateId) setSelectedStateId(addressDetails.stateId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -245,7 +259,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
         </DialogTitle>
         <Button
           onClick={onClose}
-          className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+          className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
         >
           <IoCloseSharp size={20} />
         </Button>
@@ -255,7 +269,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="card-item card-payment-form px-5 pb-5 pt-3"
         >
-          <input type="text" name="countryId" style={{display: 'none'}}/>
+          <input type="text" name="countryId" style={{ display: "none" }} />
           <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2">
             <ControlledTextInput
               label={t("first_name")}
@@ -272,7 +286,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             />
           </div>
 
-          <div className="mt-2 grid w-full grid-cols-1 gap-1 md:grid-cols-1">
+          <div className="relative z-[99999999] mt-2 grid w-full grid-cols-1 gap-1 md:grid-cols-1">
             <ControlledPhoneInput
               label={t("phone_number")}
               name="phoneNumber"
@@ -290,7 +304,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             />
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 mt-3">
+          <div className="mt-3 grid w-full grid-cols-1 gap-1 md:grid-cols-2">
             <div style={{ zIndex: 9999999 }}>
               <Label>{t("country")}</Label>
               <Controller
@@ -299,22 +313,29 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
                 render={({ field }) => (
                   <Select
                     options={memoizedCountries}
-                    value={memoizedCountries.find((country: any) => country.value == field.value)}
-                    onChange={(selectedOption: SingleValue<{ label: string, value: string }>) => {
+                    value={memoizedCountries.find(
+                      (country: any) => country.value == field.value,
+                    )}
+                    onChange={(
+                      selectedOption: SingleValue<{
+                        label: string;
+                        value: string;
+                      }>,
+                    ) => {
                       field.onChange(selectedOption?.value);
                       setSelectedCountryId(Number(selectedOption?.value));
                     }}
                     instanceId="countryId"
                     placeholder={t("select")}
                     styles={customStyles}
-                    isRtl={langDir == 'rtl'}
+                    isRtl={langDir == "rtl"}
                     // @ts-ignore
-                    onFocus={(e) => e.target.autocomplete = 'none'}
+                    onFocus={(e) => (e.target.autocomplete = "none")}
                   />
                 )}
               />
               <p className="text-[13px] text-red-500" dir={langDir}>
-                {form.formState.errors?.countryId?.message || ''}
+                {form.formState.errors?.countryId?.message || ""}
               </p>
             </div>
 
@@ -328,27 +349,32 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
                     // @ts-ignore
                     options={states}
                     // @ts-ignore
-                    value={states.find(state => state.value == field.value)}
-                    onChange={(selectedOption: SingleValue<{ label: string, value: string }>) => {
+                    value={states.find((state) => state.value == field.value)}
+                    onChange={(
+                      selectedOption: SingleValue<{
+                        label: string;
+                        value: string;
+                      }>,
+                    ) => {
                       field.onChange(selectedOption?.value);
                       setSelectedStateId(Number(selectedOption?.value));
                     }}
                     instanceId="stateId"
                     placeholder={t("select")}
                     styles={customStyles}
-                    isRtl={langDir == 'rtl'}
+                    isRtl={langDir == "rtl"}
                     // @ts-ignore
-                    onFocus={(e) => e.target.autocomplete = 'none'}
+                    onFocus={(e) => (e.target.autocomplete = "none")}
                   />
                 )}
               />
               <p className="text-[13px] text-red-500" dir={langDir}>
-                {form.formState.errors?.stateId?.message || ''}
+                {form.formState.errors?.stateId?.message || ""}
               </p>
             </div>
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 mt-3">
+          <div className="mt-3 grid w-full grid-cols-1 gap-1 md:grid-cols-2">
             <div style={{ zIndex: 99999 }}>
               <Label>{t("city")}</Label>
               <Controller
@@ -359,21 +385,24 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
                     // @ts-ignore
                     options={cities}
                     // @ts-ignore
-                    value={cities.find(city => city.value == field.value)}
-                    onChange={(selectedOption: SingleValue<{ label: string, value: string }>) =>
-                      field.onChange(selectedOption?.value)
-                    }
+                    value={cities.find((city) => city.value == field.value)}
+                    onChange={(
+                      selectedOption: SingleValue<{
+                        label: string;
+                        value: string;
+                      }>,
+                    ) => field.onChange(selectedOption?.value)}
                     instanceId="cityId"
                     placeholder={t("select")}
                     styles={customStyles}
-                    isRtl={langDir == 'rtl'}
+                    isRtl={langDir == "rtl"}
                     // @ts-ignore
-                    onFocus={(e) => e.target.autocomplete = 'none'}
+                    onFocus={(e) => (e.target.autocomplete = "none")}
                   />
                 )}
               />
               <p className="text-[13px] text-red-500" dir={langDir}>
-                {form.formState.errors?.cityId?.message || ''}
+                {form.formState.errors?.cityId?.message || ""}
               </p>
             </div>
 
@@ -391,7 +420,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             </div>
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 mt-3">
+          <div className="mt-3 grid w-full grid-cols-1 gap-1 md:grid-cols-2">
             <div>
               <Label>{t("postcode")}</Label>
               <ControlledTextInput
@@ -409,7 +438,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
           <Button
             disabled={createAddress.isPending || updateAddress.isPending}
             type="submit"
-            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-3"
+            className="theme-primary-btn mt-3 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
             dir={langDir}
           >
             {createAddress.isPending || updateAddress.isPending ? (
