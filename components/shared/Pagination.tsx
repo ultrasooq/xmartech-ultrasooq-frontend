@@ -7,6 +7,7 @@ import NextIcon from "@/public/images/pagination-next.svg";
 import LastIcon from "@/public/images/pagination-last.svg";
 import ReactPaginate from "react-paginate";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type PaginationProps = {
   // data: [];
@@ -24,6 +25,7 @@ const Pagination: React.FC<PaginationProps> = ({
   limit,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const itemsPerPage = limit;
   // const [itemOffset, setItemOffset] = useState(0);
   // const endOffset = itemOffset + itemsPerPage;
@@ -54,6 +56,7 @@ const Pagination: React.FC<PaginationProps> = ({
             height={0}
             width={0}
             className="h-auto w-[7px]"
+            dir={langDir}
           />
           {t("first")}
         </Button>
@@ -100,6 +103,7 @@ const Pagination: React.FC<PaginationProps> = ({
           type="button"
           className="theme-primary-btn last"
           onClick={() => setPage(pageCount)}
+          dir={langDir}
         >
           {t("last")}
           <Image

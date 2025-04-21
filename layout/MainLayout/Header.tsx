@@ -7,10 +7,10 @@ import React, {
   useTransition,
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { deleteCookie, getCookie } from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DialogTitle } from "@/components/ui/dialog";
-import { PUREMOON_TOKEN_KEY, menuBarIconList } from "@/utils/constants";
+import { CURRENCIES, LANGUAGES, PUREMOON_TOKEN_KEY, menuBarIconList } from "@/utils/constants";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,6 +61,7 @@ import QueryForm from "@/components/modules/QueryForm";
 import { useTranslations } from "next-intl";
 import { cookies } from "next/headers";
 import { setUserLocale } from "@/src/services/locale";
+import { fetchIpInfo } from "@/apis/requests/ip.requests";
 
 type CategoryProps = {
   id: number;
@@ -101,16 +102,15 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
 
 const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const t = useTranslations();
-  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
-  //  const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
   const permissions: string[] = getPermissions();
   const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [menuId, setMenuId] = useState();
+  const [menuId, setMenuId] = useState<string | number>();
   const [categoryId, setCategoryId] = useState();
   const [assignedToId, setAssignedToId] = useState();
   // const [subCategoryId, setSubCategoryId] = useState();
@@ -119,7 +119,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
-  const { clearUser, applyTranslation } = useAuth();
+  const { clearUser, applyTranslation, langDir, changeCurrency } = useAuth();
   const wishlistCount = useWishlistCount(hasAccessToken);
   const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
   const cartCountWithoutLogin = useCartCountWithoutLogin(
@@ -134,13 +134,19 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     !!categoryId,
   );
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(searchParams?.get('term') || '');
 
   const [isActive, setIsActive] = useState(false);
 
   const handleClick = () => {
     setIsActive(!isActive);
   };
+
+  const [selectedLocale, setSelectedLocale] = useState<string>(locale || "en");
+  const languages = [...LANGUAGES];
+
+  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+  const currencies = [...CURRENCIES];
 
   // Debounced function to update URL
   const updateURL = debounce((newTerm) => {
@@ -184,11 +190,6 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
         },
       );
     }
-    tempArr.unshift({
-      name: t("home"),
-      id: 0,
-      icon: menuBarIconList[0],
-    });
 
     return tempArr || [];
   }, [categoryQuery.data?.data]);
@@ -211,28 +212,6 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     return tempArr || [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subCategoryQuery.data?.data, categoryId]);
-
-  // const memoizedSubCategory = useMemo(() => {
-  //   let tempArr: any = [];
-  //   if (memoizedCategory.length) {
-  //     tempArr = memoizedCategory?.find(
-  //       (item: any) => item.id === categoryId,
-  //     )?.children;
-  //   }
-  //   return tempArr || [];
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [categoryId, menuId]);
-
-  // const memoizedSubSubCategory = useMemo(() => {
-  //   let tempArr: any = [];
-  //   if (memoizedSubCategory.length) {
-  //     tempArr = memoizedSubCategory?.find(
-  //       (item: any) => item.id === subCategoryId,
-  //     )?.children;
-  //   }
-  //   return tempArr || [];
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [subCategoryId, categoryId, menuId]);
 
   const handleProfile = () => {
     switch (me?.data?.data?.tradeRole) {
@@ -264,7 +243,6 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       variant: "success",
     });
 
-    // router.push(data?.url || "/home");
     router.push("/home");
   };
 
@@ -299,6 +277,67 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     }
   }, [isClickedOutside]);
 
+  useEffect(() => {
+    const getIpInfo = async () => {
+      try {
+        if (!window?.localStorage?.ipInfo || getCookie('ipInfoLoaded') != '1') {
+          const response = await fetchIpInfo();
+
+          const ip = response.data.ip;
+          if (ip) {
+            let savedIpInfo = JSON.parse(window.localStorage.getItem('ipInfo') || "{}");
+            if (!savedIpInfo.ip || (savedIpInfo.ip && savedIpInfo.ip != ip)) {
+              window.localStorage.setItem('ipInfo', JSON.stringify(response.data));
+
+              let localeKey = response.data.languages.split(',')[0];
+              if (localeKey.substr(0, 2) == 'en') {
+                localeKey = 'en';
+              }
+              window.localStorage.setItem('locale', localeKey);
+              applyTranslation(localeKey);
+    
+              setSelectedCurrency(response.data.currency || 'USD');
+              window.localStorage.setItem('currency', response.data.currency || 'USD');
+              changeCurrency(response.data.currency || 'USD');
+            }
+
+            setCookie('ipInfoLoaded', '1');
+          }
+
+        } else {
+          setSelectedCurrency(window.localStorage.currency || 'USD');
+          changeCurrency(window.localStorage.currency || 'USD');
+        }
+      } catch (error) {
+
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      getIpInfo();
+    }
+
+    let elem = document.querySelector('.goog-te-combo');
+    if (elem) {
+      // @ts-ignore
+      elem.value = e.target.value;
+      elem.dispatchEvent(new Event('change'));
+      setTimeout(() => {
+        let elem = document.querySelector('.goog-te-combo');
+        // @ts-ignore
+        if (elem && !elem.value) {
+          // @ts-ignore
+          elem.value = 'ar';
+          elem.dispatchEvent(new Event('change'));
+        }
+      }, 1000)
+    }
+  }, [])
+
+  useEffect(() => {
+    setSearchTerm(searchParams?.get('term') || '');
+  }, [searchParams]);
+
   const hideMenu = (permissionName: string): boolean => {
     if (
       me?.data?.data?.tradeRole === "MEMBER" &&
@@ -316,38 +355,61 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           <div className="container m-auto px-3 pt-3">
             <div className="hidden sm:hidden md:flex md:gap-x-2.5">
               <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
-                <p>{t("welcome")}</p>
+                <p dir={langDir}>{t("welcome")}</p>
               </div>
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <a href="#">{t("store_location")}</a>
+                    <a href="#" dir={langDir}>{t("store_location")}</a>
                   </li>
                   {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <Link href="/my-orders">{t("track_your_order")}</Link>
+                    <Link href="/my-orders" dir={langDir}>{t("track_your_order")}</Link>
                   </li>
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <select className="border-0 bg-transparent text-white focus:outline-none">
-                      <option className="bg-dark-cyan">USD</option>
-                      <option className="bg-dark-cyan">INR</option>
-                      <option className="bg-dark-cyan">AUD</option>
+                    <select className="border-0 bg-transparent text-white focus:outline-none" value={selectedCurrency} 
+                      onChange={(e: any) => {
+                        setSelectedCurrency(e.target?.value || 'USD');
+                        window.localStorage.setItem('currency', e.target?.value || 'USD');
+                        changeCurrency(e.target.value || 'USD');
+                      }}
+                    >
+                      {currencies.map((item: { code: string }) => {
+                        return <option className="bg-dark-cyan" value={item.code} key={item.code}>
+                          {item.code}
+                        </option>
+                      })}
                     </select>
                   </li>
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
-                    {/* <GoogleTranslate /> */}
-                    <select
-                      className="border-0 bg-transparent text-white focus:outline-none"
-                      defaultValue={locale}
-                      onChange={(e) => applyTranslation(e.target.value)}
+                    <GoogleTranslate />
+                    <select className="border-0 bg-transparent text-white focus:outline-none" value={selectedLocale}
+                      onChange={(e) => {
+                        setSelectedLocale(e.target.value);
+                        applyTranslation(e.target.value)
+                        let elem = document.querySelector('.goog-te-combo');
+                        if (elem) {
+                          // @ts-ignore
+                          elem.value = e.target.value;
+                          elem.dispatchEvent(new Event('change'));
+                          setTimeout(() => {
+                            let elem = document.querySelector('.goog-te-combo');
+                            // @ts-ignore
+                            if (elem && !elem.value) {
+                              // @ts-ignore
+                              elem.value = 'ar';
+                              elem.dispatchEvent(new Event('change'));
+                            }
+                          }, 1000)
+                        }
+                      }}
                     >
-                      <option className="bg-dark-cyan" value="en">
-                        English
-                      </option>
-                      <option className="bg-dark-cyan" value="ar">
-                        Arabic
-                      </option>
+                      {languages.map((language: { locale: string, name: string }) => {
+                        return <option className="bg-dark-cyan" key={language.locale} value={language.locale}>
+                          {language.name}
+                        </option>
+                      })}
                       {/* <option className="bg-dark-cyan">German</option>
                       <option className="bg-dark-cyan">French</option> */}
                     </select>
@@ -383,6 +445,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={handleKeyDown} // Calls search when Enter is pressed
+                    dir={langDir}
                   />
                 </div>
                 <div className="h-11 w-1/4 md:w-1/6">
@@ -390,6 +453,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     type="button"
                     className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
                     onClick={() => updateURL(searchTerm)} // Update URL when clicking search
+                    dir={langDir}
                   >
                     {t("search")}
                   </button>
@@ -456,7 +520,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                           <Link href={handleProfile()}>
-                            <DropdownMenuItem className="cursor-pointer">
+                            <DropdownMenuItem className="cursor-pointer" dir={langDir}>
                               {t("profile_information")}
                             </DropdownMenuItem>
                           </Link>
@@ -465,14 +529,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             <>
                               {hideMenu(PERMISSION_TEAM_MEMBERS) && (
                                 <Link href="/team-members">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("team_members")}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_PRODUCTS) && (
                                 <Link href="/manage-products">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("products")}
                                   </DropdownMenuItem>
                                 </Link>
@@ -480,7 +544,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_ORDERS) && (
                                 <Link href="/seller-orders">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("orders")}
                                   </DropdownMenuItem>
                                 </Link>
@@ -488,7 +552,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_QUOTES) && (
                                 <Link href="/rfq-quotes">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("rfq_quotes")}
                                   </DropdownMenuItem>
                                 </Link>
@@ -496,14 +560,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
                                 <Link href="/seller-rfq-request">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("rfq_seller_requests")}
                                   </DropdownMenuItem>
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_SELLER_REWARDS) && (
                                 <Link href="/seller-rewards">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem dir={langDir}>
                                     {t("seller_rewards")}
                                   </DropdownMenuItem>
                                 </Link>
@@ -513,24 +577,28 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           ) : null}
                           {hideMenu(PERMISSION_SHARE_LINKS) && (
                             <Link href="/share-links">
-                              <DropdownMenuItem>
+                              <DropdownMenuItem dir={langDir}>
                                 {t("share_links")}
                               </DropdownMenuItem>
                             </Link>
                           )}
                           <Link href="/my-settings/address">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem dir={langDir}>
                               {t("my_settings")}
                             </DropdownMenuItem>
                           </Link>
+                          <Link href="/transactions">
+                            <DropdownMenuItem dir={langDir}>{t("transactions")}</DropdownMenuItem>
+                          </Link>
                           <Link href="/queries">
-                            <DropdownMenuItem>{t("queries")}</DropdownMenuItem>
+                            <DropdownMenuItem dir={langDir}>{t("queries")}</DropdownMenuItem>
                           </Link>
                           <DropdownMenuSeparator />
                           {/* <DropdownMenuSeparator /> */}
                           <DropdownMenuItem
                             onClick={handleLogout}
                             className="cursor-pointer"
+                            dir={langDir}
                           >
                             {t("logout")}
                           </DropdownMenuItem>
@@ -548,12 +616,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           <Link
                             href="/login"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
+                            dir={langDir}
                           >
                             {t("login")}
                           </Link>
                           <Link
                             href="/register"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
+                            dir={langDir}
                           >
                             {t("register")}
                           </Link>
@@ -578,6 +648,25 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 <IoCloseOutline />
               </div>
               <div className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-between">
+                <ButtonLink
+                  key={0}
+                  onClick={() => {
+                    setMenuId(0);
+                    router.push('/home')
+                  }}
+                  href="/home"
+                >
+                  <div className="flex gap-x-3" onClick={handleClick}>
+                    <Image
+                      src={menuBarIconList[0]}
+                      alt={t("home")}
+                      height={0}
+                      width={0}
+                      className="h-7 w-7"
+                    />{" "}
+                    {t("home")}
+                  </div>
+                </ButtonLink>
                 {memoizedMenu.map((item: any) => (
                   <>
                     <ButtonLink
@@ -647,7 +736,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             <div className="relative flex flex-row flex-wrap md:flex-nowrap">
               <div className="flex w-full flex-1 flex-wrap gap-x-3 md:w-auto md:gap-x-5">
                 <div className="dropdown">
-                  <button className="dropbtn flex items-center">
+                  {(pathname == '/trending' || pathname == '/buygroup') && <button className="dropbtn flex items-center">
                     <div>
                       <Image src={HamburgerIcon} alt="hamburger-icon" />
                     </div>
@@ -660,9 +749,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         alt="hamburger-down-icon"
                       />
                     </div>
-                  </button>
+                  </button>}
 
-                  {memoizedSubCategory?.length ? (
+                  {(pathname == '/trending' || pathname == '/buygroup') && memoizedSubCategory?.length ? (
                     <div className="dropdown-content">
                       {memoizedSubCategory?.map(
                         (item: CategoryProps, index: number) => (
@@ -699,6 +788,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
                               //reset for second level category active index
                               category.setSecondLevelCategoryIndex(0);
+
+                              category.setCategoryIds(item?.id.toString())
                             }}
                           >
                             {item?.icon ? (
@@ -723,7 +814,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </div>
                   ) : null}
 
-                  {memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
+                  {(pathname == '/trending' || pathname == '/buygroup') && memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                     <div className="dropdown-content-second">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
                         (item: CategoryProps, index: number) => (
@@ -755,6 +846,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 category.setSubCategories([]);
                                 category.setSubCategoryParentName("");
                               }
+                              category.setCategoryIds([
+                                memoizedSubCategory?.[subCategoryIndex]?.id.toString(),
+                                item?.id.toString()
+                              ].join(','))
                             }}
                           >
                             {item?.icon ? (
@@ -779,7 +874,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </div>
                   ) : null}
 
-                  {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                  {(pathname == '/trending' || pathname == '/buygroup') && memoizedSubCategory?.[subCategoryIndex]?.children?.[
                     subSubCategoryIndex
                   ]?.children?.length ? (
                     <div className="dropdown-content-third p-3">
@@ -811,7 +906,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               onClick={() => {
                                 setSubSubSubCategoryIndex(index);
                                 category.setCategoryId(item?.id.toString());
+                                category.setCategoryIds([
+                                  memoizedSubCategory?.[subCategoryIndex]?.id.toString(),
+                                  memoizedSubCategory?.[subCategoryIndex]?.children?.[subSubCategoryIndex]?.id.toString(),
+                                  item?.id.toString()
+                                ].join(','))
                               }}
+
                             >
                               <div className="relative h-8 w-8">
                                 {item?.icon ? (
@@ -841,7 +942,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   ) : null}
                 </div>
 
-                <div className="flex items-center gap-x-1 md:gap-x-5">
+                {(pathname == '/trending' || pathname == '/buygroup') && <div className="flex items-center gap-x-1 md:gap-x-5">
                   {memoizedCategory.map((item: any) => (
                     <Button
                       type="button"
@@ -866,7 +967,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       <p>{item.name}</p>
                     </Button>
                   ))}
-                </div>
+                </div>}
               </div>
 
               <div className="flex w-full items-center justify-end md:w-auto">

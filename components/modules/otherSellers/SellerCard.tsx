@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React from "react";
@@ -38,10 +39,11 @@ const SellerCard: React.FC<SellerCardProps> = ({
   onChooseSeller,
 }) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   return (
@@ -49,7 +51,7 @@ const SellerCard: React.FC<SellerCardProps> = ({
       <div className="grid w-full grid-cols-3 border-b border-solid border-gray-300">
         <div>
           <div className="h-[57px] w-full border-b border-solid border-gray-300 px-3 py-4">
-            <span>{t("seller")}</span>
+            <span dir={langDir}>{t("seller")}</span>
           </div>
           <div className="w-full px-3 py-4">
             <Link
@@ -66,7 +68,7 @@ const SellerCard: React.FC<SellerCardProps> = ({
               </h4>
             </Link>
             <ul>
-              <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']">
+              <li className="relative my-2 pl-4 text-sm font-normal before:absolute before:left-0 before:top-[7px] before:h-[6px] before:w-[6px] before:rounded before:bg-slate-400 before:content-['']" dir={langDir}>
                 {t("product_location")}: {productLocation || "N/A"}
               </li>
             </ul>
@@ -75,17 +77,17 @@ const SellerCard: React.FC<SellerCardProps> = ({
         {askForPrice !== "true" ? (
           <div>
             <div className="h-[57px] w-full border-b border-solid border-gray-300 px-3 py-4">
-              <span>Price</span>
+              <span dir={langDir}>{t("price")}</span>
             </div>
             <div className="w-full px-3 py-4">
               <div className="flex w-full items-end">
                 <span className="text-md font-medium text-black">
                   {calculateDiscountedPrice
-                    ? `$${calculateDiscountedPrice()}`
-                    : `$${0}`}
+                    ? `${currency.symbol}${calculateDiscountedPrice()}`
+                    : `${currency.symbol}${0}`}
                 </span>
                 <span className="ml-2 text-sm font-medium text-light-gray line-through">
-                  {productProductPrice ? `$${productProductPrice}` : `$${0}`}
+                  {productProductPrice ? `${currency.symbol}${productProductPrice}` : `${currency.symbol}${0}`}
                 </span>
               </div>
             </div>
@@ -98,9 +100,9 @@ const SellerCard: React.FC<SellerCardProps> = ({
           <div className="w-full px-3 py-4">
             <div className="my-2 flex w-full text-sm font-medium">
               {deliveryAfter ? (
-                <p>{t("delivery_days_after").replace("{after}", String(deliveryAfter))}</p>
+                <p dir={langDir}>{t("delivery_days_after").replace("{after}", String(deliveryAfter))}</p>
               ) : (
-                <p>{t("no_delivery_days")}</p>
+                <p dir={langDir}>{t("no_delivery_days")}</p>
               )}
             </div>
           </div>
@@ -112,6 +114,7 @@ const SellerCard: React.FC<SellerCardProps> = ({
           <button
             onClick={onChooseSeller}
             className="whitespace-nowrap rounded-sm bg-gray-500 px-6 py-3 text-sm font-bold capitalize text-white"
+            dir={langDir}
           >
             {t("choose_seller")}
           </button>
@@ -121,18 +124,20 @@ const SellerCard: React.FC<SellerCardProps> = ({
               <button
                 onClick={onAdd}
                 className="inline-block rounded-sm bg-dark-orange px-6 py-3 text-sm font-bold capitalize text-white"
+                dir={langDir}
               >
                 {t("add_to_cart").toUpperCase()}
               </button>
               <button
                 onClick={onToCheckout}
                 className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white"
+                dir={langDir}
               >
                 {t("buy_now").toUpperCase()}
               </button>
             </div>
           ) : (
-            <button className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white">
+            <button className="inline-block rounded-sm bg-color-yellow px-6 py-3 text-sm font-bold capitalize text-white" dir={langDir}>
               {t("message").toUpperCase()}
             </button>
           )}

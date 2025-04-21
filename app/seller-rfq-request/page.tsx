@@ -10,9 +10,11 @@ import VendorOperations from "@/components/modules/vendorOperations/VendorOperat
 import { PERMISSION_RFQ_SELLER_REQUESTS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const SellerRfqRequestPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_RFQ_SELLER_REQUESTS);
   const [currentTab, setCurrentTab] = useState<string>("RFQ");
@@ -39,7 +41,7 @@ const SellerRfqRequestPage = () => {
       <div className="w-full px-2 lg:w-[15%]">
         <div className="w-full px-0 py-0 shadow-lg">
           <ul>
-            <li className="w-full py-1">
+            <li className="w-full py-1" dir={langDir}>
               <Link
                 href="#"
                 className="flex items-center justify-start rounded-xl p-2"
@@ -60,6 +62,7 @@ const SellerRfqRequestPage = () => {
                   : "bg-gray-50 text-black",
                 "w-full py-1",
               )}
+              dir={langDir}
             >
               <button className="flex items-center justify-start rounded-xl p-2">
                 <div className="flex h-[20px] w-[20px] items-center justify-center">
@@ -69,7 +72,7 @@ const SellerRfqRequestPage = () => {
                     className="brightness-0 invert"
                   />
                 </div>
-                <div className="pl-1 text-sm font-medium">{t("rfq")}</div>
+                <div className="pl-1 text-sm font-medium" dir={langDir}>{t("rfq")}</div>
               </button>
             </li>
             <li
@@ -80,6 +83,7 @@ const SellerRfqRequestPage = () => {
                   : "bg-gray-50 text-black",
                 "w-full py-1",
               )}
+              dir={langDir}
             >
               <button className="flex items-center justify-start rounded-xl p-2">
                 <div className="flex h-[20px] w-[20px] items-center justify-center">
@@ -89,7 +93,7 @@ const SellerRfqRequestPage = () => {
                     className="brightness-0 invert"
                   />
                 </div>
-                <div className="pl-1 text-sm font-medium">
+                <div className="pl-1 text-sm font-medium" dir={langDir}>
                   {t("vendor_operations")}
                 </div>
               </button>

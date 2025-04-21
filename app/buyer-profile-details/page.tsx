@@ -13,9 +13,11 @@ import ConfirmContent from "@/components/shared/ConfirmContent";
 import { useToast } from "@/components/ui/use-toast";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const BuyerProfileDetailsPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -82,7 +84,7 @@ const BuyerProfileDetailsPage = () => {
         <div className="container relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
-              <h2 className="text-4xl font-semibold leading-10 text-color-dark">
+              <h2 className="text-4xl font-semibold leading-10 text-color-dark" dir={langDir}>
                 {t("my_profile")}
               </h2>
             </div>
@@ -93,6 +95,7 @@ const BuyerProfileDetailsPage = () => {
                 type="button"
                 onClick={handleRoleModal}
                 className="theme-primary-btn addbtn"
+                dir={langDir}
               >
                 {t("update")}
               </button>
@@ -104,6 +107,7 @@ const BuyerProfileDetailsPage = () => {
                   <TabsTrigger
                     value="profile-info"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
+                    dir={langDir}
                   >
                     {t("profile_info")}
                   </TabsTrigger>

@@ -2,13 +2,16 @@ import { useCategoryStore } from "@/lib/categoryStore";
 import React, { useEffect, useState } from "react";
 import TrendingOptionCard from "../home/TrendingOptionCard";
 import TrendingCard from "../home/TrendingCard";
+import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const TrendingCategories = () => {
+  const t = useTranslations();
+  const { langDir } = useAuth();
   const category = useCategoryStore();
-  const [activeSecondLevelCategoryIndex, setActiveSecondLevelCategoryIndex] =
-    useState(0);
-  const [activeThirdLevelCategoryIndex, setActiveThirdLevelCategoryIndex] =
-    useState(0);
+  const [activeSecondLevelCategoryIndex, setActiveSecondLevelCategoryIndex] = useState(0);
+  const [activeThirdLevelCategoryIndex, setActiveThirdLevelCategoryIndex] = useState(0);
 
   useEffect(() => {
     setActiveSecondLevelCategoryIndex(category.secondLevelCategoryIndex || 0);
@@ -75,6 +78,24 @@ const TrendingCategories = () => {
             ) : null}
           </div>
         </div>
+      </div>
+      <div dir={langDir}>
+        <Button 
+          type="button" 
+          className="theme-primary-btn"
+          onClick={() => {
+            category.setSubCategories([]);
+            category.setSubSubCategories([]);
+            category.setCategoryId('');
+            category.setCategoryIds('');
+            category.setSubCategoryIndex(0);
+            category.setSecondLevelCategoryIndex(0);
+            category.setSubCategoryParentName('');
+            category.setSubSubCategoryParentName('');
+          }}
+        >
+          {t("clear")}
+        </Button>
       </div>
     </div>
   ) : null;

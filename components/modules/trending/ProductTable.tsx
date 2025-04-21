@@ -14,6 +14,7 @@ import { TrendingProduct } from "@/utils/types/common.types";
 import Link from "next/link";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type ProducTableProps = {
   list: TrendingProduct[];
@@ -21,12 +22,13 @@ type ProducTableProps = {
 
 const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const calculateDiscountedPrice = ({ item }: { item: any }) => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
       : 0;
     const discount = item.consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   return (
@@ -36,11 +38,11 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{(t("product"))}</TableHead>
-                <TableHead>{t("category")}</TableHead>
+                <TableHead dir={langDir}>{t("product")}</TableHead>
+                <TableHead dir={langDir}>{t("category")}</TableHead>
                 {/* <TableHead>SKU No</TableHead> */}
-                <TableHead>{t("brand")}</TableHead>
-                <TableHead>{t("price")}</TableHead>
+                <TableHead dir={langDir}>{t("brand")}</TableHead>
+                <TableHead dir={langDir}>{t("price")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -75,12 +77,13 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
                         <button
                           type="button"
                           className="inline-block rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+                          dir={langDir}
                         >
                           {t("ask_vendor_for_price")}
                         </button>
                       </Link>
                     ) : (
-                      `$${calculateDiscountedPrice({ item })}`
+                      `${currency.symbol}${calculateDiscountedPrice({ item })}`
                     )}
                   </TableCell>
                 </TableRow>

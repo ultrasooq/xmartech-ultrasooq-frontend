@@ -26,6 +26,7 @@ import DescriptionSection from "./DescriptionSection";
 import { isImage, isVideo } from "@/utils/helper";
 import { useCreateTag } from "@/apis/queries/tags.queries";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const customStyles = {
   control: (base: any) => ({
@@ -54,6 +55,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   activeProductType,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const formContext = useFormContext();
   const { toast } = useToast();
   const photosRef = useRef<HTMLInputElement>(null);
@@ -165,10 +167,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             <div className=" w-full">
               <div className="flex flex-wrap">
                 <div className="form-groups-common-sec-s1">
-                  <h3>{t("basic_information")}</h3>
+                  <h3 dir={langDir}>{t("basic_information")}</h3>
                   <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
                     <div className="flex w-full flex-col justify-between gap-y-2">
-                      <Label>{t("product_category")}</Label>
+                      <Label dir={langDir}>{t("product_category")}</Label>
                       <Controller
                         name="categoryId"
                         control={formContext.control}
@@ -196,11 +198,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             value={catList[0]?.id || ""}
                             disabled={true} // This makes the select field disabled
                           >
-                            <option value="">{t("select_category")}</option>
+                            <option value="" dir={langDir}>{t("select_category")}</option>
                             {memoizedCategories.map((item: ISelectOptions) => (
                               <option
                                 value={item.value?.toString()}
                                 key={item.value}
+                                dir={langDir}
                               >
                                 {item.label}
                               </option>
@@ -208,7 +211,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           </select>
                         )}
                       />
-                      <p className="text-[13px] font-medium text-red-500">
+                      <p className="text-[13px] font-medium text-red-500" dir={langDir}>
                         {
                           formContext.formState.errors["categoryId"]
                             ?.message as string
@@ -223,7 +226,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
                         >
                           <div className="flex w-full flex-col justify-between gap-y-2">
-                            <Label>{"Sub ".repeat(index + 1)} Category</Label>
+                            <Label dir={langDir}>{t("sub_category")}</Label>
                             <select
                               className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                               onChange={(e) => {
@@ -251,11 +254,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                 )
                                 ?.id?.toString()}
                             >
-                              <option value="">{t("select_sub_category")}</option>
+                              <option value="" dir={langDir}>{t("select_sub_category")}</option>
                               {item?.children?.map((item: any) => (
                                 <option
                                   value={item.id?.toString()}
                                   key={item.id}
+                                  dir={langDir}
                                 >
                                   {item.name}
                                 </option>
@@ -270,13 +274,14 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     label={t("product_name")}
                     name="productName"
                     placeholder={t("product_name")}
+                    dir={langDir}
                   />
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <BrandSelect />
 
                     <div className="mt-2 flex flex-col gap-y-3">
-                      <Label>{t("product_condition")}</Label>
+                      <Label dir={langDir}>{t("product_condition")}</Label>
                       <Controller
                         name="productCondition"
                         control={formContext.control}
@@ -297,10 +302,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         )}
                       />
 
-                      <p className="text-[13px] text-red-500">
+                      <p className="text-[13px] text-red-500" dir={langDir}>
                         {
-                          formContext.formState.errors["productCondition"]
-                            ?.message as string
+                          formContext.formState.errors["productCondition"]?.message as string
                         }
                       </p>
                     </div>
@@ -320,7 +324,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                   <div className="relative mb-4 w-full">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium leading-none text-color-dark">
+                      <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                         {t("product_image")}
                       </label>
                       <div className="flex w-full flex-wrap">
@@ -424,7 +428,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                               </div>
 
                                               <div className="absolute h-20 w-full p-5">
-                                                <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
+                                                <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir}>
                                                   {t("upload_video")}
                                                 </p>
                                               </div>
@@ -476,7 +480,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   width={29}
                                   height={28}
                                 />
-                                <span>{t("add_more")}</span>
+                                <span dir={langDir}>{t("add_more")}</span>
                               </div>
                             </div>
 

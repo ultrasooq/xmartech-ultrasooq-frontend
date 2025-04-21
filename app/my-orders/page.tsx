@@ -14,10 +14,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 // import { useMe } from "@/apis/queries/user.queries";
 
 const MyOrdersPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderStatus, setOrderStatus] = useState<string>("");
@@ -94,55 +96,55 @@ const MyOrdersPage = () => {
       <div className="container m-auto px-3">
         <ul className="page-indicator-s1">
           <li>
-            <Link href="/home">{t("home")}</Link>
+            <Link href="/home" dir={langDir}>{t("home")}</Link>
           </li>
           <li>
-            <Link href="/my-orders">{t("my_orders")}</Link>
+            <Link href="/my-orders" dir={langDir}>{t("my_orders")}</Link>
           </li>
         </ul>
 
         <div className="my-order-wrapper">
           <div className="left-div">
             <div className="card-box">
-              <h2>{t("filter")}</h2>
-              <h3>{t("order_status")}</h3>
+              <h2 dir={langDir}>{t("filter")}</h2>
+              <h3 dir={langDir}>{t("order_status")}</h3>
 
               <RadioGroup
                 className="flex flex-col gap-y-3"
                 value={orderStatus}
                 onValueChange={setOrderStatus}
               >
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="" id="ALL" />
                   <Label htmlFor="ALL" className="text-base">
                     {t("all")}
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="CONFIRMED" id="CONFIRMED" />
                   <Label htmlFor="CONFIRMED" className="text-base">
                     {t("confirmed")}
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="SHIPPED" id="SHIPPED" />
                   <Label htmlFor="SHIPPED" className="text-base">
                     {t("shipped")}
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="OFD" id="OFD" />
                   <Label htmlFor="OFD" className="text-base">
                     {t("on_the_way")}
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="DELIVERED" id="DELIVERED" />
                   <Label htmlFor="DELIVERED" className="text-base">
                     {t("delivered")}
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="CANCELLED" id="CANCELLED" />
                   <Label htmlFor="CANCELLED" className="text-base">
                     {t("cancelled")}
@@ -152,50 +154,50 @@ const MyOrdersPage = () => {
 
               <div className="divider"></div>
 
-              <h3>{t("order_time")}</h3>
+              <h3 dir={langDir}>{t("order_time")}</h3>
 
               <RadioGroup
                 className="flex flex-col gap-y-3"
                 value={orderTime}
                 onValueChange={setOrderTime}
               >
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="last30" id="last30" />
                   <Label htmlFor="last30" className="text-base">
                     {t("last_30_days")}
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="2024" id="2024" />
                   <Label htmlFor="2024" className="text-base">
                     2024
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="2023" id="2023" />
                   <Label htmlFor="2023" className="text-base">
                     2023
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="2022" id="2022" />
                   <Label htmlFor="2022" className="text-base">
                     2022
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="2021" id="2021" />
                   <Label htmlFor="2021" className="text-base">
                     2021
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="2020" id="2020" />
                   <Label htmlFor="2020" className="text-base">
                     2020
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="older" id="older" />
                   <Label htmlFor="older" className="text-base">
                     {t("older")}
@@ -206,7 +208,7 @@ const MyOrdersPage = () => {
               <div className="divider"></div>
 
               <div className="mt-4 text-center">
-                <Button variant="outline" onClick={handleClearFilter}>
+                <Button variant="outline" onClick={handleClearFilter} dir={langDir}>
                   {t("clean_filter")}
                 </Button>
               </div>
@@ -219,9 +221,10 @@ const MyOrdersPage = () => {
                 <input
                   type="text"
                   className="custom-form-control-s1 !w-full"
-                  placeholder="Search..."
+                  placeholder={t("search")}
                   onChange={handleDebounce}
                   ref={searchRef}
+                  dir={langDir}
                 />
                 {searchTerm !== "" ? (
                   <Button
@@ -233,7 +236,7 @@ const MyOrdersPage = () => {
                   </Button>
                 ) : null}
               </div>
-              <button type="button" className="search-btn theme-primary-btn">
+              <button type="button" className="search-btn theme-primary-btn" dir={langDir}>
                 <FiSearch />
                 {t("search_orders")}
               </button>
@@ -254,7 +257,7 @@ const MyOrdersPage = () => {
 
               {!ordersQuery.isLoading && !ordersQuery?.data?.data?.length ? (
                 <div className="w-full p-3">
-                  <p className="text-center text-lg font-semibold">
+                  <p className="text-center text-lg font-semibold" dir={langDir}>
                     {t("no_orders_found")}
                   </p>
                 </div>

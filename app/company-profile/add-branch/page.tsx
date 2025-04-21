@@ -34,111 +34,119 @@ import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInp
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 
-const formSchema = z.object({
-  uploadBranchImage: z.any().optional(),
-  uploadProofOfAddress: z.any().optional(),
-  branchFrontPicture: z.string().trim().optional(),
-  proofOfAddress: z.string().trim().optional(),
-  businessTypeList: z
-    .array(
-      z.object({
-        label: z.string().trim(),
-        value: z.number(),
+const formSchema = (t: any) => {
+  return z.object({
+    uploadBranchImage: z.any().optional(),
+    uploadProofOfAddress: z.any().optional(),
+    branchFrontPicture: z.string().trim().optional(),
+    proofOfAddress: z.string().trim().optional(),
+    businessTypeList: z
+      .array(
+        z.object({
+          label: z.string().trim(),
+          value: z.number(),
+        }),
+        {
+          required_error: t("business_type_required")
+        }
+      )
+      .min(1, {
+        message: t("business_type_required"),
+      })
+      .transform((value) => {
+        let temp: any = [];
+        value.forEach((item) => {
+          temp.push({ businessTypeId: item.value });
+        });
+        return temp;
       }),
-    )
-    .min(1, {
-      message: "Business Type is required",
-    })
-    .transform((value) => {
-      let temp: any = [];
-      value.forEach((item) => {
-        temp.push({ businessTypeId: item.value });
-      });
-      return temp;
+    address: z
+      .string()
+      .trim()
+      .min(2, { message: t("address_required") })
+      .max(50, {
+        message: t("address_must_be_less_than_n_chars", { n: 50 }),
+      }),
+    city: z.string().trim().min(2, { message: t("city_required") }),
+    province: z.string().trim().min(2, { message: t("province_required") }),
+    country: z.string().trim().min(2, { message: t("country_required") }),
+    cc: z.string().trim(),
+    contactNumber: z
+      .string()
+      .trim()
+      .min(2, { message: t("branch_contact_number_required") })
+      .min(8, {
+        message: t("branch_contact_number_must_be_min_n_digits", { n: 8 }),
+      })
+      .max(20, {
+        message: t("branch_contact_number_cant_be_nore_than_n_digits", { n: 20 }),
+      }),
+    contactName: z
+      .string()
+      .trim()
+      .min(2, { message: t("branch_contact_name_required") }),
+    startTime: z.string().trim().min(1, {
+      message: t("start_time_required"),
     }),
-  address: z
-    .string()
-    .trim()
-    .min(2, { message: "Address is required" })
-    .max(50, {
-      message: "Address must be less than 50 characters",
+    endTime: z.string().trim().min(1, {
+      message: t("end_time_required"),
     }),
-  city: z.string().trim().min(2, { message: "City is required" }),
-  province: z.string().trim().min(2, { message: "Province is required" }),
-  country: z.string().trim().min(2, { message: "Country is required" }),
-  cc: z.string().trim(),
-  contactNumber: z
-    .string()
-    .trim()
-    .min(2, { message: "Branch Contact Number is required" })
-    .min(8, {
-      message: "Branch Contact Number must be minimum of 8 digits",
-    })
-    .max(20, {
-      message: "Branch Contact Number cannot be more than 20 digits",
-    }),
-  contactName: z
-    .string()
-    .trim()
-    .min(2, { message: "Branch Contact Name is required" }),
-  startTime: z.string().trim().min(1, {
-    message: "Start Time is required",
-  }),
-  endTime: z.string().trim().min(1, {
-    message: "End Time is required",
-  }),
-  workingDays: z
-    .object({
-      sun: z.number(),
-      mon: z.number(),
-      tue: z.number(),
-      wed: z.number(),
-      thu: z.number(),
-      fri: z.number(),
-      sat: z.number(),
-    })
-    .refine((value) => {
-      return (
-        value.sun !== 0 ||
-        value.mon !== 0 ||
-        value.tue !== 0 ||
-        value.wed !== 0 ||
-        value.thu !== 0 ||
-        value.fri !== 0 ||
-        value.sat !== 0
-      );
-    }),
-  // tagList: z
-  //   .array(
-  //     z.object({
-  //       label: z.string().trim(),
-  //       value: z.number(),
-  //     }),
-  //   )
-  //   .min(1, {
-  //     message: "Tag is required",
-  //   })
-  //   .transform((value) => {
-  //     let temp: any = [];
-  //     value.forEach((item) => {
-  //       temp.push({ tagId: item.value });
-  //     });
-  //     return temp;
-  //   }),
-  categoryList: z.any().optional(),
-  mainOffice: z
-    .boolean()
-    .transform((value) => (value ? 1 : 0))
-    .optional(),
-});
+    workingDays: z
+      .object({
+        sun: z.number(),
+        mon: z.number(),
+        tue: z.number(),
+        wed: z.number(),
+        thu: z.number(),
+        fri: z.number(),
+        sat: z.number(),
+      })
+      .refine((value) => {
+        return (
+          value.sun !== 0 ||
+          value.mon !== 0 ||
+          value.tue !== 0 ||
+          value.wed !== 0 ||
+          value.thu !== 0 ||
+          value.fri !== 0 ||
+          value.sat !== 0
+        );
+      }),
+    // tagList: z
+    //   .array(
+    //     z.object({
+    //       label: z.string().trim(),
+    //       value: z.number(),
+    //     }),
+    //   )
+    //   .min(1, {
+    //     message: "Tag is required",
+    //   })
+    //   .transform((value) => {
+    //     let temp: any = [];
+    //     value.forEach((item) => {
+    //       temp.push({ tagId: item.value });
+    //     });
+    //     return temp;
+    //   }),
+    categoryList: z.any().optional(),
+    mainOffice: z
+      .boolean()
+      .transform((value) => (value ? 1 : 0))
+      .optional(),
+  });
+}
 
 const AddBranchPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       uploadBranchImage: undefined,
       uploadProofOfAddress: undefined,
@@ -287,7 +295,13 @@ const AddBranchPage = () => {
 
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                  <label 
+                    className={cn(
+                      "mb-3.5 block",
+                      langDir == "rtl" ? "text-right" : "text-left",
+                      "text-lg font-medium capitalize leading-5 text-color-dark"
+                    )}
+                  >
                     {t("branch_information")}
                   </label>
                 </div>
@@ -300,15 +314,15 @@ const AddBranchPage = () => {
                     name="businessTypeList"
                     options={memoizedTags || []}
                     placeholder={t("business_type")}
-                    error={String(form.formState.errors?.businessTypeList?.message)}
+                    error={String(form.formState.errors?.businessTypeList?.message || '')}
                   />
 
                   <FormField
                     control={form.control}
                     name="uploadBranchImage"
                     render={({ field }) => (
-                      <FormItem className="mb-3.5 w-full">
-                        <FormLabel>Upload Branch Front Picture</FormLabel>
+                      <FormItem className="mb-3.5 w-full" dir={langDir}>
+                        <FormLabel>{t("upload_branch_front_picture")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -326,7 +340,7 @@ const AddBranchPage = () => {
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                  <div className="flex h-full flex-col items-center justify-center">
+                                  <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
                                     <Image
                                       src="/images/upload.png"
                                       className="mb-3"
@@ -359,7 +373,10 @@ const AddBranchPage = () => {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
+                                        title: t(
+                                          "image_size_should_be_less_than_size",
+                                          { size: "500MB" },
+                                        ),
                                         variant: "danger",
                                       });
                                       return;
@@ -381,8 +398,8 @@ const AddBranchPage = () => {
                     control={form.control}
                     name="uploadProofOfAddress"
                     render={({ field }) => (
-                      <FormItem className="mb-3.5 w-full">
-                        <FormLabel>Proof Of Address</FormLabel>
+                      <FormItem className="mb-3.5 w-full" dir={langDir}>
+                        <FormLabel>{t("proof_of_address")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -402,7 +419,7 @@ const AddBranchPage = () => {
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                  <div className="flex h-full flex-col items-center justify-center">
+                                  <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
                                     <Image
                                       src="/images/upload.png"
                                       className="mb-3"
@@ -410,9 +427,7 @@ const AddBranchPage = () => {
                                       height={30}
                                       alt="camera"
                                     />
-                                    <span>
-                                      {t("drop_your_address_proof")}{" "}
-                                    </span>
+                                    <span>{t("drop_your_address_proof")} </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
@@ -435,7 +450,10 @@ const AddBranchPage = () => {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
+                                        title: t(
+                                          "image_size_should_be_less_than_size",
+                                          { size: "500MB" },
+                                        ),
                                         variant: "danger",
                                       });
                                       return;
@@ -459,7 +477,13 @@ const AddBranchPage = () => {
                 <div className="flex w-full flex-wrap">
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                      <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                      <label 
+                        className={cn(
+                          "mb-3.5 block",
+                          langDir == 'rtl' ? 'text-right' : 'text-left',
+                          "text-lg font-medium capitalize leading-5 text-color-dark"
+                        )}
+                      >
                         {t("branch_location")}
                       </label>
                     </div>
@@ -471,14 +495,7 @@ const AddBranchPage = () => {
                         label={t("address")}
                         name="address"
                         placeholder={t("address")}
-                      />
-
-                      <Image
-                        src="/images/location.svg"
-                        alt="location-icon"
-                        height={16}
-                        width={16}
-                        className="absolute right-6 top-[50px]"
+                        dir={langDir}
                       />
                     </div>
 
@@ -486,6 +503,7 @@ const AddBranchPage = () => {
                       label={t("city")}
                       name="city"
                       placeholder={t("city")}
+                      dir={langDir}
                     />
                   </div>
 
@@ -494,6 +512,7 @@ const AddBranchPage = () => {
                       label={t("province")}
                       name="province"
                       placeholder={t("province")}
+                      dir={langDir}
                     />
 
                     <ControlledSelectInput
@@ -515,6 +534,7 @@ const AddBranchPage = () => {
                       label={t("branch_contact_name")}
                       name="contactName"
                       placeholder={t("branch_contact_name")}
+                      dir={langDir}
                     />
                   </div>
                 </div>
@@ -523,14 +543,14 @@ const AddBranchPage = () => {
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
                       <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
-                        Branch Working Hours
+                        {t("branch_working_hours")}
                       </label>
                     </div>
                   </div>
                   <div className="w-full">
                     <div className="flex flex-wrap">
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
-                        <Label htmlFor="startTime" className="text-color-dark">
+                        <Label htmlFor="startTime" className="text-color-dark" dir={langDir}>
                           {t("start_time")}
                         </Label>
                         <Controller
@@ -541,10 +561,10 @@ const AddBranchPage = () => {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="">Select</option>
+                              <option value="" dir={langDir}>{t("select")}</option>
                               {HOURS_24_FORMAT.map(
                                 (hour: string, index: number) => (
-                                  <option key={index} value={hour}>
+                                  <option key={index} value={hour} dir={langDir}>
                                     {getAmPm(hour)}
                                   </option>
                                 ),
@@ -552,13 +572,13 @@ const AddBranchPage = () => {
                             </select>
                           )}
                         />
-                        <p className="text-[13px] text-red-500">
+                        <p className="text-[13px] text-red-500" dir={langDir}>
                           {form.formState.errors.startTime?.message}
                         </p>
                       </div>
 
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
-                        <Label htmlFor="endTime" className="text-color-dark">
+                        <Label htmlFor="endTime" className="text-color-dark" dir={langDir}>
                           {t("end_time")}
                         </Label>
                         <Controller
@@ -569,10 +589,10 @@ const AddBranchPage = () => {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="">Select</option>
+                              <option value="" dir={langDir}>{t("select")}</option>
                               {HOURS_24_FORMAT.map(
                                 (hour: string, index: number) => (
-                                  <option key={index} value={hour}>
+                                  <option key={index} value={hour} dir={langDir}>
                                     {getAmPm(hour)}
                                   </option>
                                 ),
@@ -580,7 +600,7 @@ const AddBranchPage = () => {
                             </select>
                           )}
                         />
-                        <p className="text-[13px] text-red-500">
+                        <p className="text-[13px] text-red-500" dir={langDir}>
                           {form.formState.errors.endTime?.message}
                         </p>
                       </div>
@@ -622,7 +642,7 @@ const AddBranchPage = () => {
                       ))}
                     </div>
                     {form.formState.errors.workingDays?.message ? (
-                      <p className="text-[13px] text-red-500">
+                      <p className="text-[13px] text-red-500" dir={langDir}>
                         {t("working_day_required")}
                       </p>
                     ) : null}
@@ -639,7 +659,7 @@ const AddBranchPage = () => {
 
                 <MultiSelectCategory name="categoryList" />
 
-                <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
+                <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4" dir={langDir}>
                   <FormField
                     control={form.control}
                     name="mainOffice"
@@ -663,6 +683,7 @@ const AddBranchPage = () => {
                 disabled={createCompanyBranch.isPending || upload.isPending}
                 type="submit"
                 className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                dir={langDir}
               >
                 {createCompanyBranch.isPending || upload.isPending ? (
                   <>

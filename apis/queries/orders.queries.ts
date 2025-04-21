@@ -12,6 +12,7 @@ import {
   fetchOrderBySellerId,
   fetchOrders,
   fetchOrdersBySellerId,
+  preOrderCalculation,
   updateCancelReason,
   updateProductStatus,
 } from "../requests/orders.requests";
@@ -125,7 +126,7 @@ export const useCreateOrderUnAuth = () => {
   });
 };
 
-export const useCreateIntent = () => {
+export const useCreatePaymentIntent = () => {
   return useMutation<
   { data: any; message: string; status: boolean },
   APIResponseError,
@@ -239,6 +240,25 @@ export const useUpdateCancelReason = () => {
       queryClient.invalidateQueries({
         queryKey: ["orders"],
       });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const usePreOrderCalculation = () => {
+  return useMutation<
+    {[key: string]: any},
+    APIResponseError,
+    { cartIds: number[]; userAddressId: number }
+  >({
+    mutationFn: async (payload) => {
+      const res = await preOrderCalculation(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      
     },
     onError: (err: APIResponseError) => {
       console.log(err);

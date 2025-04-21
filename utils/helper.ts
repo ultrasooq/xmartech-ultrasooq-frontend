@@ -125,13 +125,13 @@ export const handleDescriptionParse = (description: string) => {
   }
 };
 
-export const formatPrice = (price: number): string => {
+export const formatPrice = (price: number, symbol: string = '$'): string => {
   if (!price) return "";
   const formattedTotal = price.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  return `$${formattedTotal}`;
+  return `${symbol}${formattedTotal}`;
 };
 
 export const isVideo = (path: string) => {
@@ -162,9 +162,26 @@ export const isImage = (path: any) => {
   }
 };
 
-
 export const generateUniqueNumber = () => {
   const timestamp = Date.now();
   const randomNum = Math.floor(Math.random() * 10000);
   return timestamp + randomNum;
 }
+
+export const convertDateTime = (dateString: string) => {
+  if (!dateString) {
+    return "-";
+  }
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    minute: "numeric",
+    hour: "numeric",
+    hour12: true,
+    second: "numeric",
+  };
+  const formattedDate = date.toLocaleDateString("en-GB", options);
+  return formattedDate;
+};

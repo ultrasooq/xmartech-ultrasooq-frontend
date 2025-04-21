@@ -7,6 +7,7 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useAddFactoriesProduct, useUpdateFactoriesCartWithLogin } from "@/apis/queries/rfq.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type FactoriesCartMenuCardProps = {
   factoriesCartId: number;
@@ -40,6 +41,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
   note,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
 
@@ -156,6 +158,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
             onClick={() => {
               onRemove(factoriesCartId);
             }}
+            dir={langDir}
           >
             {t("remove")}
           </Button>

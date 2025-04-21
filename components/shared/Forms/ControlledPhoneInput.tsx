@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import PhoneInput, { CountryData, PhoneInputProps } from "react-phone-input-2";
 import "react-phone-input-2/lib/bootstrap.css";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
 
 interface ControlledPhoneInputProps extends PhoneInputProps {
   label?: string;
@@ -17,6 +18,7 @@ const ControlledPhoneInput: React.FC<ControlledPhoneInputProps> = ({
   countryName,
   ...props
 }) => {
+  const { langDir } = useAuth();
   const formContext = useFormContext();
 
   const getError = () => {
@@ -44,6 +46,7 @@ const ControlledPhoneInput: React.FC<ControlledPhoneInputProps> = ({
         className={cn(
           formContext.formState.errors.phoneNumber ? "!text-red-500" : "",
         )}
+        dir={langDir}
       >
         {label}
       </Label>
@@ -64,7 +67,7 @@ const ControlledPhoneInput: React.FC<ControlledPhoneInputProps> = ({
           />
         )}
       />
-      <p className="text-[13px] font-medium text-red-500">
+      <p className="text-[13px] font-medium text-red-500" dir={langDir}>
         {getError() as string}
       </p>
     </div>

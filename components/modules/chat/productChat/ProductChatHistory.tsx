@@ -23,7 +23,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
   updateMessageCount
 }) => {
   const t = useTranslations();
-  const { user } = useAuth();
+  const { user, langDir } = useAuth();
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -186,7 +186,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
             ))}
           </div>
         ) : (
-          <div className="mt-5 flex w-full flex-wrap items-end">
+          <div className="mt-5 flex w-full flex-wrap items-end" dir={langDir}>
             {chatHistoryLoading ? "Loading..." : t("no_chat_history_found")}
           </div>
         )}

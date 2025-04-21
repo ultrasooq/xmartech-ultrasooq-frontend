@@ -43,6 +43,7 @@ import AddImageContent from "@/components/modules/profile/AddImageContent";
 import ClostIcon from "@/public/images/close-white.svg";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -57,15 +58,25 @@ const formSchema = (t: any) => {
       .trim()
       .min(2, { message: t("first_name_required") })
       .max(50, { message: t("first_name_must_be_50_chars_only") })
-      .regex(/^[A-Za-z\s]+$/, { message: t("first_name_must_only_contain_letters") }),
+      .regex(/^[A-Za-z\s]+$/, {
+        message: t("first_name_must_only_contain_letters"),
+      }),
     lastName: z
       .string()
       .trim()
       .min(2, { message: t("last_name_requierd") })
       .max(50, { message: t("last_name_must_be_50_chars_only") })
-      .regex(/^[A-Za-z\s]+$/, { message: t("last_name_must_only_contain_letters") }),
-    gender: z.string().trim().min(2, { message: t("gender_required") }),
-    userName: z.string().trim().min(5, { message: t("username_required") }),
+      .regex(/^[A-Za-z\s]+$/, {
+        message: t("last_name_must_only_contain_letters"),
+      }),
+    gender: z
+      .string()
+      .trim()
+      .min(2, { message: t("gender_required") }),
+    userName: z
+      .string()
+      .trim()
+      .min(5, { message: t("username_required") }),
     email: z
       .string()
       .trim()
@@ -105,6 +116,7 @@ const formSchema = (t: any) => {
 
 export default function ProfilePage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const frontIdentityRef = useRef<HTMLInputElement>(null);
@@ -188,7 +200,11 @@ export default function ProfilePage() {
   };
 
   const onSubmit = async (formData: any) => {
-    const data = { ...formData, phoneNumber: formData.phoneNumberList[0].phoneNumber, dateOfBirth: formData.dateOfBirth.toISOString(), };
+    const data = {
+      ...formData,
+      phoneNumber: formData.phoneNumberList[0].phoneNumber,
+      dateOfBirth: formData.dateOfBirth.toISOString(),
+    };
 
     formData.uploadImage = imageFile;
     formData.uploadIdentityFrontImage = identityFrontImageFile;
@@ -201,11 +217,21 @@ export default function ProfilePage() {
     if (formData.uploadImage) {
       getImageUrl = await handleUploadedFile(formData.uploadImage);
     }
-    if (formData.uploadIdentityFrontImage && typeof formData.uploadIdentityFrontImage === "object") {
-      getIdentityImageUrl = await handleUploadedFile(formData.uploadIdentityFrontImage,);
+    if (
+      formData.uploadIdentityFrontImage &&
+      typeof formData.uploadIdentityFrontImage === "object"
+    ) {
+      getIdentityImageUrl = await handleUploadedFile(
+        formData.uploadIdentityFrontImage,
+      );
     }
-    if (formData.uploadIdentityBackImage && typeof formData.uploadIdentityBackImage === "object") {
-      getIdentityBackImageUrl = await handleUploadedFile(formData.uploadIdentityBackImage,);
+    if (
+      formData.uploadIdentityBackImage &&
+      typeof formData.uploadIdentityBackImage === "object"
+    ) {
+      getIdentityBackImageUrl = await handleUploadedFile(
+        formData.uploadIdentityBackImage,
+      );
     }
 
     //TODO: identity image upload
@@ -222,17 +248,29 @@ export default function ProfilePage() {
       data.identityProofBack = getIdentityBackImageUrl;
     }
 
-    data.socialLinkList = data.socialLinkList.filter((link: any) => link.link.trim() !== "" && link.linkType.trim() !== "",);
+    data.socialLinkList = data.socialLinkList.filter(
+      (link: any) => link.link.trim() !== "" && link.linkType.trim() !== "",
+    );
 
-    if (data.socialLinkList.length && data.socialLinkList.some((link: any) => !validator.isURL(link.link))) {
-      form.setError("socialLinkList", { type: "custom", message: "Invalid URL", });
+    if (
+      data.socialLinkList.length &&
+      data.socialLinkList.some((link: any) => !validator.isURL(link.link))
+    ) {
+      form.setError("socialLinkList", {
+        type: "custom",
+        message: "Invalid URL",
+      });
       return;
     }
     // console.log(data);
     // return;
     const response = await updateProfile.mutateAsync(data);
     if (response.status && response.data) {
-      toast({ title: t("profile_updated"), description: t("profile_update_info"), variant: "success", });
+      toast({
+        title: t("profile_updated"),
+        description: t("profile_update_info"),
+        variant: "success",
+      });
       form.reset();
       const tradeRole = response.data?.tradeRole;
       if (tradeRole === "BUYER") {
@@ -253,7 +291,11 @@ export default function ProfilePage() {
         router.push("/member-profile-details");
       }
     } else {
-      toast({ title: t("profile_update_failed"), description: response.message, variant: "danger", });
+      toast({
+        title: t("profile_update_failed"),
+        description: response.message,
+        variant: "danger",
+      });
     }
   };
 
@@ -261,31 +303,45 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (me.data) {
-      const { profilePicture, identityProof, identityProofBack, firstName, lastName, gender, email, cc, phoneNumber, dateOfBirth, userPhone, userSocialLink, userName } = me.data?.data;
+      const {
+        profilePicture,
+        identityProof,
+        identityProofBack,
+        firstName,
+        lastName,
+        gender,
+        email,
+        cc,
+        phoneNumber,
+        dateOfBirth,
+        userPhone,
+        userSocialLink,
+        userName,
+      } = me.data?.data;
 
       const phoneNumberList = userPhone.length
         ? userPhone.map((item: any) => ({
-          cc: item?.cc,
-          phoneNumber: item?.phoneNumber,
-        }))
+            cc: item?.cc,
+            phoneNumber: item?.phoneNumber,
+          }))
         : [
-          {
-            cc: cc || "",
-            phoneNumber: phoneNumber || "",
-          },
-        ];
+            {
+              cc: cc || "",
+              phoneNumber: phoneNumber || "",
+            },
+          ];
 
       const socialLinkList = userSocialLink.length
         ? userSocialLink.map((item: any) => ({
-          linkType: item?.linkType,
-          link: item?.link,
-        }))
+            linkType: item?.linkType,
+            link: item?.link,
+          }))
         : [
-          {
-            linkType: "",
-            link: "",
-          },
-        ];
+            {
+              linkType: "",
+              link: "",
+            },
+          ];
 
       form.reset({
         profilePicture: profilePicture || "",
@@ -321,107 +377,125 @@ export default function ProfilePage() {
         <div className="flex">
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-9/12 lg:w-7/12 lg:p-12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+              <h2
+                className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
+                dir={langDir}
+              >
                 {t("profile")}
               </h2>
-              <p>{t("update_profile")}</p>
+              <p dir={langDir}>{t("update_profile")}</p>
             </div>
             <div className="w-full">
               <Form {...form}>
-                <form className="flex flex-wrap" onSubmit={form.handleSubmit(onSubmit)}>
-                  <FormField control={form.control} name="uploadImage" render={({ field }) => (
-                    <FormItem className="mb-4 w-full">
-                      <FormControl>
-                        <div className="relative m-auto h-44 w-44 rounded-full border-2 border-dashed border-gray-300">
-                          <div className="relative h-full w-full">
-                            {imageFile || me.data?.data?.profilePicture ? (
-                              <>
-                                <Image
-                                  src={
-                                    imageFile
-                                      ? URL.createObjectURL(imageFile[0])
-                                      : me.data?.data?.profilePicture
-                                        ? me.data?.data?.profilePicture
-                                        : "/images/company-logo.png"
-                                  }
-                                  alt="profile"
-                                  fill
-                                  className="rounded-full object-contain"
-                                  priority
-                                />
-                                <div className="absolute bottom-3 right-4 rounded-full bg-white p-1 shadow-md">
+                <form
+                  className="flex flex-wrap"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                >
+                  <FormField
+                    control={form.control}
+                    name="uploadImage"
+                    render={({ field }) => (
+                      <FormItem className="mb-4 w-full">
+                        <FormControl>
+                          <div className="relative m-auto h-44 w-44 rounded-full border-2 border-dashed border-gray-300">
+                            <div className="relative h-full w-full">
+                              {imageFile || me.data?.data?.profilePicture ? (
+                                <>
                                   <Image
-                                    src="/images/camera.png"
-                                    width={29}
-                                    height={29}
-                                    alt="camera"
-                                    className=""
+                                    src={
+                                      imageFile
+                                        ? URL.createObjectURL(imageFile[0])
+                                        : me.data?.data?.profilePicture
+                                          ? me.data?.data?.profilePicture
+                                          : "/images/company-logo.png"
+                                    }
+                                    alt="profile"
+                                    fill
+                                    className="rounded-full object-contain"
+                                    priority
                                   />
+                                  <div className="absolute bottom-3 right-4 rounded-full bg-white p-1 shadow-md">
+                                    <Image
+                                      src="/images/camera.png"
+                                      width={29}
+                                      height={29}
+                                      alt="camera"
+                                      className=""
+                                    />
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
+                                  <div className="flex h-full flex-col items-center justify-center">
+                                    <Image
+                                      src="/images/camera.png"
+                                      className="mb-3"
+                                      width={29}
+                                      height={29}
+                                      alt="camera"
+                                    />
+                                    <span dir={langDir}>
+                                      {t("upload_image")}
+                                    </span>
+                                  </div>
                                 </div>
-                              </>
-                            ) : (
-                              <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                <div className="flex h-full flex-col items-center justify-center">
-                                  <Image
-                                    src="/images/camera.png"
-                                    className="mb-3"
-                                    width={29}
-                                    height={29}
-                                    alt="camera"
-                                  />
-                                  <span>{t("upload_image")}</span>
-                                </div>
-                              </div>
-                            )}
+                              )}
 
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              multiple={false}
-                              className="!bottom-0 h-44 !w-full opacity-0"
-                              {...field}
-                              onChange={(event) => {
-                                if (event.target.files?.[0]) {
-                                  if (
-                                    event.target.files[0].size > 524288000
-                                  ) {
-                                    toast({
-                                      title: t("image_size_should_be_less_than_size", { size: "500MB" }),
-                                      variant: "danger",
-                                    });
-                                    return;
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                multiple={false}
+                                className="!bottom-0 h-44 !w-full opacity-0"
+                                {...field}
+                                onChange={(event) => {
+                                  if (event.target.files?.[0]) {
+                                    if (
+                                      event.target.files[0].size > 524288000
+                                    ) {
+                                      toast({
+                                        title: t(
+                                          "image_size_should_be_less_than_size",
+                                          { size: "500MB" },
+                                        ),
+                                        variant: "danger",
+                                      });
+                                      return;
+                                    }
+                                    setImageFile(event.target.files);
                                   }
-                                  setImageFile(event.target.files);
-                                }
-                              }}
-                              id="uploadImage"
-                            />
+                                }}
+                                id="uploadImage"
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
 
                   <ControlledTextInput
                     label={t("first_name")}
                     name="firstName"
                     placeholder={t("enter_first_name")}
+                    dir={langDir}
                   />
 
                   <ControlledTextInput
                     label={t("last_name")}
                     name="lastName"
                     placeholder={t("enter_last_name")}
+                    dir={langDir}
                   />
 
                   <FormField
                     control={form.control}
                     name="gender"
                     render={({ field }) => (
-                      <FormItem className="mb-5 flex w-full flex-col items-start">
-                        <FormLabel className="mb-3 mr-6 capitalize">
+                      <FormItem className="mb-5 mt-3 flex w-full flex-col items-start" dir={langDir}>
+                        <FormLabel
+                          className="mb-3 mr-6 capitalize"
+                        >
                           {t("gender")}
                         </FormLabel>
                         <FormControl>
@@ -456,17 +530,31 @@ export default function ProfilePage() {
                     )}
                   />
 
-                  <ControlledDatePicker
-                    label={t("dob")}
-                    name="dateOfBirth"
+                  <ControlledDatePicker label={t("dob")} name="dateOfBirth" />
+
+                  <ControlledTextInput
+                    label={t("username")}
+                    name="userName"
+                    placeholder={t("enter_username")}
+                    dir={langDir}
+                  />
+                  <ControlledTextInput
+                    label={t("email")}
+                    name="email"
+                    placeholder={t("enter_email")}
+                    dir={langDir}
+                    disabled
+                  />
+                  <ControlledTextInput
+                    label={t("new_password")}
+                    name="newPassword"
+                    placeholder="**********"
+                    type="password"
+                    dir={langDir}
                   />
 
-                  <ControlledTextInput label={t("username")} name="userName" placeholder={t("enter_username")} />
-                  <ControlledTextInput label={t("email")} name="email" placeholder={t("enter_email")} disabled />
-                  <ControlledTextInput label={t("new_password")} name="newPassword" placeholder="**********" type="password" />
-
                   <div className="w-full">
-                    <div className="flex w-full items-center justify-between">
+                    <div className="flex w-full items-center justify-between" dir={langDir}>
                       <label
                         className={cn(
                           "block text-left text-sm font-medium capitalize leading-4 text-color-dark",
@@ -497,7 +585,11 @@ export default function ProfilePage() {
 
                   {fieldArrayForPhoneNumber.fields.map((field, index) => (
                     <div key={field.id} className="relative w-full">
-                      <ControlledPhoneInput name={`phoneNumberList.${index}.phoneNumber`} countryName={`phoneNumberList.${index}.cc`} placeholder="Enter Your Phone Number" />
+                      <ControlledPhoneInput
+                        name={`phoneNumberList.${index}.phoneNumber`}
+                        countryName={`phoneNumberList.${index}.cc`}
+                        placeholder="Enter Your Phone Number"
+                      />
 
                       {index !== 0 ? (
                         <Button
@@ -517,8 +609,10 @@ export default function ProfilePage() {
                   ))}
 
                   <div className="mb-1 w-full">
-                    <div className="flex w-full items-center justify-between">
-                      <label className="block text-left text-sm font-medium capitalize leading-4 text-color-dark">
+                    <div className="flex w-full items-center justify-between" dir={langDir}>
+                      <label
+                        className="block text-left text-sm font-medium capitalize leading-4 text-color-dark"
+                      >
                         {t("social_links")}
                       </label>
 
@@ -548,6 +642,7 @@ export default function ProfilePage() {
                         <AccordionItem
                           value="item-1"
                           className="mt-2 border-b-0"
+                          dir={langDir}
                         >
                           <AccordionTrigger className="flex justify-between py-0 hover:!no-underline">
                             <div className="mb-2 flex items-center text-sm font-normal leading-4 text-color-dark">
@@ -555,7 +650,7 @@ export default function ProfilePage() {
                                 <Image
                                   src={
                                     SOCIAL_MEDIA_ICON[
-                                    watchSocialMedia[index]?.linkType
+                                      watchSocialMedia[index]?.linkType
                                     ]
                                   }
                                   className="mr-1.5"
@@ -564,7 +659,9 @@ export default function ProfilePage() {
                                   alt="social-facebook-icon"
                                 />
                               ) : (
-                                <span className="capitalize">{t("select_type")}</span>
+                                <span className="capitalize">
+                                  {t("select_type")}
+                                </span>
                               )}
                               <div className="wrap relative flex break-all">
                                 <p
@@ -602,7 +699,8 @@ export default function ProfilePage() {
                             <ControlledTextInput
                               label={t("link")}
                               name={`socialLinkList.${index}.link`}
-                              placeholder="Enter Your Link"
+                              placeholder={t("enter_your_link")}
+                              dir={langDir}
                             />
                           </AccordionContent>
                         </AccordionItem>
@@ -610,7 +708,7 @@ export default function ProfilePage() {
                       <Button
                         type="button"
                         onClick={() => removeSocialLinks(index)}
-                        className="absolute right-11 top-3.5 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                        className={`absolute ${langDir == 'rtl' ? 'ml-2' : 'right-11'} top-3.5 flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent`}
                       >
                         <Image
                           src="/images/social-delete-icon.svg"
@@ -628,12 +726,14 @@ export default function ProfilePage() {
                       name="uploadIdentityFrontImage"
                       render={({ field }) => (
                         <FormItem className="mb-3.5 w-full">
-                          <FormLabel className="block">
+                          <FormLabel className="block" dir={langDir}>
                             {t("upload_identity_proof")}
                           </FormLabel>
                           <div className="upload-identity-proof-both-side">
                             <div className="upload-identity-proof-both-side-col">
-                              <FormLabel className="block">{t("front")}</FormLabel>
+                              <FormLabel className="block" dir={langDir}>
+                                {t("front")}
+                              </FormLabel>
                               <FormControl>
                                 <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
@@ -663,11 +763,11 @@ export default function ProfilePage() {
                                       <Image
                                         src={
                                           identityFrontImageFile &&
-                                            typeof identityFrontImageFile ===
+                                          typeof identityFrontImageFile ===
                                             "object"
                                             ? URL.createObjectURL(
-                                              identityFrontImageFile[0],
-                                            )
+                                                identityFrontImageFile[0],
+                                              )
                                             : me.data?.data?.identityProof
                                               ? me.data?.data?.identityProof
                                               : "/images/company-logo.png"
@@ -678,7 +778,11 @@ export default function ProfilePage() {
                                         className="object-contain"
                                       />
                                     ) : (
-                                      <AddImageContent description={t("drop_your_identity_proof")} />
+                                      <AddImageContent
+                                        description={t(
+                                          "drop_your_identity_proof",
+                                        )}
+                                      />
                                     )}
 
                                     <Input
@@ -694,7 +798,10 @@ export default function ProfilePage() {
                                             524288000
                                           ) {
                                             toast({
-                                              title: t("image_size_should_be_less_than_size", { size: "500MB" }),
+                                              title: t(
+                                                "image_size_should_be_less_than_size",
+                                                { size: "500MB" },
+                                              ),
                                               variant: "danger",
                                             });
                                             return;
@@ -713,7 +820,9 @@ export default function ProfilePage() {
                               </FormControl>
                             </div>
                             <div className="upload-identity-proof-both-side-col">
-                              <FormLabel className="block">{t("back")}</FormLabel>
+                              <FormLabel className="block" dir={langDir}>
+                                {t("back")}
+                              </FormLabel>
                               <FormControl>
                                 <div className="upload-identity-proof-box relative w-full border-2 border-dashed border-gray-300">
                                   <div className="relative h-full w-full">
@@ -746,11 +855,11 @@ export default function ProfilePage() {
                                       <Image
                                         src={
                                           identityBackImageFile &&
-                                            typeof identityBackImageFile ===
+                                          typeof identityBackImageFile ===
                                             "object"
                                             ? URL.createObjectURL(
-                                              identityBackImageFile[0],
-                                            )
+                                                identityBackImageFile[0],
+                                              )
                                             : me.data?.data?.identityProofBack
                                               ? me.data?.data?.identityProofBack
                                               : "/images/company-logo.png"
@@ -761,7 +870,11 @@ export default function ProfilePage() {
                                         className="object-contain"
                                       />
                                     ) : (
-                                      <AddImageContent description={t("drop_your_identity_proof")} />
+                                      <AddImageContent
+                                        description={t(
+                                          "drop_your_identity_proof",
+                                        )}
+                                      />
                                     )}
 
                                     <Input
@@ -777,7 +890,10 @@ export default function ProfilePage() {
                                             524288000
                                           ) {
                                             toast({
-                                              title: t("image_size_should_be_less_than_size", { size: "500MB" }),
+                                              title: t(
+                                                "image_size_should_be_less_than_size",
+                                                { size: "500MB" },
+                                              ),
                                               variant: "danger",
                                             });
                                             return;
@@ -802,7 +918,7 @@ export default function ProfilePage() {
                     />
                   ) : null}
 
-                  <p className="mb-3 text-[13px] text-red-500">
+                  <p className="mb-3 text-[13px] text-red-500" dir={langDir}>
                     {form.formState.errors.socialLinkList?.message}
                   </p>
 
@@ -810,6 +926,7 @@ export default function ProfilePage() {
                     disabled={updateProfile.isPending || upload.isPending}
                     type="submit"
                     className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold  leading-6"
+                    dir={langDir}
                   >
                     {updateProfile.isPending || upload.isPending ? (
                       <>

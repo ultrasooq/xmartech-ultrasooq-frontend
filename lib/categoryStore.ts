@@ -4,6 +4,7 @@ export type State = {
   subCategories: any[];
   subSubCategories: any[];
   categoryId?: string;
+  categoryIds?: string;
   subCategoryIndex?: number;
   secondLevelCategoryIndex?: number;
   subCategoryParentName?: string;
@@ -14,6 +15,7 @@ export type Actions = {
   setSubCategories: (data: any[]) => void;
   setSubSubCategories: (data: any[]) => void;
   setCategoryId: (data: string) => void;
+  setCategoryIds: (data: string) => void;
   setSubCategoryIndex: (data: number) => void;
   setSecondLevelCategoryIndex: (data: number) => void;
   setSubCategoryParentName: (data: string) => void;
@@ -24,6 +26,7 @@ export const initialCategoryState: State = {
   subCategories: [],
   subSubCategories: [],
   categoryId: undefined,
+  categoryIds: undefined,
   subCategoryIndex: undefined,
   secondLevelCategoryIndex: 0,
   subCategoryParentName: undefined,
@@ -38,6 +41,7 @@ export const useCategoryStore = create<State & Actions>()((set) => ({
   setSubSubCategories: (data) =>
     set((state) => ({ ...state, subSubCategories: data })),
   setCategoryId: (data) => set((state) => ({ ...state, categoryId: data })),
+  setCategoryIds: (data) => set((state) => ({ ...state, categoryIds: data })),
   setSubCategoryIndex: (data) =>
     set((state) => ({ ...state, subCategoryIndex: data })),
   setSecondLevelCategoryIndex: (data) =>

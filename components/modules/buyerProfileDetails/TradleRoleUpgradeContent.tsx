@@ -4,6 +4,7 @@ import Image from "next/image";
 import FreelancerIcon from "@/public/images/freelancer.svg";
 import CompanyIcon from "@/public/images/company.svg";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type TradeRoleUpgradeContentProps = {
   onClose?: () => void;
@@ -15,10 +16,11 @@ const TradeRoleUpgradeContent: React.FC<TradeRoleUpgradeContentProps> = ({
   onConfirmRole,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   return (
     <DialogContent className="custom-action-type-chose-picker">
       <div className="modal-headerpart">
-        <h5>{t("select_your_preferred_role")}</h5>
+        <h5 dir={langDir}>{t("select_your_preferred_role")}</h5>
       </div>
       <div className="modal-bodypart">
         <div className="import-pickup-type-selector-lists">
@@ -34,7 +36,7 @@ const TradeRoleUpgradeContent: React.FC<TradeRoleUpgradeContentProps> = ({
                 <Image src={FreelancerIcon} alt="freelancer-icon" />
               </div>
               <div className="text-container">
-                <h5>{t("freelancer")}</h5>
+                <h5 dir={langDir}>{t("freelancer")}</h5>
                 <p></p>
               </div>
             </div>
@@ -51,7 +53,7 @@ const TradeRoleUpgradeContent: React.FC<TradeRoleUpgradeContentProps> = ({
                 <Image src={CompanyIcon} alt="company-icon" />
               </div>
               <div className="text-container">
-                <h5>{t("company")}</h5>
+                <h5 dir={langDir}>{t("company")}</h5>
                 <p></p>
               </div>
             </div>

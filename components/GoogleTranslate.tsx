@@ -17,7 +17,6 @@ const GoogleTranslate = () => {
           {
             pageLanguage: "en",
             includedLanguages: "en,ar",
-            layout: (window as any).google.translate.TranslateElement.InlineLayout.SIMPLE,
           },
           "google_translate_element"
         );
@@ -39,7 +38,7 @@ const GoogleTranslate = () => {
     };
   }, []);
 
-  return <div id="google_translate_element" className="m-2"></div>;
+  return <div id="google_translate_element" className="m-2 hidden"></div>;
 };
 
 export default GoogleTranslate;

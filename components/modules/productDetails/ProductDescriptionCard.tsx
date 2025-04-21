@@ -19,10 +19,12 @@ import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductDescriptionCardProps = {
   productId: string;
   productName: string;
+  productType?: string;
   brand: string;
   productPrice: string;
   offerPrice: string;
@@ -52,6 +54,7 @@ type ProductDescriptionCardProps = {
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   productId,
   productName,
+  productType,
   brand,
   productPrice,
   offerPrice,
@@ -78,6 +81,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   onQuantityChange, // Callback to update productQuantity outside
 }) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(productQuantity);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
@@ -85,7 +89,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {
@@ -124,14 +128,49 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   const updateQuantity = (newQuantity: number, action: "add" | "remove") => {
     if (maxQuantity && maxQuantity < newQuantity) {
       toast({
-        description: t('max_quantity_must_be_n', { n: maxQuantity }),
-        variant: "danger"
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
       });
       return;
     }
 
     setQuantity(newQuantity);
     onQuantityChange?.(newQuantity, action); // Notify parent if function exists
+  };
+
+  const handleQuantityChange = () => {
+    if (quantity == 0) {
+      if (productQuantity != 0) {
+        toast({
+          description: t("quantity_can_not_be_0"),
+          variant: "danger",
+        });
+      }
+      setQuantity(productQuantity);
+      return;
+    }
+
+    if (minQuantity && minQuantity > quantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      });
+      setQuantity(productQuantity);
+      return;
+    }
+
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      });
+      setQuantity(productQuantity);
+      return;
+    }
+
+    const action = quantity > productQuantity ? "add" : "remove";
+    if (quantity != productQuantity && onQuantityChange)
+      onQuantityChange(quantity, action);
   };
 
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -176,7 +215,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   // For CountDown
 
   useEffect(() => {
-    if (!productPriceArr?.length || productPriceArr[0]?.sellType !== "BUYGROUP")
+    if (
+      !productPriceArr?.length ||
+      productPriceArr?.[0]?.sellType !== "BUYGROUP"
+    )
       return;
 
     const product = productPriceArr[0];
@@ -250,14 +292,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           <div className="brand_sold_info !items-start">
             <div className="lediv w-full sm:w-1/2">
               <h5>
-                <span className="inline-block w-20 sm:!w-20">Brand:</span>{" "}
+                <span className="inline-block w-20 sm:!w-20">
+                  {t("brand")}:
+                </span>{" "}
                 {brand}
               </h5>
             </div>
 
             <div className="rgdiv flex w-full gap-x-2 sm:w-1/2">
               <h5 className="w-20 !capitalize !text-dark-orange sm:!w-20">
-                Sold By:
+                {t("sold_by")}:
               </h5>
               <Link
                 href={
@@ -278,14 +322,18 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           </div>
           {askForPrice === "true" ? (
             <h3 className="w-fit rounded !bg-dark-orange px-4 py-2 !font-semibold !normal-case !text-white !no-underline shadow-md">
-              Ask for price
+              {t("ask_for_price")}
             </h3>
-          ) : (
+          ) : productType != "R" ? (
             <h3>
-              ${calculateDiscountedPrice()}{" "}
-              <span>${Number(productProductPrice)}</span>
+              {currency.symbol}
+              {calculateDiscountedPrice()}{" "}
+              <span>
+                {currency.symbol}
+                {Number(productProductPrice)}
+              </span>
             </h3>
-          )}
+          ) : null}
         </div>
       )}
 
@@ -304,7 +352,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                       ))}
                     </ul>
                   ) : (
-                    <p>{t("no_description")}</p>
+                    <p dir={langDir}>{t("no_description")}</p>
                   )}
                 </div>
               </div>
@@ -313,7 +361,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         </div>
       )}
 
-      <div className="flex items-center gap-x-4">
+      <div className="flex items-center gap-x-3">
         <Button
           variant="outline"
           className="relative hover:shadow-sm"
@@ -322,7 +370,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         >
           <Image src={MinusIcon} alt="minus-icon" fill className="p-3" />
         </Button>
-        <p>{quantity}</p>
+        <input
+          type="text"
+          value={quantity}
+          className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-none"
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            setQuantity(isNaN(value) ? productQuantity : value);
+          }}
+          onBlur={handleQuantityChange}
+        />
         <Button
           variant="outline"
           className="relative hover:shadow-sm"
@@ -334,7 +391,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
       {isLoading ? (
         <Skeleton className="h-44 w-full" />
-      ) : productPriceArr[0]?.sellType === "BUYGROUP" ? (
+      ) : productPriceArr?.[0]?.sellType === "BUYGROUP" ? (
         <div className="info-col">
           <div className="row">
             <div className="col-12 col-md-12">
@@ -342,7 +399,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 {/* <label>Report Abuse</label> */}
                 <p>
                   {timeLeft !== "NotStarted" && timeLeft !== "Expired" && (
-                    <div className="">
+                    <div className="" dir={langDir}>
                       {t("time_left")}
                       <div className="time_wrap">
                         <div className="time_field">
@@ -350,7 +407,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                           <h6>Days</h6>
                         </div>
                         <div className="time_field">
-                          <h3>{timeLeft.split(':')[1]}</h3>
+                          <h3>{timeLeft.split(":")[1]}</h3>
                           <h6>Hours</h6>
                         </div>
                         <div className="time_field">
@@ -366,42 +423,50 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   )}
                 </p>
                 <p>
-                  <span className="color-text">
+                  <span className="color-text" dir={langDir}>
                     {t("group_buy_deal_ends")} :
                   </span>{" "}
                   {formatDateTimeWithTimezone(
-                    productPriceArr[0]?.dateClose,
-                    productPriceArr[0]?.endTime,
+                    productPriceArr?.[0]?.dateClose,
+                    productPriceArr?.[0]?.endTime,
                   )}
                 </p>
                 <p>
-                  <span className="color-text">{t("timezone")}:</span>{" "}
+                  <span className="color-text" dir={langDir}>
+                    {t("timezone")}:
+                  </span>{" "}
                   {getUTCOffset()} ({userTimezone})
                 </p>
 
                 <p>
-                  <span className="color-text">{t("min_quantity")}:</span>{" "}
-                  <b>{productPriceArr[0]?.minQuantity}</b>
+                  <span className="color-text" dir={langDir}>
+                    {t("min_quantity")}:
+                  </span>{" "}
+                  <b>{productPriceArr?.[0]?.minQuantity}</b>
                 </p>
                 <p>
-                  <span className="color-text">{(t("max_quantity"))}:</span>{" "}
-                  <b>{productPriceArr[0]?.maxQuantity}</b>
+                  <span className="color-text" dir={langDir}>
+                    {t("max_quantity")}:
+                  </span>{" "}
+                  <b>{productPriceArr?.[0]?.maxQuantity}</b>
                 </p>
                 <p>
-                  <span className="color-text">{t("deals_sold")}:</span>
+                  <span className="color-text" dir={langDir}>
+                    {t("deals_sold")}:
+                  </span>
                   {0}
                 </p>
                 <p>
-                  <span className="color-text">
+                  <span className="color-text" dir={langDir}>
                     {t("min_quantity_per_customer")}:
                   </span>{" "}
-                  <b>{productPriceArr[0]?.minQuantityPerCustomer}</b>
+                  <b>{productPriceArr?.[0]?.minQuantityPerCustomer}</b>
                 </p>
                 <p>
-                  <span className="color-text">
+                  <span className="color-text" dir={langDir}>
                     {t("max_quantity_per_customer")}:
                   </span>{" "}
-                  <b>{productPriceArr[0]?.maxQuantityPerCustomer}</b>
+                  <b>{productPriceArr?.[0]?.maxQuantityPerCustomer}</b>
                 </p>
               </div>
             </div>
@@ -421,7 +486,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     width={28}
                     height={22}
                   />
-                  <span>{t("secure_payment")}</span>
+                  <span dir={langDir}>{t("secure_payment")}</span>
                 </li>
                 <li>
                   <Image
@@ -430,7 +495,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                     width={28}
                     height={28}
                   />
-                  <span>{t("secure_payment")}</span>
+                  <span dir={langDir}>{t("secure_payment")}</span>
                 </li>
               </ul>
             </div>
@@ -445,16 +510,23 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           <div className="row">
             <div className="col-12 col-md-12">
               <div className="form-group mb-0">
-                <label>{t("report_abuse")}</label>
+                <label dir={langDir}>{t("report_abuse")}</label>
                 <p>
-                  <span className="color-text">{t("sku")}:</span> {skuNo}
+                  <span className="color-text" dir={langDir}>
+                    {t("sku")}:
+                  </span>{" "}
+                  {skuNo}
                 </p>
                 <p>
-                  <span className="color-text">{t("categories")}:</span>{" "}
+                  <span className="color-text" dir={langDir}>
+                    {t("categories")}:
+                  </span>{" "}
                   {category}
                 </p>
                 <p>
-                  <span className="color-text">{t("tags")}:</span>{" "}
+                  <span className="color-text" dir={langDir}>
+                    {t("tags")}:
+                  </span>{" "}
                   {productTags
                     ?.map((item) => item.productTagsTag?.tagName)
                     .join(", ")}
@@ -471,14 +543,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                       className="font-bold text-red-500"
                       onClick={() => setIsDrawerOpen(true)}
                     >
-                      See other sellers
+                      {t("see_other_sellers")}
                     </Button>
                     {/* </DrawerTrigger> */}
                     <DrawerContent className="left-auto right-0 top-0 mt-0 w-[600px] rounded-none">
                       <ScrollArea className="h-screen">
                         <div className="mx-auto w-full p-2">
                           <DrawerHeader>
-                            <DrawerTitle>{t("all_sellers")}</DrawerTitle>
+                            <DrawerTitle dir={langDir}>
+                              {t("all_sellers")}
+                            </DrawerTitle>
                           </DrawerHeader>
                           <OtherSellerSection
                             setIsDrawerOpen={setIsDrawerOpen}

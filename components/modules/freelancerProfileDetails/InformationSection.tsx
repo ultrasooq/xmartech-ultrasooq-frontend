@@ -3,6 +3,7 @@ import Image from "next/image";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type InformationSectionProps = {
   userDetails: any;
@@ -12,6 +13,8 @@ const InformationSection: React.FC<InformationSectionProps> = ({
   userDetails,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
+
   const getSocialLinks = useMemo(() => {
     if (userDetails?.userSocialLink?.length > 0) {
       const socialLinks = userDetails?.userSocialLink?.map(
@@ -40,13 +43,14 @@ const InformationSection: React.FC<InformationSectionProps> = ({
   return (
     <div className="w-full border-b-2 border-dashed border-gray-200 py-4">
       <div className="flex w-full flex-wrap items-center justify-between pb-5">
-        <h2 className="left-8 text-2xl font-semibold text-color-dark">
+        <h2 className="left-8 text-2xl font-semibold text-color-dark" dir={langDir}>
           {t("contact_information")}
         </h2>
         <div className="w-auto">
           <Link
             href="/profile"
             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+            dir={langDir}
           >
             <Image
               src={EditIcon}
@@ -63,23 +67,23 @@ const InformationSection: React.FC<InformationSectionProps> = ({
         <div className="w-full">
           <div className="flex w-full flex-wrap py-3.5">
             <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0">
-              <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+              <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                 {t("email")}:
               </span>
             </div>
-            <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0">
+            <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0" dir={langDir}>
               <p className="text-base font-medium leading-4 text-color-dark">
                 {userDetails?.email || "NA"}
               </p>
             </div>
           </div>
           <div className="flex w-full flex-wrap py-3.5">
-            <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0">
+            <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0" dir={langDir}>
               <span className="text-sm font-normal capitalize leading-4 text-gray-500">
                 {t("phone")}:
               </span>
             </div>
-            <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0">
+            <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0" dir={langDir}>
               <p className="text-base font-medium leading-4 text-color-dark">
                 {userDetails?.phoneNumber || "NA"}
               </p>
@@ -87,11 +91,11 @@ const InformationSection: React.FC<InformationSectionProps> = ({
           </div>
           <div className="flex w-full flex-wrap py-3.5">
             <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0">
-              <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+              <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                 {t("social_links")}:
               </span>
             </div>
-            <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0">
+            <div className="mr-1 flex w-10/12  items-center justify-start sm:mr-0" dir={langDir}>
               <div className="flex gap-x-3 text-base font-medium capitalize leading-4 text-color-dark">
                 {getSocialLinks}
               </div>

@@ -26,7 +26,13 @@ export type State = {
     shippingProvince?: string;
     shippingCountry?: string;
     shippingPostCode?: string;
+    town?: string;
+    countryId?: number;
+    stateId?: number;
+    cityId?: number;
+    userAddressId?: number;
   };
+  total: number;
 };
 
 // export type Actions = {
@@ -35,6 +41,7 @@ export type State = {
 export type Actions = {
   setOrders: (data: State["orders"]) => void;
   resetOrders: () => void;
+  setTotal: (total: number) => void;
 };
 
 export const initialOrderState: State = {
@@ -57,6 +64,7 @@ export const initialOrderState: State = {
     shippingCountry: "",
     shippingPostCode: "",
   },
+  total: 0
 };
 
 // export const useOrderStore = create<State & Actions>()((set) => ({
@@ -72,6 +80,10 @@ export const useOrderStore = create<State & Actions>()(
       setOrders: (data) => set({ orders: data }),
 
       resetOrders: () => set({ orders: initialOrderState.orders }),
+
+      total: initialOrderState.total,
+
+      setTotal: (total) => set({ total: total })
     }),
     {
       name: "order-storage", // Key to store in localStorage

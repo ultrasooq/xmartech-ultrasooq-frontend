@@ -40,9 +40,11 @@ import ProductCard from "@/components/modules/cartList/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CartItem } from "@/utils/types/cart.types";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const ProductDetailsPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const searchParams = useParams();
   const searchQuery = useSearchParams();
@@ -55,12 +57,15 @@ const ProductDetailsPage = () => {
   const type = searchQuery?.get("type");
   const otherSellerId = searchQuery?.get("sellerId");
   const otherProductId = searchQuery?.get("productId");
+  const sharedLinkId = searchQuery?.get("sharedLinkId") || '';
+  const [isShareLinkProcessed, setIsShareLinkProcessed] = useState<boolean>(false);
 
   const me = useMe();
   const productQueryById = useProductById(
     {
       productId: searchParams?.id ? (searchParams?.id as string) : "",
       userId: me.data?.data?.id,
+      sharedLinkId: sharedLinkId,
     },
     !!searchParams?.id && !otherSellerId && !otherProductId,
   );
@@ -143,6 +148,25 @@ const ProductDetailsPage = () => {
     }
   };
 
+  const addToCartFromSharedLink = async () => {
+    if (isShareLinkProcessed) return;
+
+    if (productQueryById?.data?.generatedLinkDetail && !cartListByUser?.isLoading && !cartListByDeviceQuery?.isLoading) {
+      const item = memoizedCartList.find((item: any) => item.productId == Number(searchParams?.id || ''));
+      if (!item || (item && item.sharedLinkId != productQueryById.data.generatedLinkDetail.id)) {
+        if (item) {
+          await handleRemoveItemFromCart(item.id);
+        }
+        const minQuantity = productDetails?.product_productPrice?.length
+          ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+          : null;
+        let quantity = item?.quantity || minQuantity || 1;
+        handleAddToCart(quantity, "add");
+        setIsShareLinkProcessed(true);
+      }
+    }
+  }
+
   const productDetails = !otherSellerId
     ? productQueryById.data?.data
     : productQueryByOtherSeller.data?.data;
@@ -162,6 +186,13 @@ const ProductDetailsPage = () => {
   const [globalQuantity, setGlobalQuantity] = useState(0); // Global state
 
   useEffect(() => {
+    addToCartFromSharedLink();
+  }, [
+    productQueryById?.data?.generatedLinkDetail, 
+    memoizedCartList
+  ]);
+
+  useEffect(() => {
     setGlobalQuantity(
       getProductQuantityByUser || getProductQuantityByDevice || 0,
     );
@@ -172,6 +203,18 @@ const ProductDetailsPage = () => {
     if (isAddedToCart) {
       handleAddToCart(quantity, action);
     } else {
+      if (action == "add") {
+        const minQuantity = productDetails?.product_productPrice?.length
+          ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+          : null;
+        if (
+          !minQuantity ||
+          minQuantity === 0 ||
+          (minQuantity && quantity == minQuantity)
+        ) {
+          handleAddToCart(quantity, action);
+        }
+      }
       setGlobalQuantity(quantity);
     }
   };
@@ -180,27 +223,33 @@ const ProductDetailsPage = () => {
     quantity: number,
     actionType: "add" | "remove",
   ) => {
-    const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+    const minQuantity = productDetails?.product_productPrice?.length
+      ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+      : null;
     if (actionType == "add" && minQuantity && minQuantity > quantity) {
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
         variant: "danger",
-      })
+      });
       return;
     }
 
-    const maxQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.maxQuantityPerCustomer : null; 
+    const maxQuantity = productDetails?.product_productPrice?.length
+      ? productDetails.product_productPrice[0]?.maxQuantityPerCustomer
+      : null;
     if (maxQuantity && maxQuantity < quantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
         variant: "danger",
-      })
+      });
       return;
     }
 
     if (actionType == "remove" && minQuantity && minQuantity > quantity) {
       quantity = 0;
     }
+
+    const sharedLinkId = productQueryById?.data?.generatedLinkDetail?.id;
 
     if (haveAccessToken) {
       if (!productDetails?.product_productPrice?.[0]?.id) {
@@ -219,12 +268,16 @@ const ProductDetailsPage = () => {
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
+        sharedLinkId,
       });
 
       if (response.status) {
         setGlobalQuantity(quantity);
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -244,11 +297,15 @@ const ProductDetailsPage = () => {
         productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
         deviceId,
+        sharedLinkId,
       });
       if (response.status) {
         setGlobalQuantity(quantity);
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -259,14 +316,19 @@ const ProductDetailsPage = () => {
   };
 
   const handleCartPage = async () => {
-    if ((getProductQuantityByUser || 0) >= 1 || (getProductQuantityByDevice || 0) >= 1) {
+    if (
+      (getProductQuantityByUser || 0) >= 1 ||
+      (getProductQuantityByDevice || 0) >= 1
+    ) {
       router.push("/cart");
       return;
     }
 
     let quantity = globalQuantity;
     if (quantity == 0) {
-      const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+      const minQuantity = productDetails?.product_productPrice?.length
+        ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+        : null;
       quantity = minQuantity || 1;
     }
     const response = await handleAddToCart(quantity, "add");
@@ -276,16 +338,21 @@ const ProductDetailsPage = () => {
       }, 2000);
     }
   };
-  
+
   const handleCheckoutPage = async () => {
-    if ((getProductQuantityByUser || 0) >= 1 || (getProductQuantityByDevice || 0) >= 1) {
+    if (
+      (getProductQuantityByUser || 0) >= 1 ||
+      (getProductQuantityByDevice || 0) >= 1
+    ) {
       router.push("/checkout");
       return;
     }
 
     let quantity = globalQuantity;
     if (quantity == 0) {
-      const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+      const minQuantity = productDetails?.product_productPrice?.length
+        ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+        : null;
       quantity = minQuantity || 1;
     }
     const response = await handleAddToCart(quantity, "add");
@@ -369,7 +436,7 @@ const ProductDetailsPage = () => {
 
   return (
     <>
-      <title>Store | Ultrasooq</title>
+      <title dir={langDir}>{t("store")} | Ultrasooq</title>
       <div className="body-content-s1 relative">
         <div className="product-view-s1-left-right type2">
           <div className="container m-auto px-3">
@@ -399,6 +466,7 @@ const ProductDetailsPage = () => {
             <ProductDescriptionCard
               productId={searchParams?.id ? (searchParams?.id as string) : ""}
               productName={productDetails?.productName}
+              productType={productDetails?.productType}
               brand={productDetails?.brand?.brandName}
               productPrice={productDetails?.productPrice}
               offerPrice={productDetails?.product_productPrice?.[0]?.offerPrice}
@@ -440,10 +508,12 @@ const ProductDetailsPage = () => {
                 productDetails?.product_productPrice?.[0]?.askForPrice
               }
               minQuantity={
-                productDetails?.product_productPrice?.[0]?.minQuantityPerCustomer
+                productDetails?.product_productPrice?.[0]
+                  ?.minQuantityPerCustomer
               }
               maxQuantity={
-                productDetails?.product_productPrice?.[0]?.maxQuantityPerCustomer
+                productDetails?.product_productPrice?.[0]
+                  ?.maxQuantityPerCustomer
               }
               otherSellerDetails={otherSellerDetails}
               productPriceArr={productDetails?.product_productPrice}
@@ -459,36 +529,42 @@ const ProductDetailsPage = () => {
                     <TabsTrigger
                       value="description"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("description")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="specification"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("specification")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="vendor"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("vendor")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="reviews"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("reviews")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="qanda"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("questions")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="offers"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("more_offers")}
                     </TabsTrigger>
@@ -500,7 +576,8 @@ const ProductDetailsPage = () => {
                           handleDescriptionParse(productDetails?.description) ||
                           undefined
                         }
-                        readOnly
+                        readOnly={true}
+                        fixedToolbar={false}
                       />
                     </div>
                   </TabsContent>
@@ -513,7 +590,7 @@ const ProductDetailsPage = () => {
                       ) : null}
                       {productDetails?.product_productSpecification?.length ? (
                         <div className="specification-sec">
-                          <h2>{t("specification")}</h2>
+                          <h2 dir={langDir}>{t("specification")}</h2>
                           <table className="specification-table">
                             <tbody>
                               <tr className="grid grid-cols-2">
@@ -598,6 +675,7 @@ const ProductDetailsPage = () => {
                   href="javascript:void(0)"
                   className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
                   onClick={handleCartPage}
+                  dir={langDir}
                 >
                   {t("go_to_cart_page")}
                 </a>
@@ -607,7 +685,9 @@ const ProductDetailsPage = () => {
                 !cartListByUser.data?.data?.length &&
                 !cartListByUser.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center">{t("no_cart_items")}</p>
+                    <p className="my-3 text-center" dir={langDir}>
+                      {t("no_cart_items")}
+                    </p>
                   </div>
                 ) : null}
 
@@ -615,7 +695,9 @@ const ProductDetailsPage = () => {
                 !cartListByDeviceQuery.data?.data?.length &&
                 !cartListByDeviceQuery.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center">{t("no_cart_items")}</p>
+                    <p className="my-3 text-center" dir={langDir}>
+                      {t("no_cart_items")}
+                    </p>
                   </div>
                 ) : null}
 
@@ -644,22 +726,27 @@ const ProductDetailsPage = () => {
                     productId={item.productId}
                     productPriceId={item.productPriceId}
                     productName={
-                      item.productPriceDetails?.productPrice_product?.productName
+                      item.productPriceDetails?.productPrice_product
+                        ?.productName
                     }
                     offerPrice={item.productPriceDetails?.offerPrice}
                     productQuantity={item.quantity}
                     productImages={
-                      item.productPriceDetails?.productPrice_product?.productImages
+                      item.productPriceDetails?.productPrice_product
+                        ?.productImages
                     }
                     consumerDiscount={
                       item.productPriceDetails?.consumerDiscount
                     }
-                    onAdd={handleAddToCart}
                     onRemove={handleRemoveItemFromCart}
                     onWishlist={handleAddToWishlist}
                     haveAccessToken={haveAccessToken}
-                    minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
-                    maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                    minQuantity={
+                      item?.productPriceDetails?.minQuantityPerCustomer
+                    }
+                    maxQuantity={
+                      item?.productPriceDetails?.maxQuantityPerCustomer
+                    }
                   />
                 ))}
               </div>

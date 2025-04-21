@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -11,9 +11,21 @@ import { IBrands, ISelectOptions } from "@/utils/types/common.types";
 import { useBrands } from "@/apis/queries/masters.queries";
 import { debounce } from "lodash";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
-const BrandFilterList = () => {
+type BrandFilterListTypes = {
+  selectAllBrands?: boolean;
+  selectedBrandsCount?: number;
+  onSelectBrands?: (brandIds: number[]) => void;
+};
+
+const BrandFilterList: React.FC<BrandFilterListTypes> = ({
+  selectAllBrands = false,
+  selectedBrandsCount,
+  onSelectBrands,
+}) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const brandsQuery = useBrands({
@@ -46,10 +58,36 @@ const BrandFilterList = () => {
       tempArr = tempArr.filter((ele: number) => ele !== item.value);
     }
     setSelectedBrandIds(tempArr);
+    onSelectBrands && onSelectBrands(tempArr);
   };
 
+  useEffect(() => {
+    if (selectAllBrands) {
+      setSelectedBrandIds(
+        brandsQuery?.data?.data.map((item: IBrands) => {
+          return item.id;
+        }) || [],
+      );
+
+      onSelectBrands &&
+        onSelectBrands(
+          brandsQuery?.data?.data.map((item: IBrands) => {
+            return item.id;
+          }) || [],
+        );
+    } else {
+      setSelectedBrandIds([]);
+    }
+  }, [selectAllBrands]);
+
+  useEffect(() => {
+    if (selectedBrandsCount == 0 && !selectAllBrands) {
+      setSelectedBrandIds([]);
+    }
+  }, [selectedBrandsCount]);
+
   return (
-    <div className="trending-search-sec">
+    <div className="trending-search-sec mt-0">
       <div className="container m-auto">
         <div className="left-filter">
           <Accordion
@@ -58,7 +96,7 @@ const BrandFilterList = () => {
             className="filter-col"
           >
             <AccordionItem value="brand">
-              <AccordionTrigger className="px-3 text-base hover:!no-underline">
+              <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
                 {t("by_brand")}
               </AccordionTrigger>
               <AccordionContent>
@@ -68,12 +106,13 @@ const BrandFilterList = () => {
                     placeholder={t("search_brand")}
                     className="custom-form-control-s1 searchInput rounded-none"
                     onChange={handleDebounce}
+                    dir={langDir}
                   />
                 </div>
                 <div className="filter-body-part">
                   <div className="filter-checklists">
                     {!memoizedBrands.length ? (
-                      <p className="text-center text-sm font-medium">
+                      <p className="text-center text-sm font-medium" dir={langDir}>
                         {t("no_data_found")}
                       </p>
                     ) : null}

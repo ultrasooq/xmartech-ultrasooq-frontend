@@ -26,21 +26,25 @@ import { z } from "zod";
 import BannerImage from "@/public/images/rfq-sec-bg.png";
 import Footer from "@/components/shared/Footer";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
-const formSchema = z.object({
-  address: z.string().trim().min(1, { message: "Address is required" }),
-  rfqDate: z
-    .date({ required_error: "Delivery Date is required" })
-    .transform((val) => val.toISOString()),
-});
+const formSchema = (t: any) => {
+  return z.object({
+    address: z.string().trim().min(1, { message: t("address_required") }),
+    rfqDate: z
+      .date({ required_error: t("delivery_date_required") })
+      .transform((val) => val.toISOString()),
+  });
+};
 
 const RfqCartPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema(t)),
     defaultValues: {
       address: "",
       rfqDate: undefined as unknown as string,
@@ -63,8 +67,8 @@ const RfqCartPage = () => {
   const memoziedAddressList = useMemo(() => {
     return (
       allUserAddressQuery.data?.data.map((item: AddressItem) => ({
-        label: `${item.address} ${item.city} ${item.province} ${item.postCode} ${item.country}`,
-        value: `${item.address};${item.city};${item.province};${item.postCode};${item.country}`,
+        label: [item.address, item.town, item.cityDetail?.name, item?.stateDetail?.name, item.postCode, item.countryDetail?.name].filter(el => el).join(', '),
+        value: [item.address, item.town, item.cityDetail?.name, item?.stateDetail?.name, item.postCode, item.countryDetail?.name].filter(el => el).join(', '),
       })) || []
     );
   }, [allUserAddressQuery.data?.data]);
@@ -170,29 +174,30 @@ const RfqCartPage = () => {
               >
                 <MdOutlineChevronLeft />
               </button>
-              <h3>{t("rfq_cart_items")}</h3>
+              <h3 dir={langDir}>{t("rfq_cart_items")}</h3>
             </div>
             <div className="bodyPart">
               <div className="add-delivery-card">
-                <h3>{t("add_delivery_address_date")}</h3>
+                <h3 dir={langDir}>{t("add_delivery_address_date")}</h3>
                 <Form {...form}>
                   <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
                     <ControlledSelectInput
                       label={t("address")}
                       name="address"
                       options={memoziedAddressList}
+                      placeholder={t("select_address")}
                     />
 
                     <div>
-                      <Label>{t("date")}</Label>
-                      <ControlledDatePicker name="rfqDate" isFuture />
+                      <Label dir={langDir}>{t("date")}</Label>
+                      <ControlledDatePicker name="rfqDate" isFuture placeholder={t("enter_date")} />
                     </div>
                   </form>
                 </Form>
               </div>
 
               <div className="rfq-cart-item-lists">
-                <h4>{t("rfq_cart_items")}</h4>
+                <h4 dir={langDir}>{t("rfq_cart_items")}</h4>
                 <div className="rfq-cart-item-ul">
                   {memoizedRfqCartList.map((item: any) => (
                     <RfqProductCard
@@ -214,7 +219,7 @@ const RfqCartPage = () => {
 
                   {!memoizedRfqCartList.length ? (
                     <div className="my-10 text-center">
-                      <h4>{t("no_cart_items")}</h4>
+                      <h4 dir={langDir}>{t("no_cart_items")}</h4>
                     </div>
                   ) : null}
                 </div>

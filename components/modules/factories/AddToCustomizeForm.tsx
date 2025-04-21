@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import AddImageContent from "../profile/AddImageContent";
 import { v4 as uuidv4 } from "uuid";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   useCreateProduct,
   useRfqProductById,
@@ -23,7 +22,6 @@ import {
 import {
   useAddProductDuplicateRfq,
   useUpdateFactoriesCartWithLogin,
-  useUpdateRfqCartWithLogin,
 } from "@/apis/queries/rfq.queries";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
 import ReactPlayer from "react-player/lazy";
@@ -35,52 +33,67 @@ import {
   isVideo,
 } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type AddToCustomizeFormProps = {
-  onClose: () => void;
   selectedProductId?: number;
-//   selectedQuantity?: number;
+  onClose: () => void;
+  onAddToFactory?: () => void;
+  onAddToCart?: () => void;
 };
 
-const addFormSchema = z.object({
-  fromPrice: z.coerce
-    .number()
-    .max(1000000, {
-      message: "Offer From price must be less than 1000000",
-    })
-    .optional(),
+const addFormSchema = (t: any) => {
+  return z.object({
+    fromPrice: z.coerce
+      .number({ invalid_type_error: t("offer_price_from_required") })
+      .min(1, {
+        message: t("offer_price_from_required")
+      })
+      .max(1000000, {
+        message: t("offer_price_from_must_be_less_than_price", { price: 1000000 }),
+      }),
     toPrice: z.coerce
-    .number()
-    .max(1000000, {
-      message: "Offer To price must be less than 1000000",
-    })
-    .optional(),
-  note: z
-    .string()
-    .trim()
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    })
-    .optional(),
+      .number({ invalid_type_error: t("offer_price_to_required") })
+      .min(1, {
+        message: t("offer_price_to_required")
+      })
+      .max(1000000, {
+        message: t("offer_price_to_must_be_less_than_price", { price: 1000000 }),
+      }),
+    note: z
+      .string()
+      .trim()
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      })
+      .optional(),
     customizeproductImageList: z.any().optional(),
-});
+  }).refine(
+    ({ fromPrice, toPrice }) => {
+      return Number(fromPrice) < Number(toPrice);
+    },
+    {
+      message: t("offer_price_from_must_be_less_than_offer_price_to"),
+      path: ["fromPrice"],
+    }
+  );
+};
 
-const editFormSchema = z.object({
-  note: z
-    .string()
-    .trim()
-    .max(100, {
-      message: "Description must be less than 100 characters",
-    })
-    .optional(),
+const editFormSchema = (t: any) => {
+  return z.object({
+    note: z
+      .string()
+      .trim()
+      .max(100, {
+        message: t("description_must_be_less_than_n_chars", { n: 100 }),
+      })
+      .optional(),
     customizeproductImageList: z.any().optional(),
-});
+  });
+};
 
 const addDefaultValues = {
-  fromPrice: 0,
-  toPrice: 0,
   note: "",
   customizeproductImageList: undefined,
   productImages: [] as { path: File; id: string }[],
@@ -93,18 +106,16 @@ const editDefaultValues = {
 };
 
 const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
-  onClose,
   selectedProductId,
-//   selectedQuantity,
+  onClose,
+  onAddToFactory,
+  onAddToCart,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const router = useRouter();
   const form = useForm({
-    // resolver: zodResolver(selectedQuantity ? addFormSchema : editFormSchema),
-    // defaultValues: selectedQuantity ? addDefaultValues : editDefaultValues,
-    resolver: zodResolver(addFormSchema),
+    resolver: zodResolver(addFormSchema(t)),
     defaultValues: addDefaultValues,
   });
   const photosRef = useRef<HTMLInputElement>(null);
@@ -122,7 +133,6 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
     },
     !!selectedProductId,
   );
-  const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
 
   const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
 
@@ -160,30 +170,21 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
     quantity: number,
     productId: number,
     customizeProductId: number,
-    // offerPrice: number,
-    // note: string,
   ) => {
     const response = await updateFactoriesCartWithLogin.mutateAsync({
       productId,
       quantity,
       customizeProductId
-      // offerPrice,
-      // note,
     });
 
     if (response.status) {
       toast({
-        title: t("something_went_wrong"),
+        title: t("item_added_to_cart"),
         description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
-      // form.reset();
-      // productQueryById.refetch();
-      // queryClient.invalidateQueries({
-      //   queryKey: ["rfq-products"],
-      // });
-        router.push(`/factories-cart`);
-        onClose();
+      if (onAddToCart) onAddToCart();
+      onClose();
     } else {
       toast({
         title: t("something_went_wrong"),
@@ -194,7 +195,6 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
   };
 
   const onSubmit = async (formData: any) => {
-    // console.log(formData); return
     const updatedFormData = { ...formData };
     if (watchProductImages.length) {
       const fileTypeArrays = watchProductImages.filter(
@@ -258,7 +258,6 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
       });
 
       updatedFormData.productImages = [
-        // ...stringTypeArrays,
         ...formattedimageUrlArrays,
       ];
 
@@ -269,19 +268,9 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
 
     delete updatedFormData.productImages;
 
-    // console.log(productQueryById, selectedProductId)
-
-    if (
-      selectedProductId
-    ) {
-      // F type product
-
-      console.log(updatedFormData); 
-
-      // return;
+    if (selectedProductId) {
       const response = await updateForCustomize.mutateAsync({
         productId: selectedProductId,
-        // productType: "F",
         ...updatedFormData,
       });
       if (response.status) {
@@ -291,12 +280,14 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
           variant: "success",
         });
 
-         await handleAddToCart(
-            1,
-            Number(selectedProductId),
-            response?.data.id,
-          );
-        
+        if (onAddToFactory) onAddToFactory();
+
+        await handleAddToCart(
+          1,
+          Number(selectedProductId),
+          response?.data.id,
+        );
+
       } else {
         toast({
           title: t("customize_product_update_failed"),
@@ -304,7 +295,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
           variant: "danger",
         });
       }
-    } 
+    }
 
     if (isBrowser())
       window.scrollTo({
@@ -319,36 +310,36 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
 
       const productImages = product?.productImages?.length
         ? product?.productImages?.map((item: any) => {
-            if (item?.image) {
-              return {
-                path: item?.image,
-                id: uuidv4(),
-              };
-            } else if (item?.video) {
-              return {
-                path: item?.video,
-                id: uuidv4(),
-              };
-            }
-          })
+          if (item?.image) {
+            return {
+              path: item?.image,
+              id: uuidv4(),
+            };
+          } else if (item?.video) {
+            return {
+              path: item?.video,
+              id: uuidv4(),
+            };
+          }
+        })
         : [];
 
       const customizeproductImageList = product?.productImages
         ? product?.productImages?.map((item: any) => {
-            if (item?.video) {
-              return {
-                link: item?.video,
-                linkType: 'video',
-                videoName: item?.videoName,
-              };
-            } else if (item?.image) {
-              return {
-                link: item?.image,
-                linkType: 'image',
-                imageName: item?.imageName,
-              };
-            }
-          })
+          if (item?.video) {
+            return {
+              link: item?.video,
+              linkType: 'video',
+              videoName: item?.videoName,
+            };
+          } else if (item?.image) {
+            return {
+              link: item?.image,
+              linkType: 'image',
+              imageName: item?.imageName,
+            };
+          }
+        })
         : undefined;
 
       form.reset({
@@ -363,7 +354,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
   return (
     <>
       <div className="modal-header !justify-between">
-        <DialogTitle className="text-center text-xl font-bold">
+        <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
           {t("add_customize_cart")}
         </DialogTitle>
         <Button
@@ -380,7 +371,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
         >
           <div className="relative mb-4 w-full">
             <div className="space-y-2">
-              <label className="text-sm font-medium leading-none text-color-dark">
+              <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                 {t("product_image")}
               </label>
               <div className="flex w-full flex-wrap">
@@ -472,7 +463,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                                     </div>
 
                                     <div className="absolute h-20 w-full p-5">
-                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
+                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir}>
                                         {t("upload_video")}
                                       </p>
                                     </div>
@@ -506,25 +497,6 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                                 ) : (
                                   <AddImageContent description={t("drop_your_file")} />
                                 )}
-
-                                {/* <Input
-                                  type="file"
-                                  accept="image/*"
-                                  multiple={false}
-                                  className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
-                                  onChange={(event) =>
-                                    // handleFileChanges(event, field, item)
-                                    {
-                                      if (event.target.files) {
-                                        handleEditPreviewImage(
-                                          item?.id,
-                                          event.target.files,
-                                        );
-                                      }
-                                    }
-                                  }
-                                  id="productImages"
-                                /> */}
                               </div>
                             </div>
                           </FormControl>
@@ -534,7 +506,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                   ))}
                   <div className="relative mb-3 w-full pl-2">
                     <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
-                      <div className="text-sm font-medium leading-4 text-color-dark">
+                      <div className="text-sm font-medium leading-4 text-color-dark" dir={langDir}>
                         <Image
                           src="/images/plus.png"
                           className="m-auto mb-3"
@@ -552,36 +524,36 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                       multiple
                       className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
                       onChange={(event) =>
-                        // handleFileChanges(event, field, item)
-                        {
-                          if (event.target.files) {
-                            const filesArray = Array.from(event.target.files);
-                            console.log(filesArray);
-                            if (
-                              filesArray.some((file) => file.size > 524288000)
-                            ) {
-                              toast({
-                                title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
-                                variant: "danger",
-                              });
-                              return;
-                            }
-
-                            const newImages = filesArray.map((file) => ({
-                              path: file,
-                              id: uuidv4(),
-                            }));
-                            const updatedProductImages = [
-                              ...(watchProductImages || []),
-                              ...newImages,
-                            ];
-
-                            form.setValue(
-                              "productImages",
-                              updatedProductImages,
-                            );
+                      // handleFileChanges(event, field, item)
+                      {
+                        if (event.target.files) {
+                          const filesArray = Array.from(event.target.files);
+                          console.log(filesArray);
+                          if (
+                            filesArray.some((file) => file.size > 524288000)
+                          ) {
+                            toast({
+                              title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                              variant: "danger",
+                            });
+                            return;
                           }
+
+                          const newImages = filesArray.map((file) => ({
+                            path: file,
+                            id: uuidv4(),
+                          }));
+                          const updatedProductImages = [
+                            ...(watchProductImages || []),
+                            ...newImages,
+                          ];
+
+                          form.setValue(
+                            "productImages",
+                            updatedProductImages,
+                          );
                         }
+                      }
                       }
                       id="productImages"
                       ref={photosRef}
@@ -590,7 +562,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                 </div>
               </div>
 
-              <p className="text-[13px] !text-red-500">
+              <p className="text-[13px] !text-red-500" dir={langDir}>
                 {!watchProductImages?.length
                   ? form.formState.errors?.productImages?.message
                   : ""}
@@ -603,46 +575,36 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
             name="note"
             placeholder=""
             rows={6}
+            dir={langDir}
           />
 
-          {/* {selectedQuantity ? ( */}
+          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
             <ControlledTextInput
               label={t("offer_price_from")}
               name="fromPrice"
-              placeholder={t("offer_price")}
+              placeholder={t("offer_price_from")}
               type="number"
+              dir={langDir}
             />
 
             <ControlledTextInput
               label={t("offer_price_to")}
               name="toPrice"
-              placeholder={t("to_price")}
+              placeholder={t("offer_price_to")}
               type="number"
+              dir={langDir}
             />
-          {/* ) : null} */}
+          </div>
 
           <Button
-            disabled={
-            //   uploadMultiple.isPending ||
-            //   updateProduct.isPending ||
-            //   createProduct.isPending ||
-            //   addDuplicateProduct.isPending ||
-            updateFactoriesCartWithLogin.isPending
-            }
+            disabled={updateForCustomize?.isPending || updateFactoriesCartWithLogin?.isPending}
             type="submit"
-            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-3"
+            dir={langDir}
           >
-            {/* {uploadMultiple.isPending ||
-            updateProduct.isPending ||
-            createProduct.isPending ||
-            addDuplicateProduct.isPending ||
-            updateRfqCartWithLogin.isPending ? (
-              <LoaderWithMessage message="Please wait" />
-            ) : (
-              `${selectedQuantity ? "Add to Cart" : "Edit"}`
-            
-            )} */}
-            {t("add_t_cart")}
+            {updateForCustomize.isPending || updateFactoriesCartWithLogin.isPending ? (
+              <LoaderWithMessage message={t("please_wait")} />
+            ) : t("add_to_cart")}
           </Button>
         </form>
       </Form>

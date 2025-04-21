@@ -22,6 +22,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = z
   .object({
@@ -65,6 +66,7 @@ const formSchema = z
 
 export default function ChangePasswordPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -133,7 +135,7 @@ export default function ChangePasswordPage() {
               </div>
             ) : (
               <>
-                <h2 className="mb-4 text-[18px] font-semibold md:text-[22px]">
+                <h2 className="mb-4 text-[18px] font-semibold md:text-[22px]" dir={langDir}>
                   {t("change_password")}
                 </h2>
                 <div className="w-full">
@@ -146,7 +148,7 @@ export default function ChangePasswordPage() {
                         control={form.control}
                         name="password"
                         render={({ field }) => (
-                          <FormItem className="mb-4 w-full">
+                          <FormItem className="mb-4 w-full" dir={langDir}>
                             <FormLabel>{t("old_password")}</FormLabel>
                             <FormControl>
                               <Input
@@ -154,6 +156,7 @@ export default function ChangePasswordPage() {
                                 placeholder="**********"
                                 className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                                 {...field}
+                                dir={langDir}
                               />
                             </FormControl>
                             <FormMessage />
@@ -165,7 +168,7 @@ export default function ChangePasswordPage() {
                         control={form.control}
                         name="newPassword"
                         render={({ field }) => (
-                          <FormItem className="mb-4 w-full">
+                          <FormItem className="mb-4 w-full" dir={langDir}>
                             <FormLabel>{t("new_password")}</FormLabel>
                             <FormControl>
                               <Input
@@ -173,6 +176,7 @@ export default function ChangePasswordPage() {
                                 placeholder="**********"
                                 className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                                 {...field}
+                                dir={langDir}
                               />
                             </FormControl>
                             <FormMessage />
@@ -184,7 +188,7 @@ export default function ChangePasswordPage() {
                         control={form.control}
                         name="confirmPassword"
                         render={({ field }) => (
-                          <FormItem className="mb-4 w-full">
+                          <FormItem className="mb-4 w-full" dir={langDir}>
                             <FormLabel>{t("reenter_new_password")}</FormLabel>
                             <FormControl>
                               <Input
@@ -192,6 +196,7 @@ export default function ChangePasswordPage() {
                                 placeholder="**********"
                                 className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                                 {...field}
+                                dir={langDir}
                               />
                             </FormControl>
                             <FormMessage />

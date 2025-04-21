@@ -10,6 +10,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "next-intl";
 
 interface ControlledTimePickerProps {
   label?: string;
@@ -30,7 +32,9 @@ const generateTimeOptions = () => {
 const timeOptions = generateTimeOptions();
 
 const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name }) => {
+  const t = useTranslations();
   const { control, setValue, watch } = useFormContext();
+  const { langDir } = useAuth();
 
   return (
     <Controller
@@ -38,10 +42,10 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name
       control={control}
       render={({ field }) => (
         <FormItem className="mb-4 flex w-full flex-col">
-          <FormLabel>{label}</FormLabel>
+          <FormLabel dir={langDir}>{label}</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
-              <FormControl>
+              <FormControl dir={langDir}>
                 <Button
                   variant={"outline"}
                   className={cn(
@@ -49,11 +53,11 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name
                     !field.value && "text-muted-foreground"
                   )}
                 >
-                  {field.value ? field.value : <span>Select {label || "Time"}</span>}
+                  {field.value ? field.value : <span>{t("select")} {label || "Time"}</span>}
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-2 max-h-64 overflow-y-auto" align="start">
+            <PopoverContent className="w-auto p-2 max-h-64 overflow-y-auto" align={langDir == 'rtl' ? 'end' : 'start'}>
               <select
                 className="w-full border border-gray-300 rounded-lg p-2 text-lg cursor-pointer"
                 value={field.value || ""}
@@ -63,9 +67,10 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name
                   field.onChange(selectedTime); // ✅ Call field.onChange
                   // console.log(`Updated ${name}:`, selectedTime); // ✅ Debugging log
                 }}
+                dir={langDir}
               >
                 <option value="" disabled>
-                  Select Time
+                  {t("select_time")}
                 </option>
                 {timeOptions.map((time) => (
                   <option key={time} value={time}>

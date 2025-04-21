@@ -3,6 +3,7 @@ import React from "react";
 // import QuillEditor from "../Quill/QuillEditor";
 import { Controller, useFormContext } from "react-hook-form";
 import PlateEditor from "../Plate/PlateEditor";
+import { useAuth } from "@/context/AuthContext";
 
 interface ControlledRichTextEditorProps {
   label: string;
@@ -13,10 +14,11 @@ interface ControlledRichTextEditorProps {
 
 const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({ label, name, value, onChange, }) => {
   const formContext = useFormContext();
+  const { langDir } = useAuth();
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium leading-none text-color-dark">
+      <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
         {label}
       </label>
       <Controller

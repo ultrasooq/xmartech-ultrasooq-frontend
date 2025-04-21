@@ -67,7 +67,12 @@ export const useProducts = (
     page: number;
     limit: number;
     term?: string;
+    brandIds?: string;
     status?: string;
+    expireDate?: string;
+    sellType?: string;
+    discount?: boolean;
+    sort?: string;
   },
   enabled = true,
 ) =>
@@ -84,7 +89,7 @@ export const useProducts = (
   });
 
 export const useProductById = (
-  payload: { productId: string; userId?: number },
+  payload: { productId: string; userId?: number, sharedLinkId?: string },
   enabled = true,
 ) =>
   useQuery({
@@ -191,7 +196,7 @@ export const useExistingProduct = (payload: { page: number; limit: number; term?
 });
 
 
-export const useAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; }, enabled = true,) => useQuery({
+export const useAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; }, enabled = true,) => useQuery({
   queryKey: ["existing-products", payload],
   queryFn: async () => {
     const res = await fetchAllProducts(payload);
@@ -203,7 +208,7 @@ export const useAllProducts = (payload: { page: number; limit: number; term?: st
   enabled,
 });
 
-export const useAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; }, enabled = true,) => useQuery({
+export const useAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; }, enabled = true,) => useQuery({
   queryKey: ["existing-products", payload],
   queryFn: async () => {
     const res = await fetchAllBuyGroupProducts(payload);
@@ -307,6 +312,11 @@ export const useAllManagedProducts = (
     limit: number;
     term?: string;
     selectedAdminId?: number;
+    brandIds?: string;
+    status?: string;
+    expireDate?: string;
+    sellType?: string;
+    discount?: boolean;
   },
   enabled = true,
 ) =>
@@ -364,6 +374,13 @@ export const useVendorProducts = (
     adminId: string;
     page: number;
     limit: number;
+    term?: string;
+    brandIds?: string;
+    status?: string;
+    expireDate?: string;
+    sellType?: string;
+    discount?: boolean;
+    sort?: string;
   },
   enabled = true,
 ) =>

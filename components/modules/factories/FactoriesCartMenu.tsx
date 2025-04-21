@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import FactoriesCartMenuCard from "./FactoriesCartMenuCard";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type FactoryCartMenuProps = {
   onInitCart?: (cartList: any[]) => void; 
@@ -21,6 +22,7 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
   haveAccessToken,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
   const factoriesCartListByUser = useFactoriesCartListByUserId(
     {
@@ -64,19 +66,20 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
             <Link
               href="/factories-cart"
               className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
+              dir={langDir}
             >
               {t("go_to_factories_cart")}
             </Link>
           </div>
         ) : null}
 
-        <h4 className="text-center">
+        <h4 className="text-center" dir={langDir}>
           {t("your_factories_cart")} ({t("n_items", { n: memoizedFactoriseCartList.length })})
         </h4>
 
         {!memoizedFactoriseCartList.length && (
           <div className="my-10 text-center">
-            <h4>{t("no_cart_items")}</h4>
+            <h4 dir={langDir}>{t("no_cart_items")}</h4>
           </div>
         )}
 

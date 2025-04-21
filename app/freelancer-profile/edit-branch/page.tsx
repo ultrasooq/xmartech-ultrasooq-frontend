@@ -32,6 +32,7 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import ReactSelect from "react-select";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const customStyles = {
   control: (base: any) => ({
@@ -147,6 +148,7 @@ const formSchema = z
 
 export default function EditBranchPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -327,14 +329,14 @@ export default function EditBranchPage() {
               className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
                   {t("my_profile")}
                 </h2>
               </div>
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                       {t("freelancer_information")}
                     </label>
                   </div>
@@ -354,7 +356,7 @@ export default function EditBranchPage() {
                   <div className="flex flex-wrap">
                     <div className="mb-4 w-full">
                       <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                        <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                        <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                           {t("address")}
                         </label>
                       </div>
@@ -366,6 +368,7 @@ export default function EditBranchPage() {
                           label={t("address")}
                           name="address"
                           placeholder={t("address")}
+                          dir={langDir}
                         />
 
                         <Image
@@ -381,6 +384,7 @@ export default function EditBranchPage() {
                         label={t("city")}
                         name="city"
                         placeholder={t("city")}
+                        dir={langDir}
                       />
                     </div>
 
@@ -389,6 +393,7 @@ export default function EditBranchPage() {
                         label={t("province")}
                         name="province"
                         placeholder={t("province")}
+                        dir={langDir}
                       />
 
                       {/* <ControlledSelectInput
@@ -397,7 +402,7 @@ export default function EditBranchPage() {
                         options={memoizedCountries}
                       /> */}
                       <div className="mt-2 flex flex-col gap-y-3">
-                        <Label>{t("country")}</Label>
+                        <Label dir={langDir}>{t("country")}</Label>
                         <Controller
                           name="country"
                           control={form.control}
@@ -431,6 +436,7 @@ export default function EditBranchPage() {
                         label={t("branch_contact_name")}
                         name="contactName"
                         placeholder={t("branch_contact_name")}
+                        dir={langDir}
                       />
                     </div>
                   </div>
@@ -439,14 +445,14 @@ export default function EditBranchPage() {
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                       {t("working_hours")}
                     </label>
                   </div>
                 </div>
                 <div className="grid w-full grid-cols-1 gap-x-6 md:grid-cols-2">
                   <div className="mb-4 flex w-full flex-col gap-y-3">
-                    <Label htmlFor="startTime" className="text-color-dark">
+                    <Label htmlFor="startTime" className="text-color-dark" dir={langDir}>
                       {t("start_time")}
                     </Label>
                     <Controller
@@ -468,12 +474,12 @@ export default function EditBranchPage() {
                         </select>
                       )}
                     />
-                    <p className="text-[13px] text-red-500">
+                    <p className="text-[13px] text-red-500" dir={langDir}>
                       {form.formState.errors.startTime?.message}
                     </p>
                   </div>
                   <div className="mb-4 flex w-full flex-col gap-y-3">
-                    <Label htmlFor="endTime" className="text-color-dark">
+                    <Label htmlFor="endTime" className="text-color-dark" dir={langDir}>
                       {t("end_time")}
                     </Label>
                     <Controller
@@ -495,7 +501,7 @@ export default function EditBranchPage() {
                         </select>
                       )}
                     />
-                    <p className="text-[13px] text-red-500">
+                    <p className="text-[13px] text-red-500" dir={langDir}>
                       {form.formState.errors.endTime?.message}
                     </p>
                   </div>
@@ -537,7 +543,7 @@ export default function EditBranchPage() {
                   </div>
 
                   {form.formState.errors.workingDays?.message ? (
-                    <p className="text-[13px] text-red-500">
+                    <p className="text-[13px] text-red-500" dir={langDir}>
                       {t("working_day_required")}
                     </p>
                   ) : null}
@@ -561,6 +567,7 @@ export default function EditBranchPage() {
                 disabled={updateFreelancerBranch.isPending}
                 type="submit"
                 className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                dir={langDir}
               >
                 {updateFreelancerBranch.isPending ? (
                   <>

@@ -11,6 +11,7 @@ import ProductCard from "@/components/modules/cartList/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/context/AuthContext";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { CartItem } from "@/utils/types/cart.types";
@@ -21,6 +22,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 const CartListPage = () => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth()
   const router = useRouter();
   const { toast } = useToast();
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -62,7 +64,7 @@ const CartListPage = () => {
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateTotalAmount = () => {
@@ -78,13 +80,12 @@ const CartListPage = () => {
             quantity: number;
           },
         ) => {
+          const discount = calculateDiscountedPrice(
+            curr.productPriceDetails?.offerPrice ?? 0,
+            curr?.productPriceDetails?.consumerDiscount,
+          );
           return (
-            acc +
-            +calculateDiscountedPrice(
-              curr.productPriceDetails?.offerPrice ?? 0,
-              curr?.productPriceDetails?.consumerDiscount,
-            ) *
-              curr.quantity
+            Number((acc + discount * curr.quantity).toFixed(2))
           );
         },
         0,
@@ -101,7 +102,7 @@ const CartListPage = () => {
           },
         ) => {
           return (
-            acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
+            Number((acc + Number(curr.productPriceDetails?.offerPrice || 0) * curr.quantity).toFixed(2))
           );
         },
         0,
@@ -210,7 +211,7 @@ const CartListPage = () => {
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
-        <div className="headerPart">
+        <div className="headerPart" dir={langDir}>
           <div className="lediv">
             <h3>{t("my_cart")}</h3>
           </div>
@@ -219,7 +220,7 @@ const CartListPage = () => {
           <div className="cart-page-left">
             <div className="bodyPart">
               <div className="card-item cart-items">
-                <div className="card-inner-headerPart">
+                <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
                     <h3>{t("cart_items")}</h3>
                   </div>
@@ -276,7 +277,6 @@ const CartListPage = () => {
                       consumerDiscount={
                         item.productPriceDetails?.consumerDiscount
                       }
-                      onAdd={handleAddToCart}
                       onRemove={handleRemoveItemFromCart}
                       onWishlist={handleAddToWishlist}
                       haveAccessToken={haveAccessToken}
@@ -290,26 +290,26 @@ const CartListPage = () => {
           </div>
           <div className="cart-page-right">
             <div className="card-item priceDetails">
-              <div className="card-inner-headerPart">
+              <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
                   <h3>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
-                  <li>
+                  <li dir={langDir}>
                     <p>{t("subtotal")}</p>
-                    <h5>${calculateTotalAmount() || 0}</h5>
+                    <h5>{currency.symbol}{calculateTotalAmount() || 0}</h5>
                   </li>
-                  <li>
+                  <li dir={langDir}>
                     <p>{t("shipping")}</p>
                     <h5>{t("free")}</h5>
                   </li>
                 </ul>
               </div>
-              <div className="priceDetails-footer">
+              <div className="priceDetails-footer" dir={langDir}>
                 <h4>{t("total_amount")}</h4>
-                <h4 className="amount-value">${calculateTotalAmount() || 0}</h4>
+                <h4 className="amount-value">{currency.symbol}{calculateTotalAmount() || 0}</h4>
               </div>
             </div>
             <div className="order-action-btn">
@@ -317,6 +317,7 @@ const CartListPage = () => {
                 onClick={() => router.push("/checkout")}
                 disabled={!memoizedCartList?.length}
                 className="theme-primary-btn order-btn"
+                dir={langDir}
               >
                 {t("place_order")}
               </Button>

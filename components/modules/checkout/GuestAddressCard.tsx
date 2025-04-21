@@ -16,9 +16,10 @@ type GuestAddressCardProps = {
   cc?: string;
   phoneNumber?: string;
   address?: string;
+  town?: string;
   city?: string;
+  state?: string;
   country?: string;
-  province?: string;
   postCode?: string;
   onEdit: () => void;
 };
@@ -30,8 +31,9 @@ const GuestAddressCard: React.FC<GuestAddressCardProps> = ({
   phoneNumber,
   address,
   city,
+  town,
+  state,
   country,
-  province,
   postCode,
   onEdit,
 }) => {
@@ -57,7 +59,7 @@ const GuestAddressCard: React.FC<GuestAddressCardProps> = ({
                   <Image src={LocationIcon} alt="location-icon" />
                 </span>
                 <span className="text-container">
-                  {address} {city}, {province}, {postCode}, {country}
+                  {[address, town, city, state, postCode, country].filter(el => el).join(', ')}
                 </span>
               </p>
             </li>

@@ -6,9 +6,11 @@ import { toast } from "@/components/ui/use-toast";
 import { PERMISSION_SHARE_LINKS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const ShareLinksPage = () => {
     const t = useTranslations();
+    const { langDir } = useAuth();
     const router = useRouter();
     const hasPermission = checkPermission(PERMISSION_SHARE_LINKS);
     const [page, setPage] = useState(1);
@@ -31,8 +33,8 @@ const ShareLinksPage = () => {
     const copyShareLink = (id: number, productId: number) => {
         // navigator.clipboard.writeText();
         var textField = document.createElement('textarea')
-        textField.innerText = `${location.origin}/share/${productId}?share=${id}`;
-        document.body.appendChild(textField)
+        textField.innerText = `${location.origin}/trending/${productId}?sharedLinkId=${id}`;
+        document.body.appendChild(textField);
         textField.select()
         document.execCommand('copy')
         textField.remove()
@@ -53,7 +55,7 @@ const ShareLinksPage = () => {
         <section className="team_members_section">
             <div className="container relative z-10 m-auto px-3">
                 <div className="flex w-full flex-wrap">
-                    <div className="team_members_heading w-full">
+                    <div className="team_members_heading w-full" dir={langDir}>
                         <h1>{t("share_links")}</h1>
                     </div>
                     <div className="team_members_table w-full">
@@ -62,7 +64,7 @@ const ShareLinksPage = () => {
                                 <table cellPadding={0} cellSpacing={0} border={0}>
                                     <thead>
                                         <tr>
-                                            <th>{t("product")}</th>
+                                            <th dir={langDir}>{t("product")}</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -75,7 +77,7 @@ const ShareLinksPage = () => {
                                                         {item?.productDetail?.productName}
                                                     </td>
                                                     <td>
-                                                        <button type="button" onClick={() => copyShareLink(item.id, item.productId)}>
+                                                        <button type="button" onClick={() => copyShareLink(item.id, item.productId)} dir={langDir}>
                                                             {t("copy_share_link")}
                                                         </button>
                                                     </td>
@@ -88,7 +90,7 @@ const ShareLinksPage = () => {
                         ) : null}
 
                         {!shareLinksQuery?.isLoading && !shareLinks.length ? (
-                            <p className="py-10 text-center text-sm font-medium">
+                            <p className="py-10 text-center text-sm font-medium" dir={langDir}>
                                 {t("no_data_found")}
                             </p>
                         ) : null}

@@ -16,6 +16,8 @@ import {
 } from "../ui/accordion";
 import { OptionProps } from "@/utils/types/common.types";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 
 type AccordionMultiSelectV2Props = {
   label: string;
@@ -37,6 +39,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
   error,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   
   const formContext = useFormContext();
 
@@ -60,7 +63,13 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
 
   return (
     <>
-      <label className="mb-3 block text-left text-sm font-medium leading-5 text-color-dark">
+      <label 
+        className={cn(
+          'mb-3 block',
+          langDir == 'rtl' ? 'text-right' : 'text-left',
+          'text-sm font-medium leading-5 text-color-dark'
+        )}
+      >
         {label}
       </label>
 
@@ -70,7 +79,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
         className="mb-4 w-full rounded border border-solid border-gray-300 bg-white"
       >
         <AccordionItem value="item-1" className="border-b-0 px-3">
-          <AccordionTrigger className="flex h-auto min-h-[48px] justify-between py-0 hover:!no-underline">
+          <AccordionTrigger className="flex h-auto min-h-[48px] justify-between py-0 hover:!no-underline" dir={langDir}>
             <div className="my-2 flex flex-wrap">
               {(watcher || [])?.map((item: OptionProps) => (
                 <p
@@ -88,6 +97,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
           <AccordionContent>
             <FormItem
               className="mb-4 mr-4 flex flex-row items-start space-x-3 space-y-0"
+              dir={langDir}
             >
               <FormControl>
                 <Input
@@ -99,7 +109,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
             {canCreate && filteredOptions.length == 0 && <div className="mb-4">
               <a href="javascript:void(0)" onClick={e => addNew(search)} style={{ cursor: 'pointer' }}>Add {`"${search}"`}</a>
             </div>}
-            <div className="flex flex-col">
+            <div className="flex flex-col" dir={langDir}>
               {filteredOptions.map((item) => (
                 <FormField
                   key={item.value}
@@ -160,7 +170,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <p className="mb-3 text-sm text-red-500">{error}</p>
+      <p className="mb-3 text-sm text-red-500" dir={langDir}>{error}</p>
     </>
   );
 };

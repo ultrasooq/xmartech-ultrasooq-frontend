@@ -8,15 +8,18 @@ import {
 } from "@/components/ui/form";
 import { Input, InputProps } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
+import { cn } from "@/lib/utils";
 
 interface ControlledTextInputProps extends InputProps {
   label?: string;
   name: string;
+  showLabel?: boolean
 }
 
 const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
   label,
   name,
+  showLabel = false,
   ...props
 }) => {
   const formContext = useFormContext();
@@ -26,8 +29,11 @@ const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
       control={formContext.control}
       name={name}
       render={({ field }) => (
-        <FormItem className="mt-2 flex w-full flex-col gap-y-1">
-          {/* <FormLabel>{label}</FormLabel> */}
+        <FormItem className={cn(
+          "mt-2 flex w-full flex-col gap-y-1",
+          props.className || ""
+        )}>
+          {showLabel && <FormLabel>{label}</FormLabel>}
           <FormControl>
             <Input {...props} className="theme-form-control-s1" {...field} />
           </FormControl>

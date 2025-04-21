@@ -11,9 +11,11 @@ import Link from "next/link";
 import { PERMISSION_TEAM_MEMBERS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const TeamMembersPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_TEAM_MEMBERS);
   const [page, setPage] = useState(1);
@@ -72,7 +74,7 @@ const TeamMembersPage = () => {
     <section className="team_members_section">
       <div className="container relative z-10 m-auto px-3">
         <div className="flex w-full flex-wrap">
-          <div className="mb-5 w-full">
+          <div className="mb-5 w-full" dir={langDir}>
             <ul className="flex w-full items-center justify-start gap-1">
               <Link
                 href={"/team-members"}
@@ -88,10 +90,10 @@ const TeamMembersPage = () => {
               </Link>
             </ul>
           </div>
-          <div className="team_members_heading w-full">
-            <h1>{t("team_members")}</h1>
+          <div className="team_members_heading w-full" dir={langDir}>
+            <h1 dir={langDir}>{t("team_members")}</h1>
             <div className="flex justify-end gap-3">
-              <button type="button" onClick={handleToggleAddModal}>
+              <button type="button" onClick={handleToggleAddModal} dir={langDir}>
                 <IoMdAdd /> {t("add_new_member")}
               </button>
               {/* <Link
@@ -109,13 +111,13 @@ const TeamMembersPage = () => {
                 <table cellPadding={0} cellSpacing={0} border={0}>
                   <thead>
                     <tr>
-                      <th>{t("name")}</th>
-                      <th>{t("email")}</th>
-                      <th>{t("phone_number")}</th>
-                      <th>{t("role")}</th>
-                      <th>{t("employee_id")}</th>
-                      <th>{t("account_status")}</th>
-                      <th>{t("action")}</th>
+                      <th dir={langDir}>{t("name")}</th>
+                      <th dir={langDir}>{t("email")}</th>
+                      <th dir={langDir}>{t("phone_number")}</th>
+                      <th dir={langDir}>{t("role")}</th>
+                      <th dir={langDir}>{t("employee_id")}</th>
+                      <th dir={langDir}>{t("account_status")}</th>
+                      <th dir={langDir}>{t("action")}</th>
                     </tr>
                   </thead>
 
@@ -147,7 +149,7 @@ const TeamMembersPage = () => {
             ) : null}
 
             {!membersQuery?.isLoading && !memoizedMember.length ? (
-              <p className="py-10 text-center text-sm font-medium">
+              <p className="py-10 text-center text-sm font-medium" dir={langDir}>
                 {t("no_members_found")}
               </p>
             ) : null}

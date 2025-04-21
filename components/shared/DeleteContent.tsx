@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type DeleteContentProps = {
   onClose: () => void;
@@ -21,14 +22,15 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
   isLoading,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
 
   return (
     <DialogContent className="custom-ui-alert-popup danger-alert-popup">
       <DialogHeader className="alert-popup-headerpart">
-        <h1>{t("delete")}</h1>
+        <h1 dir={langDir}>{t("delete")}</h1>
       </DialogHeader>
       <DialogDescription className="alert-popup-bodypart">
-        <h4>{t("confirm_delete")}</h4>
+        <h4 dir={langDir}>{t("confirm_delete")}</h4>
       </DialogDescription>
       <DialogFooter className="alert-actions">
         <div className="alert-actions-col">
@@ -36,6 +38,7 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
             onClick={onClose}
             disabled={isLoading}
             className="alert--cancel-btn"
+            dir={langDir}
           >
             {t("no")}
           </Button>
@@ -45,6 +48,7 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
             onClick={onConfirm}
             disabled={isLoading}
             className="alert--submit-btn"
+            dir={langDir}
           >
             {isLoading ? (
               <>

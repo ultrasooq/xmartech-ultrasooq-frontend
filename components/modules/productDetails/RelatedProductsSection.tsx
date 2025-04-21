@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
+import Slider from "react-slick";
 import ProductCard from "./ProductCard";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import {
   Carousel,
   CarouselContent,
@@ -24,6 +27,7 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type RelatedProductsSectionProps = {
   calculateTagIds: string;
@@ -35,6 +39,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
   productId,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
@@ -203,62 +208,80 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     }
   }, [accessToken]);
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    initialSlide: 0,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          // initialSlide: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   return (
     <section className="w-full py-8">
       <div className="container m-auto">
         <div className="products-header-filter">
           <div className="le-info">
-            <h3>{t("related_products")}</h3>
+            <h3 dir={langDir}>{t("related_products")}</h3>
           </div>
         </div>
 
         {relatedProductsQuery?.isFetched &&
         memoizedRelatedProductList?.length ? (
-          <Carousel
-            className="related_slider w-full"
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-          >
-            <CarouselContent className="-ml-1">
-              {memoizedRelatedProductList?.map((item: any) => (
-                <CarouselItem
-                  key={item?.id}
-                  className="max-w-[260px] pl-1 md:basis-1/2 lg:basis-1/3"
-                >
-                  <div className="p-1">
-                    <ProductCard
-                      id={item?.id}
-                      productName={item?.productName}
-                      productImages={item?.productImages}
-                      shortDescription={
-                        item?.shortDescription
-                          ? stripHTML(item?.shortDescription)
-                          : "-"
-                      }
-                      offerPrice={item?.offerPrice}
-                      productProductPrice={item?.productProductPrice}
-                      productPrice={item?.productPrice}
-                      productReview={item?.productReview}
-                      onAdd={() =>
-                        handleAddToCart(-1, item?.productProductPriceId)
-                      }
-                      onWishlist={() =>
-                        handleAddToWishlist(item.id, item?.productWishlist)
-                      }
-                      inWishlist={item?.inWishlist}
-                      haveAccessToken={haveAccessToken}
-                      consumerDiscount={item?.consumerDiscount}
-                      askForPrice={item?.askForPrice}
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          <Slider className="related_slider w-full" {...settings}>
+            {memoizedRelatedProductList?.map((item: any) => (
+              <div className="p-1" key={item?.id}>
+                <ProductCard
+                  id={item?.id}
+                  productName={item?.productName}
+                  productImages={item?.productImages}
+                  shortDescription={
+                    item?.shortDescription
+                      ? stripHTML(item?.shortDescription)
+                      : "-"
+                  }
+                  offerPrice={item?.offerPrice}
+                  productProductPrice={item?.productProductPrice}
+                  productPrice={item?.productPrice}
+                  productReview={item?.productReview}
+                  onAdd={() => handleAddToCart(-1, item?.productProductPriceId)}
+                  onWishlist={() =>
+                    handleAddToWishlist(item.id, item?.productWishlist)
+                  }
+                  inWishlist={item?.inWishlist}
+                  haveAccessToken={haveAccessToken}
+                  consumerDiscount={item?.consumerDiscount}
+                  askForPrice={item?.askForPrice}
+                />
+              </div>
+            ))}
+          </Slider>
         ) : null}
       </div>
     </section>

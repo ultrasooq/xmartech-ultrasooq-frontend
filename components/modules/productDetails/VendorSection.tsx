@@ -7,6 +7,7 @@ import { COMPANY_UNIQUE_ID } from "@/utils/constants";
 import NoImagePlaceholder from "@/public/images/no-image.jpg";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type VendorSectionProps = {
   adminId?: string;
@@ -14,6 +15,7 @@ type VendorSectionProps = {
 
 const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const vendorQuery = useVendorDetails(
     {
       adminId: adminId || "",
@@ -89,7 +91,7 @@ const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
             </a>
           </li>
         </ul>
-        <h5>{t("business_type")}</h5>
+        <h5 dir={langDir}>{t("business_type")}</h5>
         <div className="tagLists">
           <div className="tagItem">
             {vendor?.userProfile
@@ -102,7 +104,7 @@ const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
               ))}
           </div>
         </div>
-        <h5>
+        <h5 dir={langDir}>
           {t("company_id")}:{" "}
           <strong>
             {vendor?.uniqueId

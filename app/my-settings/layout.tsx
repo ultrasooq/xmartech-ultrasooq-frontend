@@ -10,9 +10,11 @@ import { getInitials } from "@/utils/helper";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const pathname = usePathname();
   const isActivePath = (path: string) => path === pathname;
 
@@ -55,7 +57,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
               </figure>
             </div>
             <div className="card-item">
-              <ul className="menu-lists">
+              <ul className="menu-lists" dir={langDir}>
                 <li>
                   <Link href="/my-orders" className="menu-links">
                     <span className="icon-container">

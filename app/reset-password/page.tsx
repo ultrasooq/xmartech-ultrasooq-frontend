@@ -16,6 +16,7 @@ import { z } from "zod";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = z
   .object({
@@ -50,6 +51,7 @@ const formSchema = z
 
 export default function ResetPasswordPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
@@ -128,7 +130,7 @@ export default function ResetPasswordPage() {
             ) : (
               <>
                 <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                  <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                  <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
                     {t("reset_password")}
                   </h2>
                 </div>
@@ -143,6 +145,7 @@ export default function ResetPasswordPage() {
                         name="newPassword"
                         placeholder="**********"
                         type="password"
+                        dir={langDir}
                       />
 
                       <ControlledTextInput
@@ -150,6 +153,7 @@ export default function ResetPasswordPage() {
                         name="confirmPassword"
                         placeholder="**********"
                         type="password"
+                        dir={langDir}
                       />
 
                       <div className="mb-4 w-full">
