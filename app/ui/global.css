@@ -1260,25 +1260,6 @@
 
   /* end: auth-page-main */
 
-  /* start: shadcn-toast-custom */
-  .shadcn-toast-custom {
-    @apply border-l-4 border-solid !important;
-  }
-
-  .shadcn-toast-custom.success {
-    @apply border-[#27c927] bg-[#f4fff4] text-[#27c927] !important;
-  }
-
-  .shadcn-toast-custom.error {
-    @apply border-[#F44336] bg-[#fff2f1] text-[#f44336] !important;
-  }
-
-  .shadcn-toast-custom.info {
-    @apply border-[#2196f3] bg-[#f1faff] text-[#2196f3] !important;
-  }
-
-  /* end: shadcn-toast-custom */
-
   /* start: upload-identity-proof-both-side */
   .upload-identity-proof-both-side {
     @apply -m-2 flex;
@@ -1305,6 +1286,25 @@
   }
 
   /* end: upload-identity-proof-both-side */
+
+  /* start: shadcn-toast-custom */
+  .shadcn-toast-custom {
+    @apply border-l-4 border-solid !important;
+  }
+
+  .shadcn-toast-custom.success {
+    @apply border-[#27c927] bg-[#f4fff4] text-[#27c927] !important;
+  }
+
+  .shadcn-toast-custom.error {
+    @apply border-[#F44336] bg-[#fff2f1] text-[#f44336] !important;
+  }
+
+  .shadcn-toast-custom.info {
+    @apply border-[#2196f3] bg-[#f1faff] text-[#2196f3] !important;
+  }
+
+  /* end: shadcn-toast-custom */
 
   /* start: cart-page */
   .cart-page {
