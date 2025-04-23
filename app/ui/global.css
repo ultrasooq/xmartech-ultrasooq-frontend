@@ -5109,35 +5109,6 @@ input::-ms-clear {
     @apply text-sm px-1 !important;
   }
 
-  .team_members_heading {
-    @apply flex-wrap gap-2
-  }
-
-  .team_members_heading h1 {
-    @apply text-2xl
-  }
-
-  .team_members_heading button {
-    @apply p-2 text-sm;
-  }
-
-  .team_members_table {
-    @apply overflow-auto;
-  }
-
-  .team_members_table table thead tr th {
-    @apply p-[10px] whitespace-nowrap;
-  }
-  
-  .team_members_table table tbody tr td {
-    @apply p-[10px] whitespace-nowrap;
-  }
-  
-  .team_members_table table thead tr th:nth-child(4),
-  .team_members_table table tbody tr td:nth-child(4) {
-    @apply w-auto whitespace-nowrap;
-  }
-
   .existing-product-add-page .container.m-auto.px-3 {
     @apply px-4 !important;
   }
@@ -5227,6 +5198,35 @@ input::-ms-clear {
 
   .custom-inner-banner-s1 {
     @apply w-full;
+  }
+
+  .team_members_heading {
+    @apply flex-wrap gap-2
+  }
+
+  .team_members_heading h1 {
+    @apply text-2xl
+  }
+
+  .team_members_heading button {
+    @apply p-2 text-sm;
+  }
+
+  .team_members_table {
+    @apply overflow-auto;
+  }
+
+  .team_members_table table thead tr th {
+    @apply p-[10px] whitespace-nowrap;
+  }
+  
+  .team_members_table table tbody tr td {
+    @apply p-[10px] whitespace-nowrap;
+  }
+  
+  .team_members_table table thead tr th:nth-child(4),
+  .team_members_table table tbody tr td:nth-child(4) {
+    @apply w-auto whitespace-nowrap;
   }
 
   .team_members_table table tbody tr td svg {
@@ -5410,17 +5410,6 @@ input::-ms-clear {
 }
 
 
-
-
-@media only screen and (min-width: 1024px) and (max-width: 1200px) {
-
-.rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .product_sec_list .product_list_part {
-  width: 50%
-}
-
-}
-
-
 @media only screen and (min-width: 768px) and (max-width: 991px) {
 
   .body-content-s1 {
@@ -5455,6 +5444,18 @@ input::-ms-clear {
   }
 
 }
+
+
+@media only screen and (min-width: 1024px) and (max-width: 1200px) {
+
+.rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .product_sec_list .product_list_part {
+  width: 50%
+}
+
+}
+
+
+
 
 .skiptranslate {
   display: none !important;
