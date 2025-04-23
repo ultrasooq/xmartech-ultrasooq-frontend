@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/form";
 import { useFormContext } from "react-hook-form";
 import { Textarea, TextareaProps } from "@/components/ui/textarea";
+import { useAuth } from "@/context/AuthContext";
 
 interface ControlledTextareaInputProps extends TextareaProps {
   label: string;
@@ -20,13 +21,14 @@ const ControlledTextareaInput: React.FC<ControlledTextareaInputProps> = ({
   ...props
 }) => {
   const formContext = useFormContext();
+  const { langDir } = useAuth();
 
   return (
     <FormField
       control={formContext.control}
       name={name}
       render={({ field }) => (
-        <FormItem className="mb-4 w-full">
+        <FormItem className="mb-4 w-full" dir={langDir}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Textarea

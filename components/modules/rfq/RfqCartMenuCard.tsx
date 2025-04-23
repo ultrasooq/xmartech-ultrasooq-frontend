@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type RfqCartMenuCardProps = {
   id: number;
@@ -41,6 +42,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
   note,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   // const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
 

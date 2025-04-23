@@ -11,9 +11,11 @@ import Link from "next/link";
 import { PERMISSION_SELLER_REWARDS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const SellerRewardsPage = () => {
     const t = useTranslations();
+    const { langDir } = useAuth();
     const router = useRouter();
     const hasPermission = checkPermission(PERMISSION_SELLER_REWARDS);
     const [page, setPage] = useState(1);
@@ -48,7 +50,7 @@ const SellerRewardsPage = () => {
         <section className="team_members_section">
             <div className="container relative z-10 m-auto px-3">
                 <div className="flex w-full flex-wrap">
-                    <div className="team_members_heading w-full">
+                    <div className="team_members_heading w-full" dir={langDir}>
                         <h1>{t("seller_rewards")}</h1>
                         <div className="flex justify-end gap-3">
                             <button type="button" onClick={() => setIsSellerRewardFormModalOpen(true)}>
@@ -77,7 +79,7 @@ const SellerRewardsPage = () => {
                                     <tbody>
                                         {sellerRewards?.filter((item: any) => item.productDetail).map((item: any) => {
 
-                                            let image = item.productDetail?.productImages[0].image || PlaceholderImage;
+                                            let image = item.productDetail?.productImages?.[0]?.image || PlaceholderImage;
                                             return (
                                                 <tr key={item.id}>
                                                     <td>
@@ -107,7 +109,7 @@ const SellerRewardsPage = () => {
                         ) : null}
 
                         {!sellerRewardsQuery?.isLoading && !sellerRewards.length ? (
-                            <p className="py-10 text-center text-sm font-medium">
+                            <p className="py-10 text-center text-sm font-medium" dir={langDir}>
                                 {t("no_data_found")}
                             </p>
                         ) : null}

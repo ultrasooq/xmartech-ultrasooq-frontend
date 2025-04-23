@@ -20,9 +20,10 @@ type AddressCardProps = {
   cc: string;
   phoneNumber: string;
   address: string;
-  city: string;
-  country: string;
-  province: string;
+  town: string;
+  city?: { id: number; name: string; };
+  state?: { id: number; name: string; };
+  country?: { id: number; name: string; };
   postCode: string;
   onEdit: () => void;
   onDelete: () => void;
@@ -36,9 +37,10 @@ const AddressCard: React.FC<AddressCardProps> = ({
   cc,
   phoneNumber,
   address,
+  town,
   city,
+  state,
   country,
-  province,
   postCode,
   onEdit,
   onDelete,
@@ -73,7 +75,7 @@ const AddressCard: React.FC<AddressCardProps> = ({
                     <Image src={LocationIcon} alt="location-icon" />
                   </span>
                   <span className="text-container">
-                    {address} {city}, {province}, {postCode}, {country}
+                    {[address, town, city?.name, state?.name, postCode, country?.name].filter(el => el).join(', ')}
                   </span>
                 </p>
               </li>

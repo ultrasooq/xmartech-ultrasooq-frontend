@@ -6,6 +6,7 @@ import QuestionForm from "./QuestionForm";
 import QuestionCard from "./QuestionCard";
 import { useQuestions } from "@/apis/queries/question.queries";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type QuestionsAnswersSectionProps = {
   hasAccessToken?: boolean;
@@ -17,6 +18,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
   productId,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
   const [sortType, setSortType] = useState<"newest" | "oldest">("newest");
 
@@ -37,7 +39,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
     <div className="w-full">
       <div className="flex w-full flex-wrap items-center justify-between">
         <div className="flex w-auto flex-wrap items-start justify-start">
-          <h2 className="mb-0 text-2xl font-semibold leading-7 text-color-dark">
+          <h2 className="mb-0 text-2xl font-semibold leading-7 text-color-dark" dir={langDir}>
             {t("question_n_answers")}
           </h2>
         </div>
@@ -47,6 +49,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
               type="button"
               onClick={handleToggleQuestionModal}
               className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
+              dir={langDir}
             >
               <Image
                 src="/images/pen-icon.svg"
@@ -68,6 +71,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
               variant={sortType === "newest" ? "secondary" : "ghost"}
               onClick={() => setSortType("newest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
+              dir={langDir}
             >
               {t("newest")}
             </Button>
@@ -78,6 +82,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
               variant={sortType === "oldest" ? "secondary" : "ghost"}
               onClick={() => setSortType("oldest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
+              dir={langDir}
             >
               {t("oldest")}
             </Button>
@@ -87,7 +92,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
       <div className="flex w-full border-t-2 border-dashed border-gray-300 py-5">
         <div className="w-full space-y-3">
           {!questionQuery?.data?.data?.length ? (
-            <div className="w-full text-center text-sm font-bold text-dark-orange">
+            <div className="w-full text-center text-sm font-bold text-dark-orange" dir={langDir}>
               {t("no_questions_found")}
             </div>
           ) : null}

@@ -34,6 +34,7 @@ import {
 } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type AddToRfqFormProps = {
   onClose: () => void;
@@ -113,6 +114,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   offerPriceTo
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
@@ -500,7 +502,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         >
           <div className="relative mb-4 w-full">
             <div className="space-y-2">
-              <label className="text-sm font-medium leading-none text-color-dark">
+              <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                 {t("product_image")}
               </label>
               <div className="flex w-full flex-wrap">
@@ -593,7 +595,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                     </div>
 
                                     <div className="absolute h-20 w-full p-5">
-                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold">
+                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir}>
                                         {t("upload_video")}
                                       </p>
                                     </div>
@@ -656,7 +658,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                   ))}
                   <div className="relative mb-3 w-full pl-2">
                     <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
-                      <div className="text-sm font-medium leading-4 text-color-dark">
+                      <div className="text-sm font-medium leading-4 text-color-dark" dir={langDir}>
                         <Image
                           src="/images/plus.png"
                           className="m-auto mb-3"
@@ -712,7 +714,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                 </div>
               </div>
 
-              <p className="text-[13px] !text-red-500">
+              <p className="text-[13px] !text-red-500" dir={langDir}>
                 {!watchProductImages?.length
                   ? form.formState.errors?.productImages?.message
                   : ""}
@@ -725,6 +727,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             name="note"
             placeholder=""
             rows={6}
+            dir={langDir}
           />
 
           {selectedQuantity ? (
@@ -735,6 +738,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                 placeholder={t("offer_price_from")}
                 type="number"
                 defaultValue={""}
+                dir={langDir}
               />
 
               <ControlledTextInput
@@ -743,6 +747,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                 placeholder={t("offer_price_to")}
                 type="number"
                 defaultValue={""}
+                dir={langDir}
               />
             </div>
           ) : null}

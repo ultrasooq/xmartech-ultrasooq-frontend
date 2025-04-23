@@ -49,7 +49,7 @@ export const createOrderUnAuth = (payload: any) => {
 export const createPaymentIntent = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/payment/create-intent`,
+    url: `${process.env.NEXT_PUBLIC_API_URL}/payment/create-paymob-intention`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -134,6 +134,19 @@ export const updateCancelReason = (payload: {
   return axios({
     method: "PATCH",
     url: `${process.env.NEXT_PUBLIC_API_URL}/order/orderProductCancelReason`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const preOrderCalculation = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/order/preOrderCal`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

@@ -394,7 +394,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
       <div className="flex w-full rounded-sm border border-solid border-gray-300">
         <div className="w-full border-r border-solid border-gray-300 lg:w-[15%]">
           <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-            <span>Product</span>
+            <span>{t("product")}</span>
           </div>
           {productDetails && (
             <a
@@ -443,7 +443,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
             {!product?.isPending && !productDetails ? (
               <div className="my-2 space-y-2">
                 <p className="text-center text-sm font-normal text-gray-500">
-                  No data found
+                  {t("no_data_found")}
                 </p>
               </div>
             ) : null}

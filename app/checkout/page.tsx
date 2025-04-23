@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/modules/checkout/ProductCard";
 import {
@@ -39,9 +39,14 @@ import GuestAddressForm from "@/components/modules/checkout/GuestAddressForm";
 import AddIcon from "@/public/images/addbtn.svg";
 import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
+import { usePreOrderCalculation } from "@/apis/queries/orders.queries";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { IoCloseSharp } from "react-icons/io5";
 
 const CheckoutPage = () => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const router = useRouter();
   const wrapperRef = useRef(null);
   const { toast } = useToast();
@@ -51,8 +56,7 @@ const CheckoutPage = () => {
     number | undefined
   >();
   const [sameAsShipping, setSameAsShipping] = useState(false);
-  const [selectedOrderDetails, setSelectedOrderDetails] =
-    useState<OrderDetails>();
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState<OrderDetails>();
   const [addressType, setAddressType] = useState<"shipping" | "billing">();
   const [guestShippingAddress, setGuestShippingAddress] = useState<
     | {
@@ -61,9 +65,13 @@ const CheckoutPage = () => {
       cc: string;
       phoneNumber: string;
       address: string;
+      town: string;
       city: string;
+      cityId: string;
+      state: string;
+      stateId: string;
       country: string;
-      province: string;
+      countryId: string;
       postCode: string;
     }
     | undefined
@@ -75,18 +83,34 @@ const CheckoutPage = () => {
       cc: string;
       phoneNumber: string;
       address: string;
+      town: string;
       city: string;
+      cityId: string;
+      state: string;
+      stateId: string;
       country: string;
-      province: string;
+      countryId: string;
       postCode: string;
     }
     | undefined
   >();
   const [guestEmail, setGuestEmail] = useState("");
+  const [itemsTotal, setItemsTotal] = useState<number>(0);
+  const [fee, setFee] = useState<number>(0);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+
+  const [selectedCartId, setSelectedCartId] = useState<number>();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const confirmDialogRef = useRef(null);
+  const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
 
   const deviceId = getOrCreateDeviceId() || "";
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
-  const orders = useOrderStore();
+
+  const orderStore = useOrderStore();
+  const preOrderCalculation = usePreOrderCalculation();
+  
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
 
   const me = useMe(haveAccessToken);
@@ -135,49 +159,54 @@ const CheckoutPage = () => {
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateTotalAmount = () => {
     if (cartListByUser.data?.data?.length) {
-      return cartListByUser.data?.data?.reduce(
-        (
-          acc: number,
-          curr: {
-            productPriceDetails: {
-              offerPrice: string;
-              consumerDiscount: number;
-            };
-            quantity: number;
-          },
-        ) => {
-          return (
-            acc +
-            +calculateDiscountedPrice(
+      setItemsTotal(
+        cartListByUser.data?.data?.reduce(
+          (
+            acc: number,
+            curr: {
+              productPriceDetails: {
+                offerPrice: string;
+                consumerDiscount: number;
+              };
+              quantity: number;
+            },
+          ) => {
+            let discount = calculateDiscountedPrice(
               curr.productPriceDetails?.offerPrice ?? 0,
               curr?.productPriceDetails?.consumerDiscount,
-            ) *
-            curr.quantity
-          );
-        },
-        0,
-      );
-    } else if (cartListByDeviceQuery.data?.data?.length) {
-      return cartListByDeviceQuery.data?.data?.reduce(
-        (
-          acc: number,
-          curr: {
-            productPriceDetails: {
-              offerPrice: string;
-            };
-            quantity: number;
+            );
+  
+            return (
+              Number((acc + discount * curr.quantity).toFixed(2))
+            );
           },
-        ) => {
-          return (
-            acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
-          );
-        },
-        0,
+          0,
+        )
+      );
+
+    } else if (cartListByDeviceQuery.data?.data?.length) {
+      setItemsTotal(
+        cartListByDeviceQuery.data?.data?.reduce(
+          (
+            acc: number,
+            curr: {
+              productPriceDetails: {
+                offerPrice: string;
+              };
+              quantity: number;
+            },
+          ) => {
+            return (
+              Number((acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity).toFixed(2))
+            );
+          },
+          0,
+        )
       );
     }
   };
@@ -190,11 +219,13 @@ const CheckoutPage = () => {
     quantity: number,
     actionType: "add" | "remove",
     productPriceId: number,
+    productVariant?: any
   ) => {
     if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId,
         quantity,
+        productVariant
       });
 
       if (response.status) {
@@ -229,6 +260,17 @@ const CheckoutPage = () => {
         variant: "success",
       });
     }
+  };
+
+  const onConfirmRemove = () => {
+    if (selectedCartId) handleRemoveItemFromCart(selectedCartId);
+    setIsConfirmDialogOpen(false);
+    setSelectedCartId(undefined);
+  };
+
+  const onCancelRemove = () => {
+    setIsConfirmDialogOpen(false);
+    setSelectedCartId(undefined);
   };
 
   const handleDeleteAddress = async (userAddressId: number) => {
@@ -278,10 +320,12 @@ const CheckoutPage = () => {
         cc: item.cc,
         phone: item.phoneNumber,
         shippingAddress: item.address,
-        shippingCity: item.city,
-        shippingProvince: item.province,
-        shippingCountry: item.country,
+        // shippingTown: item.town,
+        shippingCity: item.cityDetail?.name,
+        shippingProvince: item.stateDetail?.name,
+        shippingCountry: item.countryDetail?.name,
         shippingPostCode: item.postCode,
+
       }));
     } else if (addresszType === "billing") {
       setSelectedOrderDetails((prevState) => ({
@@ -292,48 +336,76 @@ const CheckoutPage = () => {
         cc: item.cc,
         phone: item.phoneNumber,
         billingAddress: item.address,
-        billingCity: item.city,
-        billingProvince: item.province,
-        billingCountry: item.country,
+        // billingTown: item.town,
+        billingCity: item.cityDetail?.name,
+        billingProvince: item.stateDetail?.name,
+        billingCountry: item.countryDetail?.name,
         billingPostCode: item.postCode,
       }));
     }
   };
 
   // State for selected addresses
-const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(null);
-const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(null);
+  const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(null);
+  const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(null);
 
-//  Set default selected address when addresses are loaded
-useEffect(() => {
-  if (memoziedAddressList.length > 0) {
-    setSelectedShippingAddressId(memoziedAddressList[0].id.toString());
-    setSelectedBillingAddressId(memoziedAddressList[0].id.toString());
+  //  Set default selected address when addresses are loaded
+  useEffect(() => {
+    if (memoziedAddressList.length > 0) {
+      setSelectedShippingAddressId(memoziedAddressList[0].id.toString());
+      setSelectedBillingAddressId(memoziedAddressList[0].id.toString());
 
-    // Call handleOrderDetails for both shipping and billing
-    handleOrderDetails(memoziedAddressList[0], "shipping");
-    handleOrderDetails(memoziedAddressList[0], "billing");
+      // Call handleOrderDetails for both shipping and billing
+      handleOrderDetails(memoziedAddressList[0], "shipping");
+      handleOrderDetails(memoziedAddressList[0], "billing");
+    }
+  }, [memoziedAddressList]);
 
+  const [invalidProducts, setInvalidProducts] = useState<number[]>([]);
+  const [notAvailableProducts, setNotAvailableProducts] = useState<number[]>([]);
+
+  const calculateFees = async () => {
+    const response = await preOrderCalculation.mutateAsync({
+      cartIds: memoizedCartList.map((item: any) => item.id),
+      userAddressId: Number(selectedShippingAddressId)
+    });
+    setInvalidProducts(response?.invalidProducts?.map((productId: number) => productId) || []);
+    setNotAvailableProducts(response?.productCannotBuy?.map((item: any) => item.productId) || []);
+    setFee(response.totalCustomerPay - response.totalPurchasedPrice);
   }
-}, [memoziedAddressList]);
 
+  useEffect(() => {
+    if (memoizedCartList.length && selectedShippingAddressId) {
+      calculateFees();
+    }
+  }, [
+    cartListByUser.data?.data,
+    cartListByDeviceQuery?.data?.data,
+    allUserAddressQuery?.data?.data,
+    selectedBillingAddressId
+  ]);
+
+  useEffect(() => {
+    calculateTotalAmount();
+  }, [
+    cartListByUser.data?.data,
+    cartListByDeviceQuery?.data?.data
+  ]);
+
+  useEffect(() => {
+    setTotalAmount(itemsTotal + fee);
+  }, [itemsTotal, fee]);
 
   const onSaveOrder = () => {
+    if (invalidProducts.length > 0 || notAvailableProducts.length > 0) {
+      toast({
+        description: t("remove_n_items_from_cart", { n: invalidProducts.length + notAvailableProducts.length }),
+        variant: "danger"
+      });
+      // return;
+    }
+
     if (haveAccessToken) {
-
-
-      // console.log("Selected Order Details:", selectedOrderDetails);
-
-      const payload = {
-        shippingAddress: selectedOrderDetails?.shippingAddress,
-        billingAddress: sameAsShipping
-          ? selectedOrderDetails?.shippingAddress
-          : selectedOrderDetails?.billingAddress,
-      };
-    
-      // console.log("Final Payload:", payload);
-
-
       if (!selectedOrderDetails?.shippingAddress) {
         toast({
           title: t("please_select_a_shipping_address"),
@@ -344,7 +416,6 @@ useEffect(() => {
 
       const data = {
         ...selectedOrderDetails,
-        // paymentMethod: "cash",
         cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
       };
 
@@ -356,9 +427,6 @@ useEffect(() => {
         data.billingPostCode = data.shippingPostCode;
       }
 
-      // console.log(data);
-      // return
-
       if (!data.billingAddress) {
         toast({
           title: t("please_select_a_billing_address"),
@@ -366,103 +434,119 @@ useEffect(() => {
         });
         return;
       }
+      
+      const address = memoziedAddressList.find((item: any) => item.id == selectedShippingAddressId);
 
-      orders.setOrders(data);
-      router.push("/orders");
+      orderStore.setOrders({
+        ...data,
+        ...{
+          countryId: address?.countryId,
+          stateId: address?.stateId,
+          cityId: address?.cityId,
+          town: address?.town,
+          userAddressId: Number(selectedShippingAddressId)
+        }
+      });
+      orderStore.setTotal(totalAmount);
+      router.push("/complete-order");
+
     } else {
-      if (!guestEmail) {
-        toast({
-          title: t("please_enter_email_address"),
-          variant: "danger",
-        });
-        return;
-      }
+      // if (!guestEmail) {
+      //   toast({
+      //     title: t("please_enter_email_address"),
+      //     variant: "danger",
+      //   });
+      //   return;
+      // }
 
-      if (!validator.isEmail(guestEmail)) {
-        toast({
-          title: t("please_enter_valid_email_address"),
-          variant: "danger",
-        });
-        return;
-      }
+      // if (!validator.isEmail(guestEmail)) {
+      //   toast({
+      //     title: t("please_enter_valid_email_address"),
+      //     variant: "danger",
+      //   });
+      //   return;
+      // }
 
-      let guestOrderDetails: any = {
-        guestUser: {
-          firstName: "",
-          lastName: "",
-          email: "",
-          cc: "",
-          phoneNumber: "",
-        },
-      };
+      // let guestOrderDetails: any = {
+      //   guestUser: {
+      //     firstName: "",
+      //     lastName: "",
+      //     email: "",
+      //     cc: "",
+      //     phoneNumber: "",
+      //   },
+      // };
 
-      if (!guestShippingAddress) {
-        toast({
-          title: t("please_add_a_shipping_address"),
-          variant: "danger",
-        });
-        return;
-      }
+      // if (!guestShippingAddress) {
+      //   toast({
+      //     title: t("please_add_a_shipping_address"),
+      //     variant: "danger",
+      //   });
+      //   return;
+      // }
 
-      if (guestShippingAddress) {
-        guestOrderDetails = {
-          ...guestOrderDetails,
-          firstName: guestShippingAddress.firstName,
-          lastName: guestShippingAddress.lastName,
-          email: "",
-          cc: guestShippingAddress.cc,
-          phone: guestShippingAddress.phoneNumber,
-          shippingAddress: guestShippingAddress.address,
-          shippingCity: guestShippingAddress.city,
-          shippingProvince: guestShippingAddress.province,
-          shippingCountry: guestShippingAddress.country,
-          shippingPostCode: guestShippingAddress.postCode,
-        };
-      }
+      // if (guestShippingAddress) {
+      //   guestOrderDetails = {
+      //     ...guestOrderDetails,
+      //     firstName: guestShippingAddress.firstName,
+      //     lastName: guestShippingAddress.lastName,
+      //     email: "",
+      //     cc: guestShippingAddress.cc,
+      //     phone: guestShippingAddress.phoneNumber,
+      //     shippingAddress: guestShippingAddress.address,
+      //     shippingTown: guestShippingAddress.town,
+      //     shippingCity: guestShippingAddress.city,
+      //     shippingProvince: guestShippingAddress.state,
+      //     shippingCountry: guestShippingAddress.country,
+      //     shippingPostCode: guestShippingAddress.postCode,
+      //   };
+      // }
 
-      if (!guestBillingAddress) {
-        toast({
-          title: t("please_add_a_billing_address"),
-          variant: "danger",
-        });
-        return;
-      }
+      // if (!guestBillingAddress) {
+      //   toast({
+      //     title: t("please_add_a_billing_address"),
+      //     variant: "danger",
+      //   });
+      //   return;
+      // }
 
-      if (guestBillingAddress) {
-        guestOrderDetails = {
-          ...guestOrderDetails,
-          billingAddress: guestBillingAddress.address,
-          billingCity: guestBillingAddress.city,
-          billingProvince: guestBillingAddress.province,
-          billingCountry: guestBillingAddress.country,
-          billingPostCode: guestBillingAddress.postCode,
-        };
-      }
+      // if (guestBillingAddress) {
+      //   guestOrderDetails = {
+      //     ...guestOrderDetails,
+      //     billingAddress: guestBillingAddress.address,
+      //     billingCity: guestBillingAddress.city,
+      //     billingTown: guestBillingAddress.town,
+      //     billingProvince: guestBillingAddress.state,
+      //     billingCountry: guestBillingAddress.country,
+      //     billingPostCode: guestBillingAddress.postCode,
+      //   };
+      // }
 
-      const data = {
-        ...guestOrderDetails,
-        email: guestEmail,
-        paymentMethod: "cash",
-        cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
-      };
+      // const data = {
+      //   ...guestOrderDetails,
+      //   email: guestEmail,
+      //   paymentMethod: "cash",
+      //   cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
+      // };
 
-      if (
-        data.firstName !== "" &&
-        data.lastName !== "" &&
-        data.cc != "" &&
-        data.phone !== ""
-      ) {
-        data.guestUser = {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: guestEmail,
-          cc: data.cc,
-          phoneNumber: data.phone,
-        };
-      }
+      // if (
+      //   data.firstName !== "" &&
+      //   data.lastName !== "" &&
+      //   data.cc != "" &&
+      //   data.phone !== ""
+      // ) {
+      //   data.guestUser = {
+      //     firstName: data.firstName,
+      //     lastName: data.lastName,
+      //     email: guestEmail,
+      //     cc: data.cc,
+      //     phoneNumber: data.phone,
+      //   };
+      // }
 
-      orders.setOrders(data);
-      router.push("/orders");
+      // orderStore.setOrders(data);
+      // orderStore.setTotal(totalAmount);
+      // router.push("/complete-order");
     }
   };
 
@@ -487,7 +571,7 @@ useEffect(() => {
           <div className="cart-page-left">
             <div className="bodyPart">
               <div className="card-item cart-items">
-                <div className="card-inner-headerPart">
+                <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
                     <h3>{t("cart_items")}</h3>
                   </div>
@@ -518,22 +602,26 @@ useEffect(() => {
                       productId={item.productId}
                       productPriceId={item.productPriceId}
                       productName={
-                        item.productPriceDetails?.productPrice_product
-                          ?.productName
+                        item.productPriceDetails?.productPrice_product?.productName
                       }
                       offerPrice={item.productPriceDetails?.offerPrice}
                       productQuantity={item.quantity}
+                      productVariant={item.object}
                       productImages={
-                        item.productPriceDetails?.productPrice_product
-                          ?.productImages
+                        item.productPriceDetails?.productPrice_product?.productImages
                       }
                       consumerDiscount={
                         item.productPriceDetails?.consumerDiscount
                       }
                       onAdd={handleAddToCart}
-                      onRemove={handleRemoveItemFromCart}
+                      onRemove={(cartId: number) => {
+                        setIsConfirmDialogOpen(true);
+                        setSelectedCartId(cartId);
+                      }}
                       onWishlist={handleAddToWishlist}
                       haveAccessToken={haveAccessToken}
+                      invalidProduct={invalidProducts.includes(item.productId)}
+                      cannotBuy={notAvailableProducts.includes(item.productId)}
                     />
                   ))}
                 </div>
@@ -541,7 +629,7 @@ useEffect(() => {
 
               {!me.data ? (
                 <div className="card-item selected-address">
-                  <div className="card-inner-headerPart">
+                  <div className="card-inner-headerPart" dir={langDir}>
                     <div className="lediv">
                       <h3>{t("your_informations")}</h3>
                     </div>
@@ -549,12 +637,13 @@ useEffect(() => {
 
                   <div className="selected-address-lists">
                     <div className="space-y-2 p-3">
-                      <Label>{t("email")}</Label>
+                      <Label dir={langDir}>{t("email")}</Label>
                       <Input
                         className="theme-form-control-s1"
                         placeholder={t("enter_email")}
                         onChange={(e) => setGuestEmail(e.target.value)}
                         value={guestEmail}
+                        dir={langDir}
                       />
                     </div>
                   </div>
@@ -562,7 +651,7 @@ useEffect(() => {
               ) : null}
 
               <div className="card-item selected-address">
-                <div className="card-inner-headerPart">
+                <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
                     <h3>
                       {me?.data
@@ -605,9 +694,10 @@ useEffect(() => {
                         cc={item.cc}
                         phoneNumber={item.phoneNumber}
                         address={item.address}
-                        city={item.city}
-                        country={item.country}
-                        province={item.province}
+                        town={item.town}
+                        city={item.cityDetail}
+                        country={item.countryDetail}
+                        state={item.stateDetail}
                         postCode={item.postCode}
                         onEdit={() => {
                           setSelectedAddressId(item.id);
@@ -629,8 +719,9 @@ useEffect(() => {
                       phoneNumber={guestShippingAddress?.phoneNumber}
                       address={guestShippingAddress?.address}
                       city={guestShippingAddress?.city}
+                      town={guestShippingAddress?.town}
+                      state={guestShippingAddress?.state}
                       country={guestShippingAddress?.country}
-                      province={guestShippingAddress?.province}
                       postCode={guestShippingAddress?.postCode}
                       onEdit={() => {
                         setAddressType("shipping");
@@ -642,7 +733,7 @@ useEffect(() => {
 
                 {!me.data && !guestShippingAddress ? (
                   <div className="card-item cart-items for-add">
-                    <div className="top-heading">
+                    <div className="top-heading" dir={langDir}>
                       <Button
                         variant="outline"
                         type="button"
@@ -666,7 +757,7 @@ useEffect(() => {
               </div>
 
               <div className="card-item selected-address">
-                <div className="card-inner-headerPart">
+                <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
                     <h3>
                       {me?.data ? t("select_billing_address") : t("billing_address")}
@@ -696,7 +787,7 @@ useEffect(() => {
                           }}
                           checked={sameAsShipping}
                         />
-                        <Label htmlFor="same_as_shipping">
+                        <Label htmlFor="same_as_shipping" dir={langDir}>
                           {t("same_as_shipping_address")}
                         </Label>
                       </div>
@@ -737,9 +828,10 @@ useEffect(() => {
                           cc={item.cc}
                           phoneNumber={item.phoneNumber}
                           address={item.address}
-                          city={item.city}
-                          country={item.country}
-                          province={item.province}
+                          town={item.town}
+                          city={item.cityDetail}
+                          country={item.countryDetail}
+                          state={item.stateDetail}
                           postCode={item.postCode}
                           onEdit={() => {
                             setSelectedAddressId(item.id);
@@ -754,7 +846,7 @@ useEffect(() => {
                     </RadioGroup>
                   ) : (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center">
+                      <p className="my-3 text-center" dir={langDir}>
                         {t("same_as_shipping_address")}
                       </p>
                     </div>
@@ -768,8 +860,9 @@ useEffect(() => {
                       phoneNumber={guestBillingAddress?.phoneNumber}
                       address={guestBillingAddress?.address}
                       city={guestBillingAddress?.city}
+                      town={guestBillingAddress?.town}
+                      state={guestBillingAddress?.state}
                       country={guestBillingAddress?.country}
-                      province={guestBillingAddress?.province}
                       postCode={guestBillingAddress?.postCode}
                       onEdit={() => {
                         setAddressType("billing");
@@ -781,7 +874,7 @@ useEffect(() => {
 
                 {!me.data && !guestBillingAddress ? (
                   <div className="card-item cart-items for-add">
-                    <div className="top-heading">
+                    <div className="top-heading" dir={langDir}>
                       <Button
                         variant="outline"
                         type="button"
@@ -806,12 +899,13 @@ useEffect(() => {
 
               {me.data ? (
                 <div className="card-item cart-items for-add">
-                  <div className="top-heading">
+                  <div className="top-heading" dir={langDir}>
                     <Button
                       variant="outline"
                       type="button"
                       className="add-new-address-btn border-none p-0 !normal-case shadow-none"
                       onClick={handleToggleAddModal}
+                      dir={langDir}
                     >
                       <Image
                         src={AddIcon}
@@ -828,35 +922,47 @@ useEffect(() => {
           </div>
           <div className="cart-page-right">
             <div className="card-item priceDetails">
-              <div className="card-inner-headerPart">
+              <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
                   <h3>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
-                  <li>
+                  <li dir={langDir}>
                     <p>{t("subtotal")}</p>
-                    <h5>${calculateTotalAmount() || 0}</h5>
+                    <h5>{currency.symbol}{itemsTotal}</h5>
                   </li>
-                  <li>
+                  <li dir={langDir}>
                     <p>{t("shipping")}</p>
                     <h5>{t("free")}</h5>
                   </li>
+                  <li dir={langDir}>
+                    <p>{t("fee")}</p>
+                    <h5>{currency.symbol}{fee}</h5>
+                  </li>
                 </ul>
               </div>
-              <div className="priceDetails-footer">
+              <div className="priceDetails-footer" dir={langDir}>
                 <h4>{t("total_amount")}</h4>
-                <h4 className="amount-value">${calculateTotalAmount() || 0}</h4>
+                <h4 className="amount-value">{currency.symbol}{totalAmount}</h4>
               </div>
             </div>
             <div className="order-action-btn">
               <Button
                 onClick={onSaveOrder}
-                disabled={!memoizedCartList?.length}
+                disabled={!memoizedCartList?.length
+                  || updateCartByDevice?.isPending
+                  || updateCartWithLogin?.isPending
+                  || cartListByDeviceQuery?.isFetching
+                  || cartListByUser?.isFetching
+                  || allUserAddressQuery?.isLoading
+                  || preOrderCalculation?.isPending}
                 className="theme-primary-btn order-btn"
               >
-                {t("continue")}
+                {preOrderCalculation?.isPending ? (
+                  <LoaderWithMessage message={t("please_wait")} />
+                ) : t("continue")}
               </Button>
             </div>
           </div>
@@ -888,6 +994,42 @@ useEffect(() => {
               guestBillingAddress={guestBillingAddress}
             />
           )}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={confirmDialogRef}
+        >
+          <div className="modal-header !justify-between" dir={langDir}>
+            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
+            <Button
+              onClick={onCancelRemove}
+              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+            >
+              <IoCloseSharp size={20} />
+            </Button>
+          </div>
+
+          <div className="text-center mt-4 mb-4">
+            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
+            <div>
+              <Button
+                type="button"
+                className="bg-white text-red-500 mr-2"
+                onClick={onCancelRemove}
+              >
+                {t("remove")}
+              </Button>
+              <Button
+                type="button"
+                className="bg-red-500"
+                onClick={onConfirmRemove}
+              >
+                {t("remove")}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

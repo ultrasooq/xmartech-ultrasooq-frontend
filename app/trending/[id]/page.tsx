@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   useProductById,
   useOneWithProductPrice,
+  useProductVariant,
 } from "@/apis/queries/product.queries";
 // import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
 import RelatedProductsSection from "@/components/modules/productDetails/RelatedProductsSection";
@@ -40,9 +41,15 @@ import ProductCard from "@/components/modules/cartList/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CartItem } from "@/utils/types/cart.types";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useClickOutside } from "use-events";
+import { Button } from "@/components/ui/button";
+import { IoCloseSharp } from "react-icons/io5";
 
 const ProductDetailsPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const searchParams = useParams();
   const searchQuery = useSearchParams();
@@ -55,15 +62,27 @@ const ProductDetailsPage = () => {
   const type = searchQuery?.get("type");
   const otherSellerId = searchQuery?.get("sellerId");
   const otherProductId = searchQuery?.get("productId");
+  const sharedLinkId = searchQuery?.get("sharedLinkId") || '';
+  const [isShareLinkProcessed, setIsShareLinkProcessed] = useState<boolean>(false);
+  const [productVariantTypes, setProductVariantTypes] = useState<string[]>();
+  const [productVariants, setProductVariants] = useState<any[]>();
+  const [selectedProductVariant, setSelectedProductVariant] = useState<any>(null);
+
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const confirmDialogRef = useRef(null);
+  const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
 
   const me = useMe();
   const productQueryById = useProductById(
     {
       productId: searchParams?.id ? (searchParams?.id as string) : "",
       userId: me.data?.data?.id,
+      sharedLinkId: sharedLinkId,
     },
     !!searchParams?.id && !otherSellerId && !otherProductId,
   );
+  const getProductVariant = useProductVariant();
 
   const handleProductUpdateSuccess = () => {
     queryClient.invalidateQueries({
@@ -74,7 +93,7 @@ const ProductDetailsPage = () => {
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
-      limit: 10,
+      limit: 100,
       deviceId,
     },
     !haveAccessToken,
@@ -82,7 +101,7 @@ const ProductDetailsPage = () => {
   const cartListByUser = useCartListByUserId(
     {
       page: 1,
-      limit: 10,
+      limit: 100,
     },
     haveAccessToken,
   );
@@ -116,6 +135,14 @@ const ProductDetailsPage = () => {
     (item: any) => item.productId === Number(searchParams?.id),
   )?.quantity;
 
+  const getProductVariantByUser = cartListByUser.data?.data?.find(
+    (item: any) => item.productId === Number(searchParams?.id),
+  )?.object;
+
+  const getProductVariantByDevice = cartListByDeviceQuery.data?.data?.find(
+    (item: any) => item.productId === Number(searchParams?.id),
+  )?.object;
+
   const memoizedCartList = useMemo(() => {
     if (cartListByUser.data?.data) {
       setIsVisible(true);
@@ -143,6 +170,45 @@ const ProductDetailsPage = () => {
     }
   };
 
+  const onConfirmRemove = () => {
+    const cartId = cartListByUser.data?.data?.find((item: any) => item.productId == productDetails.id)?.id
+      || cartListByDeviceQuery.data?.data?.find((item: any) => item.productId == productDetails.id)?.id;
+
+    if (cartId) handleRemoveItemFromCart(cartId);
+    setIsConfirmDialogOpen(false);
+  };
+
+  const onCancelRemove = () => {
+    setGlobalQuantity(getProductQuantityByDevice || getProductQuantityByUser);
+    setIsConfirmDialogOpen(false);
+  };
+
+  const selectProductVariant = (variant: any) => {
+    setSelectedProductVariant(variant);
+    if (getProductQuantityByDevice > 0 || getProductQuantityByUser > 0) {
+      handleAddToCart(globalQuantity, "add", variant);
+    }
+  };
+
+  const addToCartFromSharedLink = async () => {
+    if (isShareLinkProcessed) return;
+
+    if (productQueryById?.data?.generatedLinkDetail && !cartListByUser?.isLoading && !cartListByDeviceQuery?.isLoading) {
+      const item = memoizedCartList.find((item: any) => item.productId == Number(searchParams?.id || ''));
+      if (!item || (item && item.sharedLinkId != productQueryById.data.generatedLinkDetail.id)) {
+        if (item) {
+          await handleRemoveItemFromCart(item.id);
+        }
+        const minQuantity = productDetails?.product_productPrice?.length
+          ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+          : null;
+        let quantity = item?.quantity || minQuantity || 1;
+        handleAddToCart(quantity, "add");
+        setIsShareLinkProcessed(true);
+      }
+    }
+  }
+
   const productDetails = !otherSellerId
     ? productQueryById.data?.data
     : productQueryByOtherSeller.data?.data;
@@ -162,45 +228,95 @@ const ProductDetailsPage = () => {
   const [globalQuantity, setGlobalQuantity] = useState(0); // Global state
 
   useEffect(() => {
+    const fetchProductVariant = async () => {
+      const response = await getProductVariant.mutateAsync([productDetails?.product_productPrice?.[0]?.id]);
+      const variants = response?.data?.[0]?.object || [];
+      if (variants.length > 0) {
+        const variantTypes = variants.map((item: any) => item.type);
+        setProductVariantTypes(Array.from(new Set(variantTypes)));
+        setProductVariants(variants);
+        setSelectedProductVariant(variants[0]);
+      }
+    };
+
+    if (!productQueryById?.isLoading) fetchProductVariant();
+  }, [productQueryById?.data?.data])
+
+  useEffect(() => {
+    addToCartFromSharedLink();
+  }, [
+    productQueryById?.data?.generatedLinkDetail,
+    memoizedCartList.length,
+    cartListByDeviceQuery?.isLoading,
+    cartListByUser?.isLoading
+  ]);
+
+  useEffect(() => {
     setGlobalQuantity(
       getProductQuantityByUser || getProductQuantityByDevice || 0,
     );
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const handleQuantity = async (quantity: number, action: "add" | "remove") => {
+    setGlobalQuantity(quantity);
     const isAddedToCart = hasItemByUser || hasItemByDevice;
     if (isAddedToCart) {
       handleAddToCart(quantity, action);
     } else {
-      setGlobalQuantity(quantity);
+      const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
+      const maxQuantity = productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
+
+      if (minQuantity && minQuantity > quantity) {
+        toast({
+          description: t("min_quantity_must_be_n", { n: minQuantity }),
+          variant: "danger",
+        });
+        return;
+      }
+
+      if (maxQuantity && maxQuantity < quantity) {
+        toast({
+          description: t("max_quantity_must_be_n", { n: maxQuantity }),
+          variant: "danger",
+        });
+        return;
+      }
     }
   };
 
   const handleAddToCart = async (
     quantity: number,
     actionType: "add" | "remove",
+    productVariant?: any
   ) => {
-    const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+    const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
     if (actionType == "add" && minQuantity && minQuantity > quantity) {
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
         variant: "danger",
-      })
-      return;
-    }
-
-    const maxQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.maxQuantityPerCustomer : null; 
-    if (maxQuantity && maxQuantity < quantity) {
-      toast({
-        description: t("max_quantity_must_be_n", { n: maxQuantity }),
-        variant: "danger",
-      })
+      });
       return;
     }
 
     if (actionType == "remove" && minQuantity && minQuantity > quantity) {
-      quantity = 0;
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      });
+      setIsConfirmDialogOpen(true);
+      return;
     }
+
+    const maxQuantity = productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      });
+      return;
+    }
+
+    const sharedLinkId = productQueryById?.data?.generatedLinkDetail?.id;
 
     if (haveAccessToken) {
       if (!productDetails?.product_productPrice?.[0]?.id) {
@@ -219,6 +335,8 @@ const ProductDetailsPage = () => {
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
+        sharedLinkId,
+        productVariant: productVariant || selectedProductVariant,
       });
 
       if (response.status) {
@@ -231,6 +349,7 @@ const ProductDetailsPage = () => {
         setIsVisible(true); // Show the div when the button is clicked
         return response.status;
       }
+
     } else {
       if (!productDetails?.product_productPrice?.[0]?.id) {
         toast({
@@ -244,6 +363,8 @@ const ProductDetailsPage = () => {
         productPriceId: productDetails?.product_productPrice?.[0]?.id,
         quantity,
         deviceId,
+        sharedLinkId,
+        productVariant: productVariant || selectedProductVariant,
       });
       if (response.status) {
         setGlobalQuantity(quantity);
@@ -259,14 +380,19 @@ const ProductDetailsPage = () => {
   };
 
   const handleCartPage = async () => {
-    if ((getProductQuantityByUser || 0) >= 1 || (getProductQuantityByDevice || 0) >= 1) {
+    if (
+      (getProductQuantityByUser || 0) >= 1 ||
+      (getProductQuantityByDevice || 0) >= 1
+    ) {
       router.push("/cart");
       return;
     }
 
     let quantity = globalQuantity;
     if (quantity == 0) {
-      const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+      const minQuantity = productDetails?.product_productPrice?.length
+        ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+        : null;
       quantity = minQuantity || 1;
     }
     const response = await handleAddToCart(quantity, "add");
@@ -276,16 +402,21 @@ const ProductDetailsPage = () => {
       }, 2000);
     }
   };
-  
+
   const handleCheckoutPage = async () => {
-    if ((getProductQuantityByUser || 0) >= 1 || (getProductQuantityByDevice || 0) >= 1) {
+    if (
+      (getProductQuantityByUser || 0) >= 1 ||
+      (getProductQuantityByDevice || 0) >= 1
+    ) {
       router.push("/checkout");
       return;
     }
 
     let quantity = globalQuantity;
     if (quantity == 0) {
-      const minQuantity = productDetails?.product_productPrice?.length ? productDetails.product_productPrice[0]?.minQuantityPerCustomer : null;
+      const minQuantity = productDetails?.product_productPrice?.length
+        ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+        : null;
       quantity = minQuantity || 1;
     }
     const response = await handleAddToCart(quantity, "add");
@@ -367,9 +498,13 @@ const ProductDetailsPage = () => {
     }
   }, [accessToken]);
 
+  useEffect(() => {
+
+  }, []);
+
   return (
     <>
-      <title>Store | Ultrasooq</title>
+      <title dir={langDir}>{t("store")} | Ultrasooq</title>
       <div className="body-content-s1 relative">
         <div className="product-view-s1-left-right type2">
           <div className="container m-auto px-3">
@@ -377,7 +512,7 @@ const ProductDetailsPage = () => {
               productDetails={productDetails}
               onProductUpdateSuccess={handleProductUpdateSuccess} // Pass to child
               onAdd={() => handleAddToCart(globalQuantity, "add")}
-              onToCart={handleCartPage}
+              onToCart={() => handleAddToCart(globalQuantity, "add")}
               onToCheckout={handleCheckoutPage}
               openCartCard={handelOpenCartLayout}
               hasItem={hasItemByUser || hasItemByDevice}
@@ -399,6 +534,7 @@ const ProductDetailsPage = () => {
             <ProductDescriptionCard
               productId={searchParams?.id ? (searchParams?.id as string) : ""}
               productName={productDetails?.productName}
+              productType={productDetails?.productType}
               brand={productDetails?.brand?.brandName}
               productPrice={productDetails?.productPrice}
               offerPrice={productDetails?.product_productPrice?.[0]?.offerPrice}
@@ -409,7 +545,7 @@ const ProductDetailsPage = () => {
                 productDetails?.product_productShortDescription
               }
               productQuantity={
-                getProductQuantityByUser || getProductQuantityByDevice
+                globalQuantity || getProductQuantityByUser || getProductQuantityByDevice
               }
               onQuantityChange={handleQuantity}
               productReview={productDetails?.productReview}
@@ -422,8 +558,7 @@ const ProductDetailsPage = () => {
               soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
                 ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
               soldByTradeRole={
-                productDetails?.product_productPrice?.[0]?.adminDetail
-                  ?.tradeRole
+                productDetails?.product_productPrice?.[0]?.adminDetail?.tradeRole
               }
               userId={me.data?.data?.id}
               sellerId={
@@ -440,13 +575,21 @@ const ProductDetailsPage = () => {
                 productDetails?.product_productPrice?.[0]?.askForPrice
               }
               minQuantity={
-                productDetails?.product_productPrice?.[0]?.minQuantityPerCustomer
+                productDetails?.product_productPrice?.[0]
+                  ?.minQuantityPerCustomer
               }
               maxQuantity={
-                productDetails?.product_productPrice?.[0]?.maxQuantityPerCustomer
+                productDetails?.product_productPrice?.[0]
+                  ?.maxQuantityPerCustomer
               }
               otherSellerDetails={otherSellerDetails}
               productPriceArr={productDetails?.product_productPrice}
+              productVariantTypes={productVariantTypes}
+              productVariants={productVariants}
+              selectedProductVariant={
+                getProductVariantByDevice || getProductVariantByUser || productVariants?.[0]
+              }
+              selectProductVariant={selectProductVariant}
             />
           </div>
         </div>
@@ -459,36 +602,42 @@ const ProductDetailsPage = () => {
                     <TabsTrigger
                       value="description"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("description")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="specification"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("specification")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="vendor"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("vendor")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="reviews"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("reviews")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="qanda"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("questions")}
                     </TabsTrigger>
                     <TabsTrigger
                       value="offers"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
                     >
                       {t("more_offers")}
                     </TabsTrigger>
@@ -500,7 +649,8 @@ const ProductDetailsPage = () => {
                           handleDescriptionParse(productDetails?.description) ||
                           undefined
                         }
-                        readOnly
+                        readOnly={true}
+                        fixedToolbar={false}
                       />
                     </div>
                   </TabsContent>
@@ -513,7 +663,7 @@ const ProductDetailsPage = () => {
                       ) : null}
                       {productDetails?.product_productSpecification?.length ? (
                         <div className="specification-sec">
-                          <h2>{t("specification")}</h2>
+                          <h2 dir={langDir}>{t("specification")}</h2>
                           <table className="specification-table">
                             <tbody>
                               <tr className="grid grid-cols-2">
@@ -598,24 +748,29 @@ const ProductDetailsPage = () => {
                   href="javascript:void(0)"
                   className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
                   onClick={handleCartPage}
+                  dir={langDir}
                 >
                   {t("go_to_cart_page")}
                 </a>
               </div>
               <div className="cart-item-lists">
                 {haveAccessToken &&
-                !cartListByUser.data?.data?.length &&
-                !cartListByUser.isLoading ? (
+                  !cartListByUser.data?.data?.length &&
+                  !cartListByUser.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center">{t("no_cart_items")}</p>
+                    <p className="my-3 text-center" dir={langDir}>
+                      {t("no_cart_items")}
+                    </p>
                   </div>
                 ) : null}
 
                 {!haveAccessToken &&
-                !cartListByDeviceQuery.data?.data?.length &&
-                !cartListByDeviceQuery.isLoading ? (
+                  !cartListByDeviceQuery.data?.data?.length &&
+                  !cartListByDeviceQuery.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center">{t("no_cart_items")}</p>
+                    <p className="my-3 text-center" dir={langDir}>
+                      {t("no_cart_items")}
+                    </p>
                   </div>
                 ) : null}
 
@@ -648,18 +803,22 @@ const ProductDetailsPage = () => {
                     }
                     offerPrice={item.productPriceDetails?.offerPrice}
                     productQuantity={item.quantity}
+                    productVariant={item.object}
                     productImages={
                       item.productPriceDetails?.productPrice_product?.productImages
                     }
                     consumerDiscount={
                       item.productPriceDetails?.consumerDiscount
                     }
-                    onAdd={handleAddToCart}
                     onRemove={handleRemoveItemFromCart}
                     onWishlist={handleAddToWishlist}
                     haveAccessToken={haveAccessToken}
-                    minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
-                    maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                    minQuantity={
+                      item?.productPriceDetails?.minQuantityPerCustomer
+                    }
+                    maxQuantity={
+                      item?.productPriceDetails?.maxQuantityPerCustomer
+                    }
                   />
                 ))}
               </div>
@@ -675,6 +834,42 @@ const ProductDetailsPage = () => {
         </div>
       </div>
       <Footer />
+      <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={confirmDialogRef}
+        >
+          <div className="modal-header !justify-between" dir={langDir}>
+            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
+            <Button
+              onClick={onCancelRemove}
+              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+            >
+              <IoCloseSharp size={20} />
+            </Button>
+          </div>
+
+          <div className="text-center mt-4 mb-4">
+            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
+            <div>
+              <Button
+                type="button"
+                className="bg-white text-red-500 mr-2"
+                onClick={onCancelRemove}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="bg-red-500"
+                onClick={onConfirmRemove}
+              >
+                Remove
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

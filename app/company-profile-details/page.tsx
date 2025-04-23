@@ -19,9 +19,11 @@ import VendorMoreInformationSection from "@/components/modules/companyProfileDet
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CompanyProfileDetailsPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [activeTab, setActiveTab] = useState("profile-info");
   const [activeSellerId, setActiveSellerId] = useState<string | null>();
 
@@ -61,7 +63,10 @@ export default function CompanyProfileDetailsPage() {
         <div className="container relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
-              <h2 className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl">
+              <h2
+                className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl"
+                dir={langDir}
+              >
                 {t("my_profile")}
               </h2>
             </div>
@@ -75,7 +80,12 @@ export default function CompanyProfileDetailsPage() {
             ) : null}
 
             <div className="mt-6 w-full md:mt-12">
-              <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
+              <Tabs
+                onValueChange={(e) => setActiveTab(e)}
+                value={activeTab}
+                // @ts-ignore
+                dir={langDir}
+              >
                 <TabsList className="mb-0 flex h-auto grid-cols-3 flex-wrap justify-start gap-4 rounded-none bg-transparent px-0 pt-3 sm:mb-1 sm:gap-x-6 md:grid md:min-h-[80px] md:w-[560px] md:pt-7">
                   <TabsTrigger
                     value="profile-info"
@@ -99,7 +109,7 @@ export default function CompanyProfileDetailsPage() {
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
-                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
+                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {!activeSellerId ? (
                       <InformationSection userDetails={me.data?.data} />
                     ) : null}
@@ -118,8 +128,11 @@ export default function CompanyProfileDetailsPage() {
 
                     {/* Branch Section */}
                     {!me.data?.data?.userBranch?.length ? (
-                      <p className="pt-5 text-center text-lg font-medium text-color-dark">
-                        No Branch Exists
+                      <p
+                        className="pt-5 text-center text-lg font-medium text-color-dark"
+                        dir={langDir}
+                      >
+                        {t("no_branch_exists")}
                       </p>
                     ) : null}
                     <div className="mb-4 w-full pt-4">
@@ -132,9 +145,10 @@ export default function CompanyProfileDetailsPage() {
                                 : "/company-profile/add-branch"
                             }
                             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-xs font-medium capitalize leading-6 text-white sm:text-sm"
+                            dir={langDir}
                           >
                             <PlusIcon className="mr-1 h-5 w-5" />
-                            Add
+                            {t("add")}
                           </Link>
                         </div>
                       ) : null}
@@ -163,7 +177,7 @@ export default function CompanyProfileDetailsPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="ratings" className="mt-0">
-                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
+                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {/* importing from freelancer details module */}
                     <ReviewSection
                       sellerId={
@@ -175,7 +189,7 @@ export default function CompanyProfileDetailsPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">
-                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
+                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {/* importing from freelancer details module */}
                     <ProductsSection sellerId={activeSellerId as string} />
                   </div>

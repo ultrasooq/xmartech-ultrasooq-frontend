@@ -11,6 +11,7 @@ import { useAddQuestion } from "@/apis/queries/question.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type QuestionFormProps = {
   onClose: () => void;
@@ -32,6 +33,7 @@ const formSchema = (t: any) => {
 
 const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const searchParams = useParams();
   const { toast } = useToast();
   const defaultValues = {
@@ -71,7 +73,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
   return (
     <div>
       <DialogHeader>
-        <DialogTitle className="mb-5 text-center text-xl font-semibold">
+        <DialogTitle className="mb-5 text-center text-xl font-semibold" dir={langDir}>
           {t("post_your_question")}
         </DialogTitle>
       </DialogHeader>
@@ -79,9 +81,9 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
       <section className="grid gap-3 md:grid-cols-2">
         <div className="pl-5">
           <ul className="list-disc">
-            <li>{t("question_instruction_1")}</li>
-            <li>{t("question_instruction_2")}</li>
-            <li>{t("question_instruction_3")}</li>
+            <li dir={langDir}>{t("question_instruction_1")}</li>
+            <li dir={langDir}>{t("question_instruction_2")}</li>
+            <li dir={langDir}>{t("question_instruction_3")}</li>
           </ul>
         </div>
 
@@ -95,12 +97,14 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
               name="question"
               placeholder={t("enter_your_question_here")}
               rows={6}
+              dir={langDir}
             />
 
             <Button
               disabled={addQuestion.isPending}
               type="submit"
               className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+              dir={langDir}
             >
               {addQuestion.isPending ? (
                 <>

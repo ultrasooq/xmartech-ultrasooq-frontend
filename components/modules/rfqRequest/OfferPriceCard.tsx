@@ -3,6 +3,8 @@ import Image from "next/image";
 import moment from "moment";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { capitalizeWord, formatDate, formatPrice } from "@/utils/helper";
+import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "next-intl";
 
 type OfferPriceCardProps = {
   offerPrice: string;
@@ -29,6 +31,8 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   onRequestPrice,
   priceRequest
 }) => {
+  const t = useTranslations();
+  const { currency, langDir } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editedOfferPrice, setEditedOfferPrice] = useState("");
 
@@ -84,14 +88,14 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
                 type="number"
               />
               <div className="flex gap-1 mt-1">
-                <button onClick={handleSaveClick} className="text-blue-500">Save</button>
-                <button onClick={handleCancelClick} className="text-red-500">Cancel</button>
+                <button onClick={handleSaveClick} className="text-blue-500">{t("save")}</button>
+                <button onClick={handleCancelClick} className="text-red-500">{t("cancel")}</button>
               </div>
             </div>
           ) : (
             <div>
-              {editedOfferPrice ? `$${editedOfferPrice}` : "-"}
-              <button onClick={handleEditClick} className="ml-2 text-blue-500">Edit</button>
+              {editedOfferPrice ? `${currency.symbol}${editedOfferPrice}` : "-"}
+              <button onClick={handleEditClick} className="ml-2 text-blue-500">{t("edit")}</button>
             </div>
           )}
         </div>
@@ -102,16 +106,16 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
       {priceRequest?.status === "PENDING" && (
         <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4">
           <p className="mb-2 text-sm font-normal text-gray-500">
-            Requested for Offer Price change:
-            <span className="mx-7">Requested Price: {formatPrice(priceRequest?.requestedPrice)}</span>
-            <span className="mr-7">Status: {capitalizeWord(priceRequest?.status)}</span>
-            <span>Date: {moment(priceRequest?.updatedAt).format('YYYY-MM-DD HH:mm A')}</span>
+            {t("requested_offer_price")}:
+            <span className="mx-7">{t("requested_price")}: {formatPrice(priceRequest?.requestedPrice, currency.symbol)}</span>
+            <span className="mr-7">{t("status")}: {capitalizeWord(priceRequest?.status)}</span>
+            <span>{t("date")}: {moment(priceRequest?.updatedAt).format('YYYY-MM-DD HH:mm A')}</span>
           </p>
         </div>
       )}
-      <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4">
+      <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4" dir={langDir}>
         <span className="mb-2 text-sm font-normal text-gray-500">
-          Vendor Note:
+          {t("vendor_note")}:
         </span>
         <p className="text-sm font-normal text-black"> {note || "-"}</p>
       </div>

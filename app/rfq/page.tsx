@@ -39,11 +39,19 @@ import Footer from "@/components/shared/Footer";
 import { FaPlus } from "react-icons/fa";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
+import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
 
 const RfqPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const router = useRouter();
@@ -51,6 +59,9 @@ const RfqPage = () => {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const [searchRfqTerm, setSearchRfqTerm] = useState("");
+  const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
+  const [displayMyProducts, setDisplayMyProducts] = useState("0");
   const [selectedProductId, setSelectedProductId] = useState<number>();
   const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -64,17 +75,22 @@ const RfqPage = () => {
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
-  const handleToggleAddModal = () => setIsAddToCartModalOpen(!isAddToCartModalOpen);
+  const handleToggleAddModal = () =>
+    setIsAddToCartModalOpen(!isAddToCartModalOpen);
 
   const me = useMe(haveAccessToken);
   const rfqProductsQuery = useRfqProducts({
     page,
     limit,
     term: searchRfqTerm,
-    adminId: me?.data?.data?.id || undefined,
+    adminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
     sortType: sortBy,
+    brandIds: selectedBrandIds.join(","),
+    isOwner: displayMyProducts == "1" ? "me" : "",
   });
 
   const rfqCartListByUser = useRfqCartListByUserId(
@@ -97,10 +113,10 @@ const RfqPage = () => {
     action: "add" | "remove",
     offerPriceFrom?: number,
     offerPriceTo?: number,
-    note?: string
+    note?: string,
   ) => {
     if (action == "remove" && quantity == 0) {
-      handleAddToCart(quantity, productId, "remove", 0, 0, '');
+      handleAddToCart(quantity, productId, "remove", 0, 0, "");
     } else {
       handleToggleAddModal();
       setSelectedProductId(productId);
@@ -123,12 +139,15 @@ const RfqPage = () => {
       quantity,
       offerPriceFrom: offerPriceFrom || 0,
       offerPriceTo: offerPriceTo || 0,
-      note: note || '',
+      note: note || "",
     });
 
     if (response.status) {
       toast({
-        title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+        title:
+          actionType == "add"
+            ? t("item_added_to_cart")
+            : t("item_removed_from_cart"),
         description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
@@ -143,17 +162,19 @@ const RfqPage = () => {
         rfqProductsQuery.data?.data.map((item: any) => {
           return {
             ...item,
-            isAddedToCart: item?.product_rfqCart?.length && item?.product_rfqCart[0]?.quantity > 0,
-            quantity: item?.product_rfqCart?.length && item?.product_rfqCart[0]?.quantity,
+            isAddedToCart:
+              item?.product_rfqCart?.length &&
+              item?.product_rfqCart[0]?.quantity > 0,
+            quantity:
+              item?.product_rfqCart?.length &&
+              item?.product_rfqCart[0]?.quantity,
           };
         }) || []
       );
     } else {
       return [];
     }
-  }, [
-    rfqProductsQuery.data?.data,
-  ]);
+  }, [rfqProductsQuery.data?.data]);
 
   useEffect(() => {
     if (rfqCartListByUser.data?.data) {
@@ -172,9 +193,7 @@ const RfqPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          "rfq-products",
-        ],
+        queryKey: ["rfq-products"],
       });
     } else {
       toast({
@@ -208,9 +227,7 @@ const RfqPage = () => {
         variant: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          "rfq-products",
-        ],
+        queryKey: ["rfq-products"],
       });
     } else {
       toast({
@@ -228,6 +245,19 @@ const RfqPage = () => {
     }
   }, [isClickedOutside]);
 
+  const selectAll = () => {
+    setSelectAllBrands(true);
+  };
+
+  const clearFilter = () => {
+    setSelectAllBrands(false);
+    setSearchRfqTerm("");
+    setSelectedBrandIds([]);
+    setDisplayMyProducts("0");
+
+    if (searchInputRef?.current) searchInputRef.current.value = "";
+  };
+
   useEffect(() => {
     if (accessToken) {
       setHaveAccessToken(true);
@@ -238,7 +268,7 @@ const RfqPage = () => {
 
   return (
     <>
-      <title>{t("rfq")} | Ultrasooq</title>
+      <title dir={langDir}>{t("rfq")} | Ultrasooq</title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
@@ -246,11 +276,52 @@ const RfqPage = () => {
         <div className="rfq-container px-3">
           <div className="row">
             <div className="rfq_main_box !justify-center">
-              <div className="rfq_left">
-                {/* <CategoryFilterList /> */}
-                {/* <BrandFilterList /> */}
+              <div className="rfq_left" dir={langDir}>
+                <div className="all_select_button">
+                  <button type="button" onClick={selectAll}>
+                    {t("select_all")}
+                  </button>
+                  <button type="button" onClick={clearFilter}>
+                    {t("clean_select")}
+                  </button>
+                </div>
+                <BrandFilterList
+                  selectAllBrands={selectAllBrands}
+                  selectedBrandsCount={selectedBrandIds.length}
+                  onSelectBrands={(brandIds: number[]) =>
+                    setSelectedBrandIds(brandIds)
+                  }
+                />
               </div>
               <div className="rfq_middle">
+                {me?.data?.data?.tradeRole != 'BUYER' && <RadioGroup
+                  className="mb-3 flex flex-row gap-y-3"
+                  value={displayMyProducts}
+                  onValueChange={setDisplayMyProducts}
+                  // @ts-ignore
+                  dir={langDir}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="0"
+                      id="all_products"
+                      checked={displayMyProducts == "0"}
+                    />
+                    <Label htmlFor="all_products" className="text-base" dir={langDir}>
+                      {t("all_products")}
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="1"
+                      id="my_products"
+                      checked={displayMyProducts == "1"}
+                    />
+                    <Label htmlFor="my_products" className="text-base" dir={langDir}>
+                      {t("my_products")}
+                    </Label>
+                  </div>
+                </RadioGroup>}
                 <div className="rfq_middle_top">
                   <div className="rfq_search">
                     <input
@@ -258,6 +329,8 @@ const RfqPage = () => {
                       className="form-control"
                       placeholder={t("search_product")}
                       onChange={handleRfqDebounce}
+                      ref={searchInputRef}
+                      dir={langDir}
                     />
                     <button type="button">
                       <Image
@@ -273,6 +346,7 @@ const RfqPage = () => {
                       <Link
                         href="/product?productType=R"
                         className="flex items-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
+                        dir={langDir}
                       >
                         <FaPlus />
                         {t("add_new_rfq_product")}
@@ -284,7 +358,7 @@ const RfqPage = () => {
                   <div className="row">
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
-                        <div className="products_sec_top_left">
+                        <div className="products_sec_top_left" dir={langDir}>
                           <h4>{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
@@ -294,14 +368,14 @@ const RfqPage = () => {
                               defaultValue={sortBy}
                             >
                               <SelectTrigger className="custom-form-control-s1 bg-white">
-                                <SelectValue placeholder={t("sort_by")} />
+                                <SelectValue placeholder={t("sort_by")} dir={langDir} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectItem value="newest">
+                                  <SelectItem value="newest" dir={langDir}>
                                     {t("sort_by_latest")}
                                   </SelectItem>
-                                  <SelectItem value="oldest">
+                                  <SelectItem value="oldest" dir={langDir}>
                                     {t("sort_by_oldest")}
                                   </SelectItem>
                                 </SelectGroup>
@@ -341,7 +415,7 @@ const RfqPage = () => {
 
                       {!rfqProductsQuery?.data?.data?.length &&
                       !rfqProductsQuery.isLoading ? (
-                        <p className="my-10 text-center text-sm font-medium">
+                        <p className="my-10 text-center text-sm font-medium" dir={langDir}>
                           {t("no_data_found")}
                         </p>
                       ) : null}
@@ -360,10 +434,14 @@ const RfqPage = () => {
                               productQuantity={item?.quantity || 0}
                               productPrice={item?.product_productPrice}
                               offerPriceFrom={
-                                cartList?.find((el: any) => el.productId == item.id)?.offerPriceFrom
+                                cartList?.find(
+                                  (el: any) => el.productId == item.id,
+                                )?.offerPriceFrom
                               }
                               offerPriceTo={
-                                cartList?.find((el: any) => el.productId == item.id)?.offerPriceTo
+                                cartList?.find(
+                                  (el: any) => el.productId == item.id,
+                                )?.offerPriceTo
                               }
                               onAdd={handleRFQCart}
                               onToCart={handleCartPage}
@@ -371,14 +449,17 @@ const RfqPage = () => {
                                 handleToggleAddModal();
                                 setSelectedProductId(item?.id);
                               }}
-                              onWishlist={() => handleAddToWishlist(item.id, item?.product_wishlist)}
-                              isCreatedByMe={item?.userId === me.data?.data?.id}
-                              isAddedToCart={item?.isAddedToCart}
-                              inWishlist={
-                                item?.product_wishlist?.find(
-                                  (el: any) => el?.userId === me.data?.data?.id,
+                              onWishlist={() =>
+                                handleAddToWishlist(
+                                  item.id,
+                                  item?.product_wishlist,
                                 )
                               }
+                              isCreatedByMe={item?.userId === me.data?.data?.id}
+                              isAddedToCart={item?.isAddedToCart}
+                              inWishlist={item?.product_wishlist?.find(
+                                (el: any) => el?.userId === me.data?.data?.id,
+                              )}
                               haveAccessToken={haveAccessToken}
                             />
                           ))}
@@ -406,10 +487,7 @@ const RfqPage = () => {
                   </div>
                 </div>
               </div>
-              <RfqCartMenu
-                onAdd={handleRFQCart}
-                cartList={cartList || []}
-              />
+              <RfqCartMenu onAdd={handleRFQCart} cartList={cartList || []} />
             </div>
           </div>
         </div>

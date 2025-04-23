@@ -15,6 +15,7 @@ import {
   useUpdatePermission,
 } from "@/apis/queries/member.queries";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type PermissionFormProps = {
   roleId: number;
@@ -48,6 +49,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
   onClose,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const permissionsQuery = usePermissions();
   const addPermission = useSetPermission();
   const updatePermission = useUpdatePermission();
@@ -142,7 +144,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
 
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                     {t("permission_information")}
                   </label>
                 </div>
@@ -171,6 +173,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
                 disabled={addPermission.isPending || updatePermission.isPending}
                 type="submit"
                 className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+                dir={langDir}
               >
                 {addPermission.isPending || updatePermission.isPending ? (
                   <>

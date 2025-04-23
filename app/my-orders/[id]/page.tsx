@@ -19,9 +19,11 @@ import { cn } from "@/lib/utils";
 // import { useMe } from "@/apis/queries/user.queries";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const MyOrderDetailsPage = ({}) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const searchParams = useParams();
   // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   // const [reviewId, setReviewId] = useState<number>();
@@ -94,10 +96,10 @@ const MyOrderDetailsPage = ({}) => {
               <div className="my-order-lists for-delivery-address">
                 <ul className="page-indicator-s1 !mb-0">
                   <li>
-                    <Link href="/home">{t("home")}</Link>
+                    <Link href="/home" dir={langDir}>{t("home")}</Link>
                   </li>
                   <li>
-                    <Link href="/my-orders">{t("my_orders")}</Link>
+                    <Link href="/my-orders" dir={langDir}>{t("my_orders")}</Link>
                   </li>
                   <li>
                     <h5>
@@ -115,35 +117,35 @@ const MyOrderDetailsPage = ({}) => {
                     <div className="my-order-card">
                       <div className="delivery-address">
                         <div className="delivery-address-col deliveryAddress">
-                          <h2>{t("delivery_address")}</h2>
-                          <h3>
+                          <h2 dir={langDir}>{t("delivery_address")}</h2>
+                          <h3 dir={langDir}>
                             {shippingDetails?.firstName}{" "}
                             {shippingDetails?.lastName}
                           </h3>
-                          <address>
+                          <address dir={langDir}>
                             {shippingDetails?.address}, <br /> pin -{" "}
                             {shippingDetails?.postCode}
                           </address>
-                          <p>
+                          <p dir={langDir}>
                             {t("phone_number")}{" "}
-                            <span className="!text-red-500">
+                            <span className="!text-red-500" dir={langDir}>
                               {shippingDetails?.phone}
                             </span>
                           </p>
                         </div>
                         <div className="delivery-address-col deliveryAddress">
-                          <h2>{t("billing_address")}</h2>
-                          <h3>
+                          <h2 dir={langDir}>{t("billing_address")}</h2>
+                          <h3 dir={langDir}>
                             {billingDetails?.firstName}{" "}
                             {billingDetails?.lastName}
                           </h3>
-                          <address>
+                          <address dir={langDir}>
                             {billingDetails?.address}, <br /> pin -{" "}
                             {billingDetails?.postCode}
                           </address>
-                          <p>
+                          <p dir={langDir}>
                             {t("phone_number")}{" "}
-                            <span className="!text-red-500">
+                            <span className="!text-red-500" dir={langDir}>
                               {billingDetails?.phone}
                             </span>
                           </p>
@@ -152,7 +154,7 @@ const MyOrderDetailsPage = ({}) => {
                         <h2>Your Rewards</h2>
                       </div> */}
                         <div className="delivery-address-col moreActions">
-                          <h2>More actions</h2>
+                          <h2 dir={langDir}>{t("more_actions")}</h2>
                           <figure className="downloadInvoice">
                             <figcaption>
                               <Button className="downloadInvoice-btn theme-primary-btn">
@@ -216,7 +218,7 @@ const MyOrderDetailsPage = ({}) => {
                                 }
                               </p>
                               <h4 className="mt-1">
-                                $
+                                {currency.symbol}
                                 {orderDetails?.orderProduct_productPrice
                                   ?.offerPrice
                                   ? Number(
@@ -236,7 +238,7 @@ const MyOrderDetailsPage = ({}) => {
                           <div className="order-delivery-progess-s1">
                             <ul>
                               <li className="complted">
-                                <div className="orderStatusText">
+                                <div className="orderStatusText" dir={langDir}>
                                   {t("order_received")}
                                 </div>
                                 <div className="dot">
@@ -263,7 +265,7 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText">
+                                <div className="orderStatusText" dir={langDir}>
                                   {t("order_confirmed")}
                                 </div>
                                 <div className="dot">
@@ -287,7 +289,7 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText">{t("shipped")}</div>
+                                <div className="orderStatusText" dir={langDir}>{t("shipped")}</div>
                                 <div className="dot">
                                   <small></small>
                                 </div>
@@ -310,7 +312,7 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText">
+                                <div className="orderStatusText" dir={langDir}>
                                   {t("out_for_delivery")}
                                 </div>
                                 <div className="dot">
@@ -369,7 +371,7 @@ const MyOrderDetailsPage = ({}) => {
                           </div>
                         </div>
                         <div className="right-info">
-                          <h4 className="mb-2">
+                          <h4 className="mb-2" dir={langDir}>
                             {orderDetails?.orderProductStatus ===
                             "CONFIRMED" ? (
                               <>
@@ -425,12 +427,13 @@ const MyOrderDetailsPage = ({}) => {
                             <Link
                               href={`/trending/${orderDetails?.productId}?type=reviews`}
                               className="ratingLink"
+                              dir={langDir}
                             >
                               <PiStarFill />
                               {t("rate_n_review_product")}
                             </Link>
                           ) : null}
-                          <Button variant="ghost" className="ratingLink mt-0">
+                          <Button variant="ghost" className="ratingLink mt-0" dir={langDir}>
                             <MdHelpCenter />
                             {t("need_help")}
                           </Button>
@@ -448,6 +451,7 @@ const MyOrderDetailsPage = ({}) => {
                                     : "#"
                               }
                               className="ratingLink"
+                              dir={langDir}
                             >
                               <PiStarFill />
                               {t("rate_n_review_seller")}

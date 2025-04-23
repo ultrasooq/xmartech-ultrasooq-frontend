@@ -5,9 +5,10 @@ export interface AddressItem {
   cc: string;
   phoneNumber: string;
   address: string;
-  city: string;
-  country: string;
-  province: string;
+  town: string;
+  cityDetail?: { id: number; name: string; };
+  stateDetail?: { id: number; name: string; };
+  countryDetail?: { id: number; name: string; };
   postCode: string;
 }
 
@@ -17,9 +18,10 @@ export interface AddressCreateRequest {
   phoneNumber: string;
   cc: string;
   address: string;
-  city: string;
-  country: string;
-  province: string;
+  countryId: string | number;
+  stateId: string | number;
+  cityId: string | number;
+  town: string;
   postCode: string;
 }
 

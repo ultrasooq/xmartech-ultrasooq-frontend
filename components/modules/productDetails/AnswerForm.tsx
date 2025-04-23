@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useUpdateAnswer } from "@/apis/queries/question.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type AnswerFormProps = {
   onClose: () => void;
@@ -33,6 +34,7 @@ const formSchema = (t: any) => {
 
 const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuccess }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
   const defaultValues = {
     answer: "",
@@ -73,7 +75,7 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
   return (
     <div>
       <DialogHeader>
-        <DialogTitle className="mb-5 text-center text-xl font-semibold">
+        <DialogTitle className="mb-5 text-center text-xl font-semibold" dir={langDir}>
           {t("post_your_answer")}
         </DialogTitle>
       </DialogHeader>
@@ -88,12 +90,14 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
             name="answer"
             placeholder={t("enter_your_answer_here")}
             rows={6}
+            dir={langDir}
           />
 
           <Button
             disabled={updateAnswer.isPending}
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+            dir={langDir}
           >
             {updateAnswer.isPending ? (
               <>

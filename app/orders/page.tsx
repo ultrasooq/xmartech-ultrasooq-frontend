@@ -13,18 +13,20 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   useCreateOrder,
   useCreateOrderUnAuth,
-  useCreateIntent
+  useCreatePaymentIntent
 } from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 // Load Stripe with your public key
 const stripePromise = loadStripe("pk_test_51QuptGPQ2VnoEyMPay2u4FyltporIQfMh9hWcp2EEresPjx07AuT4lFLuvnNrvO7ksqtaepmRQHfYs4FLia8lIV500i83tXYMR");
 
 const OrdersPage = () => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
@@ -61,7 +63,7 @@ const OrdersPage = () => {
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateTotalAmount = () => {
@@ -77,11 +79,11 @@ const OrdersPage = () => {
             quantity: number;
           },
         ) => {
-          // console.log(curr.productPriceDetails.offerPrice)
-          return acc + +calculateDiscountedPrice(
+          const discount = calculateDiscountedPrice(
             curr.productPriceDetails?.offerPrice ?? 0,
             curr?.productPriceDetails?.consumerDiscount,
-          ) * curr.quantity;
+          );
+          return Number((acc + discount * curr.quantity).toFixed(2));
         },
         0,
       );
@@ -97,10 +99,11 @@ const OrdersPage = () => {
             quantity: number;
           },
         ) => {
-          return acc + +calculateDiscountedPrice(
+          const discount = calculateDiscountedPrice(
             curr.productPriceDetails?.offerPrice ?? 0,
             curr?.productPriceDetails?.consumerDiscount,
-          ) * curr.quantity;
+          );
+          return Number((acc + discount * curr.quantity).toFixed(2));
         },
         0,
       );
@@ -182,7 +185,7 @@ const OrdersPage = () => {
   return (
     <div className="cart-page">
       <div className="container m-auto px-3">
-        <div className="headerPart">
+        <div className="headerPart" dir={langDir}>
           <div className="lediv">
             <h3>{t("make_payment")}</h3>
           </div>
@@ -200,30 +203,32 @@ const OrdersPage = () => {
 
           <div className="cart-page-right">
             <div className="card-item priceDetails">
-              <div className="card-inner-headerPart">
+              <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
-                  <h3>{t("price_details")}</h3>
+                  <h3 dir={langDir}>{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
                   <li>
-                    <p>{t("subtotal")}</p>
-                    <h5>${calculateTotalAmount() || 0}</h5>
+                    <p dir={langDir}>{t("subtotal")}</p>
+                    <h5>{currency.symbol}{calculateTotalAmount() || 0}</h5>
                   </li>
                   {advanceAmount !== "" ? 
-                  <><li>
-                      <p>{t("advance_payment")}</p>
-                      <h5>${advanceAmount || 0}</h5>
-                    </li><li>
-                        <p>{t("shipping")}</p>
-                        <h5>{t("free")}</h5>
+                  <>
+                    <li>
+                      <p dir={langDir}>{t("advance_payment")}</p>
+                      <h5>{currency.symbol}{advanceAmount || 0}</h5>
+                    </li>
+                    <li>
+                        <p dir={langDir}>{t("shipping")}</p>
+                        <h5  dir={langDir}>{t("free")}</h5>
                       </li></>
                   : null }
                 </ul>
               </div>
               <div className="priceDetails-footer">
-                <h4>{t("total_amount")}</h4>
+                <h4 dir={langDir}>{t("total_amount")}</h4>
                 <h4 className="amount-value">
                 {advanceAmount !== "" ? (advanceAmount || 0) : (calculateTotalAmount() || 0)}
                   </h4> <br />

@@ -19,6 +19,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Dialog } from "@/components/ui/dialog";
 import AddProductContent from "../products/AddProductContent";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type ManageProductCardProps = {
   selectedIds?: number[];
@@ -82,6 +83,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   onRemove,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const { toast } = useToast();
 
   // Status update part
@@ -466,13 +468,18 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
                   {/* For Stock */}
                   <div className="flex flex-wrap space-y-1">
-                    <div className="flex items-center justify-start gap-2 text-black">
+                    <div
+                      className="flex items-center justify-start gap-2 text-black"
+                      dir={langDir}
+                    >
                       <input
                         type="checkbox"
                         className="h-[20px] w-[20px]"
-                        checked={askForStock === "false"} // Checkbox is checked when askForStock is false
+                        defaultChecked={askForStock === "false"} // Checkbox is checked when askForStock is false
                       />
-                      <div className="text-[12px] font-semibold">{t("stock")}</div>
+                      <div className="text-[12px] font-semibold">
+                        {t("stock")}
+                      </div>
                     </div>
                     {askForStock === "false" ? (
                       <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -485,9 +492,10 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         </a>
                         <input
                           type="text"
-                          value={initialStock || 0}
+                          value={stock}
                           className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                          readOnly // Prevent manual editing
+                          onChange={(e) => setStock(Number(e.target.value))}
+                          // readOnly // Prevent manual editing
                         />
                         <a
                           href="javascript:void(0)"
@@ -505,13 +513,18 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                   </div>
 
                   <div className="flex flex-wrap space-y-1">
-                    <div className="flex items-center justify-start gap-2 text-black">
+                    <div
+                      className="flex items-center justify-start gap-2 text-black"
+                      dir={langDir}
+                    >
                       <input
                         type="checkbox"
                         className="h-[20px] w-[20px]"
-                        checked={askForPrice === "false"} // Checkbox is checked when askForStock is false
+                        defaultChecked={askForPrice === "false"} // Checkbox is checked when askForStock is false
                       />
-                      <div className="text-[12px] font-semibold">{t("price")}</div>
+                      <div className="text-[12px] font-semibold" dir={langDir}>
+                        {t("price")}
+                      </div>
                     </div>
                     {askForStock === "false" ? (
                       <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
@@ -524,8 +537,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                         </a>
                         <input
                           type="text"
-                          value={initialPrice || 0}
+                          value={productPrice}
                           className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                          onChange={(e) =>
+                            setProductPrice(Number(e.target.value))
+                          }
                         />
                         <a
                           href="javascript:void(0)"
@@ -574,7 +590,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div> */}
                 </div>
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
                         {t("product_condition")}
@@ -583,17 +599,21 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                       <select
                         className="m-0 w-[100%] text-center focus:border-none focus:outline-none"
-                        value={initialCondition} // Bind the selected value to the state
+                        defaultValue={initialCondition} // Bind the selected value to the state
                         onChange={(e) => setCondition(e.target.value)} // Update the state when the value changes
                       >
-                        <option value={"NEW"}>{t("new")}</option>
-                        <option value={"OLD"}>{t("old")}</option>
+                        <option value={"NEW"} dir={langDir}>
+                          {t("new")}
+                        </option>
+                        <option value={"OLD"} dir={langDir}>
+                          {t("old")}
+                        </option>
                       </select>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold">
+                      <div className="text-[12px] font-semibold" dir={langDir}>
                         {t("deliver_after")}
                       </div>
                     </div>
@@ -607,8 +627,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialDelivery || 0}
+                        value={deliveryAfter}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) => setDelivery(Number(e.target.value))}
                       />
                       <a
                         href="javascript:void(0)"
@@ -648,6 +669,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       type="button"
                       className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
                       onClick={handleAddProductModal}
+                      dir={langDir}
                     >
                       {t("add_new")}
                     </button>
@@ -659,6 +681,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       type="button"
                       className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
                       onClick={handleReset}
+                      dir={langDir}
                     >
                       {t("reset")}
                     </button>
@@ -668,6 +691,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       type="button"
                       className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
                       onClick={handleRemoveProduct}
+                      dir={langDir}
                     >
                       {t("remove")}
                     </button>
@@ -678,9 +702,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
             <div className="rightdiv">
               <div className="form-container">
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold">{t("time_open")}</div>
+                      <div className="text-[12px] font-semibold">
+                        {t("time_open")}
+                      </div>
                     </div>
                     <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
                       <a
@@ -692,8 +718,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialTimeOpen || 0}
+                        value={timeOpen}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) => setTimeOpen(Number(e.target.value))}
                       />
                       <a
                         href="javascript:void(0)"
@@ -704,9 +731,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold">
+                      <div className="text-[12px] font-semibold" dir={langDir}>
                         {t("time_close")}
                       </div>
                     </div>
@@ -720,8 +747,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialTimeClose || 0}
+                        value={timeClose}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) => setTimeClose(Number(e.target.value))}
                       />
                       <a
                         href="javascript:void(0)"
@@ -749,21 +777,27 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex w-full items-center justify-start gap-2 text-black md:w-[40%]">
                       <div className="text-[12px] font-semibold">
                         {t("consumer_type")}
                       </div>
                     </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2 md:w-[60%]">
+                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2 text-sm md:w-[60%]">
                       <select
                         className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
-                        value={initialConsumerType} // Bind the selected value to the state
+                        defaultValue={initialConsumerType} // Bind the selected value to the state
                         onChange={(e) => setConsumer(e.target.value)} // Update the state when the value changes
                       >
-                        <option value={"CONSUMER"}>{t("consumer")}</option>
-                        <option value={"VENDORS"}>{t("vendor")}</option>
-                        <option value={"EVERYONE"}>{t("everyone")}</option>
+                        <option value={"CONSUMER"} dir={langDir}>
+                          {t("consumer")}
+                        </option>
+                        <option value={"VENDORS"} dir={langDir}>
+                          {t("vendor")}
+                        </option>
+                        <option value={"EVERYONE"} dir={langDir}>
+                          {t("everyone")}
+                        </option>
                       </select>
                     </div>
                   </div>
@@ -783,26 +817,34 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex w-[40%] items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold">{t("sell_type")}</div>
+                      <div className="text-[12px] font-semibold">
+                        {t("sell_type")}
+                      </div>
                     </div>
-                    <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
+                    <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2 text-sm">
                       <select
                         className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
-                        value={initialSellType} // Bind the selected value to the state
+                        defaultValue={initialSellType} // Bind the selected value to the state
                         onChange={(e) => setSell(e.target.value)} // Update the state when the value changes
                       >
-                        <option value={"NORMALSELL"}>{t("normal_sell")}</option>
-                        <option value={"BUYGROUP"}>{t("buy_group")}</option>
-                        <option value={"EVERYONE"}>{t("everyone")}</option>
+                        <option value={"NORMALSELL"} dir={langDir}>
+                          {t("normal_sell")}
+                        </option>
+                        <option value={"BUYGROUP"} dir={langDir}>
+                          {t("buy_group")}
+                        </option>
+                        <option value={"EVERYONE"} dir={langDir}>
+                          {t("everyone")}
+                        </option>
                       </select>
                     </div>
                   </div>
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
                         {t("vendor_discount")}
@@ -818,8 +860,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialVendorDiscount || 0}
+                        value={vendorDiscount}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) => setVendor(Number(e.target.value))}
                       />
                       <a
                         href="javascript:void(0)"
@@ -830,7 +873,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
                         {t("consumer_discount")}
@@ -846,8 +889,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialConsumerDiscount || 0}
+                        value={consumerDiscount}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) =>
+                          setConsumerDiscount(Number(e.target.value))
+                        }
                       />
                       <a
                         href="javascript:void(0)"
@@ -861,7 +907,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
                         {t("min_quantity")}
@@ -877,8 +923,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialMinQuantity || 0}
+                        value={minQuantity}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) => setMinQuantity(Number(e.target.value))}
                       />
                       <a
                         href="javascript:void(0)"
@@ -889,7 +936,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
                         {t("max_quantity")}
@@ -905,8 +952,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialMaxQuantity || 0}
+                        value={maxQuantity}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) => setMaxQuantity(Number(e.target.value))}
                       />
                       <a
                         href="javascript:void(0)"
@@ -920,7 +968,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
                         {t("min_customer")}
@@ -936,8 +984,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialMinCustomer || 0}
+                        value={minCustomer}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) => setMinCustomer(Number(e.target.value))}
                       />
                       <a
                         href="javascript:void(0)"
@@ -948,7 +997,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
                         {t("max_customer")}
@@ -964,8 +1013,9 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialMaxCustomer || 0}
+                        value={maxCustomer}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) => setMaxCustomer(Number(e.target.value))}
                       />
                       <a
                         href="javascript:void(0)"
@@ -979,7 +1029,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                 </div>
 
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
                         {t("min_quantity_per_customer")}
@@ -995,8 +1045,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialMinQuantityPerCustomer || 0}
+                        value={minQuantityPerCustomer}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) =>
+                          setMinQuantityCustomer(Number(e.target.value))
+                        }
                       />
                       <a
                         href="javascript:void(0)"
@@ -1007,7 +1060,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap space-y-1">
+                  <div className="flex flex-wrap space-y-1" dir={langDir}>
                     <div className="flex items-center justify-start gap-2 text-black">
                       <div className="text-[12px] font-semibold">
                         {t("max_quantity_per_customer")}
@@ -1023,8 +1076,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       </a>
                       <input
                         type="text"
-                        value={initialMaxQuantityPerCustomer || 0}
+                        value={maxQuantityPerCustomer}
                         className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
+                        onChange={(e) =>
+                          setMaxQuantityCustomer(Number(e.target.value))
+                        }
                       />
                       <a
                         href="javascript:void(0)"

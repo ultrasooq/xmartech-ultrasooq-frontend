@@ -14,4 +14,5 @@ export interface CartItem {
     maxQuantityPerCustomer?: number;
   };
   quantity: number;
+  object: any;
 }

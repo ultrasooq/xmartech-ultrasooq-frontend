@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useMemo } from "react";
@@ -10,6 +11,8 @@ const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
   vendor,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
+  
   const getSocialLinks = useMemo(() => {
     if (vendor?.userSocialLink?.length > 0) {
       const socialLinks = vendor?.userSocialLink?.map(
@@ -38,14 +41,14 @@ const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
   return (
     <div className="w-full border-b-2 border-dashed border-gray-200 py-4">
       <div className="flex w-full flex-wrap items-center justify-between pb-5">
-        <h2 className="left-8 text-2xl font-semibold text-color-dark">
+        <h2 className="left-8 text-2xl font-semibold text-color-dark" dir={langDir}>
           {t("company_information")}
         </h2>
       </div>
       <div className="w-full">
         <div className="w-full">
           <div className="mb-4 w-full">
-            <label className="text-lg font-bold text-color-dark">
+            <label className="text-lg font-bold text-color-dark" dir={langDir}>
               {t("registration_address")}
             </label>
           </div>
@@ -53,12 +56,12 @@ const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
             <div className="w-7/12">
               <div className="flex w-full flex-wrap py-4">
                 <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                  <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+                  <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                     {t("email")}:
                   </span>
                 </div>
                 <div className="mr-1 flex w-8/12  items-center justify-start sm:mr-0">
-                  <p className="text-base font-medium leading-4 text-color-dark">
+                  <p className="text-base font-medium leading-4 text-color-dark" dir={langDir}>
                     {vendor?.email || "N/A"}
                   </p>
                 </div>
@@ -67,12 +70,12 @@ const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
             <div className="w-5/12">
               <div className="flex w-full flex-wrap py-4">
                 <div className="mr-1 flex w-5/12 items-center justify-start sm:mr-0">
-                  <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+                  <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                     {t("phone")}:
                   </span>
                 </div>
                 <div className="mr-1 flex w-7/12  items-center justify-start sm:mr-0">
-                  <p className="text-base font-medium leading-4 text-color-dark">
+                  <p className="text-base font-medium leading-4 text-color-dark" dir={langDir}>
                     {vendor?.phoneNumber || "N/A"}
                   </p>
                 </div>
@@ -81,12 +84,12 @@ const VendorInformationSection: React.FC<VendorInformationSectionProps> = ({
             <div className="w-7/12">
               <div className="flex w-full flex-wrap py-4">
                 <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                  <span className="text-sm font-normal capitalize leading-4 text-gray-500">
+                  <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
                     {t("social_links")}:
                   </span>
                 </div>
                 <div className="mr-1 flex w-8/12  items-center justify-start sm:mr-0">
-                  <div className="flex gap-x-3 text-base font-medium capitalize leading-4 text-color-dark">
+                  <div className="flex gap-x-3 text-base font-medium capitalize leading-4 text-color-dark" dir={langDir}>
                     {getSocialLinks}
                   </div>
                 </div>

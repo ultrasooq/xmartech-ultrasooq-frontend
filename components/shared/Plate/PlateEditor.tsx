@@ -386,9 +386,10 @@ type PlateEditorProps = {
   ) => void;
   description: { id: string; type: string; children: { text: string }[] }[];
   readOnly?: boolean;
+  fixedToolbar?: boolean;
 };
 
-const PlateEditor: React.FC<PlateEditorProps> = ({ onChange, description, readOnly, }) => {
+const PlateEditor: React.FC<PlateEditorProps> = ({ onChange, description, readOnly, fixedToolbar = true }) => {
 
   const [value, setValue] = useState<Value>();
   const [showElement, setShowElement] = useState(false);
@@ -428,7 +429,14 @@ const PlateEditor: React.FC<PlateEditorProps> = ({ onChange, description, readOn
   //   </TooltipProvider>
   // )
 
-  return showElement ? <PlateEditorComponent value={value} onChange={onChange} readOnly={readOnly} /> : null;
+  return showElement ? (
+    <PlateEditorComponent 
+      value={value} 
+      onChange={onChange} 
+      readOnly={readOnly} 
+      fixedToolbar={fixedToolbar}
+    />
+  ) : null;
 };
 
 export default PlateEditor;

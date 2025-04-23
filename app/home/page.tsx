@@ -1,7 +1,9 @@
+"use client";
 import DealsCard from "@/components/modules/home/DealsCard";
-import ProductCard from "@/components/modules/home/ProductCard";
+import ProductCardHome from "@/components/modules/home/ProductCard";
 import TrendingCard from "@/components/modules/home/TrendingCard";
 import TrendingOptionCard from "@/components/modules/home/TrendingOptionCard";
+import ProductCard from "@/components/modules/trending/ProductCard";
 import Footer from "@/components/shared/Footer";
 import {
   bestSellerList,
@@ -18,13 +20,317 @@ import HeadphoneImage from "@/public/images/big-headphone.png";
 import AdBannerOne from "@/public/images/hs-1.png";
 import AdBannerTwo from "@/public/images/hs-2.png";
 import AdBannerThree from "@/public/images/hs-3.png";
-import { Metadata } from "next";
+import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import {
+  useAllBuyGroupProducts,
+  useAllProducts,
+} from "@/apis/queries/product.queries";
+import { useEffect, useMemo, useState } from "react";
+import { useMe } from "@/apis/queries/user.queries";
+import { TrendingProduct } from "@/utils/types/common.types";
+import { toast } from "@/components/ui/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import {
+  useCartListByDevice,
+  useCartListByUserId,
+} from "@/apis/queries/cart.queries";
+import { getOrCreateDeviceId } from "@/utils/helper";
+import { useCategoryStore } from "@/lib/categoryStore";
+import { useRouter } from "next/navigation";
+import { useCategory } from "@/apis/queries/category.queries";
+// import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Home",
-};
+// export const metadata: Metadata = {
+//   title: "Home",
+// };
 
 function HomePage() {
+  const t = useTranslations();
+  const { currency } = useAuth();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const categoryStore = useCategoryStore();
+  const [cartList, setCartList] = useState<any[]>();
+  const deviceId = getOrCreateDeviceId() || "";
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+
+  const addToWishlist = useAddToWishList();
+  const deleteFromWishlist = useDeleteFromWishList();
+
+  const me = useMe();
+
+  useEffect(() => {
+    if (accessToken) {
+      setHaveAccessToken(true);
+    } else {
+      setHaveAccessToken(false);
+    }
+  }, [accessToken]);
+
+  const categoryQuery = useCategory("184");
+
+  const memoizedCategories = useMemo(() => {
+    let tempArr: any = [];
+    if (categoryQuery.data?.data) {
+      tempArr = categoryQuery.data.data?.children;
+    }
+    return tempArr || [];
+  }, [categoryQuery?.data?.data]);
+
+  const buyGroupProductsQuery = useAllBuyGroupProducts({
+    page: 1,
+    limit: 4,
+    sort: "desc",
+  });
+
+  const memoizedBuyGroupProducts = useMemo(() => {
+    return (
+      buyGroupProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
+        sold: item.orderProducts?.length,
+      })) || []
+    );
+  }, [buyGroupProductsQuery?.data?.data]);
+
+  const homeDecorProductsQuery = useAllProducts({
+    page: 1,
+    limit: 4,
+    sort: "desc",
+    categoryIds: "203",
+  });
+
+  const memoizedHomeDecorProducts = useMemo(() => {
+    return (
+      homeDecorProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
+      })) || []
+    );
+  }, [homeDecorProductsQuery?.data?.data]);
+
+  const fashionBeautyProductsQuery = useAllProducts({
+    page: 1,
+    limit: 4,
+    sort: "desc",
+    categoryIds: "258",
+  });
+
+  const memoizedFashionBeautyProducts = useMemo(() => {
+    return (
+      fashionBeautyProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
+      })) || []
+    );
+  }, [fashionBeautyProductsQuery?.data?.data]);
+
+  const consumerElectronicsProductsQuery = useAllProducts({
+    page: 1,
+    limit: 4,
+    sort: "desc",
+    categoryIds: "269,270",
+  });
+
+  const memoizedConsumerElectronicsProducts = useMemo(() => {
+    return (
+      consumerElectronicsProductsQuery?.data?.data?.map((item: any) => ({
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
+      })) || []
+    );
+  }, [consumerElectronicsProductsQuery?.data?.data]);
+
+  const handleDeleteFromWishlist = async (productId: number) => {
+    const response = await deleteFromWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
+      });
+    } else {
+      toast({
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleAddToWishlist = async (
+    productId: number,
+    wishlistArr?: any[],
+  ) => {
+    const wishlistObject = wishlistArr?.find(
+      (item) => item.userId === me.data?.data?.id,
+    );
+    // return;
+    if (wishlistObject) {
+      handleDeleteFromWishlist(wishlistObject?.productId);
+      return;
+    }
+
+    const response = await addToWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
+      });
+    } else {
+      toast({
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
+        variant: "danger",
+      });
+    }
+  };
+
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 20,
+      deviceId,
+    },
+    !haveAccessToken,
+  );
+
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 20,
+    },
+    haveAccessToken,
+  );
+
+  useEffect(() => {
+    if (cartListByUser.data?.data) {
+      setCartList((cartListByUser.data?.data || []).map((item: any) => item));
+    } else if (cartListByDeviceQuery.data?.data) {
+      setCartList(
+        (cartListByDeviceQuery.data?.data || []).map((item: any) => item),
+      );
+    }
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
+
   return (
     <>
       <section className="w-full py-8">
@@ -76,7 +382,7 @@ function HomePage() {
                     </h3>
                     <p>Just Price</p>
                     <h5 className="mb-5 text-lg font-semibold text-olive-green">
-                      $159.99
+                      {currency.symbol}159.99
                     </h5>
                   </div>
                 </div>
@@ -101,7 +407,7 @@ function HomePage() {
                     </span>
                     <p>Just Price</p>
                     <h5 className="mb-5 text-lg font-semibold text-olive-green">
-                      $159.99
+                      {currency.symbol}159.99
                     </h5>
                   </div>
                 </div>
@@ -111,7 +417,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="w-full py-8">
+      <section className="w-full pb-4 pt-8">
         <div className="container m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-5 w-full">
@@ -141,37 +447,56 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="w-full py-8">
-        <div className="container m-auto px-3">
-          <div className="flex flex-wrap">
-            <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
-              <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
-                  Deal of the day
-                </h4>
-                <span className="rounded bg-dark-orange px-3 py-1.5 text-sm font-medium capitalize text-white md:px-5 md:py-2.5 md:text-lg">
+      {memoizedBuyGroupProducts?.length > 0 && (
+        <section className="w-full pb-8 pt-0">
+          <div className="container m-auto px-3">
+            <div className="flex flex-wrap">
+              <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
+                <div className="flex flex-wrap items-center justify-start">
+                  <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                    {t("deal_of_the_day")}
+                  </h4>
+                  {/* <span className="rounded bg-dark-orange px-3 py-1.5 text-sm font-medium capitalize text-white md:px-5 md:py-2.5 md:text-lg">
                   End in: 26:22:00:19
-                </span>
+                </span> */}
+                </div>
+                <div className="flex flex-wrap items-center justify-end">
+                  <Link
+                    href="/buygroup"
+                    className="mr-3.5 text-sm font-normal text-black underline sm:mr-0"
+                  >
+                    {t("view_all")}
+                  </Link>
+                </div>
               </div>
-              <div className="flex flex-wrap items-center justify-end">
-                <a
-                  href="#"
-                  className="mr-3.5 text-sm font-normal text-black underline sm:mr-0"
-                >
-                  View all
-                </a>
+              <div className="product-list-s1 w-full">
+                {memoizedBuyGroupProducts.map((item: TrendingProduct) => {
+                  const cartQuantity =
+                    cartList?.find((el: any) => el.productId == item.id)
+                      ?.quantity || 0;
+                  return (
+                    <ProductCard
+                      key={item.id}
+                      item={item}
+                      onWishlist={() =>
+                        handleAddToWishlist(item.id, item?.productWishlist)
+                      }
+                      inWishlist={item?.inWishlist}
+                      haveAccessToken={haveAccessToken}
+                      isInteractive
+                      productQuantity={cartQuantity}
+                      isAddedToCart={cartQuantity > 0}
+                      sold={item.sold}
+                    />
+                  );
+                })}
               </div>
-            </div>
-            <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {dealsList.map((item: any) => (
-                <DealsCard key={uuidv4()} item={item} />
-              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="w-full py-8">
+      {/* <section className="w-full py-8">
         <div className="container m-auto px-3">
           <div className="flex flex-wrap">
             <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
@@ -214,7 +539,7 @@ function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="w-full py-8">
         <div className="container m-auto">
@@ -231,10 +556,10 @@ function HomePage() {
               </div>
               <div className="w-12/12 flex flex-wrap content-center items-center px-3.5 sm:w-4/12 md:w-3/12">
                 <h6 className="mb-1.5 text-base font-medium uppercase text-color-dark line-through">
-                  $332.38
+                  {currency.symbol}332.38
                 </h6>
                 <h4 className="w-full text-3xl font-medium uppercase text-olive-green">
-                  <span className="line-through">$</span>219.05
+                  <span className="line-through">{currency.symbol}</span>219.05
                 </h4>
                 <div className="mt-5">
                   <a
@@ -259,17 +584,18 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="w-full py-8">
-        <div className="container m-auto">
-          <div className="flex flex-wrap">
-            <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
-              <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
-                  Computers & Technology
-                </h4>
-              </div>
-              <div className="flex flex-wrap items-center justify-start sm:justify-end">
-                <a
+      {memoizedHomeDecorProducts?.length > 0 && (
+        <section className="w-full py-8">
+          <div className="container m-auto">
+            <div className="flex flex-wrap">
+              <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
+                <div className="flex flex-wrap items-center justify-start">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                    {t("home_decor")}
+                  </h4>
+                </div>
+                <div className="flex flex-wrap items-center justify-start sm:justify-end">
+                  {/* <a
                   href="#"
                   className="mr-3.5 text-sm font-normal text-black sm:mr-0"
                 >
@@ -304,35 +630,78 @@ function HomePage() {
                   className="mr-3.5 text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
                 >
                   Accessories
-                </a>
-                <a
-                  href="#"
-                  className="mr-3.5 text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
-                >
-                  View all
-                </a>
+                </a> */}
+                  <a
+                    onClick={() => {
+                      const categoryId = 203;
+                      const subCategoryIndex = memoizedCategories.findIndex(
+                        (item: any) => item.id == categoryId,
+                      );
+                      const item = memoizedCategories.find(
+                        (item: any) => item.id == categoryId,
+                      );
+                      categoryStore.setSubCategories(
+                        memoizedCategories?.[subCategoryIndex]?.children,
+                      );
+                      categoryStore.setCategoryId(categoryId.toString());
+                      categoryStore.setSubCategoryIndex(subCategoryIndex);
+                      categoryStore.setSubCategoryParentName(item?.name);
+                      categoryStore.setSubSubCategoryParentName(
+                        memoizedCategories?.[subCategoryIndex]?.children?.[0]
+                          ?.name,
+                      );
+                      categoryStore.setSubSubCategories(
+                        memoizedCategories?.[subCategoryIndex]?.children?.[0]
+                          ?.children,
+                      );
+                      categoryStore.setSecondLevelCategoryIndex(0);
+                      categoryStore.setCategoryIds(categoryId.toString());
+                      router.push("/trending");
+                    }}
+                    className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                  >
+                    {t("view_all")}
+                  </a>
+                </div>
               </div>
-            </div>
-            <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {computerTechnologyList.map((item: any) => (
-                <ProductCard key={uuidv4()} item={item} />
-              ))}
+              <div className="product-list-s1 w-full">
+                {memoizedHomeDecorProducts.map((item: TrendingProduct) => {
+                  const cartQuantity =
+                    cartList?.find((el: any) => el.productId == item.id)
+                      ?.quantity || 0;
+                  return (
+                    <ProductCard
+                      key={item.id}
+                      item={item}
+                      onWishlist={() =>
+                        handleAddToWishlist(item.id, item?.productWishlist)
+                      }
+                      inWishlist={item?.inWishlist}
+                      haveAccessToken={haveAccessToken}
+                      isInteractive
+                      productQuantity={cartQuantity}
+                      isAddedToCart={cartQuantity > 0}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="w-full py-8">
-        <div className="container m-auto">
-          <div className="flex flex-wrap">
-            <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
-              <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
-                  Home Electronics
-                </h4>
-              </div>
-              <div className="flex flex-wrap items-center justify-start sm:justify-end">
-                <a
+      {memoizedFashionBeautyProducts?.length > 0 && (
+        <section className="w-full py-8">
+          <div className="container m-auto">
+            <div className="flex flex-wrap">
+              <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
+                <div className="flex flex-wrap items-center justify-start">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                    {t("fashion_n_beauty")}
+                  </h4>
+                </div>
+                <div className="flex flex-wrap items-center justify-start sm:justify-end">
+                  {/* <a
                   href="#"
                   className="mr-3.5 text-sm font-normal text-black sm:mr-0"
                 >
@@ -361,35 +730,78 @@ function HomePage() {
                   className="mr-3.5 text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
                 >
                   Panasonic Refrigerations
-                </a>
-                <a
-                  href="#"
-                  className="mr-3.5 text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
-                >
-                  View all
-                </a>
+                </a> */}
+                  <a
+                    onClick={() => {
+                      const categoryId = 258;
+                      const subCategoryIndex = memoizedCategories.findIndex(
+                        (item: any) => item.id == categoryId,
+                      );
+                      const item = memoizedCategories.find(
+                        (item: any) => item.id == categoryId,
+                      );
+                      categoryStore.setSubCategories(
+                        memoizedCategories?.[subCategoryIndex]?.children,
+                      );
+                      categoryStore.setCategoryId(categoryId.toString());
+                      categoryStore.setSubCategoryIndex(subCategoryIndex);
+                      categoryStore.setSubCategoryParentName(item?.name);
+                      categoryStore.setSubSubCategoryParentName(
+                        memoizedCategories?.[subCategoryIndex]?.children?.[0]
+                          ?.name,
+                      );
+                      categoryStore.setSubSubCategories(
+                        memoizedCategories?.[subCategoryIndex]?.children?.[0]
+                          ?.children,
+                      );
+                      categoryStore.setSecondLevelCategoryIndex(0);
+                      categoryStore.setCategoryIds(categoryId.toString());
+                      router.push("/trending");
+                    }}
+                    className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                  >
+                    {t("view_all")}
+                  </a>
+                </div>
               </div>
-            </div>
-            <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {homeElectronicsList.map((item: any) => (
-                <ProductCard key={uuidv4()} item={item} />
-              ))}
+              <div className="product-list-s1 w-full">
+                {memoizedFashionBeautyProducts.map((item: TrendingProduct) => {
+                  const cartQuantity =
+                    cartList?.find((el: any) => el.productId == item.id)
+                      ?.quantity || 0;
+                  return (
+                    <ProductCard
+                      key={item.id}
+                      item={item}
+                      onWishlist={() =>
+                        handleAddToWishlist(item.id, item?.productWishlist)
+                      }
+                      inWishlist={item?.inWishlist}
+                      haveAccessToken={haveAccessToken}
+                      isInteractive
+                      productQuantity={cartQuantity}
+                      isAddedToCart={cartQuantity > 0}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="w-full py-8">
-        <div className="container m-auto">
-          <div className="flex flex-wrap">
-            <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
-              <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
-                  Cameras & Videos
-                </h4>
-              </div>
-              <div className="flex flex-wrap items-center justify-start sm:justify-end">
-                <a
+      {memoizedConsumerElectronicsProducts.length > 0 && (
+        <section className="w-full py-8">
+          <div className="container m-auto">
+            <div className="flex flex-wrap">
+              <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
+                <div className="flex flex-wrap items-center justify-start">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                    {t("consumer_electronics")}
+                  </h4>
+                </div>
+                <div className="flex flex-wrap items-center justify-start sm:justify-end">
+                  {/* <a
                   href="#"
                   className="mr-3.5 text-sm font-normal text-black sm:mr-0"
                 >
@@ -418,23 +830,74 @@ function HomePage() {
                   className="mr-3.5 text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
                 >
                   Accessories
-                </a>
-                <a
-                  href="#"
-                  className="mr-3.5 text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
-                >
-                  View all
-                </a>
+                </a> */}
+                  <a
+                    onClick={() => {
+                      const categoryId = 269;
+                      const subCategoryId = 270;
+                      const categoryIds = "269,270";
+                      const subCategoryIndex = memoizedCategories.findIndex(
+                        (item: any) => item.id == categoryId,
+                      );
+                      const item = memoizedCategories.find(
+                        (item: any) => item.id == categoryId,
+                      );
+                      const children =
+                        memoizedCategories?.[subCategoryIndex]?.children || [];
+                      categoryStore.setSubCategories(children);
+                      categoryStore.setSubCategoryIndex(subCategoryIndex);
+                      categoryStore.setSubCategoryParentName(item?.name);
+                      const itemSubCategory = children.find(
+                        (item: any) => item.id == subCategoryId,
+                      );
+                      categoryStore.setSubSubCategoryParentName(
+                        itemSubCategory?.name,
+                      );
+                      categoryStore.setSubSubCategories(
+                        itemSubCategory?.children,
+                      );
+                      categoryStore.setSecondLevelCategoryIndex(
+                        children.findIndex(
+                          (item: any) => item.id == subCategoryId,
+                        ),
+                      );
+                      categoryStore.setCategoryId(subCategoryId.toString());
+                      categoryStore.setCategoryIds(categoryIds);
+                      router.push("/trending");
+                    }}
+                    className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                  >
+                    {t("view_all")}
+                  </a>
+                </div>
+              </div>
+              <div className="product-list-s1 w-full">
+                {memoizedConsumerElectronicsProducts.map(
+                  (item: TrendingProduct) => {
+                    const cartQuantity =
+                      cartList?.find((el: any) => el.productId == item.id)
+                        ?.quantity || 0;
+                    return (
+                      <ProductCard
+                        key={item.id}
+                        item={item}
+                        onWishlist={() =>
+                          handleAddToWishlist(item.id, item?.productWishlist)
+                        }
+                        inWishlist={item?.inWishlist}
+                        haveAccessToken={haveAccessToken}
+                        isInteractive
+                        productQuantity={cartQuantity}
+                        isAddedToCart={cartQuantity > 0}
+                      />
+                    );
+                  },
+                )}
               </div>
             </div>
-            <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {camerasVideosList.map((item: any) => (
-                <ProductCard key={uuidv4()} item={item} />
-              ))}
-            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <Footer />
     </>

@@ -14,6 +14,7 @@ import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductCardProps = {
   id: number;
@@ -49,11 +50,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   askForPrice,
 }) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
 
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {
@@ -90,7 +92,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <Link href={`/trending/${id}`}>
         {askForPrice !== "true" ? (
           consumerDiscount ? (
-            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
+            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
               <span>{consumerDiscount}%</span>
             </div>
           ) : null
@@ -99,7 +101,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <Image
             src={
               productImages?.[0]?.image &&
-                validator.isURL(productImages[0].image)
+              validator.isURL(productImages[0].image)
                 ? productImages[0].image
                 : PlaceholderImage
             }
@@ -177,15 +179,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <button
               type="button"
               className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+              dir={langDir}
             >
               {t("ask_vendor_for_price")}
             </button>
           </Link>
         ) : (
           <h5 className="py-1 text-[#1D77D1]">
-            ${calculateDiscountedPrice()}{" "}
+            {currency.symbol}
+            {calculateDiscountedPrice()}{" "}
             <span className="text-gray-500 !line-through">
-              ${productProductPrice}
+              {currency.symbol}
+              {productProductPrice}
             </span>
           </h5>
         )}

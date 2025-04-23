@@ -14,6 +14,7 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -32,6 +33,7 @@ const formSchema = (t: any) => {
 
 export default function ForgetPasswordPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const defaultValues = {
@@ -80,10 +82,10 @@ export default function ForgetPasswordPage() {
         <div className="flex">
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
                 {t("forgot_your_password")}
               </h2>
-              <p>{t("forgot_password_instruction")}</p>
+              <p dir={langDir}>{t("forgot_password_instruction")}</p>
             </div>
             <div className="w-full">
               <Form {...form}>
@@ -95,13 +97,15 @@ export default function ForgetPasswordPage() {
                     label={t("email_phone_id")}
                     name="email"
                     placeholder={t("enter_email_phone_id")}
+                    dir={langDir}
                   />
 
                   <div className="mb-4 w-full">
                     <Button
                       disabled={forgotPassword.isPending}
                       type="submit"
-                      className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold  leading-6"
+                      className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                      dir={langDir}
                     >
                       {forgotPassword.isPending ? (
                         <LoaderWithMessage message={t("please_wait")} />

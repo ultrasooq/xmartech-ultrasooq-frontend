@@ -38,6 +38,8 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import ReactSelect from "react-select";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 
 const customStyles = {
   control: (base: any) => ({
@@ -161,6 +163,7 @@ const formSchema = z
 
 export default function EditBranchPage() {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -393,7 +396,13 @@ export default function EditBranchPage() {
 
             <div className="mb-4 w-full">
               <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                <label 
+                  className={cn(
+                    "mb-3.5 block",
+                    langDir == "rtl" ? "text-right" : "text-left",
+                    "text-lg font-medium capitalize leading-5 text-color-dark"
+                  )}
+                >
                   {t("branch_information")}
                 </label>
               </div>
@@ -402,18 +411,18 @@ export default function EditBranchPage() {
             <div>
               <div className="mb-3.5 w-full">
                 <AccordionMultiSelectV2
-                  label="Business Type"
+                  label={t("business_type")}
                   name="businessTypeList"
                   options={memoizedTags || []}
-                  placeholder="Business Type"
-                  error={String(form.formState.errors?.businessTypeList?.message)}
+                  placeholder={t("business_type")}
+                  error={String(form.formState.errors?.businessTypeList?.message || '')}
                 />
 
                 <FormField
                   control={form.control}
                   name="uploadBranchImage"
                   render={({ field }) => (
-                    <FormItem className="mb-3.5 w-full">
+                    <FormItem className="mb-3.5 w-full" dir={langDir}>
                       <FormLabel>{t("upload_branch_front_picture")}</FormLabel>
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
@@ -436,7 +445,7 @@ export default function EditBranchPage() {
                               />
                             ) : (
                               <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                <div className="flex h-full flex-col items-center justify-center">
+                                <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
                                   <Image
                                     src="/images/upload.png"
                                     className="mb-3"
@@ -487,7 +496,7 @@ export default function EditBranchPage() {
                   control={form.control}
                   name="uploadProofOfAddress"
                   render={({ field }) => (
-                    <FormItem className="mb-3.5 w-full">
+                    <FormItem className="mb-3.5 w-full" dir={langDir}>
                       <FormLabel>{t("address_proof")}</FormLabel>
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
@@ -511,7 +520,7 @@ export default function EditBranchPage() {
                               />
                             ) : (
                               <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                <div className="flex h-full flex-col items-center justify-center">
+                                <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
                                   <Image
                                     src="/images/upload.png"
                                     className="mb-3"
@@ -564,7 +573,13 @@ export default function EditBranchPage() {
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                    <label 
+                      className={cn(
+                        "mb-3.5 block",
+                        langDir == 'rtl' ? 'text-right' : 'text-left',
+                        "text-lg font-medium capitalize leading-5 text-color-dark"
+                      )}
+                    >
                       {t("branch_location")}
                     </label>
                   </div>
@@ -576,14 +591,7 @@ export default function EditBranchPage() {
                       label={t("address")}
                       name="address"
                       placeholder={t("address")}
-                    />
-
-                    <Image
-                      src="/images/location.svg"
-                      alt="location-icon"
-                      height={16}
-                      width={16}
-                      className="absolute right-6 top-[50px]"
+                      dir={langDir}
                     />
                   </div>
 
@@ -591,14 +599,16 @@ export default function EditBranchPage() {
                     label={t("city")}
                     name="city"
                     placeholder={t("city")}
+                    dir={langDir}
                   />
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                   <ControlledTextInput
-                    label="Province"
+                    label={t("province")}
                     name="province"
-                    placeholder="Province"
+                    placeholder={t("province")}
+                    dir={langDir}
                   />
 
                   {/* <ControlledSelectInput
@@ -608,7 +618,7 @@ export default function EditBranchPage() {
                   /> */}
 
                   <div className="mt-2 flex flex-col gap-y-3">
-                    <Label>Country</Label>
+                    <Label dir={langDir}>{t("country")}</Label>
                     <Controller
                       name="country"
                       control={form.control}
@@ -624,6 +634,7 @@ export default function EditBranchPage() {
                           )}
                           styles={customStyles}
                           instanceId="country"
+                          isRtl={langDir == 'rtl'}
                         />
                       )}
                     />
@@ -632,16 +643,17 @@ export default function EditBranchPage() {
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                   <ControlledPhoneInput
-                    label="Branch Contact Number"
+                    label={t("branch_contact_number")}
                     name="contactNumber"
                     countryName="cc"
-                    placeholder="Branch Contact Number"
+                    placeholder={t("branch_contact_number")}
                   />
 
                   <ControlledTextInput
                     label={t("branch_contact_name")}
                     name="contactName"
                     placeholder={t("branch_contact_name")}
+                    dir={langDir}
                   />
                 </div>
               </div>
@@ -649,7 +661,7 @@ export default function EditBranchPage() {
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark">
+                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
                       {t("branch_working_hours")}
                     </label>
                   </div>
@@ -657,7 +669,7 @@ export default function EditBranchPage() {
                 <div className="w-full">
                   <div className="flex flex-wrap">
                     <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
-                      <Label htmlFor="startTime" className="text-color-dark">
+                      <Label htmlFor="startTime" className="text-color-dark" dir={langDir}>
                         {t("start_time")}
                       </Label>
                       <Controller
@@ -668,10 +680,10 @@ export default function EditBranchPage() {
                             {...field}
                             className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                           >
-                            <option value="">Select</option>
+                            <option value="" dir={langDir}>{t("select")}</option>
                             {HOURS_24_FORMAT.map(
                               (hour: string, index: number) => (
-                                <option key={index} value={hour}>
+                                <option key={index} value={hour} dir={langDir}>
                                   {getAmPm(hour)}
                                 </option>
                               ),
@@ -679,13 +691,13 @@ export default function EditBranchPage() {
                           </select>
                         )}
                       />
-                      <p className="text-[13px] text-red-500">
+                      <p className="text-[13px] text-red-500" dir={langDir}>
                         {form.formState.errors.startTime?.message}
                       </p>
                     </div>
 
                     <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
-                      <Label htmlFor="endTime" className="text-color-dark">
+                      <Label htmlFor="endTime" className="text-color-dark" dir={langDir}>
                         {t("end_time")}
                       </Label>
                       <Controller
@@ -696,10 +708,10 @@ export default function EditBranchPage() {
                             {...field}
                             className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                           >
-                            <option value="">{t("select")}</option>
+                            <option value="" dir={langDir}>{t("select")}</option>
                             {HOURS_24_FORMAT.map(
                               (hour: string, index: number) => (
-                                <option key={index} value={hour}>
+                                <option key={index} value={hour} dir={langDir}>
                                   {getAmPm(hour)}
                                 </option>
                               ),
@@ -707,7 +719,7 @@ export default function EditBranchPage() {
                           </select>
                         )}
                       />
-                      <p className="text-[13px] text-red-500">
+                      <p className="text-[13px] text-red-500" dir={langDir}>
                         {form.formState.errors.endTime?.message}
                       </p>
                     </div>
@@ -749,7 +761,7 @@ export default function EditBranchPage() {
                     ))}
                   </div>
                   {form.formState.errors.workingDays?.message ? (
-                    <p className="text-[13px] text-red-500">
+                    <p className="text-[13px] text-red-500" dir={langDir}>
                       {t("working_day_required")}
                     </p>
                   ) : null}
@@ -769,13 +781,13 @@ export default function EditBranchPage() {
                 branchId={activeBranchId}
               />
 
-              <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4">
+              <div className="mb-3.5 flex w-full border-b-2 border-dashed border-gray-300 pb-4" dir={langDir}>
                 <FormField
                   control={form.control}
                   name="mainOffice"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
-                      <FormLabel>Main Office:</FormLabel>
+                      <FormLabel>{t("main_branch")}:</FormLabel>
                       <FormControl>
                         <Switch
                           checked={!!field.value}
@@ -793,6 +805,7 @@ export default function EditBranchPage() {
               disabled={updateCompanyBranch.isPending || upload.isPending}
               type="submit"
               className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+              dir={langDir}
             >
               
               {updateCompanyBranch.isPending || upload.isPending ? (

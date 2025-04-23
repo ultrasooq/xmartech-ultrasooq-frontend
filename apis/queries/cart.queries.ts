@@ -56,7 +56,12 @@ export const useUpdateCartWithLogin = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { productPriceId: number; quantity: number }
+    { 
+      productPriceId: number; 
+      quantity: number, 
+      sharedLinkId?: number; 
+      productVariant?: any;
+    }
   >({
     mutationFn: async (payload) => {
       const res = await updateCartWithLogin(payload);
@@ -81,7 +86,13 @@ export const useUpdateCartByDevice = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { productPriceId: number; quantity: number; deviceId: string }
+    { 
+      productPriceId: number; 
+      quantity: number; 
+      deviceId: string, 
+      sharedLinkId?: number; 
+      productVariant?: any;
+    }
   >({
     mutationFn: async (payload) => {
       const res = await updateCartByDevice(payload);

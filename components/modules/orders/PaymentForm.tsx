@@ -12,9 +12,10 @@ import {
   AccordionItemButton,
   AccordionItemPanel,
 } from "react-accessible-accordion";
-import { useCreateIntent } from "@/apis/queries/orders.queries";
+import { useCreatePaymentIntent } from "@/apis/queries/orders.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type PaymentFormProps = {
   onCreateOrder: (paymentType: string, paymentIntent: string) => void;
@@ -35,10 +36,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   clearCardElement
 }) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const { toast } = useToast();
   const stripe = useStripe();
   const elements = useElements();
-  const createIntent = useCreateIntent();
+  const createIntent = useCreatePaymentIntent();
   const [name, setName] = useState("");
   const [clientSecret, setClientSecret] = useState(""); // State to store response data 
   // const [paymentIntentId, setPaymentIntentId] = useState(null); // State to store response data 
@@ -56,43 +58,43 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       setInputValue("");
     }
   }, [clearCardElement, elements]);
-  
-    const handleCardPayment = async (paymentType: string) => {
-      setSelectedPaymentType(paymentType); // Single state to track selected type
-      // if(paymentType === 'direct') handleIntentCreate()
+
+  const handleCardPayment = async (paymentType: string) => {
+    setSelectedPaymentType(paymentType); // Single state to track selected type
+    // if(paymentType === 'direct') handleIntentCreate()
+  }
+
+  const handleIntentCreate = async (paymentMethodId: string) => {
+    const data = {
+      amount: selectedPaymentType === 'direct' ? calculateTotalAmount() : Number(inputValue),
+      paymentMethod: "CARD",
+      paymentMethodId: paymentMethodId
     }
 
-    const handleIntentCreate = async (paymentMethodId: string) => {
-      const data = {
-        amount: selectedPaymentType === 'direct' ? calculateTotalAmount() :Number(inputValue),
-        paymentMethod: "CARD",
-        paymentMethodId: paymentMethodId
-      }
-  
-      // console.log(data); return
-      // if(data.amount !== 0){
-        const response = await createIntent.mutateAsync(data);
-  
-        if (response?.status && response?.data) {
-          // console.log(response.data?.id); return;
-          // setClientSecret(response.data?.client_secret); // Set response data in state
-          // // setPaymentIntentId(response.data?.id); // Set response data in state
-          // // router.push("/login");
-          onCreateOrder(selectedPaymentType, response?.data?.id);
-          // if(selectedPaymentType === 'advance')  
-        } else {
-          toast({
-            title: t("payment_error"),
-            description: response.message,
-            variant: "danger",
-          });
-        }
-      // }
-      
-    }
+    // console.log(data); return
+    // if(data.amount !== 0){
+    const response = await createIntent.mutateAsync(data);
 
-     // Handle card input change
-   const handleCardChange = (event: any) => {
+    if (response?.status && response?.data) {
+      // console.log(response.data?.id); return;
+      // setClientSecret(response.data?.client_secret); // Set response data in state
+      // // setPaymentIntentId(response.data?.id); // Set response data in state
+      // // router.push("/login");
+      onCreateOrder(selectedPaymentType, response?.data?.id);
+      // if(selectedPaymentType === 'advance')  
+    } else {
+      toast({
+        title: t("payment_error"),
+        description: response.message,
+        variant: "danger",
+      });
+    }
+    // }
+
+  }
+
+  // Handle card input change
+  const handleCardChange = (event: any) => {
     setCardComplete(event.complete); // event.complete is true when the card details are valid
   };
 
@@ -130,14 +132,14 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     alert('hi');
   }
 
-  
+
   return (
     <div className="cart-page-left">
       <div className="order_accordion w-full">
         <Accordion>
           <AccordionItem>
             <AccordionItemHeading>
-              <AccordionItemButton>{t("cash")}</AccordionItemButton>
+              <AccordionItemButton dir={langDir}>{t("cash")}</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
               <div className="w-full bg-white">
@@ -153,9 +155,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                     </div>
                     <div className="order-action-btn half_button">
                       <Button
-                       onClick={() => onCreateOrder('CASH', "")}
+                        onClick={() => onCreateOrder('CASH', "")}
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
+                        dir={langDir}
                       >
                         {t("confirm_order")}
                       </Button>
@@ -168,168 +171,173 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
           <AccordionItem>
             <AccordionItemHeading onClick={() => handleCardPayment('direct')}>
-              <AccordionItemButton>{t("direct_payment")}</AccordionItemButton>
+              <AccordionItemButton dir={langDir}>{t("direct_payment")}</AccordionItemButton>
             </AccordionItemHeading>
-            {selectedPaymentType === 'direct' ? 
-            <AccordionItemPanel>
-            <div className="w-full bg-white">
-              <div className="bodyPart">
-                <div className="card-item card-payment-form px-5 pb-5 pt-3">
-                  <div className="flex flex-wrap">
-                    <div className="mb-4 w-full space-y-2">
-                      <label
-                        className="text-sm font-medium 
-        leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        {t("card_holder_name")}
-                      </label>
-                      <div className="relative">
-                        <input
-                         type="text"
-                         value={name}
-                         onChange={(e) => setName(e.target.value)}
-                         placeholder={t("card_holder_name")}
-                          className="theme-form-control-s1 flex h-9 w-full rounded-md border
+            {selectedPaymentType === 'direct' ?
+              <AccordionItemPanel>
+                <div className="w-full bg-white">
+                  <div className="bodyPart">
+                    <div className="card-item card-payment-form px-5 pb-5 pt-3">
+                      <div className="flex flex-wrap">
+                        <div className="mb-4 w-full space-y-2">
+                          <label
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            dir={langDir}
+                          >
+                            {t("card_holder_name")}
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              placeholder={t("card_holder_name")}
+                              className="theme-form-control-s1 flex h-9 w-full rounded-md border
            border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors 
            file:border-0 file:bg-transparent file:text-sm file:font-medium 
            placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
            disabled:cursor-not-allowed disabled:opacity-50"
-                        />
+                              dir={langDir}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mb-4 w-full space-y-2" style={{ width: '650px' }}>
+                          <label className="text-sm font-medium" dir={langDir}>{t("card_details")}</label>
+                          <div className="theme-form-control-s1 border p-2">
+                            <CardElement options={{ hidePostalCode: true }} onChange={handleCardChange} />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="order-action-btn">
+                        <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete} className="theme-primary-btn order-btn">
+                          {isLoading ? t("processing") : t("confirm_payment")}
+                        </Button>
                       </div>
                     </div>
-                    
-                     <div className="mb-4 w-full space-y-2" style={{width: '650px'}}>
-              <label className="text-sm font-medium">{t("card_details")}</label>
-              <div className="theme-form-control-s1 border p-2">
-                <CardElement options={{ hidePostalCode: true }} onChange={handleCardChange} />
-              </div>
-            </div>
-                  </div>
-                  <div className="order-action-btn">
-                  <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete} className="theme-primary-btn order-btn">
-                {isLoading ? t("processing") : t("confirm_payment")}
-              </Button>
                   </div>
                 </div>
-              </div>
-            </div>
-          </AccordionItemPanel>
-          : null}
+              </AccordionItemPanel>
+              : null}
           </AccordionItem>
 
-          
+
           <AccordionItem>
             <AccordionItemHeading onClick={() => handleCardPayment('advance')}>
-              <AccordionItemButton>{t("advance_payment")}(%)</AccordionItemButton>
+              <AccordionItemButton dir={langDir}>{t("advance_payment")}(%)</AccordionItemButton>
             </AccordionItemHeading>
-            {selectedPaymentType === 'advance' ? 
-            <AccordionItemPanel>
-              <div className="w-full bg-white">
-                <div className="bodyPart">
-                  <div className="card-item card-payment-form px-5 pb-5 pt-3">
-                  <div className="w-full">
-                      <Button className="theme-primary-btn order-btn mt-2 h-14 w-full p-4">
-                        {t("attached_transaction_receipt")}
-                      </Button>
-                      <div className="mt-3 flex w-auto flex-wrap rounded-sm bg-[#B3B3B3] px-10 py-7">
-                        <div className="relative mb-3 w-[80%]">
-                          <label className="mb-2 text-lg font-semibold text-black">
-                            {t("payment_amount")}($):
-                          </label>
-                          <input
-                            type="number"
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)} // Allow empty value
-                            className="h-12 w-full rounded-[5px] bg-white px-4 py-3 text-lg text-black focus:shadow-none focus:outline-none"
-                          />
-                        </div>
-                        <div className="relative mb-3 flex w-[20%] items-end justify-center text-center">
-                          <input
-                            type="file"
-                            className="absolute left-0 top-0 h-full w-full opacity-0"
-                          />
-                          <img
-                            src="/images/attach.png"
-                            alt=""
-                            className="h-auto w-[38px]"
-                          />
-                        </div>
-                        <div className="mt-2 flex h-auto w-full items-center justify-center gap-5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setAdvanceAmount(inputValue);
-                              onManageAmount(inputValue);
-                              // handleIntentCreate();
-                            }} // Set saved amount 
-                            disabled={!inputValue} // Disable if inputValue is empty
-                            className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            {t("save")}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setInputValue(""); // Clear input field
-                              setAdvanceAmount(""); // Clear saved amount
-                              onManageAmount("")
-                            }}
-                            disabled={!inputValue} // Disable if inputValue is empty
-                            className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            {t("cancel")}
-                          </button>
+            {selectedPaymentType === 'advance' ?
+              <AccordionItemPanel>
+                <div className="w-full bg-white">
+                  <div className="bodyPart">
+                    <div className="card-item card-payment-form px-5 pb-5 pt-3">
+                      <div className="w-full">
+                        <Button className="theme-primary-btn order-btn mt-2 h-14 w-full p-4" dir={langDir}>
+                          {t("attached_transaction_receipt")}
+                        </Button>
+                        <div className="mt-3 flex w-auto flex-wrap rounded-sm bg-[#B3B3B3] px-10 py-7">
+                          <div className="relative mb-3 w-[80%]">
+                            <label className="mb-2 text-lg font-semibold text-black" dir={langDir}>
+                              {t("payment_amount")}({currency.symbol}):
+                            </label>
+                            <input
+                              type="number"
+                              value={inputValue}
+                              onChange={(e) => setInputValue(e.target.value)} // Allow empty value
+                              className="h-12 w-full rounded-[5px] bg-white px-4 py-3 text-lg text-black focus:shadow-none focus:outline-none"
+                            />
+                          </div>
+                          <div className="relative mb-3 flex w-[20%] items-end justify-center text-center">
+                            <input
+                              type="file"
+                              className="absolute left-0 top-0 h-full w-full opacity-0"
+                            />
+                            <img
+                              src="/images/attach.png"
+                              alt=""
+                              className="h-auto w-[38px]"
+                            />
+                          </div>
+                          <div className="mt-2 flex h-auto w-full items-center justify-center gap-5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAdvanceAmount(inputValue);
+                                onManageAmount(inputValue);
+                                // handleIntentCreate();
+                              }} // Set saved amount 
+                              disabled={!inputValue} // Disable if inputValue is empty
+                              className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
+                              dir={langDir}
+                            >
+                              {t("save")}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setInputValue(""); // Clear input field
+                                setAdvanceAmount(""); // Clear saved amount
+                                onManageAmount("")
+                              }}
+                              disabled={!inputValue} // Disable if inputValue is empty
+                              className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
+                              dir={langDir}
+                            >
+                              {t("cancel")}
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
 
-                    <div className="flex flex-wrap">
-                      <div className="mb-4 w-full space-y-2">
-                        <label
-                          className="text-sm font-medium 
+                      <div className="flex flex-wrap">
+                        <div className="mb-4 w-full space-y-2">
+                          <label
+                            className="text-sm font-medium 
           leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {t("card_holder_name")}
-                        </label>
-                        <div className="relative">
-                        <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder={t("card_holder_name")}
-                      className="theme-form-control-s1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1"
-                    />
+                            dir={langDir}
+                          >
+                            {t("card_holder_name")}
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              placeholder={t("card_holder_name")}
+                              className="theme-form-control-s1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1"
+                              dir={langDir}
+                            />
+                          </div>
+                        </div>
+                        <div className="mb-4 w-full space-y-2" style={{ width: '650px' }}>
+                          <label className="text-sm font-medium" dir={langDir}>{t("card_details")}</label>
+                          <div className="theme-form-control-s1 border p-2">
+                            <CardElement options={{ hidePostalCode: true }} onChange={handleCardChange} />
+                          </div>
                         </div>
                       </div>
-                      <div className="mb-4 w-full space-y-2" style={{width: '650px'}}>
-                        <label className="text-sm font-medium">{t("card_details")}</label>
-                        <div className="theme-form-control-s1 border p-2">
-                        <CardElement options={{ hidePostalCode: true }} onChange={handleCardChange} />
+                      <div className="order-action-btn">
+                        <div className="order-action-btn">
+                          <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete || advanceAmount === ''} className="theme-primary-btn order-btn">
+                            {isLoading ? t("processing") : t("confirm_payment")}
+                          </Button> &nbsp;&nbsp;
+                          <Button onClick={handleAttachment} className="theme-primary-btn order-btn">
+                            {isLoading ? t("processing") : t("send_attachment")}
+                          </Button>
                         </div>
                       </div>
+
                     </div>
-                    <div className="order-action-btn">
-                    <div className="order-action-btn">
-                <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete || advanceAmount === ''} className="theme-primary-btn order-btn">
-                      {isLoading ? t("processing") : t("confirm_payment")}
-                    </Button> &nbsp;&nbsp;
-                    <Button onClick={handleAttachment} className="theme-primary-btn order-btn">
-                      {isLoading ? t("processing") : t("send_attachment")}
-                    </Button>
-                    </div>
-                    </div>
-                    
                   </div>
                 </div>
-              </div>
-            </AccordionItemPanel>
-            : null}
-          </AccordionItem> 
+              </AccordionItemPanel>
+              : null}
+          </AccordionItem>
 
           <AccordionItem>
             <AccordionItemHeading>
-              <AccordionItemButton>{t("pay_it_for_me")}</AccordionItemButton>
+              <AccordionItemButton dir={langDir}>{t("pay_it_for_me")}</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
               <div className="w-full bg-white">
@@ -348,6 +356,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         onClick={() => onCreateOrder('payItForMe', "")}
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
+                        dir={langDir}
                       >
                         {t("confirm_order")}
                       </Button>
@@ -360,7 +369,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
           <AccordionItem>
             <AccordionItemHeading>
-              <AccordionItemButton>{t("installments")}</AccordionItemButton>
+              <AccordionItemButton dir={langDir}>{t("installments")}</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
               <div className="w-full bg-white">
@@ -379,6 +388,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         onClick={() => onCreateOrder('installment', "")}
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
+                        dir={langDir}
                       >
                         {t("confirm_order")}
                       </Button>

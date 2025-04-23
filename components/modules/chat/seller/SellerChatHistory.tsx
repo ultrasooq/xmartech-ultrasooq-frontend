@@ -29,7 +29,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
   isUploadingCompleted,
 }) => {
   const t = useTranslations();
-  const { user } = useAuth();
+  const { user, currency, langDir } = useAuth();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { updateRfqRequestStatus } = useSocket();
 
@@ -115,7 +115,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                   </p>
                                   <p className="mr-2 truncate text-xs italic">
                                     {file?.status === "UPLOADING"
-                                      ? "Uploading..."
+                                      ? t("uploading")
                                       : file?.status}
                                   </p>
                                 </div>
@@ -128,7 +128,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                           </div>
                         )}
                         {isUploadingCompleted
-                          ? "Attachment(s) uploading..."
+                          ? t("attachments_uploading")
                           : ""}
                         {chat?.content && (
                           <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
@@ -141,7 +141,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                             {chat?.rfqProductPriceRequest && (
                               <div>
                                 <p>
-                                  Requested Price: $
+                                  {t("requested_price")}: {currency.symbol}
                                   {chat.rfqProductPriceRequest?.requestedPrice}
                                 </p>
                                 <p>
@@ -149,16 +149,16 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                   {chat.rfqProductPriceRequest?.status ===
                                   "APPROVED" ? (
                                     <span className="rounded-sm bg-blue-700 p-0.5 text-white">
-                                      Approved
+                                      {t("approved")}
                                     </span>
                                   ) : chat.rfqProductPriceRequest?.status ===
                                     "REJECTED" ? (
                                     <span className="rounded-sm bg-red-600 p-0.5 text-white">
-                                      Rejected
+                                      {t("rejected")}
                                     </span>
                                   ) : (
                                     <span className="rounded-sm bg-yellow-600 p-0.5 text-white">
-                                      Pending
+                                      {t("pending")}
                                     </span>
                                   )}
                                 </p>
@@ -170,7 +170,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
 
                       <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
                         {chat?.status === "SD" ? (
-                          <span>Sending...</span>
+                          <span>{t("sending")}</span>
                         ) : (
                           <span>
                             {chat.createdAt
@@ -229,7 +229,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                       </p>
                                       <p className="mr-2 truncate text-xs italic">
                                         {file?.status === "UPLOADING"
-                                          ? "Uploading..."
+                                          ? t("uploading")
                                           : file?.status}
                                       </p>
                                     </div>
@@ -243,7 +243,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                             </div>
                           )}
                           {isUploadingCompleted
-                            ? "Attachment(s) uploading..."
+                            ? t("attachments_uploading")
                             : ""}
                           {chat?.content && (
                             <div className="inline-block w-auto rounded-xl bg-[#F1F2F6] p-3 text-right text-sm text-white">
@@ -256,7 +256,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                               {chat?.rfqProductPriceRequest && (
                                 <div>
                                   <p>
-                                    Requested Price: $
+                                    {t("requested_price")}: {currency.symbol}
                                     {
                                       chat.rfqProductPriceRequest
                                         ?.requestedPrice
@@ -267,16 +267,16 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                     {chat.rfqProductPriceRequest?.status ===
                                     "APPROVED" ? (
                                       <span className="rounded-sm bg-blue-700 p-0.5 text-white">
-                                        Approved
+                                        {t("approved")}
                                       </span>
                                     ) : chat.rfqProductPriceRequest?.status ===
                                       "REJECTED" ? (
                                       <span className="rounded-sm bg-red-600 p-0.5 text-white">
-                                        Rejected
+                                        {t("rejected")}
                                       </span>
                                     ) : (
                                       <span className="rounded-sm bg-yellow-700 p-0.5 text-white">
-                                        Pending
+                                        {t("pending")}
                                       </span>
                                     )}
                                   </p>
@@ -293,7 +293,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                         type="button"
                                         className="me-2 rounded-lg bg-blue-700 px-2 py-2 text-white hover:bg-blue-800 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                       >
-                                        Accept
+                                        {t("accept")}
                                       </button>
                                       <button
                                         onClick={() =>
@@ -305,7 +305,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                         type="button"
                                         className="me-2 rounded-lg bg-red-700 px-2 py-2 text-white hover:bg-red-800 focus:outline-none dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                                       >
-                                        Reject
+                                        {t("reject")}
                                       </button>
                                     </div>
                                   )}
@@ -317,7 +317,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
 
                         <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
                           {chat?.status === "SD" ? (
-                            <span>Sending...</span>
+                            <span>{t("sending")}</span>
                           ) : (
                             <span>
                               {chat.createdAt
@@ -336,8 +336,8 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
             ))}
           </div>
         ) : (
-          <div className="mt-5 flex w-full flex-wrap items-end">
-            {chatHistoryLoading ? "Loading..." : t("no_chat_history_found")}
+          <div className="mt-5 flex w-full flex-wrap items-end" dir={langDir}>
+            {chatHistoryLoading ? t("loading") : t("no_chat_history_found")}
           </div>
         )}
       </div>

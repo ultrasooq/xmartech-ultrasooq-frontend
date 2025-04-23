@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 // import { useCartStore } from "@/lib/rfqStore";
 
 type RfqProductCardProps = {
@@ -41,6 +42,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   note,
 }) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(1);
   // const cart = useCartStore();
 
@@ -65,7 +67,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         </div>
         <figcaption>
           <h5>{productName}</h5>
-          <label>{t("quantity")}</label>
+          <label dir={langDir}>{t("quantity")}</label>
           <div className="qty-with-remove">
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-4">
@@ -123,22 +125,23 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               onClick={() => {
                 onRemove(id);
               }}
+              dir={langDir}
             >
               {t("remove")}
             </Button>
           </div>
         </figcaption>
       </figure>
-      <p>
+      <p dir={langDir}>
         <span>{t("note")}:</span> {note}
       </p>
-      <div className="price-info">
+      <div className="price-info" dir={langDir}>
         <h5>{t("offer_price_from")}</h5>
-        <p>${offerPriceFrom}</p>
+        <p>{currency.symbol}{offerPriceFrom}</p>
       </div>
-      <div className="price-info">
+      <div className="price-info" dir={langDir}>
         <h5>{t("offer_price_to")}</h5>
-        <p>${offerPriceTo}</p>
+        <p>{currency.symbol}{offerPriceTo}</p>
       </div>
     </div>
   );

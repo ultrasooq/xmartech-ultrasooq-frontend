@@ -21,13 +21,13 @@ import ReactPlayer from "react-player/lazy";
 import { isImage, isVideo } from "@/utils/helper";
 import ProductEditForm from "../factories/ProductEditForm";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useClickOutside } from "use-events";
-import EditProductPage from "@/app/product/[id]/page";
 import { useMe } from "@/apis/queries/user.queries";
 import AddToCustomizeForm from "../factories/AddToCustomizeForm";
 import { useSellerRewards } from "@/apis/queries/seller-reward.queries";
 import SellerRewardDetail from "./SellerRewardDetail";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -63,6 +63,8 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   cartQuantity = 0,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
+  const router = useRouter();
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -144,7 +146,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   return (
     <div className="product-view-s1-left">
       <div className="mb-3 flex flex-col-reverse md:mb-3 lg:mb-0 lg:grid lg:grid-cols-4 lg:gap-4">
-        <div className="relative order-2 col-span-3 space-y-4 bg-gray-100 md:max-h-[500px]">
+        <div className="relative order-2 col-span-3 flex items-center space-y-4 bg-gray-100 md:max-h-[500px]">
           {!isLoading && haveAccessToken ? (
             <button
               type="button"
@@ -248,7 +250,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
       {/* For factories type */}
       {!isLoading &&
-      productDetails?.product_productPrice[0]?.isCustomProduct === "true" ? (
+      productDetails?.product_productPrice?.[0]?.isCustomProduct === "true" ? (
         <div className="my-2 flex w-full flex-wrap justify-end gap-3 self-end pb-2">
           {productDetails?.adminId !== loginUserId ? (
             <>
@@ -256,6 +258,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 type="button"
                 onClick={handleToCustomizeModal}
                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
+                dir={langDir}
               >
                 {t("send_to_customize")}
               </Button>
@@ -264,6 +267,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 // onClick={onToCheckout}
                 onClick={onToCart}
                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
+                dir={langDir}
               >
                 {t("message_vendor")}
               </Button>
@@ -287,6 +291,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           <Button
             type="button"
             className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
+            dir={langDir}
           >
             {t("ask_vendor_for_price")}
           </Button>
@@ -306,6 +311,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             type="button"
             onClick={onToCart}
             className="h-14 max-w-[205px] flex-1 rounded-none bg-dark-orange text-base"
+            dir={langDir}
           >
             {t("buy_now")}
           </Button>
@@ -314,6 +320,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               type="button"
               onClick={() => setIsSellerRewardDetailModalOpen(true)}
               className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+              dir={langDir}
             >
               {t("generate_share_link")}
             </Button>
@@ -345,13 +352,11 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           ref={wrapperRef}
         >
           <AddToCustomizeForm
+            selectedProductId={productDetails?.id}
             onClose={() => {
               setIsCustomizeModalOpen(false);
-              // setSelectedProductId(undefined);
-              // setQuantity(undefined);
             }}
-            selectedProductId={productDetails?.id}
-            // selectedQuantity={quantity}
+            onAddToCart={() => router.push(`/factories-cart`)}
           />
         </DialogContent>
       </Dialog>

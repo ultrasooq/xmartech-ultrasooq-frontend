@@ -257,19 +257,19 @@ export const SIZE_LIST: { label: string; value: string }[] = [
 ];
 
 export const DELIVERY_STATUS: { [key: string]: string } = {
-  CONFIRMED: "Your order has been placed",
-  SHIPPED: "Your order has been shipped",
-  OFD: "Your order is out for delivery",
-  DELIVERED: "Your order has been delivered",
-  CANCELLED: "Your order has been cancelled",
+  CONFIRMED: "order_placed",
+  SHIPPED: "order_shipped",
+  OFD: "order_out_for_delivery",
+  DELIVERED: "order_delivered",
+  CANCELLED: "order_cancelled",
 };
 
 export const SELLER_DELIVERY_STATUS: { [key: string]: string } = {
-  CONFIRMED: "The order has been placed",
-  SHIPPED: "The order has been shipped",
-  OFD: "The order is out for delivery",
-  DELIVERED: "The order has been delivered",
-  CANCELLED: "The order has been cancelled",
+  CONFIRMED: "order_placed",
+  SHIPPED: "order_shipped",
+  OFD: "order_out_for_delivery",
+  DELIVERED: "order_delivered",
+  CANCELLED: "order_cancelled",
 };
 
 export const STATUS_LIST: { label: string; value: string }[] = [
@@ -405,3 +405,31 @@ export const STORE_MENU_ID = 188;
 export const BUYGROUP_MENU_ID = 189;
 export const FACTORIES_MENU_ID = 190;
 export const RFQ_MENU_ID = 191;
+
+export const LANGUAGES = [
+  {
+    locale: 'en',
+    name: 'English',
+    direction: 'ltr',
+  },
+  {
+    locale: 'ar',
+    name: 'Arabic',
+    direction: 'rtl',
+  }
+];
+
+export const CURRENCIES = [
+  {
+    code: 'INR',
+    symbol: '₹'
+  },
+  {
+    code: 'USD',
+    symbol: '$'
+  },
+  {
+    code: 'AUD',
+    symbol: '$'
+  }
+];

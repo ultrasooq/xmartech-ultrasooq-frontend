@@ -2,17 +2,19 @@ import React from "react";
 import Image from "next/image";
 import StarIcon from "@/public/images/star.png";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 type ProductCardProps = {
   item: any;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
+  const { currency } = useAuth();
   return (
     <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
       {item?.discount ? (
         <div className="absolute right-2.5 top-2.5 inline-block rounded bg-dark-orange px-2.5 py-2 text-lg font-medium capitalize leading-5 text-white">
-          <span>{item?.discount}</span>
+          <span>{currency.symbol}{item?.discount}</span>
         </div>
       ) : null}
       <div className="flex h-40 w-full items-center justify-center lg:h-52">
@@ -30,7 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         </h6>
         <div className="mt-2.5 w-full">
           <h4 className="font-lg font-normal uppercase text-olive-green">
-            ${item?.offerPrice}
+            {currency.symbol}{item?.offerPrice}
           </h4>
         </div>
         <p>
@@ -49,11 +51,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
             "mr-1 w-auto text-base font-normal",
           )}
         >
-          ${item?.productPrice}
+          {currency.symbol}{item?.productPrice}
         </span>
         {item?.discount ? (
           <span className="w-auto text-base font-normal text-light-gray line-through">
-            ${item?.productPrice}
+            {currency.symbol}{item?.productPrice}
           </span>
         ) : null}
       </div>

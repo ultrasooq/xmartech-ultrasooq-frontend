@@ -57,6 +57,7 @@ interface SellerChatProps {}
 
 const SellerChat: React.FC<SellerChatProps> = () => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
   const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
   const [rfqQuotes, setRfqQuotes] = useState<any[]>([]);
@@ -660,7 +661,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     <div>
       <div className="flex w-full flex-wrap rounded-sm border border-solid border-gray-300">
         <div className="w-full border-r border-solid border-gray-300 md:w-[20%]">
-          <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-sm font-normal text-[#333333] md:px-[10px] md:py-[10px] md:text-base">
+          <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-sm font-normal text-[#333333] md:px-[10px] md:py-[10px] md:text-base" dir={langDir}>
             <span>{t("request_for_rfq")}</span>
           </div>
           <div className="max-h-[720px] w-full overflow-y-auto p-2">
@@ -674,7 +675,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
             {!allRfqQuotesQuery?.isLoading && !rfqQuotes?.length ? (
               <div className="my-2 space-y-2">
-                <p className="text-center text-sm font-normal text-gray-500">
+                <p className="text-center text-sm font-normal text-gray-500" dir={langDir}>
                   {t("no_data_found")}
                 </p>
               </div>
@@ -705,12 +706,12 @@ const SellerChat: React.FC<SellerChatProps> = () => {
           </div>
         </div>
         <div className="w-full border-r border-solid border-gray-300 md:w-[80%]">
-          <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
+          <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]" dir={langDir}>
             <span>
               {t("offering_price")}{" "}
               <b className="text-[#679A03]">
                 {selectedRfqQuote?.offerPrice
-                  ? `$${selectedRfqQuote?.offerPrice}`
+                  ? `${currency.symbol}${selectedRfqQuote?.offerPrice}`
                   : "-"}
               </b>
             </span>
@@ -718,29 +719,29 @@ const SellerChat: React.FC<SellerChatProps> = () => {
               href="#"
               className="inline-block rounded-sm bg-dark-orange px-3 py-2 text-xs font-bold capitalize text-white"
             >
-              checkout
+              {t("checkout")}
             </Link>
           </div>
           <div className="flex w-full flex-wrap p-[20px]">
             <div className="mb-5 max-h-[300px] w-full border border-solid border-gray-300">
               <div className="w-full overflow-y-auto rounded-sm">
                 <div className="flex w-full">
-                  <div className="md:w-[25% w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm">
+                  <div className="md:w-[25% w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm" dir={langDir}>
                     {t("product")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[15%] md:text-sm">
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[15%] md:text-sm" dir={langDir}>
                     {t("delivery_date")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm">
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir}>
                     {t("brand")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm">
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir}>
                     {t("number_of_piece")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm">
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir}>
                     {t("price")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm">
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir}>
                     {t("address")}
                   </div>
                 </div>
@@ -754,7 +755,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
                 {!allRfqQuotesQuery?.isLoading && !quoteProducts?.length ? (
                   <div className="my-2 space-y-2 py-10">
-                    <p className="text-center text-sm font-normal text-gray-500">
+                    <p className="text-center text-sm font-normal text-gray-500" dir={langDir}>
                       {t("no_data_found")}
                     </p>
                   </div>

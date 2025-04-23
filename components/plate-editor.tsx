@@ -27,12 +27,14 @@ type PlateEditorProps = {
   ) => void;
   value?: Value | undefined;
   readOnly?: boolean;
+  fixedToolbar?: boolean;
 };
 
 export default function PlateEditor({
   onChange,
   value,
   readOnly,
+  fixedToolbar = true,
 }: PlateEditorProps) {
   const containerRef = useRef(null);
   if (typeof window !== "undefined") {
@@ -56,15 +58,16 @@ export default function PlateEditor({
                 "[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4",
               )}
             >
-              <FixedToolbar>
+              {fixedToolbar && <FixedToolbar>
                 <FixedToolbarButtons />
-              </FixedToolbar>
+              </FixedToolbar>}
               <Editor
                 className="px-[15px] py-[15px] lg:px-[96px] lg:py-16"
                 autoFocus
                 focusRing={false}
                 variant="ghost"
                 size="md"
+                readOnly={readOnly}
               />
               <FloatingToolbar>
                 <FloatingToolbarButtons />

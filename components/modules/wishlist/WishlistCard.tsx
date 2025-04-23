@@ -8,6 +8,7 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import TrashIcon from "@/public/images/td-trash-icon.svg";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type WishlistCardProps = {
   productId: number;
@@ -23,14 +24,14 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   id,
 }) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   
   const calculateDiscountedPrice = () => {
-    const price = wishlistData?.product_productPrice?.[0]?.productProductPrice
-      ? Number(wishlistData.product_productPrice?.[0]?.productProductPrice)
+    const price = wishlistData?.product_productPrice?.[0]?.offerPrice
+      ? Number(wishlistData.product_productPrice?.[0]?.offerPrice)
       : 0;
-    const discount =
-      wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    const discount = wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {
@@ -131,15 +132,16 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
               <button
                 type="button"
                 className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+                dir={langDir}
               >
                 {t("ask_vendor_for_price")}
               </button>
             </Link>
           ) : (
             <h5 className="py-1 text-[#1D77D1]">
-              ${calculateDiscountedPrice()}{" "}
+              {currency.symbol}{calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
-                ${wishlistData?.product_productPrice?.[0]?.offerPrice}
+                {currency.symbol}{wishlistData?.product_productPrice?.[0]?.offerPrice}
               </span>
             </h5>
           )}

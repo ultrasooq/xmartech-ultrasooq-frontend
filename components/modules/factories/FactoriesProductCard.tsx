@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import Link from "next/link";
@@ -10,7 +10,11 @@ import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import { useTranslations } from "next-intl";
-import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import { useDeleteCartItem, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import { useAuth } from "@/context/AuthContext";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { IoCloseSharp } from "react-icons/io5";
+import { useClickOutside } from "use-events";
 // import Link from "next/link";
 
 type RfqProductCardProps = {
@@ -23,11 +27,12 @@ type RfqProductCardProps = {
     image: string;
   }[];
   productQuantity: number;
+  productVariant?: any;
   customizeProductId?: number;
   onAdd: () => void;
   onWishlist: () => void;
   isCreatedByMe: boolean;
-  isAddedToCart: boolean;
+  cartId?: number;
   isAddedToFactoryCart: boolean;
   inWishlist?: boolean;
   haveAccessToken: boolean;
@@ -42,24 +47,37 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   productStatus,
   productImages,
   productQuantity,
+  productVariant,
   customizeProductId,
   onAdd,
   onWishlist,
   isCreatedByMe,
-  isAddedToCart,
+  cartId,
   isAddedToFactoryCart,
   inWishlist,
   haveAccessToken,
   productPrices,
 }) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(0);
+  const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
+
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const confirmDialogRef = useRef(null);
+  const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
 
   useEffect(() => {
     setQuantity(productQuantity || 0);
   }, [productQuantity]);
 
+  useEffect(() => {
+    setSelectedProductVariant(productVariant);
+  }, [productVariant]);
+
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const deleteCartItem = useDeleteCartItem();
 
   const handleAddToCart = async (
     quantity: number,
@@ -70,21 +88,22 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
         variant: "danger",
-      })
+      });
       return;
     }
 
-    const maxQuantity = productPrices?.length ? productPrices[0]?.maxQuantityPerCustomer : null; 
+    const maxQuantity = productPrices?.length ? productPrices[0]?.maxQuantityPerCustomer : null;
     if (maxQuantity && maxQuantity < quantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
         variant: "danger",
-      })
+      });
       return;
     }
 
     if (action == "remove" && minQuantity && minQuantity > quantity) {
-      quantity = 0;
+      setIsConfirmDialogOpen(true);
+      return;
     }
 
     if (haveAccessToken) {
@@ -99,6 +118,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: productPrices?.[0]?.id,
         quantity,
+        productVariant: selectedProductVariant
       });
 
       if (response.status) {
@@ -113,8 +133,110 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           variant: "success",
         });
         return response.status;
+      } else {
+        toast({
+          title: t("something_went_wrong"),
+          description: response.message,
+          variant: "danger",
+        });
       }
     }
+  };
+
+  const handleQuantity = async (quantity: number, action: "add" | "remove") => {
+    const minQuantity = productPrices?.[0]?.minQuantityPerCustomer;
+    const maxQuantity = productPrices?.[0]?.maxQuantityPerCustomer;
+
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      });
+      setQuantity(productQuantity || maxQuantity);
+      return;
+    }
+
+    setQuantity(quantity);
+    if (cartId) {
+      handleAddToCart(quantity, action);
+    } else {
+      if (minQuantity && minQuantity > quantity) {
+        toast({
+          description: t("min_quantity_must_be_n", { n: minQuantity }),
+          variant: "danger",
+        });
+        return;
+      }
+    }
+  };
+
+  const handleQuantityChange = () => {
+    if (quantity == 0 && productQuantity != 0) {
+      toast({
+        description: t("quantity_can_not_be_0"),
+        variant: "danger",
+      });
+      handleQuantity(quantity, "remove");
+      return;
+    }
+
+    const minQuantity = productPrices?.length ? productPrices[0]?.minQuantityPerCustomer : null;
+    if (minQuantity && minQuantity > quantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      });
+      handleQuantity(quantity, quantity > productQuantity ? "add" : "remove");
+      return;
+    }
+
+    const maxQuantity = productPrices?.length ? productPrices[0]?.maxQuantityPerCustomer : null;
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      });
+      setQuantity(productQuantity || maxQuantity);
+      return;
+    }
+
+    const action = quantity > productQuantity ? "add" : "remove";
+    if (quantity != productQuantity) handleQuantity(quantity, action);
+  };
+
+  const handleRemoveItemFromCart = async (cartId: number) => {
+    const response = await deleteCartItem.mutateAsync({ cartId });
+    if (response.status) {
+      toast({
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: t("item_not_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "danger",
+      });
+    }
+  };
+
+  const onConfirmRemove = () => {
+    if (cartId) handleRemoveItemFromCart(cartId);
+    setIsConfirmDialogOpen(false);
+  };
+
+  const onCancelRemove = () => {
+    setQuantity(productQuantity);
+    setIsConfirmDialogOpen(false);
+  };
+
+  const calculateDiscountedPrice = () => {
+    const price = productPrices?.[0]?.offerPrice
+      ? Number(productPrices[0]?.offerPrice)
+      : 0;
+    const discount = productPrices?.[0]?.consumerDiscount || 0;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   return (
@@ -127,7 +249,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
             className="p-3"
             src={
               productImages?.[0]?.image &&
-                validator.isURL(productImages?.[0]?.image)
+              validator.isURL(productImages?.[0]?.image)
                 ? productImages[0].image
                 : PlaceholderImage
             }
@@ -166,23 +288,26 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           <p>{productName}</p>
         </Link>
       </div>
-
+      {productPrices?.[0]?.offerPrice && (
+        <h5 className="py-1 text-[#1D77D1]">
+          {currency.symbol}
+          {calculateDiscountedPrice()}{" "}
+          <span className="text-gray-500 !line-through">
+            {currency.symbol}
+            {productPrices?.[0]?.offerPrice}
+          </span>
+        </h5>
+      )}
       <div className="quantity_wrap mb-2">
-        <label>{t("quantity")}</label>
+        <label dir={langDir}>{t("quantity")}</label>
         <div className="qty-up-down-s1-with-rgMenuAction">
-          <div className="flex items-center gap-x-3 md:gap-x-4">
+          <div className="flex items-center gap-x-3 md:gap-x-3">
             <Button
               type="button"
               variant="outline"
               className="relative hover:shadow-sm"
-              onClick={() => {
-                if (isAddedToCart) {
-                  handleAddToCart(quantity - 1, "remove");
-                } else {
-                  setQuantity(quantity - 1);
-                }
-              }}
-              disabled={quantity === 0}
+              onClick={() => handleQuantity(quantity - 1, "remove")}
+              disabled={quantity === 0 || updateCartWithLogin?.isPending}
             >
               <Image
                 src="/images/upDownBtn-minus.svg"
@@ -191,18 +316,22 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                 className="p-3"
               />
             </Button>
-            <p className="!mb-0 !text-black">{quantity}</p>
+            <input
+              type="text"
+              value={quantity}
+              className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-none"
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setQuantity(isNaN(value) ? productQuantity : value);
+              }}
+              onBlur={handleQuantityChange}
+            />
             <Button
               type="button"
               variant="outline"
               className="relative hover:shadow-sm"
-              onClick={() => {
-                if (isAddedToCart) {
-                  handleAddToCart(quantity + 1, "add");
-                } else {
-                  setQuantity(quantity + 1);
-                }
-              }}
+              onClick={() => handleQuantity(quantity + 1, "add")}
+              disabled={updateCartWithLogin?.isPending}
             >
               <Image
                 src="/images/upDownBtn-plus.svg"
@@ -211,7 +340,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                 className="p-3"
               />
             </Button>
-            {!isAddedToFactoryCart && <Button
+            {/* {!isAddedToFactoryCart && <Button
               type="button"
               variant="ghost"
               onClick={onAdd}
@@ -223,28 +352,70 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                   fill
                 />
               </div>
-            </Button>}
+            </Button>} */}
           </div>
         </div>
       </div>
 
       <div className="cart_button">
-        {isAddedToCart && <button
-          type="button"
-          className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
-        >
-          <FaCircleCheck color="#00C48C" />
-          {t("added_to_cart")}
-        </button>}
-        {!isAddedToCart && <button
-          type="button"
-          className="add_to_cart_button"
-          onClick={() => handleAddToCart(quantity, "add")}
-          disabled={quantity == 0}
-        >
-          {t("add_to_cart")}
-        </button>}
+        {cartId && (
+          <button
+            type="button"
+            className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
+            dir={langDir}
+          >
+            <FaCircleCheck color="#00C48C" />
+            {t("added_to_cart")}
+          </button>
+        )}
+        {!cartId && (
+          <button
+            type="button"
+            className="add_to_cart_button"
+            onClick={() => handleAddToCart(quantity, "add")}
+            disabled={quantity == 0 || updateCartWithLogin?.isPending}
+            dir={langDir}
+          >
+            {t("add_to_cart")}
+          </button>
+        )}
       </div>
+      <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={confirmDialogRef}
+        >
+          <div className="modal-header !justify-between" dir={langDir}>
+            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
+            <Button
+              onClick={onCancelRemove}
+              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+            >
+              <IoCloseSharp size={20} />
+            </Button>
+          </div>
+
+          <div className="text-center mt-4 mb-4">
+            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
+            <div>
+              <Button
+                type="button"
+                className="bg-white text-red-500 mr-2"
+                onClick={onCancelRemove}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="bg-red-500"
+                onClick={onConfirmRemove}
+              >
+                Remove
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

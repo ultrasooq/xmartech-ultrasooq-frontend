@@ -4,6 +4,7 @@ import React, { useState } from "react";
 // import AnswerForm from "./AnswerForm";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type QuestionCardProps = {
   id: number;
@@ -25,6 +26,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   isLastItem,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
   // const handleToggleQuestionModal = () => setIsQuestionModalOpen(!isQuestionModalOpen);
@@ -55,7 +57,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         )) : null}
         {!answers?.length && (
           <>
-            <p>
+            <p dir={langDir}>
               <span className="mr-2 font-bold">A:</span>
               {t("no_answer_yet")}
             </p>

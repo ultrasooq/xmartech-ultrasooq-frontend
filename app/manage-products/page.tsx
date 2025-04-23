@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   useAllManagedProducts,
   useUpdateMultipleProductPrice,
@@ -22,70 +22,84 @@ import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
 import { useMe } from "@/apis/queries/user.queries";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
+import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { IBrands, ISelectOptions } from "@/utils/types/common.types";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useBrands } from "@/apis/queries/masters.queries";
 
-const schema = z
-  .object({
-    productPrice: z.number().optional(),
-    offerPrice: z.coerce.number().optional(),
-    productLocationId: z.number().optional(),
-    stock: z.coerce.number().optional(),
-    deliveryAfter: z.coerce.number().optional(),
-    timeOpen: z.coerce.number().optional(),
-    timeClose: z.coerce.number().optional(),
-    consumerType: z.string().trim().optional(),
-    sellType: z.string().trim().optional(),
-    vendorDiscount: z.coerce.number().optional(),
-    consumerDiscount: z.coerce.number().optional(),
-    minQuantity: z.coerce.number().optional(),
-    maxQuantity: z.coerce.number().optional(),
-    minCustomer: z.coerce.number().optional(),
-    maxCustomer: z.coerce.number().optional(),
-    minQuantityPerCustomer: z.coerce.number().optional(),
-    maxQuantityPerCustomer: z.coerce.number().optional(),
-    productCondition: z.string().optional(),
-    isProductConditionRequired: z.boolean().optional(),
-    isHiddenRequired: z.boolean().optional(),
-    isStockRequired: z.boolean().optional(),
-    isOfferPriceRequired: z.boolean().optional(),
-    isDeliveryAfterRequired: z.boolean().optional(),
-    isConsumerTypeRequired: z.boolean().optional(),
-    isSellTypeRequired: z.boolean().optional(),
-    isVendorDiscountRequired: z.boolean().optional(),
-    isConsumerDiscountRequired: z.boolean().optional(),
-    isMinQuantityRequired: z.boolean().optional(),
-    isMaxQuantityRequired: z.boolean().optional(),
-    isMinCustomerRequired: z.boolean().optional(),
-    isMaxCustomerRequired: z.boolean().optional(),
-    isMinQuantityPerCustomerRequired: z.boolean().optional(),
-    isMaxQuantityPerCustomerRequired: z.boolean().optional(),
-  })
-  .refine(
-    (data) => !data.isProductConditionRequired || !!data.productCondition,
-    {
-      message: "Product Condition is required",
-      path: ["productCondition"],
-    },
-  )
-  // .refine((data) => data.isStockRequired || !!data.stock, {
-  //   message: "Stock is required",
-  //   path: ["stock"],
-  // })
-  // .refine((data) => data.isOfferPriceRequired || !!data.offerPrice, {
-  //   message: "Offer Price is required",
-  //   path: ["offerPrice"],
-  // })
-  .refine((data) => !data.isDeliveryAfterRequired || !!data.deliveryAfter, {
-    message: "Delivery After is required",
-    path: ["deliveryAfter"],
-  })
-  .refine((data) => !data.isConsumerTypeRequired || !!data.consumerType, {
-    message: "Consumer Type is required",
-    path: ["consumerType"],
-  })
-  .refine((data) => !data.isSellTypeRequired || !!data.sellType, {
-    message: "Sell Type is required",
-    path: ["sellType"],
-  });
+const schema = (t: any) => {
+  return (
+    z
+      .object({
+        productPrice: z.number().optional(),
+        offerPrice: z.coerce.number().optional(),
+        productLocationId: z.number().optional(),
+        stock: z.coerce.number().optional(),
+        deliveryAfter: z.coerce.number().optional(),
+        timeOpen: z.coerce.number().optional(),
+        timeClose: z.coerce.number().optional(),
+        consumerType: z.string().trim().optional(),
+        sellType: z.string().trim().optional(),
+        vendorDiscount: z.coerce.number().optional(),
+        consumerDiscount: z.coerce.number().optional(),
+        minQuantity: z.coerce.number().optional(),
+        maxQuantity: z.coerce.number().optional(),
+        minCustomer: z.coerce.number().optional(),
+        maxCustomer: z.coerce.number().optional(),
+        minQuantityPerCustomer: z.coerce.number().optional(),
+        maxQuantityPerCustomer: z.coerce.number().optional(),
+        productCondition: z.string().optional(),
+        isProductConditionRequired: z.boolean().optional(),
+        isHiddenRequired: z.boolean().optional(),
+        isStockRequired: z.boolean().optional(),
+        isOfferPriceRequired: z.boolean().optional(),
+        isDeliveryAfterRequired: z.boolean().optional(),
+        isConsumerTypeRequired: z.boolean().optional(),
+        isSellTypeRequired: z.boolean().optional(),
+        isVendorDiscountRequired: z.boolean().optional(),
+        isConsumerDiscountRequired: z.boolean().optional(),
+        isMinQuantityRequired: z.boolean().optional(),
+        isMaxQuantityRequired: z.boolean().optional(),
+        isMinCustomerRequired: z.boolean().optional(),
+        isMaxCustomerRequired: z.boolean().optional(),
+        isMinQuantityPerCustomerRequired: z.boolean().optional(),
+        isMaxQuantityPerCustomerRequired: z.boolean().optional(),
+      })
+      .refine(
+        (data) => !data.isProductConditionRequired || !!data.productCondition,
+        {
+          message: "Product Condition is required",
+          path: ["productCondition"],
+        },
+      )
+      // .refine((data) => data.isStockRequired || !!data.stock, {
+      //   message: "Stock is required",
+      //   path: ["stock"],
+      // })
+      // .refine((data) => data.isOfferPriceRequired || !!data.offerPrice, {
+      //   message: "Offer Price is required",
+      //   path: ["offerPrice"],
+      // })
+      .refine((data) => !data.isDeliveryAfterRequired || !!data.deliveryAfter, {
+        message: t("delivery_after_is_required"),
+        path: ["deliveryAfter"],
+      })
+      .refine((data) => !data.isConsumerTypeRequired || !!data.consumerType, {
+        message: t("consumer_type_is_required"),
+        path: ["consumerType"],
+      })
+      .refine((data) => !data.isSellTypeRequired || !!data.sellType, {
+        message: t("sell_type_is_required"),
+        path: ["sellType"],
+      })
+  );
+};
 
 const defaultValues = {
   productPrice: 0,
@@ -116,6 +130,7 @@ const defaultValues = {
 
 const ManageProductsPage = () => {
   const t = useTranslations();
+  const { langDir } = useAuth();
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_PRODUCTS);
   const { toast } = useToast();
@@ -126,10 +141,70 @@ const ManageProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const me = useMe();
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [displayStoreProducts, setDisplayStoreProducts] = useState(false);
+  const [displayBuyGroupProducts, setDisplayBuyGroupProducts] = useState(false);
+  const [displayExpiredProducts, setDisplayExpiredProducts] = useState(false);
+  const [displayHiddenProducts, setDisplayHiddenProducts] = useState(false);
+  const [displayDiscountedProducts, setDisplayDiscountedProducts] =
+    useState(false);
+
+  const [searchTermBrand, setSearchTermBrand] = useState("");
+
+  const brandsQuery = useBrands({
+    term: searchTermBrand,
+  });
+
+  const memoizedBrands = useMemo(() => {
+    return (
+      brandsQuery?.data?.data.map((item: IBrands) => {
+        return { label: item.brandName, value: item.id };
+      }) || []
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brandsQuery?.data?.data?.length]);
+
+  const handleDebounceBrandSearch = debounce((event: any) => {
+    setSearchTermBrand(event.target.value);
+  }, 1000);
+
+  const handleBrandChange = (
+    checked: boolean | string,
+    item: ISelectOptions,
+  ) => {
+    let tempArr = selectedBrandIds || [];
+    if (checked && !tempArr.find((ele: number) => ele === item.value)) {
+      tempArr = [...tempArr, item.value];
+    }
+
+    if (!checked && tempArr.find((ele: number) => ele === item.value)) {
+      tempArr = tempArr.filter((ele: number) => ele !== item.value);
+    }
+    setSelectedBrandIds(tempArr);
+  };
+
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema(t)),
     defaultValues,
   });
+
+  const sellType = () => {
+    if (displayStoreProducts && displayBuyGroupProducts) {
+      return "NORMALSELL,BUYGROUP";
+    }
+
+    if (displayStoreProducts) {
+      return "NORMALSELL";
+    }
+
+    if (displayBuyGroupProducts) {
+      return "BUYGROUP";
+    }
+
+    return "";
+  };
 
   const allManagedProductsQuery = useAllManagedProducts(
     {
@@ -140,6 +215,12 @@ const ManageProductsPage = () => {
         me?.data?.data?.tradeRole == "MEMBER"
           ? me?.data?.data?.addedBy
           : undefined,
+      brandIds: selectedBrandIds.join(","),
+      status: displayHiddenProducts ? "INACTIVE" : "",
+      expireDate: displayExpiredProducts ? "expired" : "",
+      sellType:
+        displayStoreProducts || displayBuyGroupProducts ? sellType() : "",
+      discount: displayDiscountedProducts,
     },
     hasPermission,
   );
@@ -147,6 +228,30 @@ const ManageProductsPage = () => {
   const { data, refetch } = allManagedProductsQuery;
   const [products, setProducts] = useState(data?.data || []);
   const [totalCount, setTotalCount] = useState(data?.totalCount || 0);
+
+  const selectAll = () => {
+    setSelectedBrandIds(
+      brandsQuery?.data?.data?.map((item: any) => {
+        return item.id;
+      }) || [],
+    );
+    setDisplayStoreProducts(true);
+    setDisplayBuyGroupProducts(true);
+    setDisplayExpiredProducts(true);
+    setDisplayHiddenProducts(true);
+    setDisplayDiscountedProducts(true);
+  };
+
+  const clearFilter = () => {
+    setSelectedBrandIds([]);
+    setDisplayStoreProducts(false);
+    setDisplayBuyGroupProducts(false);
+    setDisplayExpiredProducts(false);
+    setDisplayHiddenProducts(false);
+    setDisplayDiscountedProducts(false);
+
+    if (searchInputRef?.current) searchInputRef.current.value = "";
+  };
 
   // Update state when new data is available
   useEffect(() => {
@@ -358,44 +463,241 @@ const ManageProductsPage = () => {
       <div className="existing-product-add-page">
         <div className="existing-product-add-layout">
           <div className="container m-auto px-3">
-            <div className="flex">
-              <div className="w-[25%]">
-                <div className="trending-search-sec mt-0">
+            <div className="flex flex-wrap md:flex-nowrap">
+              <div className="w-full md:w-[25%]">
+                <div className="trending-search-sec mt-0" dir={langDir}>
                   <div className="all_select_button">
-                    <button type="button">Select All</button>
-                    <button type="button">Clean Select</button>
+                    <button type="button" onClick={selectAll}>
+                      {t("select_all")}
+                    </button>
+                    <button type="button" onClick={clearFilter}>
+                      {t("clean_select")}
+                    </button>
+                  </div>
+                  <div className="container m-auto pr-3">
+                    <div className="left-filter">
+                      <Accordion
+                        type="multiple"
+                        defaultValue={["brand"]}
+                        className="filter-col"
+                      >
+                        <AccordionItem value="brand">
+                          <AccordionTrigger
+                            className="px-3 text-base hover:!no-underline"
+                            dir={langDir}
+                          >
+                            {t("by_brand")}
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="filter-sub-header">
+                              <Input
+                                type="text"
+                                placeholder={t("search_brand")}
+                                className="custom-form-control-s1 searchInput rounded-none"
+                                onChange={handleDebounceBrandSearch}
+                                dir={langDir}
+                              />
+                            </div>
+                            <div className="filter-body-part">
+                              <div className="filter-checklists">
+                                {!memoizedBrands.length ? (
+                                  <p
+                                    className="text-center text-sm font-medium"
+                                    dir={langDir}
+                                  >
+                                    {t("no_data_found")}
+                                  </p>
+                                ) : null}
+                                {memoizedBrands.map((item: ISelectOptions) => (
+                                  <div key={item.value} className="div-li">
+                                    <Checkbox
+                                      id={item.label}
+                                      className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                                      onCheckedChange={(checked) =>
+                                        handleBrandChange(checked, item)
+                                      }
+                                      checked={selectedBrandIds.includes(
+                                        item.value,
+                                      )}
+                                    />
+                                    <div className="grid gap-1.5 leading-none">
+                                      <label
+                                        htmlFor={item.label}
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      >
+                                        {item.label}
+                                      </label>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+
+                      <Accordion
+                        type="multiple"
+                        defaultValue={["product_conditions"]}
+                        className="filter-col"
+                      >
+                        <AccordionItem value="product_conditions">
+                          <AccordionTrigger className="px-3 text-base hover:!no-underline">
+                            {t("by_menu")}
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="filter-body-part">
+                              <div className="filter-checklists">
+                                <div className="div-li">
+                                  <Checkbox
+                                    id="displayStoreProducts"
+                                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                                    onCheckedChange={(checked: boolean) =>
+                                      setDisplayStoreProducts(checked)
+                                    }
+                                    checked={displayStoreProducts}
+                                  />
+                                  <div className="grid gap-1.5 leading-none">
+                                    <label
+                                      htmlFor="displayStoreProducts"
+                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      dir={langDir}
+                                    >
+                                      {t("store")}
+                                    </label>
+                                  </div>
+                                </div>
+                                <div className="div-li">
+                                  <Checkbox
+                                    id="displayBuyGroupProducts"
+                                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                                    onCheckedChange={(checked: boolean) => {
+                                      setDisplayBuyGroupProducts(checked);
+                                      setDisplayExpiredProducts(
+                                        checked
+                                          ? displayExpiredProducts
+                                          : false,
+                                      );
+                                    }}
+                                    checked={displayBuyGroupProducts}
+                                  />
+                                  <div className="grid gap-1.5 leading-none">
+                                    <label
+                                      htmlFor="displayBuyGroupProducts"
+                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      dir={langDir}
+                                    >
+                                      {t("buy_group")}
+                                    </label>
+                                  </div>
+                                </div>
+                                {displayBuyGroupProducts && (
+                                  <div className="div-li">
+                                    <Checkbox
+                                      id="displayExpiredProducts"
+                                      className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                                      onCheckedChange={(checked: boolean) =>
+                                        setDisplayExpiredProducts(checked)
+                                      }
+                                      checked={displayExpiredProducts}
+                                    />
+                                    <div className="grid gap-1.5 leading-none">
+                                      <label
+                                        htmlFor="displayExpiredProducts"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                        dir={langDir}
+                                      >
+                                        {t("expired")}
+                                      </label>
+                                    </div>
+                                  </div>
+                                )}
+                                <div className="div-li">
+                                  <Checkbox
+                                    id="displayHiddenProducts"
+                                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                                    onCheckedChange={(checked: boolean) =>
+                                      setDisplayHiddenProducts(checked)
+                                    }
+                                    checked={displayHiddenProducts}
+                                  />
+                                  <div className="grid gap-1.5 leading-none">
+                                    <label
+                                      htmlFor="displayHiddenProducts"
+                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      dir={langDir}
+                                    >
+                                      {t("hidden")}
+                                    </label>
+                                  </div>
+                                </div>
+                                <div className="div-li">
+                                  <Checkbox
+                                    id="displayDiscountedProducts"
+                                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                                    onCheckedChange={(checked: boolean) =>
+                                      setDisplayDiscountedProducts(checked)
+                                    }
+                                    checked={displayDiscountedProducts}
+                                  />
+                                  <div className="grid gap-1.5 leading-none">
+                                    <label
+                                      htmlFor="displayDiscountedProducts"
+                                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                      dir={langDir}
+                                    >
+                                      {t("discounted")}
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="w-[75%]">
+              <div className="w-full md:w-[75%]">
                 {/* start: existing-product-add-headerPart */}
                 <div className="existing-product-add-headerPart">
-                  <h2 className="text-2xl font-medium capitalize text-color-dark">
+                  <h2
+                    className="text-2xl font-medium capitalize text-color-dark"
+                    dir={langDir}
+                  >
                     {t("products")}
                   </h2>
-                  <ul className="right-filter-lists flex flex-row flex-nowrap gap-x-2">
-                    <li>
+                  <ul className="right-filter-lists flex flex-row flex-wrap gap-2 md:flex-nowrap">
+                    <li className="w-full sm:w-auto">
                       <Input
                         type="text"
                         placeholder={t("search_product")}
-                        className="search-box h-[40px] w-[200px] sm:w-[160px] lg:w-80"
+                        className="search-box h-[40px] w-full sm:w-[160px] lg:w-80"
                         onChange={handleDebounce}
+                        ref={searchInputRef}
+                        dir={langDir}
                       />
                     </li>
-                    <li>
+                    <li className="flex">
                       <button
                         className="theme-primary-btn add-btn p-2"
                         onClick={handleAddProductModal}
+                        dir={langDir}
                       >
-                        <IoMdAdd size={24} />
+                        <IoMdAdd size={20} />
                         <span className="d-none-mobile">
                           {t("add_product")}
                         </span>
                       </button>
                     </li>
-                    <li>
-                      <button className="theme-primary-btn add-btn p-2">
-                        <span className="d-none-mobile">Go To Cart</span>
+                    <li className="flex">
+                      <button
+                        className="theme-primary-btn add-btn p-2"
+                        onClick={() => router.replace("/cart")}
+                        dir={langDir}
+                      >
+                        <span className="d-none-mobile">{t("go_to_cart")}</span>
                       </button>
                     </li>
                   </ul>
@@ -421,7 +723,10 @@ const ManageProductsPage = () => {
 
                           {!allManagedProductsQuery.data?.data?.length &&
                           !allManagedProductsQuery.isLoading ? (
-                            <p className="w-full py-10 text-center text-base font-medium">
+                            <p
+                              className="w-full py-10 text-center text-base font-medium"
+                              dir={langDir}
+                            >
                               {t("no_product_found")}
                             </p>
                           ) : null}

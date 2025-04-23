@@ -43,6 +43,8 @@ export const updateCartByDevice = (payload: {
   productPriceId: number;
   quantity: number;
   deviceId: string;
+  sharedLinkId?: number;
+  productVariant?: any;
 }) => {
   return axios({
     method: "PATCH",

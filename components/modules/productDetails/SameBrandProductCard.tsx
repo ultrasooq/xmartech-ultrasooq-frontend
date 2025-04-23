@@ -15,6 +15,7 @@ import { FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 type SameBrandProductCardProps = {
   id: number;
@@ -50,11 +51,12 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
   askForPrice,
 }) => {
   const t = useTranslations();
+  const { langDir, currency } = useAuth();
 
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
     const discount = consumerDiscount || 0;
-    return price - (price * discount) / 100;
+    return Number((price - (price * discount) / 100).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {
@@ -168,15 +170,16 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
               <button
                 type="button"
                 className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+                dir={langDir}
               >
                 {t("ask_vendor_for_price")}
               </button>
             </Link>
           ) : (
             <h5 className="py-1 text-[#1D77D1]">
-              ${calculateDiscountedPrice()}{" "}
+              {currency.symbol}{calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
-                ${productProductPrice}
+                {currency.symbol}{productProductPrice}
               </span>
             </h5>
           )}

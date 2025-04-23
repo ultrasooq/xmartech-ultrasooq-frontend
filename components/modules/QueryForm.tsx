@@ -33,6 +33,7 @@ const queryFormSchema = (t: any) => {
 
 const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
     const t = useTranslations();
+    const { langDir } = useAuth();
 
     const form = useForm({
         resolver: zodResolver(queryFormSchema(t)),
@@ -81,13 +82,13 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
 
     return (
         <>
-            <div className="modal-header !justify-between">
-                <DialogTitle className="text-center text-xl font-bold">
+            <div className="modal-header !justify-between" dir={langDir}>
+                <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
                     {t("submit_your_query")}
                 </DialogTitle>
                 <Button
                     onClick={onClose}
-                    className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+                    className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
                 >
                     <IoCloseSharp size={20} />
                 </Button>
@@ -98,25 +99,32 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="card-item card-payment-form px-5 pb-5 pt-3"
                 >
-                    <label className="text-sm font-medium leading-none text-color-dark">{t("email")}</label>
+                    <div dir={langDir}>
+                        <label className="text-sm font-medium leading-none text-color-dark">
+                            {t("email")}
+                        </label>
+                    </div>
                     <ControlledTextInput
                         label={t("email")}
                         name="email"
                         placeholder={t("enter_email")}
                         type="email"
                         disabled={!!me?.data?.data?.id}
+                        dir={langDir}
                     />
 
                     <ControlledTextareaInput
                         label={t("query")}
                         name="query"
                         placeholder={t("enter_your_query")}
+                        dir={langDir}
                     />
 
                     <Button
                         type="submit"
                         className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                         disabled={submitQuery?.isPending}
+                        dir={langDir}
                     >
                         {submitQuery?.isPending ? t("processing") : t("submit")}
                     </Button>

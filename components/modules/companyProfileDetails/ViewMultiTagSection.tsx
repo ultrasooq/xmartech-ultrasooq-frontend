@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import React from "react";
 
@@ -9,14 +10,15 @@ const ViewMultiTagSection: React.FC<ViewMultiTagSectionProps> = ({
   categoryDetails,
 }) => {
   const t = useTranslations();
+  const { langDir } = useAuth();
 
   return (
     <div className="mt-6 w-full pb-5">
       <div className="w-full">
-        <label className="block text-lg font-semibold leading-5 text-color-dark">
+        <label className="block text-lg font-semibold leading-5 text-color-dark" dir={langDir}>
           {t("tag")}
         </label>
-        <div className="flex w-full flex-wrap">
+        <div className="flex w-full flex-wrap" dir={langDir}>
           {categoryDetails?.map((item: any) => (
             <span
               key={item.id}

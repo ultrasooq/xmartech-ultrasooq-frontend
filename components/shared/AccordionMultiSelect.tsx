@@ -8,6 +8,7 @@ import {
 import { FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Checkbox } from "../ui/checkbox";
 import { useFormContext } from "react-hook-form";
+import { useAuth } from "@/context/AuthContext";
 
 interface ISelectProps {
   label: string;
@@ -27,6 +28,7 @@ const AccordionMultiSelect = ({
   placeholder,
   error,
 }: ISelectProps) => {
+  const { langDir } = useAuth();
   const formContext = useFormContext();
   const [selectedItems, setSelectedItems] = useState<
     {
@@ -131,7 +133,7 @@ const AccordionMultiSelect = ({
         </AccordionItem>
       </Accordion>
 
-      <p className="text-[13px] text-red-500">{error}</p>
+      <p className="text-[13px] text-red-500" dir={langDir}>{error}</p>
     </>
   );
 };
