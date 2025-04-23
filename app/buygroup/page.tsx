@@ -566,9 +566,7 @@ const TrendingPage = () => {
               {viewType === "grid" ? (
                 <div className="product-list-s1">
                   {memoizedProductList.map((item: TrendingProduct) => {
-                    const cartQuantity =
-                      cartList?.find((el: any) => el.productId == item.id)
-                        ?.quantity || 0;
+                    const cartItem = cartList?.find((el: any) => el.productId == item.id);
                     return (
                       <ProductCard
                         key={item.id}
@@ -579,8 +577,10 @@ const TrendingPage = () => {
                         inWishlist={item?.inWishlist}
                         haveAccessToken={haveAccessToken}
                         isInteractive
-                        productQuantity={cartQuantity}
-                        isAddedToCart={cartQuantity > 0}
+                        productQuantity={cartItem?.quantity}
+                        productVariant={cartItem?.object}
+                        cartId={cartItem?.id}
+                        isAddedToCart={cartItem ? true : false}
                         sold={item.sold}
                       />
                     );

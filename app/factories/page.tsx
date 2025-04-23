@@ -396,6 +396,11 @@ const FactoriesPage = () => {
                                     (el: any) => el.productId == item.id,
                                   )?.quantity || 0
                                 }
+                                productVariant={
+                                  cartList.find(
+                                    (el: any) => el.productId == item.id,
+                                  )?.object
+                                }
                                 customizeProductId={
                                   factoriesCartList.find(
                                     (el: any) => el.productId == item.id,
@@ -411,19 +416,15 @@ const FactoriesPage = () => {
                                 isCreatedByMe={
                                   item?.userId === me.data?.data?.id
                                 }
-                                isAddedToCart={
+                                cartId={
                                   cartList.find(
                                     (el: any) => el.productId == item.id,
-                                  )
-                                    ? true
-                                    : false
+                                  )?.id
                                 }
                                 isAddedToFactoryCart={
                                   factoriesCartList.find(
                                     (el: any) => el.productId == item.id,
-                                  )
-                                    ? true
-                                    : false
+                                  ) ? true : false
                                 }
                                 inWishlist={item?.product_wishlist?.find(
                                   (el: any) => el?.userId === me.data?.data?.id,

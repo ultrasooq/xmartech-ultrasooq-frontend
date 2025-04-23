@@ -1,7 +1,7 @@
 import { TrendingProduct } from "@/utils/types/common.types";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import validator from "validator";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
@@ -19,7 +19,10 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { FaCircleCheck } from "react-icons/fa6";
 import { toast } from "@/components/ui/use-toast";
-import { useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import { useDeleteCartItem, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { IoCloseSharp } from "react-icons/io5";
+import { useClickOutside } from "use-events";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -29,6 +32,8 @@ type ProductCardProps = {
   isSeller?: boolean;
   isAddedToCart?: boolean;
   cartQuantity?: number;
+  productVariant: any;
+  cartId?: number;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -39,12 +44,30 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isSeller,
   isAddedToCart,
   cartQuantity = 0,
+  productVariant,
+  cartId,
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
 
   const [quantity, setQuantity] = useState<number>(cartQuantity);
+  const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
+
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const confirmDialogRef = useRef(null);
+  const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
+
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const deleteCartItem = useDeleteCartItem();
+
+  useEffect(() => {
+    setQuantity(cartQuantity);
+  }, [cartQuantity]);
+
+  useEffect(() => {
+    setSelectedProductVariant(productVariant);
+  }, [productVariant]);
 
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
@@ -87,16 +110,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     newQuantity: number,
     actionType: "add" | "remove",
   ) => {
-    const minQuantity = item.productPrices?.length
-      ? item.productPrices[0]?.minQuantityPerCustomer
-      : null;
-    const maxQuantity = item.productPrices?.length
-      ? item.productPrices[0]?.maxQuantityPerCustomer
-      : null;
+    const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
+    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
 
     if (actionType == "add" && newQuantity == -1) {
-      newQuantity =
-        minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
+      newQuantity = minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
     }
 
     if (actionType == "add" && minQuantity && minQuantity > newQuantity) {
@@ -116,7 +134,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
 
     if (actionType == "remove" && minQuantity && minQuantity > newQuantity) {
-      newQuantity = 0;
+      setIsConfirmDialogOpen(true);
+      return;
     }
 
     if (!item?.productProductPriceId) {
@@ -130,6 +149,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const response = await updateCartWithLogin.mutateAsync({
       productPriceId: item?.productProductPriceId,
       quantity: newQuantity,
+      productVariant: selectedProductVariant,
     });
 
     if (response.status) {
@@ -139,10 +159,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         setQuantity(newQuantity);
       }
       toast({
-        title:
-          actionType == "add"
-            ? t("item_added_to_cart")
-            : t("item_removed_from_cart"),
+        title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
         description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
@@ -156,44 +173,92 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
-  const handleQuantityChange = () => {
-    if (quantity == 0) {
-      if (cartQuantity != 0) {
-        toast({
-          description: t("quantity_can_not_be_0"),
-          variant: "danger",
-        });
-      }
-      setQuantity(cartQuantity);
-      return;
-    }
+  const handleQuantity = (quantity: number, action: "add" | "remove") => {
+    const minQuantity = item.productPrices?.length? item.productPrices[0]?.minQuantityPerCustomer : null;
+    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
 
-    const minQuantity = item.productPrices?.length
-      ? item.productPrices[0]?.minQuantityPerCustomer
-      : null;
-    if (minQuantity && minQuantity > quantity) {
-      toast({
-        description: t("min_quantity_must_be_n", { n: minQuantity }),
-        variant: "danger",
-      });
-      setQuantity(cartQuantity);
-      return;
-    }
-
-    const maxQuantity = item.productPrices?.length
-      ? item.productPrices[0]?.maxQuantityPerCustomer
-      : null;
     if (maxQuantity && maxQuantity < quantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
         variant: "danger",
       });
-      setQuantity(cartQuantity);
+      setQuantity(cartQuantity || maxQuantity);
+      return;
+    }
+
+    setQuantity(quantity);
+    if (cartId) {
+      handleAddToCart(quantity, action);
+    } else {
+      if (minQuantity && minQuantity > quantity) {
+        toast({
+          description: t("min_quantity_must_be_n", { n: minQuantity }),
+          variant: "danger",
+        });
+        return;
+      }
+    }
+  };
+
+  const handleQuantityChange = () => {
+    if (quantity == 0 && cartQuantity != 0) {
+      toast({
+        description: t("quantity_can_not_be_0"),
+        variant: "danger",
+      });
+      handleQuantity(quantity, "remove");
+      return;
+    }
+
+    const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
+    if (minQuantity && minQuantity > quantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      });
+      handleQuantity(quantity, quantity > cartQuantity ? "add" : "remove");
+      return;
+    }
+
+    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      });
+      setQuantity(cartQuantity || maxQuantity);
       return;
     }
 
     const action = quantity > cartQuantity ? "add" : "remove";
-    if (quantity != cartQuantity) handleAddToCart(quantity, action);
+    if (quantity != cartQuantity) handleQuantity(quantity, action);
+  };
+
+  const handleRemoveItemFromCart = async (cartId: number) => {
+    const response = await deleteCartItem.mutateAsync({ cartId });
+    if (response.status) {
+      toast({
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: t("item_not_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "danger",
+      });
+    }
+  };
+
+  const onConfirmRemove = () => {
+    if (cartId) handleRemoveItemFromCart(cartId);
+    setIsConfirmDialogOpen(false);
+  };
+
+  const onCancelRemove = () => {
+    setQuantity(cartQuantity);
+    setIsConfirmDialogOpen(false);
   };
 
   return (
@@ -327,13 +392,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               type="button"
               variant="outline"
               className="relative hover:shadow-sm"
-              onClick={() => {
-                if (isAddedToCart) {
-                  handleAddToCart(quantity - 1, "remove");
-                } else {
-                  setQuantity(quantity - 1);
-                }
-              }}
+              onClick={() => handleQuantity(quantity - 1, "remove")}
               disabled={
                 quantity === 0 ||
                 item.status === "INACTIVE" ||
@@ -361,23 +420,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               type="button"
               variant="outline"
               className="relative hover:shadow-sm"
-              onClick={() => {
-                if (isAddedToCart) {
-                  handleAddToCart(quantity + 1, "add");
-                } else {
-                  const minQuantity = item.productPrices?.length
-                    ? item.productPrices[0]?.minQuantityPerCustomer
-                    : null;
-                  if (
-                    !minQuantity ||
-                    minQuantity === 0 ||
-                    (minQuantity && quantity + 1 == minQuantity)
-                  ) {
-                    handleAddToCart(quantity + 1, "add");
-                  }
-                  setQuantity(quantity + 1);
-                }
-              }}
+              onClick={() => handleQuantity(quantity + 1, "add")}
               disabled={
                 item.status === "INACTIVE" || updateCartWithLogin?.isPending
               }
@@ -421,6 +464,43 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </button>
         )}
       </div>
+
+      <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={confirmDialogRef}
+        >
+          <div className="modal-header !justify-between" dir={langDir}>
+            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
+            <Button
+              onClick={onCancelRemove}
+              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+            >
+              <IoCloseSharp size={20} />
+            </Button>
+          </div>
+
+          <div className="text-center mt-4 mb-4">
+            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
+            <div>
+              <Button
+                type="button"
+                className="bg-white text-red-500 mr-2"
+                onClick={onCancelRemove}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="bg-red-500"
+                onClick={onConfirmRemove}
+              >
+                Remove
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

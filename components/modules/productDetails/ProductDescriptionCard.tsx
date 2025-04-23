@@ -20,6 +20,10 @@ import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import { useProductVariant } from "@/apis/queries/product.queries";
+import { Label } from "@/components/ui/label";
+import { Select, SelectItem } from "@/components/ui/select";
+import { SelectContent } from "@radix-ui/react-select";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -48,7 +52,11 @@ type ProductDescriptionCardProps = {
   productPriceArr: any[];
   minQuantity?: number;
   maxQuantity?: number;
-  onQuantityChange?: (newQuantity: number, action: "add" | "remove") => void;
+  onQuantityChange?: (newQuantity: number, action: "add" | "remove", variant?: any) => void;
+  productVariantTypes?: string[];
+  productVariants?: any[];
+  selectedProductVariant?: any;
+  selectProductVariant?: (variant: any) => void;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -79,10 +87,15 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   minQuantity,
   maxQuantity,
   onQuantityChange, // Callback to update productQuantity outside
+  productVariantTypes = [],
+  productVariants = [],
+  selectedProductVariant,
+  selectProductVariant
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(productQuantity);
+  const [isAddedToCart, setIsAddedToCart] = useState<boolean>(productQuantity > 0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
 
@@ -122,31 +135,33 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   );
 
   useEffect(() => {
+    if (productQuantity === -1) return;
     setQuantity(productQuantity || 0);
+    setIsAddedToCart(!!productQuantity && productQuantity > 0);
   }, [productQuantity]);
 
   const updateQuantity = (newQuantity: number, action: "add" | "remove") => {
+    setQuantity(newQuantity);
+
     if (maxQuantity && maxQuantity < newQuantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
         variant: "danger",
       });
+      setQuantity(productQuantity);
       return;
     }
 
-    setQuantity(newQuantity);
-    onQuantityChange?.(newQuantity, action); // Notify parent if function exists
+    onQuantityChange?.(newQuantity, action);
   };
 
   const handleQuantityChange = () => {
-    if (quantity == 0) {
-      if (productQuantity != 0) {
-        toast({
-          description: t("quantity_can_not_be_0"),
-          variant: "danger",
-        });
-      }
-      setQuantity(productQuantity);
+    if (quantity == 0 && productQuantity != 0) {
+      toast({
+        description: t("quantity_can_not_be_0"),
+        variant: "danger",
+      });
+      onQuantityChange?.(-1, "remove");
       return;
     }
 
@@ -155,7 +170,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
         variant: "danger",
       });
-      setQuantity(productQuantity);
+      onQuantityChange?.(quantity, quantity > productQuantity ? "add" : "remove");
       return;
     }
 
@@ -169,8 +184,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
     }
 
     const action = quantity > productQuantity ? "add" : "remove";
-    if (quantity != productQuantity && onQuantityChange)
-      onQuantityChange(quantity, action);
+    if (quantity != productQuantity) onQuantityChange?.(quantity, action);
   };
 
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -361,6 +375,31 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         </div>
       )}
 
+      {productVariantTypes?.map((type: string, index: number) => {
+        return (
+          <div className="flex items-center gap-x-3 mb-3" key={index}>
+            <Label>{type}</Label>
+            <select 
+              style={{ border: "1px solid" }} 
+              data-type={type}
+              onChange={(e) => selectProductVariant?.({ type: e.target.dataset.type, value: e.target.value})}
+            >
+              {productVariants?.filter((item: any) => item.type == type)?.map((item: any, i: number) => {
+                return (
+                  <option 
+                    key={i} 
+                    value={item.value} 
+                    selected={item.type == selectedProductVariant?.type && item.value == selectedProductVariant?.value}
+                  >
+                    {item.value}
+                  </option>
+                );
+              }) || []}
+            </select>
+          </div>
+        )
+      })}
+
       <div className="flex items-center gap-x-3">
         <Button
           variant="outline"
@@ -391,88 +430,121 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
       {isLoading ? (
         <Skeleton className="h-44 w-full" />
-      ) : productPriceArr?.[0]?.sellType === "BUYGROUP" ? (
+      ) : (
         <div className="info-col">
           <div className="row">
             <div className="col-12 col-md-12">
               <div className="form-group mb-0">
                 {/* <label>Report Abuse</label> */}
-                <p>
-                  {timeLeft !== "NotStarted" && timeLeft !== "Expired" && (
-                    <div className="" dir={langDir}>
-                      {t("time_left")}
-                      <div className="time_wrap">
-                        <div className="time_field">
-                          <h3>{timeLeft.split(":")[0]}</h3>
-                          <h6>Days</h6>
+                {productPriceArr?.[0]?.sellType === "BUYGROUP" ? (
+                  <>
+                    <p>
+                      {timeLeft !== "NotStarted" && timeLeft !== "Expired" && (
+                        <div className="" dir={langDir}>
+                          {t("time_left")}
+                          <div className="time_wrap">
+                            <div className="time_field">
+                              <h3>{timeLeft.split(":")[0]}</h3>
+                              <h6>Days</h6>
+                            </div>
+                            <div className="time_field">
+                              <h3>{timeLeft.split(":")[1]}</h3>
+                              <h6>Hours</h6>
+                            </div>
+                            <div className="time_field">
+                              <h3>{timeLeft.split(":")[2]}</h3>
+                              <h6>Minutes</h6>
+                            </div>
+                            <div className="time_field">
+                              <h3>{timeLeft.split(":")[3]}</h3>
+                              <h6>Seconds</h6>
+                            </div>
+                          </div>
                         </div>
-                        <div className="time_field">
-                          <h3>{timeLeft.split(":")[1]}</h3>
-                          <h6>Hours</h6>
-                        </div>
-                        <div className="time_field">
-                          <h3>{timeLeft.split(":")[2]}</h3>
-                          <h6>Minutes</h6>
-                        </div>
-                        <div className="time_field">
-                          <h3>{timeLeft.split(":")[3]}</h3>
-                          <h6>Seconds</h6>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </p>
-                <p>
-                  <span className="color-text" dir={langDir}>
-                    {t("group_buy_deal_ends")} :
-                  </span>{" "}
-                  {formatDateTimeWithTimezone(
-                    productPriceArr?.[0]?.dateClose,
-                    productPriceArr?.[0]?.endTime,
-                  )}
-                </p>
-                <p>
-                  <span className="color-text" dir={langDir}>
-                    {t("timezone")}:
-                  </span>{" "}
-                  {getUTCOffset()} ({userTimezone})
-                </p>
+                      )}
+                    </p>
+                    <p>
+                      <span className="color-text" dir={langDir}>
+                        {t("group_buy_deal_ends")} :
+                      </span>{" "}
+                      {formatDateTimeWithTimezone(
+                        productPriceArr?.[0]?.dateClose,
+                        productPriceArr?.[0]?.endTime,
+                      )}
+                    </p>
+                    <p>
+                      <span className="color-text" dir={langDir}>
+                        {t("timezone")}:
+                      </span>{" "}
+                      {getUTCOffset()} ({userTimezone})
+                    </p>
+                  </>
+                ) : null}
 
-                <p>
+                {productPriceArr?.[0]?.minQuantity ? <p>
                   <span className="color-text" dir={langDir}>
                     {t("min_quantity")}:
                   </span>{" "}
                   <b>{productPriceArr?.[0]?.minQuantity}</b>
-                </p>
-                <p>
+                </p> : null}
+
+                {productPriceArr?.[0]?.maxQuantity ? <p>
                   <span className="color-text" dir={langDir}>
                     {t("max_quantity")}:
                   </span>{" "}
                   <b>{productPriceArr?.[0]?.maxQuantity}</b>
-                </p>
-                <p>
+                </p> : null}
+
+                {/* <p>
                   <span className="color-text" dir={langDir}>
                     {t("deals_sold")}:
-                  </span>
+                  </span>{" "}
                   {0}
-                </p>
-                <p>
+                </p> */}
+
+                {productPriceArr?.[0]?.minQuantityPerCustomer ? <p>
                   <span className="color-text" dir={langDir}>
                     {t("min_quantity_per_customer")}:
                   </span>{" "}
                   <b>{productPriceArr?.[0]?.minQuantityPerCustomer}</b>
-                </p>
-                <p>
+                </p> : null}
+
+                {productPriceArr?.[0]?.maxQuantityPerCustomer ? <p>
                   <span className="color-text" dir={langDir}>
                     {t("max_quantity_per_customer")}:
                   </span>{" "}
                   <b>{productPriceArr?.[0]?.maxQuantityPerCustomer}</b>
-                </p>
+                </p> : null}
+
+                {productPriceArr?.[0]?.consumerType ? <p>
+                  <span className="color-text" dir={langDir}>
+                    {t("consumer_type")}:
+                  </span>{" "}
+                  <b>{productPriceArr?.[0]?.consumerType}</b>
+                </p> : null}
+
+                {(productPriceArr?.[0]?.consumerType == 'EVERYONE' ||
+                  productPriceArr?.[0]?.consumerType == 'CONSUMER') &&
+                  productPriceArr?.[0]?.consumerDiscount ? <p>
+                  <span className="color-text" dir={langDir}>
+                    {t("consumer_discount")}:
+                  </span>{" "}
+                  <b>{productPriceArr?.[0]?.consumerDiscount}&nbsp;({productPriceArr?.[0]?.consumerDiscountType})</b>
+                </p> : null}
+
+                {(productPriceArr?.[0]?.consumerType == 'EVERYONE' ||
+                  productPriceArr?.[0]?.consumerType == 'VENDORS') &&
+                  productPriceArr?.[0]?.vendorDiscount ? <p>
+                  <span className="color-text" dir={langDir}>
+                    {t("vendor_discount")}:
+                  </span>{" "}
+                  <b>{productPriceArr?.[0]?.vendorDiscount}&nbsp;({productPriceArr?.[0]?.vendorDiscountType})</b>
+                </p> : null}
               </div>
             </div>
           </div>
         </div>
-      ) : null}
+      )}
 
       <div className="info-col top-btm-border">
         <div className="form-group mb-0">

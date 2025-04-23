@@ -8,6 +8,7 @@ import {
   fetchAllProducts,
   fetchExistingProducts,
   fetchProductById,
+  fetchProductVariant,
   fetchProducts,
   fetchRelatedProducts,
   fetchRfqProductById,
@@ -561,3 +562,19 @@ export const useRemoveProduct = () => {
     },
   });
 }
+
+export const useProductVariant = () => {
+  const queryClient = useQueryClient();
+  return useMutation<any, APIResponseError, number[]>({
+    mutationFn: async (productPriceId: number[]) => {
+      const res = await fetchProductVariant(productPriceId);
+      return res.data;
+    },
+    onSuccess: () => {
+      
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};

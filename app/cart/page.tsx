@@ -271,6 +271,7 @@ const CartListPage = () => {
                       }
                       offerPrice={item.productPriceDetails?.offerPrice}
                       productQuantity={item.quantity}
+                      productVariant={item.object}
                       productImages={
                         item.productPriceDetails?.productPrice_product?.productImages
                       }

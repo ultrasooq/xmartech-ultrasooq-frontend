@@ -14,8 +14,9 @@ type ProductCardProps = {
   productName: string;
   offerPrice: string;
   productQuantity: number;
+  productVariant: any;
   productImages: { id: number; image: string }[];
-  onAdd: (args0: number, args1: "add" | "remove", args2: number) => void;
+  onAdd: (quantity: number, action: "add" | "remove", productPriceId: number, variant?: any) => void;
   onRemove: (args0: number) => void;
   onWishlist: (args0: number) => void;
   haveAccessToken: boolean;
@@ -31,6 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   productName,
   offerPrice,
   productQuantity,
+  productVariant,
   productImages,
   onAdd,
   onRemove,
@@ -77,7 +79,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     className="relative hover:shadow-sm"
                     onClick={() => {
                       setQuantity(quantity - 1);
-                      onAdd(quantity - 1, "remove", productPriceId);
+                      onAdd(quantity - 1, "remove", productPriceId, productVariant);
                     }}
                     disabled={quantity === 0}
                   >
@@ -94,7 +96,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     className="relative hover:shadow-sm"
                     onClick={() => {
                       setQuantity(quantity + 1);
-                      onAdd(quantity + 1, "add", productPriceId);
+                      onAdd(quantity + 1, "add", productPriceId, productQuantity);
                     }}
                   >
                     <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
