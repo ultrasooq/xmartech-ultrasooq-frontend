@@ -76,7 +76,7 @@ function HomePage() {
     }
   }, [accessToken]);
 
-  const categoryQuery = useCategory("184");
+  const categoryQuery = useCategory("4");
 
   const memoizedCategories = useMemo(() => {
     let tempArr: any = [];

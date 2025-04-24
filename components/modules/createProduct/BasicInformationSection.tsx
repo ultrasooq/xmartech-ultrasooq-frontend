@@ -62,7 +62,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const createTag = useCreateTag();
   const [listIds, setListIds] = useState<string[]>([]);
   const [catList, setCatList] = useState<any[]>([]);
-  const [currentId, setCurrentId] = useState<string>("184");
+  const [currentId, setCurrentId] = useState<string>("4");
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   // const upload = useUploadFile();

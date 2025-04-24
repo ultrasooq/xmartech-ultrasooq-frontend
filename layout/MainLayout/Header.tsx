@@ -133,7 +133,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   );
   const category = useCategoryStore();
   const me = useMe(!!accessToken);
-  const categoryQuery = useCategory("187");
+  const categoryQuery = useCategory("7");
   const subCategoryQuery = useCategory(
     categoryId ? categoryId : "",
     !!categoryId,
