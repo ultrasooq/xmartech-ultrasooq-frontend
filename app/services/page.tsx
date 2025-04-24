@@ -6,9 +6,8 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTags } from "@/apis/queries/tags.queries";
-import BasicInformationSection from "@/components/modules/createProduct/BasicInformationSection";
-import ProductDetailsSection from "@/components/modules/createProduct/ProductDetailsSection";
-import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
+import BasicInformationSection from "@/components/modules/createService/BasicInformationSection";
+import DescriptionAndSpecificationSection from "@/components/modules/createService/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
 import { useCreateProduct } from "@/apis/queries/product.queries";
 import { useToast } from "@/components/ui/use-toast";
@@ -277,7 +276,6 @@ const formSchemaForTypeP = (t: any) => {
           .max(20, { message: t("value_must_be_less_than_n_characters", { n: 20 }) })
           .optional()
           .or(z.literal('')),
-        image: z.any().optional(),
       }),
     ),
   })
@@ -492,13 +490,12 @@ const defaultValues: { [key: string]: any } = {
   isCustomProduct: false,
   productVariants: [
     {
-      value: "",
-      image: null
+      value: ""
     }
   ]
 };
 
-const CreateProductPage = () => {
+const CreateServicePage = () => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const router = useRouter();
@@ -546,8 +543,6 @@ const CreateProductPage = () => {
       productType: activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
       status: activeProductType === "R" || activeProductType === "F" ? "ACTIVE" : "INACTIVE",
     };
-
-    updatedFormData.productImagesList = [];
 
     if (watchProductImages.length) {
       const fileTypeArrays = watchProductImages.filter(
@@ -720,50 +715,6 @@ const CreateProductPage = () => {
           value: el.value
         }
       });
-
-    const productVariantImages = updatedFormData.productVariants
-      .filter((item: any) => item.image)
-      .map((item: any, index: number) => {
-        return { path: item.image, id: index.toString() };
-      });
-    if (productVariantImages.length > 0) {
-      const productVariantImagesArray = await handleUploadedFile(productVariantImages);
-      if (productVariantImagesArray) {
-        updatedFormData.productImagesList = [
-          ...updatedFormData.productImagesList,
-          ...updatedFormData.productVariants
-            .filter((item: any) => item.image && item.value)
-            .map((item: any, index: number) => {
-              const url = productVariantImagesArray[index];
-              const extension = url.split(".").pop()?.toLowerCase();
-  
-              if (extension) {
-                if (imageExtensions.includes(extension)) {
-                  const imageName: string = url.split("/").pop()!;
-                  return { 
-                    image: url, 
-                    imageName, 
-                    variant: {
-                      type: updatedFormData.productVariantType,
-                      value: item.value
-                    }
-                  };
-                }
-              }
-  
-              return { 
-                image: url, 
-                imageName: url, 
-                variant: {
-                  type: updatedFormData.productVariantType,
-                  value: item.value
-                }
-              };
-            })
-        ];
-      }
-    }
-    
     delete updatedFormData.productVariantType;
     delete updatedFormData.productVariants;
 
@@ -895,4 +846,4 @@ const CreateProductPage = () => {
   );
 };
 
-export default CreateProductPage;
+export default CreateServicePage;

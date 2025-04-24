@@ -21,8 +21,6 @@ import ReactPlayer from "react-player/lazy";
 import { isImage, isVideo } from "@/utils/helper";
 import ProductEditForm from "../factories/ProductEditForm";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useClickOutside } from "use-events";
-import EditProductPage from "@/app/product/[id]/page";
 import { useMe } from "@/apis/queries/user.queries";
 import AddToCustomizeForm from "../factories/AddToCustomizeForm";
 import { useSellerRewards } from "@/apis/queries/seller-reward.queries";

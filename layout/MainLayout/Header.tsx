@@ -10,7 +10,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DialogTitle } from "@/components/ui/dialog";
-import { CURRENCIES, LANGUAGES, PUREMOON_TOKEN_KEY, menuBarIconList } from "@/utils/constants";
+import {
+  CURRENCIES,
+  LANGUAGES,
+  PUREMOON_TOKEN_KEY,
+  menuBarIconList,
+} from "@/utils/constants";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -134,7 +139,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     !!categoryId,
   );
 
-  const [searchTerm, setSearchTerm] = useState(searchParams?.get('term') || '');
+  const [searchTerm, setSearchTerm] = useState(searchParams?.get("term") || "");
 
   const [isActive, setIsActive] = useState(false);
 
@@ -145,7 +150,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [selectedLocale, setSelectedLocale] = useState<string>(locale || "en");
   const languages = [...LANGUAGES];
 
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
   const currencies = [...CURRENCIES];
 
   // Debounced function to update URL
@@ -280,62 +285,67 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   useEffect(() => {
     const getIpInfo = async () => {
       try {
-        if (!window?.localStorage?.ipInfo || getCookie('ipInfoLoaded') != '1') {
+        if (!window?.localStorage?.ipInfo || getCookie("ipInfoLoaded") != "1") {
           const response = await fetchIpInfo();
 
           const ip = response.data.ip;
           if (ip) {
-            let savedIpInfo = JSON.parse(window.localStorage.getItem('ipInfo') || "{}");
+            let savedIpInfo = JSON.parse(
+              window.localStorage.getItem("ipInfo") || "{}",
+            );
             if (!savedIpInfo.ip || (savedIpInfo.ip && savedIpInfo.ip != ip)) {
-              window.localStorage.setItem('ipInfo', JSON.stringify(response.data));
+              window.localStorage.setItem(
+                "ipInfo",
+                JSON.stringify(response.data),
+              );
 
-              let localeKey = response.data.languages.split(',')[0];
-              if (localeKey.substr(0, 2) == 'en') {
-                localeKey = 'en';
+              let localeKey = response.data.languages.split(",")[0];
+              if (localeKey.substr(0, 2) == "en") {
+                localeKey = "en";
               }
-              window.localStorage.setItem('locale', localeKey);
+              window.localStorage.setItem("locale", localeKey);
               applyTranslation(localeKey);
-    
-              setSelectedCurrency(response.data.currency || 'USD');
-              window.localStorage.setItem('currency', response.data.currency || 'USD');
-              changeCurrency(response.data.currency || 'USD');
+
+              setSelectedCurrency(response.data.currency || "USD");
+              window.localStorage.setItem(
+                "currency",
+                response.data.currency || "USD",
+              );
+              changeCurrency(response.data.currency || "USD");
             }
 
-            setCookie('ipInfoLoaded', '1');
+            setCookie("ipInfoLoaded", "1");
           }
-
         } else {
-          setSelectedCurrency(window.localStorage.currency || 'USD');
-          changeCurrency(window.localStorage.currency || 'USD');
+          setSelectedCurrency(window.localStorage.currency || "USD");
+          changeCurrency(window.localStorage.currency || "USD");
         }
-      } catch (error) {
-
-      }
+      } catch (error) {}
     };
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       getIpInfo();
     }
 
-    let elem = document.querySelector('.goog-te-combo');
+    let elem = document.querySelector(".goog-te-combo");
     if (elem) {
       // @ts-ignore
       elem.value = e.target.value;
-      elem.dispatchEvent(new Event('change'));
+      elem.dispatchEvent(new Event("change"));
       setTimeout(() => {
-        let elem = document.querySelector('.goog-te-combo');
+        let elem = document.querySelector(".goog-te-combo");
         // @ts-ignore
         if (elem && !elem.value) {
           // @ts-ignore
-          elem.value = 'ar';
-          elem.dispatchEvent(new Event('change'));
+          elem.value = "ar";
+          elem.dispatchEvent(new Event("change"));
         }
-      }, 1000)
+      }, 1000);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    setSearchTerm(searchParams?.get('term') || '');
+    setSearchTerm(searchParams?.get("term") || "");
   }, [searchParams]);
 
   const hideMenu = (permissionName: string): boolean => {
@@ -360,56 +370,81 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <a href="#" dir={langDir}>{t("store_location")}</a>
+                    <a href="#" dir={langDir}>
+                      {t("store_location")}
+                    </a>
                   </li>
                   {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <Link href="/my-orders" dir={langDir}>{t("track_your_order")}</Link>
+                    <Link href="/my-orders" dir={langDir}>
+                      {t("track_your_order")}
+                    </Link>
                   </li>
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <select className="border-0 bg-transparent text-white focus:outline-none" value={selectedCurrency} 
+                    <select
+                      className="border-0 bg-transparent text-white focus:outline-none"
+                      value={selectedCurrency}
                       onChange={(e: any) => {
-                        setSelectedCurrency(e.target?.value || 'USD');
-                        window.localStorage.setItem('currency', e.target?.value || 'USD');
-                        changeCurrency(e.target.value || 'USD');
+                        setSelectedCurrency(e.target?.value || "USD");
+                        window.localStorage.setItem(
+                          "currency",
+                          e.target?.value || "USD",
+                        );
+                        changeCurrency(e.target.value || "USD");
                       }}
                     >
                       {currencies.map((item: { code: string }) => {
-                        return <option className="bg-dark-cyan" value={item.code} key={item.code}>
-                          {item.code}
-                        </option>
+                        return (
+                          <option
+                            className="bg-dark-cyan"
+                            value={item.code}
+                            key={item.code}
+                          >
+                            {item.code}
+                          </option>
+                        );
                       })}
                     </select>
                   </li>
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
                     <GoogleTranslate />
-                    <select className="border-0 bg-transparent text-white focus:outline-none" value={selectedLocale}
+                    <select
+                      className="border-0 bg-transparent text-white focus:outline-none"
+                      value={selectedLocale}
                       onChange={(e) => {
                         setSelectedLocale(e.target.value);
-                        applyTranslation(e.target.value)
-                        let elem = document.querySelector('.goog-te-combo');
+                        applyTranslation(e.target.value);
+                        let elem = document.querySelector(".goog-te-combo");
                         if (elem) {
                           // @ts-ignore
                           elem.value = e.target.value;
-                          elem.dispatchEvent(new Event('change'));
+                          elem.dispatchEvent(new Event("change"));
                           setTimeout(() => {
-                            let elem = document.querySelector('.goog-te-combo');
+                            let elem = document.querySelector(".goog-te-combo");
                             // @ts-ignore
                             if (elem && !elem.value) {
                               // @ts-ignore
-                              elem.value = 'ar';
-                              elem.dispatchEvent(new Event('change'));
+                              elem.value = "ar";
+                              elem.dispatchEvent(new Event("change"));
                             }
-                          }, 1000)
+                          }, 1000);
                         }
                       }}
                     >
-                      {languages.map((language: { locale: string, name: string }) => {
-                        return <option className="bg-dark-cyan" key={language.locale} value={language.locale}>
-                          {language.name}
-                        </option>
-                      })}
+                      {languages.map(
+                        (language: { locale: string; name: string }) => {
+                          return (
+                            <option
+                              className="bg-dark-cyan"
+                              key={language.locale}
+                              value={language.locale}
+                            >
+                              {language.name}
+                            </option>
+                          );
+                        },
+                      )}
                       {/* <option className="bg-dark-cyan">German</option>
                       <option className="bg-dark-cyan">French</option> */}
                     </select>
@@ -468,8 +503,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     >
                       <Image
                         src={WishlistIcon}
-                        height={28}
-                        width={33}
+                        height={24}
+                        width={28}
                         alt="wishlist"
                       />
                       <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
@@ -520,7 +555,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                           <Link href={handleProfile()}>
-                            <DropdownMenuItem className="cursor-pointer" dir={langDir}>
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              dir={langDir}
+                            >
                               {t("profile_information")}
                             </DropdownMenuItem>
                           </Link>
@@ -588,10 +626,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             </DropdownMenuItem>
                           </Link>
                           <Link href="/transactions">
-                            <DropdownMenuItem dir={langDir}>{t("transactions")}</DropdownMenuItem>
+                            <DropdownMenuItem dir={langDir}>
+                              {t("transactions")}
+                            </DropdownMenuItem>
                           </Link>
                           <Link href="/queries">
-                            <DropdownMenuItem dir={langDir}>{t("queries")}</DropdownMenuItem>
+                            <DropdownMenuItem dir={langDir}>
+                              {t("queries")}
+                            </DropdownMenuItem>
                           </Link>
                           <DropdownMenuSeparator />
                           {/* <DropdownMenuSeparator /> */}
@@ -652,7 +694,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   key={0}
                   onClick={() => {
                     setMenuId(0);
-                    router.push('/home')
+                    router.push("/home");
                   }}
                   href="/home"
                 >
@@ -736,22 +778,25 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             <div className="relative flex flex-row flex-wrap md:flex-nowrap">
               <div className="flex w-full flex-1 flex-wrap gap-x-3 md:w-auto md:gap-x-5">
                 <div className="dropdown">
-                  {(pathname == '/trending' || pathname == '/buygroup') && <button className="dropbtn flex items-center">
-                    <div>
-                      <Image src={HamburgerIcon} alt="hamburger-icon" />
-                    </div>
-                    <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
-                      {t("all_categories")}
-                    </p>
-                    <div>
-                      <Image
-                        src={HamburgerDownIcon}
-                        alt="hamburger-down-icon"
-                      />
-                    </div>
-                  </button>}
+                  {(pathname == "/trending" || pathname == "/buygroup") && (
+                    <button className="dropbtn flex items-center">
+                      <div>
+                        <Image src={HamburgerIcon} alt="hamburger-icon" />
+                      </div>
+                      <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
+                        {t("all_categories")}
+                      </p>
+                      <div>
+                        <Image
+                          src={HamburgerDownIcon}
+                          alt="hamburger-down-icon"
+                        />
+                      </div>
+                    </button>
+                  )}
 
-                  {(pathname == '/trending' || pathname == '/buygroup') && memoizedSubCategory?.length ? (
+                  {(pathname == "/trending" || pathname == "/buygroup") &&
+                  memoizedSubCategory?.length ? (
                     <div className="dropdown-content">
                       {memoizedSubCategory?.map(
                         (item: CategoryProps, index: number) => (
@@ -789,7 +834,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               //reset for second level category active index
                               category.setSecondLevelCategoryIndex(0);
 
-                              category.setCategoryIds(item?.id.toString())
+                              category.setCategoryIds(item?.id.toString());
                             }}
                           >
                             {item?.icon ? (
@@ -814,7 +859,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </div>
                   ) : null}
 
-                  {(pathname == '/trending' || pathname == '/buygroup') && memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
+                  {(pathname == "/trending" || pathname == "/buygroup") &&
+                  memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                     <div className="dropdown-content-second">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
                         (item: CategoryProps, index: number) => (
@@ -846,10 +892,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 category.setSubCategories([]);
                                 category.setSubCategoryParentName("");
                               }
-                              category.setCategoryIds([
-                                memoizedSubCategory?.[subCategoryIndex]?.id.toString(),
-                                item?.id.toString()
-                              ].join(','))
+                              category.setCategoryIds(
+                                [
+                                  memoizedSubCategory?.[
+                                    subCategoryIndex
+                                  ]?.id.toString(),
+                                  item?.id.toString(),
+                                ].join(","),
+                              );
                             }}
                           >
                             {item?.icon ? (
@@ -874,7 +924,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </div>
                   ) : null}
 
-                  {(pathname == '/trending' || pathname == '/buygroup') && memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                  {(pathname == "/trending" || pathname == "/buygroup") &&
+                  memoizedSubCategory?.[subCategoryIndex]?.children?.[
                     subSubCategoryIndex
                   ]?.children?.length ? (
                     <div className="dropdown-content-third p-3">
@@ -906,13 +957,20 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               onClick={() => {
                                 setSubSubSubCategoryIndex(index);
                                 category.setCategoryId(item?.id.toString());
-                                category.setCategoryIds([
-                                  memoizedSubCategory?.[subCategoryIndex]?.id.toString(),
-                                  memoizedSubCategory?.[subCategoryIndex]?.children?.[subSubCategoryIndex]?.id.toString(),
-                                  item?.id.toString()
-                                ].join(','))
+                                category.setCategoryIds(
+                                  [
+                                    memoizedSubCategory?.[
+                                      subCategoryIndex
+                                    ]?.id.toString(),
+                                    memoizedSubCategory?.[
+                                      subCategoryIndex
+                                    ]?.children?.[
+                                      subSubCategoryIndex
+                                    ]?.id.toString(),
+                                    item?.id.toString(),
+                                  ].join(","),
+                                );
                               }}
-
                             >
                               <div className="relative h-8 w-8">
                                 {item?.icon ? (
@@ -942,32 +1000,34 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   ) : null}
                 </div>
 
-                {(pathname == '/trending' || pathname == '/buygroup') && <div className="flex items-center gap-x-1 md:gap-x-5">
-                  {memoizedCategory.map((item: any) => (
-                    <Button
-                      type="button"
-                      key={item.id}
-                      onClick={() => {
-                        if (item?.assignTo) {
-                          setCategoryId(item.assignTo);
-                          setAssignedToId(item.id);
-                        } else {
-                          setCategoryId(undefined);
-                          setAssignedToId(undefined);
-                        }
-                      }}
-                      variant="link"
-                      className={cn(
-                        "p-1 text-sm font-semibold capitalize text-color-dark sm:text-base md:py-3",
-                        item?.id === assignedToId
-                          ? "underline"
-                          : "no-underline",
-                      )}
-                    >
-                      <p>{item.name}</p>
-                    </Button>
-                  ))}
-                </div>}
+                {(pathname == "/trending" || pathname == "/buygroup") && (
+                  <div className="flex items-center gap-x-1 md:gap-x-5">
+                    {memoizedCategory.map((item: any) => (
+                      <Button
+                        type="button"
+                        key={item.id}
+                        onClick={() => {
+                          if (item?.assignTo) {
+                            setCategoryId(item.assignTo);
+                            setAssignedToId(item.id);
+                          } else {
+                            setCategoryId(undefined);
+                            setAssignedToId(undefined);
+                          }
+                        }}
+                        variant="link"
+                        className={cn(
+                          "p-1 text-sm font-semibold capitalize text-color-dark sm:text-base md:py-3",
+                          item?.id === assignedToId
+                            ? "underline"
+                            : "no-underline",
+                        )}
+                      >
+                        <p>{item.name}</p>
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex w-full items-center justify-end md:w-auto">

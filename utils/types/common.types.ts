@@ -119,6 +119,9 @@ export interface TrendingProduct {
   productProductPriceId?: number;
   productProductPrice?: string;
   consumerDiscount?: number;
+  consumerDiscountType?: string;
+  vendorDiscount?: number;
+  vendorDiscountType?: string;
   askForPrice?: string;
   productPrices?: any[];
   sold?: number;

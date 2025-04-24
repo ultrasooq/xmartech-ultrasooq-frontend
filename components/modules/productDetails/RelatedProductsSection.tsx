@@ -80,6 +80,9 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+        vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+        vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
         askForPrice: item?.product_productPrice?.[0]?.askForPrice,
       })) || []
     );
@@ -212,7 +215,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 1,
+    slidesToShow: 4,
     slidesToScroll: 1,
     initialSlide: 0,
     responsive: [
@@ -277,6 +280,9 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
                   inWishlist={item?.inWishlist}
                   haveAccessToken={haveAccessToken}
                   consumerDiscount={item?.consumerDiscount}
+                  consumerDiscountType={item?.consumerDiscountType}
+                  vendorDiscount={item?.vendorDiscount}
+                  vendorDiscountType={item?.vendorDiscountType}
                   askForPrice={item?.askForPrice}
                 />
               </div>

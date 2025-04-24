@@ -98,7 +98,7 @@ export const updateProduct = (payload: IUpdateProductRequest) => {
   });
 };
 
-export const updateForCustomize = (payload:any) => {
+export const updateForCustomize = (payload: any) => {
   return axios({
     method: "POST",
     url: `${process.env.NEXT_PUBLIC_API_URL}/product/addCustomizeProduct`,
@@ -336,30 +336,30 @@ export const updateProductStatus = (payload: {
       Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
     },
   });
-}; 
+};
 
 export const updateSingleProducts = (payload: {
   productPriceId: number;
   stock: number,
-      askForPrice: string,
-      askForStock: string,
-      offerPrice: number,
-      productPrice: number
-      status: string,
-      productCondition: string,
-      consumerType: string,
-      sellType: string,
-      deliveryAfter: number,
-      timeOpen: number,
-      timeClose: number,
-      vendorDiscount: number,
-      consumerDiscount: number,
-      minQuantity: number,
-      maxQuantity: number,
-      minCustomer: number,
-      maxCustomer: number,
-      minQuantityPerCustomer: number,
-      maxQuantityPerCustomer: number
+  askForPrice: string,
+  askForStock: string,
+  offerPrice: number,
+  productPrice: number
+  status: string,
+  productCondition: string,
+  consumerType: string,
+  sellType: string,
+  deliveryAfter: number,
+  timeOpen: number,
+  timeClose: number,
+  vendorDiscount: number,
+  consumerDiscount: number,
+  minQuantity: number,
+  maxQuantity: number,
+  minCustomer: number,
+  maxCustomer: number,
+  minQuantityPerCustomer: number,
+  maxQuantityPerCustomer: number
 }) => {
   return axios({
     method: "PATCH",
@@ -388,4 +388,19 @@ export const removeProduct = (payload: {
       Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
     },
   });
-}; 
+};
+
+export const fetchProductVariant = (productPriceId: number[]) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/product/getProductVariant`,
+    data: {
+      productPriceId
+    },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+}

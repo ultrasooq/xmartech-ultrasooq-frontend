@@ -860,5 +860,12 @@
 
     "role_name_required": "Role Name is required",
     "role_number_must_only_contain_letters": "Role Name must contain only letters",
-    "permission_type_required": "Permission Type is required"
+    "permission_type_required": "Permission Type is required",
+    "service_name": "Service Name",
+    "service_category":"Service Category",
+    "service_image": "Service Image",
+    "service_price": "Service Price",
+    "confirm_order_type": "Confirm Order Type",
+    "auto_confirm": "Auto Confirm",
+    "manual": "Manual"
 }

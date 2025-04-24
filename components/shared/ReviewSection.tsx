@@ -79,7 +79,10 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     <div className="w-full">
       <div className="flex w-full flex-wrap items-center justify-between">
         <div className="flex w-auto flex-wrap items-start justify-start">
-          <h2 className="mb-0 mr-7 text-2xl font-semibold leading-7 text-color-dark" dir={langDir}>
+          <h2
+            className="mb-0 mr-7 text-2xl font-semibold leading-7 text-color-dark"
+            dir={langDir}
+          >
             {t("ratings_n_reviews")}
           </h2>
           <div className="flex w-auto flex-col">
@@ -89,8 +92,15 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
               </h4>
               {calculateRatings(calculateAvgRating)}
             </div>
-            <div className="mt-1.5 w-auto text-sm font-medium leading-5 text-gray-500" dir={langDir}>
-              <p>{t("based_on_n_reviews", { n: reviewsQuery.data?.data?.length })}</p>
+            <div
+              className="mt-1.5 w-auto text-sm font-medium leading-5 text-gray-500"
+              dir={langDir}
+            >
+              <p>
+                {t("based_on_n_reviews", {
+                  n: reviewsQuery.data?.data?.length,
+                })}
+              </p>
             </div>
           </div>
         </div>
@@ -120,7 +130,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             <Button
               variant={sortType === "newest" ? "secondary" : "ghost"}
               onClick={() => setSortType("newest")}
-              className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
+              className="block rounded-full border border-solid border-gray-300 px-2 text-sm font-medium text-gray-500"
               dir={langDir}
             >
               {t("newest")}
@@ -130,7 +140,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             <Button
               variant={sortType === "highest" ? "secondary" : "ghost"}
               onClick={() => setSortType("highest")}
-              className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
+              className="block rounded-full border border-solid border-gray-300 px-2 text-sm font-medium text-gray-500"
               dir={langDir}
             >
               {t("highest")}
@@ -140,7 +150,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             <Button
               variant={sortType === "lowest" ? "secondary" : "ghost"}
               onClick={() => setSortType("lowest")}
-              className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
+              className="block rounded-full border border-solid border-gray-300 px-2 text-sm font-medium text-gray-500"
               dir={langDir}
             >
               {t("lowest")}
@@ -150,7 +160,10 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
       </div>
       <div className="flex w-full border-t-2 border-dashed border-gray-300 py-5">
         {!reviewsQuery?.data?.data?.length ? (
-          <div className="w-full text-center text-sm font-bold text-dark-orange" dir={langDir}>
+          <div
+            className="w-full text-center text-sm font-bold text-dark-orange"
+            dir={langDir}
+          >
             {t("no_reviews_found")}
           </div>
         ) : null}

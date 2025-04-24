@@ -6,11 +6,8 @@ import Image from "next/image";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import AddIcon from "@/public/images/add-icon.svg";
 import TrashIcon from "@/public/images/social-delete-icon.svg";
-import CloseWhiteIcon from "@/public/images/close-white.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 
 const DescriptionAndSpecificationSection = () => {
   const t = useTranslations();
@@ -38,7 +35,6 @@ const DescriptionAndSpecificationSection = () => {
   const appendVariant = () =>
     fieldArrayForVariants.append({
       value: "",
-      image: null
     });
 
   const removeVariant = (index: number) => fieldArrayForVariants.remove(index);
@@ -136,82 +132,6 @@ const DescriptionAndSpecificationSection = () => {
                   key={field.id}
                   className="relative grid w-full grid-cols-1 gap-5 md:grid-cols-2"
                 >
-                  <div className="relative mb-3 w-full px-2 mt-2">
-                    {formContext.getValues(`productVariants.${index}.image`) ? (
-                      <>
-                        <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                          <button
-                            type="button"
-                            className="common-close-btn-uploader-s1"
-                            onClick={() => {
-                              fieldArrayForVariants.update(index, {
-                                value: formContext.getValues(`productVariants.${index}.value`),
-                                image: null
-                              });
-                            }}
-                          >
-                            <Image
-                              src={CloseWhiteIcon}
-                              alt="close-icon"
-                              height={22}
-                              width={22}
-                            />
-                          </button>
-                          {(() => {
-                            const image = formContext.getValues(`productVariants.${index}.image`)
-
-                            return (
-                              <Image
-                                src={URL.createObjectURL(image)}
-                                alt="profile"
-                                fill
-                                priority
-                              />
-                            );
-                          })()}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
-                          <div className="text-sm font-medium leading-4 text-color-dark">
-                            <Image
-                              src="/images/plus.png"
-                              className="m-auto mb-3"
-                              alt="camera-icon"
-                              width={29}
-                              height={28}
-                            />
-                          </div>
-                        </div>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          multiple={false}
-                          className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
-                          onChange={(event) => {
-                            if (event.target.files) {
-                              if (
-                                event.target.files[0]
-                                  .size > 524288000
-                              ) {
-                                toast({
-                                  title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
-                                  variant: "danger",
-                                });
-                                return;
-                              }
-                              fieldArrayForVariants.update(index, {
-                                value: formContext.getValues(`productVariants.${index}.value`),
-                                image: event.target.files[0]
-                              });
-                            }
-                          }}
-                          id={`productVariants.${index}.image`}
-                        />
-                      </>
-                    )}
-                  </div>
                   <ControlledTextInput
                     name={`productVariants.${index}.value`}
                     placeholder={t("enter_value")}
