@@ -406,6 +406,8 @@ export const BUYGROUP_MENU_ID = 9;
 export const FACTORIES_MENU_ID = 10;
 export const RFQ_MENU_ID = 11;
 
+export const PRODUCT_CATEGORY_ID = 4;
+
 export const LANGUAGES = [
   {
     locale: 'en',

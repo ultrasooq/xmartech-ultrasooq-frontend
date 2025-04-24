@@ -13,6 +13,7 @@ import { DialogTitle } from "@/components/ui/dialog";
 import {
   CURRENCIES,
   LANGUAGES,
+  PRODUCT_CATEGORY_ID,
   PUREMOON_TOKEN_KEY,
   menuBarIconList,
 } from "@/utils/constants";
@@ -135,8 +136,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const me = useMe(!!accessToken);
   const categoryQuery = useCategory("7");
   const subCategoryQuery = useCategory(
-    categoryId ? categoryId : "",
-    !!categoryId,
+    PRODUCT_CATEGORY_ID.toString(), //categoryId ? categoryId : "",
+    true, //!!categoryId,
   );
 
   const [searchTerm, setSearchTerm] = useState(searchParams?.get("term") || "");
