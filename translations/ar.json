@@ -33,7 +33,6 @@
     "failed": "فشل!",
     "copied": "منقول",
     "chat": "محادثة",
-
     "name": "اسم",
     "add": "يضيف",
     "add_new": "أضف جديد",
@@ -121,12 +120,10 @@
     "reject": "يرفض",
     "sending": "إرسال...",
     "loading": "تحميل...",
-
     "deal_of_the_day": "صفقة اليوم",
     "home_decor": "ديكور المنزل",
     "fashion_n_beauty": "الموضة والجمال",
     "consumer_electronics": "إلكترونيات المستهلك",
-
     "login_to_your_account": "تسجيل الدخول إلى حسابك",
     "remember_me": "تذكرنى",
     "already_have_an_account": "هل لديك حساب بالفعل؟",
@@ -135,7 +132,6 @@
     "signup": "اشتراك",
     "facebook_sign_in": "تسجيل الدخول مع Facebook",
     "google_sign_in": "تسجيل الدخول مع Google",
-
     "registration": "تسجيل",
     "create_your_account": "قم بإنشاء حسابك",
     "facebook_sign_up": "اشترك مع Facebook",
@@ -147,7 +143,6 @@
     "policy": "سياسة",
     "privacy_policy": "سياسة الخصوصية",
     "agree_n_register": "أوافق وتسجيل",
-
     "forgot_password": "هل نسيت كلمة السر؟",
     "forgot_your_password": "نسيت كلمة السر",
     "forgot_password_instruction": "أدخل عنوان البريد الإلكتروني لتلقي رابط إعادة تعيين كلمة المرور",
@@ -161,7 +156,6 @@
     "enter_login_password": "أدخل كلمة مرور تسجيل الدخول الخاصة بك",
     "confirm_password": "تأكيد كلمة المرور",
     "enter_login_password_again": "أدخل كلمة مرور تسجيل الدخول الخاصة بك مرة أخرى",
-
     "verify": "يؤكد",
     "verify_otp": "تحقق من OTP",
     "didnt_receive_otp": "لم يستلم OTP؟",
@@ -169,7 +163,6 @@
     "enter_otp_text": "أدخل OTP الذي تلقيته عبر البريد الإلكتروني",
     "otp_will_expire_in_min_minutes": "سوف تنتهي صلاحية OTP في {min} دقيقة",
     "resend": "إعادة الالتحاق",
-
     "front": "أمام",
     "profile": "حساب تعريفي",
     "company_name": "اسم الشركة",
@@ -263,7 +256,6 @@
     "change_email": "تغيير البريد الإلكتروني",
     "manage_address": "إدارة العنوان",
     "no_address_found": "لم يتم العثور على عنوان",
-
     "quantity": "كمية",
     "price": "سعر",
     "rate_n_review_product": "معدل ومراجعة المنتج",
@@ -400,7 +392,6 @@
     "vendor_lists": "قوائم البائعين",
     "offering_price": "سعر العرض",
     "no_chat_history_found": "لم يتم العثور على سجل الدردشة",
-
     "post_your_question": "انشر سؤالك",
     "type_your_question_here": "اكتب سؤالك هنا",
     "enter_your_question_here": "أدخل سؤالك هنا",
@@ -414,12 +405,10 @@
     "type_your_answer_here": "اكتب إجابتك هنا",
     "enter_your_answer_here": "أدخل إجابتك هنا",
     "no_answer_yet": "لا إجابة بعد",
-
     "wishlist": "قائمة الرغبات",
     "my_wishlist": "قائمة أمنياتي",
     "move_to_wishlist": "الانتقال إلى قائمة الأمنيات",
     "no_wishlist_items": "لا توجد عناصر في قائمة الأمنيات",
-
     "my_cart": "عربتي",
     "add_to_cart": "أضف إلى السلة",
     "added_to_cart": "أضاف إلى العربة",
@@ -433,10 +422,8 @@
     "add_delivery_address_date": "إضافة عنوان التسليم والتاريخ",
     "buy_now": "اشتري الآن",
     "fee": "مصاريف",
-
     "request_for_customize": "طلب التخصيص",
     "customize_cart_items": "تخصيص عناصر العربة",
-
     "rfq": "RFQ",
     "rfq_product": "منتج RFQ",
     "add_new_rfq_product": "أضف منتجًا جديدًا في RFQ",
@@ -449,16 +436,13 @@
     "requested_offer_price": "سعر العرض المطلوب",
     "requested_price": "السعر المطلوب",
     "vendor_note": "ملاحظة البائع",
-
     "rfq_id": "معرف RFQ",
     "delivery_date": "تاريخ التسليم او الوصول",
     "no_of_quote": "لا من اقتباس",
-
     "go_to_factories_cart": "اذهب إلى عربة المصانع",
     "your_factories_cart": "عربة المصانع الخاصة بك",
     "add_to_factories": "أضف إلى المصانع",
     "add_customize_cart": "إضافة العربة تخصيص",
-
     "create_seller_reward": "إنشاء مكافأة البائع",
     "create_reward": "إنشاء مكافأة",
     "seller_reward": "مكافأة البائع",
@@ -473,7 +457,6 @@
     "copy_share_link": "نسخ رابط مشاركة",
     "total_sell": "إجمالي البيع",
     "orders_placed": "أوامر وضعت",
-
     "make_payment": "قم بالدفع",
     "cash": "نقدي",
     "direct_payment": "الدفع المباشر",
@@ -500,7 +483,6 @@
     "transaction_type": "نوع المعاملة",
     "transaction_reference_number": "رقم مرجع المعاملة",
     "order_reference_number": "ترتيب رقم المرجع",
-
     "place_order": "ترتيب مكان",
     "placing_order": "وضع الطلب ...",
     "initiating_payment": "بدء الدفع ...",
@@ -542,7 +524,6 @@
     "order_out_for_delivery": "الطلب خارج للتسليم",
     "order_delivered": "تم تسليم الطلب",
     "order_cancelled": "تم إلغاء الطلب",
-
     "add_new_member": "أضف عضوًا جديدًا",
     "add_member": "إضافة عضو",
     "edit_member": "عضو تحرير",
@@ -571,7 +552,6 @@
     "permission_information": "معلومات الإذن",
     "permission_type": "نوع إذن",
     "no_roles_found": "لم يتم العثور على أدوار",
-
     "quick_links": "روابط سريعة",
     "faqs": "الأسئلة الشائعة",
     "affiliate": "تابعة",
@@ -586,7 +566,6 @@
     "subscribe": "يشترك",
     "all_rights_reserved": "جميع الحقوق محفوظة",
     "payment_info": "نحن نستخدم الدفع الآمن لـ",
-
     "trade_role_update_successful": "تحديث الأدوار التجارية ناجحة",
     "trade_role_update_failed": "فشل تحديث الدور التجاري",
     "something_went_wrong": "أُووبس! ",
@@ -739,7 +718,6 @@
     "user_role_create_failed": "فشل إنشاء دور المستخدم",
     "role_add_failed": "فشل إضافة الدور",
     "permission_set_failed": "فشلت مجموعة الإذن",
-
     "consumer_type_is_required": "نوع المستهلك مطلوب",
     "sell_type_is_required": "نوع البيع مطلوب",
     "consumer_discount_must_be_less_than_100": "يجب أن يكون خصم المستهلك أقل من 100",
@@ -780,7 +758,6 @@
     "variant_type_must_be_less_than_20_characters": "يجب أن يكون النوع المتغير أقل من 20 حرفًا",
     "product_price_is_required": "سعر المنتج مطلوب",
     "offer_price_is_required": "سعر العرض مطلوب",
-
     "product_required": "المنتج مطلوب",
     "start_date_required": "تاريخ البدء مطلوب",
     "start_time_required": "مطلوب وقت البدء",
@@ -789,30 +766,25 @@
     "minimum_value_must_be_n": "يجب أن تكون القيمة الدنيا {n}",
     "minimum_order_must_be_n": "يجب أن يكون الحد الأدنى للطلب {n}",
     "minimum_stock_must_be_n": "يجب أن يكون الحد الأدنى للمخزون {n}",
-
     "offer_price_from_required": "مطلوب سعر العرض من",
     "offer_price_from_must_be_less_than_price": "يجب أن يكون سعر العرض أقل من {price}",
     "offer_price_to_required": "سعر العرض مطلوب",
     "offer_price_to_must_be_less_than_price": "يجب أن يكون سعر العرض أقل من {price}",
     "offer_price_from_must_be_less_than_offer_price_to": "يجب أن يكون سعر العرض أقل من سعر العرض إلى",
-
     "from_price_required": "من السعر مطلوب",
     "from_price_must_be_less_than_price": "من السعر يجب أن يكون أقل من {price}",
     "to_price_required": "للسعر مطلوب",
     "to_price_must_be_less_than_price": "يجب أن يكون السعر أقل من {price}",
     "from_price_must_be_less_than_to_price": "من السعر يجب أن يكون أقل من السعر",
     "delivery_date_required": "تاريخ التسليم مطلوب",
-
     "description_required": "الوصف مطلوب",
     "description_must_be_less_than_n_chars": "يجب أن يكون الوصف أقل من أحرف {n}",
     "title_required": "العنوان مطلوب",
     "title_must_be_less_than_n_chars": "يجب أن يكون العنوان أقل من أحرف {n}",
-
     "question_required": "السؤال مطلوب",
     "question_must_be_less_than_n_chars": "يجب أن يكون السؤال أقل من أحرف {n}",
     "answer_required": "الجواب مطلوب",
     "answer_must_be_less_than_n_chars": "يجب أن تكون الإجابة أقل من أحرف {n}",
-    
     "first_name_required": "الاسم الأول مطلوب",
     "first_name_must_be_50_chars_only": "يجب أن يكون الاسم الأول أقل من أو يساوي 50 حرفًا",
     "first_name_must_only_contain_letters": "يجب أن يحتوي الاسم الأول على رسائل فقط",
@@ -828,7 +800,6 @@
     "phone_number_cant_be_more_than_20_digits": "لا يمكن أن يكون رقم الهاتف أكثر من 20 رقمًا",
     "status_must_be_active_inactive": "يجب أن تكون الحالة نشطة أو غير نشطة",
     "dob_required": "مطلوب تاريخ الميلاد",
-
     "address_required": "العنوان مطلوب",
     "address_must_be_less_than_n_chars": "يجب أن يكون العنوان أقل من أحرف {n}",
     "city_required": "المدينة مطلوبة",
@@ -845,7 +816,6 @@
     "country_must_contain_only_letters": "يجب أن تحتوي الدولة على أحرف فقط",
     "postcode_required": "رمز البريد مطلوب",
     "postcode_must_be_less_than_n_chars": "يجب أن يكون رمز النشر أقل من أحرف {n}",
-
     "company_name_required": "مطلوب اسم الشركة",
     "company_name_must_be_less_than_50_chars": "يجب أن يكون اسم الشركة أقل من 50 حرفًا",
     "annual_purchasing_volume_required": "مطلوب حجم الشراء السنوي",
@@ -857,8 +827,14 @@
     "branch_contact_number_must_be_min_n_digits": "يجب أن يكون رقم جهة الاتصال الفرع كحد أدنى من الأرقام {n}",
     "branch_contact_number_cant_be_nore_than_n_digits": "لا يمكن أن يكون رقم جهة الاتصال الفرع أكثر من {n}",
     "branch_contact_name_required": "مطلوب اسم جهة الاتصال الفرع",
-
     "role_name_required": "اسم الدور مطلوب",
     "role_number_must_only_contain_letters": "يجب أن يحتوي اسم الدور على رسائل فقط",
-    "permission_type_required": "نوع الإذن مطلوب"
+    "permission_type_required": "نوع الإذن مطلوب",
+    "service_name": "اسم الخدمة",
+    "service_category": "فئة الخدمة",
+    "service_image": "صورة الخدمة",
+    "service_price": "سعر الخدمة",
+    "confirm_order_type": "تأكيد نوع الطلب",
+    "auto_confirm": "تأكيد تلقائي",
+    "manual": "يدوي"
 }
