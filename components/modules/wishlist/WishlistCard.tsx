@@ -24,14 +24,22 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   id,
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
   
   const calculateDiscountedPrice = () => {
     const price = wishlistData?.product_productPrice?.[0]?.offerPrice
       ? Number(wishlistData.product_productPrice?.[0]?.offerPrice)
       : 0;
-    const discount = wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    let discount = wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
+    let discountType = wishlistData?.product_productPrice?.[0]?.consumerDiscountType;
+    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
+      discount = wishlistData?.product_productPrice?.[0]?.vendorDiscount || 0;
+      discountType = wishlistData?.product_productPrice?.[0]?.vendorDiscountType;
+    }
+    if (discountType == 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {

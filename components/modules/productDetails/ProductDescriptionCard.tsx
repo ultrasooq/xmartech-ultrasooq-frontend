@@ -47,6 +47,9 @@ type ProductDescriptionCardProps = {
   haveOtherSellers?: boolean;
   productProductPrice?: string;
   consumerDiscount?: number;
+  consumerDiscountType?: string;
+  vendorDiscount?: number;
+  vendorDiscountType?: string;
   askForPrice?: string;
   otherSellerDetails?: any[];
   productPriceArr: any[];
@@ -81,6 +84,9 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   haveOtherSellers,
   productProductPrice,
   consumerDiscount,
+  consumerDiscountType,
+  vendorDiscount,
+  vendorDiscountType,
   askForPrice,
   otherSellerDetails,
   productPriceArr,
@@ -93,7 +99,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   selectProductVariant
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(productQuantity);
   const [isAddedToCart, setIsAddedToCart] = useState<boolean>(productQuantity > 0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -101,8 +107,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
-    const discount = consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    let discount = consumerDiscount || 0;
+    let discountType = consumerDiscountType;
+    if (user?.tradeRole && user.tradeRole != 'BUYER') {
+      discount = vendorDiscount || 0;
+      discountType = vendorDiscountType;
+    }
+    if (discountType == 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {

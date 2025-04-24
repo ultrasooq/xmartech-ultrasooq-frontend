@@ -22,7 +22,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 const CartListPage = () => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth()
+  const { user, langDir, currency } = useAuth()
   const router = useRouter();
   const { toast } = useToast();
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -60,11 +60,14 @@ const CartListPage = () => {
 
   const calculateDiscountedPrice = (
     offerPrice: string | number,
-    consumerDiscount: number,
+    discount: number,
+    discountType?: string
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
-    const discount = consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    if (discountType == 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   const calculateTotalAmount = () => {
@@ -75,17 +78,27 @@ const CartListPage = () => {
           curr: {
             productPriceDetails: {
               offerPrice: string;
-              consumerDiscount: number;
+              consumerDiscount?: number;
+              consumerDiscountType?: string;
+              vendorDiscount?: number;
+              vendorDiscountType?: string;
             };
             quantity: number;
           },
         ) => {
-          const discount = calculateDiscountedPrice(
+          let discount = curr?.productPriceDetails?.consumerDiscount;
+          let discountType = curr?.productPriceDetails?.consumerDiscountType;
+          if (user?.tradeRole && user.tradeRole != 'BUYER') {
+            discount = curr?.productPriceDetails?.vendorDiscount;
+            discountType = curr?.productPriceDetails?.vendorDiscountType;
+          }
+          const calculatedDiscount = calculateDiscountedPrice(
             curr.productPriceDetails?.offerPrice ?? 0,
-            curr?.productPriceDetails?.consumerDiscount,
+            discount || 0,
+            discountType
           );
           return (
-            Number((acc + discount * curr.quantity).toFixed(2))
+            Number((acc + calculatedDiscount * curr.quantity).toFixed(2))
           );
         },
         0,
@@ -266,18 +279,15 @@ const CartListPage = () => {
                       cartId={item.id}
                       productId={item.productId}
                       productPriceId={item.productPriceId}
-                      productName={
-                        item.productPriceDetails?.productPrice_product?.productName
-                      }
+                      productName={item.productPriceDetails?.productPrice_product?.productName}
                       offerPrice={item.productPriceDetails?.offerPrice}
                       productQuantity={item.quantity}
                       productVariant={item.object}
-                      productImages={
-                        item.productPriceDetails?.productPrice_product?.productImages
-                      }
-                      consumerDiscount={
-                        item.productPriceDetails?.consumerDiscount
-                      }
+                      productImages={item.productPriceDetails?.productPrice_product?.productImages}
+                      consumerDiscount={item.productPriceDetails?.consumerDiscount || 0}
+                      consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
+                      vendorDiscount={item.productPriceDetails?.vendorDiscount || 0}
+                      vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
                       onRemove={handleRemoveItemFromCart}
                       onWishlist={handleAddToWishlist}
                       haveAccessToken={haveAccessToken}

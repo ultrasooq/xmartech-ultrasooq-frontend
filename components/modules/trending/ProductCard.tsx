@@ -62,18 +62,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
   sold,
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
 
   const [timeLeft, setTimeLeft] = useState("");
 
   const deviceId = getOrCreateDeviceId() || "";
 
   const calculateDiscountedPrice = () => {
-    const price = item.productProductPrice
-      ? Number(item.productProductPrice)
-      : 0;
-    const discount = item.consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    const price = item.productProductPrice ? Number(item.productProductPrice) : 0;
+    let discount = item.consumerDiscount || 0;
+    let discountType = item.consumerDiscountType;
+    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
+      discount = item.vendorDiscount || 0;
+      discountType = item.vendorDiscountType;
+    }
+    if (discountType == 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {

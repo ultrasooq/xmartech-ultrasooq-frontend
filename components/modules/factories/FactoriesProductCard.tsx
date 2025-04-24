@@ -59,7 +59,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   productPrices,
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(0);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
 
@@ -232,11 +232,17 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   };
 
   const calculateDiscountedPrice = () => {
-    const price = productPrices?.[0]?.offerPrice
-      ? Number(productPrices[0]?.offerPrice)
-      : 0;
-    const discount = productPrices?.[0]?.consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    const price = productPrices?.[0]?.offerPrice ? Number(productPrices[0]?.offerPrice) : 0;
+    let discount = productPrices?.[0]?.consumerDiscount || 0;
+    let discountType = productPrices?.[0]?.consumerDiscountType;
+    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
+      discount = productPrices?.[0]?.vendorDiscount || 0;
+      discountType = productPrices?.[0]?.vendorDiscountType;
+    }
+    if (discountType == 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   return (

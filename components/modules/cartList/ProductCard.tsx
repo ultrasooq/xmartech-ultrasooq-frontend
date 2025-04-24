@@ -30,6 +30,9 @@ type ProductCardProps = {
   onWishlist: (args0: number) => void;
   haveAccessToken: boolean;
   consumerDiscount: number;
+  consumerDiscountType?: string;
+  vendorDiscount: number;
+  vendorDiscountType?: string;
   minQuantity?: number;
   maxQuantity?: number;
 };
@@ -47,11 +50,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onWishlist,
   haveAccessToken,
   consumerDiscount,
+  consumerDiscountType,
+  vendorDiscount,
+  vendorDiscountType,
   minQuantity,
   maxQuantity,
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
   const deviceId = getOrCreateDeviceId() || "";
@@ -66,8 +72,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const calculateDiscountedPrice = () => {
     const price = offerPrice ? Number(offerPrice) : 0;
-    const discount = consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    let discount = consumerDiscount;
+    let discountType = consumerDiscountType;
+    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
+      discount = vendorDiscount;
+      discountType = vendorDiscountType;
+    }
+    if (discountType == 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   useEffect(() => {

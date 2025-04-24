@@ -188,6 +188,9 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           productProductPriceId: item?.product_productPrice?.[0]?.id,
           productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
           consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+          vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
           askForPrice: item?.product_productPrice?.[0]?.askForPrice,
           productPrices: item?.product_productPrice,
         };
@@ -230,6 +233,9 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           productProductPriceId: item?.product_productPrice?.[0]?.id,
           productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
           consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+          vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
           askForPrice: item?.product_productPrice?.[0]?.askForPrice,
           productPrices: item?.product_productPrice,
         };

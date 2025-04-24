@@ -571,6 +571,15 @@ const ProductDetailsPage = () => {
               consumerDiscount={
                 productDetails?.product_productPrice?.[0]?.consumerDiscount
               }
+              consumerDiscountType={
+                productDetails?.product_productPrice?.[0]?.consumerDiscountType
+              }
+              vendorDiscount={
+                productDetails?.product_productPrice?.[0]?.vendorDiscount
+              }
+              vendorDiscountType={
+                productDetails?.product_productPrice?.[0]?.vendorDiscountType
+              }
               askForPrice={
                 productDetails?.product_productPrice?.[0]?.askForPrice
               }
@@ -798,27 +807,20 @@ const ProductDetailsPage = () => {
                     cartId={item.id}
                     productId={item.productId}
                     productPriceId={item.productPriceId}
-                    productName={
-                      item.productPriceDetails?.productPrice_product?.productName
-                    }
+                    productName={item.productPriceDetails?.productPrice_product?.productName}
                     offerPrice={item.productPriceDetails?.offerPrice}
                     productQuantity={item.quantity}
                     productVariant={item.object}
-                    productImages={
-                      item.productPriceDetails?.productPrice_product?.productImages
-                    }
-                    consumerDiscount={
-                      item.productPriceDetails?.consumerDiscount
-                    }
+                    productImages={item.productPriceDetails?.productPrice_product?.productImages}
+                    consumerDiscount={item.productPriceDetails?.consumerDiscount}
+                    consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
+                    vendorDiscount={item.productPriceDetails?.vendorDiscount}
+                    vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
                     onRemove={handleRemoveItemFromCart}
                     onWishlist={handleAddToWishlist}
                     haveAccessToken={haveAccessToken}
-                    minQuantity={
-                      item?.productPriceDetails?.minQuantityPerCustomer
-                    }
-                    maxQuantity={
-                      item?.productPriceDetails?.maxQuantityPerCustomer
-                    }
+                    minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
+                    maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
                   />
                 ))}
               </div>

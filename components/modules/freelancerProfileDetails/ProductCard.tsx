@@ -48,7 +48,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   cartId,
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
 
   const [quantity, setQuantity] = useState<number>(cartQuantity);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
@@ -70,11 +70,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
   }, [productVariant]);
 
   const calculateDiscountedPrice = () => {
-    const price = item.productProductPrice
-      ? Number(item.productProductPrice)
-      : 0;
-    const discount = item.consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    const price = item.productProductPrice ? Number(item.productProductPrice) : 0;
+      let discount = item.consumerDiscount || 0;
+      let discountType = item.consumerDiscountType;
+      if (user?.tradeRole && user?.tradeRole != 'BUYER') {
+        discount = item.vendorDiscount || 0;
+        discountType = item.vendorDiscountType;
+      }
+      if (discountType == 'PERCENTAGE') {
+        return Number((price - (price * discount) / 100).toFixed(2));
+      }
+      return Number((price - discount).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {
