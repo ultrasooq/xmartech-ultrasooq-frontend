@@ -401,10 +401,10 @@ export const CHAT_REQUEST_MESSAGE = {
   },
 };
 
-export const STORE_MENU_ID = 188;
-export const BUYGROUP_MENU_ID = 189;
-export const FACTORIES_MENU_ID = 190;
-export const RFQ_MENU_ID = 191;
+export const STORE_MENU_ID = 8;
+export const BUYGROUP_MENU_ID = 9;
+export const FACTORIES_MENU_ID = 10;
+export const RFQ_MENU_ID = 11;
 
 export const LANGUAGES = [
   {
