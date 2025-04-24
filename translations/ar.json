@@ -836,5 +836,17 @@
     "service_price": "سعر الخدمة",
     "confirm_order_type": "تأكيد نوع الطلب",
     "auto_confirm": "تأكيد تلقائي",
-    "manual": "يدوي"
+    "manual": "يدوي",
+    "service_name_is_required": "اسم الخدمة مطلوب",
+    "category_is_required": "الفئة مطلوبة",
+    "category_id_must_be_positive": "يجب أن يكون معرف الفئة رقمًا موجبًا",
+    "working_days_required": "أيام العمل مطلوبة",
+    "service_type_is_required": "نوع الخدمة مطلوب",
+    "tag_id_required": "معرف الوسم مطلوب",
+    "at_least_one_tag_required": "يجب إدخال وسم واحد على الأقل",
+    "feature_name_required": "اسم الميزة مطلوب",
+    "cost_type_required": "نوع التكلفة مطلوب",
+    "cost_must_be_positive": "يجب أن تكون التكلفة رقمًا موجبًا",
+    "at_least_one_feature_required": "يجب إضافة ميزة واحدة على الأقل",
+    "invalid_image_url": "رابط الصورة غير صالح"
 }

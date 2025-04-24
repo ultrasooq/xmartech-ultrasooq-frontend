@@ -40,7 +40,7 @@ const customStyles = {
   }),
 };
 
-type ProductImageProps = {
+type serviceImageProps = {
   path: string;
   id: string;
 };
@@ -62,14 +62,14 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const createTag = useCreateTag();
   const [listIds, setListIds] = useState<string[]>([]);
   const [catList, setCatList] = useState<any[]>([]);
-  const [currentId, setCurrentId] = useState<string>("184");
+  const [currentId, setCurrentId] = useState<string>("6");//static id for services
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   // const upload = useUploadFile();
   const categoryQuery = useCategory("1");
   const subCategoryById = useSubCategoryById(currentId, !!currentId);
 
-  const watchProductImages = formContext.watch("productImages");
+  const watchServiceImages = formContext.watch("images");
 
   const memoizedCategories = useMemo(() => {
     return (
@@ -81,20 +81,20 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   }, [categoryQuery?.data?.data?.children?.length]);
 
   const handleEditPreviewImage = (id: string, item: FileList) => {
-    const tempArr = watchProductImages || [];
+    const tempArr = watchServiceImages || [];
     const filteredFormItem = tempArr.filter(
-      (item: ProductImageProps) => item.id === id,
+      (item: serviceImageProps) => item.id === id,
     );
     if (filteredFormItem.length) {
       filteredFormItem[0].path = item[0];
-      formContext.setValue("productImages", [...tempArr]);
+      formContext.setValue("images", [...tempArr]);
     }
   };
 
   const handleRemovePreviewImage = (id: string) => {
-    formContext.setValue("productImages", [
-      ...(watchProductImages || []).filter(
-        (item: ProductImageProps) => item.id !== id,
+    formContext.setValue("images", [
+      ...(watchServiceImages || []).filter(
+        (item: serviceImageProps) => item.id !== id,
       ),
     ]);
   };
@@ -109,9 +109,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         variant: "success",
       });
       catList.push({ value: response.data.id, label: response.data.tagName });
-      let selected = formContext.getValues("productTagList") || [];
+      let selected = formContext.getValues("tags") || [];
       selected.push({ value: response.data.id, label: response.data.tagName });
-      formContext.setValue("productTagList", selected);
+      formContext.setValue("tags", selected);
     } else {
       toast({
         title: t("tag_create_failed"),
@@ -276,49 +276,16 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     placeholder={t("service_name")}
                     dir={langDir}
                   />
-
-                  {/*<div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                    <BrandSelect />
-
-                    <div className="mt-2 flex flex-col gap-y-3">
-                      <Label dir={langDir}>{t("product_condition")}</Label>
-                      <Controller
-                        name="productCondition"
-                        control={formContext.control}
-                        render={({ field }) => (
-                          <ReactSelect
-                            {...field}
-                            onChange={(newValue) => {
-                              field.onChange(newValue?.value);
-                            }}
-                            options={productConditions()}
-                            value={productConditions().find(
-                              (item: any) => item.value === field.value,
-                            )}
-                            styles={customStyles}
-                            instanceId="productCondition"
-                            placeholder={t("select")}
-                          />
-                        )}
-                      />
-
-                      <p className="text-[13px] text-red-500" dir={langDir}>
-                        {
-                          formContext.formState.errors["productCondition"]?.message as string
-                        }
-                      </p>
-                    </div>
-                  </div>*/}
                   <div className="mt-2">
                     <AccordionMultiSelectV2
                       label={t("tags")}
-                      name="productTagList"
+                      name="tags"
                       options={tagsList || []}
                       placeholder={t("tags")}
                       canCreate={true}
                       createOption={handleCreateTag}
                       error={
-                        formContext.formState.errors["productTagList"]?.message as string
+                        formContext.formState.errors["tags"]?.message as string
                       }
                     />
                   </div>
@@ -329,18 +296,18 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       </label>
                       <div className="flex w-full flex-wrap">
                         <div className="grid grid-cols-2 md:grid-cols-4">
-                          {watchProductImages?.map(
+                          {watchServiceImages?.map(
                             (item: any, index: number) => (
                               <FormField
                                 control={formContext.control}
-                                name="productImages"
+                                name="images"
                                 key={index}
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormControl>
                                       <div className="relative mb-3 w-full px-2">
                                         <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                                          {watchProductImages?.length ? (
+                                          {watchServiceImages?.length ? (
                                             <button
                                               type="button"
                                               className="common-close-btn-uploader-s1"
@@ -401,7 +368,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                     );
                                                   }
                                                 }}
-                                                id="productImages"
+                                                id="images"
                                               />
                                             </div>
                                           ) : item?.path &&
@@ -456,7 +423,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                     );
                                                   }
                                                 }}
-                                                id="productImages"
+                                                id="images"
                                               />
                                             </div>
                                           ) : (
@@ -511,17 +478,17 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                     path: file,
                                     id: uuidv4(),
                                   }));
-                                  const updatedProductImages = [
-                                    ...(watchProductImages || []),
+                                  const updatedServiceImages = [
+                                    ...(watchServiceImages || []),
                                     ...newImages,
                                   ];
                                   formContext.setValue(
-                                    "productImages",
-                                    updatedProductImages,
+                                    "images",
+                                    updatedServiceImages,
                                   );
                                 }
                               }}
-                              id="productImages"
+                              id="images"
                               ref={photosRef}
                             />
                           </div>
@@ -531,9 +498,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
                 </div>
 
-                <PriceSection activeProductType={activeProductType} />
+                {/* <PriceSection activeProductType={activeProductType} /> */}
 
-                <DescriptionSection />
+                {/* <DescriptionSection /> */}
               </div>
             </div>
           </div>
