@@ -186,6 +186,9 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+        vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+        vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
         askForPrice: item?.product_productPrice?.[0]?.askForPrice,
         productPrices: item?.product_productPrice,
       })) || []
@@ -581,9 +584,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
               {viewType === "grid" ? (
                 <div className="product-list-s1">
                   {memoizedProductList.map((item: TrendingProduct) => {
-                    const cartQuantity =
-                      cartList?.find((el: any) => el.productId == item.id)
-                        ?.quantity || 0;
+                    const cartItem = cartList?.find((el: any) => el.productId == item.id);
                     return (
                       <ProductCard
                         key={item.id}
@@ -594,8 +595,10 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                         inWishlist={item?.inWishlist}
                         haveAccessToken={haveAccessToken}
                         isInteractive
-                        productQuantity={cartQuantity}
-                        isAddedToCart={cartQuantity > 0}
+                        productQuantity={cartItem?.quantity || 0}
+                        productVariant={cartItem?.object}
+                        cartId={cartItem?.id}
+                        isAddedToCart={cartItem ? true : false}
                       />
                     );
                   })}

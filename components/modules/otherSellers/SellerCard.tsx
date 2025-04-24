@@ -12,6 +12,9 @@ type SellerCardProps = {
   onToCheckout: () => void;
   productProductPrice?: string;
   consumerDiscount?: number;
+  consumerDiscountType?: string;
+  vendorDiscount?: number;
+  vendorDiscountType?: string;
   askForPrice?: string;
   askForStock?: string;
   deliveryAfter?: number;
@@ -30,6 +33,9 @@ const SellerCard: React.FC<SellerCardProps> = ({
   onToCheckout,
   productProductPrice,
   consumerDiscount,
+  consumerDiscountType,
+  vendorDiscount,
+  vendorDiscountType,
   askForPrice,
   askForStock,
   deliveryAfter,
@@ -39,11 +45,19 @@ const SellerCard: React.FC<SellerCardProps> = ({
   onChooseSeller,
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
-    const discount = consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    let discount = consumerDiscount || 0;
+    let discountType = consumerDiscountType;
+    if (user?.tradeRole && user.tradeRole != 'BUYER') {
+      discount = vendorDiscount || 0;
+      discountType = vendorDiscountType;
+    }
+    if (discountType != 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   return (

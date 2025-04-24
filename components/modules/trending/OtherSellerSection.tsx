@@ -194,6 +194,9 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
                 productPrice: string;
                 productId: number;
                 consumerDiscount: number;
+                consumerDiscountType: string;
+                vendorDiscount: number;
+                vendorDiscountType: string;
                 askForPrice: string;
                 askForStock: string;
                 deliveryAfter: number;
@@ -211,6 +214,9 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
                   onToCheckout={() => handleCheckoutPage(item?.id)}
                   productProductPrice={item?.offerPrice}
                   consumerDiscount={item?.consumerDiscount}
+                  consumerDiscountType={item?.consumerDiscountType}
+                  vendorDiscount={item?.vendorDiscount}
+                  vendorDiscountType={item?.vendorDiscountType}
                   askForPrice={item?.askForPrice}
                   askForStock={item?.askForStock}
                   deliveryAfter={item?.deliveryAfter}

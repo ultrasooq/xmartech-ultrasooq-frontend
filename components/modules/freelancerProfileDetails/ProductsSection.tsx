@@ -188,6 +188,9 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           productProductPriceId: item?.product_productPrice?.[0]?.id,
           productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
           consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+          vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
           askForPrice: item?.product_productPrice?.[0]?.askForPrice,
           productPrices: item?.product_productPrice,
         };
@@ -230,6 +233,9 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           productProductPriceId: item?.product_productPrice?.[0]?.id,
           productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
           consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+          vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
           askForPrice: item?.product_productPrice?.[0]?.askForPrice,
           productPrices: item?.product_productPrice,
         };
@@ -613,7 +619,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           <div className="profile_details_product flex flex-wrap gap-3 md:grid md:grid-cols-4">
             {!sellerId && memoizedProducts.length && !productsQuery?.isLoading ?
               memoizedProducts.map((item: any) => {
-                const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
+                const cartItem = cartList?.find((el: any) => el.productId == item.id);
                 return (
                   <ProductCard
                     key={item.id}
@@ -623,15 +629,17 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     }
                     inWishlist={item?.inWishlist}
                     haveAccessToken={!!me.data?.data}
-                    isAddedToCart={cartQuantity > 0}
-                    cartQuantity={cartQuantity}
+                    isAddedToCart={cartItem ? true : false}
+                    cartQuantity={cartItem?.quantity || 0}
+                    productVariant={cartItem?.object}
+                    cartId={cartItem?.id}
                   />
                 );
               }) : null}
 
             {sellerId && memoizedVendorProducts.length && !vendorProductsQuery?.isLoading ?
               memoizedVendorProducts.map((item: any) => {
-                const cartQuantity = cartList?.find((el: any) => el.productId == item.id)?.quantity || 0;
+                const cartItem = cartList?.find((el: any) => el.productId == item.id);
                 return (
                   <ProductCard
                     key={item.id}
@@ -640,8 +648,10 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     inWishlist={item?.inWishlist}
                     haveAccessToken={!!me.data?.data}
                     isSeller
-                    isAddedToCart={cartQuantity > 0}
-                    cartQuantity={cartQuantity}
+                    isAddedToCart={cartItem ? true : false}
+                    cartQuantity={cartItem?.quantity || 0}
+                    productVariant={cartItem?.object}
+                    cartId={cartItem?.id}
                   />
                 );
               }) : null}

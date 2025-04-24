@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/modules/checkout/ProductCard";
 import {
@@ -42,10 +42,11 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { usePreOrderCalculation } from "@/apis/queries/orders.queries";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { IoCloseSharp } from "react-icons/io5";
 
 const CheckoutPage = () => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
   const router = useRouter();
   const wrapperRef = useRef(null);
   const { toast } = useToast();
@@ -55,8 +56,7 @@ const CheckoutPage = () => {
     number | undefined
   >();
   const [sameAsShipping, setSameAsShipping] = useState(false);
-  const [selectedOrderDetails, setSelectedOrderDetails] =
-    useState<OrderDetails>();
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState<OrderDetails>();
   const [addressType, setAddressType] = useState<"shipping" | "billing">();
   const [guestShippingAddress, setGuestShippingAddress] = useState<
     | {
@@ -98,6 +98,12 @@ const CheckoutPage = () => {
   const [itemsTotal, setItemsTotal] = useState<number>(0);
   const [fee, setFee] = useState<number>(0);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+
+  const [selectedCartId, setSelectedCartId] = useState<number>();
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const confirmDialogRef = useRef(null);
+  const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
 
   const deviceId = getOrCreateDeviceId() || "";
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
@@ -149,11 +155,14 @@ const CheckoutPage = () => {
 
   const calculateDiscountedPrice = (
     offerPrice: string | number,
-    consumerDiscount: number,
+    discount: number,
+    discountType?: string
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
-    const discount = consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    if (discountType == 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   const calculateTotalAmount = () => {
@@ -165,18 +174,28 @@ const CheckoutPage = () => {
             curr: {
               productPriceDetails: {
                 offerPrice: string;
-                consumerDiscount: number;
+                consumerDiscount?: number;
+                consumerDiscountType?: string;
+                vendorDiscount?: number;
+                vendorDiscountType?: string;
               };
               quantity: number;
             },
           ) => {
-            let discount = calculateDiscountedPrice(
+            let discount = curr?.productPriceDetails?.consumerDiscount;
+            let discountType = curr?.productPriceDetails?.consumerDiscountType;
+            if (user?.tradeRole && user.tradeRole != 'BUYER') {
+              discount = curr?.productPriceDetails?.vendorDiscount;
+              discountType = curr?.productPriceDetails?.vendorDiscountType;
+            }
+            let calculatedDiscount = calculateDiscountedPrice(
               curr.productPriceDetails?.offerPrice ?? 0,
-              curr?.productPriceDetails?.consumerDiscount,
+              discount || 0,
+              discountType
             );
   
             return (
-              Number((acc + discount * curr.quantity).toFixed(2))
+              Number((acc + calculatedDiscount * curr.quantity).toFixed(2))
             );
           },
           0,
@@ -213,11 +232,13 @@ const CheckoutPage = () => {
     quantity: number,
     actionType: "add" | "remove",
     productPriceId: number,
+    productVariant?: any
   ) => {
     if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId,
         quantity,
+        productVariant
       });
 
       if (response.status) {
@@ -252,6 +273,17 @@ const CheckoutPage = () => {
         variant: "success",
       });
     }
+  };
+
+  const onConfirmRemove = () => {
+    if (selectedCartId) handleRemoveItemFromCart(selectedCartId);
+    setIsConfirmDialogOpen(false);
+    setSelectedCartId(undefined);
+  };
+
+  const onCancelRemove = () => {
+    setIsConfirmDialogOpen(false);
+    setSelectedCartId(undefined);
   };
 
   const handleDeleteAddress = async (userAddressId: number) => {
@@ -383,7 +415,7 @@ const CheckoutPage = () => {
         description: t("remove_n_items_from_cart", { n: invalidProducts.length + notAvailableProducts.length }),
         variant: "danger"
       });
-      // return;
+      return;
     }
 
     if (haveAccessToken) {
@@ -582,21 +614,20 @@ const CheckoutPage = () => {
                       cartId={item.id}
                       productId={item.productId}
                       productPriceId={item.productPriceId}
-                      productName={
-                        item.productPriceDetails?.productPrice_product
-                          ?.productName
-                      }
+                      productName={item.productPriceDetails?.productPrice_product?.productName}
                       offerPrice={item.productPriceDetails?.offerPrice}
                       productQuantity={item.quantity}
-                      productImages={
-                        item.productPriceDetails?.productPrice_product
-                          ?.productImages
-                      }
-                      consumerDiscount={
-                        item.productPriceDetails?.consumerDiscount
-                      }
+                      productVariant={item.object}
+                      productImages={item.productPriceDetails?.productPrice_product?.productImages}
+                      consumerDiscount={item.productPriceDetails?.consumerDiscount || 0}
+                      consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
+                      vendorDiscount={item.productPriceDetails?.vendorDiscount || 0}
+                      vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
                       onAdd={handleAddToCart}
-                      onRemove={handleRemoveItemFromCart}
+                      onRemove={(cartId: number) => {
+                        setIsConfirmDialogOpen(true);
+                        setSelectedCartId(cartId);
+                      }}
                       onWishlist={handleAddToWishlist}
                       haveAccessToken={haveAccessToken}
                       invalidProduct={invalidProducts.includes(item.productId)}
@@ -973,6 +1004,42 @@ const CheckoutPage = () => {
               guestBillingAddress={guestBillingAddress}
             />
           )}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={confirmDialogRef}
+        >
+          <div className="modal-header !justify-between" dir={langDir}>
+            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
+            <Button
+              onClick={onCancelRemove}
+              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+            >
+              <IoCloseSharp size={20} />
+            </Button>
+          </div>
+
+          <div className="text-center mt-4 mb-4">
+            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
+            <div>
+              <Button
+                type="button"
+                className="bg-white text-red-500 mr-2"
+                onClick={onCancelRemove}
+              >
+                {t("remove")}
+              </Button>
+              <Button
+                type="button"
+                className="bg-red-500"
+                onClick={onConfirmRemove}
+              >
+                {t("remove")}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

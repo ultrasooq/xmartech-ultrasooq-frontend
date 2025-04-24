@@ -63,7 +63,10 @@ export default function CompanyProfileDetailsPage() {
         <div className="container relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
-              <h2 className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl" dir={langDir}>
+              <h2
+                className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl"
+                dir={langDir}
+              >
                 {t("my_profile")}
               </h2>
             </div>
@@ -77,8 +80,9 @@ export default function CompanyProfileDetailsPage() {
             ) : null}
 
             <div className="mt-6 w-full md:mt-12">
-              <Tabs 
-                onValueChange={(e) => setActiveTab(e)} value={activeTab} 
+              <Tabs
+                onValueChange={(e) => setActiveTab(e)}
+                value={activeTab}
                 // @ts-ignore
                 dir={langDir}
               >
@@ -105,7 +109,7 @@ export default function CompanyProfileDetailsPage() {
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
-                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
+                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {!activeSellerId ? (
                       <InformationSection userDetails={me.data?.data} />
                     ) : null}
@@ -124,7 +128,10 @@ export default function CompanyProfileDetailsPage() {
 
                     {/* Branch Section */}
                     {!me.data?.data?.userBranch?.length ? (
-                      <p className="pt-5 text-center text-lg font-medium text-color-dark" dir={langDir}>
+                      <p
+                        className="pt-5 text-center text-lg font-medium text-color-dark"
+                        dir={langDir}
+                      >
                         {t("no_branch_exists")}
                       </p>
                     ) : null}
@@ -170,7 +177,7 @@ export default function CompanyProfileDetailsPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="ratings" className="mt-0">
-                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
+                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {/* importing from freelancer details module */}
                     <ReviewSection
                       sellerId={
@@ -182,7 +189,7 @@ export default function CompanyProfileDetailsPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">
-                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
+                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
                     {/* importing from freelancer details module */}
                     <ProductsSection sellerId={activeSellerId as string} />
                   </div>
