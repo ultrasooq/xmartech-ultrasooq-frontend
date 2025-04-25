@@ -8,6 +8,7 @@ import AddIcon from "@/public/images/add-icon.svg";
 import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import ControlledNumberInput from "@/components/shared/Forms/ControlledNumberInput";
 
 const DescriptionAndSpecificationSection = () => {
   const t = useTranslations();
@@ -18,7 +19,10 @@ const DescriptionAndSpecificationSection = () => {
     control: formContext.control,
     name: "productSpecificationList",
   });
-
+  const fieldArrayForFeatures = useFieldArray({
+    control: formContext.control,
+    name: "productSpecificationList",
+  });
   const appendSpecification = () =>
     fieldArrayForSpecification.append({
       label: "",
@@ -46,13 +50,84 @@ const DescriptionAndSpecificationSection = () => {
         <div className="relative mb-4 w-full">
           <ControlledRichTextEditor
             label={t("description")}
-            name="descriptionJson"
+            name="description"
           />
         </div>
         <div className="relative mb-4 w-full">
           <div className="grid w-full grid-cols-1">
             <div>
               <div className="flex w-full items-center justify-between">
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                  {t("service_details")}
+                </label>
+
+                <Button
+                  type="button"
+                  onClick={() =>
+                    fieldArrayForFeatures.append({
+                      name: "",
+                      serviceCostType: "FLAT",
+                      serviceCost: 0,
+                    })
+                  }
+                  className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                  dir={langDir}
+                >
+                  <Image src={AddIcon} className="mr-1" alt="add-icon" />
+                  <span>{t("add_service")}</span>
+                </Button>
+              </div>
+
+              {fieldArrayForFeatures.fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="relative grid w-full grid-cols-1 gap-5 md:grid-cols-3"
+                >
+                  {/* Feature Name */}
+                  <ControlledTextInput
+                    name={`features.${index}.name`}
+                    placeholder={t("enter_service_name")}
+                    label={t("service_name")}
+                    dir={langDir}
+                  />
+
+                  {/* Service Cost Type */}
+                  <div>
+                    <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                      {t("service_cost_type")}
+                    </label>
+                    <select
+                      {...formContext.register(`features.${index}.serviceCostType`)}
+                      className="w-full rounded border border-gray-300 p-2"
+                    >
+                      <option value="FLAT">{t("flat")}</option>
+                      <option value="HOURLY">{t("hourly")}</option>
+                    </select>
+                  </div>
+
+                  {/* Service Cost */}
+                  <ControlledNumberInput
+                    name={`features.${index}.serviceCost`}
+                    placeholder={t("enter_service_cost")}
+                    label={t("service_cost")}
+                    type="text"
+                    dir={langDir}
+                  />
+
+                  {/* Remove Button */}
+                  {index !== 0 ? (
+                    <Button
+                      type="button"
+                      onClick={() => fieldArrayForFeatures.remove(index)}
+                      className="absolute right-2 top-3 mt-5 flex -translate-y-2/4 cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                      dir={langDir}
+                    >
+                      <Image src={TrashIcon} alt="delete-icon" />
+                    </Button>
+                  ) : null}
+                </div>
+              ))}
+              {/* <div className="flex w-full items-center justify-between">
                 <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                   {t("specification")}
                 </label>
@@ -98,9 +173,9 @@ const DescriptionAndSpecificationSection = () => {
                     </Button>
                   ) : null}
                 </div>
-              ))}
+              ))} */}
 
-              <div className="w-full mt-2">
+              {/* <div className="w-full mt-2">
                 <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
                   {t("variant_type")}
                 </label>
@@ -150,7 +225,7 @@ const DescriptionAndSpecificationSection = () => {
                     </Button>
                   ) : null}
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
         </div>

@@ -25,412 +25,21 @@ import { WEEKDAYS_LIST } from "@/utils/constants"
 import ReactSelect from "react-select";
 import {
   IOption,
+  IState,
+  ICity
 } from "@/utils/types/common.types";
 import {
+  useAllCountries,
   useFetchCitiesByState,
+  useFetchStatesByCountry,
 } from "@/apis/queries/masters.queries";
-// const baseProductPriceItemSchema = (t: any) => {
-//   return z.object({
-//     consumerType: z.string().trim().optional(),
-//     sellType: z.string().trim().optional(),
-//     consumerDiscount: z.coerce.number().optional().or(z.literal('')),
-//     vendorDiscount: z.coerce.number().optional().or(z.literal('')),
-//     consumerDiscountType: z.coerce.string().optional(),
-//     vendorDiscountType: z.coerce.string().optional(),
-//     minCustomer: z.coerce.number().optional().or(z.literal('')),
-//     maxCustomer: z.coerce.number().optional().or(z.literal('')),
-//     minQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
-//     maxQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
-//     minQuantity: z.coerce.number().optional().or(z.literal('')),
-//     maxQuantity: z.coerce.number().optional().or(z.literal('')),
-//     dateOpen: z.coerce.string().optional(),
-//     dateClose: z.coerce.string().optional(),
-//     startTime: z.coerce.string().optional(),
-//     endTime: z.coerce.string().optional().or(z.literal('')),
-//     timeOpen: z.coerce.number().optional().or(z.literal('')),
-//     timeClose: z.coerce.number().optional(),
-//     deliveryAfter: z.coerce.number().optional().or(z.literal('')),
-//     stock: z.coerce.number().optional().or(z.literal('')),
-//   });
-// };
+import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
+import { useCreateService } from "@/apis/queries/services.queries";
 
-// const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
-//   return baseProductPriceItemSchema(t)
-//     .extend({
-//       consumerType: z
-//         .string()
-//         .trim()
-//         .min(1, { message: t("consumer_type_is_required") }),
-//       sellType: z.string().trim().min(1, { message: t("sell_type_is_required") }),
-//       consumerDiscount: z.coerce
-//         .number()
-//         .max(100, { message: t("consumer_discount_must_be_less_than_100") }),
-//       vendorDiscount: z.coerce
-//         .number()
-//         .max(100, { message: t("vendor_discount_must_be_less_than_100") }),
-//       deliveryAfter: z.coerce
-//         .number()
-//         .min(1, { message: t("delivery_after_is_required") }),
-//     })
-//     .refine(
-//       ({ minQuantity, maxQuantity, sellType }) => sellType != 'BUYGROUP' ||
-//         (minQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)) ||
-//         (maxQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)),
-//       {
-//         message: t("min_quantity_must_be_less_than_max_quantity"),
-//         path: ["minQuantity"],
-//       },
-//     )
-//     .refine(
-//       ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
-//         (minQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)) ||
-//         (maxQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)),
-//       {
-//         message: t("min_quantity_per_customer_must_be_less_than_max_quantity_per_customer"),
-//         path: ["minQuantityPerCustomer"],
-//       },
-//     )
-//     .refine(
-//       ({ minCustomer, maxCustomer }) =>
-//         (!minCustomer || minCustomer) <= (!maxCustomer || maxCustomer),
-//       {
-//         message: t("min_customer_must_be_less_than_or_equal_to_max_customer"),
-//         path: ["minCustomer"],
-//       },
-//     )
-//     .superRefine((schema, ctx) => {
-//       const {
-//         sellType,
-//         minQuantityPerCustomer,
-//         maxQuantityPerCustomer,
-//         minQuantity,
-//         maxQuantity,
-//         minCustomer,
-//         maxCustomer,
-//         startTime,
-//         endTime,
-//       } = schema;
-//       if (sellType === "NORMALSELL" || sellType === "BUYGROUP") {
-//         if (!minQuantityPerCustomer) {
-//           ctx.addIssue({
-//             code: "custom",
-//             message: t("quantity_per_customer_is_required"),
-//             path: ["minQuantityPerCustomer"],
-//           });
-//         }
-//         if (!maxQuantityPerCustomer) {
-//           ctx.addIssue({
-//             code: "custom",
-//             message: t("quantity_per_customer_is_required"),
-//             path: ["maxQuantityPerCustomer"],
-//           });
-//         }
-//       }
-//       if (sellType === "BUYGROUP") {
-//         if (!minQuantity) {
-//           ctx.addIssue({
-//             code: "custom",
-//             message: t("min_quantity_is_required"),
-//             path: ["minQuantity"],
-//           });
-//         }
-//       }
-//       if (sellType === "BUYGROUP") {
-//         if (!maxQuantity) {
-//           ctx.addIssue({
-//             code: "custom",
-//             message: t("max_quantity_is_required"),
-//             path: ["maxQuantity"],
-//           });
-//         }
-//       }
-//       if (sellType === "BUYGROUP") {
-//         if (!minCustomer) {
-//           ctx.addIssue({
-//             code: "custom",
-//             message: t("min_customer_is_required"),
-//             path: ["minCustomer"],
-//           });
-//         }
-//       }
-//       if (sellType === "BUYGROUP") {
-//         if (!maxCustomer) {
-//           ctx.addIssue({
-//             code: "custom",
-//             message: t("max_customer_is_required"),
-//             path: ["maxCustomer"],
-//           });
-//         }
-//       }
-//       if (sellType == "BUYGROUP") {
-//         if ((minQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0)) || (maxQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0))) {
-//           ctx.addIssue({
-//             code: "custom",
-//             message: t("min_quantity_must_be_less_than_max_quantity"),
-//             path: ["maxQuantity"],
-//           });
-//         }
-//       }
-//       // if (sellType === "BUYGROUP") {
-//       //   if (!startTime) {
-//       //     ctx.addIssue({ code: "custom", message: t("time_open_is_required"), path: ["startTime"], });
-//       //   }
-//       // }
-//       // if (sellType === "BUYGROUP") {
-//       //   if (!endTime) {
-//       //     ctx.addIssue({ code: "custom", message: t("time_close_is_required"), path: ["endTime"], });
-//       //   }
-//       // }
-//     });
-// };
-
-// const formSchemaForTypeP = (t: any) => {
-//   return z.object({
-//     productName: z
-//       .string()
-//       .trim()
-//       .min(2, { message: t("product_name_is_required") })
-//       .max(50, { message: t("product_name_must_be_less_than_50_characters") }),
-//     categoryId: z.number().optional(),
-//     categoryLocation: z.string().trim().optional(),
-//     typeOfProduct: z
-//       .string({
-//         required_error: t("provide_you_product_type"),
-//         message: t("provide_you_product_type"),
-//       })
-//       .trim(),
-//     brandId: z.number().min(1, { message: t("brand_is_required") }),
-//     // productLocationId: z.number().min(1, { message: t("product_location_is_required") }),
-//     productCountryId: z
-//       .number()
-//       .min(1, { message: t("product_country_is_required") }),
-//     productStateId: z.number().min(1, { message: t("product_state_is_required") }),
-//     productCityId: z.number().min(1, { message: t("product_city_is_required") }),
-//     productTown: z.string().trim().optional(),
-//     productLatLng: z.string().trim().optional(),
-//     sellCountryIds: z.any().optional(),
-//     sellStateIds: z.any().optional(),
-//     sellCityIds: z.any().optional(),
-//     skuNo: z.string().trim().optional(),
-//     productCondition: z
-//       .string()
-//       .trim()
-//       .min(1, { message: t("product_condition_is_required") }),
-//     productTagList: z
-//       .array(
-//         z.object({
-//           label: z.string().trim(),
-//           value: z.number(),
-//         }),
-//         {
-//           invalid_type_error: t("tag_is_required"),
-//           required_error: t("tag_is_required")
-//         }
-//       )
-//       .min(1, { message: t("tag_is_required") })
-//       .transform((value) => value.map((item) => ({ tagId: item.value }))),
-//     productImagesList: z.any().optional(),
-//     productPrice: z.coerce.number().optional().or(z.literal('')),
-//     offerPrice: z.coerce.number().optional().or(z.literal('')),
-//     placeOfOriginId: z
-//       .number()
-//       .min(1, { message: t("place_of_origin_is_required") }),
-//     productShortDescriptionList: z.array(
-//       z.object({
-//         shortDescription: z
-//           .string()
-//           .trim()
-//           .min(2, { message: t("short_description_is_required") })
-//           .max(20, {
-//             message: t("short_description_must_be_less_than_20_characters"),
-//           }),
-//       }),
-//     ),
-//     productSpecificationList: z.array(
-//       z.object({
-//         label: z
-//           .string()
-//           .trim()
-//           .min(2, { message: t("label_is_required") })
-//           .max(20, { message: t("label_must_be_less_than_20_characters") }),
-//         specification: z
-//           .string()
-//           .trim()
-//           .min(1, { message: t("specification_is_required") })
-//           .max(20, {
-//             message: t("specification_must_be_less_than_20_characters"),
-//           }),
-//       }),
-//     ),
-//     description: z.string().trim().optional(),
-//     descriptionJson: z.array(z.any()).optional(),
-//     productPriceList: z.array(baseProductPriceItemSchema(t)).optional(),
-//     setUpPrice: z.boolean(),
-//     isStockRequired: z.boolean().optional(),
-//     isOfferPriceRequired: z.boolean().optional(),
-//     isCustomProduct: z.boolean().optional(),
-//     productVariantType: z.string()
-//       .trim()
-//       .min(3, { message: t("variant_type_must_be_equal_greater_than_2_characters") })
-//       .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
-//       .optional()
-//       .or(z.literal('')),
-//     productVariants: z.array(
-//       z.object({
-//         value: z
-//           .string()
-//           .trim()
-//           .min(1, { message: t("value_is_required") })
-//           .max(20, { message: t("value_must_be_less_than_n_characters", { n: 20 }) })
-//           .optional()
-//           .or(z.literal('')),
-//       }),
-//     ),
-//   })
-//     .superRefine((data, ctx) => {
-//       const variantsCount = data.productVariants.filter(el => el.value?.trim()).length;
-//       if (data.productVariantType?.trim() && variantsCount == 0) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: t("value_is_required"),
-//           path: ["productVariants.0.value"],
-//         });
-//       }
-//       if (variantsCount > 0 && !data.productVariantType?.trim()) {
-//         ctx.addIssue({
-//           code: "custom",
-//           message: t("variant_type_is_required"),
-//           path: ["productVariantType"],
-//         });
-//       }
-
-//       if (data.setUpPrice) {
-//         const result = z
-//           .array(productPriceItemSchemaWhenSetUpPriceTrue(t))
-//           .safeParse(data.productPriceList);
-
-//         if (!result.success) {
-//           result.error.issues.forEach((issue) => ctx.addIssue(issue));
-//         }
-
-//       } else {
-//         data.productPrice = 0;
-//         data.offerPrice = 0;
-//         if (Array.isArray(data.productPriceList)) {
-//           data.productPriceList = data.productPriceList.map((item) => ({
-//             consumerType: "",
-//             sellType: "",
-//             consumerDiscount: 0,
-//             vendorDiscount: 0,
-//             consumerDiscountType: "",
-//             vendorDiscountType: "",
-//             minCustomer: 0,
-//             maxCustomer: 0,
-//             minQuantityPerCustomer: 0,
-//             maxQuantityPerCustomer: 0,
-//             minQuantity: 0,
-//             maxQuantity: 0,
-//             dateOpen: "",
-//             dateClose: "",
-//             timeOpen: 0,
-//             timeClose: 0,
-//             startTime: "",
-//             endTime: "",
-//             deliveryAfter: 0,
-//             stock: 0,
-//           }));
-//         }
-//       }
-//     });
-// };
-
-// const formSchemaForTypeR = (t: any) => {
-//   return z.object({
-//     productName: z
-//       .string()
-//       .trim()
-//       .min(2, { message: t("product_name_is_required") })
-//       .max(50, { message: t("product_name_must_be_less_than_50_characters") }),
-//     categoryId: z.number().optional(),
-//     categoryLocation: z.string().trim().optional(),
-//     typeOfProduct: z
-//       .string({
-//         required_error: t("provide_you_product_type"),
-//         message: t("provide_you_product_type"),
-//       })
-//       .trim(),
-//     brandId: z.number().min(1, { message: t("brand_is_required") }),
-//     productCondition: z
-//       .string()
-//       .trim()
-//       .min(1, { message: t("product_condition_is_required") }),
-//     productTagList: z
-//       .array(
-//         z.object({
-//           label: z.string().trim(),
-//           value: z.number(),
-//         }),
-//       )
-//       .min(1, { message: t("tag_is_required") })
-//       .transform((value) => {
-//         let temp: any = [];
-//         value.forEach((item) => {
-//           temp.push({ tagId: item.value });
-//         });
-//         return temp;
-//       }),
-//     productImagesList: z.any().optional(),
-//     productPrice: z.coerce.number().optional(),
-//     offerPrice: z.coerce.number().optional(),
-//     placeOfOriginId: z
-//       .number()
-//       .min(1, { message: t("place_of_origin_is_required") }),
-//     productShortDescriptionList: z.array(
-//       z.object({
-//         shortDescription: z
-//           .string()
-//           .trim()
-//           .min(2, { message: t("short_description_is_required") })
-//           .max(20, {
-//             message: t("short_description_must_be_less_than_20_characters"),
-//           }),
-//       }),
-//     ),
-//     productSpecificationList: z.array(
-//       z.object({
-//         label: z
-//           .string()
-//           .trim()
-//           .min(2, { message: t("label_is_required") })
-//           .max(20, { message: t("label_must_be_less_than_20_characters") }),
-//         specification: z
-//           .string()
-//           .trim()
-//           .min(2, { message: t("specification_is_required") })
-//           .max(20, {
-//             message: t("specification_must_be_less_than_20_characters"),
-//           }),
-//       }),
-//     ),
-//     description: z.string().trim().optional(),
-//     descriptionJson: z.array(z.any()).optional(),
-//     setUpPrice: z.boolean(),
-//     isStockRequired: z.boolean().optional(),
-//     isOfferPriceRequired: z.boolean().optional(),
-//     isCustomProduct: z.boolean().optional(),
-//   })
-//     .superRefine((data, ctx) => {
-//       if (data.setUpPrice) {
-//         // if (data.offerPrice === 0) {
-//         //   ctx.addIssue({
-//         //     code: "custom",
-//         //     message: t("offer_price_is_required"),
-//         //     path: ["offerPrice"],
-//         //   });
-//         // }
-//       }
-//     });
-// };
+interface OptionType {
+  label: string;
+  value: string | number;
+}
 const formSchema = (t: any) =>
   z.object({
     serviceName: z
@@ -438,7 +47,7 @@ const formSchema = (t: any) =>
       .trim()
       .min(1, { message: t("service_name_is_required") }),
 
-    description: z.string().trim().optional(),
+    description: z.array(z.any()).optional(),
 
     categoryId: z
       .number({ required_error: t("category_is_required") })
@@ -468,8 +77,8 @@ const formSchema = (t: any) =>
     toCityId: z.number().positive().optional(),
     rangeCityId: z.number().positive().optional(),
 
-    eachCustomerTime: z.number().positive().optional(),
-    customerPerPeiod: z.number().positive().optional(),
+    eachCustomerTime: z.string().trim().optional(),
+    customerPerPeiod: z.string().trim().optional(),
 
     serviceType: z.enum(["BOOKING", "MOVING"], {
       required_error: t("service_type_is_required"),
@@ -498,22 +107,58 @@ const formSchema = (t: any) =>
             required_error: t("cost_type_required"),
           }),
           serviceCost: z
-            .number()
-            .positive({ message: t("cost_must_be_positive") }),
+            .string().trim(),
         })
       )
       .min(1, { message: t("at_least_one_feature_required") }),
 
-    images: z
-      .array(
-        z.object({
-          url: z
-            .string()
-            .trim()
-            .url({ message: t("invalid_image_url") }),
-        })
-      )
-      .optional(),
+    images: z.any().optional(),
+  }).superRefine((data: any, ctx) => {
+    // Validate that closeTime is after openTime
+    if (data.openTime && data.closeTime && data.openTime >= data.closeTime) {
+      ctx.addIssue({
+        code: "custom",
+        message: t("close_time_must_be_after_open_time"),
+        path: ["closeTime"],
+      });
+    }
+
+    // Validate that breakTimeFrom is within openTime and closeTime
+    if (
+      data.breakTimeFrom &&
+      (data.breakTimeFrom < data.openTime || data.breakTimeFrom >= data.closeTime)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: t("break_time_from_must_be_within_open_and_close_time"),
+        path: ["breakTimeFrom"],
+      });
+    }
+
+    // Validate that breakTimeTo is within openTime and closeTime
+    if (
+      data.breakTimeTo &&
+      (data.breakTimeTo <= data.openTime || data.breakTimeTo > data.closeTime)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: t("break_time_to_must_be_within_open_and_close_time"),
+        path: ["breakTimeTo"],
+      });
+    }
+
+    // Validate that breakTimeFrom is before breakTimeTo
+    if (
+      data.breakTimeFrom &&
+      data.breakTimeTo &&
+      data.breakTimeFrom >= data.breakTimeTo
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: t("break_time_from_must_be_before_break_time_to"),
+        path: ["breakTimeFrom"],
+      });
+    }
   });
 const customStyles = {
   control: (base: any) => ({
@@ -526,76 +171,6 @@ const customStyles = {
     zIndex: 20,
   }),
 };
-// const defaultValues: { [key: string]: any } = {
-//   productName: "",
-//   categoryId: 0,
-//   categoryLocation: "",
-//   typeOfProduct: "",
-//   brandId: 0,
-//   skuNo: "",
-//   productCondition: "",
-//   productTagList: undefined,
-//   productImagesList: undefined,
-//   productPrice: "",
-//   offerPrice: "",
-//   placeOfOriginId: 0,
-//   // productLocationId: 0,
-//   productCountryId: 0,
-//   productStateId: 0,
-//   productCityId: 0,
-//   sellCountryIds: [],
-//   sellStateIds: [],
-//   sellCityIds: [],
-//   productTown: "",
-//   productLatLng: "",
-//   productShortDescriptionList: [
-//     {
-//       shortDescription: "",
-//     },
-//   ],
-//   productSpecificationList: [
-//     {
-//       label: "",
-//       specification: "",
-//     },
-//   ],
-//   description: "",
-//   descriptionJson: undefined,
-//   productImages: [],
-//   productPriceList: [
-//     {
-//       consumerType: "",
-//       sellType: "",
-//       consumerDiscount: "",
-//       vendorDiscount: "",
-//       consumerDiscountType: "",
-//       vendorDiscountType: "",
-//       minCustomer: "",
-//       maxCustomer: "",
-//       minQuantityPerCustomer: "",
-//       maxQuantityPerCustomer: "",
-//       minQuantity: "",
-//       maxQuantity: "",
-//       dateOpen: "",
-//       dateClose: "",
-//       timeOpen: "",
-//       timeClose: "",
-//       startTime: "",
-//       endTime: "",
-//       deliveryAfter: "",
-//       stock: "",
-//     },
-//   ],
-//   setUpPrice: true,
-//   isStockRequired: false,
-//   isOfferPriceRequired: false,
-//   isCustomProduct: false,
-//   productVariants: [
-//     {
-//       value: ""
-//     }
-//   ]
-// };
 const defaultServiceValues = {
   serviceName: "",
   description: "",
@@ -603,7 +178,7 @@ const defaultServiceValues = {
   categoryLocation: "",
   workingDays: "",
   offDays: "",
-  renewEveryWeek: false,
+  renewEveryWeek: true,
   oneTime: false,
   openTime: "",
   closeTime: "",
@@ -616,16 +191,10 @@ const defaultServiceValues = {
   eachCustomerTime: undefined,
   customerPerPeiod: undefined,
   serviceType: "BOOKING", // default could be "BOOKING" or "MOVING"
-  serviceConfirmType: undefined,
-  serviceFor: undefined,
+  serviceConfirmType: "AUTO",
+  serviceFor: "OWNER",
   tags: [],
-  features: [
-    {
-      name: "",
-      serviceCostType: "FLAT", // default could be "FLAT" or "HOURLY"
-      serviceCost: 0,
-    },
-  ],
+  features: [],
   images: [],
 };
 
@@ -635,7 +204,14 @@ const CreateServicePage = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [activeProductType, setActiveProductType] = useState<string>();
+  const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
+  const [selectedState, setSelectedState] = useState<any | null>(null);
+  const [states, setStates] = useState<IOption[]>([]);
   const [cities, setCities] = useState<IOption[]>([]);
+  const [selectedCountries, setSelectedCountries] = useState<OptionType[]>([]);
+  const [statesByCountry, setStatesByCountry] = useState<
+    Record<string, OptionType[]>
+  >({});
   const form = useForm({
     resolver: zodResolver(formSchema(t)),
     defaultValues: defaultServiceValues,
@@ -643,8 +219,10 @@ const CreateServicePage = () => {
   const fetchCitiesByState = useFetchCitiesByState();
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
-  const createProduct = useCreateProduct();
-  const watchProductImages = form.watch("images");
+  const countriesNewQuery = useAllCountries();
+  const fetchStatesByCountry = useFetchStatesByCountry();
+  const createService = useCreateService();
+  const watchServiceImages = form.watch("images");
   // const watchSetUpPrice = form.watch("setUpPrice");
 
   const memoizedTags = useMemo(() => {
@@ -654,7 +232,40 @@ const CreateServicePage = () => {
       }) || []
     );
   }, [tagsQuery?.data]);
-
+  const memoizedAllCountries = useMemo(() => {
+    return (
+      countriesNewQuery?.data?.data.map((item: any) => {
+        return { label: item.name, value: item.id };
+      }) || []
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countriesNewQuery?.data?.data?.length]);
+  const fetchStates = async (countryId: number) => {
+    try {
+      const response = await fetchStatesByCountry.mutateAsync({ countryId }); // Call your API
+      setStates(
+        response.data.map((state: IState) => ({
+          label: state.name,
+          value: state.id,
+        })),
+      );
+    } catch (error) {
+      console.error("Error fetching states:", error);
+    }
+  };
+  const fetchCities = async (stateId: number) => {
+    try {
+      const response = await fetchCitiesByState.mutateAsync({ stateId }); // ✅ Pass as an object
+      setCities(
+        response.data.map((city: ICity) => ({
+          label: city.name,
+          value: city.id,
+        })),
+      );
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
   const handleUploadedFile = async (list: any[]) => {
     if (list?.length) {
       const formData = new FormData();
@@ -671,16 +282,12 @@ const CreateServicePage = () => {
   };
 
   const onSubmit = async (formData: any) => {
-    console.log(formData);
-    return;
-    const updatedFormData = {
+    let updatedFormData = {
       ...formData,
-      productType: activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
-      status: activeProductType === "R" || activeProductType === "F" ? "ACTIVE" : "INACTIVE",
     };
 
-    if (watchProductImages.length) {
-      const fileTypeArrays = watchProductImages.filter(
+    if (watchServiceImages.length) {
+      const fileTypeArrays = watchServiceImages.filter(
         (item: any) => typeof item.path === "object",
       );
 
@@ -688,254 +295,124 @@ const CreateServicePage = () => {
         ? await handleUploadedFile(fileTypeArrays)
         : [];
 
-      updatedFormData.productImages = [...imageUrlArray];
-
-      if (updatedFormData.productImages.length) {
-        updatedFormData.productImagesList = updatedFormData.productImages.map(
+      if (imageUrlArray.length) {
+        updatedFormData.images = imageUrlArray.map(
           (item: string) => {
             const extension = item.split(".").pop()?.toLowerCase();
 
             if (extension) {
+              const fileName: string = item.split("/").pop()!;
               if (videoExtensions.includes(extension)) {
-                const videoName: string = item.split("/").pop()!;
-                return { video: item, videoName };
+                return {
+                  url: item,
+                  filename: fileName,
+                  type: "VIDEO"
+                };
               } else if (imageExtensions.includes(extension)) {
-                const imageName: string = item.split("/").pop()!;
-                return { image: item, imageName };
+                return {
+                  url: item,
+                  filename: fileName,
+                  type: "IMAGE"
+                };
               }
             }
 
-            return { image: item, imageName: item };
+            return {
+              url: item,
+              filename: item,
+              type: "IMAGE"
+            };
           },
         );
       }
     }
-    const randomSkuNo = generateRandomSkuNoWithTimeStamp().toString();
-
-    delete updatedFormData.productImages;
-    updatedFormData.productPriceList = [
-      {
-        ...(activeProductType !== "R" && updatedFormData.productPriceList[0]),
-        askForStock: updatedFormData.isStockRequired ? "true" : "false",
-        askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
-        isCustomProduct: updatedFormData.isCustomProduct ? "true" : "false",
-        productPrice: updatedFormData.isOfferPriceRequired
-          ? 0
-          : activeProductType === "R"
-            ? (updatedFormData.offerPrice ?? 0)
-            : (updatedFormData.productPrice ?? 0),
-        offerPrice: updatedFormData.isOfferPriceRequired
-          ? 0
-          : activeProductType === "R"
-            ? (updatedFormData.offerPrice ?? 0)
-            : (updatedFormData.productPrice ?? 0),
-        stock: updatedFormData.isStockRequired
-          ? 0
-          : updatedFormData.productPriceList?.[0]?.stock
-            ? updatedFormData.productPriceList[0].stock
-            : 0,
-        productCountryId: updatedFormData.productCountryId,
-        productStateId: updatedFormData.productStateId,
-        productCityId: updatedFormData.productCityId,
-        productCondition: updatedFormData.productCondition,
-        productTown: updatedFormData.productTown,
-        productLatLng: updatedFormData.productLatLng,
-        sellCountryIds: updatedFormData.sellCountryIds,
-        sellStateIds: updatedFormData.sellStateIds,
-        sellCityIds: updatedFormData.sellCityIds,
-        status:
-          activeProductType === "R"
-            ? updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired
-              ? "ACTIVE"
-              : "INACTIVE"
-            : updatedFormData.productPrice ||
-              updatedFormData.isOfferPriceRequired
-              ? "ACTIVE"
-              : "INACTIVE",
-      },
-    ];
-
-    if (activeProductType === "R") {
-      updatedFormData.productPriceList[0] = {
-        consumerType: "",
-        sellType: "",
-        consumerDiscount: 0,
-        vendorDiscount: 0,
-        consumerDiscountType: "",
-        vendorDiscountType: "",
-        minCustomer: 0,
-        maxCustomer: 0,
-        minQuantityPerCustomer: 0,
-        maxQuantityPerCustomer: 0,
-        minQuantity: 0,
-        maxQuantity: 0,
-        timeOpen: 0,
-        timeClose: 0,
-        deliveryAfter: 0,
-        stock: 0,
-        askForStock: updatedFormData.isStockRequired ? "true" : undefined,
-        askForPrice: updatedFormData.isOfferPriceRequired
-          ? "true"
-          : undefined,
-        ...updatedFormData.productPriceList[0],
-      };
-      delete updatedFormData.productPriceList[0].productCountryId;
-      delete updatedFormData.productPriceList[0].productStateId;
-      delete updatedFormData.productPriceList[0].productCityId;
-      delete updatedFormData.productPriceList[0].productTown;
-      delete updatedFormData.productPriceList[0].productLatLng;
-      delete updatedFormData.productPriceList[0].sellCountryIds;
-      delete updatedFormData.productPriceList[0].sellStateIds;
-      delete updatedFormData.productPriceList[0].sellCityIds;
-    }
-
-    if (updatedFormData.productPriceList?.[0]?.sellType == 'NORMALSELL') {
-      updatedFormData.productPriceList[0].menuId = STORE_MENU_ID;
-    }
-    if (updatedFormData.productPriceList?.[0]?.sellType == 'BUYGROUP') {
-      updatedFormData.productPriceList[0].menuId = BUYGROUP_MENU_ID;
-    }
-    if (updatedFormData.isCustomProduct) {
-      updatedFormData.productPriceList[0].menuId = FACTORIES_MENU_ID;
-    }
-    if (activeProductType == "R") {
-      updatedFormData.productPriceList[0].menuId = RFQ_MENU_ID;
-    }
-
-    // delete updatedFormData.productLocationId;
-    delete updatedFormData.productCountryId;
-    delete updatedFormData.productStateId;
-    delete updatedFormData.productCityId;
-    delete updatedFormData.productTown;
-    delete updatedFormData.productLatLng;
-    delete updatedFormData.sellCountryIds;
-    delete updatedFormData.sellStateIds;
-    delete updatedFormData.sellCityIds;
-
-    delete updatedFormData.setUpPrice;
-    delete updatedFormData.productCondition;
-
-    delete updatedFormData.isStockRequired;
-    delete updatedFormData.isOfferPriceRequired;
-
-    updatedFormData.skuNo = randomSkuNo;
-    updatedFormData.offerPrice =
-      activeProductType === "R"
-        ? (updatedFormData.offerPrice ?? 0)
-        : (updatedFormData.productPrice ?? 0);
-    updatedFormData.productPrice =
-      activeProductType === "R"
-        ? (updatedFormData.offerPrice ?? 0)
-        : (updatedFormData.productPrice ?? 0);
-
-    // TODO: category input field change
-    if (updatedFormData.categoryId === 0) {
-      toast({
-        title: t("product_create_failed"),
-        description: t("please_select_category"),
-        variant: "danger",
-      });
-      return;
-    }
-
-    updatedFormData.description = updatedFormData?.descriptionJson
-      ? JSON.stringify(updatedFormData?.descriptionJson)
-      : "",
-      delete updatedFormData.descriptionJson;
-
-    updatedFormData.productVariant = updatedFormData.productVariants.filter((el: any) => el.value?.trim())
-      .map((el: any) => {
-        return {
-          type: updatedFormData.productVariantType,
-          value: el.value
-        }
-      });
-    delete updatedFormData.productVariantType;
-    delete updatedFormData.productVariants;
-
-    const response = await createProduct.mutateAsync(updatedFormData);
+    updatedFormData.description = JSON.stringify(updatedFormData?.description);
+    updatedFormData.tags = updatedFormData.tags.map((v: any) => {
+      return {
+        tagId: v.value
+      }
+    })
+    updatedFormData.countryId = selectedCountry;
+    updatedFormData.stateId = selectedState;
+    const response = await createService.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {
       toast({
-        title: t("product_create_successful"),
+        title: t("service_create_successful"),
         description: response.message,
         variant: "success",
       });
       form.reset();
-      if (activeProductType === "R") {
-        router.push("/rfq");
-      } else if (activeProductType === "F") {
-        router.push("/factories");
-      } else {
-        router.push("/manage-products");
-      }
+      // router.push("/manage-services");
     } else {
       toast({
-        title: t("product_create_failed"),
+        title: t("service_create_failed"),
         description: response.message,
         variant: "danger",
       });
     }
   };
+  const handleRenewFun = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    if (value === 'every_week') {
+      form.setValue('renewEveryWeek', true);
+      form.setValue('oneTime', false);
+    } else if (value === 'one_time') {
+      form.setValue('oneTime', true);
+      form.setValue('renewEveryWeek', false);
+    }
+  };
+
   useEffect(() => {
     console.log("Current Form Errors:", form.formState.errors);
   }, [form.formState.errors]);
-  // useEffect(() => {
-  //   if (!watchSetUpPrice) {
-  //     form.setValue("productPrice", 0);
-  //     form.setValue("offerPrice", 0);
-  //     form.setValue("productPriceList", [
-  //       {
-  //         consumerType: "",
-  //         sellType: "",
-  //         consumerDiscount: 0,
-  //         vendorDiscount: 0,
-  //         consumerDiscountType: "",
-  //         vendorDiscountType: "",
-  //         minCustomer: 0,
-  //         maxCustomer: 0,
-  //         minQuantityPerCustomer: 0,
-  //         maxQuantityPerCustomer: 0,
-  //         minQuantity: 0,
-  //         maxQuantity: 0,
-  //         dateOpen: "",
-  //         dateClose: "",
-  //         timeOpen: 0,
-  //         timeClose: 0,
-  //         startTime: "",
-  //         endTime: "",
-  //         deliveryAfter: 0,
-  //         stock: 0,
-  //       },
-  //     ]);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [watchSetUpPrice, form.setValue]);
-
-  // useEffect(() => {
-  //   const params = new URLSearchParams(document.location.search);
-  //   let activeProductType = params.get("productType");
-
-  //   if (activeProductType) {
-  //     setActiveProductType(activeProductType);
-  //   }
-  // }, []);
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await fetchCitiesByState.mutateAsync({ stateId: -1 }); // ✅ Pass as an object
-        setCities(
-          response.data.map((city: any) => ({
-            label: city.name,
-            value: city.id,
-          })),
-        );
-      } catch (error) {
-        console.error("Error fetching cities:", error);
-      }
-    };
-    fetchCities();
-  }, [])
+    if (selectedCountry) {
+      fetchStates(selectedCountry);
+    } else {
+      setStates([]);
+      setSelectedState(null);
+    }
+  }, [selectedCountry]);
+  useEffect(() => {
+    if (selectedState) {
+      fetchCities(selectedState);
+    } else {
+      setCities([]);
+    }
+  }, [selectedState]);
+  useEffect(() => {
+    if (selectedCountries.length > 0) {
+      const fetchStates = async () => {
+        const statesData: Record<string, OptionType[]> = {};
+
+        try {
+          const responses = await Promise.all(
+            selectedCountries.map(async (country) => {
+              const response = await fetchStatesByCountry.mutateAsync({
+                countryId: Number(country.value),
+              });
+              return { countryId: country.value, data: response.data };
+            }),
+          );
+
+          responses.forEach(({ countryId, data }) => {
+            statesData[countryId] = data.map((state: any) => ({
+              label: state.name,
+              value: state.id,
+            }));
+          });
+
+          setStatesByCountry(statesData);
+        } catch (error) {
+          console.error("Error fetching states:", error);
+        }
+      };
+
+      fetchStates();
+    }
+  }, [selectedCountries]);
   return (
     <>
       <section className="relative w-full py-7">
@@ -990,37 +467,74 @@ const CreateServicePage = () => {
                                 {form.formState.errors.workingDays.message}
                               </p>
                             )}
-                            <Label dir={langDir}>{t("off_days")}</Label>
-                            <div className="flex flex-wrap gap-2">
-                              {WEEKDAYS_LIST.map((day) => (
-                                <label key={day} className="flex items-center gap-2">
-                                  <input
-                                    type="checkbox"
-                                    value={day}
-                                    checked={form.watch("offDays")?.split(",").includes(day)}
-                                    disabled={form.watch("workingDays")?.split(",").includes(day)} // Disable if selected in workingDays
-                                    onChange={(e) => {
-                                      const currentDays = form.watch("offDays") || "";
-                                      const updatedDays = e.target.checked
-                                        ? [...currentDays.split(","), day].filter(Boolean)
-                                        : currentDays.split(",").filter((d) => d !== day);
-                                      form.setValue("offDays", updatedDays.join(","));
-                                    }}
-                                  />
-                                  {day}
-                                </label>
-                              ))}
+                            <div className="my-2">
+                              <Label dir={langDir}>{t("off_days")}</Label>
+                              <div className="flex flex-wrap gap-2">
+                                {WEEKDAYS_LIST.map((day) => (
+                                  <label key={day} className="flex items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      value={day}
+                                      checked={form.watch("offDays")?.split(",").includes(day)}
+                                      disabled={form.watch("workingDays")?.split(",").includes(day)} // Disable if selected in workingDays
+                                      onChange={(e) => {
+                                        const currentDays = form.watch("offDays") || "";
+                                        const updatedDays = e.target.checked
+                                          ? [...currentDays.split(","), day].filter(Boolean)
+                                          : currentDays.split(",").filter((d) => d !== day);
+                                        form.setValue("offDays", updatedDays.join(","));
+                                      }}
+                                    />
+                                    {day}
+                                  </label>
+                                ))}
+                              </div>
                             </div>
-                            <Label dir={langDir}>{t("service_type")}</Label>
-                            <div className="flex flex-wrap gap-2 my-2">
-                              <select
-                                className="w-full rounded border border-gray-300 p-2"
-                                value={form.watch("serviceType")}
-                                onChange={(e) => form.setValue("serviceType", e.target.value)}
-                              >
-                                <option value="BOOKING">{t("booking")}</option>
-                                <option value="MOVING">{t("moving")}</option>
-                              </select>
+                            <div className="my-2">
+                              <Label dir={langDir}>{t("service_for")}</Label>
+                              <div className="flex items-center space-x-6">
+                                <div className="flex items-center">
+                                  <input
+                                    type="radio"
+                                    id="me"
+                                    name="serviceFor"
+                                    value="OWNER"
+                                    checked={form.watch("serviceFor") === "OWNER"}
+                                    onChange={(e: any) => form.setValue("serviceFor", e.target.value)}
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                  />
+                                  <label htmlFor="me" className="ml-2 text-sm text-gray-700">
+                                    {t("me")}
+                                  </label>
+                                </div>
+                                <div className="flex items-center">
+                                  <input
+                                    type="radio"
+                                    id="everyone"
+                                    name="serviceFor"
+                                    value="EVERYONE"
+                                    checked={form.watch("serviceFor") === "EVERYONE"}
+                                    onChange={(e: any) => form.setValue("serviceFor", e.target.value)}
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                  />
+                                  <label htmlFor="everyone" className="ml-2 text-sm text-gray-700">
+                                    {t("everyone")}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="my-2">
+                              <Label dir={langDir}>{t("service_type")}</Label>
+                              <div className="flex flex-wrap gap-2 my-2">
+                                <select
+                                  className="w-full rounded border border-gray-300 p-2"
+                                  value={form.watch("serviceType")}
+                                  onChange={(e) => form.setValue("serviceType", e.target.value)}
+                                >
+                                  <option value="BOOKING">{t("booking")}</option>
+                                  <option value="MOVING">{t("moving")}</option>
+                                </select>
+                              </div>
                             </div>
                             {form.formState.errors.serviceType && (
                               <p className="text-red-500 text-sm mt-1">
@@ -1061,6 +575,39 @@ const CreateServicePage = () => {
                               </div>
                             </div>
                             <div className="my-2">
+                              <Label dir={langDir}>{t("renew")}</Label>
+                              <div className="flex items-center space-x-6">
+                                <div className="flex items-center">
+                                  <input
+                                    type="radio"
+                                    id="auto"
+                                    name="renew"
+                                    value="every_week"
+                                    checked={form.watch("renewEveryWeek") === true}
+                                    onChange={handleRenewFun}
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                  />
+                                  <label htmlFor="auto" className="ml-2 text-sm text-gray-700">
+                                    {t("every_week")}
+                                  </label>
+                                </div>
+                                <div className="flex items-center">
+                                  <input
+                                    type="radio"
+                                    id="auto"
+                                    name="renew"
+                                    value="one_time"
+                                    checked={form.watch("oneTime") === true}
+                                    onChange={handleRenewFun}
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                  />
+                                  <label htmlFor="manual" className="ml-2 text-sm text-gray-700">
+                                    {t("one_by_general_tool")}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="my-2">
                               <div className="flex flex-col space-y-4">
                                 <Label dir={langDir}>{t("shipping")}</Label>
                                 <div className="flex items-center space-x-6">
@@ -1093,66 +640,209 @@ const CreateServicePage = () => {
                                     </label>
                                   </div>
                                 </div>
-
-                                {form.watch("shippingType") === "DIRECTION" ? (
-                                  <div className="space-y-4">
-                                    <div>
-                                      <Label dir={langDir}>{t("from_city")}</Label>
-                                      <ReactSelect
-                                        onChange={(newValue: any) => {
-                                          form.setValue("fromCityId", newValue?.value); // Set the value for fromCityId
-                                        }}
-                                        options={cities}
-                                        value={cities.find((item) => item.value === form.watch("fromCityId"))} // Watch the value for fromCityId
-                                        styles={customStyles}
-                                        instanceId="fromCityId"
-                                        placeholder={t("select")}
-                                      />
-                                      {form.formState.errors.fromCityId && (
-                                        <p className="text-red-500 text-sm mt-1">
-                                          {form.formState.errors.fromCityId.message}
-                                        </p>
-                                      )}
-                                    </div>
-
-                                    <div>
-                                      <Label dir={langDir}>{t("to_city")}</Label>
-                                      <ReactSelect
-                                        onChange={(newValue: any) => {
-                                          form.setValue("toCityId", newValue?.value); // Set the value for toCityId
-                                        }}
-                                        options={cities}
-                                        value={cities.find((item) => item.value === form.watch("toCityId"))} // Watch the value for toCityId
-                                        styles={customStyles}
-                                        instanceId="toCityId"
-                                        placeholder={t("select")}
-                                      />
-                                      {form.formState.errors.toCityId && (
-                                        <p className="text-red-500 text-sm mt-1">
-                                          {form.formState.errors.toCityId.message}
-                                        </p>
-                                      )}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div>
-                                    <Label dir={langDir}>{t("range_city")}</Label>
-                                    <ReactSelect
-                                      onChange={(newValue: any) => {
-                                        form.setValue("rangeCityId", newValue?.value); // Set the value for rangeCityId
-                                      }}
-                                      options={cities}
-                                      value={cities.find((item) => item.value === form.watch("rangeCityId"))} // Watch the value for rangeCityId
-                                      styles={customStyles}
-                                      instanceId="rangeCityId"
-                                      placeholder={t("select")}
-                                    />
-                                    {form.formState.errors.rangeCityId && (
-                                      <p className="text-red-500 text-sm mt-1">
-                                        {form.formState.errors.rangeCityId.message}
-                                      </p>
+                                <div className="mt-2 flex flex-col gap-y-3">
+                                  <Label dir={langDir}>{t("select_country")}</Label>
+                                  <ReactSelect
+                                    onChange={(newValue) => {
+                                      setSelectedCountry(newValue?.value || null);
+                                      setSelectedState(null); // Reset state when country changes
+                                      setCities([]); // Clear cities when country changes
+                                    }}
+                                    options={memoizedAllCountries}
+                                    value={memoizedAllCountries.find(
+                                      (item: any) => item.value === selectedCountry?.value,
                                     )}
-                                  </div>
+                                    styles={customStyles}
+                                    // instanceId="rangeCityId"
+                                    placeholder={t("select")}
+                                  />
+                                  {/* <p className="text-[13px] text-red-500" dir={langDir}>
+                                    {
+                                      formContext.formState.errors["productCountryId"]
+                                        ?.message as string
+                                    }
+                                  </p> */}
+                                </div>
+                                <div className="mt-2 flex flex-col gap-y-3">
+                                  {/* State Dropdown - Visible only if country is selected */}
+                                  {selectedCountry && (
+                                    <>
+                                      <Label dir={langDir}>{t("select_state")}</Label>
+                                      <ReactSelect
+                                        onChange={(newValue) => {
+                                          setSelectedState(newValue?.value || null);
+                                          setCities([]); // Clear cities when state changes
+                                        }}
+                                        options={states}
+                                        value={states.find(
+                                          (item) => item.value === selectedState?.value,
+                                        )}
+                                        styles={customStyles}
+                                        // instanceId="rangeCityId"
+                                        placeholder={t("select")}
+                                      />
+                                      {/* <p className="text-[13px] text-red-500" dir={langDir}>
+                                        {
+                                          formContext.formState.errors["productStateId"]
+                                            ?.message as string
+                                        }
+                                      </p> */}
+                                    </>
+                                  )}
+                                </div>
+                                {
+                                  selectedState && (
+                                    form.watch("shippingType") === "DIRECTION" ? (
+                                      <div className="space-y-4">
+                                        <div>
+                                          <Label dir={langDir}>{t("from_city")}</Label>
+                                          <ReactSelect
+                                            onChange={(newValue: any) => {
+                                              form.setValue("fromCityId", newValue?.value); // Set the value for fromCityId
+                                            }}
+                                            options={cities}
+                                            value={cities.find((item) => item.value === form.watch("fromCityId"))} // Watch the value for fromCityId
+                                            styles={customStyles}
+                                            instanceId="fromCityId"
+                                            placeholder={t("select")}
+                                          />
+                                          {form.formState.errors.fromCityId && (
+                                            <p className="text-red-500 text-sm mt-1">
+                                              {form.formState.errors.fromCityId.message}
+                                            </p>
+                                          )}
+                                        </div>
+
+                                        <div>
+                                          <Label dir={langDir}>{t("to_city")}</Label>
+                                          <ReactSelect
+                                            onChange={(newValue: any) => {
+                                              form.setValue("toCityId", newValue?.value); // Set the value for toCityId
+                                            }}
+                                            options={cities}
+                                            value={cities.find((item) => item.value === form.watch("toCityId"))} // Watch the value for toCityId
+                                            styles={customStyles}
+                                            instanceId="toCityId"
+                                            placeholder={t("select")}
+                                          />
+                                          {form.formState.errors.toCityId && (
+                                            <p className="text-red-500 text-sm mt-1">
+                                              {form.formState.errors.toCityId.message}
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <Label dir={langDir}>{t("range_city")}</Label>
+                                        <ReactSelect
+                                          onChange={(newValue: any) => {
+                                            form.setValue("rangeCityId", newValue?.value); // Set the value for rangeCityId
+                                          }}
+                                          options={cities}
+                                          value={cities.find((item) => item.value === form.watch("rangeCityId"))} // Watch the value for rangeCityId
+                                          styles={customStyles}
+                                          instanceId="rangeCityId"
+                                          placeholder={t("select")}
+                                        />
+                                        {form.formState.errors.rangeCityId && (
+                                          <p className="text-red-500 text-sm mt-1">
+                                            {form.formState.errors.rangeCityId.message}
+                                          </p>
+                                        )}
+                                      </div>
+                                    )
+                                  )}
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 my-4">
+                              {/* Each Customer Input */}
+                              <div>
+                                <Label dir={langDir}>{t("each_customer")}</Label>
+                                <input
+                                  type="text"
+                                  className="w-full rounded border border-gray-300 p-2"
+                                  min={0}
+                                  placeholder={t("enter_minutes")}
+                                  {...form.register("eachCustomerTime")}
+                                  onChange={(e) => {
+                                    const cleaned = e.target.value.replace(/[^\d]/g, "");
+                                    form.setValue("eachCustomerTime", cleaned ? parseInt(cleaned, 10) : undefined as any);
+                                  }}
+                                  value={form.watch("eachCustomerTime") || ""}
+                                />
+                                {form.formState.errors.eachCustomerTime && (
+                                  <p className="text-red-500 text-sm mt-1">
+                                    {form.formState.errors.eachCustomerTime.message}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Customer/Period Input */}
+                              <div>
+                                <Label dir={langDir}>{t("customer_per_period")}</Label>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  className="w-full rounded border border-gray-300 p-2"
+                                  placeholder={t("enter_number")}
+                                  {...form.register("customerPerPeiod")}
+                                  onChange={(e) => {
+                                    const cleaned = e.target.value.replace(/[^\d]/g, "");
+                                    form.setValue("customerPerPeiod", cleaned ? parseInt(cleaned, 10) : undefined as any);
+                                  }}
+                                  value={form.watch("customerPerPeiod") || ""}
+                                />
+                                {form.formState.errors.customerPerPeiod && (
+                                  <p className="text-red-500 text-sm mt-1">
+                                    {form.formState.errors.customerPerPeiod.message}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-4 gap-4 my-2">
+                              <div className="col-span-1">
+                                <ControlledTimePicker
+                                  label={t("open_time")}
+                                  name="openTime"
+                                />
+                                {form.formState.errors.openTime && (
+                                  <p className="text-red-500 text-sm mt-1">
+                                    {form.formState.errors.openTime.message}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="col-span-1">
+                                <ControlledTimePicker
+                                  label={t("close_time")}
+                                  name="closeTime"
+                                />
+                                {form.formState.errors.closeTime && (
+                                  <p className="text-red-500 text-sm mt-1">
+                                    {form.formState.errors.closeTime.message}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="col-span-1">
+                                <ControlledTimePicker
+                                  label={t("break_time_from")}
+                                  name="breakTimeFrom"
+                                />
+                                {form.formState.errors.breakTimeFrom && (
+                                  <p className="text-red-500 text-sm mt-1">
+                                    {form.formState.errors.breakTimeFrom.message}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="col-span-1">
+                                <ControlledTimePicker
+                                  label={t("break_time_to")}
+                                  name="breakTimeTo"
+                                />
+                                {form.formState.errors.breakTimeTo && (
+                                  <p className="text-red-500 text-sm mt-1">
+                                    {form.formState.errors.breakTimeTo.message}
+                                  </p>
                                 )}
                               </div>
                             </div>
@@ -1175,17 +865,17 @@ const CreateServicePage = () => {
 
                         <Button
                           disabled={
-                            createProduct.isPending || uploadMultiple.isPending
+                            createService.isPending || uploadMultiple.isPending
                           }
                           type="submit"
                           className="h-10 rounded bg-dark-orange px-6 text-center text-sm font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:h-12 md:px-10 md:text-lg"
                           dir={langDir}
                         >
-                          {createProduct.isPending ||
+                          {createService.isPending ||
                             uploadMultiple.isPending ? (
                             <LoaderWithMessage message={t("please_wait")} />
                           ) : (
-                            t("continue")
+                            t("submit")
                           )}
                         </Button>
                       </div>
