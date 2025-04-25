@@ -41,11 +41,9 @@ const ControlledPhoneInput: React.FC<ControlledPhoneInputProps> = ({
   };
 
   return (
-    <div className="flex w-full flex-col justify-between space-y-3">
+    <div className="mt-0 flex w-full flex-col justify-between space-y-3">
       <Label
-        className={cn(
-          formContext.formState.errors.phoneNumber ? "!text-red-500" : "",
-        )}
+        className={cn(formContext.formState.errors.phoneNumber ? "" : "")}
         dir={langDir}
       >
         {label}

@@ -1726,6 +1726,10 @@
     @apply bg-[#fef6f6] px-0 py-[50px];
   }
 
+  .react-tel-input {
+    margin-top: 0;
+  }
+
   @media only screen and (min-width: 240px) and (max-width: 767px) {
     .my-order-main {
       @apply px-0 py-[30px];
