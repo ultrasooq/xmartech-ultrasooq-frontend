@@ -26,6 +26,7 @@ type RfqProductCardProps = {
   productImages: {
     image: string;
   }[];
+  productVariants?: any[];
   productQuantity: number;
   productVariant?: any;
   customizeProductId?: number;
@@ -46,6 +47,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   productNote,
   productStatus,
   productImages,
+  productVariants = [],
   productQuantity,
   productVariant,
   customizeProductId,
@@ -73,6 +75,10 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   }, [productQuantity]);
 
   useEffect(() => {
+    setSelectedProductVariant(productVariant || productVariants?.[0]);
+  }, [productVariants, productVariant]);
+
+  useEffect(() => {
     setSelectedProductVariant(productVariant);
   }, [productVariant]);
 
@@ -82,6 +88,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   const handleAddToCart = async (
     quantity: number,
     action: "add" | "remove",
+    variant?: any
   ) => {
     const minQuantity = productPrices?.length ? productPrices[0]?.minQuantityPerCustomer : null;
     if (action == "add" && minQuantity && minQuantity > quantity) {
@@ -118,7 +125,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: productPrices?.[0]?.id,
         quantity,
-        productVariant: selectedProductVariant
+        productVariant: variant || selectedProductVariant
       });
 
       if (response.status) {
@@ -255,7 +262,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
             className="p-3"
             src={
               productImages?.[0]?.image &&
-              validator.isURL(productImages?.[0]?.image)
+                validator.isURL(productImages?.[0]?.image)
                 ? productImages[0].image
                 : PlaceholderImage
             }
@@ -304,6 +311,23 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           </span>
         </h5>
       )}
+      {productVariants.length > 0 && <div className="mb-2">
+        <label dir={langDir}>{productVariants[0].type}</label>
+        <select
+          className="w-full"
+          value={selectedProductVariant?.value}
+          onChange={(e) => {
+            let value = e.target.value;
+            const selectedVariant = productVariants.find((variant: any) => variant.value == value);
+            setSelectedProductVariant(selectedVariant);
+            handleAddToCart(quantity, "add", selectedVariant)
+          }}
+        >
+          {productVariants.map((variant: any, index: number) => {
+            return <option key={index} value={variant.value} dir={langDir}>{variant.value}</option>;
+          })}
+        </select>
+      </div>}
       <div className="quantity_wrap mb-2">
         <label dir={langDir}>{t("quantity")}</label>
         <div className="qty-up-down-s1-with-rgMenuAction">

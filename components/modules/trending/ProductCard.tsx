@@ -32,6 +32,7 @@ import { IoCloseSharp } from "react-icons/io5";
 
 type ProductCardProps = {
   item: TrendingProduct;
+  productVariants?: any[];
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
@@ -48,6 +49,7 @@ type ProductCardProps = {
 
 const ProductCard: React.FC<ProductCardProps> = ({
   item,
+  productVariants = [],
   onWishlist,
   inWishlist,
   haveAccessToken,
@@ -124,8 +126,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   }, [productQuantity]);
 
   useEffect(() => {
-    setSelectedProductVariant(productVariant);
-  }, [productVariant]);
+    setSelectedProductVariant(productVariant || productVariants?.[0]);
+  }, [productVariants, productVariant]);
 
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
@@ -134,6 +136,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const handleAddToCart = async (
     newQuantity: number,
     actionType: "add" | "remove",
+    variant?: any
   ) => {
     const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
     const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer: null;
@@ -175,7 +178,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: item?.productProductPriceId,
         quantity: newQuantity,
-        productVariant: selectedProductVariant
+        productVariant: variant || selectedProductVariant
       });
 
       if (response.status) {
@@ -210,7 +213,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         productPriceId: item?.productProductPriceId,
         quantity: newQuantity,
         deviceId,
-        productVariant: selectedProductVariant
+        productVariant: variant || selectedProductVariant
       });
       if (response.status) {
         if (actionType === "add" && newQuantity === 0) {
@@ -507,6 +510,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </h5>
           )}
         </div>
+        {productVariants.length > 0 && <div className="mb-2">
+          <label dir={langDir}>{productVariants[0].type}</label>
+          <select 
+            className="w-full" 
+            value={selectedProductVariant?.value} 
+            onChange={(e) => {
+              let value = e.target.value;
+              const selectedVariant = productVariants.find((variant: any) => variant.value == value);
+              setSelectedProductVariant(selectedVariant);
+              handleAddToCart(quantity, "add", selectedVariant)
+            }}
+          >
+            {productVariants.map((variant: any, index: number) => {
+              return <option key={index} value={variant.value} dir={langDir}>{variant.value}</option>;
+            })}
+          </select>
+        </div>}
         <div className="quantity_wrap mb-2">
           <label dir={langDir}>{t("quantity")}</label>
           <div className="qty-up-down-s1-with-rgMenuAction">

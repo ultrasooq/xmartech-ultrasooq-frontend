@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ProductCard from "./ProductCard";
 import { useMe } from "@/apis/queries/user.queries";
-import { useProducts, useVendorProducts } from "@/apis/queries/product.queries";
+import { useProductVariant, useProducts, useVendorProducts } from "@/apis/queries/product.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { useCartListByUserId, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
@@ -47,6 +47,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
   const [displayExpiredProducts, setDisplayExpiredProducts] = useState(false);
   const [displayHiddenProducts, setDisplayHiddenProducts] = useState(false);
   const [displayDiscountedProducts, setDisplayDiscountedProducts] = useState(false);
+  const [productVariants, setProductVariants] = useState<any[]>([]);
   const [cartList, setCartList] = useState<any[]>([]);
 
   const me = useMe();
@@ -83,6 +84,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
 
     return "";
   };
+
+  const fetchProductVariant = useProductVariant();
 
   const productsQuery = useProducts(
     {
@@ -253,6 +256,29 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
     displayDiscountedProducts,
     sortBy
   ]);
+
+  const getProductVariants = async () => {
+    let productPriceIds = [];
+    if (memoizedProducts.length > 0) {
+      productPriceIds = memoizedProducts
+        .filter((item: any) => item.productPrices.length > 0)
+        .map((item: any) => item.productPrices[0].id);
+    } 
+    else if (memoizedVendorProducts.length > 0) {
+      productPriceIds = memoizedVendorProducts
+        .filter((item: any) => item.productPrices.length > 0)
+        .map((item: any) => item.productPrices[0].id);
+    }
+
+    if (productPriceIds.length > 0) {
+      const response = await fetchProductVariant.mutateAsync(productPriceIds);
+      if (response.status) setProductVariants(response.data);
+    }
+  }
+
+  useEffect(() => {
+    getProductVariants();
+  }, [memoizedProducts, memoizedVendorProducts]);
 
   const cartListByUser = useCartListByUserId(
     {
@@ -629,6 +655,9 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     }
                     inWishlist={item?.inWishlist}
                     haveAccessToken={!!me.data?.data}
+                    productVariants={
+                      productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                    }
                     isAddedToCart={cartItem ? true : false}
                     cartQuantity={cartItem?.quantity || 0}
                     productVariant={cartItem?.object}
@@ -648,6 +677,9 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     inWishlist={item?.inWishlist}
                     haveAccessToken={!!me.data?.data}
                     isSeller
+                    productVariants={
+                      productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                    }
                     isAddedToCart={cartItem ? true : false}
                     cartQuantity={cartItem?.quantity || 0}
                     productVariant={cartItem?.object}

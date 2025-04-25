@@ -30,6 +30,7 @@ type ProductCardProps = {
   inWishlist?: boolean;
   haveAccessToken: boolean;
   isSeller?: boolean;
+  productVariants?: any[]
   isAddedToCart?: boolean;
   cartQuantity?: number;
   productVariant: any;
@@ -42,6 +43,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   inWishlist,
   haveAccessToken,
   isSeller,
+  productVariants = [],
   isAddedToCart,
   cartQuantity = 0,
   productVariant,
@@ -115,6 +117,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const handleAddToCart = async (
     newQuantity: number,
     actionType: "add" | "remove",
+    variant?: any
   ) => {
     const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
     const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
@@ -155,7 +158,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const response = await updateCartWithLogin.mutateAsync({
       productPriceId: item?.productProductPriceId,
       quantity: newQuantity,
-      productVariant: selectedProductVariant,
+      productVariant: variant || selectedProductVariant,
     });
 
     if (response.status) {
@@ -179,7 +182,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
-  const handleQuantity = (quantity: number, action: "add" | "remove") => {
+  const handleQuantity = (quantity: number, action: "add" | "remove", variant?: any) => {
     const minQuantity = item.productPrices?.length? item.productPrices[0]?.minQuantityPerCustomer : null;
     const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
 
@@ -389,6 +392,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </Link>
         )}
       </div>
+
+      {productVariants.length > 0 && <div className="mb-2">
+        <label dir={langDir}>{productVariants[0].type}</label>
+        <select
+          className="w-full"
+          value={selectedProductVariant?.value}
+          onChange={(e) => {
+            let value = e.target.value;
+            const selectedVariant = productVariants.find((variant: any) => variant.value == value);
+            setSelectedProductVariant(selectedVariant);
+            handleAddToCart(quantity, "add", selectedVariant)
+          }}
+        >
+          {productVariants.map((variant: any, index: number) => {
+            return <option key={index} value={variant.value} dir={langDir}>{variant.value}</option>;
+          })}
+        </select>
+      </div>}
 
       <div className="quantity_wrap mb-2">
         <label dir={langDir}>{t("quantity")}</label>

@@ -7,7 +7,7 @@ import {
 } from "@/utils/types/common.types";
 import { useBrands } from "@/apis/queries/masters.queries";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useAllBuyGroupProducts } from "@/apis/queries/product.queries";
+import { useAllBuyGroupProducts, useProductVariant } from "@/apis/queries/product.queries";
 import ProductCard from "@/components/modules/trending/ProductCard";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
@@ -79,6 +79,7 @@ const TrendingPage = () => {
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
+  const [productVariants, setProductVariants] = useState<any[]>([]);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
@@ -100,6 +101,7 @@ const TrendingPage = () => {
     categoryIds: category.categoryIds ? category.categoryIds : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
   });
+  const fetchProductVariant = useProductVariant();
   const brandsQuery = useBrands({
     term: searchTerm,
   });
@@ -195,6 +197,21 @@ const TrendingPage = () => {
     selectedBrandIds,
     displayMyProducts,
   ]);
+
+  const getProductVariants = async () => {
+    let productPriceIds = memoizedProductList
+        .filter((item: any) => item.productPrices.length > 0)
+        .map((item: any) => item.productPrices[0].id);
+      
+    const response = await fetchProductVariant.mutateAsync(productPriceIds);
+    if (response.status) setProductVariants(response.data);
+  }
+
+  useEffect(() => {
+    if (memoizedProductList.length) {
+      getProductVariants();
+    }
+  }, [memoizedProductList]);
 
   const [cartList, setCartList] = useState<any[]>([]);
 
@@ -573,6 +590,9 @@ const TrendingPage = () => {
                     return (
                       <ProductCard
                         key={item.id}
+                        productVariants={
+                          productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                        }
                         item={item}
                         onWishlist={() =>
                           handleAddToWishlist(item.id, item?.productWishlist)

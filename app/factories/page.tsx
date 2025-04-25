@@ -57,6 +57,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import AddToCustomizeForm from "@/components/modules/factories/AddToCustomizeForm";
 import { useAuth } from "@/context/AuthContext";
+import { useProductVariant } from "@/apis/queries/product.queries";
 
 const FactoriesPage = () => {
   const t = useTranslations();
@@ -74,6 +75,7 @@ const FactoriesPage = () => {
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
+  const [productVariants, setProductVariants] = useState<any[]>([]);
   const [cartList, setCartList] = useState<any[]>([]);
   const [factoriesCartList, setFactoriesCartList] = useState<any[]>([]);
   const addToWishlist = useAddToWishList();
@@ -100,6 +102,7 @@ const FactoriesPage = () => {
     brandIds: selectedBrandIds.join(","),
     isOwner: displayMyProducts == "1" ? "me" : "",
   });
+  const fetchProductVariant = useProductVariant();
   const cartListByUser = useCartListByUserId(
     {
       page: 1,
@@ -146,6 +149,21 @@ const FactoriesPage = () => {
       return [];
     }
   }, [factoriesProductsQuery.data?.data]);
+
+  const getProductVariants = async () => {
+    let productPriceIds = memoizedRfqProducts
+        .filter((item: any) => item.product_productPrice.length > 0)
+        .map((item: any) => item.product_productPrice[0].id);
+      
+    const response = await fetchProductVariant.mutateAsync(productPriceIds);
+    if (response.status) setProductVariants(response.data);
+  }
+
+  useEffect(() => {
+    if (memoizedRfqProducts.length) {
+      getProductVariants();
+    }
+  }, [memoizedRfqProducts]);
 
   useEffect(() => {
     if (cartListByUser.data?.data) {
@@ -391,6 +409,9 @@ const FactoriesPage = () => {
                                 productNote={item?.productNote || "-"}
                                 productStatus={item?.status}
                                 productImages={item?.productImages}
+                                productVariants={
+                                  productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                                }
                                 productQuantity={
                                   cartList.find(
                                     (el: any) => el.productId == item.id,
