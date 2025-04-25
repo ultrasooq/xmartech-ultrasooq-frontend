@@ -19,7 +19,7 @@ import AddImageContent from "../profile/AddImageContent";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import ReactPlayer from "react-player/lazy";
 import BrandSelect from "@/components/shared/BrandSelect";
-import { PRODUCT_CONDITION_LIST } from "@/utils/constants";
+import { PRODUCT_CATEGORY_ID, PRODUCT_CONDITION_LIST } from "@/utils/constants";
 import ReactSelect from "react-select";
 import PriceSection from "./PriceSection";
 import DescriptionSection from "./DescriptionSection";
@@ -62,7 +62,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const createTag = useCreateTag();
   const [listIds, setListIds] = useState<string[]>([]);
   const [catList, setCatList] = useState<any[]>([]);
-  const [currentId, setCurrentId] = useState<string>("184");
+  const [currentId, setCurrentId] = useState<string>(PRODUCT_CATEGORY_ID.toString());
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   // const upload = useUploadFile();
