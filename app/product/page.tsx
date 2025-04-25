@@ -15,7 +15,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
-import { BUYGROUP_MENU_ID, FACTORIES_MENU_ID, RFQ_MENU_ID, STORE_MENU_ID, imageExtensions, videoExtensions } from "@/utils/constants";
+import { ALPHANUMERIC_REGEX, BUYGROUP_MENU_ID, FACTORIES_MENU_ID, RFQ_MENU_ID, STORE_MENU_ID, imageExtensions, videoExtensions } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
@@ -252,6 +252,9 @@ const formSchemaForTypeP = (t: any) => {
           .min(1, { message: t("specification_is_required") })
           .max(20, {
             message: t("specification_must_be_less_than_20_characters"),
+          })
+          .refine((val) => ALPHANUMERIC_REGEX.test(val), {
+            message: t("specification_must_contain_only_letters_or_digits"),
           }),
       }),
     ),

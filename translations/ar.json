@@ -753,6 +753,7 @@
     "value_must_be_less_than_n_characters": "يجب أن تكون القيمة أقل من أحرف {n}",
     "specification_is_required": "المواصفات مطلوبة",
     "specification_must_be_less_than_20_characters": "يجب أن تكون المواصفات أقل من 20 حرفًا",
+    "specification_must_contain_only_letters_or_digits": "يجب أن تحتوي المواصفات على أحرف أو أرقام فقط",
     "variant_type_is_required": "نوع المتغير مطلوب",
     "variant_type_must_be_equal_greater_than_2_characters": "يجب أن يكون النوع المتغير مساويًا أو أكبر من 2 أحرف",
     "variant_type_must_be_less_than_20_characters": "يجب أن يكون النوع المتغير أقل من 20 حرفًا",

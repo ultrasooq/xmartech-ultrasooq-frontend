@@ -124,7 +124,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   useEffect(() => {
     if (catList[currentIndex]) {
       let tempList = catList;
-      if (subCategoryById.data?.data?.children?.length) {
+      if (subCategoryById.data?.data?.children) {
         tempList[currentIndex] = subCategoryById.data?.data;
         tempList = tempList.slice(0, currentIndex + 1);
       }
@@ -132,11 +132,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       return;
     }
 
-    if (subCategoryById.data?.data?.children?.length) {
+    if (subCategoryById.data?.data?.children) {
       setCatList([...catList, subCategoryById.data?.data]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentId, subCategoryById.data?.data?.children?.length, currentIndex]);
+  }, [currentId, subCategoryById.data?.data?.children, currentIndex]);
 
   useEffect(
     () => formContext.setValue("categoryId", Number(currentId)),
@@ -237,10 +237,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                 setCurrentId(e.target.value);
                                 setCurrentIndex(index + 1);
 
-                                if (listIds[index + 1]) {
+                                if (listIds[index]) {
                                   let tempIds = listIds;
-                                  tempIds[index + 1] = e.target.value;
-                                  tempIds = tempIds.slice(0, index + 2);
+                                  tempIds[index] = e.target.value;
+                                  tempIds = tempIds.slice(0, index + 1);
                                   setListIds([...tempIds]);
                                   return;
                                 }
