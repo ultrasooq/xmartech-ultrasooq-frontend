@@ -8,6 +8,7 @@ import { useFormContext } from "react-hook-form";
 import { Label } from "../ui/label";
 import { useTranslations } from "use-intl";
 import { useAuth } from "@/context/AuthContext";
+import { BUSINESS_TYPE_CATEGORY_ID } from "@/utils/constants";
 
 type CategoryProps = {
   id: number;
@@ -46,7 +47,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
 
   const watcher = formContext.watch(name);
 
-  const categoryQuery = useCategory("186");
+  const categoryQuery = useCategory(BUSINESS_TYPE_CATEGORY_ID.toString());
   const subCategoryQuery = useCategory(
     categoryId ? String(categoryId) : "",
     !!categoryId,

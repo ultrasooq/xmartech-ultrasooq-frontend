@@ -259,6 +259,10 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         },
         (error) => {
           console.error("Error fetching location:", error);
+          let ipInfo = JSON.parse(window.localStorage.getItem('ipInfo') || '{}');
+          if (ipInfo.latitude && ipInfo.longitude) {
+            setValue("productLatLng",  `${ipInfo.latitude}, ${ipInfo.longitude}`)
+          }
         },
       );
     } else {
@@ -1010,13 +1014,14 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     }
                   </p>
                 </div>
-                <div className="mt-2 flex flex-col gap-y-3">
+                <div className="flex flex-col gap-y-3">
                   {/* For Location */}
                   {/* <label>Location</label> */}
                   <ControlledTextInput
                     name="productTown"
                     placeholder={t("enter_location")}
                     label={t("location")}
+                    showLabel={true}
                     dir={langDir}
                   />
                 </div>

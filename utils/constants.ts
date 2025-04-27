@@ -409,6 +409,8 @@ export const FACTORIES_MENU_ID = 10;
 export const RFQ_MENU_ID = 11;
 
 export const PRODUCT_CATEGORY_ID = 4;
+export const SERVICE_CATEGORY_ID = 6;
+export const BUSINESS_TYPE_CATEGORY_ID = 5;
 
 export const LANGUAGES = [
   {

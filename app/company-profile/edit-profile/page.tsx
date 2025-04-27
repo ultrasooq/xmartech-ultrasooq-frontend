@@ -64,7 +64,6 @@ export default function EditProfilePage() {
   const router = useRouter();
   const { toast } = useToast();
 
-
   const form = useForm({
     resolver: zodResolver(formSchema(t)),
     defaultValues: {
@@ -87,7 +86,6 @@ export default function EditProfilePage() {
       aboutUsJson: "",
     },
   });
-
 
   const [imageFile, setImageFile] = useState<FileList | null>();
   const [activeUserId, setActiveUserId] = useState<string | null>();
@@ -186,7 +184,7 @@ export default function EditProfilePage() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uniqueUser.data?.data?.userProfile?.length, memoizedTags?.length, memoizedCountries?.length, memoizedLastTwoHundredYears?.length,]);
+  }, [uniqueUser.data?.data?.userProfile?.length, memoizedTags?.length, memoizedCountries?.length, memoizedLastTwoHundredYears?.length]);
 
   return (
     <section className="relative w-full py-7">
@@ -354,6 +352,7 @@ export default function EditProfilePage() {
                       label={t("address")}
                       name="address"
                       placeholder={t("address")}
+                      showLabel={true}
                       dir={langDir}
                     />
                   </div>
@@ -362,6 +361,7 @@ export default function EditProfilePage() {
                     label={t("city")}
                     name="city"
                     placeholder={t("city")}
+                    showLabel={true}
                     dir={langDir}
                   />
                 </div>
@@ -371,13 +371,18 @@ export default function EditProfilePage() {
                     label={t("province")}
                     name="province"
                     placeholder={t("province")}
+                    showLabel={true}
                     dir={langDir}
                   />
 
                   <ControlledSelectInput label={t("country")} name="country" options={memoizedCountries} />
                 </div>
 
-                <ControlledPhoneInput name={"phoneNumber"} countryName={"cc"} placeholder={t("enter_phone_number")} />
+                <ControlledPhoneInput 
+                  name={"phoneNumber"}
+                  countryName={"cc"}
+                  placeholder={t("enter_phone_number")}
+                />
 
               </div>
 
@@ -395,9 +400,17 @@ export default function EditProfilePage() {
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                  {/* TODO: fix submit value type */}
-                  <ControlledSelectInput label={t("year_of_establishment")} name="yearOfEstablishment" options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))} />
-                  <ControlledSelectInput label={t("total_no_of_employees")} name="totalNoOfEmployee" options={NO_OF_EMPLOYEES_LIST} />
+                  <ControlledSelectInput 
+                    label={t("year_of_establishment")}
+                    name="yearOfEstablishment"
+                    options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))} 
+                  />
+                  
+                  <ControlledSelectInput 
+                    label={t("total_no_of_employees")}
+                    name="totalNoOfEmployee"
+                    options={NO_OF_EMPLOYEES_LIST}
+                  />
                 </div>
 
                 <QuillEditor label={t("about_us")} name="aboutUsJson" />

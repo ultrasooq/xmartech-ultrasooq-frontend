@@ -28,6 +28,7 @@ const CartListPage = () => {
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const deviceId = getOrCreateDeviceId() || "";
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const cartListByDeviceQuery = useCartListByDevice(
     {
@@ -50,6 +51,7 @@ const CartListPage = () => {
   const addToWishlist = useAddToWishList();
 
   const memoizedCartList = useMemo(() => {
+    setLoading(false);
     if (cartListByUser.data?.data) {
       return cartListByUser.data?.data || [];
     } else if (cartListByDeviceQuery.data?.data) {
@@ -182,6 +184,7 @@ const CartListPage = () => {
   const handleRemoveItemFromCart = async (cartId: number) => {
     const response = await deleteCartItem.mutateAsync({ cartId });
     if (response.status) {
+      setLoading(true);
       toast({
         title: t("item_removed_from_cart"),
         description: t("check_your_cart_for_more_details"),
@@ -256,7 +259,7 @@ const CartListPage = () => {
                   ) : null}
 
                   <div className="px-3">
-                    {cartListByUser.isLoading ? (
+                    {cartListByUser.isLoading || loading ? (
                       <div className="my-3 space-y-3">
                         {Array.from({ length: 2 }).map((_, i) => (
                           <Skeleton key={i} className="h-28 w-full" />
@@ -264,7 +267,7 @@ const CartListPage = () => {
                       </div>
                     ) : null}
 
-                    {!haveAccessToken && cartListByDeviceQuery.isLoading ? (
+                    {!haveAccessToken && (cartListByDeviceQuery.isLoading || loading) ? (
                       <div className="my-3 space-y-3">
                         {Array.from({ length: 2 }).map((_, i) => (
                           <Skeleton key={i} className="h-28 w-full" />
@@ -273,28 +276,30 @@ const CartListPage = () => {
                     ) : null}
                   </div>
 
-                  {memoizedCartList?.map((item: CartItem) => (
-                    <ProductCard
-                      key={item.id}
-                      cartId={item.id}
-                      productId={item.productId}
-                      productPriceId={item.productPriceId}
-                      productName={item.productPriceDetails?.productPrice_product?.productName}
-                      offerPrice={item.productPriceDetails?.offerPrice}
-                      productQuantity={item.quantity}
-                      productVariant={item.object}
-                      productImages={item.productPriceDetails?.productPrice_product?.productImages}
-                      consumerDiscount={item.productPriceDetails?.consumerDiscount || 0}
-                      consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
-                      vendorDiscount={item.productPriceDetails?.vendorDiscount || 0}
-                      vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
-                      onRemove={handleRemoveItemFromCart}
-                      onWishlist={handleAddToWishlist}
-                      haveAccessToken={haveAccessToken}
-                      minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
-                      maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
-                    />
-                  ))}
+                  {!loading ? (
+                    memoizedCartList?.map((item: CartItem) => (
+                      <ProductCard
+                        key={item.id}
+                        cartId={item.id}
+                        productId={item.productId}
+                        productPriceId={item.productPriceId}
+                        productName={item.productPriceDetails?.productPrice_product?.productName}
+                        offerPrice={item.productPriceDetails?.offerPrice}
+                        productQuantity={item.quantity}
+                        productVariant={item.object}
+                        productImages={item.productPriceDetails?.productPrice_product?.productImages}
+                        consumerDiscount={item.productPriceDetails?.consumerDiscount || 0}
+                        consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
+                        vendorDiscount={item.productPriceDetails?.vendorDiscount || 0}
+                        vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
+                        onRemove={handleRemoveItemFromCart}
+                        onWishlist={handleAddToWishlist}
+                        haveAccessToken={haveAccessToken}
+                        minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
+                        maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                      />
+                    ))
+                  ) : null}
                 </div>
               </div>
             </div>

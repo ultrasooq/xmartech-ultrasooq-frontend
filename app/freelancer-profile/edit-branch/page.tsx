@@ -140,8 +140,8 @@ const formSchema = z
     if (startTime && endTime && startTime > endTime) {
       ctx.addIssue({
         code: "custom",
-        message: "End Time must be greater than Start Time",
-        path: ["endTime"],
+        message: "Start Time must be less than End Time",
+        path: ["startTime"],
       });
     }
   });
@@ -269,15 +269,6 @@ export default function EditBranchPage() {
             sat: 0,
           };
 
-      // const tagList = branch?.userBranchTags
-      //   ? branch?.userBranchTags?.map((item: any) => {
-      //       return {
-      //         label: item?.userBranchTagsTag?.tagName,
-      //         value: item?.userBranchTagsTag?.id,
-      //       };
-      //     })
-      //   : [];
-
       const categoryList = branch?.userBranch_userBranchCategory
         ? branch?.userBranch_userBranchCategory?.map((item: any) => {
             return {
@@ -368,6 +359,7 @@ export default function EditBranchPage() {
                           label={t("address")}
                           name="address"
                           placeholder={t("address")}
+                          showLabel={true}
                           dir={langDir}
                         />
 
@@ -384,6 +376,7 @@ export default function EditBranchPage() {
                         label={t("city")}
                         name="city"
                         placeholder={t("city")}
+                        showLabel={true}
                         dir={langDir}
                       />
                     </div>
@@ -393,6 +386,7 @@ export default function EditBranchPage() {
                         label={t("province")}
                         name="province"
                         placeholder={t("province")}
+                        showLabel={true}
                         dir={langDir}
                       />
 
@@ -425,17 +419,20 @@ export default function EditBranchPage() {
                     </div>
 
                     <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                      <ControlledPhoneInput
-                        label={t("branch_contact_number")}
-                        name="contactNumber"
-                        countryName="cc"
-                        placeholder={t("branch_contact_number")}
-                      />
+                      <div className="mt-2">
+                        <ControlledPhoneInput
+                          label={t("branch_contact_number")}
+                          name="contactNumber"
+                          countryName="cc"
+                          placeholder={t("branch_contact_number")}
+                        />
+                      </div>
 
                       <ControlledTextInput
                         label={t("branch_contact_name")}
                         name="contactName"
                         placeholder={t("branch_contact_name")}
+                        showLabel={true}
                         dir={langDir}
                       />
                     </div>

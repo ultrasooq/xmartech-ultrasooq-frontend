@@ -99,6 +99,7 @@ export default function OtpVerifyPage() {
       sessionStorage.clear();
       router.push("/profile");
     } else {
+      setOtp(new Array(4).fill(""));
       toast({
         title: t("verification_failed"),
         description: response.message,

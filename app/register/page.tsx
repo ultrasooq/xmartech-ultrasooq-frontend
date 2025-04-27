@@ -74,18 +74,18 @@ const formSchema = z
         message: "Email must be in lower case",
       }),
     initialPassword: z
-      .string()
+      .string({ required_error: "Login Password is required" })
       .trim()
-      .min(2, {
+      .min(1, {
         message: "Login Password is required",
       })
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",
       }),
     password: z
-      .string()
+      .string({ required_error: "Login Password is required" })
       .trim()
-      .min(2, {
+      .min(1, {
         message: "Confirm Password is required",
       })
       .min(8, {
@@ -368,6 +368,7 @@ export default function RegisterPage() {
                       placeholder={t("enter_login_password_again")}
                       type="password"
                       dir={langDir}
+                      className="mb-2"
                     />
 
                     <ControlledPhoneInput
@@ -421,6 +422,7 @@ export default function RegisterPage() {
                         </FormItem>
                       )}
                     />
+                    
                     <div className="mb-4 w-full">
                       <Button
                         disabled={register.isPending}

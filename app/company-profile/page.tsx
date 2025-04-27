@@ -870,6 +870,7 @@ export default function CompanyProfilePage() {
                         label={t("address")}
                         name={`branchList.${index}.address`}
                         placeholder={t("address")}
+                        showLabel={true}
                         dir={langDir}
                       />
 
@@ -886,6 +887,7 @@ export default function CompanyProfilePage() {
                       label={t("city")}
                       name={`branchList.${index}.city`}
                       placeholder={t("city")}
+                      showLabel={true}
                       dir={langDir}
                     />
                   </div>
@@ -895,6 +897,7 @@ export default function CompanyProfilePage() {
                       label={t("province")}
                       name={`branchList.${index}.province`}
                       placeholder={t("province")}
+                      showLabel={true}
                       dir={langDir}
                     />
 
@@ -914,9 +917,11 @@ export default function CompanyProfilePage() {
                     />
 
                     <ControlledTextInput
+                      className="mt-0"
                       label={t("branch_contact_name")}
                       name={`branchList.${index}.contactName`}
                       placeholder={t("branch_contact_name")}
+                      showLabel={true}
                       dir={langDir}
                     />
                   </div>
@@ -1037,7 +1042,7 @@ export default function CompanyProfilePage() {
                                   }}
                                   checked={
                                     !!field.value[
-                                      item.value as keyof typeof field.value
+                                    item.value as keyof typeof field.value
                                     ]
                                   }
                                   className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
