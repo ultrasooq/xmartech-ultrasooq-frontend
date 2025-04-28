@@ -889,7 +889,10 @@
     "hourly": "Hourly",
     "service_cost": "Service Cost",
     "enter_service_cost": "Enter service cost",
-    "service_details":"Service Details",
-    "service_create_successful":"Service Create Successful",
-    "service_create_failed":"Service Create Failed"
+    "service_details": "Service Details",
+    "service_create_successful": "Service Create Successful",
+    "service_create_failed": "Service Create Failed",
+    "all_services": "All Services",
+    "my_services": "My Services",
+    "n_services_found": "{n} Services Found"
 }

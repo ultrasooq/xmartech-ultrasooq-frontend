@@ -1,896 +1,625 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
-import { Form } from "@/components/ui/form";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useTags } from "@/apis/queries/tags.queries";
-import BasicInformationSection from "@/components/modules/createService/BasicInformationSection";
-import DescriptionAndSpecificationSection from "@/components/modules/createService/DescriptionAndSpecificationSection";
-import Footer from "@/components/shared/Footer";
-import { useCreateProduct } from "@/apis/queries/product.queries";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
-import { BUYGROUP_MENU_ID, FACTORIES_MENU_ID, RFQ_MENU_ID, STORE_MENU_ID, imageExtensions, videoExtensions } from "@/utils/constants";
-import BackgroundImage from "@/public/images/before-login-bg.png";
-import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
-import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
-import { useTranslations } from "next-intl";
-import { useAuth } from "@/context/AuthContext";
-import { Label } from "@/components/ui/label";
-import { WEEKDAYS_LIST } from "@/utils/constants"
-import ReactSelect from "react-select";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
-  IOption,
-  IState,
-  ICity
+  IBrands,
+  ISelectOptions,
+  TrendingProduct,
 } from "@/utils/types/common.types";
+import { useBrands } from "@/apis/queries/masters.queries";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useAllProducts, useProductVariant } from "@/apis/queries/product.queries";
+import ProductCard from "@/components/modules/trending/ProductCard";
+import GridIcon from "@/components/icons/GridIcon";
+import ListIcon from "@/components/icons/ListIcon";
+import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
+import ProductTable from "@/components/modules/trending/ProductTable";
+import { debounce } from "lodash";
 import {
-  useAllCountries,
-  useFetchCitiesByState,
-  useFetchStatesByCountry,
-} from "@/apis/queries/masters.queries";
-import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
-import { useCreateService } from "@/apis/queries/services.queries";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import ReactSlider from "react-slider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+// import { stripHTML } from "@/utils/helper";
+// import Image from "next/image";
+// import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";
+// import ChevronRightIcon from "@/public/images/nextarow.svg";
+// import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
+import Footer from "@/components/shared/Footer";
+import Pagination from "@/components/shared/Pagination";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMe } from "@/apis/queries/user.queries";
+import {
+  useCartListByDevice,
+  useCartListByUserId,
+} from "@/apis/queries/cart.queries";
+import { getOrCreateDeviceId } from "@/utils/helper";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import BannerSection from "@/components/modules/trending/BannerSection";
+import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
+import { useCategoryStore } from "@/lib/categoryStore";
+import TrendingCategories from "@/components/modules/trending/TrendingCategories";
+import { useTranslations } from "next-intl";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
+import { fetchAllServices } from "@/apis/requests/services.requests";
+import { useGetAllServices } from "@/apis/queries/services.queries";
+import ServiceCard from "@/components/modules/trending/ServiceCard";
+import ServiceTable from "@/components/modules/trending/ServiceTable";
 
-interface OptionType {
-  label: string;
-  value: string | number;
+interface ServicesProps {
+  searchParams?: { term?: string };
 }
-const formSchema = (t: any) =>
-  z.object({
-    serviceName: z
-      .string()
-      .trim()
-      .min(1, { message: t("service_name_is_required") }),
 
-    description: z.array(z.any()).optional(),
-
-    categoryId: z
-      .number({ required_error: t("category_is_required") })
-      .positive({ message: t("category_id_must_be_positive") }),
-
-    categoryLocation: z.string().trim().optional(),
-
-    workingDays: z
-      .string()
-      .trim()
-      .min(1, { message: t("working_days_required") }),
-
-    offDays: z.string().trim().optional(),
-
-    renewEveryWeek: z.boolean().optional(),
-
-    oneTime: z.boolean().optional(),
-
-    openTime: z.string().trim().optional(),
-    closeTime: z.string().trim().optional(),
-    breakTimeFrom: z.string().trim().optional(),
-    breakTimeTo: z.string().trim().optional(),
-
-    shippingType: z.enum(["DIRECTION", "RANG"]).optional(),
-
-    fromCityId: z.number().positive().optional(),
-    toCityId: z.number().positive().optional(),
-    rangeCityId: z.number().positive().optional(),
-
-    eachCustomerTime: z.string().trim().optional(),
-    customerPerPeiod: z.string().trim().optional(),
-
-    serviceType: z.enum(["BOOKING", "MOVING"], {
-      required_error: t("service_type_is_required"),
-    }),
-
-    serviceConfirmType: z.enum(["AUTO", "MANUAL"]).optional(),
-
-    serviceFor: z.enum(["OWNER", "EVERYONE"]).optional(),
-
-    tags: z
-      .array(
-        z.object({
-          label: z.string().trim(),
-          value: z.number(),
-        }),
-      )
-      .min(1, { message: t("at_least_one_tag_required") }),
-    features: z
-      .array(
-        z.object({
-          name: z
-            .string()
-            .trim()
-            .min(1, { message: t("feature_name_required") }),
-          serviceCostType: z.enum(["FLAT", "HOURLY"], {
-            required_error: t("cost_type_required"),
-          }),
-          serviceCost: z
-            .string().trim(),
-        })
-      )
-      .min(1, { message: t("at_least_one_feature_required") }),
-
-    images: z.any().optional(),
-  }).superRefine((data: any, ctx) => {
-    // Validate that closeTime is after openTime
-    if (data.openTime && data.closeTime && data.openTime >= data.closeTime) {
-      ctx.addIssue({
-        code: "custom",
-        message: t("close_time_must_be_after_open_time"),
-        path: ["closeTime"],
-      });
-    }
-
-    // Validate that breakTimeFrom is within openTime and closeTime
-    if (
-      data.breakTimeFrom &&
-      (data.breakTimeFrom < data.openTime || data.breakTimeFrom >= data.closeTime)
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        message: t("break_time_from_must_be_within_open_and_close_time"),
-        path: ["breakTimeFrom"],
-      });
-    }
-
-    // Validate that breakTimeTo is within openTime and closeTime
-    if (
-      data.breakTimeTo &&
-      (data.breakTimeTo <= data.openTime || data.breakTimeTo > data.closeTime)
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        message: t("break_time_to_must_be_within_open_and_close_time"),
-        path: ["breakTimeTo"],
-      });
-    }
-
-    // Validate that breakTimeFrom is before breakTimeTo
-    if (
-      data.breakTimeFrom &&
-      data.breakTimeTo &&
-      data.breakTimeFrom >= data.breakTimeTo
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        message: t("break_time_from_must_be_before_break_time_to"),
-        path: ["breakTimeFrom"],
-      });
-    }
-  });
-const customStyles = {
-  control: (base: any) => ({
-    ...base,
-    height: 48,
-    minHeight: 48,
-  }),
-  menu: (base: any) => ({
-    ...base,
-    zIndex: 20,
-  }),
-};
-const defaultServiceValues = {
-  serviceName: "",
-  description: "",
-  categoryId: 0,
-  categoryLocation: "",
-  workingDays: "",
-  offDays: "",
-  renewEveryWeek: true,
-  oneTime: false,
-  openTime: "",
-  closeTime: "",
-  breakTimeFrom: "",
-  breakTimeTo: "",
-  shippingType: "DIRECTION",
-  fromCityId: undefined,
-  toCityId: undefined,
-  rangeCityId: undefined,
-  eachCustomerTime: undefined,
-  customerPerPeiod: undefined,
-  serviceType: "BOOKING", // default could be "BOOKING" or "MOVING"
-  serviceConfirmType: "AUTO",
-  serviceFor: "OWNER",
-  tags: [],
-  features: [],
-  images: [],
-};
-
-const CreateServicePage = () => {
+const Services = ({ searchParams }: ServicesProps) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
-  const router = useRouter();
+  const { langDir, currency } = useAuth();
+  const queryClient = useQueryClient();
+  const categoryStore = useCategoryStore();
+  // const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [activeProductType, setActiveProductType] = useState<string>();
-  const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
-  const [selectedState, setSelectedState] = useState<any | null>(null);
-  const [states, setStates] = useState<IOption[]>([]);
-  const [cities, setCities] = useState<IOption[]>([]);
-  const [selectedCountries, setSelectedCountries] = useState<OptionType[]>([]);
-  const [statesByCountry, setStatesByCountry] = useState<
-    Record<string, OptionType[]>
-  >({});
-  const form = useForm({
-    resolver: zodResolver(formSchema(t)),
-    defaultValues: defaultServiceValues,
-  });
-  const fetchCitiesByState = useFetchCitiesByState();
-  const uploadMultiple = useUploadMultipleFile();
-  const tagsQuery = useTags();
-  const countriesNewQuery = useAllCountries();
-  const fetchStatesByCountry = useFetchStatesByCountry();
-  const createService = useCreateService();
-  const watchServiceImages = form.watch("images");
-  // const watchSetUpPrice = form.watch("setUpPrice");
+  const deviceId = getOrCreateDeviceId() || "";
+  const [viewType, setViewType] = useState<"grid" | "list">("grid");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [priceRange, setPriceRange] = useState<number[]>([]);
+  const [minPriceInput, setMinPriceInput] = useState("");
+  const [maxPriceInput, setMaxPriceInput] = useState("");
+  const [sortBy, setSortBy] = useState("desc");
+  const [productFilter, setProductFilter] = useState(false);
+  const [displayMyProducts, setDisplayMyProducts] = useState("0");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(8);
+  const [productVariants, setProductVariants] = useState<any[]>([]);
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  const category = useCategoryStore();
 
-  const memoizedTags = useMemo(() => {
+  const minPriceInputRef = useRef<HTMLInputElement>(null);
+  const maxPriceInputRef = useRef<HTMLInputElement>(null);
+
+  // const [searchUrlTerm, setSearchUrlTerm] = useState("");
+  const searchUrlTerm = searchParams?.term || "";
+
+  const me = useMe();
+  const addToWishlist = useAddToWishList();
+  const deleteFromWishlist = useDeleteFromWishList();
+  const allServicesQuery = useGetAllServices({
+    page,
+    limit,
+    // sort: sortBy,
+    // term: searchUrlTerm,
+    // priceMin:
+    //   priceRange[0] === 0
+    //     ? 0
+    //     : ((priceRange[0] || Number(minPriceInput)) ?? undefined),
+    // priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
+    // brandIds:
+    //   selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    // userId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
+    // categoryIds: category.categoryIds ? category.categoryIds : undefined,
+    // isOwner: displayMyProducts == "1" ? "me" : "",
+  });
+  console.log(allServicesQuery)
+  const fetchProductVariant = useProductVariant();
+  const brandsQuery = useBrands({
+    term: searchTerm,
+  });
+
+  const memoizedBrands = useMemo(() => {
     return (
-      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
-        return { label: item.tagName, value: item.id };
-      }) || []
-    );
-  }, [tagsQuery?.data]);
-  const memoizedAllCountries = useMemo(() => {
-    return (
-      countriesNewQuery?.data?.data.map((item: any) => {
-        return { label: item.name, value: item.id };
+      brandsQuery?.data?.data.map((item: IBrands) => {
+        return { label: item.brandName, value: item.id };
       }) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countriesNewQuery?.data?.data?.length]);
-  const fetchStates = async (countryId: number) => {
-    try {
-      const response = await fetchStatesByCountry.mutateAsync({ countryId }); // Call your API
-      setStates(
-        response.data.map((state: IState) => ({
-          label: state.name,
-          value: state.id,
-        })),
-      );
-    } catch (error) {
-      console.error("Error fetching states:", error);
-    }
-  };
-  const fetchCities = async (stateId: number) => {
-    try {
-      const response = await fetchCitiesByState.mutateAsync({ stateId }); // ✅ Pass as an object
-      setCities(
-        response.data.map((city: ICity) => ({
-          label: city.name,
-          value: city.id,
-        })),
-      );
-    } catch (error) {
-      console.error("Error fetching cities:", error);
-    }
-  };
-  const handleUploadedFile = async (list: any[]) => {
-    if (list?.length) {
-      const formData = new FormData();
+  }, [brandsQuery?.data?.data?.length]);
 
-      list.forEach((item: { path: File; id: string }) => {
-        formData.append("content", item.path);
-      });
+  const handleDebounce = debounce((event: any) => {
+    setSearchTerm(event.target.value);
+  }, 1000);
 
-      const response = await uploadMultiple.mutateAsync(formData);
-      if (response.status && response.data) {
-        return response.data;
-      }
+  const handlePriceDebounce = debounce((event: any) => {
+    setPriceRange(event);
+  }, 1000);
+
+  const handleMinPriceChange = debounce((event: any) => {
+    setMinPriceInput(event.target.value);
+    // setPriceRange([ Number(event.target.value),500]);
+  }, 1000);
+
+  const handleMaxPriceChange = debounce((event: any) => {
+    setMaxPriceInput(event.target.value);
+    // setPriceRange([0, Number(event.target.value)]);
+  }, 1000);
+
+  const handleBrandChange = (
+    checked: boolean | string,
+    item: ISelectOptions,
+  ) => {
+    let tempArr = selectedBrandIds || [];
+    if (checked && !tempArr.find((ele: number) => ele === item.value)) {
+      tempArr = [...tempArr, item.value];
     }
+
+    if (!checked && tempArr.find((ele: number) => ele === item.value)) {
+      tempArr = tempArr.filter((ele: number) => ele !== item.value);
+    }
+    setSelectedBrandIds(tempArr);
   };
 
-  const onSubmit = async (formData: any) => {
-    let updatedFormData = {
-      ...formData,
-    };
+  const memoizedServicesList = useMemo(() => {
+    return allServicesQuery?.data?.data?.services || [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    allServicesQuery?.data?.data,
+    allServicesQuery?.data?.data?.length,
+    sortBy,
+    searchUrlTerm,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    priceRange[0],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    priceRange[1],
+    page,
+    limit,
+    searchTerm,
+    selectedBrandIds,
+    displayMyProducts,
+  ]);
 
-    if (watchServiceImages.length) {
-      const fileTypeArrays = watchServiceImages.filter(
-        (item: any) => typeof item.path === "object",
-      );
+  const getProductVariants = async () => {
+    let productPriceIds = memoizedServicesList
+      .filter((item: any) => item.productPrices.length > 0)
+      .map((item: any) => item.productPrices[0].id);
 
-      const imageUrlArray: any = fileTypeArrays?.length
-        ? await handleUploadedFile(fileTypeArrays)
-        : [];
+    const response = await fetchProductVariant.mutateAsync(productPriceIds);
+    if (response.status) setProductVariants(response.data);
+  }
 
-      if (imageUrlArray.length) {
-        updatedFormData.images = imageUrlArray.map(
-          (item: string) => {
-            const extension = item.split(".").pop()?.toLowerCase();
-
-            if (extension) {
-              const fileName: string = item.split("/").pop()!;
-              if (videoExtensions.includes(extension)) {
-                return {
-                  url: item,
-                  filename: fileName,
-                  type: "VIDEO"
-                };
-              } else if (imageExtensions.includes(extension)) {
-                return {
-                  url: item,
-                  filename: fileName,
-                  type: "IMAGE"
-                };
-              }
-            }
-
-            return {
-              url: item,
-              filename: item,
-              type: "IMAGE"
-            };
-          },
-        );
-      }
+  useEffect(() => {
+    if (memoizedServicesList.length) {
+      // getProductVariants();
     }
-    updatedFormData.description = JSON.stringify(updatedFormData?.description);
-    updatedFormData.tags = updatedFormData.tags.map((v: any) => {
-      return {
-        tagId: v.value
-      }
-    })
-    updatedFormData.countryId = selectedCountry;
-    updatedFormData.stateId = selectedState;
-    const response = await createService.mutateAsync(updatedFormData);
+  }, [memoizedServicesList]);
 
-    if (response.status && response.data) {
+  const [cartList, setCartList] = useState<any[]>([]);
+
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 20,
+      deviceId,
+    },
+    !haveAccessToken,
+  );
+
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 20,
+    },
+    haveAccessToken,
+  );
+
+  useEffect(() => {
+    if (cartListByUser.data?.data) {
+      setCartList((cartListByUser.data?.data || []).map((item: any) => item));
+    } else if (cartListByDeviceQuery.data?.data) {
+      setCartList(
+        (cartListByDeviceQuery.data?.data || []).map((item: any) => item),
+      );
+    }
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
+
+  const handleDeleteFromWishlist = async (productId: number) => {
+    const response = await deleteFromWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
       toast({
-        title: t("service_create_successful"),
-        description: response.message,
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
-      form.reset();
-      // router.push("/manage-services");
+      queryClient.invalidateQueries({
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
+      });
     } else {
       toast({
-        title: t("service_create_failed"),
-        description: response.message,
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
   };
-  const handleRenewFun = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
 
-    if (value === 'every_week') {
-      form.setValue('renewEveryWeek', true);
-      form.setValue('oneTime', false);
-    } else if (value === 'one_time') {
-      form.setValue('oneTime', true);
-      form.setValue('renewEveryWeek', false);
+  const handleAddToWishlist = async (
+    productId: number,
+    wishlistArr?: any[],
+  ) => {
+    const wishlistObject = wishlistArr?.find(
+      (item) => item.userId === me.data?.data?.id,
+    );
+    // return;
+    if (wishlistObject) {
+      handleDeleteFromWishlist(wishlistObject?.productId);
+      return;
+    }
+
+    const response = await addToWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
+      });
+    } else {
+      toast({
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
+        variant: "danger",
+      });
     }
   };
 
+  const selectAll = () => {
+    setSelectedBrandIds(
+      brandsQuery?.data?.data?.map((item: any) => {
+        return item.id;
+      }) || [],
+    );
+  };
+
+  const clearFilter = () => {
+    setSelectedBrandIds([]);
+    setMaxPriceInput("");
+    setMinPriceInput("");
+    setPriceRange([]);
+    setDisplayMyProducts("0");
+
+    if (minPriceInputRef.current) minPriceInputRef.current.value = "";
+    if (maxPriceInputRef.current) maxPriceInputRef.current.value = "";
+  };
+
   useEffect(() => {
-    console.log("Current Form Errors:", form.formState.errors);
-  }, [form.formState.errors]);
-  useEffect(() => {
-    if (selectedCountry) {
-      fetchStates(selectedCountry);
+    if (accessToken) {
+      setHaveAccessToken(true);
     } else {
-      setStates([]);
-      setSelectedState(null);
+      setHaveAccessToken(false);
     }
-  }, [selectedCountry]);
+  }, [accessToken]);
+
   useEffect(() => {
-    if (selectedState) {
-      fetchCities(selectedState);
-    } else {
-      setCities([]);
-    }
-  }, [selectedState]);
-  useEffect(() => {
-    if (selectedCountries.length > 0) {
-      const fetchStates = async () => {
-        const statesData: Record<string, OptionType[]> = {};
+    return () => {
+      categoryStore.setSubCategories([]);
+      categoryStore.setSubSubCategories([]);
+      categoryStore.setCategoryId('');
+      categoryStore.setCategoryIds('');
+      categoryStore.setSubCategoryIndex(0);
+      categoryStore.setSecondLevelCategoryIndex(0);
+      categoryStore.setSubCategoryParentName('');
+      categoryStore.setSubSubCategoryParentName('');
+    };
+  }, []);
 
-        try {
-          const responses = await Promise.all(
-            selectedCountries.map(async (country) => {
-              const response = await fetchStatesByCountry.mutateAsync({
-                countryId: Number(country.value),
-              });
-              return { countryId: country.value, data: response.data };
-            }),
-          );
-
-          responses.forEach(({ countryId, data }) => {
-            statesData[countryId] = data.map((state: any) => ({
-              label: state.name,
-              value: state.id,
-            }));
-          });
-
-          setStatesByCountry(statesData);
-        } catch (error) {
-          console.error("Error fetching states:", error);
-        }
-      };
-
-      fetchStates();
-    }
-  }, [selectedCountries]);
   return (
     <>
-      <section className="relative w-full py-7">
-        <div className="absolute left-0 top-0 -z-10 h-full w-full">
-          <Image
-            src={BackgroundImage}
-            className="h-full w-full object-cover object-center"
-            alt="background"
-            fill
-            priority
-          />
-        </div>
-        <div className="container relative z-10 m-auto mx-auto max-w-[950px] px-3">
-          <div className="flex flex-wrap">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-                <BasicInformationSection
-                  tagsList={memoizedTags}
-                  activeProductType={activeProductType}
-                />
-                <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
-                    <div className="flex w-full flex-wrap">
-                      <div className=" w-full">
-                        <div className="flex flex-wrap">
-                          <div className="form-groups-common-sec-s1">
-                            <h3 dir={langDir}>{t("other_details")}</h3>
-                            <Label dir={langDir}>{t("working_days")}</Label>
-                            <div className="flex flex-wrap gap-2">
-                              {WEEKDAYS_LIST.map((day) => (
-                                <label key={day} className="flex items-center gap-2">
-                                  <input
-                                    type="checkbox"
-                                    value={day}
-                                    checked={form.watch("workingDays")?.split(",").includes(day)}
-                                    disabled={form.watch("offDays")?.split(",").includes(day)} // Disable if selected in offDays
-                                    onChange={(e) => {
-                                      const currentDays = form.watch("workingDays") || "";
-                                      const updatedDays = e.target.checked
-                                        ? [...currentDays.split(","), day].filter(Boolean)
-                                        : currentDays.split(",").filter((d) => d !== day);
-                                      form.setValue("workingDays", updatedDays.join(","));
-                                      form.clearErrors("workingDays");
-                                    }}
-                                  />
-                                  {day}
-                                </label>
-                              ))}
-                            </div>
-                            {form.formState.errors.workingDays && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {form.formState.errors.workingDays.message}
-                              </p>
-                            )}
-                            <div className="my-2">
-                              <Label dir={langDir}>{t("off_days")}</Label>
-                              <div className="flex flex-wrap gap-2">
-                                {WEEKDAYS_LIST.map((day) => (
-                                  <label key={day} className="flex items-center gap-2">
-                                    <input
-                                      type="checkbox"
-                                      value={day}
-                                      checked={form.watch("offDays")?.split(",").includes(day)}
-                                      disabled={form.watch("workingDays")?.split(",").includes(day)} // Disable if selected in workingDays
-                                      onChange={(e) => {
-                                        const currentDays = form.watch("offDays") || "";
-                                        const updatedDays = e.target.checked
-                                          ? [...currentDays.split(","), day].filter(Boolean)
-                                          : currentDays.split(",").filter((d) => d !== day);
-                                        form.setValue("offDays", updatedDays.join(","));
-                                      }}
-                                    />
-                                    {day}
-                                  </label>
-                                ))}
-                              </div>
-                            </div>
-                            <div className="my-2">
-                              <Label dir={langDir}>{t("service_for")}</Label>
-                              <div className="flex items-center space-x-6">
-                                <div className="flex items-center">
-                                  <input
-                                    type="radio"
-                                    id="me"
-                                    name="serviceFor"
-                                    value="OWNER"
-                                    checked={form.watch("serviceFor") === "OWNER"}
-                                    onChange={(e: any) => form.setValue("serviceFor", e.target.value)}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                  />
-                                  <label htmlFor="me" className="ml-2 text-sm text-gray-700">
-                                    {t("me")}
-                                  </label>
-                                </div>
-                                <div className="flex items-center">
-                                  <input
-                                    type="radio"
-                                    id="everyone"
-                                    name="serviceFor"
-                                    value="EVERYONE"
-                                    checked={form.watch("serviceFor") === "EVERYONE"}
-                                    onChange={(e: any) => form.setValue("serviceFor", e.target.value)}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                  />
-                                  <label htmlFor="everyone" className="ml-2 text-sm text-gray-700">
-                                    {t("everyone")}
-                                  </label>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="my-2">
-                              <Label dir={langDir}>{t("service_type")}</Label>
-                              <div className="flex flex-wrap gap-2 my-2">
-                                <select
-                                  className="w-full rounded border border-gray-300 p-2"
-                                  value={form.watch("serviceType")}
-                                  onChange={(e) => form.setValue("serviceType", e.target.value)}
-                                >
-                                  <option value="BOOKING">{t("booking")}</option>
-                                  <option value="MOVING">{t("moving")}</option>
-                                </select>
-                              </div>
-                            </div>
-                            {form.formState.errors.serviceType && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {form.formState.errors.serviceType.message}
-                              </p>
-                            )}
-                            <div className="my-2">
-                              <Label dir={langDir}>{t("confirm_order_type")}</Label>
-                              <div className="flex items-center space-x-6">
-                                <div className="flex items-center">
-                                  <input
-                                    type="radio"
-                                    id="auto"
-                                    name="serviceConfirmType"
-                                    value="AUTO"
-                                    checked={form.watch("serviceConfirmType") === "AUTO"}
-                                    onChange={(e: any) => form.setValue("serviceConfirmType", e.target.value)}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                  />
-                                  <label htmlFor="auto" className="ml-2 text-sm text-gray-700">
-                                    {t("auto_confirm")}
-                                  </label>
-                                </div>
-                                <div className="flex items-center">
-                                  <input
-                                    type="radio"
-                                    id="manual"
-                                    name="serviceConfirmType"
-                                    value="MANUAL"
-                                    checked={form.watch("serviceConfirmType") === "MANUAL"}
-                                    onChange={(e: any) => form.setValue("serviceConfirmType", e.target.value)}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                  />
-                                  <label htmlFor="manual" className="ml-2 text-sm text-gray-700">
-                                    {t("manual")}
-                                  </label>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="my-2">
-                              <Label dir={langDir}>{t("renew")}</Label>
-                              <div className="flex items-center space-x-6">
-                                <div className="flex items-center">
-                                  <input
-                                    type="radio"
-                                    id="auto"
-                                    name="renew"
-                                    value="every_week"
-                                    checked={form.watch("renewEveryWeek") === true}
-                                    onChange={handleRenewFun}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                  />
-                                  <label htmlFor="auto" className="ml-2 text-sm text-gray-700">
-                                    {t("every_week")}
-                                  </label>
-                                </div>
-                                <div className="flex items-center">
-                                  <input
-                                    type="radio"
-                                    id="auto"
-                                    name="renew"
-                                    value="one_time"
-                                    checked={form.watch("oneTime") === true}
-                                    onChange={handleRenewFun}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                  />
-                                  <label htmlFor="manual" className="ml-2 text-sm text-gray-700">
-                                    {t("one_by_general_tool")}
-                                  </label>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="my-2">
-                              <div className="flex flex-col space-y-4">
-                                <Label dir={langDir}>{t("shipping")}</Label>
-                                <div className="flex items-center space-x-6">
-                                  <div className="flex items-center">
-                                    <input
-                                      type="radio"
-                                      id="direction"
-                                      name="shippingType"
-                                      value="DIRECTION"
-                                      checked={form.watch("shippingType") === "DIRECTION"}
-                                      onChange={(e: any) => form.setValue("shippingType", e.target.value)}
-                                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="direction" className="ml-2 text-sm text-gray-700">
-                                      {t("direction")}
-                                    </label>
-                                  </div>
-                                  <div className="flex items-center">
-                                    <input
-                                      type="radio"
-                                      id="rang"
-                                      name="shippingType"
-                                      value="RANG"
-                                      checked={form.watch("shippingType") === "RANG"}
-                                      onChange={(e: any) => form.setValue("shippingType", e.target.value)}
-                                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                                    />
-                                    <label htmlFor="rang" className="ml-2 text-sm text-gray-700">
-                                      {t("range")}
-                                    </label>
-                                  </div>
-                                </div>
-                                <div className="mt-2 flex flex-col gap-y-3">
-                                  <Label dir={langDir}>{t("select_country")}</Label>
-                                  <ReactSelect
-                                    onChange={(newValue) => {
-                                      setSelectedCountry(newValue?.value || null);
-                                      setSelectedState(null); // Reset state when country changes
-                                      setCities([]); // Clear cities when country changes
-                                    }}
-                                    options={memoizedAllCountries}
-                                    value={memoizedAllCountries.find(
-                                      (item: any) => item.value === selectedCountry?.value,
-                                    )}
-                                    styles={customStyles}
-                                    // instanceId="rangeCityId"
-                                    placeholder={t("select")}
-                                  />
-                                  {/* <p className="text-[13px] text-red-500" dir={langDir}>
-                                    {
-                                      formContext.formState.errors["productCountryId"]
-                                        ?.message as string
-                                    }
-                                  </p> */}
-                                </div>
-                                <div className="mt-2 flex flex-col gap-y-3">
-                                  {/* State Dropdown - Visible only if country is selected */}
-                                  {selectedCountry && (
-                                    <>
-                                      <Label dir={langDir}>{t("select_state")}</Label>
-                                      <ReactSelect
-                                        onChange={(newValue) => {
-                                          setSelectedState(newValue?.value || null);
-                                          setCities([]); // Clear cities when state changes
-                                        }}
-                                        options={states}
-                                        value={states.find(
-                                          (item) => item.value === selectedState?.value,
-                                        )}
-                                        styles={customStyles}
-                                        // instanceId="rangeCityId"
-                                        placeholder={t("select")}
-                                      />
-                                      {/* <p className="text-[13px] text-red-500" dir={langDir}>
-                                        {
-                                          formContext.formState.errors["productStateId"]
-                                            ?.message as string
-                                        }
-                                      </p> */}
-                                    </>
-                                  )}
-                                </div>
-                                {
-                                  selectedState && (
-                                    form.watch("shippingType") === "DIRECTION" ? (
-                                      <div className="space-y-4">
-                                        <div>
-                                          <Label dir={langDir}>{t("from_city")}</Label>
-                                          <ReactSelect
-                                            onChange={(newValue: any) => {
-                                              form.setValue("fromCityId", newValue?.value); // Set the value for fromCityId
-                                            }}
-                                            options={cities}
-                                            value={cities.find((item) => item.value === form.watch("fromCityId"))} // Watch the value for fromCityId
-                                            styles={customStyles}
-                                            instanceId="fromCityId"
-                                            placeholder={t("select")}
-                                          />
-                                          {form.formState.errors.fromCityId && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                              {form.formState.errors.fromCityId.message}
-                                            </p>
-                                          )}
-                                        </div>
+      <title dir={langDir}>{t("store")} | Ultrasooq</title>
+      <div className="body-content-s1">
+        {/* <TrendingCategories /> */}
 
-                                        <div>
-                                          <Label dir={langDir}>{t("to_city")}</Label>
-                                          <ReactSelect
-                                            onChange={(newValue: any) => {
-                                              form.setValue("toCityId", newValue?.value); // Set the value for toCityId
-                                            }}
-                                            options={cities}
-                                            value={cities.find((item) => item.value === form.watch("toCityId"))} // Watch the value for toCityId
-                                            styles={customStyles}
-                                            instanceId="toCityId"
-                                            placeholder={t("select")}
-                                          />
-                                          {form.formState.errors.toCityId && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                              {form.formState.errors.toCityId.message}
-                                            </p>
-                                          )}
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div>
-                                        <Label dir={langDir}>{t("range_city")}</Label>
-                                        <ReactSelect
-                                          onChange={(newValue: any) => {
-                                            form.setValue("rangeCityId", newValue?.value); // Set the value for rangeCityId
-                                          }}
-                                          options={cities}
-                                          value={cities.find((item) => item.value === form.watch("rangeCityId"))} // Watch the value for rangeCityId
-                                          styles={customStyles}
-                                          instanceId="rangeCityId"
-                                          placeholder={t("select")}
-                                        />
-                                        {form.formState.errors.rangeCityId && (
-                                          <p className="text-red-500 text-sm mt-1">
-                                            {form.formState.errors.rangeCityId.message}
-                                          </p>
-                                        )}
-                                      </div>
-                                    )
-                                  )}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 my-4">
-                              {/* Each Customer Input */}
-                              <div>
-                                <Label dir={langDir}>{t("each_customer")}</Label>
-                                <input
-                                  type="text"
-                                  className="w-full rounded border border-gray-300 p-2"
-                                  min={0}
-                                  placeholder={t("enter_minutes")}
-                                  {...form.register("eachCustomerTime")}
-                                  onChange={(e) => {
-                                    const cleaned = e.target.value.replace(/[^\d]/g, "");
-                                    form.setValue("eachCustomerTime", cleaned ? parseInt(cleaned, 10) : undefined as any);
-                                  }}
-                                  value={form.watch("eachCustomerTime") || ""}
-                                />
-                                {form.formState.errors.eachCustomerTime && (
-                                  <p className="text-red-500 text-sm mt-1">
-                                    {form.formState.errors.eachCustomerTime.message}
-                                  </p>
-                                )}
-                              </div>
+        {/* <BannerSection /> */}
 
-                              {/* Customer/Period Input */}
-                              <div>
-                                <Label dir={langDir}>{t("customer_per_period")}</Label>
-                                <input
-                                  type="number"
-                                  min={0}
-                                  className="w-full rounded border border-gray-300 p-2"
-                                  placeholder={t("enter_number")}
-                                  {...form.register("customerPerPeiod")}
-                                  onChange={(e) => {
-                                    const cleaned = e.target.value.replace(/[^\d]/g, "");
-                                    form.setValue("customerPerPeiod", cleaned ? parseInt(cleaned, 10) : undefined as any);
-                                  }}
-                                  value={form.watch("customerPerPeiod") || ""}
-                                />
-                                {form.formState.errors.customerPerPeiod && (
-                                  <p className="text-red-500 text-sm mt-1">
-                                    {form.formState.errors.customerPerPeiod.message}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <div className="grid grid-cols-4 gap-4 my-2">
-                              <div className="col-span-1">
-                                <ControlledTimePicker
-                                  label={t("open_time")}
-                                  name="openTime"
-                                />
-                                {form.formState.errors.openTime && (
-                                  <p className="text-red-500 text-sm mt-1">
-                                    {form.formState.errors.openTime.message}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="col-span-1">
-                                <ControlledTimePicker
-                                  label={t("close_time")}
-                                  name="closeTime"
-                                />
-                                {form.formState.errors.closeTime && (
-                                  <p className="text-red-500 text-sm mt-1">
-                                    {form.formState.errors.closeTime.message}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="col-span-1">
-                                <ControlledTimePicker
-                                  label={t("break_time_from")}
-                                  name="breakTimeFrom"
-                                />
-                                {form.formState.errors.breakTimeFrom && (
-                                  <p className="text-red-500 text-sm mt-1">
-                                    {form.formState.errors.breakTimeFrom.message}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="col-span-1">
-                                <ControlledTimePicker
-                                  label={t("break_time_to")}
-                                  name="breakTimeTo"
-                                />
-                                {form.formState.errors.breakTimeTo && (
-                                  <p className="text-red-500 text-sm mt-1">
-                                    {form.formState.errors.breakTimeTo.message}
-                                  </p>
-                                )}
-                              </div>
+        <div className="trending-search-sec">
+          <div className="container m-auto px-3">
+            {/* <div className={productFilter ? "left-filter show" : "left-filter"} dir={langDir}>
+              <div className="all_select_button">
+                <button type="button" onClick={selectAll}>
+                  {t("select_all")}
+                </button>
+                <button type="button" onClick={clearFilter}>
+                  {t("clean_select")}
+                </button>
+              </div>
+              <Accordion
+                type="multiple"
+                defaultValue={["brand"]}
+                className="filter-col"
+              >
+                <AccordionItem value="brand">
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+                    {t("by_brand")}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="filter-sub-header">
+                      <Input
+                        type="text"
+                        placeholder={t("search_brand")}
+                        className="custom-form-control-s1 searchInput rounded-none"
+                        onChange={handleDebounce}
+                        dir={langDir}
+                      />
+                    </div>
+                    <div className="filter-body-part">
+                      <div className="filter-checklists">
+                        {!memoizedBrands.length ? (
+                          <p className="text-center text-sm font-medium" dir={langDir}>
+                            {t("no_data_found")}
+                          </p>
+                        ) : null}
+                        {memoizedBrands.map((item: ISelectOptions) => (
+                          <div key={item.value} className="div-li">
+                            <Checkbox
+                              id={item.label}
+                              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                              onCheckedChange={(checked) =>
+                                handleBrandChange(checked, item)
+                              }
+                              checked={selectedBrandIds.includes(item.value)}
+                            />
+                            <div className="grid gap-1.5 leading-none">
+                              <label
+                                htmlFor={item.label}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {item.label}
+                              </label>
                             </div>
                           </div>
-                        </div>
+                        ))}
                       </div>
                     </div>
-                  </div>
-                </div>
-                {/* <ProductDetailsSection /> */}
+                  </AccordionContent>
+                </AccordionItem>
 
-                <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
-                    <div className="form-groups-common-sec-s1">
-                      <DescriptionAndSpecificationSection />
-                      <div className="mb-4 mt-4 inline-flex w-full items-center justify-end gap-2">
-                        {/* <button className="rounded-sm bg-transparent px-2 py-2 text-sm font-bold leading-6 text-[#7F818D] md:px-4 md:py-4 md:text-lg" dir={langDir}>
-                          {t("save_as_draft")}
-                        </button> */}
-
-                        <Button
-                          disabled={
-                            createService.isPending || uploadMultiple.isPending
+                <AccordionItem value="price">
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+                    {t("price")}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="px-4">
+                      <div className="px-2">
+                        <ReactSlider
+                          className="horizontal-slider"
+                          thumbClassName="example-thumb"
+                          trackClassName="example-track"
+                          defaultValue={[0, 500]}
+                          ariaLabel={["Lower thumb", "Upper thumb"]}
+                          ariaValuetext={(state) =>
+                            `Thumb value ${state.valueNow}`
                           }
-                          type="submit"
-                          className="h-10 rounded bg-dark-orange px-6 text-center text-sm font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:h-12 md:px-10 md:text-lg"
+                          renderThumb={(props, state) => (
+                            <div {...props} key={props.key}>
+                              {state.valueNow}
+                            </div>
+                          )}
+                          pearling
+                          minDistance={10}
+                          onChange={(value) => handlePriceDebounce(value)}
+                          max={500}
+                          min={0}
+                        />
+                      </div>
+                      <div className="flex justify-center">
+                        <Button
+                          variant="outline"
+                          className="mb-4"
+                          onClick={() => setPriceRange([])}
                           dir={langDir}
                         >
-                          {createService.isPending ||
-                            uploadMultiple.isPending ? (
-                            <LoaderWithMessage message={t("please_wait")} />
-                          ) : (
-                            t("submit")
-                          )}
+                          {t("clear")}
                         </Button>
                       </div>
+                      <div className="range-price-left-right-info">
+                        <Input
+                          type="number"
+                          placeholder={`${currency.symbol}0`}
+                          className="custom-form-control-s1 rounded-none"
+                          onChange={handleMinPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
+                          ref={minPriceInputRef}
+                        />
+                        <div className="center-divider"></div>
+                        <Input
+                          type="number"
+                          placeholder={`${currency.symbol}500`}
+                          className="custom-form-control-s1 rounded-none"
+                          onChange={handleMaxPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
+                          ref={maxPriceInputRef}
+                        />
+                      </div>
                     </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div> 
+            <div
+              className="left-filter-overlay"
+              onClick={() => setProductFilter(false)}
+            ></div>*/}
+            <div className="right-products">
+              {/* {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' &&
+                <RadioGroup
+                  className="mb-3 flex flex-row gap-y-3"
+                  value={displayMyProducts}
+                  onValueChange={setDisplayMyProducts}
+                  // @ts-ignore
+                  dir={langDir}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="0"
+                      id="all_products"
+                      checked={displayMyProducts == "0"}
+                    />
+                    <Label htmlFor="all_products" className="text-base" dir={langDir}>
+                      {t("all_products")}
+                    </Label>
                   </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="1"
+                      id="my_products"
+                      checked={displayMyProducts == "1"}
+                    />
+                    <Label htmlFor="my_products" className="text-base" dir={langDir}>
+                      {t("my_products")}
+                    </Label>
+                  </div>
+                </RadioGroup>
+              } */}
+              <div className="products-header-filter">
+                <div className="le-info">
                 </div>
-              </form>
-            </Form>
+                <div className="rg-filter">
+                  <p dir={langDir}>
+                    {t("n_services_found", {
+                      n: allServicesQuery.data?.data?.total,
+                    })}
+                  </p>
+                  <ul>
+                    <li>
+                      <Select onValueChange={(e) => setSortBy(e)} disabled={true}>
+                        <SelectTrigger className="custom-form-control-s1 bg-white">
+                          <SelectValue placeholder={t("sort_by")} dir={langDir} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="desc" dir={langDir}>
+                              {t("sort_by_latest")}
+                            </SelectItem>
+                            <SelectItem value="asc" dir={langDir}>
+                              {t("sort_by_oldest")}
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </li>
+
+                    <li>
+                      <button
+                        type="button"
+                        className="view-type-btn"
+                        onClick={() => setViewType("grid")}
+                      >
+                        <GridIcon active={viewType === "grid"} />
+                      </button>
+                    </li>
+                    {/* <li>
+                      <button
+                        type="button"
+                        className="view-type-btn"
+                        onClick={() => setViewType("list")}
+                      >
+                        <ListIcon active={viewType === "list"} />
+                      </button>
+                    </li> */}
+                    <li>
+                      <button
+                        type="button"
+                        className="view-type-btn"
+                        onClick={() => setProductFilter(true)}
+                      >
+                        <FilterMenuIcon />
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {allServicesQuery.isLoading && viewType === "grid" ? (
+                <div className="grid grid-cols-4 gap-5">
+                  {Array.from({ length: 8 }).map((_, index: number) => (
+                    <SkeletonProductCardLoader key={index} />
+                  ))}
+                </div>
+              ) : null}
+
+              {!memoizedServicesList.length && !allServicesQuery.isLoading ? (
+                <p className="text-center text-sm font-medium" dir={langDir}>
+                  {t("no_data_found")}
+                </p>
+              ) : null}
+
+              {viewType === "grid" ? (
+                <div className="product-list-s1">
+                  {memoizedServicesList.map((item: TrendingProduct) => {
+                    const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                    return (
+                      <ServiceCard
+                        key={item.id}
+                        // productVariants={
+                        //   productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                        // }
+                        item={item}
+                        // onWishlist={() =>
+                        //   handleAddToWishlist(item.id, item?.productWishlist)
+                        // }
+                        // inWishlist={item?.inWishlist}
+                        // haveAccessToken={haveAccessToken}
+                        // isInteractive
+                        // productQuantity={cartItem?.quantity || 0}
+                        // productVariant={cartItem?.object}
+                        // cartId={cartItem?.id}
+                        // isAddedToCart={cartItem ? true : false}
+                      />
+                    );
+                  })}
+                </div>
+              ) : null}
+
+              {viewType === "list" && memoizedServicesList.length ? (
+                <div className="product-list-s1 p-4">
+                  <ServiceTable list={memoizedServicesList} />
+                </div>
+              ) : null}
+
+              {allServicesQuery.data?.data?.total > page ? (
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  totalCount={allServicesQuery.data?.data?.total}
+                  limit={limit}
+                />
+              ) : null}
+            </div>
           </div>
         </div>
-      </section>
-
+      </div>
       <Footer />
     </>
   );
 };
 
-export default CreateServicePage;
+export default Services;

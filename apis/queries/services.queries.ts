@@ -1,6 +1,6 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createService } from "../requests/services.requests";
+import { createService, fetchAllServices, fetchServiceById } from "../requests/services.requests";
 
 export const useCreateService = () => {
     const queryClient = useQueryClient();
@@ -28,3 +28,31 @@ export const useCreateService = () => {
         },
     });
 };
+
+export const useGetAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; }, enabled = true,) => useQuery({
+  queryKey: ["all-services", payload],
+  queryFn: async () => {
+    const res = await fetchAllServices(payload);
+    return res.data;
+  },
+  // onError: (err: APIResponseError) => {
+  //   console.log(err);
+  // },
+  enabled,
+});
+
+export const useServiceById = (
+  payload: { serviceid: string; userId?: number, sharedLinkId?: string },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["service-by-id", payload],
+    queryFn: async () => {
+      const res = await fetchServiceById(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
