@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useCartListByDevice,
   useCartListByUserId,
@@ -11,9 +11,11 @@ import PaymentForm from "@/components/modules/orders/PaymentForm";
 import { initialOrderState, useOrderStore } from "@/lib/orderStore";
 import { useToast } from "@/components/ui/use-toast";
 import {
+  useCreateEMIPayment,
   useCreateOrder,
   useCreateOrderUnAuth,
   useCreatePaymentIntent,
+  useCreatePaymentLink,
 } from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
@@ -42,10 +44,48 @@ const CompleteOrderPage = () => {
   const createOrder = useCreateOrder();
   const createOrderUnAuth = useCreateOrderUnAuth();
   const createPaymentIntent = useCreatePaymentIntent();
+  const createPaymentLink = useCreatePaymentLink();
+  const createEMIPayment = useCreateEMIPayment();
   const [paymentType, setPaymentType] = useState<string>("DIRECT");
   const [advanceAmount, setAdvanceAmount] = useState(0);
-  const [isRedirectingToPaymob, setIsRedirectingToPaymob] =
-    useState<boolean>(false);
+  const [isRedirectingToPaymob, setIsRedirectingToPaymob] = useState<boolean>(false);
+  const [paymentLink, setPaymentLink] = useState<string>();
+  const [emiPeriod, setEmiPeriod] = useState<number>(6);
+  const [emiAmount, setEmiAmount] = useState<number>(0);
+
+  useEffect(() => {
+    if (paymentType == "EMI") {
+      setEmiAmount(Number((orderStore.total / emiPeriod).toFixed(2)));
+    }
+  }, [paymentType, emiPeriod]);
+
+  const referenceOrderId = (orderId: number) => {
+    const date = new Date();
+
+    return [
+      orderId,
+      date.getHours() < 10 ? `0${date.getHours()}` : String(date.getHours()),
+      date.getMinutes() < 10
+        ? `0${date.getMinutes()}`
+        : String(date.getMinutes()),
+      date.getDate() < 10 ? `0${date.getDate()}` : String(date.getDate()),
+      date.getMonth() < 10 ? `0${date.getMonth()}` : String(date.getMonth()),
+      date.getFullYear() < 10
+        ? `0${date.getFullYear()}`
+        : String(date.getFullYear()),
+    ].join("-");
+  };
+
+  const copyPaymentLink = () => {
+    if (paymentLink) {
+      navigator.clipboard.writeText(paymentLink);
+      toast({
+        title: t("copied"),
+        description: '',
+        variant: "success",
+      });
+    }
+  };
 
   const handleCreateOrder = async () => {
     if (hasAccessToken) {
@@ -79,9 +119,26 @@ const CompleteOrderPage = () => {
           }
         }
 
+        let data: {[key: string]: any} = orderStore.orders;
+        data.paymentType = paymentType;
+        if (paymentType == "ADVANCE") {
+          data.advanceAmount = advanceAmount;
+          data.dueAmount = orderStore.total - advanceAmount;
+        } else if (paymentType == "EMI") {
+          data.emiInstallmentCount = emiPeriod;
+          data.emiInstallmentAmount = emiAmount;
+          data.emiInstallmentAmountCents = emiAmount * 1000;
+        }
+
         const response = await createOrder.mutateAsync(orderStore.orders);
         if (response?.status) {
-          await handleCreatePaymentIntent(response?.data?.id);
+          if (paymentType == "PAYMENTLINK") {
+            await handleCreatePaymentLink(response?.data?.id);
+          } else if (paymentType == "EMI") {
+            await handleCreateEmiPayment(response?.data?.id);
+          } else {
+            await handleCreatePaymentIntent(response?.data?.id);
+          }
         } else {
           toast({
             title: t("something_went_wrong"),
@@ -95,19 +152,17 @@ const CompleteOrderPage = () => {
   };
 
   const handleCreatePaymentIntent = async (orderId: number) => {
-    const date = new Date();
-
-    const response = await createPaymentIntent.mutateAsync({
-      amount:
-        paymentType == "ADVANCE"
-          ? advanceAmount * 1000
-          : orderStore.total * 1000,
+    let data: { [key: string]: any } = {
+      amount: paymentType == "ADVANCE" ? advanceAmount * 1000 : orderStore.total * 1000,
       billing_data: {
         first_name: orderStore.orders.firstName,
         last_name: orderStore.orders.lastName,
         email: orderStore.orders.email,
         phone_number: orderStore.orders.phone,
         apartment: orderStore.orders.billingAddress,
+        building: 'NA',
+        street: 'NA',
+        floor: 'NA',
         city: orderStore.orders.billingCity,
         state: orderStore.orders.billingProvince,
         country: orderStore.orders.billingCountry,
@@ -116,19 +171,74 @@ const CompleteOrderPage = () => {
         orderId: orderId,
         paymentType: paymentType,
       },
-      special_reference: [
-        orderId,
-        date.getHours() < 10 ? `0${date.getHours()}` : String(date.getHours()),
-        date.getMinutes() < 10
-          ? `0${date.getMinutes()}`
-          : String(date.getMinutes()),
-        date.getDate() < 10 ? `0${date.getDate()}` : String(date.getDate()),
-        date.getMonth() < 10 ? `0${date.getMonth()}` : String(date.getMonth()),
-        date.getFullYear() < 10
-          ? `0${date.getFullYear()}`
-          : String(date.getFullYear()),
-      ].join("-"),
-    });
+      special_reference: referenceOrderId(orderId)
+    };
+
+    const response = await createPaymentIntent.mutateAsync(data);
+
+    if (response?.status) {
+      setIsRedirectingToPaymob(true);
+      window.location.assign(
+        `${process.env.NEXT_PUBLIC_PAYMOB_PAYMENT_URL}?publicKey=${process.env.NEXT_PUBLIC_PAYMOB_PUBLIC_KEY}&clientSecret=${response.data.client_secret}`,
+      );
+    } else {
+      toast({
+        title: t("something_went_wrong"),
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleCreatePaymentLink = async (orderId: number) => {
+    let data = {
+      amountCents: orderStore.total * 1000,
+      referenceId: referenceOrderId(orderId),
+      email: orderStore.orders.email,
+      isLive: false,
+      fullName: `${orderStore.orders.firstName} ${orderStore.orders.lastName}`,
+      description: `orderId=${orderId}`
+    }
+
+    const response = await createPaymentLink.mutateAsync(data);
+
+    if (response?.success) {
+      setPaymentLink(response?.data?.client_url);
+      orderStore.resetOrders();
+      orderStore.setTotal(0);
+    } else {
+      toast({
+        title: t("something_went_wrong"),
+        description: response.message,
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleCreateEmiPayment = async (orderId: number) => {
+    let data: { [key: string]: any } = {
+      amount: emiAmount * 1000,
+      billing_data: {
+        first_name: orderStore.orders.firstName,
+        last_name: orderStore.orders.lastName,
+        email: orderStore.orders.email,
+        phone_number: orderStore.orders.phone,
+        apartment: orderStore.orders.billingAddress,
+        building: 'NA',
+        street: 'NA',
+        floor: 'NA',
+        city: orderStore.orders.billingCity,
+        state: orderStore.orders.billingProvince,
+        country: orderStore.orders.billingCountry,
+      },
+      extras: {
+        orderId: orderId,
+        paymentType: paymentType,
+      },
+      special_reference: referenceOrderId(orderId)
+    };
+
+    const response = await createEMIPayment.mutateAsync(data);
 
     if (response?.status) {
       setIsRedirectingToPaymob(true);
@@ -184,6 +294,63 @@ const CompleteOrderPage = () => {
                 />
               </div>
             )}
+            <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
+              <Label>{t("pay_it_for_me")}</Label>
+              <Switch
+                checked={paymentType == "PAYMENTLINK"}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    setPaymentType("PAYMENTLINK");
+                    setAdvanceAmount(0);
+                  }
+                }}
+                className="m-0 data-[state=checked]:!bg-dark-orange"
+              />
+              {paymentLink ? (
+                <>
+                  <div className="sm:grid sm:grid-cols-3">
+                    <Button type="button" onClick={copyPaymentLink}>
+                      {t("copy_payment_link")}
+                    </Button>
+                  </div>
+                  <div className="sm:grid sm:grid-cols-1">
+                    <span>{t("copy_payment_link_instruction")}</span>
+                  </div>
+                </>
+              ) : null}
+            </div>
+            <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
+              <Label>{t("installments")}</Label>
+              <Switch
+                checked={paymentType == "EMI"}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    setPaymentType("EMI");
+                    setAdvanceAmount(0);
+                  }
+                }}
+                className="m-0 data-[state=checked]:!bg-dark-orange"
+              />
+              {paymentType == "EMI" ? (
+                <>
+                  <div className="sm:grid sm:grid-cols-3">
+                    <Label dir={langDir}>{t("emi_period")}{" "}({t("months")})</Label>
+                  </div>
+                  <div className="sm:grid sm:grid-cols-3">
+                    <select
+                      value={emiPeriod}
+                      onChange={(e) => setEmiPeriod(Number(e.target.value))}
+                      style={{ border: "1px solid" }}
+                    >
+                      <option value="6">6</option>
+                      <option value="12">12</option>
+                      <option value="18">18</option>
+                      <option value="24">24</option>
+                    </select>
+                  </div>
+                </>
+              ) : null}
+            </div>
           </div>
           <div className="cart-page-right">
             <div className="card-item priceDetails">
@@ -236,17 +403,33 @@ const CompleteOrderPage = () => {
                     </h4>
                   </>
                 ) : null}
+                {paymentType == "EMI" ? (
+                  <>
+                    <h4>{t("emi_amount")}</h4>
+                    <h4 className="amount-value">
+                      {currency.symbol}
+                      {emiAmount}
+                    </h4>
+                  </>
+                ) : null}
               </div>
             </div>
             <div className="order-action-btn">
               <Button
                 onClick={handleCreateOrder}
-                disabled={createOrder?.isPending}
+                disabled={createOrder?.isPending || 
+                  createPaymentIntent?.isPending || 
+                  createEMIPayment?.isPending || 
+                  isRedirectingToPaymob
+                }
                 className="theme-primary-btn order-btn"
               >
                 {createOrder?.isPending ? (
                   <LoaderWithMessage message={t("placing_order")} />
-                ) : createPaymentIntent?.isPending || isRedirectingToPaymob ? (
+                ) : createPaymentIntent?.isPending || 
+                  createPaymentLink?.isPending || 
+                  createEMIPayment?.isPending || 
+                  isRedirectingToPaymob ? (
                   <LoaderWithMessage message={t("initiating_payment")} />
                 ) : (
                   t("place_order")

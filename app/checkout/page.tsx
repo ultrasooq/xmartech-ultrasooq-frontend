@@ -382,9 +382,17 @@ const CheckoutPage = () => {
       cartIds: memoizedCartList.map((item: any) => item.id),
       userAddressId: Number(selectedShippingAddressId)
     });
+
     setInvalidProducts(response?.invalidProducts?.map((productId: number) => productId) || []);
     setNotAvailableProducts(response?.productCannotBuy?.map((item: any) => item.productId) || []);
-    setFee(response.totalCustomerPay - response.totalPurchasedPrice);
+
+    let chargedFee = 0;
+    if (response?.data?.length) {
+      response.data.forEach((item: any) => {
+        chargedFee += Number(item?.breakdown?.customer?.chargedFee);
+      })
+    }
+    setFee(chargedFee);
   }
 
   useEffect(() => {
