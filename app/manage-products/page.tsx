@@ -39,7 +39,6 @@ const schema = (t: any) => {
       .object({
         productPrice: z.number().optional(),
         offerPrice: z.coerce.number().optional(),
-        productLocationId: z.number().optional(),
         stock: z.coerce.number().optional(),
         deliveryAfter: z.coerce.number().optional(),
         timeOpen: z.coerce.number().optional(),
@@ -47,7 +46,9 @@ const schema = (t: any) => {
         consumerType: z.string().trim().optional(),
         sellType: z.string().trim().optional(),
         vendorDiscount: z.coerce.number().optional(),
+        vendorDiscountType: z.coerce.string().optional(),
         consumerDiscount: z.coerce.number().optional(),
+        consumerDiscountType: z.coerce.string().optional(),
         minQuantity: z.coerce.number().optional(),
         maxQuantity: z.coerce.number().optional(),
         minCustomer: z.coerce.number().optional(),
@@ -104,7 +105,6 @@ const schema = (t: any) => {
 const defaultValues = {
   productPrice: 0,
   offerPrice: 0,
-  productLocationId: undefined,
   stock: 0,
   deliveryAfter: 0,
   timeOpen: 0,
@@ -137,6 +137,7 @@ const ManageProductsPage = () => {
   const [page, setPage] = useState(1);
   const [limit] = useState(6);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const [prefilledData, setPrefilledData] = useState<{[key: string]: any}>();
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const me = useMe();
@@ -148,8 +149,7 @@ const ManageProductsPage = () => {
   const [displayBuyGroupProducts, setDisplayBuyGroupProducts] = useState(false);
   const [displayExpiredProducts, setDisplayExpiredProducts] = useState(false);
   const [displayHiddenProducts, setDisplayHiddenProducts] = useState(false);
-  const [displayDiscountedProducts, setDisplayDiscountedProducts] =
-    useState(false);
+  const [displayDiscountedProducts, setDisplayDiscountedProducts] = useState(false);
 
   const [searchTermBrand, setSearchTermBrand] = useState("");
 
@@ -380,6 +380,14 @@ const ManageProductsPage = () => {
           updatedFormData.consumerDiscount &&
           updatedFormData.consumerDiscount !== 0
             ? updatedFormData.consumerDiscount
+            : undefined,
+        vendorDiscountType:
+          updatedFormData.vendorDiscountType 
+          ? updatedFormData.vendorDiscountType
+          : undefined,
+        consumerDiscountType:
+          updatedFormData.consumerDiscountType
+            ? updatedFormData.consumerDiscountType
             : undefined,
         productCondition:
           updatedFormData.productCondition &&
@@ -753,9 +761,6 @@ const ManageProductsPage = () => {
                               }[];
                               productPrice: string;
                               offerPrice: string;
-                              productPrice_productLocation: {
-                                locationName: string;
-                              };
                               stock: number;
                               consumerType: string;
                               sellType: string;
@@ -763,7 +768,9 @@ const ManageProductsPage = () => {
                               timeOpen: number | null;
                               timeClose: number | null;
                               vendorDiscount: number | null;
+                              vendorDiscountType: string | null;
                               consumerDiscount: number | null;
+                              consumerDiscountType: string | null;
                               minQuantity: number | null;
                               maxQuantity: number | null;
                               minCustomer: number | null;
@@ -775,16 +782,13 @@ const ManageProductsPage = () => {
                               <ManageProductCard
                                 selectedIds={selectedProductIds}
                                 onSelectedId={handleProductIds}
+                                onSelect={setPrefilledData}
                                 key={product?.id}
                                 id={product?.id}
                                 productId={product?.productId}
                                 status={product?.status}
                                 askForPrice={product?.askForPrice}
                                 askForStock={product?.askForStock}
-                                // productImage={
-                                //   product?.productPrice_product?.productImages?.[0]
-                                //     ?.image
-                                // }
                                 productImage={
                                   product?.productPrice_productSellerImage
                                     ?.length
@@ -800,17 +804,15 @@ const ManageProductsPage = () => {
                                 productPrice={product?.productPrice}
                                 offerPrice={product?.offerPrice}
                                 deliveryAfter={product?.deliveryAfter}
-                                productLocation={
-                                  product?.productPrice_productLocation
-                                    ?.locationName
-                                }
                                 stock={product?.stock}
                                 consumerType={product?.consumerType}
                                 sellType={product?.sellType}
                                 timeOpen={product?.timeOpen}
                                 timeClose={product?.timeClose}
                                 vendorDiscount={product?.vendorDiscount}
+                                vendorDiscountType={product?.vendorDiscountType}
                                 consumerDiscount={product?.consumerDiscount}
+                                consumerDiscountType={product?.consumerDiscountType}
                                 minQuantity={product?.minQuantity}
                                 maxQuantity={product?.maxQuantity}
                                 minCustomer={product?.minCustomer}
@@ -827,14 +829,6 @@ const ManageProductsPage = () => {
                             ),
                           )}
 
-                          {/* {allManagedProductsQuery.data?.totalCount > 6 ? (
-                            <Pagination
-                              page={page}
-                              setPage={setPage}
-                              totalCount={allManagedProductsQuery.data?.totalCount}
-                              limit={limit}
-                            />
-                          ) : null} */}
                           {totalCount > limit ? (
                             <Pagination
                               page={page}
@@ -848,6 +842,7 @@ const ManageProductsPage = () => {
                       <ManageProductAside
                         isLoading={updateMultipleProductPrice.isPending}
                         // onUpdateProductPrice={handleUpdateProductPrice}
+                        prefilledData={prefilledData}
                       />
                     </form>
                   </FormProvider>

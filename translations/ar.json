@@ -86,6 +86,8 @@
     "processing": "يعالج",
     "cancel": "يلغي",
     "action": "فعل",
+    "open": "يفتح",
+    "close": "يغلق",
     "more_actions": "المزيد من الإجراءات",
     "all": "الجميع",
     "filter": "فلتر",

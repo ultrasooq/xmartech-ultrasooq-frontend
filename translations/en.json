@@ -87,6 +87,8 @@
     "processing": "Processing",
     "cancel": "Cancel",
     "action": "Action",
+    "open": "Open",
+    "close": "Close",
     "more_actions": "More actions",
     "all": "All",
     "filter": "Filter",

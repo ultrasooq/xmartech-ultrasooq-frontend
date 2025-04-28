@@ -605,15 +605,28 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
+        {(() => {
+          if (sold === undefined || sold === null) return null;
+
+          let percentage = 0;
+          if (sold && item.productPrices?.[0]?.stock) {
+            percentage = Number(((sold / item.productPrices?.[0]?.stock) * 100).toFixed());
+          }
+
+          return (
+            <>
+              <div className="mt-3 h-3 w-full bg-gray-300">
+                <div className="h-full bg-color-yellow" style={{ width: `${percentage}%` }}></div>
+              </div>
+              <span className="w-full text-sm font-normal capitalize text-light-gray">
+                {t("sold")}: {sold}
+              </span>
+            </>
+          );
+        })()}
+
         {sold !== undefined ? (
-          <>
-            <div className="mt-3 h-3 w-full bg-gray-300">
-              <div className="h-full w-4/5 bg-color-yellow"></div>
-            </div>
-            <span className="w-full text-sm font-normal capitalize text-light-gray">
-              {t("sold")}: {sold}
-            </span>
-          </>
+          <></>
         ) : null}
       </div>
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>

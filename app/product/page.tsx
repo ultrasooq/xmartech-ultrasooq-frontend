@@ -284,61 +284,61 @@ const formSchemaForTypeP = (t: any) => {
       }),
     ),
   })
-    .superRefine((data, ctx) => {
-      const variantsCount = data.productVariants.filter(el => el.value?.trim()).length;
-      if (data.productVariantType?.trim() && variantsCount == 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("value_is_required"),
-          path: ["productVariants.0.value"],
-        });
-      }
-      if (variantsCount > 0 && !data.productVariantType?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("variant_type_is_required"),
-          path: ["productVariantType"],
-        });
+  .superRefine((data, ctx) => {
+    const variantsCount = data.productVariants.filter(el => el.value?.trim()).length;
+    if (data.productVariantType?.trim() && variantsCount == 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: t("value_is_required"),
+        path: ["productVariants.0.value"],
+      });
+    }
+    if (variantsCount > 0 && !data.productVariantType?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message: t("variant_type_is_required"),
+        path: ["productVariantType"],
+      });
+    }
+
+    if (data.setUpPrice) {
+      const result = z
+        .array(productPriceItemSchemaWhenSetUpPriceTrue(t))
+        .safeParse(data.productPriceList);
+
+      if (!result.success) {
+        result.error.issues.forEach((issue) => ctx.addIssue(issue));
       }
 
-      if (data.setUpPrice) {
-        const result = z
-          .array(productPriceItemSchemaWhenSetUpPriceTrue(t))
-          .safeParse(data.productPriceList);
-
-        if (!result.success) {
-          result.error.issues.forEach((issue) => ctx.addIssue(issue));
-        }
-
-      } else {
-        data.productPrice = 0;
-        data.offerPrice = 0;
-        if (Array.isArray(data.productPriceList)) {
-          data.productPriceList = data.productPriceList.map((item) => ({
-            consumerType: "",
-            sellType: "",
-            consumerDiscount: 0,
-            vendorDiscount: 0,
-            consumerDiscountType: "",
-            vendorDiscountType: "",
-            minCustomer: 0,
-            maxCustomer: 0,
-            minQuantityPerCustomer: 0,
-            maxQuantityPerCustomer: 0,
-            minQuantity: 0,
-            maxQuantity: 0,
-            dateOpen: "",
-            dateClose: "",
-            timeOpen: 0,
-            timeClose: 0,
-            startTime: "",
-            endTime: "",
-            deliveryAfter: 0,
-            stock: 0,
-          }));
-        }
+    } else {
+      data.productPrice = 0;
+      data.offerPrice = 0;
+      if (Array.isArray(data.productPriceList)) {
+        data.productPriceList = data.productPriceList.map((item) => ({
+          consumerType: "",
+          sellType: "",
+          consumerDiscount: 0,
+          vendorDiscount: 0,
+          consumerDiscountType: "",
+          vendorDiscountType: "",
+          minCustomer: 0,
+          maxCustomer: 0,
+          minQuantityPerCustomer: 0,
+          maxQuantityPerCustomer: 0,
+          minQuantity: 0,
+          maxQuantity: 0,
+          dateOpen: "",
+          dateClose: "",
+          timeOpen: 0,
+          timeClose: 0,
+          startTime: "",
+          endTime: "",
+          deliveryAfter: 0,
+          stock: 0,
+        }));
       }
-    });
+    }
+  });
 };
 
 const formSchemaForTypeR = (t: any) => {
@@ -415,18 +415,52 @@ const formSchemaForTypeR = (t: any) => {
     isStockRequired: z.boolean().optional(),
     isOfferPriceRequired: z.boolean().optional(),
     isCustomProduct: z.boolean().optional(),
+    productVariantType: z.string()
+      .trim()
+      .min(3, { message: t("variant_type_must_be_equal_greater_than_2_characters") })
+      .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
+      .optional()
+      .or(z.literal('')),
+    productVariants: z.array(
+      z.object({
+        value: z
+          .string()
+          .trim()
+          .min(1, { message: t("value_is_required") })
+          .max(20, { message: t("value_must_be_less_than_n_characters", { n: 20 }) })
+          .optional()
+          .or(z.literal('')),
+        image: z.any().optional(),
+      }),
+    ),
   })
-    .superRefine((data, ctx) => {
-      if (data.setUpPrice) {
-        // if (data.offerPrice === 0) {
-        //   ctx.addIssue({
-        //     code: "custom",
-        //     message: t("offer_price_is_required"),
-        //     path: ["offerPrice"],
-        //   });
-        // }
-      }
-    });
+  .superRefine((data, ctx) => {
+    const variantsCount = data.productVariants.filter(el => el.value?.trim()).length;
+    if (data.productVariantType?.trim() && variantsCount == 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: t("value_is_required"),
+        path: ["productVariants.0.value"],
+      });
+    }
+    if (variantsCount > 0 && !data.productVariantType?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message: t("variant_type_is_required"),
+        path: ["productVariantType"],
+      });
+    }
+    
+    if (data.setUpPrice) {
+      // if (data.offerPrice === 0) {
+      //   ctx.addIssue({
+      //     code: "custom",
+      //     message: t("offer_price_is_required"),
+      //     path: ["offerPrice"],
+      //   });
+      // }
+    }
+  });
 };
 
 const defaultValues: { [key: string]: any } = {
@@ -714,7 +748,7 @@ const CreateProductPage = () => {
     updatedFormData.description = updatedFormData?.descriptionJson
       ? JSON.stringify(updatedFormData?.descriptionJson)
       : "",
-      delete updatedFormData.descriptionJson;
+      delete updatedFormData.descriptionJson;console.log(updatedFormData);
 
     updatedFormData.productVariant = updatedFormData.productVariants.filter((el: any) => el.value?.trim())
       .map((el: any) => {
