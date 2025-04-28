@@ -94,34 +94,43 @@ function HomePage() {
 
   const memoizedBuyGroupProducts = useMemo(() => {
     return (
-      buyGroupProductsQuery?.data?.data?.map((item: any) => ({
-        id: item.id,
-        productName: item?.productName || "-",
-        productPrice: item?.productPrice || 0,
-        offerPrice: item?.offerPrice || 0,
-        productImage: item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.length
-          ? item?.product_productPrice?.[0]
-              ?.productPrice_productSellerImage?.[0]?.image
-          : item?.productImages?.[0]?.image,
-        categoryName: item?.category?.name || "-",
-        skuNo: item?.skuNo,
-        brandName: item?.brand?.brandName || "-",
-        productReview: item?.productReview || [],
-        productWishlist: item?.product_wishlist || [],
-        inWishlist: item?.product_wishlist?.find(
-          (ele: any) => ele?.userId === me.data?.data?.id,
-        ),
-        shortDescription: item?.product_productShortDescription?.length
-          ? item?.product_productShortDescription?.[0]?.shortDescription
-          : "-",
-        productProductPriceId: item?.product_productPrice?.[0]?.id,
-        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-        productPrices: item?.product_productPrice,
-        sold: item.orderProducts?.length,
-      })) || []
+      buyGroupProductsQuery?.data?.data?.map((item: any) => {
+        let sold = 0;
+        if (item.orderProducts?.length) {
+          item.orderProducts.forEach((product: any) => {
+            sold += product?.orderQuantity || 0;
+          });
+        }
+
+        return {
+          id: item.id,
+          productName: item?.productName || "-",
+          productPrice: item?.productPrice || 0,
+          offerPrice: item?.offerPrice || 0,
+          productImage: item?.product_productPrice?.[0]
+            ?.productPrice_productSellerImage?.length
+            ? item?.product_productPrice?.[0]
+                ?.productPrice_productSellerImage?.[0]?.image
+            : item?.productImages?.[0]?.image,
+          categoryName: item?.category?.name || "-",
+          skuNo: item?.skuNo,
+          brandName: item?.brand?.brandName || "-",
+          productReview: item?.productReview || [],
+          productWishlist: item?.product_wishlist || [],
+          inWishlist: item?.product_wishlist?.find(
+            (ele: any) => ele?.userId === me.data?.data?.id,
+          ),
+          shortDescription: item?.product_productShortDescription?.length
+            ? item?.product_productShortDescription?.[0]?.shortDescription
+            : "-",
+          productProductPriceId: item?.product_productPrice?.[0]?.id,
+          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+          consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+          productPrices: item?.product_productPrice,
+          sold: sold,
+        };
+      }) || []
     );
   }, [buyGroupProductsQuery?.data?.data]);
 
