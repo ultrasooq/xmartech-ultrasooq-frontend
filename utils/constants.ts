@@ -121,6 +121,8 @@ export const EMAIL_REGEX_LOWERCASE = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
 
 export const ALPHABETS_REGEX = /^[a-zA-Z\s]*$/;
 
+export const ALPHANUMERIC_REGEX = /^[0-9a-zA-Z\s]*$/;
+
 export const HOURS_24_FORMAT = [
   "00:00",
   "00:30",
@@ -407,6 +409,8 @@ export const FACTORIES_MENU_ID = 10;
 export const RFQ_MENU_ID = 11;
 
 export const PRODUCT_CATEGORY_ID = 4;
+export const SERVICE_CATEGORY_ID = 6;
+export const BUSINESS_TYPE_CATEGORY_ID = 5;
 
 export const LANGUAGES = [
   {

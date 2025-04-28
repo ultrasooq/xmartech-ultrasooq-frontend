@@ -104,6 +104,7 @@ export default function PasswordResetVerifyPage() {
       sessionStorage.clear();
       router.push("/reset-password");
     } else {
+      setOtp(new Array(4).fill(""));
       toast({
         title: t("verification_failed"),
         description: response.message,

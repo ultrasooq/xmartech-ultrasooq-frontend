@@ -362,6 +362,7 @@ export default function FreelancerProfilePage() {
                         <ControlledTextInput
                           label="Address"
                           name="address"
+                          showLabel={true}
                           placeholder="Address"
                         />
 
@@ -377,6 +378,7 @@ export default function FreelancerProfilePage() {
                       <ControlledTextInput
                         label="City"
                         name="city"
+                        showLabel={true}
                         placeholder="City"
                       />
                     </div>
@@ -385,6 +387,7 @@ export default function FreelancerProfilePage() {
                       <ControlledTextInput
                         label="Province"
                         name="province"
+                        showLabel={true}
                         placeholder="Province"
                       />
 
@@ -404,8 +407,10 @@ export default function FreelancerProfilePage() {
                       />
 
                       <ControlledTextInput
+                        className="mt-0"
                         label="Branch Contact Name"
                         name="contactName"
+                        showLabel={true}
                         placeholder="Branch Contact Name"
                       />
                     </div>

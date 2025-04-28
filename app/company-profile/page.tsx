@@ -66,9 +66,18 @@ const formSchema = (t: any) => {
       .max(50, {
         message: t("address_must_be_less_than_n_chars", { n: 50 }),
       }),
-    city: z.string().trim().min(2, { message: t("city_required") }),
-    province: z.string().trim().min(2, { message: t("province_required") }),
-    country: z.string().trim().min(2, { message: t("country_required") }),
+    city: z
+      .string()
+      .trim()
+      .min(2, { message: t("city_required") }),
+    province: z
+      .string()
+      .trim()
+      .min(2, { message: t("province_required") }),
+    country: z
+      .string()
+      .trim()
+      .min(2, { message: t("country_required") }),
     yearOfEstablishment: z
       .string()
       .trim()
@@ -79,7 +88,7 @@ const formSchema = (t: any) => {
       .trim()
       .min(2, { message: t("total_no_of_employees_required") }),
     aboutUs: z.string().trim().optional(),
-    aboutUsJson: z.array(z.any()).optional().or(z.literal('')),
+    aboutUsJson: z.array(z.any()).optional().or(z.literal("")),
     branchList: z.array(
       z
         .object({
@@ -93,7 +102,7 @@ const formSchema = (t: any) => {
               }),
               {
                 required_error: t("business_type_required"),
-              }
+              },
             )
             .min(1, {
               message: t("business_type_required"),
@@ -112,30 +121,49 @@ const formSchema = (t: any) => {
             .max(50, {
               message: t("address_must_be_less_than_n_chars", { n: 50 }),
             }),
-          city: z.string().trim().min(2, { message: t("city_required") }),
-          province: z.string().trim().min(2, { message: t("province_required") }),
-          country: z.string().trim().min(2, { message: t("country_required") }),
+          city: z
+            .string()
+            .trim()
+            .min(2, { message: t("city_required") }),
+          province: z
+            .string()
+            .trim()
+            .min(2, { message: t("province_required") }),
+          country: z
+            .string()
+            .trim()
+            .min(2, { message: t("country_required") }),
           cc: z.string().trim(),
           contactNumber: z
             .string()
             .trim()
             .min(2, { message: t("branch_contact_number_required") })
             .min(8, {
-              message: t("branch_contact_number_must_be_min_n_digits", { n: 8 }),
+              message: t("branch_contact_number_must_be_min_n_digits", {
+                n: 8,
+              }),
             })
             .max(20, {
-              message: t("branch_contact_number_cant_be_nore_than_n_digits", { n: 20 }),
+              message: t("branch_contact_number_cant_be_nore_than_n_digits", {
+                n: 20,
+              }),
             }),
           contactName: z
             .string()
             .trim()
             .min(2, { message: t("branch_contact_name_required") }),
-          startTime: z.string().trim().min(1, {
-            message: t("start_time_required"),
-          }),
-          endTime: z.string().trim().min(1, {
-            message: t("end_time_required"),
-          }),
+          startTime: z
+            .string()
+            .trim()
+            .min(1, {
+              message: t("start_time_required"),
+            }),
+          endTime: z
+            .string()
+            .trim()
+            .min(1, {
+              message: t("end_time_required"),
+            }),
           workingDays: z
             .object({
               sun: z.number(),
@@ -308,7 +336,9 @@ export default function CompanyProfilePage() {
   const onSubmit = async (formData: any) => {
     let data = {
       ...formData,
-      aboutUs: formData.aboutUsJson?.length ? JSON.stringify(formData.aboutUsJson) : undefined,
+      aboutUs: formData.aboutUsJson?.length
+        ? JSON.stringify(formData.aboutUsJson)
+        : undefined,
       profileType: "COMPANY",
     };
 
@@ -389,14 +419,20 @@ export default function CompanyProfilePage() {
             className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
+              <h2
+                className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
+                dir={langDir}
+              >
                 {t("company_profile")}
               </h2>
             </div>
             <div className="flex w-full flex-wrap">
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                  <label
+                    className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark"
+                    dir={langDir}
+                  >
                     {t("company_information")}
                   </label>
                 </div>
@@ -408,7 +444,9 @@ export default function CompanyProfilePage() {
                     name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5">
-                        <FormLabel dir={langDir}>{t("upload_company_logo")}</FormLabel>
+                        <FormLabel dir={langDir}>
+                          {t("upload_company_logo")}
+                        </FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -440,7 +478,10 @@ export default function CompanyProfilePage() {
                                     <span className="text-blue-500">
                                       browse
                                     </span>
-                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300" dir={langDir}>
+                                    <p
+                                      className="text-normal mt-3 text-xs leading-4 text-gray-300"
+                                      dir={langDir}
+                                    >
                                       ({t("company_logo_spec")})
                                     </p>
                                   </div>
@@ -459,7 +500,10 @@ export default function CompanyProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
+                                        title: t(
+                                          "image_size_should_be_less_than_size",
+                                          { size: "500MB" },
+                                        ),
                                         variant: "danger",
                                       });
                                       return;
@@ -509,7 +553,10 @@ export default function CompanyProfilePage() {
 
               <div className="mb-3.5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
-                  <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark" dir={langDir}>
+                  <label
+                    className="m-0 block text-left text-base font-medium leading-5 text-color-dark"
+                    dir={langDir}
+                  >
                     {t("registration_address")}
                   </label>
                 </div>
@@ -528,7 +575,7 @@ export default function CompanyProfilePage() {
                         alt="location-icon"
                         height={16}
                         width={16}
-                        className="absolute right-6 top-[50px]"
+                        className="absolute right-6 top-[24px]"
                       />
                     </div>
 
@@ -559,7 +606,10 @@ export default function CompanyProfilePage() {
 
               <div className="mb-5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
-                  <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark" dir={langDir}>
+                  <label
+                    className="m-0 block text-left text-base font-medium leading-5 text-color-dark"
+                    dir={langDir}
+                  >
                     {t("more_information")}
                   </label>
                 </div>
@@ -582,13 +632,19 @@ export default function CompanyProfilePage() {
                   />
                 </div>
 
-                <ControlledRichTextEditor label={t("about_us")} name="aboutUsJson" />
+                <ControlledRichTextEditor
+                  label={t("about_us")}
+                  name="aboutUsJson"
+                />
               </div>
             </div>
 
             <div className="mb-3.5 w-full">
               <div className="mb-4 flex w-full items-center justify-between border-y border-solid border-gray-200 py-2.5">
-                <label className="m-0 block text-left text-base font-medium leading-5 text-color-dark" dir={langDir}>
+                <label
+                  className="m-0 block text-left text-base font-medium leading-5 text-color-dark"
+                  dir={langDir}
+                >
                   {t("branch")}
                 </label>
                 <Button
@@ -617,7 +673,10 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.businessTypeList`}
                     options={memoizedTags || []}
                     placeholder={t("business_type")}
-                    error={String(form.formState.errors?.branchList?.[index]?.businessTypeList?.message || '')}
+                    error={String(
+                      form.formState.errors?.branchList?.[index]
+                        ?.businessTypeList?.message || "",
+                    )}
                   />
 
                   <FormField
@@ -625,7 +684,9 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.branchFrontPicture`}
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full">
-                        <FormLabel dir={langDir}>{t("upload_branch_front_picture")}</FormLabel>
+                        <FormLabel dir={langDir}>
+                          {t("upload_branch_front_picture")}
+                        </FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -644,7 +705,10 @@ export default function CompanyProfilePage() {
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                  <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
+                                  <div
+                                    className="flex h-full flex-col items-center justify-center"
+                                    dir={langDir}
+                                  >
                                     <Image
                                       src="/images/upload.png"
                                       className="mb-3"
@@ -678,7 +742,10 @@ export default function CompanyProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
+                                        title: t(
+                                          "image_size_should_be_less_than_size",
+                                          { size: "500MB" },
+                                        ),
                                         variant: "danger",
                                       });
                                       return;
@@ -704,7 +771,9 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.proofOfAddress`}
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full">
-                        <FormLabel dir={langDir}>{t("proof_of_address")}</FormLabel>
+                        <FormLabel dir={langDir}>
+                          {t("proof_of_address")}
+                        </FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -722,7 +791,10 @@ export default function CompanyProfilePage() {
                                 />
                               ) : (
                                 <div className="absolute my-auto h-full w-full text-center text-sm font-medium leading-4 text-color-dark">
-                                  <div className="flex h-full flex-col items-center justify-center" dir={langDir}>
+                                  <div
+                                    className="flex h-full flex-col items-center justify-center"
+                                    dir={langDir}
+                                  >
                                     <Image
                                       src="/images/upload.png"
                                       className="mb-3"
@@ -730,9 +802,7 @@ export default function CompanyProfilePage() {
                                       height={30}
                                       alt="camera"
                                     />
-                                    <span>
-                                      {t("drop_your_address_proof")}{" "}
-                                    </span>
+                                    <span>{t("drop_your_address_proof")} </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
@@ -756,7 +826,10 @@ export default function CompanyProfilePage() {
                                       event.target.files[0].size > 524288000
                                     ) {
                                       toast({
-                                        title: t("image_size_should_be_less_than_size", { size: "500MB" }),
+                                        title: t(
+                                          "image_size_should_be_less_than_size",
+                                          { size: "500MB" },
+                                        ),
                                         variant: "danger",
                                       });
                                       return;
@@ -782,7 +855,10 @@ export default function CompanyProfilePage() {
                 <div className="flex w-full flex-wrap">
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                      <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                      <label
+                        className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark"
+                        dir={langDir}
+                      >
                         {t("branch_location")}
                       </label>
                     </div>
@@ -794,6 +870,7 @@ export default function CompanyProfilePage() {
                         label={t("address")}
                         name={`branchList.${index}.address`}
                         placeholder={t("address")}
+                        showLabel={true}
                         dir={langDir}
                       />
 
@@ -810,6 +887,7 @@ export default function CompanyProfilePage() {
                       label={t("city")}
                       name={`branchList.${index}.city`}
                       placeholder={t("city")}
+                      showLabel={true}
                       dir={langDir}
                     />
                   </div>
@@ -819,6 +897,7 @@ export default function CompanyProfilePage() {
                       label={t("province")}
                       name={`branchList.${index}.province`}
                       placeholder={t("province")}
+                      showLabel={true}
                       dir={langDir}
                     />
 
@@ -838,9 +917,11 @@ export default function CompanyProfilePage() {
                     />
 
                     <ControlledTextInput
+                      className="mt-0"
                       label={t("branch_contact_name")}
                       name={`branchList.${index}.contactName`}
                       placeholder={t("branch_contact_name")}
+                      showLabel={true}
                       dir={langDir}
                     />
                   </div>
@@ -849,7 +930,10 @@ export default function CompanyProfilePage() {
                 <div className="flex w-full flex-wrap">
                   <div className="mb-4 w-full">
                     <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                      <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                      <label
+                        className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark"
+                        dir={langDir}
+                      >
                         {t("branch_working_hours")}
                       </label>
                     </div>
@@ -857,7 +941,11 @@ export default function CompanyProfilePage() {
                   <div className="w-full">
                     <div className="flex flex-wrap">
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
-                        <Label htmlFor="startTime" className="text-color-dark" dir={langDir}>
+                        <Label
+                          htmlFor="startTime"
+                          className="text-color-dark"
+                          dir={langDir}
+                        >
                           {t("start_time")}
                         </Label>
                         <Controller
@@ -868,10 +956,16 @@ export default function CompanyProfilePage() {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="" dir={langDir}>{t("select")}</option>
+                              <option value="" dir={langDir}>
+                                {t("select")}
+                              </option>
                               {HOURS_24_FORMAT.map(
                                 (hour: string, index: number) => (
-                                  <option key={index} value={hour} dir={langDir}>
+                                  <option
+                                    key={index}
+                                    value={hour}
+                                    dir={langDir}
+                                  >
                                     {getAmPm(hour)}
                                   </option>
                                 ),
@@ -888,7 +982,11 @@ export default function CompanyProfilePage() {
                       </div>
 
                       <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
-                        <Label htmlFor="endTime" className="text-color-dark" dir={langDir}>
+                        <Label
+                          htmlFor="endTime"
+                          className="text-color-dark"
+                          dir={langDir}
+                        >
                           {t("end_time")}
                         </Label>
                         <Controller
@@ -899,10 +997,16 @@ export default function CompanyProfilePage() {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="" dir={langDir}>{t("select")}</option>
+                              <option value="" dir={langDir}>
+                                {t("select")}
+                              </option>
                               {HOURS_24_FORMAT.map(
                                 (hour: string, index: number) => (
-                                  <option key={index} value={hour} dir={langDir}>
+                                  <option
+                                    key={index}
+                                    value={hour}
+                                    dir={langDir}
+                                  >
                                     {getAmPm(hour)}
                                   </option>
                                 ),
@@ -912,7 +1016,8 @@ export default function CompanyProfilePage() {
                         />
                         <p className="text-[13px] text-red-500" dir={langDir}>
                           {
-                            form.formState.errors.branchList?.[index]?.endTime?.message
+                            form.formState.errors.branchList?.[index]?.endTime
+                              ?.message
                           }
                         </p>
                       </div>
@@ -984,7 +1089,9 @@ export default function CompanyProfilePage() {
                       name={`branchList.${index}.mainOffice`}
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
-                          <FormLabel dir={langDir}>{t("main_office")}:</FormLabel>
+                          <FormLabel dir={langDir}>
+                            {t("main_office")}:
+                          </FormLabel>
                           <FormControl>
                             <Switch
                               checked={!!field.value}

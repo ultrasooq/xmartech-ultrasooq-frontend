@@ -23,6 +23,9 @@ export const useUpdateProfile = () => {
       queryClient.invalidateQueries({
         queryKey: ["me"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["unique-user"]
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);

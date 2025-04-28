@@ -19,14 +19,7 @@ import {
   useCreateMember,
   useUpdateMember,
 } from "@/apis/queries/member.queries";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
@@ -52,7 +45,7 @@ const addFormSchema = (t: any) => {
     lastName: z
       .string()
       .trim()
-      .regex(/^[A-Za-z\s]+$/, { message: t("last_name_must_only_contain_letters") })
+      .regex(/^$|^[A-Za-z\s]+$/, { message: t("last_name_must_only_contain_letters") })
       .optional(), // Apply validation first, then make it optional
   
     email: z
@@ -141,8 +134,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = { ...formData };
-    console.log(updatedFormData);
-
+    
     let response;
     if (memberDetails) {
       response = await updateMember.mutateAsync({

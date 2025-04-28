@@ -192,7 +192,7 @@ const RoleSettingsPage = () => {
 
             {!userRolesQuery?.isLoading && !memoizedUserRole.length ? (
               <p className="py-10 text-center text-sm font-medium">
-                {("no_roles_found")}
+                {t("no_roles_found")}
               </p>
             ) : null}
 

@@ -74,18 +74,18 @@ const formSchema = z
         message: "Email must be in lower case",
       }),
     initialPassword: z
-      .string()
+      .string({ required_error: "Login Password is required" })
       .trim()
-      .min(2, {
+      .min(1, {
         message: "Login Password is required",
       })
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",
       }),
     password: z
-      .string()
+      .string({ required_error: "Login Password is required" })
       .trim()
-      .min(2, {
+      .min(1, {
         message: "Confirm Password is required",
       })
       .min(8, {
@@ -218,7 +218,10 @@ export default function RegisterPage() {
           <div className="flex">
             <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
+                <h2
+                  className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
+                  dir={langDir}
+                >
                   {t("registration")}
                 </h2>
                 <p dir={langDir}>{t("create_your_account")}</p>
@@ -283,7 +286,10 @@ export default function RegisterPage() {
                       name="tradeRole"
                       render={({ field }) => (
                         <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row md:items-start">
-                          <FormLabel className="mb-3 mr-6 capitalize md:mb-0" dir={langDir}>
+                          <FormLabel
+                            className="mb-3 mr-6 capitalize md:mb-0"
+                            dir={langDir}
+                          >
                             {t("select_trade_role")}:
                           </FormLabel>
                           <div className="!mt-0">
@@ -362,6 +368,7 @@ export default function RegisterPage() {
                       placeholder={t("enter_login_password_again")}
                       type="password"
                       dir={langDir}
+                      className="mb-2"
                     />
 
                     <ControlledPhoneInput
@@ -375,7 +382,7 @@ export default function RegisterPage() {
                       control={form.control}
                       name="acceptTerms"
                       render={({ field }) => (
-                        <FormItem className="mb-4 flex flex-row items-center space-x-3 space-y-0">
+                        <FormItem className="mb-4 mt-3 flex flex-row items-start space-x-3 space-y-0">
                           <FormControl>
                             <Checkbox
                               checked={field.value}
@@ -389,7 +396,7 @@ export default function RegisterPage() {
                               <Button
                                 onClick={handleToggleTermsModal}
                                 type="button"
-                                className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
+                                className="ml-1 h-auto bg-transparent p-0 shadow-none hover:bg-transparent"
                                 dir={langDir}
                               >
                                 <span className="text-xs text-light-gray underline md:text-sm">
@@ -402,7 +409,7 @@ export default function RegisterPage() {
                               <Button
                                 onClick={handleTogglePrivacyModal}
                                 type="button"
-                                className="ml-1 bg-transparent p-0 text-xs shadow-none hover:bg-transparent md:text-sm"
+                                className="ml-1 h-auto bg-transparent p-0 text-xs shadow-none hover:bg-transparent md:text-sm"
                                 dir={langDir}
                               >
                                 <span className="text-light-gray underline">
@@ -415,6 +422,7 @@ export default function RegisterPage() {
                         </FormItem>
                       )}
                     />
+                    
                     <div className="mb-4 w-full">
                       <Button
                         disabled={register.isPending}
@@ -431,7 +439,10 @@ export default function RegisterPage() {
                   </form>
                 </Form>
                 <div className="mb-4 w-full text-center">
-                  <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir}>
+                  <span
+                    className="text-sm font-medium leading-4 text-light-gray"
+                    dir={langDir}
+                  >
                     {t("already_have_an_account")}{" "}
                     <Link
                       href="/login"
@@ -449,7 +460,10 @@ export default function RegisterPage() {
         <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
           <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
             <DialogHeader className="border-b border-light-gray py-4">
-              <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+              <DialogTitle
+                className="text-center text-xl font-bold"
+                dir={langDir}
+              >
                 {t("terms_of_use")}
               </DialogTitle>
             </DialogHeader>
@@ -465,7 +479,10 @@ export default function RegisterPage() {
         >
           <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
             <DialogHeader className="border-b border-light-gray py-4">
-              <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+              <DialogTitle
+                className="text-center text-xl font-bold"
+                dir={langDir}
+              >
                 {t("privacy_policy")}
               </DialogTitle>
             </DialogHeader>

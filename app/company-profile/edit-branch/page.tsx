@@ -128,23 +128,6 @@ const formSchema = z
           value.sat !== 0
         );
       }),
-    // tagList: z
-    //   .array(
-    //     z.object({
-    //       label: z.string().trim(),
-    //       value: z.number(),
-    //     }),
-    //   )
-    //   .min(1, {
-    //     message: "Tag is required",
-    //   })
-    //   .transform((value) => {
-    //     let temp: any = [];
-    //     value.forEach((item) => {
-    //       temp.push({ tagId: item.value });
-    //     });
-    //     return temp;
-    //   }),
     categoryList: z.any().optional(),
     mainOffice: z
       .boolean()
@@ -308,24 +291,24 @@ export default function EditBranchPage() {
 
       const businessTypeList = branch?.userBranchBusinessType
         ? branch?.userBranchBusinessType?.map((item: any) => {
-            return {
-              label: item?.userBranch_BusinessType_Tag?.tagName,
-              value: item?.userBranch_BusinessType_Tag?.id,
-            };
-          })
+          return {
+            label: item?.userBranch_BusinessType_Tag?.tagName,
+            value: item?.userBranch_BusinessType_Tag?.id,
+          };
+        })
         : [];
 
       const workingDays = branch?.workingDays
         ? JSON.parse(branch.workingDays)
         : {
-            sun: 0,
-            mon: 0,
-            tue: 0,
-            wed: 0,
-            thu: 0,
-            fri: 0,
-            sat: 0,
-          };
+          sun: 0,
+          mon: 0,
+          tue: 0,
+          wed: 0,
+          thu: 0,
+          fri: 0,
+          sat: 0,
+        };
 
       // const tagList = branch?.userBranchTags
       //   ? branch?.userBranchTags?.map((item: any) => {
@@ -338,11 +321,11 @@ export default function EditBranchPage() {
 
       const categoryList = branch?.userBranch_userBranchCategory
         ? branch?.userBranch_userBranchCategory?.map((item: any) => {
-            return {
-              categoryId: item?.categoryId,
-              categoryLocation: item?.categoryLocation,
-            };
-          })
+          return {
+            categoryId: item?.categoryId,
+            categoryLocation: item?.categoryLocation,
+          };
+        })
         : undefined;
 
       //TODO: main office prefilled but not working. API issue
@@ -396,7 +379,7 @@ export default function EditBranchPage() {
 
             <div className="mb-4 w-full">
               <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                <label 
+                <label
                   className={cn(
                     "mb-3.5 block",
                     langDir == "rtl" ? "text-right" : "text-left",
@@ -433,9 +416,9 @@ export default function EditBranchPage() {
                                   branchImageFile
                                     ? URL.createObjectURL(branchImageFile[0])
                                     : branchQueryById.data?.data
-                                          ?.branchFrontPicture
+                                      ?.branchFrontPicture
                                       ? branchQueryById.data.data
-                                          .branchFrontPicture
+                                        .branchFrontPicture
                                       : "/images/no-image.jpg"
                                 }
                                 alt="profile"
@@ -502,13 +485,13 @@ export default function EditBranchPage() {
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                           <div className="relative h-full w-full">
                             {proofOfAddressImageFile ||
-                            branchQueryById.data?.data ? (
+                              branchQueryById.data?.data ? (
                               <Image
                                 src={
                                   proofOfAddressImageFile
                                     ? URL.createObjectURL(
-                                        proofOfAddressImageFile[0],
-                                      )
+                                      proofOfAddressImageFile[0],
+                                    )
                                     : branchQueryById.data?.data?.proofOfAddress
                                       ? branchQueryById.data.data.proofOfAddress
                                       : "/images/no-image.jpg"
@@ -573,7 +556,7 @@ export default function EditBranchPage() {
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label 
+                    <label
                       className={cn(
                         "mb-3.5 block",
                         langDir == 'rtl' ? 'text-right' : 'text-left',
@@ -591,6 +574,7 @@ export default function EditBranchPage() {
                       label={t("address")}
                       name="address"
                       placeholder={t("address")}
+                      showLabel={true}
                       dir={langDir}
                     />
                   </div>
@@ -599,6 +583,7 @@ export default function EditBranchPage() {
                     label={t("city")}
                     name="city"
                     placeholder={t("city")}
+                    showLabel={true}
                     dir={langDir}
                   />
                 </div>
@@ -608,6 +593,7 @@ export default function EditBranchPage() {
                     label={t("province")}
                     name="province"
                     placeholder={t("province")}
+                    showLabel={true}
                     dir={langDir}
                   />
 
@@ -642,17 +628,20 @@ export default function EditBranchPage() {
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                  <ControlledPhoneInput
-                    label={t("branch_contact_number")}
-                    name="contactNumber"
-                    countryName="cc"
-                    placeholder={t("branch_contact_number")}
-                  />
+                  <div className="mt-2">
+                    <ControlledPhoneInput
+                      label={t("branch_contact_number")}
+                      name="contactNumber"
+                      countryName="cc"
+                      placeholder={t("branch_contact_number")}
+                    />
+                  </div>
 
                   <ControlledTextInput
                     label={t("branch_contact_name")}
                     name="contactName"
                     placeholder={t("branch_contact_name")}
+                    showLabel={true}
                     dir={langDir}
                   />
                 </div>
@@ -744,7 +733,7 @@ export default function EditBranchPage() {
                                 }}
                                 checked={
                                   !!field.value[
-                                    item.value as keyof typeof field.value
+                                  item.value as keyof typeof field.value
                                   ]
                                 }
                                 className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
@@ -807,7 +796,7 @@ export default function EditBranchPage() {
               className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
               dir={langDir}
             >
-              
+
               {updateCompanyBranch.isPending || upload.isPending ? (
                 <>
                   <Image

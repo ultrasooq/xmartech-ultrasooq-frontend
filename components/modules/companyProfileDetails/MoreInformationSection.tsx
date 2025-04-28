@@ -1,11 +1,12 @@
 import React from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import PlateEditor from "@/components/shared/Plate/PlateEditor";
-import { handleDescriptionParse } from "@/utils/helper";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 type MoreInformationSectionProps = {
   userDetails: any;
@@ -82,15 +83,12 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
               </div>
             </div>
 
-            <PlateEditor
-              description={
-                userDetails?.userProfile?.[0]?.aboutUs
-                  ? handleDescriptionParse(
-                      userDetails?.userProfile?.[0]?.aboutUs,
-                    )
-                  : undefined
-              }
-              readOnly
+            <ReactQuill
+              defaultValue={userDetails?.userProfile?.[0]?.aboutUs || ''}
+              readOnly={true}
+              modules={{
+                toolbar: null
+              }}
             />
           </div>
         </div>
