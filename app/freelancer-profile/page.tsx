@@ -318,7 +318,7 @@ export default function FreelancerProfilePage() {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
+              className="form-groups-common-sec-s1 m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
@@ -498,7 +498,7 @@ export default function FreelancerProfilePage() {
                                     [item.value]: e ? 1 : 0,
                                   });
                                 }}
-                                className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                                className="border border-solid border-gray-300 data-[state=checked]:!border-[#db2302] data-[state=checked]:!bg-dark-orange"
                                 checked={
                                   !!field.value[
                                     item.value as keyof typeof field.value
