@@ -110,6 +110,7 @@ const Services = ({ searchParams }: ServicesProps) => {
     limit,
     // sort: sortBy,
     term: searchTerm,
+    ownservice:true,
     // priceMin:
     //   priceRange[0] === 0
     //     ? 0

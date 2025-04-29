@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Form } from "@/components/ui/form";
 import { useForm, useWatch } from "react-hook-form";
@@ -34,8 +34,9 @@ import {
   useFetchStatesByCountry,
 } from "@/apis/queries/masters.queries";
 import ControlledTimePicker from "@/components/shared/Forms/ControlledTimePicker";
-import { useCreateService } from "@/apis/queries/services.queries";
+import { useCreateService, useServiceById, useUpdateService } from "@/apis/queries/services.queries";
 import moment from "moment";
+import { useSearchParams } from "next/navigation";
 
 interface OptionType {
   label: string;
@@ -73,10 +74,11 @@ const formSchema = (t: any) =>
     breakTimeTo: z.string().trim().optional(),
 
     shippingType: z.enum(["DIRECTION", "RANG"]).optional(),
-
-    fromCityId: z.number().positive().optional(),
-    toCityId: z.number().positive().optional(),
-    rangeCityId: z.number().positive().optional(),
+    countryId: z.number().positive().nullable().optional(),
+    stateId: z.number().positive().nullable().optional(),
+    fromCityId: z.number().positive().nullable().optional(),
+    toCityId: z.number().positive().nullable().optional(),
+    rangeCityId: z.number().positive().nullable().optional(),
 
     eachCustomerTime: z.string().trim().optional(),
     customerPerPeiod: z.string().trim().optional(),
@@ -186,16 +188,24 @@ const defaultServiceValues = {
   breakTimeFrom: "",
   breakTimeTo: "",
   shippingType: "DIRECTION",
-  fromCityId: undefined,
-  toCityId: undefined,
-  rangeCityId: undefined,
+  countryId: null,
+  stateId: null,
+  fromCityId: null,
+  toCityId: null,
+  rangeCityId: null,
   eachCustomerTime: undefined,
   customerPerPeiod: undefined,
   serviceType: "BOOKING", // default could be "BOOKING" or "MOVING"
   serviceConfirmType: "AUTO",
   serviceFor: "OWNER",
   tags: [],
-  features: [],
+  features: [
+    {
+      name: "",
+      serviceCostType: "FLAT",
+      serviceCost: "0",
+    }
+  ],
   images: [],
 };
 
@@ -204,15 +214,17 @@ const CreateServicePage = () => {
   const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const searchParams: any = useSearchParams();
+  const editId = searchParams.get('editId');
   const [activeProductType, setActiveProductType] = useState<string>();
   const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
   const [selectedState, setSelectedState] = useState<any | null>(null);
   const [states, setStates] = useState<IOption[]>([]);
   const [cities, setCities] = useState<IOption[]>([]);
-  const [selectedCountries, setSelectedCountries] = useState<OptionType[]>([]);
-  const [statesByCountry, setStatesByCountry] = useState<
-    Record<string, OptionType[]>
-  >({});
+  // const [selectedCountries, setSelectedCountries] = useState<OptionType[]>([]);
+  // const [statesByCountry, setStatesByCountry] = useState<
+  //   Record<string, OptionType[]>
+  // >({});
   const form = useForm({
     resolver: zodResolver(formSchema(t)),
     defaultValues: defaultServiceValues,
@@ -223,9 +235,15 @@ const CreateServicePage = () => {
   const countriesNewQuery = useAllCountries();
   const fetchStatesByCountry = useFetchStatesByCountry();
   const createService = useCreateService();
+  const updateService = useUpdateService();
   const watchServiceImages = form.watch("images");
   // const watchSetUpPrice = form.watch("setUpPrice");
-
+  const serviceQueryById = useServiceById(
+    {
+      serviceid: editId ? (editId as string) : "",
+    },
+    !!editId
+  );
   const memoizedTags = useMemo(() => {
     return (
       tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
@@ -281,7 +299,7 @@ const CreateServicePage = () => {
       }
     }
   };
-  function convertTimeToISO(inputTime:string) {
+  function convertTimeToISO(inputTime: string) {
     return moment.utc().set({
       hour: parseInt(inputTime.split(':')[0], 10),
       minute: parseInt(inputTime.split(':')[1], 10),
@@ -289,7 +307,6 @@ const CreateServicePage = () => {
       millisecond: 0,
     }).toISOString();
   }
-  
   const onSubmit = async (formData: any) => {
     try {
       let updatedFormData = {
@@ -298,8 +315,6 @@ const CreateServicePage = () => {
         closeTime: convertTimeToISO(formData?.closeTime),
         breakTimeFrom: convertTimeToISO(formData?.breakTimeFrom),
         breakTimeTo: convertTimeToISO(formData?.breakTimeTo),
-        countryId: selectedCountry,
-        stateId: selectedState,
         eachCustomerTime: Number(formData?.eachCustomerTime || 0),
         customerPerPeiod: Number(formData?.customerPerPeiod || 0),
         description: JSON.stringify(formData?.description)
@@ -309,13 +324,16 @@ const CreateServicePage = () => {
         const fileTypeArrays = watchServiceImages.filter(
           (item: any) => typeof item.path === "object",
         );
+        const oldFiles = watchServiceImages.filter(
+          (item: any) => typeof item.path !== "object",
+        );
 
         const imageUrlArray: any = fileTypeArrays?.length
           ? await handleUploadedFile(fileTypeArrays)
           : [];
-
+        let newFiles = [];
         if (imageUrlArray.length) {
-          updatedFormData.images = imageUrlArray.map(
+          newFiles = imageUrlArray.map(
             (item: string) => {
               const extension = item.split(".").pop()?.toLowerCase();
 
@@ -344,10 +362,14 @@ const CreateServicePage = () => {
             },
           );
         }
+        if (oldFiles.length > 0) {
+          updatedFormData.images = [...oldFiles, ...newFiles];
+        }
       }
 
       updatedFormData.tags = updatedFormData.tags.map((v: any) => {
         return {
+          id: serviceQueryById?.data?.data?.serviceTags?.find((sv: any) => sv.tagId === v.value)?.id || undefined,
           tagId: v.value
         }
       })
@@ -357,11 +379,16 @@ const CreateServicePage = () => {
           serviceCost: Number(v?.serviceCost || 0)
         }
       })
-
-      const response = await createService.mutateAsync(updatedFormData);
+      let response: any = {};
+      if (editId) {
+        updatedFormData.serviceId = editId;
+        response = await updateService.mutateAsync(updatedFormData);
+      } else {
+        response = await createService.mutateAsync(updatedFormData);
+      }
       if (response?.success || response.status && response.data) {
         toast({
-          title: t("service_create_successful"),
+          title: t(editId ? "service_updated_successful" : "service_create_successful"),
           description: response.message,
           variant: "success",
         });
@@ -369,14 +396,14 @@ const CreateServicePage = () => {
         router.push("/services");
       } else {
         toast({
-          title: t("service_create_failed"),
+          title: t(editId ? "service_update_failed" : "service_create_failed"),
           description: response.message,
           variant: "danger",
         });
       }
     } catch (error: any) {
       toast({
-        title: t("service_create_failed"),
+        title: t(editId ? "service_update_failed" : "service_create_failed"),
         description: error.message,
         variant: "danger",
       });
@@ -393,56 +420,78 @@ const CreateServicePage = () => {
       form.setValue('renewEveryWeek', false);
     }
   };
-
   useEffect(() => {
     console.log("Current Form Errors:", form.formState.errors);
   }, [form.formState.errors]);
   useEffect(() => {
-    if (selectedCountry) {
-      fetchStates(selectedCountry);
-    } else {
-      setStates([]);
-      setSelectedState(null);
+    const countryId = form.watch("countryId") as any;
+    if (form.watch("countryId")) {
+      fetchStates(countryId);
     }
-  }, [selectedCountry]);
+    //  else {
+    //   form.setValue("stateId", undefined);
+    // }
+  }, [form.watch("countryId")]);
   useEffect(() => {
-    if (selectedState) {
-      fetchCities(selectedState);
-    } else {
-      setCities([]);
+    const stateId = form.watch("stateId") as any;
+    if (stateId) {
+      fetchCities(stateId);
     }
-  }, [selectedState]);
+    //  else {
+    //   setCities([]);
+    // }
+  }, [form.watch("stateId")]);
+
+  const hasInitialized = useRef(false);
+  console.log(form.getValues())
   useEffect(() => {
-    if (selectedCountries.length > 0) {
-      const fetchStates = async () => {
-        const statesData: Record<string, OptionType[]> = {};
+    if (
+      serviceQueryById?.data?.data &&
+      !hasInitialized.current
+    ) {
+      hasInitialized.current = true;
 
-        try {
-          const responses = await Promise.all(
-            selectedCountries.map(async (country) => {
-              const response = await fetchStatesByCountry.mutateAsync({
-                countryId: Number(country.value),
-              });
-              return { countryId: country.value, data: response.data };
-            }),
-          );
+      const responseData = serviceQueryById.data.data;
 
-          responses.forEach(({ countryId, data }) => {
-            statesData[countryId] = data.map((state: any) => ({
-              label: state.name,
-              value: state.id,
-            }));
-          });
-
-          setStatesByCountry(statesData);
-        } catch (error) {
-          console.error("Error fetching states:", error);
-        }
+      const populatedFormData = {
+        ...responseData,
+        openTime: moment.utc(responseData.openTime).format("HH:mm"),
+        closeTime: moment.utc(responseData.closeTime).format("HH:mm"),
+        breakTimeFrom: moment.utc(responseData.breakTimeFrom).format("HH:mm"),
+        breakTimeTo: moment.utc(responseData.breakTimeTo).format("HH:mm"),
+        eachCustomerTime: responseData.eachCustomerTime?.toString() || "",
+        customerPerPeiod: responseData.customerPerPeiod?.toString() || "",
+        description: JSON.parse(responseData.description || "[]"),
+        tags: responseData.serviceTags.map((tag: any) => ({
+          label: memoizedTags.find((t: any) => t.value === tag.tagId)?.label || "",
+          value: tag.tagId,
+        })),
+        features: responseData.serviceFeatures.map((feature: any) => ({
+          ...feature,
+          serviceCost: feature.serviceCost?.toString() || "",
+        })),
+        images: responseData.images.map((image: any) => ({
+          path: image.url,
+          url: image.url,
+          fileName: image.fileName,
+          fileType: image.fileType,
+          id: image.id,
+        })),
       };
 
-      fetchStates();
+      form.reset(populatedFormData);
+      // setSelectedCountry(responseData.countryId);
+      // setSelectedState(responseData.stateId);
+      if (responseData.stateId) {
+        fetchCities(responseData.stateId);
+      }
     }
-  }, [selectedCountries]);
+  }, [serviceQueryById]);
+  const resetCities = () => {
+    form.setValue("fromCityId", null);
+    form.setValue("toCityId", null);
+    form.setValue("rangeCityId", null);
+  }
   return (
     <>
       <section className="relative w-full py-7">
@@ -460,6 +509,7 @@ const CreateServicePage = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
                 <BasicInformationSection
+                  editId={editId}
                   tagsList={memoizedTags}
                   activeProductType={activeProductType}
                 />
@@ -673,15 +723,23 @@ const CreateServicePage = () => {
                                 <div className="mt-2 flex flex-col gap-y-3">
                                   <Label dir={langDir}>{t("select_country")}</Label>
                                   <ReactSelect
-                                    onChange={(newValue) => {
-                                      setSelectedCountry(newValue?.value || null);
-                                      setSelectedState(null); // Reset state when country changes
-                                      setCities([]); // Clear cities when country changes
+                                    // onChange={(newValue) => {
+                                    //   setSelectedCountry(newValue?.value || null);
+                                    //   setSelectedState(null); // Reset state when country changes
+                                    //   setCities([]); // Clear cities when country changes
+                                    // }}
+                                    // value={memoizedAllCountries.find(
+                                    //   (item: any) => item.value === selectedCountry?.value,
+                                    // )}
+                                    onChange={(newValue: any) => {
+                                      form.setValue("countryId", newValue?.value);
+                                      form.setValue("stateId", null);// Reset state when country changes
+                                      resetCities();
+                                      setStates([]);
+                                      setCities([]);// Clear cities when country changes
                                     }}
+                                    value={memoizedAllCountries.find((item: any) => item.value === form.watch("countryId"))}
                                     options={memoizedAllCountries}
-                                    value={memoizedAllCountries.find(
-                                      (item: any) => item.value === selectedCountry?.value,
-                                    )}
                                     styles={customStyles}
                                     // instanceId="rangeCityId"
                                     placeholder={t("select")}
@@ -695,18 +753,24 @@ const CreateServicePage = () => {
                                 </div>
                                 <div className="mt-2 flex flex-col gap-y-3">
                                   {/* State Dropdown - Visible only if country is selected */}
-                                  {selectedCountry && (
+                                  {form.watch("countryId") && (
                                     <>
                                       <Label dir={langDir}>{t("select_state")}</Label>
                                       <ReactSelect
-                                        onChange={(newValue) => {
-                                          setSelectedState(newValue?.value || null);
+                                        // onChange={(newValue) => {
+                                        //   setSelectedState(newValue?.value || null);
+                                        //   setCities([]); // Clear cities when state changes
+                                        // }}
+                                        onChange={(newValue: any) => {
+                                          form.setValue("stateId", newValue?.value);
+                                          resetCities();
                                           setCities([]); // Clear cities when state changes
                                         }}
+                                        value={states.find((item) => item.value === form.watch("stateId")) || null}
                                         options={states}
-                                        value={states.find(
-                                          (item) => item.value === selectedState?.value,
-                                        )}
+                                        // value={states.find(
+                                        //   (item) => item.value === selectedState?.value,
+                                        // )}
                                         styles={customStyles}
                                         // instanceId="rangeCityId"
                                         placeholder={t("select")}
@@ -721,7 +785,7 @@ const CreateServicePage = () => {
                                   )}
                                 </div>
                                 {
-                                  selectedState && (
+                                  form.watch("stateId") && (
                                     form.watch("shippingType") === "DIRECTION" ? (
                                       <div className="space-y-4">
                                         <div>
@@ -731,7 +795,7 @@ const CreateServicePage = () => {
                                               form.setValue("fromCityId", newValue?.value); // Set the value for fromCityId
                                             }}
                                             options={cities}
-                                            value={cities.find((item) => item.value === form.watch("fromCityId"))} // Watch the value for fromCityId
+                                            value={cities.find((item) => item.value === form.watch("fromCityId")) || null} // Watch the value for fromCityId
                                             styles={customStyles}
                                             instanceId="fromCityId"
                                             placeholder={t("select")}
@@ -750,7 +814,7 @@ const CreateServicePage = () => {
                                               form.setValue("toCityId", newValue?.value); // Set the value for toCityId
                                             }}
                                             options={cities}
-                                            value={cities.find((item) => item.value === form.watch("toCityId"))} // Watch the value for toCityId
+                                            value={cities.find((item) => item.value === form.watch("toCityId")) || null} // Watch the value for toCityId
                                             styles={customStyles}
                                             instanceId="toCityId"
                                             placeholder={t("select")}
@@ -770,7 +834,7 @@ const CreateServicePage = () => {
                                             form.setValue("rangeCityId", newValue?.value); // Set the value for rangeCityId
                                           }}
                                           options={cities}
-                                          value={cities.find((item) => item.value === form.watch("rangeCityId"))} // Watch the value for rangeCityId
+                                          value={cities.find((item) => item.value === form.watch("rangeCityId")) || null} // Watch the value for rangeCityId
                                           styles={customStyles}
                                           instanceId="rangeCityId"
                                           placeholder={t("select")}
@@ -895,17 +959,20 @@ const CreateServicePage = () => {
 
                         <Button
                           disabled={
-                            createService.isPending || uploadMultiple.isPending
+                            createService.isPending || updateService.isPending || uploadMultiple.isPending
                           }
                           type="submit"
                           className="h-10 rounded bg-dark-orange px-6 text-center text-sm font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:h-12 md:px-10 md:text-lg"
                           dir={langDir}
                         >
-                          {createService.isPending ||
-                            uploadMultiple.isPending ? (
+                          {(
+                            createService.isPending ||
+                            updateService.isPending ||
+                            uploadMultiple.isPending
+                          ) ? (
                             <LoaderWithMessage message={t("please_wait")} />
                           ) : (
-                            t("submit")
+                            editId ? t("update") : t("submit")
                           )}
                         </Button>
                       </div>

@@ -1,6 +1,6 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createService, fetchAllServices, fetchServiceById } from "../requests/services.requests";
+import { createService, fetchAllServices, fetchServiceById, updateService } from "../requests/services.requests";
 
 export const useCreateService = () => {
     const queryClient = useQueryClient();
@@ -10,9 +10,9 @@ export const useCreateService = () => {
             return res.data;
         },
         onSuccess: () => {
-            //   queryClient.invalidateQueries({
-            //     queryKey: ["products"],
-            //   });
+              queryClient.invalidateQueries({
+                queryKey: ["all-services"],
+              });
             //   queryClient.invalidateQueries({
             //     queryKey: ["managed-products"],
             //   });
@@ -28,8 +28,33 @@ export const useCreateService = () => {
         },
     });
 };
-
-export const useGetAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; }, enabled = true,) => useQuery({
+export const useUpdateService = () => {
+  const queryClient = useQueryClient();
+  return useMutation<any>({
+      mutationFn: async (payload: any) => {
+          const res = await updateService(payload);
+          return res.data;
+      },
+      onSuccess: () => {
+            queryClient.invalidateQueries({
+              queryKey: ["all-services"],
+            });
+          //   queryClient.invalidateQueries({
+          //     queryKey: ["managed-products"],
+          //   });
+          //   queryClient.invalidateQueries({
+          //     queryKey: ["existing-products"],
+          //   });
+          //   queryClient.invalidateQueries({
+          //     queryKey: ["rfq-products"],
+          //   });
+      },
+      onError: (err: any) => {
+          console.log(err);
+      },
+  });
+};
+export const useGetAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; ownservice?:boolean }, enabled = true,) => useQuery({
   queryKey: ["all-services", payload],
   queryFn: async () => {
     const res = await fetchAllServices(payload);
