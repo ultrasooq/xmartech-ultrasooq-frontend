@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   IBrands,
   ISelectOptions,
@@ -65,6 +65,7 @@ import { fetchAllServices } from "@/apis/requests/services.requests";
 import { useGetAllServices } from "@/apis/queries/services.queries";
 import ServiceCard from "@/components/modules/trending/ServiceCard";
 import ServiceTable from "@/components/modules/trending/ServiceTable";
+import { IoMdAdd } from "react-icons/io";
 
 interface ServicesProps {
   searchParams?: { term?: string };
@@ -77,6 +78,7 @@ const Services = ({ searchParams }: ServicesProps) => {
   const categoryStore = useCategoryStore();
   // const searchParams = useSearchParams();
   const { toast } = useToast();
+  const router = useRouter();
   const deviceId = getOrCreateDeviceId() || "";
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [searchTerm, setSearchTerm] = useState("");
@@ -107,7 +109,7 @@ const Services = ({ searchParams }: ServicesProps) => {
     page,
     limit,
     // sort: sortBy,
-    // term: searchUrlTerm,
+    term: searchTerm,
     // priceMin:
     //   priceRange[0] === 0
     //     ? 0
@@ -310,7 +312,9 @@ const Services = ({ searchParams }: ServicesProps) => {
     if (minPriceInputRef.current) minPriceInputRef.current.value = "";
     if (maxPriceInputRef.current) maxPriceInputRef.current.value = "";
   };
-
+  const handleSearchService = debounce((event: any) => {
+    setSearchTerm(event.target.value);
+  }, 1000);
   useEffect(() => {
     if (accessToken) {
       setHaveAccessToken(true);
@@ -468,6 +472,7 @@ const Services = ({ searchParams }: ServicesProps) => {
               className="left-filter-overlay"
               onClick={() => setProductFilter(false)}
             ></div>*/}
+
             <div className="right-products">
               {/* {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' &&
                 <RadioGroup
@@ -499,6 +504,48 @@ const Services = ({ searchParams }: ServicesProps) => {
                   </div>
                 </RadioGroup>
               } */}
+              <div className="existing-product-add-headerPart">
+                <h2
+                  className="text-2xl font-medium capitalize text-color-dark"
+                  dir={langDir}
+                >
+                  {t("services")}
+                </h2>
+                <ul className="right-filter-lists flex flex-row flex-wrap gap-2 md:flex-nowrap">
+                  <li className="w-full sm:w-auto">
+                    <Input
+                      type="text"
+                      placeholder={t("search_service")}
+                      className="search-box h-[40px] w-full sm:w-[160px] lg:w-80"
+                      onChange={handleSearchService}
+                      // ref={searchInputRef}
+                      dir={langDir}
+                    />
+                  </li>
+                  <li className="flex">
+                    <button
+                      className="theme-primary-btn add-btn p-2"
+                      // onClick={handleAddProductModal}
+                      onClick={() => router.replace("/services/create-service")}
+                      dir={langDir}
+                    >
+                      <IoMdAdd size={20} />
+                      <span className="d-none-mobile">
+                        {t("add_service")}
+                      </span>
+                    </button>
+                  </li>
+                  <li className="flex">
+                    <button
+                      className="theme-primary-btn add-btn p-2"
+                      onClick={() => router.replace("/cart")}
+                      dir={langDir}
+                    >
+                      <span className="d-none-mobile">{t("go_to_cart")}</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
               <div className="products-header-filter">
                 <div className="le-info">
                 </div>
@@ -583,16 +630,16 @@ const Services = ({ searchParams }: ServicesProps) => {
                         //   productVariants.find((variant: any) => variant.productId == item.id)?.object || []
                         // }
                         item={item}
-                        // onWishlist={() =>
-                        //   handleAddToWishlist(item.id, item?.productWishlist)
-                        // }
-                        // inWishlist={item?.inWishlist}
-                        // haveAccessToken={haveAccessToken}
-                        // isInteractive
-                        // productQuantity={cartItem?.quantity || 0}
-                        // productVariant={cartItem?.object}
-                        // cartId={cartItem?.id}
-                        // isAddedToCart={cartItem ? true : false}
+                      // onWishlist={() =>
+                      //   handleAddToWishlist(item.id, item?.productWishlist)
+                      // }
+                      // inWishlist={item?.inWishlist}
+                      // haveAccessToken={haveAccessToken}
+                      // isInteractive
+                      // productQuantity={cartItem?.quantity || 0}
+                      // productVariant={cartItem?.object}
+                      // cartId={cartItem?.id}
+                      // isAddedToCart={cartItem ? true : false}
                       />
                     );
                   })}

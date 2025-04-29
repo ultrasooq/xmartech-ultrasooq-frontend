@@ -366,7 +366,7 @@ const CreateServicePage = () => {
           variant: "success",
         });
         form.reset();
-        // router.push("/manage-services");
+        router.push("/services");
       } else {
         toast({
           title: t("service_create_failed"),

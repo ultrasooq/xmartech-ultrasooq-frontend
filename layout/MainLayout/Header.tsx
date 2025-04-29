@@ -580,6 +580,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </DropdownMenuItem>
                                 </Link>
                               )}
+                              {hideMenu(PERMISSION_PRODUCTS) && (
+                                <Link href="/services">
+                                  <DropdownMenuItem dir={langDir}>
+                                    {t("services")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
                               {/* <DropdownMenuSeparator /> */}
                               {hideMenu(PERMISSION_ORDERS) && (
                                 <Link href="/seller-orders">
