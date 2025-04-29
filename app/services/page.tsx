@@ -1,849 +1,672 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
-import { Form } from "@/components/ui/form";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useTags } from "@/apis/queries/tags.queries";
-import BasicInformationSection from "@/components/modules/createService/BasicInformationSection";
-import DescriptionAndSpecificationSection from "@/components/modules/createService/DescriptionAndSpecificationSection";
-import Footer from "@/components/shared/Footer";
-import { useCreateProduct } from "@/apis/queries/product.queries";
-import { useToast } from "@/components/ui/use-toast";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  IBrands,
+  ISelectOptions,
+  TrendingProduct,
+} from "@/utils/types/common.types";
+import { useBrands } from "@/apis/queries/masters.queries";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useAllProducts, useProductVariant } from "@/apis/queries/product.queries";
+import ProductCard from "@/components/modules/trending/ProductCard";
+import GridIcon from "@/components/icons/GridIcon";
+import ListIcon from "@/components/icons/ListIcon";
+import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
+import ProductTable from "@/components/modules/trending/ProductTable";
+import { debounce } from "lodash";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import ReactSlider from "react-slider";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
-import { BUYGROUP_MENU_ID, FACTORIES_MENU_ID, RFQ_MENU_ID, STORE_MENU_ID, imageExtensions, videoExtensions } from "@/utils/constants";
-import BackgroundImage from "@/public/images/before-login-bg.png";
-import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
-import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { Input } from "@/components/ui/input";
+// import { stripHTML } from "@/utils/helper";
+// import Image from "next/image";
+// import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";
+// import ChevronRightIcon from "@/public/images/nextarow.svg";
+// import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
+import Footer from "@/components/shared/Footer";
+import Pagination from "@/components/shared/Pagination";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMe } from "@/apis/queries/user.queries";
+import {
+  useCartListByDevice,
+  useCartListByUserId,
+} from "@/apis/queries/cart.queries";
+import { getOrCreateDeviceId } from "@/utils/helper";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import BannerSection from "@/components/modules/trending/BannerSection";
+import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
+import { useCategoryStore } from "@/lib/categoryStore";
+import TrendingCategories from "@/components/modules/trending/TrendingCategories";
 import { useTranslations } from "next-intl";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
+import { fetchAllServices } from "@/apis/requests/services.requests";
+import { useGetAllServices } from "@/apis/queries/services.queries";
+import ServiceCard from "@/components/modules/trending/ServiceCard";
+import ServiceTable from "@/components/modules/trending/ServiceTable";
+import { IoMdAdd } from "react-icons/io";
 
-const baseProductPriceItemSchema = (t: any) => {
-  return z.object({
-    consumerType: z.string().trim().optional(),
-    sellType: z.string().trim().optional(),
-    consumerDiscount: z.coerce.number().optional().or(z.literal('')),
-    vendorDiscount: z.coerce.number().optional().or(z.literal('')),
-    consumerDiscountType: z.coerce.string().optional(),
-    vendorDiscountType: z.coerce.string().optional(),
-    minCustomer: z.coerce.number().optional().or(z.literal('')),
-    maxCustomer: z.coerce.number().optional().or(z.literal('')),
-    minQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
-    maxQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
-    minQuantity: z.coerce.number().optional().or(z.literal('')),
-    maxQuantity: z.coerce.number().optional().or(z.literal('')),
-    dateOpen: z.coerce.string().optional(),
-    dateClose: z.coerce.string().optional(),
-    startTime: z.coerce.string().optional(),
-    endTime: z.coerce.string().optional().or(z.literal('')),
-    timeOpen: z.coerce.number().optional().or(z.literal('')),
-    timeClose: z.coerce.number().optional(),
-    deliveryAfter: z.coerce.number().optional().or(z.literal('')),
-    stock: z.coerce.number().optional().or(z.literal('')),
-  });
-};
+interface ServicesProps {
+  searchParams?: { term?: string };
+}
 
-const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
-  return baseProductPriceItemSchema(t)
-    .extend({
-      consumerType: z
-        .string()
-        .trim()
-        .min(1, { message: t("consumer_type_is_required") }),
-      sellType: z.string().trim().min(1, { message: t("sell_type_is_required") }),
-      consumerDiscount: z.coerce
-        .number()
-        .max(100, { message: t("consumer_discount_must_be_less_than_100") }),
-      vendorDiscount: z.coerce
-        .number()
-        .max(100, { message: t("vendor_discount_must_be_less_than_100") }),
-      deliveryAfter: z.coerce
-        .number()
-        .min(1, { message: t("delivery_after_is_required") }),
-    })
-    .refine(
-      ({ minQuantity, maxQuantity, sellType }) => sellType != 'BUYGROUP' ||
-        (minQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)) ||
-        (maxQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)),
-      {
-        message: t("min_quantity_must_be_less_than_max_quantity"),
-        path: ["minQuantity"],
-      },
-    )
-    .refine(
-      ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
-        (minQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)) ||
-        (maxQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)),
-      {
-        message: t("min_quantity_per_customer_must_be_less_than_max_quantity_per_customer"),
-        path: ["minQuantityPerCustomer"],
-      },
-    )
-    .refine(
-      ({ minCustomer, maxCustomer }) =>
-        (!minCustomer || minCustomer) <= (!maxCustomer || maxCustomer),
-      {
-        message: t("min_customer_must_be_less_than_or_equal_to_max_customer"),
-        path: ["minCustomer"],
-      },
-    )
-    .superRefine((schema, ctx) => {
-      const {
-        sellType,
-        minQuantityPerCustomer,
-        maxQuantityPerCustomer,
-        minQuantity,
-        maxQuantity,
-        minCustomer,
-        maxCustomer,
-        startTime,
-        endTime,
-      } = schema;
-      if (sellType === "NORMALSELL" || sellType === "BUYGROUP") {
-        if (!minQuantityPerCustomer) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("quantity_per_customer_is_required"),
-            path: ["minQuantityPerCustomer"],
-          });
-        }
-        if (!maxQuantityPerCustomer) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("quantity_per_customer_is_required"),
-            path: ["maxQuantityPerCustomer"],
-          });
-        }
-      }
-      if (sellType === "BUYGROUP") {
-        if (!minQuantity) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("min_quantity_is_required"),
-            path: ["minQuantity"],
-          });
-        }
-      }
-      if (sellType === "BUYGROUP") {
-        if (!maxQuantity) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("max_quantity_is_required"),
-            path: ["maxQuantity"],
-          });
-        }
-      }
-      if (sellType === "BUYGROUP") {
-        if (!minCustomer) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("min_customer_is_required"),
-            path: ["minCustomer"],
-          });
-        }
-      }
-      if (sellType === "BUYGROUP") {
-        if (!maxCustomer) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("max_customer_is_required"),
-            path: ["maxCustomer"],
-          });
-        }
-      }
-      if (sellType == "BUYGROUP") {
-        if ((minQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0)) || (maxQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0))) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("min_quantity_must_be_less_than_max_quantity"),
-            path: ["maxQuantity"],
-          });
-        }
-      }
-      // if (sellType === "BUYGROUP") {
-      //   if (!startTime) {
-      //     ctx.addIssue({ code: "custom", message: t("time_open_is_required"), path: ["startTime"], });
-      //   }
-      // }
-      // if (sellType === "BUYGROUP") {
-      //   if (!endTime) {
-      //     ctx.addIssue({ code: "custom", message: t("time_close_is_required"), path: ["endTime"], });
-      //   }
-      // }
-    });
-};
-
-const formSchemaForTypeP = (t: any) => {
-  return z.object({
-    productName: z
-      .string()
-      .trim()
-      .min(2, { message: t("product_name_is_required") })
-      .max(50, { message: t("product_name_must_be_less_than_50_characters") }),
-    categoryId: z.number().optional(),
-    categoryLocation: z.string().trim().optional(),
-    typeOfProduct: z
-      .string({
-        required_error: t("provide_you_product_type"),
-        message: t("provide_you_product_type"),
-      })
-      .trim(),
-    brandId: z.number().min(1, { message: t("brand_is_required") }),
-    // productLocationId: z.number().min(1, { message: t("product_location_is_required") }),
-    productCountryId: z
-      .number()
-      .min(1, { message: t("product_country_is_required") }),
-    productStateId: z.number().min(1, { message: t("product_state_is_required") }),
-    productCityId: z.number().min(1, { message: t("product_city_is_required") }),
-    productTown: z.string().trim().optional(),
-    productLatLng: z.string().trim().optional(),
-    sellCountryIds: z.any().optional(),
-    sellStateIds: z.any().optional(),
-    sellCityIds: z.any().optional(),
-    skuNo: z.string().trim().optional(),
-    productCondition: z
-      .string()
-      .trim()
-      .min(1, { message: t("product_condition_is_required") }),
-    productTagList: z
-      .array(
-        z.object({
-          label: z.string().trim(),
-          value: z.number(),
-        }),
-        {
-          invalid_type_error: t("tag_is_required"),
-          required_error: t("tag_is_required")
-        }
-      )
-      .min(1, { message: t("tag_is_required") })
-      .transform((value) => value.map((item) => ({ tagId: item.value }))),
-    productImagesList: z.any().optional(),
-    productPrice: z.coerce.number().optional().or(z.literal('')),
-    offerPrice: z.coerce.number().optional().or(z.literal('')),
-    placeOfOriginId: z
-      .number()
-      .min(1, { message: t("place_of_origin_is_required") }),
-    productShortDescriptionList: z.array(
-      z.object({
-        shortDescription: z
-          .string()
-          .trim()
-          .min(2, { message: t("short_description_is_required") })
-          .max(20, {
-            message: t("short_description_must_be_less_than_20_characters"),
-          }),
-      }),
-    ),
-    productSpecificationList: z.array(
-      z.object({
-        label: z
-          .string()
-          .trim()
-          .min(2, { message: t("label_is_required") })
-          .max(20, { message: t("label_must_be_less_than_20_characters") }),
-        specification: z
-          .string()
-          .trim()
-          .min(1, { message: t("specification_is_required") })
-          .max(20, {
-            message: t("specification_must_be_less_than_20_characters"),
-          }),
-      }),
-    ),
-    description: z.string().trim().optional(),
-    descriptionJson: z.array(z.any()).optional(),
-    productPriceList: z.array(baseProductPriceItemSchema(t)).optional(),
-    setUpPrice: z.boolean(),
-    isStockRequired: z.boolean().optional(),
-    isOfferPriceRequired: z.boolean().optional(),
-    isCustomProduct: z.boolean().optional(),
-    productVariantType: z.string()
-      .trim()
-      .min(3, { message: t("variant_type_must_be_equal_greater_than_2_characters") })
-      .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
-      .optional()
-      .or(z.literal('')),
-    productVariants: z.array(
-      z.object({
-        value: z
-          .string()
-          .trim()
-          .min(1, { message: t("value_is_required") })
-          .max(20, { message: t("value_must_be_less_than_n_characters", { n: 20 }) })
-          .optional()
-          .or(z.literal('')),
-      }),
-    ),
-  })
-    .superRefine((data, ctx) => {
-      const variantsCount = data.productVariants.filter(el => el.value?.trim()).length;
-      if (data.productVariantType?.trim() && variantsCount == 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("value_is_required"),
-          path: ["productVariants.0.value"],
-        });
-      }
-      if (variantsCount > 0 && !data.productVariantType?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("variant_type_is_required"),
-          path: ["productVariantType"],
-        });
-      }
-
-      if (data.setUpPrice) {
-        const result = z
-          .array(productPriceItemSchemaWhenSetUpPriceTrue(t))
-          .safeParse(data.productPriceList);
-
-        if (!result.success) {
-          result.error.issues.forEach((issue) => ctx.addIssue(issue));
-        }
-
-      } else {
-        data.productPrice = 0;
-        data.offerPrice = 0;
-        if (Array.isArray(data.productPriceList)) {
-          data.productPriceList = data.productPriceList.map((item) => ({
-            consumerType: "",
-            sellType: "",
-            consumerDiscount: 0,
-            vendorDiscount: 0,
-            consumerDiscountType: "",
-            vendorDiscountType: "",
-            minCustomer: 0,
-            maxCustomer: 0,
-            minQuantityPerCustomer: 0,
-            maxQuantityPerCustomer: 0,
-            minQuantity: 0,
-            maxQuantity: 0,
-            dateOpen: "",
-            dateClose: "",
-            timeOpen: 0,
-            timeClose: 0,
-            startTime: "",
-            endTime: "",
-            deliveryAfter: 0,
-            stock: 0,
-          }));
-        }
-      }
-    });
-};
-
-const formSchemaForTypeR = (t: any) => {
-  return z.object({
-    productName: z
-      .string()
-      .trim()
-      .min(2, { message: t("product_name_is_required") })
-      .max(50, { message: t("product_name_must_be_less_than_50_characters") }),
-    categoryId: z.number().optional(),
-    categoryLocation: z.string().trim().optional(),
-    typeOfProduct: z
-      .string({
-        required_error: t("provide_you_product_type"),
-        message: t("provide_you_product_type"),
-      })
-      .trim(),
-    brandId: z.number().min(1, { message: t("brand_is_required") }),
-    productCondition: z
-      .string()
-      .trim()
-      .min(1, { message: t("product_condition_is_required") }),
-    productTagList: z
-      .array(
-        z.object({
-          label: z.string().trim(),
-          value: z.number(),
-        }),
-      )
-      .min(1, { message: t("tag_is_required") })
-      .transform((value) => {
-        let temp: any = [];
-        value.forEach((item) => {
-          temp.push({ tagId: item.value });
-        });
-        return temp;
-      }),
-    productImagesList: z.any().optional(),
-    productPrice: z.coerce.number().optional(),
-    offerPrice: z.coerce.number().optional(),
-    placeOfOriginId: z
-      .number()
-      .min(1, { message: t("place_of_origin_is_required") }),
-    productShortDescriptionList: z.array(
-      z.object({
-        shortDescription: z
-          .string()
-          .trim()
-          .min(2, { message: t("short_description_is_required") })
-          .max(20, {
-            message: t("short_description_must_be_less_than_20_characters"),
-          }),
-      }),
-    ),
-    productSpecificationList: z.array(
-      z.object({
-        label: z
-          .string()
-          .trim()
-          .min(2, { message: t("label_is_required") })
-          .max(20, { message: t("label_must_be_less_than_20_characters") }),
-        specification: z
-          .string()
-          .trim()
-          .min(2, { message: t("specification_is_required") })
-          .max(20, {
-            message: t("specification_must_be_less_than_20_characters"),
-          }),
-      }),
-    ),
-    description: z.string().trim().optional(),
-    descriptionJson: z.array(z.any()).optional(),
-    setUpPrice: z.boolean(),
-    isStockRequired: z.boolean().optional(),
-    isOfferPriceRequired: z.boolean().optional(),
-    isCustomProduct: z.boolean().optional(),
-  })
-    .superRefine((data, ctx) => {
-      if (data.setUpPrice) {
-        // if (data.offerPrice === 0) {
-        //   ctx.addIssue({
-        //     code: "custom",
-        //     message: t("offer_price_is_required"),
-        //     path: ["offerPrice"],
-        //   });
-        // }
-      }
-    });
-};
-
-const defaultValues: { [key: string]: any } = {
-  productName: "",
-  categoryId: 0,
-  categoryLocation: "",
-  typeOfProduct: "",
-  brandId: 0,
-  skuNo: "",
-  productCondition: "",
-  productTagList: undefined,
-  productImagesList: undefined,
-  productPrice: "",
-  offerPrice: "",
-  placeOfOriginId: 0,
-  // productLocationId: 0,
-  productCountryId: 0,
-  productStateId: 0,
-  productCityId: 0,
-  sellCountryIds: [],
-  sellStateIds: [],
-  sellCityIds: [],
-  productTown: "",
-  productLatLng: "",
-  productShortDescriptionList: [
-    {
-      shortDescription: "",
-    },
-  ],
-  productSpecificationList: [
-    {
-      label: "",
-      specification: "",
-    },
-  ],
-  description: "",
-  descriptionJson: undefined,
-  productImages: [],
-  productPriceList: [
-    {
-      consumerType: "",
-      sellType: "",
-      consumerDiscount: "",
-      vendorDiscount: "",
-      consumerDiscountType: "",
-      vendorDiscountType: "",
-      minCustomer: "",
-      maxCustomer: "",
-      minQuantityPerCustomer: "",
-      maxQuantityPerCustomer: "",
-      minQuantity: "",
-      maxQuantity: "",
-      dateOpen: "",
-      dateClose: "",
-      timeOpen: "",
-      timeClose: "",
-      startTime: "",
-      endTime: "",
-      deliveryAfter: "",
-      stock: "",
-    },
-  ],
-  setUpPrice: true,
-  isStockRequired: false,
-  isOfferPriceRequired: false,
-  isCustomProduct: false,
-  productVariants: [
-    {
-      value: ""
-    }
-  ]
-};
-
-const CreateServicePage = () => {
+const Services = ({ searchParams }: ServicesProps) => {
   const t = useTranslations();
-  const { langDir } = useAuth();
-  const router = useRouter();
+  const { langDir, currency } = useAuth();
+  const queryClient = useQueryClient();
+  const categoryStore = useCategoryStore();
+  // const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [activeProductType, setActiveProductType] = useState<string>();
-  const form = useForm({
-    resolver: zodResolver(
-      activeProductType === "R" ? formSchemaForTypeR(t) : formSchemaForTypeP(t),
-    ),
-    defaultValues,
+  const router = useRouter();
+  const deviceId = getOrCreateDeviceId() || "";
+  const [viewType, setViewType] = useState<"grid" | "list">("grid");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [priceRange, setPriceRange] = useState<number[]>([]);
+  const [minPriceInput, setMinPriceInput] = useState("");
+  const [maxPriceInput, setMaxPriceInput] = useState("");
+  const [sortBy, setSortBy] = useState("desc");
+  const [productFilter, setProductFilter] = useState(false);
+  const [displayMyProducts, setDisplayMyProducts] = useState("0");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(8);
+  const [productVariants, setProductVariants] = useState<any[]>([]);
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  const category = useCategoryStore();
+
+  const minPriceInputRef = useRef<HTMLInputElement>(null);
+  const maxPriceInputRef = useRef<HTMLInputElement>(null);
+
+  // const [searchUrlTerm, setSearchUrlTerm] = useState("");
+  const searchUrlTerm = searchParams?.term || "";
+
+  const me = useMe();
+  const addToWishlist = useAddToWishList();
+  const deleteFromWishlist = useDeleteFromWishList();
+  const allServicesQuery = useGetAllServices({
+    page,
+    limit,
+    // sort: sortBy,
+    term: searchTerm,
+    // priceMin:
+    //   priceRange[0] === 0
+    //     ? 0
+    //     : ((priceRange[0] || Number(minPriceInput)) ?? undefined),
+    // priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
+    // brandIds:
+    //   selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    // userId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
+    // categoryIds: category.categoryIds ? category.categoryIds : undefined,
+    // isOwner: displayMyProducts == "1" ? "me" : "",
+  });
+  console.log(allServicesQuery)
+  const fetchProductVariant = useProductVariant();
+  const brandsQuery = useBrands({
+    term: searchTerm,
   });
 
-  const uploadMultiple = useUploadMultipleFile();
-  const tagsQuery = useTags();
-  const createProduct = useCreateProduct();
-  const watchProductImages = form.watch("productImages");
-  const watchSetUpPrice = form.watch("setUpPrice");
-
-  const memoizedTags = useMemo(() => {
+  const memoizedBrands = useMemo(() => {
     return (
-      tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
-        return { label: item.tagName, value: item.id };
+      brandsQuery?.data?.data.map((item: IBrands) => {
+        return { label: item.brandName, value: item.id };
       }) || []
     );
-  }, [tagsQuery?.data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brandsQuery?.data?.data?.length]);
 
-  const handleUploadedFile = async (list: any[]) => {
-    if (list?.length) {
-      const formData = new FormData();
+  const handleDebounce = debounce((event: any) => {
+    setSearchTerm(event.target.value);
+  }, 1000);
 
-      list.forEach((item: { path: File; id: string }) => {
-        formData.append("content", item.path);
+  const handlePriceDebounce = debounce((event: any) => {
+    setPriceRange(event);
+  }, 1000);
+
+  const handleMinPriceChange = debounce((event: any) => {
+    setMinPriceInput(event.target.value);
+    // setPriceRange([ Number(event.target.value),500]);
+  }, 1000);
+
+  const handleMaxPriceChange = debounce((event: any) => {
+    setMaxPriceInput(event.target.value);
+    // setPriceRange([0, Number(event.target.value)]);
+  }, 1000);
+
+  const handleBrandChange = (
+    checked: boolean | string,
+    item: ISelectOptions,
+  ) => {
+    let tempArr = selectedBrandIds || [];
+    if (checked && !tempArr.find((ele: number) => ele === item.value)) {
+      tempArr = [...tempArr, item.value];
+    }
+
+    if (!checked && tempArr.find((ele: number) => ele === item.value)) {
+      tempArr = tempArr.filter((ele: number) => ele !== item.value);
+    }
+    setSelectedBrandIds(tempArr);
+  };
+
+  const memoizedServicesList = useMemo(() => {
+    return allServicesQuery?.data?.data?.services || [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    allServicesQuery?.data?.data,
+    allServicesQuery?.data?.data?.length,
+    sortBy,
+    searchUrlTerm,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    priceRange[0],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    priceRange[1],
+    page,
+    limit,
+    searchTerm,
+    selectedBrandIds,
+    displayMyProducts,
+  ]);
+
+  const getProductVariants = async () => {
+    let productPriceIds = memoizedServicesList
+      .filter((item: any) => item.productPrices.length > 0)
+      .map((item: any) => item.productPrices[0].id);
+
+    const response = await fetchProductVariant.mutateAsync(productPriceIds);
+    if (response.status) setProductVariants(response.data);
+  }
+
+  useEffect(() => {
+    if (memoizedServicesList.length) {
+      // getProductVariants();
+    }
+  }, [memoizedServicesList]);
+
+  const [cartList, setCartList] = useState<any[]>([]);
+
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 20,
+      deviceId,
+    },
+    !haveAccessToken,
+  );
+
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 20,
+    },
+    haveAccessToken,
+  );
+
+  useEffect(() => {
+    if (cartListByUser.data?.data) {
+      setCartList((cartListByUser.data?.data || []).map((item: any) => item));
+    } else if (cartListByDeviceQuery.data?.data) {
+      setCartList(
+        (cartListByDeviceQuery.data?.data || []).map((item: any) => item),
+      );
+    }
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
+
+  const handleDeleteFromWishlist = async (productId: number) => {
+    const response = await deleteFromWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
+      toast({
+        title: t("item_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
+        variant: "success",
       });
-
-      const response = await uploadMultiple.mutateAsync(formData);
-      if (response.status && response.data) {
-        return response.data;
-      }
+      queryClient.invalidateQueries({
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
+      });
+    } else {
+      toast({
+        title: t("item_not_removed_from_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
+        variant: "danger",
+      });
     }
   };
 
-  const onSubmit = async (formData: any) => {
-    const updatedFormData = {
-      ...formData,
-      productType: activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
-      status: activeProductType === "R" || activeProductType === "F" ? "ACTIVE" : "INACTIVE",
-    };
-
-    if (watchProductImages.length) {
-      const fileTypeArrays = watchProductImages.filter(
-        (item: any) => typeof item.path === "object",
-      );
-
-      const imageUrlArray: any = fileTypeArrays?.length
-        ? await handleUploadedFile(fileTypeArrays)
-        : [];
-
-      updatedFormData.productImages = [...imageUrlArray];
-
-      if (updatedFormData.productImages.length) {
-        updatedFormData.productImagesList = updatedFormData.productImages.map(
-          (item: string) => {
-            const extension = item.split(".").pop()?.toLowerCase();
-
-            if (extension) {
-              if (videoExtensions.includes(extension)) {
-                const videoName: string = item.split("/").pop()!;
-                return { video: item, videoName };
-              } else if (imageExtensions.includes(extension)) {
-                const imageName: string = item.split("/").pop()!;
-                return { image: item, imageName };
-              }
-            }
-
-            return { image: item, imageName: item };
-          },
-        );
-      }
-    }
-    const randomSkuNo = generateRandomSkuNoWithTimeStamp().toString();
-
-    delete updatedFormData.productImages;
-    updatedFormData.productPriceList = [
-      {
-        ...(activeProductType !== "R" && updatedFormData.productPriceList[0]),
-        askForStock: updatedFormData.isStockRequired ? "true" : "false",
-        askForPrice: updatedFormData.isOfferPriceRequired ? "true" : "false",
-        isCustomProduct: updatedFormData.isCustomProduct ? "true" : "false",
-        productPrice: updatedFormData.isOfferPriceRequired
-          ? 0
-          : activeProductType === "R"
-            ? (updatedFormData.offerPrice ?? 0)
-            : (updatedFormData.productPrice ?? 0),
-        offerPrice: updatedFormData.isOfferPriceRequired
-          ? 0
-          : activeProductType === "R"
-            ? (updatedFormData.offerPrice ?? 0)
-            : (updatedFormData.productPrice ?? 0),
-        stock: updatedFormData.isStockRequired
-          ? 0
-          : updatedFormData.productPriceList?.[0]?.stock
-            ? updatedFormData.productPriceList[0].stock
-            : 0,
-        productCountryId: updatedFormData.productCountryId,
-        productStateId: updatedFormData.productStateId,
-        productCityId: updatedFormData.productCityId,
-        productCondition: updatedFormData.productCondition,
-        productTown: updatedFormData.productTown,
-        productLatLng: updatedFormData.productLatLng,
-        sellCountryIds: updatedFormData.sellCountryIds,
-        sellStateIds: updatedFormData.sellStateIds,
-        sellCityIds: updatedFormData.sellCityIds,
-        status:
-          activeProductType === "R"
-            ? updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired
-              ? "ACTIVE"
-              : "INACTIVE"
-            : updatedFormData.productPrice ||
-              updatedFormData.isOfferPriceRequired
-              ? "ACTIVE"
-              : "INACTIVE",
-      },
-    ];
-
-    if (activeProductType === "R") {
-      updatedFormData.productPriceList[0] = {
-        consumerType: "",
-        sellType: "",
-        consumerDiscount: 0,
-        vendorDiscount: 0,
-        consumerDiscountType: "",
-        vendorDiscountType: "",
-        minCustomer: 0,
-        maxCustomer: 0,
-        minQuantityPerCustomer: 0,
-        maxQuantityPerCustomer: 0,
-        minQuantity: 0,
-        maxQuantity: 0,
-        timeOpen: 0,
-        timeClose: 0,
-        deliveryAfter: 0,
-        stock: 0,
-        askForStock: updatedFormData.isStockRequired ? "true" : undefined,
-        askForPrice: updatedFormData.isOfferPriceRequired
-          ? "true"
-          : undefined,
-        ...updatedFormData.productPriceList[0],
-      };
-      delete updatedFormData.productPriceList[0].productCountryId;
-      delete updatedFormData.productPriceList[0].productStateId;
-      delete updatedFormData.productPriceList[0].productCityId;
-      delete updatedFormData.productPriceList[0].productTown;
-      delete updatedFormData.productPriceList[0].productLatLng;
-      delete updatedFormData.productPriceList[0].sellCountryIds;
-      delete updatedFormData.productPriceList[0].sellStateIds;
-      delete updatedFormData.productPriceList[0].sellCityIds;
-    }
-
-    if (updatedFormData.productPriceList?.[0]?.sellType == 'NORMALSELL') {
-      updatedFormData.productPriceList[0].menuId = STORE_MENU_ID;
-    }
-    if (updatedFormData.productPriceList?.[0]?.sellType == 'BUYGROUP') {
-      updatedFormData.productPriceList[0].menuId = BUYGROUP_MENU_ID;
-    }
-    if (updatedFormData.isCustomProduct) {
-      updatedFormData.productPriceList[0].menuId = FACTORIES_MENU_ID;
-    }
-    if (activeProductType == "R") {
-      updatedFormData.productPriceList[0].menuId = RFQ_MENU_ID;
-    }
-
-    // delete updatedFormData.productLocationId;
-    delete updatedFormData.productCountryId;
-    delete updatedFormData.productStateId;
-    delete updatedFormData.productCityId;
-    delete updatedFormData.productTown;
-    delete updatedFormData.productLatLng;
-    delete updatedFormData.sellCountryIds;
-    delete updatedFormData.sellStateIds;
-    delete updatedFormData.sellCityIds;
-
-    delete updatedFormData.setUpPrice;
-    delete updatedFormData.productCondition;
-
-    delete updatedFormData.isStockRequired;
-    delete updatedFormData.isOfferPriceRequired;
-
-    updatedFormData.skuNo = randomSkuNo;
-    updatedFormData.offerPrice =
-      activeProductType === "R"
-        ? (updatedFormData.offerPrice ?? 0)
-        : (updatedFormData.productPrice ?? 0);
-    updatedFormData.productPrice =
-      activeProductType === "R"
-        ? (updatedFormData.offerPrice ?? 0)
-        : (updatedFormData.productPrice ?? 0);
-
-    // TODO: category input field change
-    if (updatedFormData.categoryId === 0) {
-      toast({
-        title: t("product_create_failed"),
-        description: t("please_select_category"),
-        variant: "danger",
-      });
+  const handleAddToWishlist = async (
+    productId: number,
+    wishlistArr?: any[],
+  ) => {
+    const wishlistObject = wishlistArr?.find(
+      (item) => item.userId === me.data?.data?.id,
+    );
+    // return;
+    if (wishlistObject) {
+      handleDeleteFromWishlist(wishlistObject?.productId);
       return;
     }
 
-    updatedFormData.description = updatedFormData?.descriptionJson
-      ? JSON.stringify(updatedFormData?.descriptionJson)
-      : "",
-      delete updatedFormData.descriptionJson;
-
-    updatedFormData.productVariant = updatedFormData.productVariants.filter((el: any) => el.value?.trim())
-      .map((el: any) => {
-        return {
-          type: updatedFormData.productVariantType,
-          value: el.value
-        }
-      });
-    delete updatedFormData.productVariantType;
-    delete updatedFormData.productVariants;
-
-    const response = await createProduct.mutateAsync(updatedFormData);
-
-    if (response.status && response.data) {
+    const response = await addToWishlist.mutateAsync({
+      productId,
+    });
+    if (response.status) {
       toast({
-        title: t("product_create_successful"),
-        description: response.message,
+        title: t("item_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "success",
       });
-      form.reset();
-      if (activeProductType === "R") {
-        router.push("/rfq");
-      } else if (activeProductType === "F") {
-        router.push("/factories");
-      } else {
-        router.push("/manage-products");
-      }
+      queryClient.invalidateQueries({
+        queryKey: [
+          "product-by-id",
+          { productId: String(productId), userId: me.data?.data?.id },
+        ],
+      });
     } else {
       toast({
-        title: t("product_create_failed"),
-        description: response.message,
+        title: response.message || t("item_not_added_to_wishlist"),
+        description: t("check_your_wishlist_for_more_details"),
         variant: "danger",
       });
     }
   };
 
+  const selectAll = () => {
+    setSelectedBrandIds(
+      brandsQuery?.data?.data?.map((item: any) => {
+        return item.id;
+      }) || [],
+    );
+  };
+
+  const clearFilter = () => {
+    setSelectedBrandIds([]);
+    setMaxPriceInput("");
+    setMinPriceInput("");
+    setPriceRange([]);
+    setDisplayMyProducts("0");
+
+    if (minPriceInputRef.current) minPriceInputRef.current.value = "";
+    if (maxPriceInputRef.current) maxPriceInputRef.current.value = "";
+  };
+  const handleSearchService = debounce((event: any) => {
+    setSearchTerm(event.target.value);
+  }, 1000);
   useEffect(() => {
-    if (!watchSetUpPrice) {
-      form.setValue("productPrice", 0);
-      form.setValue("offerPrice", 0);
-      form.setValue("productPriceList", [
-        {
-          consumerType: "",
-          sellType: "",
-          consumerDiscount: 0,
-          vendorDiscount: 0,
-          consumerDiscountType: "",
-          vendorDiscountType: "",
-          minCustomer: 0,
-          maxCustomer: 0,
-          minQuantityPerCustomer: 0,
-          maxQuantityPerCustomer: 0,
-          minQuantity: 0,
-          maxQuantity: 0,
-          dateOpen: "",
-          dateClose: "",
-          timeOpen: 0,
-          timeClose: 0,
-          startTime: "",
-          endTime: "",
-          deliveryAfter: 0,
-          stock: 0,
-        },
-      ]);
+    if (accessToken) {
+      setHaveAccessToken(true);
+    } else {
+      setHaveAccessToken(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchSetUpPrice, form.setValue]);
+  }, [accessToken]);
 
   useEffect(() => {
-    const params = new URLSearchParams(document.location.search);
-    let activeProductType = params.get("productType");
-
-    if (activeProductType) {
-      setActiveProductType(activeProductType);
-    }
+    return () => {
+      categoryStore.setSubCategories([]);
+      categoryStore.setSubSubCategories([]);
+      categoryStore.setCategoryId('');
+      categoryStore.setCategoryIds('');
+      categoryStore.setSubCategoryIndex(0);
+      categoryStore.setSecondLevelCategoryIndex(0);
+      categoryStore.setSubCategoryParentName('');
+      categoryStore.setSubSubCategoryParentName('');
+    };
   }, []);
 
   return (
     <>
-      <section className="relative w-full py-7">
-        <div className="absolute left-0 top-0 -z-10 h-full w-full">
-          <Image
-            src={BackgroundImage}
-            className="h-full w-full object-cover object-center"
-            alt="background"
-            fill
-            priority
-          />
-        </div>
-        <div className="container relative z-10 m-auto mx-auto max-w-[950px] px-3">
-          <div className="flex flex-wrap">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-                <BasicInformationSection
-                  tagsList={memoizedTags}
-                  activeProductType={activeProductType}
-                />
+      <title dir={langDir}>{t("store")} | Ultrasooq</title>
+      <div className="body-content-s1">
+        {/* <TrendingCategories /> */}
 
-                {/* <ProductDetailsSection /> */}
+        {/* <BannerSection /> */}
 
-                <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
-                    <div className="form-groups-common-sec-s1">
-                      <DescriptionAndSpecificationSection />
-                      <div className="mb-4 mt-4 inline-flex w-full items-center justify-end gap-2">
-                        <button className="rounded-sm bg-transparent px-2 py-2 text-sm font-bold leading-6 text-[#7F818D] md:px-4 md:py-4 md:text-lg" dir={langDir}>
-                          {t("save_as_draft")}
-                        </button>
-
-                        <Button
-                          disabled={
-                            createProduct.isPending || uploadMultiple.isPending
-                          }
-                          type="submit"
-                          className="h-10 rounded bg-dark-orange px-6 text-center text-sm font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:h-12 md:px-10 md:text-lg"
-                          dir={langDir}
-                        >
-                          {createProduct.isPending ||
-                            uploadMultiple.isPending ? (
-                            <LoaderWithMessage message={t("please_wait")} />
-                          ) : (
-                            t("continue")
-                          )}
-                        </Button>
+        <div className="trending-search-sec">
+          <div className="container m-auto px-3">
+            {/* <div className={productFilter ? "left-filter show" : "left-filter"} dir={langDir}>
+              <div className="all_select_button">
+                <button type="button" onClick={selectAll}>
+                  {t("select_all")}
+                </button>
+                <button type="button" onClick={clearFilter}>
+                  {t("clean_select")}
+                </button>
+              </div>
+              <Accordion
+                type="multiple"
+                defaultValue={["brand"]}
+                className="filter-col"
+              >
+                <AccordionItem value="brand">
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+                    {t("by_brand")}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="filter-sub-header">
+                      <Input
+                        type="text"
+                        placeholder={t("search_brand")}
+                        className="custom-form-control-s1 searchInput rounded-none"
+                        onChange={handleDebounce}
+                        dir={langDir}
+                      />
+                    </div>
+                    <div className="filter-body-part">
+                      <div className="filter-checklists">
+                        {!memoizedBrands.length ? (
+                          <p className="text-center text-sm font-medium" dir={langDir}>
+                            {t("no_data_found")}
+                          </p>
+                        ) : null}
+                        {memoizedBrands.map((item: ISelectOptions) => (
+                          <div key={item.value} className="div-li">
+                            <Checkbox
+                              id={item.label}
+                              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                              onCheckedChange={(checked) =>
+                                handleBrandChange(checked, item)
+                              }
+                              checked={selectedBrandIds.includes(item.value)}
+                            />
+                            <div className="grid gap-1.5 leading-none">
+                              <label
+                                htmlFor={item.label}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {item.label}
+                              </label>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="price">
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+                    {t("price")}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="px-4">
+                      <div className="px-2">
+                        <ReactSlider
+                          className="horizontal-slider"
+                          thumbClassName="example-thumb"
+                          trackClassName="example-track"
+                          defaultValue={[0, 500]}
+                          ariaLabel={["Lower thumb", "Upper thumb"]}
+                          ariaValuetext={(state) =>
+                            `Thumb value ${state.valueNow}`
+                          }
+                          renderThumb={(props, state) => (
+                            <div {...props} key={props.key}>
+                              {state.valueNow}
+                            </div>
+                          )}
+                          pearling
+                          minDistance={10}
+                          onChange={(value) => handlePriceDebounce(value)}
+                          max={500}
+                          min={0}
+                        />
+                      </div>
+                      <div className="flex justify-center">
+                        <Button
+                          variant="outline"
+                          className="mb-4"
+                          onClick={() => setPriceRange([])}
+                          dir={langDir}
+                        >
+                          {t("clear")}
+                        </Button>
+                      </div>
+                      <div className="range-price-left-right-info">
+                        <Input
+                          type="number"
+                          placeholder={`${currency.symbol}0`}
+                          className="custom-form-control-s1 rounded-none"
+                          onChange={handleMinPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
+                          ref={minPriceInputRef}
+                        />
+                        <div className="center-divider"></div>
+                        <Input
+                          type="number"
+                          placeholder={`${currency.symbol}500`}
+                          className="custom-form-control-s1 rounded-none"
+                          onChange={handleMaxPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
+                          ref={maxPriceInputRef}
+                        />
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div> 
+            <div
+              className="left-filter-overlay"
+              onClick={() => setProductFilter(false)}
+            ></div>*/}
+
+            <div className="right-products">
+              {/* {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' &&
+                <RadioGroup
+                  className="mb-3 flex flex-row gap-y-3"
+                  value={displayMyProducts}
+                  onValueChange={setDisplayMyProducts}
+                  // @ts-ignore
+                  dir={langDir}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="0"
+                      id="all_products"
+                      checked={displayMyProducts == "0"}
+                    />
+                    <Label htmlFor="all_products" className="text-base" dir={langDir}>
+                      {t("all_products")}
+                    </Label>
                   </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="1"
+                      id="my_products"
+                      checked={displayMyProducts == "1"}
+                    />
+                    <Label htmlFor="my_products" className="text-base" dir={langDir}>
+                      {t("my_products")}
+                    </Label>
+                  </div>
+                </RadioGroup>
+              } */}
+              <div className="existing-product-add-headerPart">
+                <h2
+                  className="text-2xl font-medium capitalize text-color-dark"
+                  dir={langDir}
+                >
+                  {t("services")}
+                </h2>
+                <ul className="right-filter-lists flex flex-row flex-wrap gap-2 md:flex-nowrap">
+                  <li className="w-full sm:w-auto">
+                    <Input
+                      type="text"
+                      placeholder={t("search_service")}
+                      className="search-box h-[40px] w-full sm:w-[160px] lg:w-80"
+                      onChange={handleSearchService}
+                      // ref={searchInputRef}
+                      dir={langDir}
+                    />
+                  </li>
+                  <li className="flex">
+                    <button
+                      className="theme-primary-btn add-btn p-2"
+                      // onClick={handleAddProductModal}
+                      onClick={() => router.replace("/services/create-service")}
+                      dir={langDir}
+                    >
+                      <IoMdAdd size={20} />
+                      <span className="d-none-mobile">
+                        {t("add_service")}
+                      </span>
+                    </button>
+                  </li>
+                  <li className="flex">
+                    <button
+                      className="theme-primary-btn add-btn p-2"
+                      onClick={() => router.replace("/cart")}
+                      dir={langDir}
+                    >
+                      <span className="d-none-mobile">{t("go_to_cart")}</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div className="products-header-filter">
+                <div className="le-info">
                 </div>
-              </form>
-            </Form>
+                <div className="rg-filter">
+                  <p dir={langDir}>
+                    {t("n_services_found", {
+                      n: allServicesQuery.data?.data?.total,
+                    })}
+                  </p>
+                  <ul>
+                    <li>
+                      <Select onValueChange={(e) => setSortBy(e)} disabled={true}>
+                        <SelectTrigger className="custom-form-control-s1 bg-white">
+                          <SelectValue placeholder={t("sort_by")} dir={langDir} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="desc" dir={langDir}>
+                              {t("sort_by_latest")}
+                            </SelectItem>
+                            <SelectItem value="asc" dir={langDir}>
+                              {t("sort_by_oldest")}
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </li>
+
+                    <li>
+                      <button
+                        type="button"
+                        className="view-type-btn"
+                        onClick={() => setViewType("grid")}
+                      >
+                        <GridIcon active={viewType === "grid"} />
+                      </button>
+                    </li>
+                    {/* <li>
+                      <button
+                        type="button"
+                        className="view-type-btn"
+                        onClick={() => setViewType("list")}
+                      >
+                        <ListIcon active={viewType === "list"} />
+                      </button>
+                    </li> */}
+                    <li>
+                      <button
+                        type="button"
+                        className="view-type-btn"
+                        onClick={() => setProductFilter(true)}
+                      >
+                        <FilterMenuIcon />
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {allServicesQuery.isLoading && viewType === "grid" ? (
+                <div className="grid grid-cols-4 gap-5">
+                  {Array.from({ length: 8 }).map((_, index: number) => (
+                    <SkeletonProductCardLoader key={index} />
+                  ))}
+                </div>
+              ) : null}
+
+              {!memoizedServicesList.length && !allServicesQuery.isLoading ? (
+                <p className="text-center text-sm font-medium" dir={langDir}>
+                  {t("no_data_found")}
+                </p>
+              ) : null}
+
+              {viewType === "grid" ? (
+                <div className="product-list-s1">
+                  {memoizedServicesList.map((item: TrendingProduct) => {
+                    const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                    return (
+                      <ServiceCard
+                        key={item.id}
+                        // productVariants={
+                        //   productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                        // }
+                        item={item}
+                      // onWishlist={() =>
+                      //   handleAddToWishlist(item.id, item?.productWishlist)
+                      // }
+                      // inWishlist={item?.inWishlist}
+                      // haveAccessToken={haveAccessToken}
+                      // isInteractive
+                      // productQuantity={cartItem?.quantity || 0}
+                      // productVariant={cartItem?.object}
+                      // cartId={cartItem?.id}
+                      // isAddedToCart={cartItem ? true : false}
+                      />
+                    );
+                  })}
+                </div>
+              ) : null}
+
+              {viewType === "list" && memoizedServicesList.length ? (
+                <div className="product-list-s1 p-4">
+                  <ServiceTable list={memoizedServicesList} />
+                </div>
+              ) : null}
+
+              {allServicesQuery.data?.data?.total > page ? (
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  totalCount={allServicesQuery.data?.data?.total}
+                  limit={limit}
+                />
+              ) : null}
+            </div>
           </div>
         </div>
-      </section>
-
+      </div>
       <Footer />
     </>
   );
 };
 
-export default CreateServicePage;
+export default Services;

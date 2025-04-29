@@ -1,0 +1,45 @@
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { getCookie } from "cookies-next";
+import axios from "axios";
+import urlcat from "urlcat";
+import {
+} from "@/utils/types/product.types";
+
+export const createService = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/service/create`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+export const fetchAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string }) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/list`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+export const fetchServiceById = (payload: {
+  serviceid: string;
+  userId?: number;
+  sharedLinkId?: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/${payload.serviceid}`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
