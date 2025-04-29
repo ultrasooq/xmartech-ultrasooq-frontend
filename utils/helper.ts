@@ -185,3 +185,14 @@ export const convertDateTime = (dateString: string) => {
   const formattedDate = date.toLocaleDateString("en-GB", options);
   return formattedDate;
 };
+
+export const convertDateTimeToUTC = (datetime: string) => {
+  const date = new Date(datetime);
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() < 10 ? `0${date.getUTCMonth()}` : date.getUTCMonth().toString();
+  const day = date.getUTCDate() < 10 ? `0${date.getUTCDate()}` : date.getUTCDate().toString();
+  const hour = date.getUTCHours() < 10 ? `0${date.getUTCHours()}` : date.getUTCHours().toString();
+  const minutes = date.getUTCMinutes() < 10 ? `0${date.getUTCMinutes()}` : date.getUTCMinutes().toString();
+  const seconds = date.getUTCSeconds() < 10 ? `0${date.getUTCSeconds()}` : date.getUTCSeconds().toString();
+  return `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`;
+}

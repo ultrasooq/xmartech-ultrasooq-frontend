@@ -3,6 +3,7 @@ export interface CartItem {
   productId: number;
   productPriceId: number;
   productPriceDetails: {
+    adminId: number;
     offerPrice: string;
     productPrice_product: {
       productName: string;
