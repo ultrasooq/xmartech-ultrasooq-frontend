@@ -71,14 +71,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const deviceId = getOrCreateDeviceId() || "";
 
   const calculateDiscountedPrice = () => {
-    const price = item.productProductPrice ? Number(item.productProductPrice) : 0;
+    const price = item.productProductPrice
+      ? Number(item.productProductPrice)
+      : 0;
     let discount = item.consumerDiscount || 0;
     let discountType = item.consumerDiscountType;
-    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
+    if (user?.tradeRole && user?.tradeRole != "BUYER") {
       discount = item.vendorDiscount || 0;
       discountType = item.vendorDiscountType;
     }
-    if (discountType == 'PERCENTAGE') {
+    if (discountType == "PERCENTAGE") {
       return Number((price - (price * discount) / 100).toFixed(2));
     }
     return Number((price - discount).toFixed(2));
@@ -116,10 +118,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [quantity, setQuantity] = useState(0);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
 
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
-  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
+  const handleConfirmDialog = () =>
+    setIsConfirmDialogOpen(!isConfirmDialogOpen);
   const confirmDialogRef = useRef(null);
-  const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
+  const [isClickedOutsideConfirmDialog] = useClickOutside(
+    [confirmDialogRef],
+    (event) => {
+      onCancelRemove();
+    },
+  );
 
   useEffect(() => {
     setQuantity(productQuantity || 0);
@@ -136,13 +145,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const handleAddToCart = async (
     newQuantity: number,
     actionType: "add" | "remove",
-    variant?: any
+    variant?: any,
   ) => {
-    const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
-    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer: null;
+    const minQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.minQuantityPerCustomer
+      : null;
+    const maxQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.maxQuantityPerCustomer
+      : null;
 
     if (actionType == "add" && newQuantity == -1) {
-      newQuantity = minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
+      newQuantity =
+        minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
     }
 
     if (actionType == "add" && minQuantity && minQuantity > newQuantity) {
@@ -178,7 +192,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: item?.productProductPriceId,
         quantity: newQuantity,
-        productVariant: variant || selectedProductVariant
+        productVariant: variant || selectedProductVariant,
       });
 
       if (response.status) {
@@ -188,7 +202,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           setQuantity(newQuantity);
         }
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -213,7 +230,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         productPriceId: item?.productProductPriceId,
         quantity: newQuantity,
         deviceId,
-        productVariant: variant || selectedProductVariant
+        productVariant: variant || selectedProductVariant,
       });
       if (response.status) {
         if (actionType === "add" && newQuantity === 0) {
@@ -222,7 +239,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
           setQuantity(newQuantity);
         }
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -238,8 +258,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const handleQuantity = (quantity: number, action: "add" | "remove") => {
-    const minQuantity = item.productPrices?.length? item.productPrices[0]?.minQuantityPerCustomer : null;
-    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
+    const minQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.minQuantityPerCustomer
+      : null;
+    const maxQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.maxQuantityPerCustomer
+      : null;
 
     if (maxQuantity && maxQuantity < quantity) {
       toast({
@@ -274,7 +298,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
       return;
     }
 
-    const minQuantity = item.productPrices?.length? item.productPrices[0]?.minQuantityPerCustomer : null;
+    const minQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.minQuantityPerCustomer
+      : null;
     if (minQuantity && minQuantity > quantity) {
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
@@ -284,7 +310,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
       return;
     }
 
-    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
+    const maxQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.maxQuantityPerCustomer
+      : null;
     if (maxQuantity && maxQuantity < quantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
@@ -500,7 +528,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </button>
             </Link>
           ) : (
-            <h5 className="py-1 text-[#1D77D1]">
+            <h5 className="py-0.5 text-[#1D77D1]">
               {currency.symbol}
               {calculateDiscountedPrice()}{" "}
               <span className="text-gray-500 !line-through">
@@ -510,23 +538,31 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </h5>
           )}
         </div>
-        {productVariants.length > 0 && <div className="mb-2">
-          <label dir={langDir}>{productVariants[0].type}</label>
-          <select 
-            className="w-full" 
-            value={selectedProductVariant?.value} 
-            onChange={(e) => {
-              let value = e.target.value;
-              const selectedVariant = productVariants.find((variant: any) => variant.value == value);
-              setSelectedProductVariant(selectedVariant);
-              handleAddToCart(quantity, "add", selectedVariant)
-            }}
-          >
-            {productVariants.map((variant: any, index: number) => {
-              return <option key={index} value={variant.value} dir={langDir}>{variant.value}</option>;
-            })}
-          </select>
-        </div>}
+        {productVariants.length > 0 && (
+          <div className="mb-2">
+            <label dir={langDir}>{productVariants[0].type}</label>
+            <select
+              className="w-full"
+              value={selectedProductVariant?.value}
+              onChange={(e) => {
+                let value = e.target.value;
+                const selectedVariant = productVariants.find(
+                  (variant: any) => variant.value == value,
+                );
+                setSelectedProductVariant(selectedVariant);
+                handleAddToCart(quantity, "add", selectedVariant);
+              }}
+            >
+              {productVariants.map((variant: any, index: number) => {
+                return (
+                  <option key={index} value={variant.value} dir={langDir}>
+                    {variant.value}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        )}
         <div className="quantity_wrap mb-2">
           <label dir={langDir}>{t("quantity")}</label>
           <div className="qty-up-down-s1-with-rgMenuAction">
@@ -605,16 +641,32 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        {sold !== undefined ? (
-          <>
-            <div className="mt-3 h-3 w-full bg-gray-300">
-              <div className="h-full w-4/5 bg-color-yellow"></div>
-            </div>
-            <span className="w-full text-sm font-normal capitalize text-light-gray">
-              {t("sold")}: {sold}
-            </span>
-          </>
-        ) : null}
+        {(() => {
+          if (sold === undefined || sold === null) return null;
+
+          let percentage = 0;
+          if (sold && item.productPrices?.[0]?.stock) {
+            percentage = Number(
+              ((sold / (sold + item.productPrices?.[0]?.stock)) * 100).toFixed(),
+            );
+          }
+
+          return (
+            <>
+              <div className="mt-3 h-3 w-full bg-gray-300">
+                <div
+                  className="h-full bg-color-yellow"
+                  style={{ width: `${percentage}%` }}
+                ></div>
+              </div>
+              <span className="w-full text-sm font-normal capitalize text-light-gray">
+                {t("sold")}: {sold}
+              </span>
+            </>
+          );
+        })()}
+
+        {sold !== undefined ? <></> : null}
       </div>
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
@@ -622,21 +674,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ref={confirmDialogRef}
         >
           <div className="modal-header !justify-between" dir={langDir}>
-            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
             >
               <IoCloseSharp size={20} />
             </Button>
           </div>
 
-          <div className="text-center mt-4 mb-4">
-            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
+          <div className="mb-4 mt-4 text-center">
+            <p className="text-dark-orange">
+              Do you want to remove this item from cart?
+            </p>
             <div>
               <Button
                 type="button"
-                className="bg-white text-red-500 mr-2"
+                className="mr-2 bg-white text-red-500"
                 onClick={onCancelRemove}
               >
                 Cancel

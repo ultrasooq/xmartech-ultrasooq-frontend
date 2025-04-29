@@ -5,9 +5,11 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
+  createEMIPayment,
   createOrder,
   createOrderUnAuth,
   createPaymentIntent,
+  createPaymentLink,
   fetchOrderById,
   fetchOrderBySellerId,
   fetchOrders,
@@ -128,21 +130,59 @@ export const useCreateOrderUnAuth = () => {
 
 export const useCreatePaymentIntent = () => {
   return useMutation<
-  { data: any; message: string; status: boolean },
-  APIResponseError,
-  {}
->({
-  mutationFn: async (payload) => {
-    const res = await createPaymentIntent(payload);
-    return res.data;
-  },
-  onSuccess: () => {
-   console.log("Intent Created");
-  },
-  onError: (err: APIResponseError) => {
-    console.log(err);
-  },
-});
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {}
+  >({
+    mutationFn: async (payload) => {
+      const res = await createPaymentIntent(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      console.log("Intent Created");
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useCreatePaymentLink = () => {
+  return useMutation<
+    { data: any; message: string; success: boolean },
+    APIResponseError,
+    {}
+  >({
+    mutationFn: async (payload) => {
+      const res = await createPaymentLink(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      console.log("Intent Created");
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useCreateEMIPayment = () => {
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {}
+  >({
+    mutationFn: async (payload) => {
+      const res = await createEMIPayment(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      console.log("Intent Created");
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
 };
 
 export const useOrderById = (
@@ -249,7 +289,7 @@ export const useUpdateCancelReason = () => {
 
 export const usePreOrderCalculation = () => {
   return useMutation<
-    {[key: string]: any},
+    { [key: string]: any },
     APIResponseError,
     { cartIds: number[]; userAddressId: number }
   >({
@@ -258,7 +298,7 @@ export const usePreOrderCalculation = () => {
       return res.data;
     },
     onSuccess: () => {
-      
+
     },
     onError: (err: APIResponseError) => {
       console.log(err);

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   CONSUMER_TYPE_LIST,
@@ -9,7 +9,6 @@ import { Controller, useFormContext } from "react-hook-form";
 import ReactSelect from "react-select";
 import { Label } from "@/components/ui/label";
 import CounterTextInputField from "../createProduct/CounterTextInputField";
-import { useLocation } from "@/apis/queries/masters.queries";
 import { ILocations, IOption } from "@/utils/types/common.types";
 import { FiEyeOff } from "react-icons/fi";
 // import { FiEye } from "react-icons/fi";
@@ -40,26 +39,17 @@ const customStyles = {
 
 type ManageProductAsideProps = {
   isLoading?: boolean;
+  prefilledData?: {[key: string]: any}
 };
 
 const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   isLoading,
+  prefilledData
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
 
   const formContext = useFormContext();
-
-  const locationsQuery = useLocation();
-
-  const memoizedLocations = useMemo(() => {
-    return (
-      locationsQuery?.data?.data.map((item: ILocations) => {
-        return { label: item.locationName, value: item.id };
-      }) || []
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locationsQuery?.data?.data?.length]);
 
   const watchConsumerType = formContext.watch("consumerType");
   const watchSellType = formContext.watch("sellType");
@@ -80,9 +70,11 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   const watchIsVendorDiscountRequired = formContext.watch(
     "isVendorDiscountRequired",
   );
+  const watchVendorDiscount = formContext.watch("vendorDiscount")
   const watchIsConsumerDiscountRequired = formContext.watch(
     "isConsumerDiscountRequired",
   );
+  const watchConsumerDiscount = formContext.watch("consumerDiscount")
   const watchIsMinQuantityRequired = formContext.watch("isMinQuantityRequired");
   const watchIsMaxQuantityRequired = formContext.watch("isMaxQuantityRequired");
   const watchIsMinCustomerRequired = formContext.watch("isMinCustomerRequired");
@@ -132,6 +124,30 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
     );
   };
 
+  useEffect(() => {
+    console.log(prefilledData);
+    if (prefilledData) {
+      formContext.setValue('productCondition', prefilledData.productCondition);
+      formContext.setValue('stock', prefilledData.stock);
+      formContext.setValue('offerPrice', prefilledData.offerPrice);
+      formContext.setValue('deliveryAfter', prefilledData.deliveryAfter);
+      formContext.setValue('consumerType', prefilledData.consumerType);
+      formContext.setValue('consumerDiscount', prefilledData.consumerDiscount);
+      formContext.setValue('consumerDiscountType', prefilledData.consumerDiscountType);
+      formContext.setValue('vendorDiscount', prefilledData.vendorDiscount);
+      formContext.setValue('vendorDiscountType', prefilledData.vendorDiscountType);
+      formContext.setValue('sellType', prefilledData.sellType);
+      formContext.setValue('minQuantity', prefilledData.minQuantity);
+      formContext.setValue('maxQuantity', prefilledData.maxQuantity);
+      formContext.setValue('minCustomer', prefilledData.minCustomer);
+      formContext.setValue('maxCustomer', prefilledData.maxCustomer);
+      formContext.setValue('minQuantityPerCustomer', prefilledData.minQuantityPerCustomer);
+      formContext.setValue('maxQuantityPerCustomer', prefilledData.maxQuantityPerCustomer);
+      formContext.setValue('timeOpen', prefilledData.timeOpen);
+      formContext.setValue('timeClose', prefilledData.timeClose);
+    }
+  }, [prefilledData])
+
   return (
     <aside className="manage_product_list h-fit">
       <div className="manage_product_list_wrap">
@@ -164,7 +180,6 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           <button
             type="button"
             onClick={() => {
-              formContext.setValue("productLocationId", null);
               formContext.setValue("isHiddenRequired", false);
               formContext.setValue("isProductConditionRequired", false);
               formContext.setValue("productCondition", null);
@@ -190,33 +205,6 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
         </div>
 
         <div className="select_main_wrap">
-          <div className="mt-2 flex flex-col gap-y-3">
-            <Label dir={langDir}>{t("product_location")}</Label>
-            <Controller
-              name="productLocationId"
-              control={formContext.control}
-              render={({ field }) => (
-                <ReactSelect
-                  {...field}
-                  onChange={(newValue) => {
-                    field.onChange(newValue?.value);
-                  }}
-                  options={memoizedLocations}
-                  value={
-                    memoizedLocations.find(
-                      (item: IOption) => item.value === field.value,
-                    ) || ""
-                  }
-                  styles={customStyles}
-                  instanceId="productLocationId"
-                  isClearable={true}
-                  placeholder={t("select")}
-                  isRtl={langDir == "rtl"}
-                />
-              )}
-            />
-          </div>
-
           <div className="flex items-center justify-start gap-[10px] py-2">
             <Controller
               name="isProductConditionRequired"
@@ -564,7 +552,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           </div>
 
           {watchConsumerType === "EVERYONE" ||
-          watchConsumerType === "CONSUMER" ? (
+          watchConsumerType === "VENDORS" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
               {/* <div className="select_type_checkbox"> */}
               <Controller
@@ -591,12 +579,36 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                     placeholder="Discount"
                   />
                 </div>
+
+                {watchVendorDiscount ? (
+                  <>
+                    <Label dir={langDir} className="mb-1">{t("discount_type")}</Label>
+                    <Controller
+                      name="vendorDiscountType"
+                      control={formContext.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                        >
+                          <option value="" dir={langDir}></option>
+                          <option value="FLAT" dir={langDir}>
+                            {t("flat").toUpperCase()}
+                          </option>
+                          <option value="PERCENTAGE" dir={langDir}>
+                            {t("percentage").toUpperCase()}
+                          </option>
+                        </select>
+                      )}
+                    />
+                  </>
+                ) : null}
               </div>
             </div>
           ) : null}
 
           {watchConsumerType === "EVERYONE" ||
-          watchConsumerType === "VENDORS" ? (
+          watchConsumerType === "CONSUMER" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
               {/* <div className="select_type_checkbox"> */}
               <Controller
@@ -617,11 +629,33 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 dir={langDir}
               >
                 <Label>{t("consumer_discount")}</Label>
-                {watchIsConsumerDiscountRequired ? (
-                  <CounterTextInputField
-                    name="consumerDiscount"
-                    placeholder={t("discount")}
-                  />
+                <CounterTextInputField
+                  name="consumerDiscount"
+                  placeholder={t("discount")}
+                />
+
+                {watchConsumerDiscount ? (
+                  <>
+                    <Label dir={langDir} className="mb-1">{t("discount_type")}</Label>
+                    <Controller
+                      name="consumerDiscountType"
+                      control={formContext.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                        >
+                          <option value="" dir={langDir}></option>
+                          <option value="FLAT" dir={langDir}>
+                            {t("flat").toUpperCase()}
+                          </option>
+                          <option value="PERCENTAGE" dir={langDir}>
+                            {t("percentage").toUpperCase()}
+                          </option>
+                        </select>
+                      )}
+                    />
+                  </>
                 ) : null}
               </div>
             </div>

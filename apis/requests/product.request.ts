@@ -353,7 +353,9 @@ export const updateSingleProducts = (payload: {
   timeOpen: number,
   timeClose: number,
   vendorDiscount: number,
+  vendorDiscountType: string | null;
   consumerDiscount: number,
+  consumerDiscountType: string | null;
   minQuantity: number,
   maxQuantity: number,
   minCustomer: number,

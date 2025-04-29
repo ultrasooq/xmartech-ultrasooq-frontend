@@ -554,6 +554,13 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   </span>{" "}
                   <b>{productPriceArr?.[0]?.vendorDiscount}&nbsp;({productPriceArr?.[0]?.vendorDiscountType})</b>
                 </p> : null}
+
+                <p>
+                  <span className="color-text" dir={langDir}>
+                    {t("stock")}:
+                  </span>{" "}
+                  <b>{productPriceArr?.[0]?.stock || 0}</b>
+                </p>
               </div>
             </div>
           </div>
