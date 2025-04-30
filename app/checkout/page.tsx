@@ -407,8 +407,8 @@ const CheckoutPage = () => {
     setFee(chargedFee);
   }
 
-  useEffect(() => {
-    if (memoizedCartList.length && selectedShippingAddressId) {
+  useEffect(() => {console.log(memoizedCartList);
+    if (memoizedCartList.length) {
       let userIds = memoizedCartList.map((item: any) => {
         return item.productPriceDetails.adminId;
       });
