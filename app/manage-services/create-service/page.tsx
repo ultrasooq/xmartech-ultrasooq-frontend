@@ -365,6 +365,8 @@ const CreateServicePage = () => {
         }
         if (oldFiles.length > 0) {
           updatedFormData.images = [...oldFiles, ...newFiles];
+        }else{
+          updatedFormData.images = newFiles;
         }
       }
 

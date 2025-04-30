@@ -905,5 +905,6 @@
     "n_services_found": "{n} Services Found",
     "search_service": "Search Service",
     "service_updated_successful": "Service Updated Successful",
-    "service_update_failed": "Service Update Failed"
+    "service_update_failed": "Service Update Failed",
+    "select_services":"Select Services"
 }
