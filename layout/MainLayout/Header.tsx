@@ -253,7 +253,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   };
 
   const wrapperRef = useRef(null);
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
   const handleToggleQueryModal = () => setIsQueryModalOpen(!isQueryModalOpen);
@@ -321,7 +321,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           setSelectedCurrency(window.localStorage.currency || "USD");
           changeCurrency(window.localStorage.currency || "USD");
         }
-      } catch (error) { }
+      } catch (error) {}
     };
 
     if (typeof window !== "undefined") {
@@ -537,14 +537,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   <li className="relative flex">
                     {isLoggedIn ? (
                       <DropdownMenu>
-                        <DropdownMenuTrigger>
+                        <DropdownMenuTrigger className="h-[44px] w-[44px]">
                           {me?.data?.data?.profilePicture ? (
                             <Image
                               src={me?.data?.data?.profilePicture}
                               alt="image-icon"
                               height={44}
                               width={44}
-                              className="rounded-full"
+                              className="h-full w-full rounded-full object-cover"
                             />
                           ) : (
                             <div className="h-[44px] w-[44px] rounded-full bg-gray-300">
@@ -754,10 +754,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               ? "/rfq"
                               : item.name.toLowerCase().includes("factories")
                                 ? "/factories"
-                                :
-                                item.name.toLowerCase().includes("service")
+                                : item.name.toLowerCase().includes("service")
                                   ? "/services"
-                                  : item.name.toLowerCase().includes("buy group")
+                                  : item.name
+                                        .toLowerCase()
+                                        .includes("buy group")
                                     ? "/buygroup"
                                     : "/trending"
                       }
@@ -773,7 +774,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         <p>{item?.name}</p>
                       </div>
                     </ButtonLink>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -810,7 +811,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   )}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
-                    memoizedSubCategory?.length ? (
+                  memoizedSubCategory?.length ? (
                     <div className="dropdown-content">
                       {memoizedSubCategory?.map(
                         (item: CategoryProps, index: number) => (
@@ -874,7 +875,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   ) : null}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
-                    memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
+                  memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                     <div className="dropdown-content-second">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
                         (item: CategoryProps, index: number) => (
@@ -939,9 +940,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   ) : null}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
-                    memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                      subSubCategoryIndex
-                    ]?.children?.length ? (
+                  memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                    subSubCategoryIndex
+                  ]?.children?.length ? (
                     <div className="dropdown-content-third p-3">
                       <h4 className="mb-2 text-sm">
                         {memoizedSubCategory?.[subCategoryIndex]?.children?.[
