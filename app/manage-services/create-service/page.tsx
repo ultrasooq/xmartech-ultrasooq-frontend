@@ -102,6 +102,8 @@ const formSchema = (t: any) =>
     features: z
       .array(
         z.object({
+          id: z.number().optional(),
+          serviceId: z.number().optional(),
           name: z
             .string()
             .trim()
@@ -163,17 +165,6 @@ const formSchema = (t: any) =>
       });
     }
   });
-const customStyles = {
-  control: (base: any) => ({
-    ...base,
-    height: 48,
-    minHeight: 48,
-  }),
-  menu: (base: any) => ({
-    ...base,
-    zIndex: 20,
-  }),
-};
 const defaultServiceValues = {
   serviceName: "",
   description: "",
@@ -208,6 +199,17 @@ const defaultServiceValues = {
   ],
   images: [],
 };
+const customStyles = {
+  control: (base: any) => ({
+    ...base,
+    height: 48,
+    minHeight: 48,
+  }),
+  menu: (base: any) => ({
+    ...base,
+    zIndex: 20,
+  }),
+};
 
 const CreateServicePage = () => {
   const t = useTranslations();
@@ -217,8 +219,6 @@ const CreateServicePage = () => {
   const searchParams: any = useSearchParams();
   const editId = searchParams.get('editId');
   const [activeProductType, setActiveProductType] = useState<string>();
-  const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
-  const [selectedState, setSelectedState] = useState<any | null>(null);
   const [states, setStates] = useState<IOption[]>([]);
   const [cities, setCities] = useState<IOption[]>([]);
   // const [selectedCountries, setSelectedCountries] = useState<OptionType[]>([]);
@@ -244,6 +244,7 @@ const CreateServicePage = () => {
     },
     !!editId
   );
+  
   const memoizedTags = useMemo(() => {
     return (
       tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
@@ -393,7 +394,7 @@ const CreateServicePage = () => {
           variant: "success",
         });
         form.reset();
-        router.push("/services");
+        router.push("/manage-services");
       } else {
         toast({
           title: t(editId ? "service_update_failed" : "service_create_failed"),
@@ -443,7 +444,6 @@ const CreateServicePage = () => {
   }, [form.watch("stateId")]);
 
   const hasInitialized = useRef(false);
-  console.log(form.getValues())
   useEffect(() => {
     if (
       serviceQueryById?.data?.data &&
@@ -452,9 +452,9 @@ const CreateServicePage = () => {
       hasInitialized.current = true;
 
       const responseData = serviceQueryById.data.data;
-
       const populatedFormData = {
         ...responseData,
+        categoryLocation: responseData?.categoryLocation,
         openTime: moment.utc(responseData.openTime).format("HH:mm"),
         closeTime: moment.utc(responseData.closeTime).format("HH:mm"),
         breakTimeFrom: moment.utc(responseData.breakTimeFrom).format("HH:mm"),

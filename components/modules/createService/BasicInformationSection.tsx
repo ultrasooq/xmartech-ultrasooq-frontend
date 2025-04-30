@@ -46,7 +46,7 @@ type serviceImageProps = {
 };
 
 type BasicInformationProps = {
-  editId?:string,
+  editId?: string,
   tagsList: any;
   activeProductType?: string;
 };
@@ -88,7 +88,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       }
       doneOnce.current = true
     }
-  }, [editId,watchCategoryLocation, catList]);
+  }, [editId, watchCategoryLocation, catList]);
   const memoizedCategories = useMemo(() => {
     return (
       categoryQuery?.data?.data?.children[0]?.children.map((item: any) => {
@@ -361,6 +361,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                 alt="profile"
                                                 fill
                                                 priority
+                                                loading="eager" // Forces eager loading instead of lazy
                                               />
                                               <Input
                                                 type="file"

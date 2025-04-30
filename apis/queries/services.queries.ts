@@ -39,9 +39,9 @@ export const useUpdateService = () => {
             queryClient.invalidateQueries({
               queryKey: ["all-services"],
             });
-          //   queryClient.invalidateQueries({
-          //     queryKey: ["managed-products"],
-          //   });
+            queryClient.invalidateQueries({
+              queryKey: ["service-by-id"],
+            });
           //   queryClient.invalidateQueries({
           //     queryKey: ["existing-products"],
           //   });
@@ -66,8 +66,23 @@ export const useGetAllServices = (payload: { page: number; limit: number; term?:
   enabled,
 });
 
+// export const useServiceById = (
+//   payload: { serviceid: string; userId?: number, sharedLinkId?: string },
+//   enabled = true,
+// ) =>
+//   useQuery({
+//     queryKey: ["service-by-id", payload],
+//     queryFn: async () => {
+//       const res = await fetchServiceById(payload);
+//       return res.data;
+//     },
+//     // onError: (err: APIResponseError) => {
+//     //   console.log(err);
+//     // },
+//     enabled,
+//   });
 export const useServiceById = (
-  payload: { serviceid: string; userId?: number, sharedLinkId?: string },
+  payload: { serviceid: string; userId?: number; sharedLinkId?: string },
   enabled = true,
 ) =>
   useQuery({
@@ -76,8 +91,6 @@ export const useServiceById = (
       const res = await fetchServiceById(payload);
       return res.data;
     },
-    // onError: (err: APIResponseError) => {
-    //   console.log(err);
-    // },
     enabled,
+    gcTime: 0, // Disables caching by setting garbage collection time to 0
   });

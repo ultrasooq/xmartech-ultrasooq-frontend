@@ -253,7 +253,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   };
 
   const wrapperRef = useRef(null);
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
 
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
   const handleToggleQueryModal = () => setIsQueryModalOpen(!isQueryModalOpen);
@@ -321,7 +321,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           setSelectedCurrency(window.localStorage.currency || "USD");
           changeCurrency(window.localStorage.currency || "USD");
         }
-      } catch (error) {}
+      } catch (error) { }
     };
 
     if (typeof window !== "undefined") {
@@ -581,7 +581,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 </Link>
                               )}
                               {hideMenu(PERMISSION_PRODUCTS) && (
-                                <Link href="/services">
+                                <Link href="/manage-services">
                                   <DropdownMenuItem dir={langDir}>
                                     {t("services")}
                                   </DropdownMenuItem>
@@ -717,8 +717,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     {t("home")}
                   </div>
                 </ButtonLink>
-                {memoizedMenu.map((item: any) => (
-                  <>
+                {memoizedMenu.map((item: any) => {
+                  return (
                     <ButtonLink
                       key={item.id}
                       onClick={() => {
@@ -741,6 +741,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         if (item.name.toLowerCase().includes("factories")) {
                           router.push("/factories");
                         }
+                        if (item.name.toLowerCase().includes("service")) {
+                          router.push("/services");
+                        }
                       }}
                       href={
                         item.name.toLowerCase().includes("home")
@@ -751,9 +754,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               ? "/rfq"
                               : item.name.toLowerCase().includes("factories")
                                 ? "/factories"
-                                : item.name.toLowerCase().includes("buy group")
-                                  ? "/buygroup"
-                                  : "/trending"
+                                :
+                                item.name.toLowerCase().includes("service")
+                                  ? "/services"
+                                  : item.name.toLowerCase().includes("buy group")
+                                    ? "/buygroup"
+                                    : "/trending"
                       }
                     >
                       <div className="flex gap-x-3" onClick={handleClick}>
@@ -767,8 +773,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         <p>{item?.name}</p>
                       </div>
                     </ButtonLink>
-                  </>
-                ))}
+                  )
+                })}
               </div>
             </div>
             {/* <p
@@ -804,7 +810,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   )}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
-                  memoizedSubCategory?.length ? (
+                    memoizedSubCategory?.length ? (
                     <div className="dropdown-content">
                       {memoizedSubCategory?.map(
                         (item: CategoryProps, index: number) => (
@@ -868,7 +874,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   ) : null}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
-                  memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
+                    memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                     <div className="dropdown-content-second">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
                         (item: CategoryProps, index: number) => (
@@ -933,9 +939,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   ) : null}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
-                  memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                    subSubCategoryIndex
-                  ]?.children?.length ? (
+                    memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                      subSubCategoryIndex
+                    ]?.children?.length ? (
                     <div className="dropdown-content-third p-3">
                       <h4 className="mb-2 text-sm">
                         {memoizedSubCategory?.[subCategoryIndex]?.children?.[
