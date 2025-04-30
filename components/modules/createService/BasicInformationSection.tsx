@@ -46,11 +46,13 @@ type serviceImageProps = {
 };
 
 type BasicInformationProps = {
+  editId?: string,
   tagsList: any;
   activeProductType?: string;
 };
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
+  editId,
   tagsList,
   activeProductType,
 }) => {
@@ -70,7 +72,23 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const subCategoryById = useSubCategoryById(currentId, !!currentId);
 
   const watchServiceImages = formContext.watch("images");
-
+  const watchCategoryLocation = formContext.watch("categoryLocation");
+  const doneOnce = useRef(false);
+  useEffect(() => {
+    if (editId && watchCategoryLocation && catList.length && doneOnce.current === false) {
+      const ids = watchCategoryLocation.split(",");
+      setListIds(ids);
+      let foundId = "";
+      catList?.forEach((v) => {
+        foundId = v.children.find((sv: any) => sv.id == ids[0])?.id?.toString();
+      });
+      if (foundId) {
+        setCurrentId(foundId);
+        setCurrentIndex(ids.length - 1);
+      }
+      doneOnce.current = true
+    }
+  }, [editId, watchCategoryLocation, catList]);
   const memoizedCategories = useMemo(() => {
     return (
       categoryQuery?.data?.data?.children[0]?.children.map((item: any) => {
@@ -150,15 +168,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     [listIds?.length],
   );
 
-  const productConditions = () => {
-    return Object.keys(PRODUCT_CONDITION_LIST).map((value: string, index: number) => {
-      return {
-        label: t(PRODUCT_CONDITION_LIST[index].label),
-        value: PRODUCT_CONDITION_LIST[index].value
-      };
-    });
-  };
-
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
@@ -220,62 +229,70 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     </div>
 
                     {catList.length > 0 &&
-                      catList.map((item, index) => (
-                        <div
-                          key={item?.id}
-                          className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
-                        >
-                          <div className="flex w-full flex-col justify-between gap-y-2">
-                            <Label dir={langDir}>{t("sub_category")}</Label>
-                            <select
-                              className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                              onChange={(e) => {
-                                if (e.target.value === "") {
-                                  return;
-                                }
+                      catList.map((item, index) => {
+                        return (
+                          <div
+                            key={item?.id}
+                            className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
+                          >
+                            <div className="flex w-full flex-col justify-between gap-y-2">
+                              <Label dir={langDir}>{t("sub_category")}</Label>
+                              <select
+                                className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                                onChange={(e) => {
+                                  if (e.target.value === "") {
+                                    return;
+                                  }
 
-                                setCurrentId(e.target.value);
-                                setCurrentIndex(index + 1);
+                                  setCurrentId(e.target.value);
+                                  setCurrentIndex(index + 1);
 
-                                if (listIds[index + 1]) {
-                                  let tempIds = listIds;
-                                  tempIds[index + 1] = e.target.value;
-                                  tempIds = tempIds.slice(0, index + 2);
-                                  setListIds([...tempIds]);
-                                  return;
-                                }
-                                setListIds([...listIds, e.target.value]);
-                              }}
-                              value={item?.children
-                                ?.find((item: any) =>
-                                  listIds.includes(item.id?.toString())
-                                    ? item
-                                    : "",
-                                )
-                                ?.id?.toString()}
-                            >
-                              <option value="" dir={langDir}>{t("select_sub_category")}</option>
-                              {item?.children?.map((item: any) => (
-                                <option
-                                  value={item.id?.toString()}
-                                  key={item.id}
-                                  dir={langDir}
-                                >
-                                  {item.name}
-                                </option>
-                              ))}
-                            </select>
+                                  if (listIds[index]) {
+                                    let tempIds = listIds;
+                                    tempIds[index] = e.target.value;
+                                    tempIds = tempIds.slice(0, index + 1);
+                                    setListIds([...tempIds]);
+                                    return;
+                                  }
+                                  setListIds([...listIds, e.target.value]);
+                                }}
+                                value={item?.children
+                                  ?.find((item: any) =>
+                                    listIds.includes(item.id?.toString())
+                                      ? item
+                                      : "",
+                                  )
+                                  ?.id?.toString()}
+
+                              >
+                                <option value="" dir={langDir}>{t("select_sub_category")}</option>
+                                {item?.children?.map((item: any) => (
+                                  <option
+                                    value={item.id?.toString()}
+                                    key={item.id}
+                                    dir={langDir}
+                                  >
+                                    {item.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                   </div>
-
-                  <ControlledTextInput
-                    label={t("service_name")}
-                    name="serviceName"
-                    placeholder={t("service_name")}
-                    dir={langDir}
-                  />
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                      {t("service_name")}
+                    </label>
+                    <ControlledTextInput
+                      label={t("service_name")}
+                      name="serviceName"
+                      placeholder={t("service_name")}
+                      dir={langDir}
+                      disabled={!!editId}
+                    />
+                  </div>
                   <div className="mt-2">
                     <AccordionMultiSelectV2
                       label={t("tags")}
@@ -344,6 +361,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                 alt="profile"
                                                 fill
                                                 priority
+                                                loading="eager" // Forces eager loading instead of lazy
                                               />
                                               <Input
                                                 type="file"

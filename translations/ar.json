@@ -902,5 +902,8 @@
     "services": "الخدمات",
     "all_services": "جميع الخدمات",
     "my_services": "خدماتي",
-    "n_services_found": "تم العثور على {n} خدمة"
+    "n_services_found": "تم العثور على {n} خدمة",
+    "search_service": "بحث الخدمة",
+    "service_updated_successful": "تم تحديث الخدمة بنجاح",
+    "service_update_failed": "فشل تحديث الخدمة"
 }

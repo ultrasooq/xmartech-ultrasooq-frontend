@@ -21,7 +21,7 @@ const DescriptionAndSpecificationSection = () => {
   });
   const fieldArrayForFeatures = useFieldArray({
     control: formContext.control,
-    name: "productSpecificationList",
+    name: "features",
   });
   const appendSpecification = () =>
     fieldArrayForSpecification.append({
@@ -42,7 +42,6 @@ const DescriptionAndSpecificationSection = () => {
     });
 
   const removeVariant = (index: number) => fieldArrayForVariants.remove(index);
-
   return (
     <div className="flex w-full flex-wrap">
       <h3 dir={langDir}>{t("description_n_specification")}</h3>

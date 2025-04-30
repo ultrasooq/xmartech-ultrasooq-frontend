@@ -67,11 +67,11 @@ import ServiceCard from "@/components/modules/trending/ServiceCard";
 import ServiceTable from "@/components/modules/trending/ServiceTable";
 import { IoMdAdd } from "react-icons/io";
 
-interface ServicesProps {
+interface ManageServicesProps {
   searchParams?: { term?: string };
 }
 
-const Services = ({ searchParams }: ServicesProps) => {
+const ManageServices = ({ searchParams }: ManageServicesProps) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const queryClient = useQueryClient();
@@ -110,6 +110,7 @@ const Services = ({ searchParams }: ServicesProps) => {
     limit,
     // sort: sortBy,
     term: searchTerm,
+    ownservice:true,
     // priceMin:
     //   priceRange[0] === 0
     //     ? 0
@@ -525,10 +526,14 @@ const Services = ({ searchParams }: ServicesProps) => {
                   <li className="flex">
                     <button
                       className="theme-primary-btn add-btn p-2"
-                      onClick={() => router.replace("/cart")}
+                      // onClick={handleAddProductModal}
+                      onClick={() => router.replace("/manage-services/create-service")}
                       dir={langDir}
                     >
-                      <span className="d-none-mobile">{t("go_to_cart")}</span>
+                      <IoMdAdd size={20} />
+                      <span className="d-none-mobile">
+                        {t("add_service")}
+                      </span>
                     </button>
                   </li>
                 </ul>
@@ -617,6 +622,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                         //   productVariants.find((variant: any) => variant.productId == item.id)?.object || []
                         // }
                         item={item}
+                        noRedirect={true}
                       // onWishlist={() =>
                       //   handleAddToWishlist(item.id, item?.productWishlist)
                       // }
@@ -656,4 +662,4 @@ const Services = ({ searchParams }: ServicesProps) => {
   );
 };
 
-export default Services;
+export default ManageServices;

@@ -899,9 +899,11 @@
     "service_details": "Service Details",
     "service_create_successful": "Service Create Successful",
     "service_create_failed": "Service Create Failed",
-    "services":"Services",
+    "services": "Services",
     "all_services": "All Services",
     "my_services": "My Services",
     "n_services_found": "{n} Services Found",
-    "search_service":"Search Service"
+    "search_service": "Search Service",
+    "service_updated_successful": "Service Updated Successful",
+    "service_update_failed": "Service Update Failed"
 }

@@ -18,6 +18,7 @@ import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { FaCircleCheck } from "react-icons/fa6";
 import { useCartStore } from "@/lib/rfqStore";
 import { toast } from "@/components/ui/use-toast";
+import EditIcon from "@/public/images/edit-icon.svg";
 import {
     useDeleteCartItem,
     useUpdateCartByDevice,
@@ -29,6 +30,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useClickOutside } from "use-events";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
+import { useRouter } from "next/navigation";
 
 // type ServiceCardProps = {
 //   item: TrendingProduct;
@@ -49,6 +51,7 @@ import { IoCloseSharp } from "react-icons/io5";
 
 const ServiceCard: React.FC<any> = ({
     item,
+    noRedirect,
     productVariants = [],
     onWishlist,
     inWishlist,
@@ -63,6 +66,7 @@ const ServiceCard: React.FC<any> = ({
     isAddedToCart,
     sold,
 }) => {
+    const router = useRouter();
     const t = useTranslations();
     const { user, langDir, currency } = useAuth();
 
@@ -426,7 +430,7 @@ const ServiceCard: React.FC<any> = ({
                         <span>{timeLeft}</span>
                     </div>
                 )}
-                <Link href={`/services/${item.id}`}>
+                <Link href={noRedirect ? "#" : `/manage-services/${item.id}`}>
                     {item?.askForPrice !== "true" ? (
                         item.consumerDiscount ? (
                             <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
@@ -444,8 +448,9 @@ const ServiceCard: React.FC<any> = ({
                             alt="product-image"
                             fill
                             sizes="(max-width: 768px) 100vw,
-              (max-width: 1200px) 50vw,
-              33vw"
+                                    (max-width: 1200px) 50vw,
+                                    33vw
+                                "
                             className="object-contain"
                             blurDataURL="/images/product-placeholder.png"
                             placeholder="blur"
@@ -466,7 +471,7 @@ const ServiceCard: React.FC<any> = ({
                         ) : null}
 
                         <Link
-                            href={`/services/${item.id}`}
+                            href={noRedirect ? "#" : `/manage-services/${item.id}`}
                             className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
                         >
                             <FiEye size={18} />
@@ -494,7 +499,7 @@ const ServiceCard: React.FC<any> = ({
                     </div>
                 ) : null}
 
-                <Link href={`/services/${item.id}`}>
+                <Link href={noRedirect ? "#" : `/manage-services/${item.id}`}>
                     <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
                         <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
                             {item.serviceName}
@@ -601,7 +606,15 @@ const ServiceCard: React.FC<any> = ({
                 </div> */}
 
                 <div className="cart_button">
-                    {isAddedToCart && (
+                    <button
+                        className="w-full flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D] theme-primary-btn"
+                        onClick={() => router.push(`/manage-services/create-service?editId=${item.id}`)}
+                        dir={langDir}
+                    >
+                        <span className="d-none-mobile">{t("edit")}</span>
+                    </button>
+
+                    {/* {isAddedToCart && (
                         <button
                             type="button"
                             className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
@@ -622,7 +635,7 @@ const ServiceCard: React.FC<any> = ({
                         >
                             {t("add_to_cart")}
                         </button>
-                    )}
+                    )} */}
                 </div>
 
                 {sold !== undefined ? (
