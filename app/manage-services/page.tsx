@@ -122,7 +122,6 @@ const ManageServices = ({ searchParams }: ManageServicesProps) => {
     // categoryIds: category.categoryIds ? category.categoryIds : undefined,
     // isOwner: displayMyProducts == "1" ? "me" : "",
   });
-  console.log(allServicesQuery)
   const fetchProductVariant = useProductVariant();
   const brandsQuery = useBrands({
     term: searchTerm,
@@ -622,7 +621,7 @@ const ManageServices = ({ searchParams }: ManageServicesProps) => {
                         //   productVariants.find((variant: any) => variant.productId == item.id)?.object || []
                         // }
                         item={item}
-                        noRedirect={true}
+                        manageService={true}
                       // onWishlist={() =>
                       //   handleAddToWishlist(item.id, item?.productWishlist)
                       // }

@@ -60,6 +60,10 @@ type ServiceDescriptionCardProps = {
 };
 
 const ServiceDescriptionCard: React.FC<any> = ({
+    selectedFeatures,
+    setSelectedFeatures,
+    toggleFeature,
+    allDetailsService,
     productId,
     productName,
     productType,
@@ -345,7 +349,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                         {calculateRatings(calculateAvgRating)}
                         <span className="mt-1">({productReview?.length} Reviews)</span>
                     </div> */}
-                    {askForPrice === "true" ? (
+                    {/* {askForPrice === "true" ? (
                         <h3 className="w-fit rounded !bg-dark-orange px-4 py-2 !font-semibold !normal-case !text-white !no-underline shadow-md">
                             {t("ask_for_price")}
                         </h3>
@@ -358,11 +362,41 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                 {Number(productProductPrice)}
                             </span>
                         </h3>
-                    ) : null}
+                    ) : null} */}
+                    <div className="space-y-4">
+                        <h5 className="text-lg font-semibold">{t("select_services")}</h5>
+                        {allDetailsService?.serviceFeatures?.map((feature: any) => {
+                            const isSelected = selectedFeatures.includes(feature.id);
+                            return (
+                                <label
+                                    key={feature.id}
+                                    className={`flex items-center justify-between gap-4 rounded-xl border p-4 shadow-sm cursor-pointer transition-all hover:shadow-md ${isSelected ? "border-green-500 bg-green-50" : "border-gray-200"
+                                        }`}
+                                >
+                                    <div className="flex items-start gap-4">
+                                        <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => toggleFeature(feature.id)}
+                                            className="mt-1 h-5 w-5 text-green-600 focus:ring-green-500"
+                                        />
+                                        <div>
+                                            <h4 className="text-md font-medium text-gray-800">
+                                                {feature.name}
+                                            </h4>
+                                            <p className="text-sm text-gray-500 capitalize">
+                                                {feature.serviceCostType.toLowerCase()} — {currency.symbol}{feature.serviceCost}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </label>
+                            );
+                        })}
+                    </div>
                 </div>
             )}
 
-            {isLoading ? (
+            {/* {isLoading ? (
                 <Skeleton className="h-44 w-full" />
             ) : (
                 <div className="info-col">
@@ -370,23 +404,23 @@ const ServiceDescriptionCard: React.FC<any> = ({
                         <div className="col-12 col-md-12">
                             <div className="col-12 col-md-12">
                                 <div className="form-group min-h-[60px] pl-8">
-                                    {/* {productShortDescription?.length ? (
-                    <ul className="list-disc">
-                      {productShortDescription?.map((item:any) => (
-                        <li key={item?.id}>{item?.shortDescription}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p dir={langDir}>{t("no_description")}</p>
-                  )} */}
+                                    {productShortDescription?.length ? (
+                                        <ul className="list-disc">
+                                            {productShortDescription?.map((item: any) => (
+                                                <li key={item?.id}>{item?.shortDescription}</li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p dir={langDir}>{t("no_description")}</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
 
-            {productVariantTypes?.map((type: string, index: number) => {
+            {/* {productVariantTypes?.map((type: string, index: number) => {
                 return (
                     <div className="flex items-center gap-x-3 mb-3" key={index}>
                         <Label>{type}</Label>
@@ -409,9 +443,9 @@ const ServiceDescriptionCard: React.FC<any> = ({
                         </select>
                     </div>
                 )
-            })}
+            })} */}
 
-            <div className="flex items-center gap-x-3">
+            {/* <div className="flex items-center gap-x-3">
                 <Button
                     variant="outline"
                     className="relative hover:shadow-sm"
@@ -437,7 +471,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                 >
                     <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
                 </Button>
-            </div>
+            </div> */}
 
             {isLoading ? (
                 <Skeleton className="h-44 w-full" />
@@ -586,7 +620,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                 </div>
             </div>
 
-            {isLoading ? (
+            {/* {isLoading ? (
                 <Skeleton className="h-28 w-full" />
             ) : (
                 <div className="info-col">
@@ -620,7 +654,6 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                         open={isDrawerOpen}
                                         onOpenChange={setIsDrawerOpen}
                                     >
-                                        {/* <DrawerTrigger asChild> */}
                                         <Button
                                             variant="ghost"
                                             className="font-bold text-red-500"
@@ -628,7 +661,6 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                         >
                                             {t("see_other_sellers")}
                                         </Button>
-                                        {/* </DrawerTrigger> */}
                                         <DrawerContent className="left-auto right-0 top-0 mt-0 w-[600px] rounded-none">
                                             <ScrollArea className="h-screen">
                                                 <div className="mx-auto w-full p-2">
@@ -650,7 +682,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
         </div>
     );
 };

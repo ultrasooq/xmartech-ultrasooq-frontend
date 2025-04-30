@@ -5,7 +5,7 @@ import {
     useOneWithProductPrice,
     useProductVariant,
 } from "@/apis/queries/product.queries";
-// import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
+// import SimilarProductsSection from "@/components/modules/serviceDetails/SimilarProductsSection";
 import RelatedProductsSection from "@/components/modules/productDetails/RelatedProductsSection";
 import SameBrandSection from "@/components/modules/productDetails/SameBrandSection";
 import ProductDescriptionCard from "@/components/modules/productDetails/ProductDescriptionCard";
@@ -70,7 +70,13 @@ const ServiceDetailsPage = () => {
     const [productVariantTypes, setProductVariantTypes] = useState<string[]>();
     const [productVariants, setProductVariants] = useState<any[]>();
     const [selectedProductVariant, setSelectedProductVariant] = useState<any>(null);
+    const [selectedFeatures, setSelectedFeatures] = useState<number[]>([]);
 
+    const toggleFeature = (id: number) => {
+        setSelectedFeatures((prev) =>
+            prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
+        );
+    };
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
     const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
     const confirmDialogRef = useRef(null);
@@ -174,8 +180,8 @@ const ServiceDetailsPage = () => {
     };
 
     const onConfirmRemove = () => {
-        const cartId = cartListByUser.data?.data?.find((item: any) => item.productId == productDetails.id)?.id
-            || cartListByDeviceQuery.data?.data?.find((item: any) => item.productId == productDetails.id)?.id;
+        const cartId = cartListByUser.data?.data?.find((item: any) => item.productId == serviceDetails.id)?.id
+            || cartListByDeviceQuery.data?.data?.find((item: any) => item.productId == serviceDetails.id)?.id;
 
         if (cartId) handleRemoveItemFromCart(cartId);
         setIsConfirmDialogOpen(false);
@@ -202,8 +208,8 @@ const ServiceDetailsPage = () => {
                 if (item) {
                     await handleRemoveItemFromCart(item.id);
                 }
-                const minQuantity = productDetails?.product_productPrice?.length
-                    ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+                const minQuantity = serviceDetails?.product_productPrice?.length
+                    ? serviceDetails.product_productPrice[0]?.minQuantityPerCustomer
                     : null;
                 let quantity = item?.quantity || minQuantity || 1;
                 handleAddToCart(quantity, "add");
@@ -212,7 +218,7 @@ const ServiceDetailsPage = () => {
         }
     }
 
-    const productDetails = !otherSellerId
+    const serviceDetails = !otherSellerId
         ? serviceQueryById.data?.data
         : productQueryByOtherSeller.data?.data;
     const productInWishlist = !otherSellerId
@@ -223,16 +229,16 @@ const ServiceDetailsPage = () => {
         : productQueryByOtherSeller.data?.otherSeller;
 
     const calculateTagIds = useMemo(
-        () => productDetails?.tags?.map((item: any) => item.tagId).join(","),
+        () => serviceDetails?.tags?.map((item: any) => item.tagId).join(","),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [productDetails?.tags?.length],
+        [serviceDetails?.tags?.length],
     );
 
     const [globalQuantity, setGlobalQuantity] = useState(0); // Global state
 
     useEffect(() => {
         const fetchProductVariant = async () => {
-            const response = await getProductVariant.mutateAsync([productDetails?.product_productPrice?.[0]?.id]);
+            const response = await getProductVariant.mutateAsync([serviceDetails?.product_productPrice?.[0]?.id]);
             const variants = response?.data?.[0]?.object || [];
             if (variants.length > 0) {
                 const variantTypes = variants.map((item: any) => item.type);
@@ -266,8 +272,8 @@ const ServiceDetailsPage = () => {
         if (isAddedToCart) {
             handleAddToCart(quantity, action);
         } else {
-            const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
-            const maxQuantity = productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
+            const minQuantity = serviceDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
+            const maxQuantity = serviceDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
 
             if (minQuantity && minQuantity > quantity) {
                 toast({
@@ -292,7 +298,7 @@ const ServiceDetailsPage = () => {
         actionType: "add" | "remove",
         productVariant?: any
     ) => {
-        const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
+        const minQuantity = serviceDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
         if (actionType == "add" && minQuantity && minQuantity > quantity) {
             toast({
                 description: t("min_quantity_must_be_n", { n: minQuantity }),
@@ -310,7 +316,7 @@ const ServiceDetailsPage = () => {
             return;
         }
 
-        const maxQuantity = productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
+        const maxQuantity = serviceDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
         if (maxQuantity && maxQuantity < quantity) {
             toast({
                 description: t("max_quantity_must_be_n", { n: maxQuantity }),
@@ -322,7 +328,7 @@ const ServiceDetailsPage = () => {
         const sharedLinkId = serviceQueryById?.data?.generatedLinkDetail?.id;
 
         if (haveAccessToken) {
-            if (!productDetails?.product_productPrice?.[0]?.id) {
+            if (!serviceDetails?.product_productPrice?.[0]?.id) {
                 toast({
                     title: t("something_went_wrong"),
                     description: t("product_price_id_not_found"),
@@ -336,7 +342,7 @@ const ServiceDetailsPage = () => {
             }
 
             const response = await updateCartWithLogin.mutateAsync({
-                productPriceId: productDetails?.product_productPrice?.[0]?.id,
+                productPriceId: serviceDetails?.product_productPrice?.[0]?.id,
                 quantity,
                 sharedLinkId,
                 productVariant: productVariant || selectedProductVariant,
@@ -354,7 +360,7 @@ const ServiceDetailsPage = () => {
             }
 
         } else {
-            if (!productDetails?.product_productPrice?.[0]?.id) {
+            if (!serviceDetails?.product_productPrice?.[0]?.id) {
                 toast({
                     title: t("something_went_wrong"),
                     description: t("product_price_id_not_found"),
@@ -363,7 +369,7 @@ const ServiceDetailsPage = () => {
                 return;
             }
             const response = await updateCartByDevice.mutateAsync({
-                productPriceId: productDetails?.product_productPrice?.[0]?.id,
+                productPriceId: serviceDetails?.product_productPrice?.[0]?.id,
                 quantity,
                 deviceId,
                 sharedLinkId,
@@ -393,8 +399,8 @@ const ServiceDetailsPage = () => {
 
         let quantity = globalQuantity;
         if (quantity == 0) {
-            const minQuantity = productDetails?.product_productPrice?.length
-                ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+            const minQuantity = serviceDetails?.product_productPrice?.length
+                ? serviceDetails.product_productPrice[0]?.minQuantityPerCustomer
                 : null;
             quantity = minQuantity || 1;
         }
@@ -417,8 +423,8 @@ const ServiceDetailsPage = () => {
 
         let quantity = globalQuantity;
         if (quantity == 0) {
-            const minQuantity = productDetails?.product_productPrice?.length
-                ? productDetails.product_productPrice[0]?.minQuantityPerCustomer
+            const minQuantity = serviceDetails?.product_productPrice?.length
+                ? serviceDetails.product_productPrice[0]?.minQuantityPerCustomer
                 : null;
             quantity = minQuantity || 1;
         }
@@ -512,7 +518,8 @@ const ServiceDetailsPage = () => {
                 <div className="product-view-s1-left-right type2">
                     <div className="container m-auto px-3">
                         <ServiceImagesCard
-                            productDetails={productDetails}
+                            selectedFeatures={selectedFeatures}
+                            serviceDetails={serviceDetails}
                             onProductUpdateSuccess={handleProductUpdateSuccess} // Pass to child
                             onAdd={() => handleAddToCart(globalQuantity, "add")}
                             onToCart={() => handleAddToCart(globalQuantity, "add")}
@@ -529,73 +536,77 @@ const ServiceDetailsPage = () => {
                             haveAccessToken={haveAccessToken}
                             inWishlist={!!productInWishlist}
                             askForPrice={
-                                productDetails?.product_productPrice?.[0]?.askForPrice
+                                serviceDetails?.product_productPrice?.[0]?.askForPrice
                             }
                             isAddedToCart={hasItemByUser || hasItemByDevice}
                             cartQuantity={globalQuantity}
                         />
                         <ServiceDescriptionCard
+                            selectedFeatures={selectedFeatures}
+                            setSelectedFeatures={setSelectedFeatures}
+                            toggleFeature={toggleFeature}
+                            allDetailsService={serviceDetails}
                             productId={searchParams?.id ? (searchParams?.id as string) : ""}
-                            productName={productDetails?.serviceName}
-                            productType={productDetails?.productType}
-                            brand={productDetails?.brand?.brandName}
-                            productPrice={productDetails?.productPrice}
-                            offerPrice={productDetails?.product_productPrice?.[0]?.offerPrice}
-                            skuNo={productDetails?.skuNo}
-                            category={productDetails?.category?.name}
-                            productTags={productDetails?.tags}
+                            productName={serviceDetails?.serviceName}
+                            productType={serviceDetails?.productType}
+                            brand={serviceDetails?.brand?.brandName}
+                            productPrice={serviceDetails?.productPrice}
+                            offerPrice={serviceDetails?.product_productPrice?.[0]?.offerPrice}
+                            skuNo={serviceDetails?.skuNo}
+                            category={serviceDetails?.category?.name}
+                            productTags={serviceDetails?.tags}
                             productShortDescription={
-                                productDetails?.description
+                                serviceDetails?.description
                             }
                             productQuantity={
                                 globalQuantity || getProductQuantityByUser || getProductQuantityByDevice
                             }
                             onQuantityChange={handleQuantity}
-                            productReview={productDetails?.productReview}
+                            productReview={serviceDetails?.productReview}
                             onAdd={handleAddToCart}
                             isLoading={
                                 !otherSellerId && !otherProductId
                                     ? !serviceQueryById.isFetched
                                     : !productQueryByOtherSeller.isFetched
                             }
-                            soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
-                ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
+                            soldBy={`${serviceDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
+                ${serviceDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
                             soldByTradeRole={
-                                productDetails?.product_productPrice?.[0]?.adminDetail?.tradeRole
+                                serviceDetails?.product_productPrice?.[0]?.adminDetail?.tradeRole
                             }
                             userId={me.data?.data?.id}
                             sellerId={
-                                productDetails?.product_productPrice?.[0]?.adminDetail?.id
+                                serviceDetails?.product_productPrice?.[0]?.adminDetail?.id
                             }
                             haveOtherSellers={!!otherSellerDetails?.length}
                             productProductPrice={
-                                productDetails?.product_productPrice?.[0]?.productPrice
+                                serviceDetails?.product_productPrice?.[0]?.productPrice
                             }
                             consumerDiscount={
-                                productDetails?.product_productPrice?.[0]?.consumerDiscount
+                                serviceDetails?.product_productPrice?.[0]?.consumerDiscount
                             }
                             consumerDiscountType={
-                                productDetails?.product_productPrice?.[0]?.consumerDiscountType
+                                serviceDetails?.product_productPrice?.[0]?.consumerDiscountType
                             }
                             vendorDiscount={
-                                productDetails?.product_productPrice?.[0]?.vendorDiscount
+                                serviceDetails?.product_productPrice?.[0]?.vendorDiscount
                             }
                             vendorDiscountType={
-                                productDetails?.product_productPrice?.[0]?.vendorDiscountType
+                                serviceDetails?.product_productPrice?.[0]?.vendorDiscountType
                             }
                             askForPrice={
-                                productDetails?.product_productPrice?.[0]?.askForPrice
+                                serviceDetails?.product_productPrice?.[0]?.askForPrice
                             }
                             minQuantity={
-                                productDetails?.product_productPrice?.[0]
+                                serviceDetails?.product_productPrice?.[0]
                                     ?.minQuantityPerCustomer
                             }
                             maxQuantity={
-                                productDetails?.product_productPrice?.[0]
+                                serviceDetails?.product_productPrice?.[0]
                                     ?.maxQuantityPerCustomer
                             }
                             otherSellerDetails={otherSellerDetails}
-                            productPriceArr={productDetails?.product_productPrice}
+                            productPriceArr={serviceDetails?.product_productPrice}
                             productVariantTypes={productVariantTypes}
                             productVariants={productVariants}
                             selectedProductVariant={
@@ -618,13 +629,13 @@ const ServiceDetailsPage = () => {
                                         >
                                             {t("description")}
                                         </TabsTrigger>
-                                        <TabsTrigger
+                                        {/* <TabsTrigger
                                             value="specification"
                                             className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                                             dir={langDir}
                                         >
                                             {t("specification")}
-                                        </TabsTrigger>
+                                        </TabsTrigger> */}
                                         <TabsTrigger
                                             value="vendor"
                                             className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
@@ -658,7 +669,7 @@ const ServiceDetailsPage = () => {
                                         <div className="w-full bg-white">
                                             <PlateEditor
                                                 description={
-                                                    handleDescriptionParse(productDetails?.description) ||
+                                                    handleDescriptionParse(serviceDetails?.description) ||
                                                     undefined
                                                 }
                                                 readOnly={true}
@@ -668,18 +679,18 @@ const ServiceDetailsPage = () => {
                                     </TabsContent>
                                     <TabsContent value="specification" className="mt-0">
                                         <div className="w-full bg-white">
-                                            {!productDetails?.product_productSpecification?.length ? (
+                                            {!serviceDetails?.product_productSpecification?.length ? (
                                                 <div className="specification-sec">
                                                     <h2>No specification found</h2>
                                                 </div>
                                             ) : null}
-                                            {productDetails?.product_productSpecification?.length ? (
+                                            {serviceDetails?.product_productSpecification?.length ? (
                                                 <div className="specification-sec">
                                                     <h2 dir={langDir}>{t("specification")}</h2>
                                                     <table className="specification-table">
                                                         <tbody>
                                                             <tr className="grid grid-cols-2">
-                                                                {productDetails?.product_productSpecification?.map(
+                                                                {serviceDetails?.product_productSpecification?.map(
                                                                     (item: {
                                                                         id: number;
                                                                         label: string;
@@ -702,7 +713,7 @@ const ServiceDetailsPage = () => {
                                         <div className="w-full bg-white">
                                             <VendorSection
                                                 adminId={
-                                                    productDetails?.product_productPrice?.[0]?.adminId
+                                                    serviceDetails?.product_productPrice?.[0]?.adminId
                                                 }
                                             />
                                         </div>
@@ -712,9 +723,9 @@ const ServiceDetailsPage = () => {
                                             <ReviewSection
                                                 productId={searchParams?.id as string}
                                                 hasAccessToken={haveAccessToken}
-                                                productReview={productDetails?.productReview}
+                                                productReview={serviceDetails?.productReview}
                                                 isCreator={
-                                                    me?.data?.data?.id === productDetails?.adminId
+                                                    me?.data?.data?.id === serviceDetails?.adminId
                                                 }
                                             />
                                         </div>
@@ -743,10 +754,10 @@ const ServiceDetailsPage = () => {
                     <Image src="/images/suggestion-pic1.png" alt="suggested-preview" />
                   </div>
                 </div> */}
-                                <SameBrandSection
-                                    productDetails={productDetails}
+                                {/* <SameBrandSection
+                                    serviceDetails={serviceDetails}
                                     productId={searchParams?.id as string}
-                                />
+                                /> */}
                             </div>
                         </div>
                     </div>
@@ -831,12 +842,12 @@ const ServiceDetailsPage = () => {
                     </div>
                 )}
 
-                <div className="product-view-s1-details-more-suggestion-sliders">
+                {/* <div className="product-view-s1-details-more-suggestion-sliders">
                     <RelatedProductsSection
                         calculateTagIds={calculateTagIds}
                         productId={searchParams?.id as string}
                     />
-                </div>
+                </div> */}
             </div>
             <Footer />
             <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>

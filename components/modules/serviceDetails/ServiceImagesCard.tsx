@@ -30,7 +30,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 type ServiceImagesCardProps = {
-    productDetails: any;
+    serviceDetails: any;
     onAdd: () => void;
     onToCart: () => void;
     onToCheckout: () => void;
@@ -47,7 +47,8 @@ type ServiceImagesCardProps = {
 };
 
 const ServiceImagesCard: React.FC<any> = ({
-    productDetails,
+    selectedFeatures,
+    serviceDetails,
     onAdd,
     onToCart,
     onToCheckout,
@@ -70,13 +71,12 @@ const ServiceImagesCard: React.FC<any> = ({
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const productSellerImage =
-        productDetails?.product_productPrice?.[0]?.productPrice_productSellerImage;
+        serviceDetails?.product_productPrice?.[0]?.productPrice_productSellerImage;
 
     useEffect(() => {
         const tempImages = productSellerImage?.length
             ? productSellerImage
-            : productDetails?.images;
-        console.log()
+            : serviceDetails?.images;
         if (!tempImages) return;
 
         setPreviewImages(
@@ -88,8 +88,7 @@ const ServiceImagesCard: React.FC<any> = ({
             ),
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [productSellerImage, productDetails?.images]);
-    console.log(previewImages)
+    }, [productSellerImage, serviceDetails?.images]);
 
     useEffect(() => {
         if (!api) {
@@ -131,18 +130,18 @@ const ServiceImagesCard: React.FC<any> = ({
         {
             page: 1,
             limit: 1,
-            productId: productDetails?.id,
+            productId: serviceDetails?.id,
             sortType: "desc",
         },
-        !!productDetails?.id,
+        !!serviceDetails?.id,
     );
 
     useEffect(() => {
         const reward = sellerRewardsQuery?.data?.data?.[0];
         if (reward && new Date(reward.endTime).getTime() > new Date().getTime())
             setReward(reward);
-    }, [sellerRewardsQuery?.data?.data, productDetails]);
-    
+    }, [sellerRewardsQuery?.data?.data, serviceDetails]);
+
     return (
         <div className="product-view-s1-left">
             <div className="mb-3 flex flex-col-reverse md:mb-3 lg:mb-0 lg:grid lg:grid-cols-4 lg:gap-4">
@@ -220,7 +219,7 @@ const ServiceImagesCard: React.FC<any> = ({
                         ))
                         : null}
 
-                    {productDetails?.images?.map((item: any, index: number) => (
+                    {/* {serviceDetails?.images?.map((item: any, index: number) => (
                         <Button
                             variant="ghost"
                             className={cn(
@@ -243,15 +242,64 @@ const ServiceImagesCard: React.FC<any> = ({
                                 className="rounded-none object-contain"
                             />
                         </Button>
-                    ))}
+                    ))} */}
+                    {serviceDetails?.images?.map((item: any, index: number) => {
+                        return (
+                            <Button
+                                variant="ghost"
+                                className={cn(
+                                    previewImages[currentImageIndex] === item?.url
+                                        ? "border-2 border-red-500"
+                                        : "",
+                                    "relative h-28 w-28 rounded-none bg-gray-100",
+                                )}
+                                key={item?.id}
+                                onClick={() => api?.scrollTo(index)}
+                            >
+                                {isVideo(item.url) ? (
+                                    <>
+                                        <Image
+                                            src={item?.thumbnailUrl || PlaceholderImage}
+                                            alt="video-thumbnail"
+                                            fill
+                                            className="rounded-none object-cover opacity-60"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="white"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                className="h-8 w-8 text-black"
+                                            >
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <Image
+                                        src={
+                                            item?.url && validator.isURL(item.url)
+                                                ? item.url
+                                                : PlaceholderImage
+                                        }
+                                        alt="primary-image"
+                                        fill
+                                        className="rounded-none object-contain"
+                                    />
+                                )}
+                            </Button>
+                        );
+                    })}
+
                 </div>
             </div>
 
             {/* For factories type */}
             {!isLoading &&
-                productDetails?.product_productPrice?.[0]?.isCustomProduct === "true" ? (
+                serviceDetails?.product_productPrice?.[0]?.isCustomProduct === "true" ? (
                 <div className="my-2 flex w-full flex-wrap justify-end gap-3 self-end pb-2">
-                    {productDetails?.adminId !== loginUserId ? (
+                    {serviceDetails?.adminId !== loginUserId ? (
                         <>
                             <Button
                                 type="button"
@@ -272,7 +320,7 @@ const ServiceImagesCard: React.FC<any> = ({
                             </Button>
                         </>
                     ) : null}
-                    {/* {productDetails?.adminId == loginUserId ? (
+                    {/* {serviceDetails?.adminId == loginUserId ? (
                 <Button
                   type="button"
                   // onClick={onToCheckout}
@@ -286,7 +334,7 @@ const ServiceImagesCard: React.FC<any> = ({
             ) : null}
 
             {!isLoading && askForPrice === "true" ? (
-                <Link href={`/seller-rfq-request?product_id=${productDetails?.id}`}>
+                <Link href={`/seller-rfq-request?product_id=${serviceDetails?.id}`}>
                     <Button
                         type="button"
                         className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
@@ -302,7 +350,7 @@ const ServiceImagesCard: React.FC<any> = ({
                         type="button"
                         onClick={onAdd}
                         className="h-14 max-w-[205px] flex-1 rounded-none bg-color-yellow text-base"
-                        disabled={isAddedToCart || cartQuantity == 0}
+                        disabled={isAddedToCart || selectedFeatures.length === 0}
                     >
                         {isAddedToCart ? t("added_to_cart") : t("add_to_cart")}
                     </Button>
@@ -338,7 +386,7 @@ const ServiceImagesCard: React.FC<any> = ({
                         onClose={() => {
                             setIsEditModalOpen(false);
                         }}
-                        selectedProductId={productDetails?.id}
+                        selectedProductId={serviceDetails?.id}
                         onProductUpdateSuccess={onProductUpdateSuccess} // Pass to form
                     />
                 </DialogContent>
@@ -351,7 +399,7 @@ const ServiceImagesCard: React.FC<any> = ({
                     ref={wrapperRef}
                 >
                     <AddToCustomizeForm
-                        selectedProductId={productDetails?.id}
+                        selectedProductId={serviceDetails?.id}
                         onClose={() => {
                             setIsCustomizeModalOpen(false);
                         }}
