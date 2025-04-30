@@ -44,6 +44,7 @@ import { usePreOrderCalculation } from "@/apis/queries/orders.queries";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { IoCloseSharp } from "react-icons/io5";
 import Select from "react-select";
+import Shipping from "@/components/modules/checkout/Shipping";
 
 const CheckoutPage = () => {
   const t = useTranslations();
@@ -107,6 +108,14 @@ const CheckoutPage = () => {
   const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
   const confirmDialogRef = useRef(null);
   const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
+
+  const [selectedSellerId, setSelectedSellerId] = useState<number>();
+  const [selectedShippingType, setSelectedShippingType] = useState<string>();
+  const [fromCityId, setFromCityId] = useState<number>();
+  const [toCityId, setToCityId] = useState<number>();
+  const [isShippingModalOpen, setIsShippingModalOpen] = useState<boolean>(false);
+  const handleShippingModal = () => setIsShippingModalOpen(!isShippingModalOpen);
+  const shippingModalRef = useRef(null);
 
   const deviceId = getOrCreateDeviceId() || "";
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
@@ -234,9 +243,9 @@ const CheckoutPage = () => {
   const shippingOptions = () => {
     return [
       { value: "PICKUP", label: "Consumer Pickup" },
-      { value: "SELLER_DROP", label: "Delivery By Seller", isDisabled: true },
+      { value: "SELLERDROP", label: "Delivery By Seller" },
       { value: "THIRDPARTY", label: "Third Party" },
-      { value: "EMI", label: "Third Party (Within Platform)", isDisabled: true }
+      { value: "PLATFORM", label: "Third Party (Within Platform)" }
     ];
   };
 
@@ -407,7 +416,7 @@ const CheckoutPage = () => {
     setFee(chargedFee);
   }
 
-  useEffect(() => {console.log(memoizedCartList);
+  useEffect(() => {
     if (memoizedCartList.length) {
       let userIds = memoizedCartList.map((item: any) => {
         return item.productPriceDetails.adminId;
@@ -430,7 +439,8 @@ const CheckoutPage = () => {
               shippingDate: null,
               fromTime: null,
               toTime: null,
-              shippingCharge: 0
+              shippingCharge: 0,
+              serviceId: null
             }
           };
         })
@@ -475,7 +485,7 @@ const CheckoutPage = () => {
       charge += info.info?.shippingCharge || 0;
     }
     setShippingCharge(charge);
-  }, [shippingInfo])
+  }, [shippingInfo]);
 
   const validateShippingInfo = (): boolean => {
     let count = 0;
@@ -510,6 +520,14 @@ const CheckoutPage = () => {
         count += Object.keys(errors[i]['errors']).length > 0 ? 1 : 0;
       }
 
+      if (info.shippingType == 'SELLERDROP' || info.shippingType == 'PLATFORM') {
+        if (!info?.info?.serviceId) {
+          errors[i]['errors']['serviceId'] = 'Shipping service is required';
+        }
+
+        count += Object.keys(errors[i]['errors']).length > 0 ? 1 : 0;
+      }
+
       i++;
     }
 
@@ -525,15 +543,22 @@ const CheckoutPage = () => {
       data[i] = {
         sellerId: info.sellerId,
         orderShippingType: info.shippingType,
+        shippingDate: null,
+        fromTime: null,
+        toTime: null,
+        shippingCharge: 0,
+        serviceId: null
       };
-      data[i] = {
-        ...data[i],
-        ...info.info
-      };
+      
       if (info.shippingType == 'PICKUP') {
         data[i].shippingDate = convertDateTimeToUTC(`${info.info.shippingDate} ${info.info.fromTime}:00`);
         data[i].fromTime = convertDateTimeToUTC(`${info.info.shippingDate} ${info.info.fromTime}:00`);
         data[i].toTime = convertDateTimeToUTC(`${info.info.shippingDate} ${info.info.toTime}:00`);
+
+      } else if (info.shippingType == 'SELLERDROP' || info.shippingType == 'PLATFORM') {
+        data[i].shippingCharge = info.info.shippingCharge;
+        data[i].serviceId = info.info.serviceId;
+
       }
 
       i++;
@@ -765,7 +790,7 @@ const CheckoutPage = () => {
                           />
                         )) || []}
                       <div className="cart-item-list-col" dir={langDir}>
-                        <div className="sm:grid sm:grid-cols-3 w-full">
+                        <div className="sm:grid sm:grid-cols-3 w-full gap-2">
                           <Select
                             // @ts-ignore
                             options={shippingOptions()}
@@ -775,9 +800,45 @@ const CheckoutPage = () => {
                             onChange={(newValue: any) => {
                               let data = shippingInfo;
                               data[index].shippingType = newValue?.value;
+                              data[index].info.serviceId = null;
+                              data[index].info.serviceName = null;
+                              data[index].info.shippingCharge = 0;
                               setShippingInfo([...data]);
                             }}
                           />
+
+                          {["SELLERDROP", "PLATFORM"].includes(shippingInfo[index].shippingType) ? (
+                            <Button
+                              onClick={() => {
+                                setSelectedSellerId(sellerId);
+                                setSelectedShippingType(shippingInfo[index].shippingType);
+                                const item = memoizedCartList?.find((item: CartItem) => item.productPriceDetails.adminId == sellerId);
+                                if (item) {
+                                  setFromCityId(item.productPriceDetails?.productCityId);
+                                }
+                                const address = memoziedAddressList.find((item: any) => item.id == selectedShippingAddressId);
+                                if (address) {
+                                  setToCityId(address.cityId);
+                                }
+                                setIsShippingModalOpen(true);
+                              }}
+                              variant="destructive"
+                            >
+                              {t("select")}
+                            </Button>
+                          ) : null}
+
+                          {["SELLERDROP", "PLATFORM"].includes(shippingInfo[index].shippingType) ? (
+                            <>
+                              {shippingInfo[index]?.info?.serviceId ? (
+                                <div className="mt-2">{shippingInfo[index].info.serviceName}</div>
+                              ) : (
+                                <span className="text-red-500">
+                                  {shippingErrors?.[index]?.errors?.serviceId || ''}
+                                </span>
+                              )}
+                            </>
+                          ) : null}
                         </div>
                       </div>
                       <div></div>
@@ -801,7 +862,7 @@ const CheckoutPage = () => {
                                 </span>
                               </div>
                               <div>
-                              <Label>From Time</Label>
+                                <Label>From Time</Label>
                                 <Input
                                   type="time"
                                   value={shippingInfo[index].info?.fromTime || ''}
@@ -1185,6 +1246,7 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+
       <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
         <DialogContent
           className="add-new-address-modal gap-0 p-0"
@@ -1213,6 +1275,7 @@ const CheckoutPage = () => {
           )}
         </DialogContent>
       </Dialog>
+
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
           className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
@@ -1247,6 +1310,38 @@ const CheckoutPage = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isShippingModalOpen} onOpenChange={handleShippingModal}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={shippingModalRef}
+        >
+          <Shipping
+            sellerId={selectedSellerId}
+            type={`${selectedShippingType == "PLATFORM" ? "other" : "own"}`}
+            fromCityId={fromCityId}
+            toCityId={toCityId}
+            onClose={() => {
+              setSelectedSellerId(undefined);
+              setSelectedShippingType(undefined);
+              setFromCityId(undefined);
+              setToCityId(undefined);
+              setIsShippingModalOpen(false);
+            }}
+            onSelect={(sellerId: number, item: any) => {
+              const index = shippingInfo.findIndex((item: any) => item.sellerId == sellerId);
+              const shipping = shippingInfo.find((item: any) => item.sellerId == sellerId);
+              if (shipping) {
+                const info = shippingInfo;
+                info[index].info.serviceId = item.id;
+                info[index].info.serviceName = item.serviceName;
+                info[index].info.shippingCharge = Number(item.serviceFeatures?.[0]?.serviceCost);
+                setShippingInfo([...info]);
+              }
+            }}
+          />
         </DialogContent>
       </Dialog>
     </div>

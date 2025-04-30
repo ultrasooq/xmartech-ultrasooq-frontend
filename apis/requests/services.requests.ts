@@ -55,3 +55,39 @@ export const fetchServiceById = (payload: {
     },
   });
 };
+
+export const fetchServicesBySeller = (payload: {
+  page: number;
+  limit: number;
+  sellerId: number;
+  fromCityId?: number;
+  toCityId?: number
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/getAllServiceBySeller`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const fetchServicesByOtherSeller = (payload: {
+  page: number;
+  limit: number;
+  sellerId: number;
+  fromCityId?: number;
+  toCityId?: number
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/getAllServiceOfOtherSeller`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

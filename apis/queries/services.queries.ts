@@ -1,6 +1,6 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createService, fetchAllServices, fetchServiceById, updateService } from "../requests/services.requests";
+import { createService, fetchAllServices, fetchServiceById, fetchServicesByOtherSeller, fetchServicesBySeller, updateService } from "../requests/services.requests";
 
 export const useCreateService = () => {
     const queryClient = useQueryClient();
@@ -94,3 +94,27 @@ export const useServiceById = (
     enabled,
     gcTime: 0, // Disables caching by setting garbage collection time to 0
   });
+
+export const useGetServicesBySeller = (payload: { page: number; limit: number; sellerId: number, fromCityId?: number, toCityId?: number  }, enabled = true,) => useQuery({
+  queryKey: ["services-by-seller", payload],
+  queryFn: async () => {
+    const res = await fetchServicesBySeller(payload);
+    return res.data;
+  },
+  // onError: (err: APIResponseError) => {
+  //   console.log(err);
+  // },
+  enabled,
+});
+
+export const useGetServicesByOtherSeller = (payload: { page: number; limit: number; sellerId: number, fromCityId?: number, toCityId?: number  }, enabled = true,) => useQuery({
+  queryKey: ["services-by-other-seller", payload],
+  queryFn: async () => {
+    const res = await fetchServicesByOtherSeller(payload);
+    return res.data;
+  },
+  // onError: (err: APIResponseError) => {
+  //   console.log(err);
+  // },
+  enabled,
+});
