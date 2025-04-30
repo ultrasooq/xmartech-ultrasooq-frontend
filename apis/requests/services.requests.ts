@@ -55,3 +55,15 @@ export const fetchServiceById = (payload: {
     },
   });
 };
+export const addServiceToCart = (payload: any) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateservice`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

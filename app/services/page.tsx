@@ -96,7 +96,7 @@ const Services = ({ searchParams }: ServicesProps) => {
     const [productVariants, setProductVariants] = useState<any[]>([]);
     const [haveAccessToken, setHaveAccessToken] = useState(false);
     const [isServiceAddToCartModalOpen, setIsServiceAddToCartModalOpen] = useState(false);
-    const [selectedServiceDetails, setSelectedServiceDetails] = useState<any>(null);
+    const [selectedServiceId, setSelectedServiceId] = useState<any>(null);
     const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     const category = useCategoryStore();
 
@@ -623,7 +623,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                                                 // }
                                                 item={item}
                                                 handleServiceToCartModal={() => {
-                                                    setSelectedServiceDetails(item);
+                                                    setSelectedServiceId(item.id.toString());
                                                     handleServiceToCartModal();
                                                 }}
                                             // onWishlist={() =>
@@ -661,7 +661,11 @@ const Services = ({ searchParams }: ServicesProps) => {
                 </div>
             </div>
             <Dialog open={isServiceAddToCartModalOpen} onOpenChange={handleServiceToCartModal}>
-                <AddServiceToCartModal selectedServiceDetails={selectedServiceDetails} open={isServiceAddToCartModalOpen}/>
+                <AddServiceToCartModal
+                    id={selectedServiceId}
+                    open={isServiceAddToCartModalOpen}
+                    handleClose={() => setIsServiceAddToCartModalOpen(false)}
+                />
             </Dialog>
             <Footer />
         </>

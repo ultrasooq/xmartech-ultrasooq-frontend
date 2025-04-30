@@ -1,114 +1,239 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useAddServiceToCart, useServiceById } from "@/apis/queries/services.queries";
+import { useToast } from "@/components/ui/use-toast";
 
-const AddServiceToCartModal: React.FC<any> = ({ selectedServiceDetails, open }) => {
-  const t = useTranslations();
-  const { langDir } = useAuth();
-  const [selectedFeatures, setSelectedFeatures] = useState<number[]>([]);
+const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
+    const t = useTranslations();
+    const { langDir } = useAuth();
+    const { toast } = useToast();
+    const [selectedFeatures, setSelectedFeatures] = useState<
+        { id: number; quantity: number }[]
+    >([]);
 
-  const toggleFeature = (id: number) => {
-    setSelectedFeatures((prev) =>
-      prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
+    const serviceQueryById = useServiceById(
+        {
+            serviceid: id ? (id as string) : "",
+        },
+        !!id
     );
-  };
+    const addToCartQuery = useAddServiceToCart();
+    const toggleFeature = (id: number, quantity: number, checked: boolean) => {
+        setSelectedFeatures((prev) => {
+            if (checked) {
+                // Add or update the feature if checked
+                const existingFeature = prev.find((item) => item.id === id);
+                if (existingFeature) {
+                    return prev.map((item) =>
+                        item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
+                    );
+                }
+                return [...prev, { id, quantity: Math.max(1, quantity) }];
+            } else {
+                // Remove the feature if unchecked
+                return prev.filter((item) => item.id !== id);
+            }
+        });
+    };
 
-  const features = [
-    {
-      id: 5,
-      serviceId: 5,
-      name: "service type 2 test",
-      serviceCostType: "FLAT",
-      serviceCost: "22",
-    },
-    {
-      id: 6,
-      serviceId: 5,
-      name: "service type 3 test",
-      serviceCostType: "HOURLY",
-      serviceCost: "15",
-    },
-  ];
+    const updateQuantity = (id: number, quantity: number) => {
+        setSelectedFeatures((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
+            )
+        );
+    };
 
-  useEffect(() => {
-    if (!open) {
-      setSelectedFeatures([]);
-    }
-  }, [open]);
+    const incrementQuantity = (id: number) => {
+        setSelectedFeatures((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+            )
+        );
+    };
 
-  // Handler for the Add to Cart button
-  const handleAddToCart = () => {
-    // Add your logic here, e.g., send selectedFeatures to a cart
-    console.log("Selected Features:", selectedFeatures);
-    // You can close the modal after adding to cart if needed
-    // setOpen(false); // Uncomment and manage this with parent state if needed
-  };
+    const decrementQuantity = (id: number) => {
+        setSelectedFeatures((prev) =>
+            prev.map((item) =>
+                item.id === id
+                    ? { ...item, quantity: Math.max(1, item.quantity - 1) }
+                    : item
+            )
+        );
+    };
 
-  return (
-    <DialogContent className="custom-action-type-chose-picker">
-      <div className="modal-headerpart">
-        <DialogTitle dir={langDir} className="text-lg font-semibold text-gray-800">
-          {t("select_services")}
-        </DialogTitle>
-      </div>
-      <div className="modal-bodypart">
-        <div
-          className="import-pickup-type-selector-lists"
-          dir={langDir}
-          style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
-        >
-          {features.map((feature) => {
-            const isSelected = selectedFeatures.includes(feature.id);
-            return (
-              <div
-                key={feature.id}
-                className="import-pickup-type-selector-item"
-                style={{ maxWidth: "100%" }}
-              >
-                <div
-                  className={`import-pickup-type-selector-box flex items-center gap-3 p-4 border rounded-xl cursor-pointer ${
-                    isSelected ? "bg-green-50 border-green-500" : "bg-white border-gray-200"
-                  }`}
-                  style={{
-                    minHeight: "0px",
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "start",
-                  }}
+    const serviceDetails = useMemo(() => {
+        if (serviceQueryById?.data?.data) {
+            return serviceQueryById.data.data;
+        }
+        return null;
+    }, [serviceQueryById?.data?.data]);
+
+    useEffect(() => {
+        if (!open) {
+            setSelectedFeatures([]);
+        }
+    }, [open]);
+
+    const handleAddToCart = async () => {
+        try {
+            const payload: any = {
+                serviceId: Number(id),
+                features: selectedFeatures.map((f) => {
+                    return {
+                        serviceFeatureId: f.id,
+                        quantity: f.quantity
+                    }
+                })
+            }
+            const response = await addToCartQuery.mutateAsync(payload);
+            if (response.success) {
+                toast({
+                    title: t("service_added_to_cart"),
+                    description: response.message,
+                    variant: "success",
+                });
+                handleClose();
+            } else {
+                toast({
+                    title: t("failed_to_add"),
+                    description: response.message,
+                    variant: "danger",
+                });
+            };
+        } catch (error: any) {
+            console.log(error);
+            toast({
+                title: t("failed_to_add"),
+                description: error.message,
+                variant: "danger",
+            });
+        }
+    };
+
+    return (
+        <DialogContent className="custom-action-type-chose-picker">
+            <div className="modal-headerpart">
+                <DialogTitle
+                    dir={langDir}
+                    className="text-lg font-semibold text-gray-800"
                 >
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => toggleFeature(feature.id)}
-                    className="h-5 w-5 text-green-600 focus:ring-green-500"
-                  />
-                  <div className="text-container flex-1">
-                    <h5 dir={langDir} className="text-sm text-gray-800">
-                      {feature.name}
-                    </h5>
-                    <p className="text-xs text-gray-500">
-                      {feature.serviceCostType.toLowerCase()} — ₹{feature.serviceCost}
-                    </p>
-                  </div>
+                    {t("select_services")}
+                </DialogTitle>
+            </div>
+            <div className="modal-bodypart">
+                <div
+                    className="import-pickup-type-selector-lists"
+                    dir={langDir}
+                    style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+                >
+                    {serviceQueryById.isLoading ? (
+                        <span className="text-center">Please wait...</span>
+                    ) : (
+                        serviceDetails?.serviceFeatures?.map((feature: any) => {
+                            const selectedFeature = selectedFeatures.find(
+                                (item) => item.id === feature.id
+                            );
+                            const isSelected = !!selectedFeature;
+                            const quantity = selectedFeature ? selectedFeature.quantity : 1;
+
+                            return (
+                                <div
+                                    key={feature.id}
+                                    className="import-pickup-type-selector-item"
+                                    style={{ maxWidth: "100%" }}
+                                >
+                                    <div
+                                        className={`import-pickup-type-selector-box flex items-center gap-3 p-4 border rounded-xl cursor-pointer ${isSelected
+                                            ? "bg-green-50 border-green-500"
+                                            : "bg-white border-gray-200"
+                                            }`}
+                                        style={{
+                                            minHeight: "0px",
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            justifyContent: "start",
+                                        }}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={(e) =>
+                                                toggleFeature(feature.id, quantity, e.target.checked)
+                                            }
+                                            className="h-5 w-5 text-green-600 focus:ring-green-500"
+                                        />
+                                        <div className="text-container flex-1">
+                                            <h5 dir={langDir} className="text-sm text-gray-800">
+                                                {feature.name}
+                                            </h5>
+                                            <p className="text-xs text-gray-500">
+                                                {feature.serviceCostType.toLowerCase()} — ₹
+                                                {feature.serviceCost}
+                                            </p>
+                                        </div>
+                                        {isSelected && (
+                                            <div className="quantity-container flex items-center gap-2">
+                                                <label className="text-sm text-gray-600">Qty:</label>
+                                                <button
+                                                    onClick={() => decrementQuantity(feature.id)}
+                                                    className="w-8 h-8 flex items-center justify-center border rounded-md text-gray-600 hover:bg-gray-100"
+                                                >
+                                                    -
+                                                </button>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    value={quantity}
+                                                    onChange={(e) =>
+                                                        updateQuantity(
+                                                            feature.id,
+                                                            parseInt(e.target.value) || 1
+                                                        )
+                                                    }
+                                                    className="w-16 p-1 border rounded-md text-center"
+                                                />
+                                                <button
+                                                    onClick={() => incrementQuantity(feature.id)}
+                                                    className="w-8 h-8 flex items-center justify-center border rounded-md text-gray-600 hover:bg-gray-100"
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
                 </div>
-              </div>
-            );
-          })}
-        </div>
-        {/* Add to Cart Button */}
-        <div className="modal-footerpart" style={{ marginTop: "1rem", textAlign: "center" }}>
-          <button
-            onClick={handleAddToCart}
-            className="bg-orange-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-orange-600 transition-colors"
-            style={{ minWidth: "150px" }}
-          >
-            {t("add_to_cart")}
-          </button>
-        </div>
-      </div>
-    </DialogContent>
-  );
+                {
+                    !serviceQueryById.isLoading &&
+                    <div
+                        className="modal-footerpart cart_button"
+                        style={{ marginTop: "1rem", textAlign: "center", justifyContent: "center" }}
+                    >
+                        <button
+                            onClick={handleAddToCart}
+                            className="add_to_cart_button"
+                            disabled={selectedFeatures.length === 0 || addToCartQuery.isPending}
+                            dir={langDir}
+                        >
+                            {
+                                addToCartQuery.isPending ?
+                                    t("please_wait")+"..."
+                                    :
+                                    t("add_to_cart")
+                            }
+                        </button>
+                    </div>
+                }
+
+            </div>
+        </DialogContent>
+    );
 };
 
 export default AddServiceToCartModal;

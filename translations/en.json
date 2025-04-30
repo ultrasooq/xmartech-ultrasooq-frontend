@@ -906,5 +906,7 @@
     "search_service": "Search Service",
     "service_updated_successful": "Service Updated Successful",
     "service_update_failed": "Service Update Failed",
-    "select_services":"Select Services"
+    "select_services":"Select Services",
+    "service_added_to_cart":"Service Added To Cart",
+    "failed_to_add":"Failed To Add"
 }

@@ -1,6 +1,6 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createService, fetchAllServices, fetchServiceById, updateService } from "../requests/services.requests";
+import { addServiceToCart, createService, fetchAllServices, fetchServiceById, updateService } from "../requests/services.requests";
 
 export const useCreateService = () => {
     const queryClient = useQueryClient();
@@ -66,21 +66,6 @@ export const useGetAllServices = (payload: { page: number; limit: number; term?:
   enabled,
 });
 
-// export const useServiceById = (
-//   payload: { serviceid: string; userId?: number, sharedLinkId?: string },
-//   enabled = true,
-// ) =>
-//   useQuery({
-//     queryKey: ["service-by-id", payload],
-//     queryFn: async () => {
-//       const res = await fetchServiceById(payload);
-//       return res.data;
-//     },
-//     // onError: (err: APIResponseError) => {
-//     //   console.log(err);
-//     // },
-//     enabled,
-//   });
 export const useServiceById = (
   payload: { serviceid: string; userId?: number; sharedLinkId?: string },
   enabled = true,
@@ -94,3 +79,19 @@ export const useServiceById = (
     enabled,
     gcTime: 0, // Disables caching by setting garbage collection time to 0
   });
+
+  export const useAddServiceToCart = () => {
+    const queryClient = useQueryClient();
+    return useMutation<any, APIResponseError, number[]>({
+      mutationFn: async (payload: any) => {
+        const res = await addServiceToCart(payload);
+        return res.data;
+      },
+      onSuccess: () => {
+        
+      },
+      onError: (err: APIResponseError) => {
+        console.log(err);
+      },
+    });
+  };
