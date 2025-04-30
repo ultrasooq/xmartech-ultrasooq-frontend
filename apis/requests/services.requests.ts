@@ -17,6 +17,7 @@ export const createService = (payload: any) => {
     },
   });
 };
+
 export const updateService = (payload: any) => {
   return axios({
     method: "PATCH",
@@ -29,6 +30,7 @@ export const updateService = (payload: any) => {
     },
   });
 };
+
 export const fetchAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; ownservice?: boolean }) => {
   return axios({
     method: "GET",
@@ -40,6 +42,7 @@ export const fetchAllServices = (payload: { page: number; limit: number; term?: 
     },
   });
 };
+
 export const fetchServiceById = (payload: {
   serviceid: string;
   userId?: number;
@@ -48,6 +51,19 @@ export const fetchServiceById = (payload: {
   return axios({
     method: "GET",
     url: `${process.env.NEXT_PUBLIC_API_URL}/service/${payload.serviceid}`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const addServiceToCart = (payload: any) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateservice`,
+    data: payload,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

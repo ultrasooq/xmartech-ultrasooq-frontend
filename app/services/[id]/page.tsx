@@ -46,7 +46,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useClickOutside } from "use-events";
 import { Button } from "@/components/ui/button";
 import { IoCloseSharp } from "react-icons/io5";
-import { useServiceById } from "@/apis/queries/services.queries";
+import { useAddServiceToCart, useServiceById } from "@/apis/queries/services.queries";
 import ServiceImagesCard from "@/components/modules/serviceDetails/ServiceImagesCard";
 import ServiceDescriptionCard from "@/components/modules/serviceDetails/ServiceDescriptionCard";
 
@@ -58,6 +58,7 @@ const ServiceDetailsPage = () => {
     const searchQuery = useSearchParams();
     const router = useRouter();
     const { toast } = useToast();
+    const addToCartQuery = useAddServiceToCart();
     const deviceId = getOrCreateDeviceId() || "";
     const [activeTab, setActiveTab] = useState("description");
     const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -70,11 +71,50 @@ const ServiceDetailsPage = () => {
     const [productVariantTypes, setProductVariantTypes] = useState<string[]>();
     const [productVariants, setProductVariants] = useState<any[]>();
     const [selectedProductVariant, setSelectedProductVariant] = useState<any>(null);
-    const [selectedFeatures, setSelectedFeatures] = useState<number[]>([]);
+    const [selectedFeatures, setSelectedFeatures] = useState<
+        { id: number; quantity: number }[]
+    >([]);
+    const toggleFeature = (id: number, quantity: number, checked: boolean) => {
+        setSelectedFeatures((prev) => {
+            if (checked) {
+                // Add or update the feature if checked
+                const existingFeature = prev.find((item) => item.id === id);
+                if (existingFeature) {
+                    return prev.map((item) =>
+                        item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
+                    );
+                }
+                return [...prev, { id, quantity: Math.max(1, quantity) }];
+            } else {
+                // Remove the feature if unchecked
+                return prev.filter((item) => item.id !== id);
+            }
+        });
+    };
 
-    const toggleFeature = (id: number) => {
+    const updateQuantity = (id: number, quantity: number) => {
         setSelectedFeatures((prev) =>
-            prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
+            prev.map((item) =>
+                item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
+            )
+        );
+    };
+
+    const incrementQuantity = (id: number) => {
+        setSelectedFeatures((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+            )
+        );
+    };
+
+    const decrementQuantity = (id: number) => {
+        setSelectedFeatures((prev) =>
+            prev.map((item) =>
+                item.id === id
+                    ? { ...item, quantity: Math.max(1, item.quantity - 1) }
+                    : item
+            )
         );
     };
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
@@ -298,94 +338,120 @@ const ServiceDetailsPage = () => {
         actionType: "add" | "remove",
         productVariant?: any
     ) => {
-        const minQuantity = serviceDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
-        if (actionType == "add" && minQuantity && minQuantity > quantity) {
-            toast({
-                description: t("min_quantity_must_be_n", { n: minQuantity }),
-                variant: "danger",
-            });
-            return;
+        const payload:any = {
+            serviceId: Number(searchParams?.id),
+            features: selectedFeatures.map((f) => {
+                return {
+                    serviceFeatureId: f.id,
+                    quantity: f.quantity
+                }
+            })
         }
-
-        if (actionType == "remove" && minQuantity && minQuantity > quantity) {
+        const response = await addToCartQuery.mutateAsync(payload);
+        if (response.success) {
             toast({
-                description: t("min_quantity_must_be_n", { n: minQuantity }),
-                variant: "danger",
+                title: t("service_added_to_cart"),
+                description: response.message,
+                variant: "success",
             });
-            setIsConfirmDialogOpen(true);
-            return;
-        }
-
-        const maxQuantity = serviceDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
-        if (maxQuantity && maxQuantity < quantity) {
-            toast({
-                description: t("max_quantity_must_be_n", { n: maxQuantity }),
-                variant: "danger",
-            });
-            return;
-        }
-
-        const sharedLinkId = serviceQueryById?.data?.generatedLinkDetail?.id;
-
-        if (haveAccessToken) {
-            if (!serviceDetails?.product_productPrice?.[0]?.id) {
-                toast({
-                    title: t("something_went_wrong"),
-                    description: t("product_price_id_not_found"),
-                    variant: "danger",
-                });
-                return;
-            }
-
-            if (actionType == "add" && quantity == 0) {
-                quantity = minQuantity ?? 1;
-            }
-
-            const response = await updateCartWithLogin.mutateAsync({
-                productPriceId: serviceDetails?.product_productPrice?.[0]?.id,
-                quantity,
-                sharedLinkId,
-                productVariant: productVariant || selectedProductVariant,
-            });
-
-            if (response.status) {
-                setGlobalQuantity(quantity);
-                toast({
-                    title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
-                    description: t("check_your_cart_for_more_details"),
-                    variant: "success",
-                });
-                setIsVisible(true); // Show the div when the button is clicked
-                return response.status;
-            }
-
+            setSelectedFeatures([]);
         } else {
-            if (!serviceDetails?.product_productPrice?.[0]?.id) {
-                toast({
-                    title: t("something_went_wrong"),
-                    description: t("product_price_id_not_found"),
-                    variant: "danger",
-                });
-                return;
-            }
-            const response = await updateCartByDevice.mutateAsync({
-                productPriceId: serviceDetails?.product_productPrice?.[0]?.id,
-                quantity,
-                deviceId,
-                sharedLinkId,
-                productVariant: productVariant || selectedProductVariant,
+            toast({
+                title: t("failed_to_add"),
+                description: response.message,
+                variant: "danger",
             });
-            if (response.status) {
-                setGlobalQuantity(quantity);
-                toast({
-                    title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
-                    description: t("check_your_cart_for_more_details"),
-                    variant: "success",
-                });
-                setIsVisible(true); // Show the div when the button is clicked
-                return response.status;
-            }
-        }
+        };
+        console.log(payload);
+        // return;
+        // const minQuantity = serviceDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
+        // if (actionType == "add" && minQuantity && minQuantity > quantity) {
+        //     toast({
+        //         description: t("min_quantity_must_be_n", { n: minQuantity }),
+        //         variant: "danger",
+        //     });
+        //     return;
+        // }
+
+        // if (actionType == "remove" && minQuantity && minQuantity > quantity) {
+        //     toast({
+        //         description: t("min_quantity_must_be_n", { n: minQuantity }),
+        //         variant: "danger",
+        //     });
+        //     setIsConfirmDialogOpen(true);
+        //     return;
+        // }
+
+        // const maxQuantity = serviceDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
+        // if (maxQuantity && maxQuantity < quantity) {
+        //     toast({
+        //         description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        //         variant: "danger",
+        //     });
+        //     return;
+        // }
+
+        // const sharedLinkId = serviceQueryById?.data?.generatedLinkDetail?.id;
+
+        // if (haveAccessToken) {
+        //     if (!serviceDetails?.product_productPrice?.[0]?.id) {
+        //         toast({
+        //             title: t("something_went_wrong"),
+        //             description: t("product_price_id_not_found"),
+        //             variant: "danger",
+        //         });
+        //         return;
+        //     }
+
+        //     if (actionType == "add" && quantity == 0) {
+        //         quantity = minQuantity ?? 1;
+        //     }
+
+        //     const response = await updateCartWithLogin.mutateAsync({
+        //         productPriceId: serviceDetails?.product_productPrice?.[0]?.id,
+        //         quantity,
+        //         sharedLinkId,
+        //         productVariant: productVariant || selectedProductVariant,
+        //     });
+
+        //     if (response.status) {
+        //         setGlobalQuantity(quantity);
+        //         toast({
+        //             title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+        //             description: t("check_your_cart_for_more_details"),
+        //             variant: "success",
+        //         });
+        //         setIsVisible(true); // Show the div when the button is clicked
+        //         return response.status;
+        //     }
+
+        // } else {
+        //     if (!serviceDetails?.product_productPrice?.[0]?.id) {
+        //         toast({
+        //             title: t("something_went_wrong"),
+        //             description: t("product_price_id_not_found"),
+        //             variant: "danger",
+        //         });
+        //         return;
+        //     }
+        //     const response = await updateCartByDevice.mutateAsync({
+        //         productPriceId: serviceDetails?.product_productPrice?.[0]?.id,
+        //         quantity,
+        //         deviceId,
+        //         sharedLinkId,
+        //         productVariant: productVariant || selectedProductVariant,
+        //     });
+        //     if (response.status) {
+        //         setGlobalQuantity(quantity);
+        //         toast({
+        //             title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+        //             description: t("check_your_cart_for_more_details"),
+        //             variant: "success",
+        //         });
+        //         setIsVisible(true); // Show the div when the button is clicked
+        //         return response.status;
+        //     }
+        // }
     };
 
     const handleCartPage = async () => {
@@ -404,12 +470,12 @@ const ServiceDetailsPage = () => {
                 : null;
             quantity = minQuantity || 1;
         }
-        const response = await handleAddToCart(quantity, "add");
-        if (response) {
-            setTimeout(() => {
-                router.push("/cart");
-            }, 2000);
-        }
+        // const response = await handleAddToCart(quantity, "add");
+        // if (response) {
+        //     setTimeout(() => {
+        //         router.push("/cart");
+        //     }, 2000);
+        // }
     };
 
     const handleCheckoutPage = async () => {
@@ -428,12 +494,12 @@ const ServiceDetailsPage = () => {
                 : null;
             quantity = minQuantity || 1;
         }
-        const response = await handleAddToCart(quantity, "add");
-        if (response) {
-            setTimeout(() => {
-                router.push("/checkout");
-            }, 2000);
-        }
+        // const response = await handleAddToCart(quantity, "add");
+        // if (response) {
+        //     setTimeout(() => {
+        //         router.push("/checkout");
+        //     }, 2000);
+        // }
     };
 
     const handelOpenCartLayout = () => {
@@ -519,6 +585,7 @@ const ServiceDetailsPage = () => {
                     <div className="container m-auto px-3">
                         <ServiceImagesCard
                             selectedFeatures={selectedFeatures}
+                            addingToCart={addToCartQuery?.isPending}
                             serviceDetails={serviceDetails}
                             onProductUpdateSuccess={handleProductUpdateSuccess} // Pass to child
                             onAdd={() => handleAddToCart(globalQuantity, "add")}
@@ -545,6 +612,9 @@ const ServiceDetailsPage = () => {
                             selectedFeatures={selectedFeatures}
                             setSelectedFeatures={setSelectedFeatures}
                             toggleFeature={toggleFeature}
+                            decrementQuantity={decrementQuantity}
+                            incrementQuantity={incrementQuantity}
+                            updateQuantity={updateQuantity}
                             allDetailsService={serviceDetails}
                             productId={searchParams?.id ? (searchParams?.id as string) : ""}
                             productName={serviceDetails?.serviceName}

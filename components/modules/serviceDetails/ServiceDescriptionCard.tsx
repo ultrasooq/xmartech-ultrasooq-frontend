@@ -61,6 +61,9 @@ type ServiceDescriptionCardProps = {
 
 const ServiceDescriptionCard: React.FC<any> = ({
     selectedFeatures,
+    decrementQuantity,
+    incrementQuantity,
+    updateQuantity,
     setSelectedFeatures,
     toggleFeature,
     allDetailsService,
@@ -155,20 +158,6 @@ const ServiceDescriptionCard: React.FC<any> = ({
         setIsAddedToCart(!!productQuantity && productQuantity > 0);
     }, [productQuantity]);
 
-    const updateQuantity = (newQuantity: number, action: "add" | "remove") => {
-        setQuantity(newQuantity);
-
-        if (maxQuantity && maxQuantity < newQuantity) {
-            toast({
-                description: t("max_quantity_must_be_n", { n: maxQuantity }),
-                variant: "danger",
-            });
-            setQuantity(productQuantity);
-            return;
-        }
-
-        onQuantityChange?.(newQuantity, action);
-    };
 
     const handleQuantityChange = () => {
         if (quantity == 0 && productQuantity != 0) {
@@ -365,33 +354,83 @@ const ServiceDescriptionCard: React.FC<any> = ({
                     ) : null} */}
                     <div className="space-y-4">
                         <h5 className="text-lg font-semibold">{t("select_services")}</h5>
-                        {allDetailsService?.serviceFeatures?.map((feature: any) => {
-                            const isSelected = selectedFeatures.includes(feature.id);
-                            return (
-                                <label
-                                    key={feature.id}
-                                    className={`flex items-center justify-between gap-4 rounded-xl border p-4 shadow-sm cursor-pointer transition-all hover:shadow-md ${isSelected ? "border-green-500 bg-green-50" : "border-gray-200"
-                                        }`}
-                                >
-                                    <div className="flex items-start gap-4">
-                                        <input
-                                            type="checkbox"
-                                            checked={isSelected}
-                                            onChange={() => toggleFeature(feature.id)}
-                                            className="mt-1 h-5 w-5 text-green-600 focus:ring-green-500"
-                                        />
-                                        <div>
-                                            <h4 className="text-md font-medium text-gray-800">
-                                                {feature.name}
-                                            </h4>
-                                            <p className="text-sm text-gray-500 capitalize">
-                                                {feature.serviceCostType.toLowerCase()} — {currency.symbol}{feature.serviceCost}
-                                            </p>
+                        {
+                            allDetailsService?.serviceFeatures?.map((feature: any) => {
+                                const selectedFeature = selectedFeatures.find(
+                                    (item: any) => item.id === feature.id
+                                );
+                                const isSelected = !!selectedFeature;
+                                const quantity = selectedFeature ? selectedFeature.quantity : 1;
+
+                                return (
+                                    <div
+                                        key={feature.id}
+                                        className="import-pickup-type-selector-item"
+                                        style={{ maxWidth: "100%" }}
+                                    >
+                                        <div
+                                            className={`import-pickup-type-selector-box flex items-center gap-3 p-4 border rounded-xl cursor-pointer ${isSelected
+                                                ? "bg-green-50 border-green-500"
+                                                : "bg-white border-gray-200"
+                                                }`}
+                                            style={{
+                                                minHeight: "0px",
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                justifyContent: "start",
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={isSelected}
+                                                onChange={(e) =>
+                                                    toggleFeature(feature.id, quantity, e.target.checked)
+                                                }
+                                                className="h-5 w-5 text-green-600 focus:ring-green-500"
+                                            />
+                                            <div className="text-container flex-1">
+                                                <h5 dir={langDir} className="text-sm text-gray-800">
+                                                    {feature.name}
+                                                </h5>
+                                                <p className="text-xs text-gray-500">
+                                                    {feature.serviceCostType.toLowerCase()} — ₹
+                                                    {feature.serviceCost}
+                                                </p>
+                                            </div>
+                                            {isSelected && (
+                                                <div className="quantity-container flex items-center gap-2">
+                                                    <label className="text-sm text-gray-600">Qty:</label>
+                                                    <button
+                                                        onClick={() => decrementQuantity(feature.id)}
+                                                        className="w-8 h-8 flex items-center justify-center border rounded-md text-gray-600 hover:bg-gray-100"
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <input
+                                                        type="number"
+                                                        min="1"
+                                                        value={quantity}
+                                                        onChange={(e) =>
+                                                            updateQuantity(
+                                                                feature.id,
+                                                                parseInt(e.target.value) || 1
+                                                            )
+                                                        }
+                                                        className="w-16 p-1 border rounded-md text-center"
+                                                    />
+                                                    <button
+                                                        onClick={() => incrementQuantity(feature.id)}
+                                                        className="w-8 h-8 flex items-center justify-center border rounded-md text-gray-600 hover:bg-gray-100"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                </label>
-                            );
-                        })}
+                                );
+                            })
+                        }
                     </div>
                 </div>
             )}

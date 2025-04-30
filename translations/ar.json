@@ -905,5 +905,8 @@
     "n_services_found": "تم العثور على {n} خدمة",
     "search_service": "بحث الخدمة",
     "service_updated_successful": "تم تحديث الخدمة بنجاح",
-    "service_update_failed": "فشل تحديث الخدمة"
+    "service_update_failed": "فشل تحديث الخدمة",
+    "select_services": "اختر الخدمات",
+    "service_added_to_cart": "تمت إضافة الخدمة إلى السلة",
+    "failed_to_add": "فشل في الإضافة"
 }
