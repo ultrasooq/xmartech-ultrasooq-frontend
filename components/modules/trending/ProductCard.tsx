@@ -545,7 +545,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   (variant: any) => variant.value == value,
                 );
                 setSelectedProductVariant(selectedVariant);
-                handleAddToCart(quantity, "add", selectedVariant);
+                if (isAddedToCart) handleAddToCart(quantity, "add", selectedVariant);
               }}
               dir={langDir}
             >

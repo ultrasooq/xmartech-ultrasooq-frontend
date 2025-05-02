@@ -320,7 +320,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
             let value = e.target.value;
             const selectedVariant = productVariants.find((variant: any) => variant.value == value);
             setSelectedProductVariant(selectedVariant);
-            handleAddToCart(quantity, "add", selectedVariant)
+            if (cartId) handleAddToCart(quantity, "add", selectedVariant)
           }}
         >
           {productVariants.map((variant: any, index: number) => {
