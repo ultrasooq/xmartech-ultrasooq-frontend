@@ -16,6 +16,7 @@ import {
   fetchOrdersBySellerId,
   preOrderCalculation,
   updateCancelReason,
+  updateOrderShippingStatus,
   updateProductStatus,
 } from "../requests/orders.requests";
 import { APIResponseError } from "@/utils/types/common.types";
@@ -274,6 +275,28 @@ export const useUpdateCancelReason = () => {
   >({
     mutationFn: async (payload) => {
       const res = await updateCancelReason(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["orders"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useUpdateOrderShippingStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { orderShippingId: number; status: string, receipt: string; }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateOrderShippingStatus(payload);
       return res.data;
     },
     onSuccess: () => {

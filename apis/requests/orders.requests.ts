@@ -169,6 +169,23 @@ export const updateCancelReason = (payload: {
   });
 };
 
+export const updateOrderShippingStatus = (payload: {
+  orderShippingId: number;
+  status: string;
+  receipt: string;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/order/orderShippingStatusUpdateById`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const preOrderCalculation = (payload: any) => {
   return axios({
     method: "POST",

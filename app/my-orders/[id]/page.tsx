@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { convertDate, convertTime } from "@/utils/helper";
 
 const MyOrderDetailsPage = ({}) => {
   const t = useTranslations();
@@ -167,6 +168,50 @@ const MyOrderDetailsPage = ({}) => {
                     </div>
                   </div>
                 )}
+
+                {orderDetails?.orderShippingDetail ? (
+                  <div className="my-order-item">
+                    <div className="my-order-card">
+                      <div className="sm:grid sm:grid-cols-3 w-full gap-2 mb-2">
+                        <div className="sm:flex gap-2">
+                          <h3 className="!font-bold">{t("shipping_mode")}:</h3>
+                          <span>{orderDetails?.orderShippingDetail?.orderShippingType}</span>
+                        </div>
+                        <div className="sm:flex gap-2">
+                          <h3 className="!font-bold">{t("delivery_charge")}:</h3>
+                          <span>{currency.symbol}{orderDetails?.orderShippingDetail?.shippingCharge}</span>
+                        </div>
+                      </div>
+                      {orderDetails?.orderShippingDetail?.orderShippingType == "PICKUP" ? (
+                        <div className="sm:grid sm:grid-cols-3 w-full gap-2">
+                          <div className="sm:flex gap-2">
+                            <h3 className="!font-bold">{t("shipping_date")}:</h3>
+                            <span>{convertDate(orderDetails?.orderShippingDetail?.shippingDate)}</span>
+                          </div>
+                          <div className="sm:flex gap-2">
+                            <h3 className="!font-bold">{t("from_time")}:</h3>
+                            <span>{convertTime(orderDetails?.orderShippingDetail?.fromTime)}</span>
+                          </div>
+                          <div className="sm:flex gap-2">
+                            <h3 className="!font-bold">{t("to_time")}:</h3>
+                            <span>{convertTime(orderDetails?.orderShippingDetail?.toTime)}</span>
+                          </div>
+                        </div>
+                      ) : null}
+                      {orderDetails?.orderShippingDetail?.receipt ? (
+                        <div className="sm:grid sm:grid-cols-3 w-full gap-2 mt-2">
+                          <Link 
+                            className="text-red-500"
+                            href={orderDetails?.orderShippingDetail?.receipt}
+                            target="_blank"
+                          >
+                            {t("download_receipt")}
+                          </Link>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
 
                 {orderByIdQuery.isLoading ? (
                   <Skeleton className="h-44" />

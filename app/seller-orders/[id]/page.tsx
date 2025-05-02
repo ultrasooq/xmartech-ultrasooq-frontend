@@ -25,6 +25,8 @@ import { PERMISSION_ORDERS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { convertDate, convertTime } from "@/utils/helper";
+import AddReceipt from "@/components/modules/sellerOrderDetails/AddReceipt";
 
 const MyOrderDetailsPage = ({}) => {
   const t = useTranslations();
@@ -32,9 +34,12 @@ const MyOrderDetailsPage = ({}) => {
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_ORDERS);
   const searchParams = useParams();
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const handleToggleStatusModal = () => setIsStatusModalOpen(!isStatusModalOpen);
+
+  const [isAddReceiptModalOpen, setIsAddReceiptModalOpen] = useState(false);
+  const handleToggleAddReceiptModal = () => setIsAddReceiptModalOpen(!isAddReceiptModalOpen);
 
   const orderByIdQuery = useOrderBySellerId(
     {
@@ -154,9 +159,6 @@ const MyOrderDetailsPage = ({}) => {
                             </span>
                           </p>
                         </div>
-                        {/* <div className='delivery-address-col yourRewards'>
-                        <h2>Your Rewards</h2>
-                      </div> */}
                         <div className="delivery-address-col moreActions">
                           <h2 dir={langDir}>{t("more_actions")}</h2>
                           <figure className="downloadInvoice">
@@ -172,17 +174,65 @@ const MyOrderDetailsPage = ({}) => {
                   </div>
                 )}
 
+                {orderDetails?.orderShippingDetail ? (
+                  <div className="my-order-item">
+                    <div className="my-order-card">
+                      <div className="sm:grid sm:grid-cols-3 w-full gap-2 mb-2">
+                        <div className="sm:flex gap-2">
+                          <h3 className="!font-bold">{t("shipping_mode")}:</h3>
+                          <span>{orderDetails?.orderShippingDetail?.orderShippingType}</span>
+                        </div>
+                        <div className="sm:flex gap-2">
+                          <h3 className="!font-bold">{t("delivery_charge")}:</h3>
+                          <span>{currency.symbol}{orderDetails?.orderShippingDetail?.shippingCharge}</span>
+                        </div>
+                        <div className="more-actions">
+                          <button
+                            type="button"
+                            className="theme-primary-btn update-status-btn"
+                            onClick={handleToggleAddReceiptModal}
+                            dir={langDir}
+                          >
+                            {t("add_receipt")}
+                          </button>
+                        </div>
+                      </div>
+                      {orderDetails?.orderShippingDetail?.orderShippingType == "PICKUP" ? (
+                        <div className="sm:grid sm:grid-cols-3 w-full gap-2">
+                          <div className="sm:flex gap-2">
+                            <h3 className="!font-bold">{t("shipping_date")}:</h3>
+                            <span>{convertDate(orderDetails?.orderShippingDetail?.shippingDate)}</span>
+                          </div>
+                          <div className="sm:flex gap-2">
+                            <h3 className="!font-bold">{t("from_time")}:</h3>
+                            <span>{convertTime(orderDetails?.orderShippingDetail?.fromTime)}</span>
+                          </div>
+                          <div className="sm:flex gap-2">
+                            <h3 className="!font-bold">{t("to_time")}:</h3>
+                            <span>{convertTime(orderDetails?.orderShippingDetail?.toTime)}</span>
+                          </div>
+                        </div>
+                      ) : null}
+                      {orderDetails?.orderShippingDetail?.receipt ? (
+                        <div className="sm:grid sm:grid-cols-3 w-full gap-2 mt-2">
+                          <Link 
+                            className="text-red-500"
+                            href={orderDetails?.orderShippingDetail?.receipt}
+                            target="_blank"
+                          >
+                            {t("download_receipt")}
+                          </Link>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
+
                 {orderByIdQuery.isLoading ? (
                   <Skeleton className="h-44" />
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
-                      {/* <h5 className="mb-2">
-                        Order ID:{" "}
-                        <span className="font-semibold">
-                          {orderDetails?.orderProduct_order?.orderNo}
-                        </span>
-                      </h5> */}
                       <div className="my-order-box">
                         <Link
                           href={`/trending/${orderDetails?.orderProduct_product?.id}`}
@@ -209,7 +259,6 @@ const MyOrderDetailsPage = ({}) => {
                                     ?.productPrice_product?.productName
                                 }
                               </h3>
-                              {/* <p>Color: B.A.E Black</p> */}
                               <p className="mt-1" dir={langDir}>
                                 {t("seller")}:{" "}
                                 {
@@ -516,11 +565,12 @@ const MyOrderDetailsPage = ({}) => {
         </div>
       </div>
       <Footer />
+
       <Dialog open={isStatusModalOpen} onOpenChange={handleToggleStatusModal}>
         <DialogContent className="customModal-s1">
           <DialogHeader className="modal-header">
             <DialogTitle className="modal-title">
-              Update Delivery Status
+              {t("update_delivery_status")}
             </DialogTitle>
           </DialogHeader>
 
@@ -531,6 +581,25 @@ const MyOrderDetailsPage = ({}) => {
           />
         </DialogContent>
       </Dialog>
+
+      {orderDetails?.orderShippingDetail ? (
+        <Dialog open={isAddReceiptModalOpen} onOpenChange={handleToggleAddReceiptModal}>
+          <DialogContent className="customModal-s1">
+            <DialogHeader className="modal-header">
+              <DialogTitle className="modal-title">
+                {t("add_receipt")}
+              </DialogTitle>
+            </DialogHeader>
+
+            <AddReceipt
+              orderProductId={Number(searchParams?.id)}
+              orderShippingId={orderDetails.orderShippingDetail.id}
+              orderShippingStatus={orderDetails.orderShippingDetail.status}
+              onClose={handleToggleAddReceiptModal}
+            />
+          </DialogContent>
+        </Dialog>
+      ) : null}
 
       {/* <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
         <DialogContent>
