@@ -916,5 +916,7 @@
     "service_update_failed": "فشل تحديث الخدمة",
     "select_services": "اختر الخدمات",
     "service_added_to_cart": "تمت إضافة الخدمة إلى السلة",
-    "failed_to_add": "فشل في الإضافة"
+    "failed_to_add": "فشل في الإضافة",
+    "days": "أيام",
+    "do_you_want_to_remove_this_item_from_cart": "هل تريد إزالة هذا العنصر من السلة؟"
 }

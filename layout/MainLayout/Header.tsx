@@ -253,7 +253,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   };
 
   const wrapperRef = useRef(null);
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
 
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
   const handleToggleQueryModal = () => setIsQueryModalOpen(!isQueryModalOpen);
@@ -321,7 +321,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           setSelectedCurrency(window.localStorage.currency || "USD");
           changeCurrency(window.localStorage.currency || "USD");
         }
-      } catch (error) {}
+      } catch (error) { }
     };
 
     if (typeof window !== "undefined") {
@@ -384,6 +384,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                     <select
+                      dir={langDir}
                       className="border-0 bg-transparent text-white focus:outline-none"
                       value={selectedCurrency}
                       onChange={(e: any) => {
@@ -411,6 +412,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
                     <GoogleTranslate />
                     <select
+                      dir={langDir}
                       className="border-0 bg-transparent text-white focus:outline-none"
                       value={selectedLocale}
                       onChange={(e) => {
@@ -757,8 +759,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 : item.name.toLowerCase().includes("service")
                                   ? "/services"
                                   : item.name
-                                        .toLowerCase()
-                                        .includes("buy group")
+                                    .toLowerCase()
+                                    .includes("buy group")
                                     ? "/buygroup"
                                     : "/trending"
                       }
@@ -811,7 +813,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   )}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
-                  memoizedSubCategory?.length ? (
+                    memoizedSubCategory?.length ? (
                     <div className="dropdown-content">
                       {memoizedSubCategory?.map(
                         (item: CategoryProps, index: number) => (
@@ -825,6 +827,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   : null
                                 : null,
                             )}
+                            dir={langDir}
                             onMouseEnter={() => setSubCategoryIndex(index)}
                             onClick={() => {
                               setSubCategoryIndex(index);
@@ -875,7 +878,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   ) : null}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
-                  memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
+                    memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                     <div className="dropdown-content-second">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
                         (item: CategoryProps, index: number) => (
@@ -916,6 +919,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 ].join(","),
                               );
                             }}
+                            dir={langDir}
                           >
                             {item?.icon ? (
                               <Image
@@ -940,11 +944,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   ) : null}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
-                  memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                    subSubCategoryIndex
-                  ]?.children?.length ? (
+                    memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                      subSubCategoryIndex
+                    ]?.children?.length ? (
                     <div className="dropdown-content-third p-3">
-                      <h4 className="mb-2 text-sm">
+                      <h4 className="mb-2 text-sm" dir={langDir}>
                         {memoizedSubCategory?.[subCategoryIndex]?.children?.[
                           subSubCategoryIndex
                         ]?.name || ""}
@@ -986,6 +990,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   ].join(","),
                                 );
                               }}
+                              dir={langDir}
                             >
                               <div className="relative h-8 w-8">
                                 {item?.icon ? (
@@ -1016,7 +1021,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 </div>
 
                 {(pathname == "/trending" || pathname == "/buygroup") && (
-                  <div className="flex items-center gap-x-1 md:gap-x-5">
+                  <div className="flex items-center gap-x-1 md:gap-x-5" dir={langDir}>
                     {memoizedCategory.map((item: any) => (
                       <Button
                         type="button"

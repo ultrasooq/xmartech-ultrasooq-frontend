@@ -54,7 +54,7 @@ import { useCategory } from "@/apis/queries/category.queries";
 
 function HomePage() {
   const t = useTranslations();
-  const { currency } = useAuth();
+  const { currency, langDir } = useAuth();
   const queryClient = useQueryClient();
   const router = useRouter();
   const categoryStore = useCategoryStore();
@@ -110,7 +110,7 @@ function HomePage() {
           productImage: item?.product_productPrice?.[0]
             ?.productPrice_productSellerImage?.length
             ? item?.product_productPrice?.[0]
-                ?.productPrice_productSellerImage?.[0]?.image
+              ?.productPrice_productSellerImage?.[0]?.image
             : item?.productImages?.[0]?.image,
           categoryName: item?.category?.name || "-",
           skuNo: item?.skuNo,
@@ -151,7 +151,7 @@ function HomePage() {
         productImage: item?.product_productPrice?.[0]
           ?.productPrice_productSellerImage?.length
           ? item?.product_productPrice?.[0]
-              ?.productPrice_productSellerImage?.[0]?.image
+            ?.productPrice_productSellerImage?.[0]?.image
           : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
@@ -190,7 +190,7 @@ function HomePage() {
         productImage: item?.product_productPrice?.[0]
           ?.productPrice_productSellerImage?.length
           ? item?.product_productPrice?.[0]
-              ?.productPrice_productSellerImage?.[0]?.image
+            ?.productPrice_productSellerImage?.[0]?.image
           : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
@@ -229,7 +229,7 @@ function HomePage() {
         productImage: item?.product_productPrice?.[0]
           ?.productPrice_productSellerImage?.length
           ? item?.product_productPrice?.[0]
-              ?.productPrice_productSellerImage?.[0]?.image
+            ?.productPrice_productSellerImage?.[0]?.image
           : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
@@ -555,15 +555,15 @@ function HomePage() {
           <div className="flex">
             <div className="relative flex w-full flex-wrap bg-neutral-100 px-5 py-6 md:py-12 lg:px-10 lg:py-24">
               <div className="sm:w-12/12 w-12/12 flex flex-wrap content-center items-center pr-3.5 md:w-6/12">
-                <h3 className="text-xl font-normal capitalize leading-8 text-color-dark md:text-2xl md:leading-10 lg:text-4xl">
+                <h3 className="text-xl font-normal capitalize leading-8 text-color-dark md:text-2xl md:leading-10 lg:text-4xl" dir={langDir}>
                   Contrary to popular belief, Lorem Ipsum is not..
                 </h3>
-                <p className="text-base font-normal capitalize text-light-gray">
+                <p className="text-base font-normal capitalize text-light-gray" dir={langDir}>
                   Lorem Ipsum is simply dummy text of the printing and
                   typesetting industry.{" "}
                 </p>
               </div>
-              <div className="w-12/12 flex flex-wrap content-center items-center px-3.5 sm:w-4/12 md:w-3/12">
+              <div className="w-12/12 flex flex-wrap content-center items-center px-3.5 sm:w-4/12 md:w-3/12" dir={langDir}>
                 <h6 className="mb-1.5 text-base font-medium uppercase text-color-dark line-through">
                   {currency.symbol}332.38
                 </h6>

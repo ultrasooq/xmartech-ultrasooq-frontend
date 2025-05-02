@@ -4,18 +4,12 @@ import Link from "next/link";
 import React, { useMemo, useEffect, useState, useRef } from "react";
 import validator from "validator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FaStar } from "react-icons/fa";
-import { FaRegStar } from "react-icons/fa";
+import { FaStar, FaRegStar, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
+import { FaCircleCheck } from "react-icons/fa6";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { Button } from "@/components/ui/button";
-// import ShoppingIcon from "@/public/images/shopping-icon.svg";
-// import EyeIcon from "@/public/images/eye-icon.svg";
-// import CompareIcon from "@/public/images/compare-icon.svg";
-import { FaHeart } from "react-icons/fa";
-import { FaRegHeart } from "react-icons/fa";
-import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
-import { FaCircleCheck } from "react-icons/fa6";
 import { useCartStore } from "@/lib/rfqStore";
 import { toast } from "@/components/ui/use-toast";
 import {
@@ -24,7 +18,7 @@ import {
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl"; // Import useLocale
 import { useAuth } from "@/context/AuthContext";
 import { useClickOutside } from "use-events";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -65,8 +59,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const language = useLocale(); // Get the current locale (e.g., "en" or "ar")
 
-  const [timeLeft, setTimeLeft] = useState("");
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
 
   const deviceId = getOrCreateDeviceId() || "";
 
@@ -88,15 +83,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const calculateAvgRating = useMemo(() => {
     const totalRating = item.productReview?.reduce(
-      (acc: number, item: { rating: number }) => {
-        return acc + item.rating;
-      },
+      (acc: number, item: { rating: number }) => acc + item.rating,
       0,
     );
-
     const result = totalRating / item.productReview?.length;
     return !isNaN(result) ? Math.floor(result) : 0;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.productReview?.length]);
 
   const calculateRatings = useMemo(
@@ -111,23 +102,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }
       return stars;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [item.productReview?.length],
   );
 
   const [quantity, setQuantity] = useState(0);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
 
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
-    useState<boolean>(false);
-  const handleConfirmDialog = () =>
-    setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
   const confirmDialogRef = useRef(null);
   const [isClickedOutsideConfirmDialog] = useClickOutside(
     [confirmDialogRef],
-    (event) => {
-      onCancelRemove();
-    },
+    () => onCancelRemove(),
   );
 
   useEffect(() => {
@@ -196,11 +182,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       });
 
       if (response.status) {
-        if (actionType === "add" && newQuantity === 0) {
-          setQuantity(1);
-        } else {
-          setQuantity(newQuantity);
-        }
+        setQuantity(actionType === "add" && newQuantity === 0 ? 1 : newQuantity);
         toast({
           title:
             actionType == "add"
@@ -233,11 +215,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         productVariant: variant || selectedProductVariant,
       });
       if (response.status) {
-        if (actionType === "add" && newQuantity === 0) {
-          setQuantity(1);
-        } else {
-          setQuantity(newQuantity);
-        }
+        setQuantity(actionType === "add" && newQuantity === 0 ? 1 : newQuantity);
         toast({
           title:
             actionType == "add"
@@ -354,44 +332,50 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const getLocalTimestamp = (dateStr: any, timeStr: any) => {
-    const date = new Date(dateStr); // Parse date part only
-    const [hours, minutes] = (timeStr || "").split(":").map(Number); // Extract hours/minutes
-
-    date.setHours(hours, minutes || 0, 0, 0); // Set correct time in local timezone
-
-    return date.getTime(); // Return timestamp in milliseconds
+    const date = new Date(dateStr);
+    const [hours, minutes] = (timeStr || "").split(":").map(Number);
+    date.setHours(hours, minutes || 0, 0, 0);
+    return date.getTime();
   };
 
-  // ✅ Corrected formatTime function to display (Days, Hours, Minutes, Seconds)
   const formatTime = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
     const days = Math.floor(totalSeconds / 86400);
-    const hours = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(
-      2,
-      "0",
-    );
-    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
-      2,
-      "0",
-    );
-    const seconds = String(totalSeconds % 60).padStart(2, "0");
-    // console.log(days, hours, minutes, seconds)
-    return `${days} Days; ${hours}:${minutes}:${seconds}`;
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const isArabic = language === "ar";
+    const numberFormatter = new Intl.NumberFormat(language, {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
+
+    const formattedDays = days.toString();
+    const formattedHours = numberFormatter.format(hours);
+    const formattedMinutes = numberFormatter.format(minutes);
+    const formattedSeconds = numberFormatter.format(seconds);
+
+    const daysLabel = t("days");
+
+    const timeString = isArabic
+      ? `${formattedSeconds}:${formattedMinutes}:${formattedHours} ؛${daysLabel} ${formattedDays}`
+      : `${formattedDays} ${daysLabel}; ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+
+    return timeString;
   };
 
   useEffect(() => {
     if (
       !item?.productPrices?.length ||
       item?.productPrices?.[0]?.sellType !== "BUYGROUP"
-    )
+    ) {
+      setTimeLeft(null);
       return;
+    }
 
     const product = item.productPrices[0];
-
-    const startTimestamp = getLocalTimestamp(
-      product.dateOpen,
-      product.startTime,
-    );
+    const startTimestamp = getLocalTimestamp(product.dateOpen, product.startTime);
     const endTimestamp = getLocalTimestamp(product.dateClose, product.endTime);
 
     const updateCountdown = () => {
@@ -402,7 +386,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         return;
       }
 
-      let ms = endTimestamp - now;
+      const ms = endTimestamp - now;
       if (ms <= 0) {
         setTimeLeft(t("expired"));
         return;
@@ -411,11 +395,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       setTimeLeft(formatTime(ms));
     };
 
-    updateCountdown(); // Initial call
+    updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, [item?.productPrices?.length]);
+  }, [item?.productPrices, language, t]);
 
   return (
     <div className="product-list-s1-col">
@@ -430,17 +414,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         ) : null}
         {timeLeft && (
-          <div className="time_left">
-            <span>{timeLeft}</span>
+          <div className={`time_left ${language === "ar" ? "rtl" : "ltr"}`}>
+            <span dir={language === "ar" ? "rtl" : "ltr"}>{timeLeft}</span>
           </div>
         )}
         <Link href={`/trending/${item.id}`}>
-          {item?.askForPrice !== "true" ? (
-            item.consumerDiscount ? (
-              <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
-                <span>{item.consumerDiscount}%</span>
-              </div>
-            ) : null
+          {item?.askForPrice !== "true" && item.consumerDiscount ? (
+            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
+              <span>{item.consumerDiscount}%</span>
+            </div>
           ) : null}
           <div className="relative mx-auto mb-4 h-36 w-36">
             <Image
@@ -451,9 +433,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               }
               alt="product-image"
               fill
-              sizes="(max-width: 768px) 100vw,
-              (max-width: 1200px) 50vw,
-              33vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-contain"
               blurDataURL="/images/product-placeholder.png"
               placeholder="blur"
@@ -472,7 +452,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <ShoppingIcon />
               </Button>
             ) : null}
-
             <Link
               href={`/trending/${item.id}`}
               className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
@@ -492,18 +471,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 )}
               </Button>
             ) : null}
-            {/* <Button
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full p-0 shadow-md"
-              onClick={copyToClipboard}
-            >
-              <ShareIcon />
-            </Button> */}
           </div>
         ) : null}
 
         <Link href={`/trending/${item.id}`}>
-          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
+          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base"  dir={langDir}>
             <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
               {item.productName}
             </h4>
@@ -528,14 +500,37 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </button>
             </Link>
           ) : (
-            <h5 className="py-0.5 text-[#1D77D1]">
-              {currency.symbol}
-              {calculateDiscountedPrice()}{" "}
-              <span className="text-gray-500 !line-through">
+            <>
+              <h5 className="py-0.5 text-[#1D77D1]" dir={langDir}>
+                {langDir === "rtl" ? (
+                  <>
+                    <span className="text-gray-500 !line-through">
+                      {item.productProductPrice} {currency.symbol}
+                    </span>{" "}
+                    {calculateDiscountedPrice()} {currency.symbol}
+                  </>
+                ) : (
+                  <>
+                    {currency.symbol}
+                    {calculateDiscountedPrice()}{" "}
+                    <span className="text-gray-500 !line-through">
+                      {currency.symbol}
+                      {item.productProductPrice}
+                    </span>
+                  </>
+                )}
+              </h5>
+
+              {/* <h5 className="py-0.5 text-[#1D77D1]">
                 {currency.symbol}
-                {item.productProductPrice}
-              </span>
-            </h5>
+                {calculateDiscountedPrice()}{" "}
+                <span className="text-gray-500 !line-through">
+                  {currency.symbol}
+                  {item.productProductPrice}
+                </span>
+              </h5> */}
+
+            </>
           )}
         </div>
         {productVariants.length > 0 && (
@@ -545,21 +540,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
               className="w-full"
               value={selectedProductVariant?.value}
               onChange={(e) => {
-                let value = e.target.value;
+                const value = e.target.value;
                 const selectedVariant = productVariants.find(
                   (variant: any) => variant.value == value,
                 );
                 setSelectedProductVariant(selectedVariant);
                 handleAddToCart(quantity, "add", selectedVariant);
               }}
+              dir={langDir}
             >
-              {productVariants.map((variant: any, index: number) => {
-                return (
-                  <option key={index} value={variant.value} dir={langDir}>
-                    {variant.value}
-                  </option>
-                );
-              })}
+              {productVariants.map((variant: any, index: number) => (
+                <option key={index} value={variant.value} dir={langDir}>
+                  {variant.value}
+                </option>
+              ))}
             </select>
           </div>
         )}
@@ -641,32 +635,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        {(() => {
-          if (sold === undefined || sold === null) return null;
-
-          let percentage = 0;
-          if (sold && item.productPrices?.[0]?.stock) {
-            percentage = Number(
-              ((sold / (sold + item.productPrices?.[0]?.stock)) * 100).toFixed(),
+        {sold !== undefined && sold !== null && item.productPrices?.[0]?.stock ? (
+          (() => {
+            const percentage = Number(
+              ((sold / (sold + item.productPrices[0].stock)) * 100).toFixed(),
             );
-          }
-
-          return (
-            <>
-              <div className="mt-3 h-3 w-full bg-gray-300">
-                <div
-                  className="h-full bg-color-yellow"
-                  style={{ width: `${percentage}%` }}
-                ></div>
-              </div>
-              <span className="w-full text-sm font-normal capitalize text-light-gray">
-                {t("sold")}: {sold}
-              </span>
-            </>
-          );
-        })()}
-
-        {sold !== undefined ? <></> : null}
+            return (
+              <>
+                <div className="mt-3 h-3 w-full bg-gray-300">
+                  <div
+                    className="h-full bg-color-yellow"
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+                <span className="w-full text-sm font-normal capitalize text-light-gray">
+                  {t("sold")}: {sold}
+                </span>
+              </>
+            );
+          })()
+        ) : null}
       </div>
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
@@ -674,7 +662,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ref={confirmDialogRef}
         >
           <div className="modal-header !justify-between" dir={langDir}>
-            <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold text-dark-orange" />
             <Button
               onClick={onCancelRemove}
               className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
@@ -682,10 +670,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <IoCloseSharp size={20} />
             </Button>
           </div>
-
           <div className="mb-4 mt-4 text-center">
             <p className="text-dark-orange">
-              Do you want to remove this item from cart?
+              {t("do_you_want_to_remove_this_item_from_cart")}
             </p>
             <div>
               <Button
@@ -693,14 +680,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 className="mr-2 bg-white text-red-500"
                 onClick={onCancelRemove}
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 type="button"
                 className="bg-red-500"
                 onClick={onConfirmRemove}
               >
-                Remove
+                {t("remove")}
               </Button>
             </div>
           </div>
