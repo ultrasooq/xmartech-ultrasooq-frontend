@@ -253,7 +253,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   };
 
   const wrapperRef = useRef(null);
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
 
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
   const handleToggleQueryModal = () => setIsQueryModalOpen(!isQueryModalOpen);
@@ -321,7 +321,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           setSelectedCurrency(window.localStorage.currency || "USD");
           changeCurrency(window.localStorage.currency || "USD");
         }
-      } catch (error) {}
+      } catch (error) { }
     };
 
     if (typeof window !== "undefined") {
@@ -384,6 +384,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   {/* ) : null} */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                     <select
+                      dir={langDir}
                       className="border-0 bg-transparent text-white focus:outline-none"
                       value={selectedCurrency}
                       onChange={(e: any) => {
@@ -411,6 +412,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
                     <GoogleTranslate />
                     <select
+                      dir={langDir}
                       className="border-0 bg-transparent text-white focus:outline-none"
                       value={selectedLocale}
                       onChange={(e) => {
@@ -763,8 +765,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 : item.name.toLowerCase().includes("service")
                                   ? "/services"
                                   : item.name
-                                        .toLowerCase()
-                                        .includes("buy group")
+                                    .toLowerCase()
+                                    .includes("buy group")
                                     ? "/buygroup"
                                     : "/trending"
                       }
@@ -816,72 +818,73 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </button>
                   ) : null}
 
-                  {(pathname == "/trending" || pathname == "/buygroup") ? (
+                  {(pathname == "/trending" || pathname == "/buygroup") &&
                     memoizedSubCategory?.length ? (
-                      <div className="dropdown-content">
-                        {memoizedSubCategory?.map(
-                          (item: CategoryProps, index: number) => (
-                            <div
-                              key={item?.id}
-                              className={cn(
-                                "dropdown-content-child flex cursor-pointer items-center justify-start gap-2 p-3",
-                                memoizedSubCategory?.length
-                                  ? index === subCategoryIndex
-                                    ? "dropdown-active-child"
-                                    : null
-                                  : null,
-                              )}
-                              onMouseEnter={() => setSubCategoryIndex(index)}
-                              onClick={() => {
-                                setSubCategoryIndex(index);
-                                category.setSubCategories(
-                                  memoizedSubCategory?.[subCategoryIndex]
-                                    ?.children,
-                                );
-                                // category.setSubSubCategories([]);
-                                category.setCategoryId(item?.id.toString());
-                                // save index to check for child categories part of parent or not
-                                category.setSubCategoryIndex(index);
-                                category.setSubCategoryParentName(item?.name);
-                                category.setSubSubCategoryParentName(
-                                  memoizedSubCategory?.[subCategoryIndex]
-                                    ?.children?.[0]?.name,
-                                );
-                                category.setSubSubCategories(
-                                  memoizedSubCategory?.[subCategoryIndex]
-                                    ?.children?.[0]?.children,
-                                );
+                    <div className="dropdown-content">
+                      {memoizedSubCategory?.map(
+                        (item: CategoryProps, index: number) => (
+                          <div
+                            key={item?.id}
+                            className={cn(
+                              "dropdown-content-child flex cursor-pointer items-center justify-start gap-2 p-3",
+                              memoizedSubCategory?.length
+                                ? index === subCategoryIndex
+                                  ? "dropdown-active-child"
+                                  : null
+                                : null,
+                            )}
+                            dir={langDir}
+                            onMouseEnter={() => setSubCategoryIndex(index)}
+                            onClick={() => {
+                              setSubCategoryIndex(index);
+                              category.setSubCategories(
+                                memoizedSubCategory?.[subCategoryIndex]
+                                  ?.children,
+                              );
+                              // category.setSubSubCategories([]);
+                              category.setCategoryId(item?.id.toString());
+                              // save index to check for child categories part of parent or not
+                              category.setSubCategoryIndex(index);
+                              category.setSubCategoryParentName(item?.name);
+                              category.setSubSubCategoryParentName(
+                                memoizedSubCategory?.[subCategoryIndex]
+                                  ?.children?.[0]?.name,
+                              );
+                              category.setSubSubCategories(
+                                memoizedSubCategory?.[subCategoryIndex]
+                                  ?.children?.[0]?.children,
+                              );
 
-                                //reset for second level category active index
-                                category.setSecondLevelCategoryIndex(0);
+                              //reset for second level category active index
+                              category.setSecondLevelCategoryIndex(0);
 
-                                category.setCategoryIds(item?.id.toString());
-                              }}
+                              category.setCategoryIds(item?.id.toString());
+                            }}
+                          >
+                            {item?.icon ? (
+                              <Image
+                                src={item.icon}
+                                alt={item?.name}
+                                height={24}
+                                width={24}
+                              />
+                            ) : (
+                              <MdOutlineImageNotSupported size={24} />
+                            )}
+                            <p
+                              title={item?.name}
+                              className="text-beat text-start text-sm"
                             >
-                              {item?.icon ? (
-                                <Image
-                                  src={item.icon}
-                                  alt={item?.name}
-                                  height={24}
-                                  width={24}
-                                />
-                              ) : (
-                                <MdOutlineImageNotSupported size={24} />
-                              )}
-                              <p
-                                title={item?.name}
-                                className="text-beat text-start text-sm"
-                              >
-                                {item?.name}
-                              </p>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    ) : null) : null}
+                              {item?.name}
+                            </p>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  ) : null}
 
                   {(pathname == "/trending" || pathname == "/buygroup") ? (
-                  memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
+                    memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                     <div className="dropdown-content-second">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
                         (item: CategoryProps, index: number) => (
@@ -922,6 +925,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 ].join(","),
                               );
                             }}
+                            dir={langDir}
                           >
                             {item?.icon ? (
                               <Image
@@ -945,12 +949,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </div>
                   ) : null) : null}
 
-                  {(pathname == "/trending" || pathname == "/buygroup") ? (
-                  memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                    subSubCategoryIndex
-                  ]?.children?.length ? (
+                  {(pathname == "/trending" || pathname == "/buygroup") &&
+                    memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                      subSubCategoryIndex
+                    ]?.children?.length ? (
                     <div className="dropdown-content-third p-3">
-                      <h4 className="mb-2 text-sm">
+                      <h4 className="mb-2 text-sm" dir={langDir}>
                         {memoizedSubCategory?.[subCategoryIndex]?.children?.[
                           subSubCategoryIndex
                         ]?.name || ""}
@@ -992,6 +996,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   ].join(","),
                                 );
                               }}
+                              dir={langDir}
                             >
                               <div className="relative h-8 w-8">
                                 {item?.icon ? (
@@ -1018,11 +1023,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         )}
                       </div>
                     </div>
-                  ) : null) : null}
+                  ) : null}
                 </div>
 
                 {(pathname == "/trending" || pathname == "/buygroup") ? (
-                  <div className="flex items-center gap-x-1 md:gap-x-5">
+                  <div className="flex items-center gap-x-1 md:gap-x-5" dir={langDir}>
                     {memoizedCategory.map((item: any) => (
                       <Button
                         type="button"
