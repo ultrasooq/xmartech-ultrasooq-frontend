@@ -251,7 +251,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
       <div className="container m-auto">
         <div className="products-header-filter">
           <div className="le-info">
-            <h3 dir={langDir}>{t("related_products")}</h3>
+            <h3 dir={langDir} translate="no">{t("related_products")}</h3>
           </div>
         </div>
 

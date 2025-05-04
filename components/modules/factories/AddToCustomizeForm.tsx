@@ -354,7 +354,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
   return (
     <>
       <div className="modal-header !justify-between">
-        <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+        <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
           {t("add_customize_cart")}
         </DialogTitle>
         <Button
@@ -371,7 +371,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
         >
           <div className="relative mb-4 w-full">
             <div className="space-y-2">
-              <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+              <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
                 {t("product_image")}
               </label>
               <div className="flex w-full flex-wrap">
@@ -463,7 +463,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                                     </div>
 
                                     <div className="absolute h-20 w-full p-5">
-                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir}>
+                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir} translate="no">
                                         {t("upload_video")}
                                       </p>
                                     </div>
@@ -514,7 +514,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                           width={29}
                           height={28}
                         />
-                        <span>{t("add_more")}</span>
+                        <span translate="no">{t("add_more")}</span>
                       </div>
                     </div>
 
@@ -576,6 +576,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
             placeholder=""
             rows={6}
             dir={langDir}
+            translate="no"
           />
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
@@ -585,6 +586,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
               placeholder={t("offer_price_from")}
               type="number"
               dir={langDir}
+              translate="no"
             />
 
             <ControlledTextInput
@@ -593,6 +595,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
               placeholder={t("offer_price_to")}
               type="number"
               dir={langDir}
+              translate="no"
             />
           </div>
 
@@ -601,6 +604,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-3"
             dir={langDir}
+            translate="no"
           >
             {updateForCustomize.isPending || updateFactoriesCartWithLogin.isPending ? (
               <LoaderWithMessage message={t("please_wait")} />

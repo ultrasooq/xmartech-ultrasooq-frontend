@@ -46,7 +46,7 @@ const Operations: React.FC<OperationsProps> = ({ onSelect }) => {
   return (
     <div className="w-full border-r border-solid border-gray-300 lg:w-[15%]">
       <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]" dir={langDir}>
-        <span>{t("vendor_operations")}</span>
+        <span translate="no">{t("vendor_operations")}</span>
       </div>
 
       <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]">

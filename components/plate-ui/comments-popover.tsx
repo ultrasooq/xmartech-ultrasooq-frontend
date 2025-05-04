@@ -33,15 +33,15 @@ export function CommentsPopoverContent(props: FloatingCommentsContentProps) {
       scope={SCOPE_ACTIVE_COMMENT}
     >
       <div ref={ref} className={cn(popoverVariants(), 'relative w-[310px]')}>
-        {!hasNoComment && (
+        {!hasNoComment ? (
           <>
             <CommentItem key={activeCommentId} commentId={activeCommentId} />
 
             <CommentReplyItems />
           </>
-        )}
+        ) : null}
 
-        {!!myUserId && !disableForm && <CommentCreateForm />}
+        {!!myUserId && !disableForm ? <CommentCreateForm /> : null}
       </div>
     </CommentProvider>
   );

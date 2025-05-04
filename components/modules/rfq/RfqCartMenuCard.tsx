@@ -125,6 +125,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
             onClick={() => {
               onRemove(id);
             }}
+            translate="no"
           >
             {t("remove")}
           </Button>

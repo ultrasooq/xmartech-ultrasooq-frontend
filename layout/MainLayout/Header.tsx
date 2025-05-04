@@ -366,18 +366,18 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           <div className="container m-auto px-3 pt-3">
             <div className="hidden sm:hidden md:flex md:gap-x-2.5">
               <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
-                <p dir={langDir}>{t("welcome")}</p>
+                <p dir={langDir} translate="no">{t("welcome")}</p>
               </div>
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <a href="#" dir={langDir}>
+                    <a href="#" dir={langDir} translate="no">
                       {t("store_location")}
                     </a>
                   </li>
                   {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <Link href="/my-orders" dir={langDir}>
+                    <Link href="/my-orders" dir={langDir} translate="no">
                       {t("track_your_order")}
                     </Link>
                   </li>
@@ -475,13 +475,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 </div> */}
                 <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-5/6">
                   <input
-                    type="search"
+                    type="text"
                     className="form-control h-full w-full p-2.5 text-black focus:outline-none"
                     placeholder={t("global_search_placeholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={handleKeyDown} // Calls search when Enter is pressed
                     dir={langDir}
+                    translate="no"
                   />
                 </div>
                 <div className="h-11 w-1/4 md:w-1/6">
@@ -490,6 +491,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
                     onClick={() => updateURL(searchTerm)} // Update URL when clicking search
                     dir={langDir}
+                    translate="no"
                   >
                     {t("search")}
                   </button>
@@ -559,6 +561,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             <DropdownMenuItem
                               className="cursor-pointer"
                               dir={langDir}
+                              translate="no"
                             >
                               {t("profile_information")}
                             </DropdownMenuItem>
@@ -566,80 +569,80 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           {/* <DropdownMenuSeparator /> */}
                           {me?.data?.data?.tradeRole !== "BUYER" ? (
                             <>
-                              {hideMenu(PERMISSION_TEAM_MEMBERS) && (
+                              {hideMenu(PERMISSION_TEAM_MEMBERS) ? (
                                 <Link href="/team-members">
-                                  <DropdownMenuItem dir={langDir}>
+                                  <DropdownMenuItem dir={langDir} translate="no">
                                     {t("team_members")}
                                   </DropdownMenuItem>
                                 </Link>
-                              )}
-                              {hideMenu(PERMISSION_PRODUCTS) && (
+                              ) : null}
+                              {hideMenu(PERMISSION_PRODUCTS) ? (
                                 <Link href="/manage-products">
-                                  <DropdownMenuItem dir={langDir}>
+                                  <DropdownMenuItem dir={langDir} translate="no">
                                     {t("products")}
                                   </DropdownMenuItem>
                                 </Link>
-                              )}
-                              {hideMenu(PERMISSION_PRODUCTS) && (
+                              ) : null}
+                              {hideMenu(PERMISSION_PRODUCTS) ? (
                                 <Link href="/manage-services">
-                                  <DropdownMenuItem dir={langDir}>
+                                  <DropdownMenuItem dir={langDir} translate="no">
                                     {t("services")}
                                   </DropdownMenuItem>
                                 </Link>
-                              )}
+                              ) : null}
                               {/* <DropdownMenuSeparator /> */}
-                              {hideMenu(PERMISSION_ORDERS) && (
+                              {hideMenu(PERMISSION_ORDERS) ? (
                                 <Link href="/seller-orders">
-                                  <DropdownMenuItem dir={langDir}>
+                                  <DropdownMenuItem dir={langDir} translate="no">
                                     {t("orders")}
                                   </DropdownMenuItem>
                                 </Link>
-                              )}
+                              ) : null}
                               {/* <DropdownMenuSeparator /> */}
-                              {hideMenu(PERMISSION_RFQ_QUOTES) && (
+                              {hideMenu(PERMISSION_RFQ_QUOTES) ? (
                                 <Link href="/rfq-quotes">
-                                  <DropdownMenuItem dir={langDir}>
+                                  <DropdownMenuItem dir={langDir} translate="no">
                                     {t("rfq_quotes")}
                                   </DropdownMenuItem>
                                 </Link>
-                              )}
+                              ) : null}
                               {/* <DropdownMenuSeparator /> */}
-                              {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
+                              {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) ? (
                                 <Link href="/seller-rfq-request">
-                                  <DropdownMenuItem dir={langDir}>
+                                  <DropdownMenuItem dir={langDir} translate="no">
                                     {t("rfq_seller_requests")}
                                   </DropdownMenuItem>
                                 </Link>
-                              )}
-                              {hideMenu(PERMISSION_SELLER_REWARDS) && (
+                              ) : null}
+                              {hideMenu(PERMISSION_SELLER_REWARDS) ? (
                                 <Link href="/seller-rewards">
-                                  <DropdownMenuItem dir={langDir}>
+                                  <DropdownMenuItem dir={langDir} translate="no">
                                     {t("seller_rewards")}
                                   </DropdownMenuItem>
                                 </Link>
-                              )}
+                              ) : null}
                               {/* <DropdownMenuSeparator /> */}
                             </>
                           ) : null}
-                          {hideMenu(PERMISSION_SHARE_LINKS) && (
+                          {hideMenu(PERMISSION_SHARE_LINKS) ? (
                             <Link href="/share-links">
-                              <DropdownMenuItem dir={langDir}>
+                              <DropdownMenuItem dir={langDir} translate="no">
                                 {t("share_links")}
                               </DropdownMenuItem>
                             </Link>
-                          )}
+                          ) : null}
                           <Link href="/my-settings/address">
-                            <DropdownMenuItem dir={langDir}>
+                            <DropdownMenuItem dir={langDir} translate="no">
                               {t("my_settings")}
                             </DropdownMenuItem>
                           </Link>
                           <Link href="/transactions">
-                            <DropdownMenuItem dir={langDir}>
+                            <DropdownMenuItem dir={langDir} translate="no">
                               {t("transactions")}
                             </DropdownMenuItem>
                           </Link>
                           <Link href="/queries">
-                            <DropdownMenuItem dir={langDir}>
+                            <DropdownMenuItem dir={langDir} translate="no">
                               {t("queries")}
                             </DropdownMenuItem>
                           </Link>
@@ -649,6 +652,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             onClick={handleLogout}
                             className="cursor-pointer"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("logout")}
                           </DropdownMenuItem>
@@ -667,6 +671,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             href="/login"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("login")}
                           </Link>
@@ -674,6 +679,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             href="/register"
                             className="ml-1.5 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("register")}
                           </Link>
@@ -706,7 +712,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   }}
                   href="/home"
                 >
-                  <div className="flex gap-x-3" onClick={handleClick}>
+                  <div className="flex gap-x-3" onClick={handleClick} translate="no">
                     <Image
                       src={menuBarIconList[0]}
                       alt={t("home")}
@@ -793,12 +799,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             <div className="relative flex flex-row flex-wrap md:flex-nowrap">
               <div className="flex w-full flex-1 flex-wrap gap-x-3 md:w-auto md:gap-x-5">
                 <div className="dropdown">
-                  {(pathname == "/trending" || pathname == "/buygroup") && (
+                  {(pathname == "/trending" || pathname == "/buygroup") ? (
                     <button className="dropbtn flex items-center">
                       <div>
                         <Image src={HamburgerIcon} alt="hamburger-icon" />
                       </div>
-                      <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg">
+                      <p className="mx-3 text-sm font-normal capitalize text-color-dark sm:text-base md:text-lg" translate="no">
                         {t("all_categories")}
                       </p>
                       <div>
@@ -808,73 +814,73 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         />
                       </div>
                     </button>
-                  )}
-
-                  {(pathname == "/trending" || pathname == "/buygroup") &&
-                  memoizedSubCategory?.length ? (
-                    <div className="dropdown-content">
-                      {memoizedSubCategory?.map(
-                        (item: CategoryProps, index: number) => (
-                          <div
-                            key={item?.id}
-                            className={cn(
-                              "dropdown-content-child flex cursor-pointer items-center justify-start gap-2 p-3",
-                              memoizedSubCategory?.length
-                                ? index === subCategoryIndex
-                                  ? "dropdown-active-child"
-                                  : null
-                                : null,
-                            )}
-                            onMouseEnter={() => setSubCategoryIndex(index)}
-                            onClick={() => {
-                              setSubCategoryIndex(index);
-                              category.setSubCategories(
-                                memoizedSubCategory?.[subCategoryIndex]
-                                  ?.children,
-                              );
-                              // category.setSubSubCategories([]);
-                              category.setCategoryId(item?.id.toString());
-                              // save index to check for child categories part of parent or not
-                              category.setSubCategoryIndex(index);
-                              category.setSubCategoryParentName(item?.name);
-                              category.setSubSubCategoryParentName(
-                                memoizedSubCategory?.[subCategoryIndex]
-                                  ?.children?.[0]?.name,
-                              );
-                              category.setSubSubCategories(
-                                memoizedSubCategory?.[subCategoryIndex]
-                                  ?.children?.[0]?.children,
-                              );
-
-                              //reset for second level category active index
-                              category.setSecondLevelCategoryIndex(0);
-
-                              category.setCategoryIds(item?.id.toString());
-                            }}
-                          >
-                            {item?.icon ? (
-                              <Image
-                                src={item.icon}
-                                alt={item?.name}
-                                height={24}
-                                width={24}
-                              />
-                            ) : (
-                              <MdOutlineImageNotSupported size={24} />
-                            )}
-                            <p
-                              title={item?.name}
-                              className="text-beat text-start text-sm"
-                            >
-                              {item?.name}
-                            </p>
-                          </div>
-                        ),
-                      )}
-                    </div>
                   ) : null}
 
-                  {(pathname == "/trending" || pathname == "/buygroup") &&
+                  {(pathname == "/trending" || pathname == "/buygroup") ? (
+                    memoizedSubCategory?.length ? (
+                      <div className="dropdown-content">
+                        {memoizedSubCategory?.map(
+                          (item: CategoryProps, index: number) => (
+                            <div
+                              key={item?.id}
+                              className={cn(
+                                "dropdown-content-child flex cursor-pointer items-center justify-start gap-2 p-3",
+                                memoizedSubCategory?.length
+                                  ? index === subCategoryIndex
+                                    ? "dropdown-active-child"
+                                    : null
+                                  : null,
+                              )}
+                              onMouseEnter={() => setSubCategoryIndex(index)}
+                              onClick={() => {
+                                setSubCategoryIndex(index);
+                                category.setSubCategories(
+                                  memoizedSubCategory?.[subCategoryIndex]
+                                    ?.children,
+                                );
+                                // category.setSubSubCategories([]);
+                                category.setCategoryId(item?.id.toString());
+                                // save index to check for child categories part of parent or not
+                                category.setSubCategoryIndex(index);
+                                category.setSubCategoryParentName(item?.name);
+                                category.setSubSubCategoryParentName(
+                                  memoizedSubCategory?.[subCategoryIndex]
+                                    ?.children?.[0]?.name,
+                                );
+                                category.setSubSubCategories(
+                                  memoizedSubCategory?.[subCategoryIndex]
+                                    ?.children?.[0]?.children,
+                                );
+
+                                //reset for second level category active index
+                                category.setSecondLevelCategoryIndex(0);
+
+                                category.setCategoryIds(item?.id.toString());
+                              }}
+                            >
+                              {item?.icon ? (
+                                <Image
+                                  src={item.icon}
+                                  alt={item?.name}
+                                  height={24}
+                                  width={24}
+                                />
+                              ) : (
+                                <MdOutlineImageNotSupported size={24} />
+                              )}
+                              <p
+                                title={item?.name}
+                                className="text-beat text-start text-sm"
+                              >
+                                {item?.name}
+                              </p>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : null) : null}
+
+                  {(pathname == "/trending" || pathname == "/buygroup") ? (
                   memoizedSubCategory?.[subCategoryIndex]?.children?.length ? (
                     <div className="dropdown-content-second">
                       {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
@@ -937,9 +943,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         ),
                       )}
                     </div>
-                  ) : null}
+                  ) : null) : null}
 
-                  {(pathname == "/trending" || pathname == "/buygroup") &&
+                  {(pathname == "/trending" || pathname == "/buygroup") ? (
                   memoizedSubCategory?.[subCategoryIndex]?.children?.[
                     subSubCategoryIndex
                   ]?.children?.length ? (
@@ -1012,10 +1018,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         )}
                       </div>
                     </div>
-                  ) : null}
+                  ) : null) : null}
                 </div>
 
-                {(pathname == "/trending" || pathname == "/buygroup") && (
+                {(pathname == "/trending" || pathname == "/buygroup") ? (
                   <div className="flex items-center gap-x-1 md:gap-x-5">
                     {memoizedCategory.map((item: any) => (
                       <Button
@@ -1042,13 +1048,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       </Button>
                     ))}
                   </div>
-                )}
+                ) : null}
               </div>
 
               <div className="flex w-full items-center justify-end md:w-auto">
                 <ul className="flex items-center justify-end gap-x-4">
                   <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-                    <a href="#" className="text-light-gray">
+                    <a href="#" className="text-light-gray" translate="no">
                       {t("buyer_central")}
                     </a>
                   </li>
@@ -1057,6 +1063,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       href="#"
                       className="text-light-gray"
                       onClick={handleToggleQueryModal}
+                      translate="no"
                     >
                       {t("help_center")}
                     </a>

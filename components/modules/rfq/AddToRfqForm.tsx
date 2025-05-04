@@ -485,7 +485,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   return (
     <>
       <div className="modal-header !justify-between">
-        <DialogTitle className="text-center text-xl font-bold">
+        <DialogTitle className="text-center text-xl font-bold" translate="no">
           {selectedQuantity ? t("add_to_rfq_cart") : t("edit_product")}
         </DialogTitle>
         <Button
@@ -502,7 +502,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         >
           <div className="relative mb-4 w-full">
             <div className="space-y-2">
-              <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+              <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
                 {t("product_image")}
               </label>
               <div className="flex w-full flex-wrap">
@@ -595,7 +595,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                     </div>
 
                                     <div className="absolute h-20 w-full p-5">
-                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir}>
+                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir} translate="no">
                                         {t("upload_video")}
                                       </p>
                                     </div>
@@ -666,7 +666,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                           width={29}
                           height={28}
                         />
-                        <span>{t("add_more")}</span>
+                        <span translate="no">{t("add_more")}</span>
                       </div>
                     </div>
 
@@ -728,6 +728,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             placeholder=""
             rows={6}
             dir={langDir}
+            translate="no"
           />
 
           {selectedQuantity ? (
@@ -739,6 +740,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                 type="number"
                 defaultValue={""}
                 dir={langDir}
+                translate="no"
               />
 
               <ControlledTextInput
@@ -748,6 +750,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                 type="number"
                 defaultValue={""}
                 dir={langDir}
+                translate="no"
               />
             </div>
           ) : null}
@@ -762,6 +765,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             }
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-2"
+            translate="no"
           >
             {uploadMultiple.isPending ||
             updateProduct.isPending ||

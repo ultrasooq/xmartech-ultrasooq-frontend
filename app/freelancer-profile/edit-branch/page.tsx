@@ -320,14 +320,14 @@ export default function EditBranchPage() {
               className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
+                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir} translate="no">
                   {t("my_profile")}
                 </h2>
               </div>
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir} translate="no">
                       {t("freelancer_information")}
                     </label>
                   </div>
@@ -347,7 +347,7 @@ export default function EditBranchPage() {
                   <div className="flex flex-wrap">
                     <div className="mb-4 w-full">
                       <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                        <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                        <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir} translate="no">
                           {t("address")}
                         </label>
                       </div>
@@ -361,6 +361,7 @@ export default function EditBranchPage() {
                           placeholder={t("address")}
                           showLabel={true}
                           dir={langDir}
+                          translate="no"
                         />
 
                         <Image
@@ -378,6 +379,7 @@ export default function EditBranchPage() {
                         placeholder={t("city")}
                         showLabel={true}
                         dir={langDir}
+                        translate="no"
                       />
                     </div>
 
@@ -388,6 +390,7 @@ export default function EditBranchPage() {
                         placeholder={t("province")}
                         showLabel={true}
                         dir={langDir}
+                        translate="no"
                       />
 
                       {/* <ControlledSelectInput
@@ -396,7 +399,7 @@ export default function EditBranchPage() {
                         options={memoizedCountries}
                       /> */}
                       <div className="mt-2 flex flex-col gap-y-3">
-                        <Label dir={langDir}>{t("country")}</Label>
+                        <Label dir={langDir} translate="no">{t("country")}</Label>
                         <Controller
                           name="country"
                           control={form.control}
@@ -434,6 +437,7 @@ export default function EditBranchPage() {
                         placeholder={t("branch_contact_name")}
                         showLabel={true}
                         dir={langDir}
+                        translate="no"
                       />
                     </div>
                   </div>
@@ -442,14 +446,14 @@ export default function EditBranchPage() {
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir} translate="no">
                       {t("working_hours")}
                     </label>
                   </div>
                 </div>
                 <div className="grid w-full grid-cols-1 gap-x-6 md:grid-cols-2">
                   <div className="mb-4 flex w-full flex-col gap-y-3">
-                    <Label htmlFor="startTime" className="text-color-dark" dir={langDir}>
+                    <Label htmlFor="startTime" className="text-color-dark" dir={langDir} translate="no">
                       {t("start_time")}
                     </Label>
                     <Controller
@@ -476,7 +480,7 @@ export default function EditBranchPage() {
                     </p>
                   </div>
                   <div className="mb-4 flex w-full flex-col gap-y-3">
-                    <Label htmlFor="endTime" className="text-color-dark" dir={langDir}>
+                    <Label htmlFor="endTime" className="text-color-dark" dir={langDir} translate="no">
                       {t("end_time")}
                     </Label>
                     <Controller
@@ -540,7 +544,7 @@ export default function EditBranchPage() {
                   </div>
 
                   {form.formState.errors.workingDays?.message ? (
-                    <p className="text-[13px] text-red-500" dir={langDir}>
+                    <p className="text-[13px] text-red-500" dir={langDir} translate="no">
                       {t("working_day_required")}
                     </p>
                   ) : null}
@@ -565,6 +569,7 @@ export default function EditBranchPage() {
                 type="submit"
                 className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                 dir={langDir}
+                translate="no"
               >
                 {updateFreelancerBranch.isPending ? (
                   <>

@@ -30,11 +30,11 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead dir={langDir}>{t("product")}</TableHead>
-                <TableHead dir={langDir}>{t("category")}</TableHead>
+                <TableHead dir={langDir} translate="no">{t("product")}</TableHead>
+                <TableHead dir={langDir} translate="no">{t("category")}</TableHead>
                 {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
                 {/* <TableHead>SKU No</TableHead> */}
-                <TableHead dir={langDir}>{t("brand")}</TableHead>
+                <TableHead dir={langDir} translate="no">{t("brand")}</TableHead>
                 {/* <TableHead>Price</TableHead> */}
               </TableRow>
             </TableHeader>

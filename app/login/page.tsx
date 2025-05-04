@@ -187,7 +187,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <title dir={langDir}>{t("login")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">{t("login")} | Ultrasooq</title>
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
@@ -202,10 +202,10 @@ export default function LoginPage() {
           <div className="flex">
             <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
+                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir} translate="no">
                   {t("login")}
                 </h2>
-                <p dir={langDir}>{t("login_to_your_account")}</p>
+                <p dir={langDir} translate="no">{t("login_to_your_account")}</p>
               </div>
               <div className="w-full">
                 <Form {...form}>
@@ -218,6 +218,7 @@ export default function LoginPage() {
                       name="email"
                       placeholder={t("enter_email_phone_id")}
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledTextInput
@@ -226,6 +227,7 @@ export default function LoginPage() {
                       placeholder="**********"
                       type="password"
                       dir={langDir}
+                      translate="no"
                     />
 
                     <div className="mb-4 w-full">
@@ -240,6 +242,7 @@ export default function LoginPage() {
                             htmlFor="remember"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("remember_me")}
                           </label>
@@ -249,6 +252,7 @@ export default function LoginPage() {
                             className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
                             href="/forget-password"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("forgot_password")}
                           </Link>
@@ -261,6 +265,7 @@ export default function LoginPage() {
                         type="submit"
                         className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                         dir={langDir}
+                        translate="no"
                       >
                         {login.isPending ? (
                           <LoaderWithMessage message={t("please_wait")} />
@@ -272,7 +277,7 @@ export default function LoginPage() {
                   </form>
                 </Form>
                 <div className="mb-4 w-full text-center">
-                  <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir}>
+                  <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir} translate="no">
                     {t("dont_have_an_account")}{" "}
                     <Link
                       href="/register"
@@ -301,6 +306,7 @@ export default function LoginPage() {
                       }}
                       disabled={socialLogin.isPending}
                       dir={langDir}
+                      translate="no"
                     >
                       {socialLogin.isPending &&
                       getLoginType() === "FACEBOOK" ? (
@@ -338,6 +344,7 @@ export default function LoginPage() {
                       }}
                       disabled={socialLogin.isPending}
                       dir={langDir}
+                      translate="no"
                     >
                       {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
                         <>

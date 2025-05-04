@@ -119,6 +119,7 @@ const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
                 <DialogTitle
                     dir={langDir}
                     className="text-lg font-semibold text-gray-800"
+                    translate="no"
                 >
                     {t("select_services")}
                 </DialogTitle>
@@ -174,7 +175,7 @@ const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
                                                 {feature.serviceCost}
                                             </p>
                                         </div>
-                                        {isSelected && (
+                                        {isSelected ? (
                                             <div className="quantity-container flex items-center gap-2">
                                                 <label className="text-sm text-gray-600">Qty:</label>
                                                 <button
@@ -202,7 +203,7 @@ const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
                                                     +
                                                 </button>
                                             </div>
-                                        )}
+                                        ) : null}
                                     </div>
                                 </div>
                             );
@@ -210,7 +211,7 @@ const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
                     )}
                 </div>
                 {
-                    !serviceQueryById.isLoading &&
+                    !serviceQueryById.isLoading ? (
                     <div
                         className="modal-footerpart cart_button"
                         style={{ marginTop: "1rem", textAlign: "center", justifyContent: "center" }}
@@ -220,6 +221,7 @@ const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
                             className="add_to_cart_button"
                             disabled={selectedFeatures.length === 0 || addToCartQuery.isPending}
                             dir={langDir}
+                            translate="no"
                         >
                             {
                                 addToCartQuery.isPending ?
@@ -228,7 +230,7 @@ const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
                                     t("add_to_cart")
                             }
                         </button>
-                    </div>
+                    </div>) : null
                 }
 
             </div>

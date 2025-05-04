@@ -61,7 +61,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
         <AccordionContent>
           <div className="w-full border-t border-solid border-gray-300 bg-white px-5 py-4">
             <div className="flex w-full items-center justify-between">
-              <h2 className="left-8 text-lg font-semibold text-color-dark" dir={langDir}>
+              <h2 className="left-8 text-lg font-semibold text-color-dark" dir={langDir} translate="no">
                 {t("branch_information")}
               </h2>
             </div>
@@ -69,7 +69,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               <div className="w-7/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                       {t("address")}:
                     </span>
                   </div>
@@ -83,7 +83,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               <div className="w-5/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-5/12 items-center justify-start sm:mr-0">
-                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                       {t("country")}:
                     </span>
                   </div>
@@ -97,7 +97,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               <div className="w-7/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                       {t("city")}:
                     </span>
                   </div>
@@ -111,7 +111,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               <div className="w-5/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-5/12 items-center justify-start sm:mr-0">
-                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                       {t("branch_contact_number")}:
                     </span>
                   </div>
@@ -125,7 +125,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               <div className="w-7/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                       {t("province")}:
                     </span>
                   </div>
@@ -139,7 +139,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               <div className="w-5/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-5/12 items-center justify-start sm:mr-0">
-                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                       {t("branch_contact_name")}:
                     </span>
                   </div>
@@ -153,7 +153,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               <div className="w-7/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                       {t("start_time")}:
                     </span>
                   </div>
@@ -167,7 +167,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               <div className="w-5/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-5/12 items-center justify-start sm:mr-0">
-                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                       {t("end_time")}:
                     </span>
                   </div>
@@ -181,7 +181,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
               <div className="w-7/12">
                 <div className="flex w-full flex-wrap py-4">
                   <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0">
-                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                    <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                       {t("working_days")}:
                     </span>
                   </div>
@@ -196,7 +196,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
                 <div className="w-7/12">
                   <div className="flex w-full flex-wrap py-4">
                     <div className="mb-3 mr-1 flex w-full items-center justify-start sm:mr-0">
-                      <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                      <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                         {t("branch_front_picture")}:
                       </span>
                     </div>
@@ -219,7 +219,7 @@ const VendorBranchSection: React.FC<VendorBranchSectionProps> = ({
                 <div className="w-5/12">
                   <div className="flex w-full flex-wrap py-4">
                     <div className="mb-3 mr-1 flex w-full items-center justify-start sm:mr-0">
-                      <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir}>
+                      <span className="text-sm font-normal capitalize leading-4 text-gray-500" dir={langDir} translate="no">
                         {t("address_proof")}
                       </span>
                     </div>

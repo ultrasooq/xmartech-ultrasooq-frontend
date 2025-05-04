@@ -193,6 +193,7 @@ const AddReceipt: React.FC<AddReceiptProps> = ({
                         className="theme-primary-btn submit-btn" 
                         disabled={upload?.isPending || updateOrderShippingStatus?.isPending}
                         dir={langDir}
+                        translate="no"
                     >
                         {upload?.isPending || updateOrderShippingStatus?.isPending ? t("processing") : t("save")}
                     </button>

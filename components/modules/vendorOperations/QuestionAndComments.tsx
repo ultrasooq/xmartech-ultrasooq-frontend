@@ -107,10 +107,10 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
   return (
     <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
       <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]" dir={langDir}>
-        <span>{t("question_n_comments")}</span>
+        <span translate="no">{t("question_n_comments")}</span>
         <select onChange={(e) => setUserType(e.target.value)} value={userType}>
-          <option value="CUSTOMER" dir={langDir}>{t("customer").toUpperCase()}</option>
-          <option value="VENDOR" dir={langDir}>{t("vendor").toUpperCase()}</option>
+          <option value="CUSTOMER" dir={langDir} translate="no">{t("customer").toUpperCase()}</option>
+          <option value="VENDOR" dir={langDir} translate="no">{t("vendor").toUpperCase()}</option>
         </select>
       </div>
       <div className="flex w-full border-t-2 border-gray-300 py-5">
@@ -123,13 +123,13 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
             </>
           ) : null}
 
-          {!questionQuery?.isLoading && !memoizedQuestions?.length && (
-            <p className="text-center text-sm font-normal text-gray-500" dir={langDir}>
+          {!questionQuery?.isLoading && !memoizedQuestions?.length ? (
+            <p className="text-center text-sm font-normal text-gray-500" dir={langDir} translate="no">
               {t("no_data_found")}
             </p>
-          )}
+          ) : null}
 
-          {!questionQuery.isLoading && memoizedQuestions.length > 0 &&
+          {!questionQuery.isLoading && memoizedQuestions.length > 0 ?
             memoizedQuestions.map((question: any) => (
               <div className="w-full border-b p-3" key={question.id}>
                 <article className="space-y-2">
@@ -137,11 +137,11 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
                     <span className="mr-2">Q:</span>
                     {question.question}
                   </h3>
-                  {question.questionBy && (
+                  {question.questionBy ? (
                     <p className="text-xs font-medium text-gray-500">
                       {question.questionBy}
                     </p>
-                  )}
+                  ) : null}
                   <div className="w-full pl-3">
                     {question.answers.length ?
                       question.answers.map((answer: any) => (
@@ -152,25 +152,25 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
                               {answer.answer}
                             </p>
                           </div>
-                          {answer.answeredBy && (
+                          {answer.answeredBy ? (
                             <p className="mb-3 text-xs font-medium text-gray-500">
                               {answer.answeredBy}
                             </p>
-                          )}
+                          ) : null}
                         </React.Fragment>
                       )) : ''}
-                    {productAddedBy == me?.data?.data?.id && <div className="!my-2 text-center">
+                    {productAddedBy == me?.data?.data?.id ? (<div className="!my-2 text-center">
                       <Button
                         variant="secondary"
                         onClick={() => reply(question.id)}
                       >
                         Reply
                       </Button>
-                    </div>}
+                    </div>) : null}
                   </div>
                 </article>
               </div>
-            ))}
+            )) : null}
         </div>
       </div>
 
@@ -187,14 +187,14 @@ const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
         </DialogContent>
       </Dialog>
 
-      {questionQuery?.data?.data?.totalCount > 10 && (
+      {questionQuery?.data?.data?.totalCount > 10 ? (
         <Pagination
           page={page}
           setPage={setPage}
           totalCount={questionQuery.data?.totalCount}
           limit={limit}
         />
-      )}
+      ) : null}
     </div>
   );
 };

@@ -135,7 +135,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
               className="m-auto mb-0 max-h-[95vh] w-11/12 overflow-y-auto rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-10"
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" translate="no">
                   {memoizedGetPermission.length
                     ? t("update_permission")
                     : t("add_permission")}
@@ -144,7 +144,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
 
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                  <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir} translate="no">
                     {t("permission_information")}
                   </label>
                 </div>
@@ -174,6 +174,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
                 type="submit"
                 className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                 dir={langDir}
+                translate="no"
               >
                 {addPermission.isPending || updatePermission.isPending ? (
                   <>

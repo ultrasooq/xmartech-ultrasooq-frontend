@@ -39,7 +39,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
     <div className="my-order-item">
       <div className="my-order-card">
         <div className="cardTitle !mb-2">Other Items in this order</div>
-        <h5 className="mb-2" dir={langDir}>
+        <h5 className="mb-2" dir={langDir} translate="no">
           {t("order_id")}: <span className="font-semibold">{orderNo}</span>
         </h5>
         <div className="my-order-box">
@@ -64,7 +64,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
             </figure>
           </Link>
           <div className="right-info">
-            <h4 className="mb-2" dir={langDir}>
+            <h4 className="mb-2" dir={langDir} translate="no">
               {orderProductStatus === "CONFIRMED" ? (
                 <>
                   <BiCircle color="green" />

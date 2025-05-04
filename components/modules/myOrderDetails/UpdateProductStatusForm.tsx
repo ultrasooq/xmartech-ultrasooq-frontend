@@ -216,7 +216,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
           ) : null}
         </div>
         <div className="modal-footer">
-          <button type="submit" className="theme-primary-btn submit-btn" dir={langDir}>
+          <button type="submit" className="theme-primary-btn submit-btn" dir={langDir} translate="no">
             {t("save")}
           </button>
         </div>

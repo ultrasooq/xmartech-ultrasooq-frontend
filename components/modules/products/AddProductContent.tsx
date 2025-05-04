@@ -16,7 +16,7 @@ const AddProductContent: React.FC<AddProductContentProps> = () => {
   return (
     <DialogContent className="custom-action-type-chose-picker">
       <div className="modal-headerpart">
-        <DialogTitle dir={langDir}>{t("choose_add_product_type")}</DialogTitle>
+        <DialogTitle dir={langDir} translate="no">{t("choose_add_product_type")}</DialogTitle>
       </div>
       <div className="modal-bodypart">
         <div className="import-pickup-type-selector-lists" dir={langDir}>
@@ -29,7 +29,7 @@ const AddProductContent: React.FC<AddProductContentProps> = () => {
                 <Image src={AddProductIcon} alt="add-product-icon" />
               </div>
               <div className="text-container">
-                <h5 dir={langDir}>{t("add_new_product")}</h5>
+                <h5 dir={langDir} translate="no">{t("add_new_product")}</h5>
               </div>
             </Link>
           </div>

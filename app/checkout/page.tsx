@@ -755,7 +755,7 @@ const CheckoutPage = () => {
               <div className="card-item cart-items">
                 <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
-                    <h3>{t("cart_items")}</h3>
+                    <h3 translate="no">{t("cart_items")}</h3>
                   </div>
                 </div>
 
@@ -823,6 +823,7 @@ const CheckoutPage = () => {
                                 setIsShippingModalOpen(true);
                               }}
                               variant="destructive"
+                              translate="no"
                             >
                               {t("select")}
                             </Button>
@@ -905,19 +906,20 @@ const CheckoutPage = () => {
                 <div className="card-item selected-address">
                   <div className="card-inner-headerPart" dir={langDir}>
                     <div className="lediv">
-                      <h3>{t("your_informations")}</h3>
+                      <h3 translate="no">{t("your_informations")}</h3>
                     </div>
                   </div>
 
                   <div className="selected-address-lists">
                     <div className="space-y-2 p-3">
-                      <Label dir={langDir}>{t("email")}</Label>
+                      <Label dir={langDir} translate="no">{t("email")}</Label>
                       <Input
                         className="theme-form-control-s1"
                         placeholder={t("enter_email")}
                         onChange={(e) => setGuestEmail(e.target.value)}
                         value={guestEmail}
                         dir={langDir}
+                        translate="no"
                       />
                     </div>
                   </div>
@@ -927,7 +929,7 @@ const CheckoutPage = () => {
               <div className="card-item selected-address">
                 <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
-                    <h3>
+                    <h3 translate="no">
                       {me?.data
                         ? t("select_shipping_address")
                         : t("shipping_address")}
@@ -1016,6 +1018,7 @@ const CheckoutPage = () => {
                           setAddressType("shipping");
                           handleToggleAddModal();
                         }}
+                        translate="no"
                       >
                         <Image
                           src={AddIcon}
@@ -1033,7 +1036,7 @@ const CheckoutPage = () => {
               <div className="card-item selected-address">
                 <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
-                    <h3>
+                    <h3 translate="no">
                       {me?.data ? t("select_billing_address") : t("billing_address")}
                     </h3>
                   </div>
@@ -1061,7 +1064,7 @@ const CheckoutPage = () => {
                           }}
                           checked={sameAsShipping}
                         />
-                        <Label htmlFor="same_as_shipping" dir={langDir}>
+                        <Label htmlFor="same_as_shipping" dir={langDir} translate="no">
                           {t("same_as_shipping_address")}
                         </Label>
                       </div>
@@ -1120,7 +1123,7 @@ const CheckoutPage = () => {
                     </RadioGroup>
                   ) : (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center" dir={langDir}>
+                      <p className="my-3 text-center" dir={langDir} translate="no">
                         {t("same_as_shipping_address")}
                       </p>
                     </div>
@@ -1157,6 +1160,7 @@ const CheckoutPage = () => {
                           setAddressType("billing");
                           handleToggleAddModal();
                         }}
+                        translate="no"
                       >
                         <Image
                           src={AddIcon}
@@ -1180,6 +1184,7 @@ const CheckoutPage = () => {
                       className="add-new-address-btn border-none p-0 !normal-case shadow-none"
                       onClick={handleToggleAddModal}
                       dir={langDir}
+                      translate="no"
                     >
                       <Image
                         src={AddIcon}
@@ -1198,31 +1203,31 @@ const CheckoutPage = () => {
             <div className="card-item priceDetails">
               <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
-                  <h3>{t("price_details")}</h3>
+                  <h3 translate="no">{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
                   <li dir={langDir}>
-                    <p>{t("subtotal")}</p>
+                    <p translate="no">{t("subtotal")}</p>
                     <h5>{currency.symbol}{itemsTotal}</h5>
                   </li>
                   <li dir={langDir}>
-                    <p>{t("shipping")}</p>
+                    <p translate="no">{t("shipping")}</p>
                     {shippingCharge > 0 ? (
                       <h5>{currency.symbol}{shippingCharge}</h5>
                     ) : (
-                      <h5>{t("free")}</h5>
+                      <h5 translate="no">{t("free")}</h5>
                     )}
                   </li>
                   <li dir={langDir}>
-                    <p>{t("fee")}</p>
+                    <p translate="no">{t("fee")}</p>
                     <h5>{currency.symbol}{fee}</h5>
                   </li>
                 </ul>
               </div>
               <div className="priceDetails-footer" dir={langDir}>
-                <h4>{t("total_amount")}</h4>
+                <h4 translate="no">{t("total_amount")}</h4>
                 <h4 className="amount-value">{currency.symbol}{totalAmount}</h4>
               </div>
             </div>
@@ -1237,6 +1242,7 @@ const CheckoutPage = () => {
                   || allUserAddressQuery?.isLoading
                   || preOrderCalculation?.isPending}
                 className="theme-primary-btn order-btn"
+                translate="no"
               >
                 {preOrderCalculation?.isPending ? (
                   <LoaderWithMessage message={t("please_wait")} />
@@ -1298,6 +1304,7 @@ const CheckoutPage = () => {
                 type="button"
                 className="bg-white text-red-500 mr-2"
                 onClick={onCancelRemove}
+                translate="no"
               >
                 {t("remove")}
               </Button>
@@ -1305,6 +1312,7 @@ const CheckoutPage = () => {
                 type="button"
                 className="bg-red-500"
                 onClick={onConfirmRemove}
+                translate="no"
               >
                 {t("remove")}
               </Button>

@@ -65,10 +65,10 @@ const RequestProductCard: React.FC<RequestProductCardProps> = ({
         </div>
       </div>
       <div className="flex w-full flex-col items-center justify-start text-sm font-normal text-[#1D77D1] lg:w-[calc(100%-4rem)] lg:flex-row">
-        <span className="text-[#828593]">{t("rfq_id")}: </span> RFQ000{rfqId}
+        <span className="text-[#828593]" translate="no">{t("rfq_id")}: </span> RFQ000{rfqId}
       </div>
 
-      {messageInfo?.lastUnreadMessage?.createdAt && (
+      {messageInfo?.lastUnreadMessage?.createdAt ? (
         <div>
           <div className="flex space-x-2 p-2">
             <div className="flex items-center space-x-1">
@@ -84,7 +84,7 @@ const RequestProductCard: React.FC<RequestProductCardProps> = ({
               )}
             </div>
           </div>
-          {messageInfo?.lastUnreadMessage?.createdAt && (
+          {messageInfo?.lastUnreadMessage?.createdAt ? (
             <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
               <span>
                 {moment(messageInfo?.lastUnreadMessage?.createdAt)
@@ -92,9 +92,9 @@ const RequestProductCard: React.FC<RequestProductCardProps> = ({
                   .fromNow()}
               </span>
             </div>
-          )}
+          ) : null}
         </div>
-      )}
+      ) : null}
     </button>
   );
 };

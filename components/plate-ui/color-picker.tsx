@@ -55,7 +55,7 @@ export const ColorPickerContent = withRef<
           colors={colors}
           updateColor={updateColor}
         />
-        {color && (
+        {color ? (
           <DropdownMenuItem
             className={buttonVariants({
               variant: 'outline',
@@ -65,7 +65,7 @@ export const ColorPickerContent = withRef<
           >
             Clear
           </DropdownMenuItem>
-        )}
+        ) : null}
       </div>
     );
   }

@@ -358,10 +358,10 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
       <div className="container m-auto px-3">
         <div className={productFilter ? "left-filter show" : "left-filter"} dir={langDir}>
           <div className="all_select_button">
-            <button type="button" onClick={selectAll}>
+            <button type="button" onClick={selectAll} translate="no">
               {t("select_all")}
             </button>
-            <button type="button" onClick={clearFilter}>
+            <button type="button" onClick={clearFilter} translate="no">
               {t("clean_select")}
             </button>
           </div>
@@ -371,7 +371,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             className="filter-col"
           >
             <AccordionItem value="brand">
-              <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+              <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir} translate="no">
                 {t("by_brand")}
               </AccordionTrigger>
               <AccordionContent>
@@ -382,12 +382,13 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     className="custom-form-control-s1 searchInput rounded-none"
                     onChange={handleDebounceBrand}
                     dir={langDir}
+                    translate="no"
                   />
                 </div>
                 <div className="filter-body-part">
                   <div className="filter-checklists">
                     {!memoizedBrands.length ? (
-                      <p className="text-center text-sm font-medium" dir={langDir}>
+                      <p className="text-center text-sm font-medium" dir={langDir} translate="no">
                         {t("no_data_found")}
                       </p>
                     ) : null}
@@ -422,7 +423,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             className="filter-col"
           >
             <AccordionItem value="brand">
-              <AccordionTrigger className="px-3 text-base hover:!no-underline">
+              <AccordionTrigger className="px-3 text-base hover:!no-underline" translate="no">
                 {t("by_menu")}
               </AccordionTrigger>
               <AccordionContent>
@@ -442,6 +443,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                           htmlFor="displayStoreProducts"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("store")}
                         </label>
@@ -466,12 +468,13 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                           htmlFor="displayBuyGroupProducts"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("buy_group")}
                         </label>
                       </div>
                     </div>
-                    {displayBuyGroupProducts && (
+                    {displayBuyGroupProducts ? (
                       <div className="div-li">
                         <Checkbox
                           id="displayExpiredProducts"
@@ -486,13 +489,14 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                             htmlFor="displayExpiredProducts"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("expired")}
                           </label>
                         </div>
                       </div>
-                    )}
-                    {!sellerId && <div className="div-li">
+                    ) : null}
+                    {!sellerId ? <div className="div-li">
                       <Checkbox
                         id="displayHiddenProducts"
                         className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
@@ -506,11 +510,12 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                           htmlFor="displayHiddenProducts"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("hidden")}
                         </label>
                       </div>
-                    </div>}
+                    </div> : null}
                     <div className="div-li">
                       <Checkbox
                         id="displayDiscountedProducts"
@@ -525,6 +530,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                           htmlFor="displayDiscountedProducts"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("discounted")}
                         </label>
@@ -550,7 +556,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             </div>
             <div className="rg-filter">
               {!sellerId && memoizedProducts.length ? (
-                <p dir={langDir}>
+                <p dir={langDir} translate="no">
                   {t("n_products_found", {
                     n: productsQuery.data?.totalCount,
                   })}
@@ -558,7 +564,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
               ) : null}
 
               {sellerId && memoizedVendorProducts.length ? (
-                <p dir={langDir}>
+                <p dir={langDir} translate="no">
                   {t("n_products_found", {
                     n: vendorProductsQuery.data?.totalCount,
                   })}
@@ -574,20 +580,21 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     onChange={handleDebounce}
                     dir={langDir}
                     ref={searchInputRef}
+                    translate="no"
                   />
                 </li>
 
                 <li>
                   <Select onValueChange={(e) => setSortBy(e)}>
                     <SelectTrigger className="custom-form-control-s1 bg-white">
-                      <SelectValue placeholder={t("sort_by")} dir={langDir} />
+                      <SelectValue placeholder={t("sort_by")} dir={langDir} translate="no" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="desc" dir={langDir}>
+                        <SelectItem value="desc" dir={langDir} translate="no">
                           {t("sort_by_latest")}
                         </SelectItem>
-                        <SelectItem value="asc" dir={langDir}>
+                        <SelectItem value="asc" dir={langDir} translate="no">
                           {t("sort_by_oldest")}
                         </SelectItem>
                       </SelectGroup>
@@ -628,6 +635,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             <p
               className="p-4 text-center text-base font-medium text-color-dark"
               dir={langDir}
+              translate="no"
             >
               {t("no_product_found")}
             </p>
@@ -637,6 +645,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             <p
               className="p-4 text-center text-base font-medium text-color-dark"
               dir={langDir}
+              translate="no"
             >
               {t("no_product_found")}
             </p>

@@ -307,6 +307,7 @@ const ServiceImagesCard: React.FC<any> = ({
                                 onClick={handleToCustomizeModal}
                                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
                                 dir={langDir}
+                                translate="no"
                             >
                                 {t("send_to_customize")}
                             </Button>
@@ -316,6 +317,7 @@ const ServiceImagesCard: React.FC<any> = ({
                                 onClick={onToCart}
                                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
                                 dir={langDir}
+                                translate="no"
                             >
                                 {t("message_vendor")}
                             </Button>
@@ -340,6 +342,7 @@ const ServiceImagesCard: React.FC<any> = ({
                         type="button"
                         className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
                         dir={langDir}
+                        translate="no"
                     >
                         {t("ask_vendor_for_price")}
                     </Button>
@@ -352,6 +355,7 @@ const ServiceImagesCard: React.FC<any> = ({
                         onClick={onAdd}
                         className="h-14 max-w-[205px] flex-1 rounded-none bg-color-yellow text-base"
                         disabled={isAddedToCart || selectedFeatures.length === 0 || addingToCart}
+                        translate="no"
                     >
                         {addingToCart ? t("please_wait") + "..." : isAddedToCart ? t("added_to_cart") : t("add_to_cart")}
                     </Button>
@@ -360,19 +364,21 @@ const ServiceImagesCard: React.FC<any> = ({
                         onClick={onToCart}
                         className="h-14 max-w-[205px] flex-1 rounded-none bg-dark-orange text-base"
                         dir={langDir}
+                        translate="no"
                     >
                         {t("buy_now")}
                     </Button>
-                    {reward && (
+                    {reward ? (
                         <Button
                             type="button"
                             onClick={() => setIsSellerRewardDetailModalOpen(true)}
                             className="h-14 flex-1 rounded-none bg-dark-orange text-base"
                             dir={langDir}
+                            translate="no"
                         >
                             {t("generate_share_link")}
                         </Button>
-                    )}
+                    ) : null}
                 </div>
             ) : null}
 

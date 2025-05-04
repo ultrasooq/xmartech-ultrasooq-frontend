@@ -521,8 +521,8 @@ const CreateServicePage = () => {
                       <div className=" w-full">
                         <div className="flex flex-wrap">
                           <div className="form-groups-common-sec-s1">
-                            <h3 dir={langDir}>{t("other_details")}</h3>
-                            <Label dir={langDir}>{t("working_days")}</Label>
+                            <h3 dir={langDir} translate="no">{t("other_details")}</h3>
+                            <Label dir={langDir} translate="no">{t("working_days")}</Label>
                             <div className="flex flex-wrap gap-2">
                               {WEEKDAYS_LIST.map((day) => (
                                 <label key={day} className="flex items-center gap-2">
@@ -544,11 +544,11 @@ const CreateServicePage = () => {
                                 </label>
                               ))}
                             </div>
-                            {form.formState.errors.workingDays && (
+                            {form.formState.errors.workingDays ? (
                               <p className="text-red-500 text-sm mt-1">
                                 {form.formState.errors.workingDays.message}
                               </p>
-                            )}
+                            ) : null}
                             <div className="my-2">
                               <Label dir={langDir}>{t("off_days")}</Label>
                               <div className="flex flex-wrap gap-2">
@@ -573,7 +573,7 @@ const CreateServicePage = () => {
                               </div>
                             </div>
                             <div className="my-2">
-                              <Label dir={langDir}>{t("service_for")}</Label>
+                              <Label dir={langDir} translate="no">{t("service_for")}</Label>
                               <div className="flex items-center space-x-6">
                                 <div className="flex items-center">
                                   <input
@@ -585,7 +585,7 @@ const CreateServicePage = () => {
                                     onChange={(e: any) => form.setValue("serviceFor", e.target.value)}
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                   />
-                                  <label htmlFor="me" className="ml-2 text-sm text-gray-700">
+                                  <label htmlFor="me" className="ml-2 text-sm text-gray-700" translate="no">
                                     {t("me")}
                                   </label>
                                 </div>
@@ -599,32 +599,33 @@ const CreateServicePage = () => {
                                     onChange={(e: any) => form.setValue("serviceFor", e.target.value)}
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                   />
-                                  <label htmlFor="everyone" className="ml-2 text-sm text-gray-700">
+                                  <label htmlFor="everyone" className="ml-2 text-sm text-gray-700" translate="no">
                                     {t("everyone")}
                                   </label>
                                 </div>
                               </div>
                             </div>
                             <div className="my-2">
-                              <Label dir={langDir}>{t("service_type")}</Label>
+                              <Label dir={langDir} translate="no">{t("service_type")}</Label>
                               <div className="flex flex-wrap gap-2 my-2">
                                 <select
                                   className="w-full rounded border border-gray-300 p-2"
                                   value={form.watch("serviceType")}
                                   onChange={(e) => form.setValue("serviceType", e.target.value)}
+                                  translate="no"
                                 >
                                   <option value="BOOKING">{t("booking")}</option>
                                   <option value="MOVING">{t("moving")}</option>
                                 </select>
                               </div>
                             </div>
-                            {form.formState.errors.serviceType && (
+                            {form.formState.errors.serviceType ? (
                               <p className="text-red-500 text-sm mt-1">
                                 {form.formState.errors.serviceType.message}
                               </p>
-                            )}
+                            ) : null}
                             <div className="my-2">
-                              <Label dir={langDir}>{t("confirm_order_type")}</Label>
+                              <Label dir={langDir} translate="no">{t("confirm_order_type")}</Label>
                               <div className="flex items-center space-x-6">
                                 <div className="flex items-center">
                                   <input
@@ -636,7 +637,7 @@ const CreateServicePage = () => {
                                     onChange={(e: any) => form.setValue("serviceConfirmType", e.target.value)}
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                   />
-                                  <label htmlFor="auto" className="ml-2 text-sm text-gray-700">
+                                  <label htmlFor="auto" className="ml-2 text-sm text-gray-700" translate="no">
                                     {t("auto_confirm")}
                                   </label>
                                 </div>
@@ -650,14 +651,14 @@ const CreateServicePage = () => {
                                     onChange={(e: any) => form.setValue("serviceConfirmType", e.target.value)}
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                   />
-                                  <label htmlFor="manual" className="ml-2 text-sm text-gray-700">
+                                  <label htmlFor="manual" className="ml-2 text-sm text-gray-700" translate="no">
                                     {t("manual")}
                                   </label>
                                 </div>
                               </div>
                             </div>
                             <div className="my-2">
-                              <Label dir={langDir}>{t("renew")}</Label>
+                              <Label dir={langDir} translate="no">{t("renew")}</Label>
                               <div className="flex items-center space-x-6">
                                 <div className="flex items-center">
                                   <input
@@ -669,7 +670,7 @@ const CreateServicePage = () => {
                                     onChange={handleRenewFun}
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                   />
-                                  <label htmlFor="auto" className="ml-2 text-sm text-gray-700">
+                                  <label htmlFor="auto" className="ml-2 text-sm text-gray-700" translate="no">
                                     {t("every_week")}
                                   </label>
                                 </div>
@@ -683,7 +684,7 @@ const CreateServicePage = () => {
                                     onChange={handleRenewFun}
                                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                   />
-                                  <label htmlFor="manual" className="ml-2 text-sm text-gray-700">
+                                  <label htmlFor="manual" className="ml-2 text-sm text-gray-700" translate="no">
                                     {t("one_by_general_tool")}
                                   </label>
                                 </div>
@@ -691,7 +692,7 @@ const CreateServicePage = () => {
                             </div>
                             <div className="my-2">
                               <div className="flex flex-col space-y-4">
-                                <Label dir={langDir}>{t("shipping")}</Label>
+                                <Label dir={langDir} translate="no">{t("shipping")}</Label>
                                 <div className="flex items-center space-x-6">
                                   <div className="flex items-center">
                                     <input
@@ -703,7 +704,7 @@ const CreateServicePage = () => {
                                       onChange={(e: any) => form.setValue("shippingType", e.target.value)}
                                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                     />
-                                    <label htmlFor="direction" className="ml-2 text-sm text-gray-700">
+                                    <label htmlFor="direction" className="ml-2 text-sm text-gray-700" translate="no">
                                       {t("direction")}
                                     </label>
                                   </div>
@@ -716,14 +717,15 @@ const CreateServicePage = () => {
                                       checked={form.watch("shippingType") === "RANG"}
                                       onChange={(e: any) => form.setValue("shippingType", e.target.value)}
                                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                      translate="no"
                                     />
-                                    <label htmlFor="rang" className="ml-2 text-sm text-gray-700">
+                                    <label htmlFor="rang" className="ml-2 text-sm text-gray-700" translate="no">
                                       {t("range")}
                                     </label>
                                   </div>
                                 </div>
                                 <div className="mt-2 flex flex-col gap-y-3">
-                                  <Label dir={langDir}>{t("select_country")}</Label>
+                                  <Label dir={langDir} translate="no">{t("select_country")}</Label>
                                   <ReactSelect
                                     // onChange={(newValue) => {
                                     //   setSelectedCountry(newValue?.value || null);
@@ -755,9 +757,9 @@ const CreateServicePage = () => {
                                 </div>
                                 <div className="mt-2 flex flex-col gap-y-3">
                                   {/* State Dropdown - Visible only if country is selected */}
-                                  {form.watch("countryId") && (
+                                  {form.watch("countryId") ? (
                                     <>
-                                      <Label dir={langDir}>{t("select_state")}</Label>
+                                      <Label dir={langDir} translate="no">{t("select_state")}</Label>
                                       <ReactSelect
                                         // onChange={(newValue) => {
                                         //   setSelectedState(newValue?.value || null);
@@ -784,14 +786,14 @@ const CreateServicePage = () => {
                                         }
                                       </p> */}
                                     </>
-                                  )}
+                                  ) : null}
                                 </div>
                                 {
                                   form.watch("stateId") && (
                                     form.watch("shippingType") === "DIRECTION" ? (
                                       <div className="space-y-4">
                                         <div>
-                                          <Label dir={langDir}>{t("from_city")}</Label>
+                                          <Label dir={langDir} translate="no">{t("from_city")}</Label>
                                           <ReactSelect
                                             onChange={(newValue: any) => {
                                               form.setValue("fromCityId", newValue?.value); // Set the value for fromCityId
@@ -802,15 +804,15 @@ const CreateServicePage = () => {
                                             instanceId="fromCityId"
                                             placeholder={t("select")}
                                           />
-                                          {form.formState.errors.fromCityId && (
+                                          {form.formState.errors.fromCityId ? (
                                             <p className="text-red-500 text-sm mt-1">
                                               {form.formState.errors.fromCityId.message}
                                             </p>
-                                          )}
+                                          ) : null}
                                         </div>
 
                                         <div>
-                                          <Label dir={langDir}>{t("to_city")}</Label>
+                                          <Label dir={langDir} translate="no">{t("to_city")}</Label>
                                           <ReactSelect
                                             onChange={(newValue: any) => {
                                               form.setValue("toCityId", newValue?.value); // Set the value for toCityId
@@ -821,16 +823,16 @@ const CreateServicePage = () => {
                                             instanceId="toCityId"
                                             placeholder={t("select")}
                                           />
-                                          {form.formState.errors.toCityId && (
+                                          {form.formState.errors.toCityId ? (
                                             <p className="text-red-500 text-sm mt-1">
                                               {form.formState.errors.toCityId.message}
                                             </p>
-                                          )}
+                                          ) : null}
                                         </div>
                                       </div>
                                     ) : (
                                       <div>
-                                        <Label dir={langDir}>{t("range_city")}</Label>
+                                        <Label dir={langDir} translate="no">{t("range_city")}</Label>
                                         <ReactSelect
                                           onChange={(newValue: any) => {
                                             form.setValue("rangeCityId", newValue?.value); // Set the value for rangeCityId
@@ -841,11 +843,11 @@ const CreateServicePage = () => {
                                           instanceId="rangeCityId"
                                           placeholder={t("select")}
                                         />
-                                        {form.formState.errors.rangeCityId && (
+                                        {form.formState.errors.rangeCityId ? (
                                           <p className="text-red-500 text-sm mt-1">
                                             {form.formState.errors.rangeCityId.message}
                                           </p>
-                                        )}
+                                        ) : null}
                                       </div>
                                     )
                                   )}
@@ -854,7 +856,7 @@ const CreateServicePage = () => {
                             <div className="grid grid-cols-2 gap-4 my-4">
                               {/* Each Customer Input */}
                               <div>
-                                <Label dir={langDir}>{t("each_customer")}</Label>
+                                <Label dir={langDir} translate="no">{t("each_customer")}</Label>
                                 <input
                                   type="text"
                                   className="w-full rounded border border-gray-300 p-2"
@@ -866,17 +868,18 @@ const CreateServicePage = () => {
                                     form.setValue("eachCustomerTime", cleaned ? parseInt(cleaned, 10) : undefined as any);
                                   }}
                                   value={form.watch("eachCustomerTime") || ""}
+                                  translate="no"
                                 />
-                                {form.formState.errors.eachCustomerTime && (
+                                {form.formState.errors.eachCustomerTime ? (
                                   <p className="text-red-500 text-sm mt-1">
                                     {form.formState.errors.eachCustomerTime.message}
                                   </p>
-                                )}
+                                ) : null}
                               </div>
 
                               {/* Customer/Period Input */}
                               <div>
-                                <Label dir={langDir}>{t("customer_per_period")}</Label>
+                                <Label dir={langDir} translate="no">{t("customer_per_period")}</Label>
                                 <input
                                   type="number"
                                   min={0}
@@ -888,12 +891,13 @@ const CreateServicePage = () => {
                                     form.setValue("customerPerPeiod", cleaned ? parseInt(cleaned, 10) : undefined as any);
                                   }}
                                   value={form.watch("customerPerPeiod") || ""}
+                                  translate="no"
                                 />
-                                {form.formState.errors.customerPerPeiod && (
+                                {form.formState.errors.customerPerPeiod ? (
                                   <p className="text-red-500 text-sm mt-1">
                                     {form.formState.errors.customerPerPeiod.message}
                                   </p>
-                                )}
+                                ) : null}
                               </div>
                             </div>
                             <div className="grid grid-cols-4 gap-4 my-2">
@@ -902,44 +906,44 @@ const CreateServicePage = () => {
                                   label={t("open_time")}
                                   name="openTime"
                                 />
-                                {form.formState.errors.openTime && (
+                                {form.formState.errors.openTime ? (
                                   <p className="text-red-500 text-sm mt-1">
                                     {form.formState.errors.openTime.message}
                                   </p>
-                                )}
+                                ) : null}
                               </div>
                               <div className="col-span-1">
                                 <ControlledTimePicker
                                   label={t("close_time")}
                                   name="closeTime"
                                 />
-                                {form.formState.errors.closeTime && (
+                                {form.formState.errors.closeTime ? (
                                   <p className="text-red-500 text-sm mt-1">
                                     {form.formState.errors.closeTime.message}
                                   </p>
-                                )}
+                                ) : null}
                               </div>
                               <div className="col-span-1">
                                 <ControlledTimePicker
                                   label={t("break_time_from")}
                                   name="breakTimeFrom"
                                 />
-                                {form.formState.errors.breakTimeFrom && (
+                                {form.formState.errors.breakTimeFrom ? (
                                   <p className="text-red-500 text-sm mt-1">
                                     {form.formState.errors.breakTimeFrom.message}
                                   </p>
-                                )}
+                                ) : null}
                               </div>
                               <div className="col-span-1">
                                 <ControlledTimePicker
                                   label={t("break_time_to")}
                                   name="breakTimeTo"
                                 />
-                                {form.formState.errors.breakTimeTo && (
+                                {form.formState.errors.breakTimeTo ? (
                                   <p className="text-red-500 text-sm mt-1">
                                     {form.formState.errors.breakTimeTo.message}
                                   </p>
-                                )}
+                                ) : null}
                               </div>
                             </div>
                           </div>
@@ -955,10 +959,6 @@ const CreateServicePage = () => {
                     <div className="form-groups-common-sec-s1">
                       <DescriptionAndSpecificationSection />
                       <div className="mb-4 mt-4 inline-flex w-full items-center justify-end gap-2">
-                        {/* <button className="rounded-sm bg-transparent px-2 py-2 text-sm font-bold leading-6 text-[#7F818D] md:px-4 md:py-4 md:text-lg" dir={langDir}>
-                          {t("save_as_draft")}
-                        </button> */}
-
                         <Button
                           disabled={
                             createService.isPending || updateService.isPending || uploadMultiple.isPending
@@ -966,6 +966,7 @@ const CreateServicePage = () => {
                           type="submit"
                           className="h-10 rounded bg-dark-orange px-6 text-center text-sm font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:h-12 md:px-10 md:text-lg"
                           dir={langDir}
+                          translate="no"
                         >
                           {(
                             createService.isPending ||

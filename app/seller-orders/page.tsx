@@ -102,18 +102,18 @@ const SellerOrdersPage = () => {
       <div className="container m-auto px-3">
         <ul className="page-indicator-s1">
           <li>
-            <Link href="/home" dir={langDir}>{t("home")}</Link>
+            <Link href="/home" dir={langDir} translate="no">{t("home")}</Link>
           </li>
           <li>
-            <Link href="/seller-orders" dir={langDir}>{t("my_orders")}</Link>
+            <Link href="/seller-orders" dir={langDir} translate="no">{t("my_orders")}</Link>
           </li>
         </ul>
 
         <div className="my-order-wrapper">
           <div className="left-div">
             <div className="card-box">
-              <h2 dir={langDir}>{t("filter")}</h2>
-              <h3 dir={langDir}>{t("order_status")}</h3>
+              <h2 dir={langDir} translate="no">{t("filter")}</h2>
+              <h3 dir={langDir} translate="no">{t("order_status")}</h3>
 
               <RadioGroup
                 className="flex flex-col gap-y-3"
@@ -122,37 +122,37 @@ const SellerOrdersPage = () => {
               >
                 <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="" id="ALL" />
-                  <Label htmlFor="ALL" className="text-base">
+                  <Label htmlFor="ALL" className="text-base" translate="no">
                     {t("all")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="CONFIRMED" id="CONFIRMED" />
-                  <Label htmlFor="CONFIRMED" className="text-base">
+                  <Label htmlFor="CONFIRMED" className="text-base" translate="no">
                     {t("confirmed")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="SHIPPED" id="SHIPPED" />
-                  <Label htmlFor="SHIPPED" className="text-base">
+                  <Label htmlFor="SHIPPED" className="text-base" translate="no">
                     {t("shipped")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="OFD" id="OFD" />
-                  <Label htmlFor="OFD" className="text-base">
+                  <Label htmlFor="OFD" className="text-base" translate="no">
                     {t("on_the_way")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="DELIVERED" id="DELIVERED" />
-                  <Label htmlFor="DELIVERED" className="text-base">
+                  <Label htmlFor="DELIVERED" className="text-base" translate="no">
                     {t("delivered")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="CANCELLED" id="CANCELLED" />
-                  <Label htmlFor="CANCELLED" className="text-base">
+                  <Label htmlFor="CANCELLED" className="text-base" translate="no">
                     {t("cancelled")}
                   </Label>
                 </div>
@@ -160,7 +160,7 @@ const SellerOrdersPage = () => {
 
               <div className="divider"></div>
 
-              <h3 dir={langDir}>{t("order_time")}</h3>
+              <h3 dir={langDir} translate="no">{t("order_time")}</h3>
 
               <RadioGroup
                 className="flex flex-col gap-y-3"
@@ -169,7 +169,7 @@ const SellerOrdersPage = () => {
               >
                 <div className="flex items-center space-x-2" dir={langDir}>
                   <RadioGroupItem value="last30" id="last30" />
-                  <Label htmlFor="last30" className="text-base">
+                  <Label htmlFor="last30" className="text-base" translate="no">
                     {t("last_30_days")}
                   </Label>
                 </div>
@@ -214,7 +214,7 @@ const SellerOrdersPage = () => {
               <div className="divider"></div>
 
               <div className="mt-4 text-center">
-                <Button variant="outline" onClick={handleClearFilter} dir={langDir}>
+                <Button variant="outline" onClick={handleClearFilter} dir={langDir} translate="no">
                   {t("clean_filter")}
                 </Button>
               </div>
@@ -231,6 +231,7 @@ const SellerOrdersPage = () => {
                   onChange={handleDebounce}
                   ref={searchRef}
                   dir={langDir}
+                  translate="no"
                 />
                 {searchTerm !== "" ? (
                   <Button
@@ -242,7 +243,7 @@ const SellerOrdersPage = () => {
                   </Button>
                 ) : null}
               </div>
-              <button type="button" className="search-btn theme-primary-btn" dir={langDir}>
+              <button type="button" className="search-btn theme-primary-btn" dir={langDir} translate="no">
                 <FiSearch />
                 {t("search_orders")}
               </button>
@@ -264,7 +265,7 @@ const SellerOrdersPage = () => {
               {!ordersBySellerIdQuery.isLoading &&
               !ordersBySellerIdQuery?.data?.data?.length ? (
                 <div className="w-full p-3">
-                  <p className="text-center text-lg font-semibold" dir={langDir}>
+                  <p className="text-center text-lg font-semibold" dir={langDir} translate="no">
                     {t("no_orders_found")}
                   </p>
                 </div>

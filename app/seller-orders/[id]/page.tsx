@@ -105,10 +105,10 @@ const MyOrderDetailsPage = ({}) => {
               <div className="my-order-lists for-delivery-address">
                 <ul className="page-indicator-s1 !mb-0">
                   <li>
-                    <Link href="/home" dir={langDir}>{t("home")}</Link>
+                    <Link href="/home" dir={langDir} translate="no">{t("home")}</Link>
                   </li>
                   <li>
-                    <Link href="/seller-orders" dir={langDir}>{t("my_orders")}</Link>
+                    <Link href="/seller-orders" dir={langDir} translate="no">{t("my_orders")}</Link>
                   </li>
                   <li>
                     <h5>
@@ -126,7 +126,7 @@ const MyOrderDetailsPage = ({}) => {
                     <div className="my-order-card">
                       <div className="delivery-address">
                         <div className="delivery-address-col deliveryAddress">
-                          <h2 dir={langDir}>{t("delivery_address")}</h2>
+                          <h2 dir={langDir} translate="no">{t("delivery_address")}</h2>
                           <h3 dir={langDir}>
                             {shippingDetails?.firstName}{" "}
                             {shippingDetails?.lastName}
@@ -136,14 +136,14 @@ const MyOrderDetailsPage = ({}) => {
                             {shippingDetails?.postCode}
                           </address>
                           <p dir={langDir}>
-                            {t("phone_number")}{" "}
+                            <span translate="no">{t("phone_number")}{" "}</span>
                             <span className="!text-red-500" dir={langDir}>
                               {shippingDetails?.phone}
                             </span>
                           </p>
                         </div>
                         <div className="delivery-address-col deliveryAddress">
-                          <h2>{t("billing_address")}</h2>
+                          <h2 translate="no">{t("billing_address")}</h2>
                           <h3>
                             {billingDetails?.firstName}{" "}
                             {billingDetails?.lastName}
@@ -153,17 +153,17 @@ const MyOrderDetailsPage = ({}) => {
                             {billingDetails?.postCode}
                           </address>
                           <p>
-                            {t("phone_number")}{" "}
+                            <span translate="no">{t("phone_number")}{" "}</span>
                             <span className="!text-red-500" dir={langDir}>
                               {billingDetails?.phone}
                             </span>
                           </p>
                         </div>
                         <div className="delivery-address-col moreActions">
-                          <h2 dir={langDir}>{t("more_actions")}</h2>
+                          <h2 dir={langDir} translate="no">{t("more_actions")}</h2>
                           <figure className="downloadInvoice">
                             <figcaption>
-                              <Button className="downloadInvoice-btn theme-primary-btn" dir={langDir}>
+                              <Button className="downloadInvoice-btn theme-primary-btn" dir={langDir} translate="no">
                                 <LiaFileInvoiceSolid /> {t("download_invoice")}
                               </Button>
                             </figcaption>
@@ -179,11 +179,11 @@ const MyOrderDetailsPage = ({}) => {
                     <div className="my-order-card">
                       <div className="sm:grid sm:grid-cols-3 w-full gap-2 mb-2">
                         <div className="sm:flex gap-2">
-                          <h3 className="!font-bold">{t("shipping_mode")}:</h3>
+                          <h3 className="!font-bold" translate="no">{t("shipping_mode")}:</h3>
                           <span>{orderDetails?.orderShippingDetail?.orderShippingType}</span>
                         </div>
                         <div className="sm:flex gap-2">
-                          <h3 className="!font-bold">{t("delivery_charge")}:</h3>
+                          <h3 className="!font-bold" translate="no">{t("delivery_charge")}:</h3>
                           <span>{currency.symbol}{orderDetails?.orderShippingDetail?.shippingCharge}</span>
                         </div>
                         <div className="more-actions">
@@ -192,6 +192,7 @@ const MyOrderDetailsPage = ({}) => {
                             className="theme-primary-btn update-status-btn"
                             onClick={handleToggleAddReceiptModal}
                             dir={langDir}
+                            translate="no"
                           >
                             {t("add_receipt")}
                           </button>
@@ -200,15 +201,15 @@ const MyOrderDetailsPage = ({}) => {
                       {orderDetails?.orderShippingDetail?.orderShippingType == "PICKUP" ? (
                         <div className="sm:grid sm:grid-cols-3 w-full gap-2">
                           <div className="sm:flex gap-2">
-                            <h3 className="!font-bold">{t("shipping_date")}:</h3>
+                            <h3 className="!font-bold" translate="no">{t("shipping_date")}:</h3>
                             <span>{convertDate(orderDetails?.orderShippingDetail?.shippingDate)}</span>
                           </div>
                           <div className="sm:flex gap-2">
-                            <h3 className="!font-bold">{t("from_time")}:</h3>
+                            <h3 className="!font-bold" translate="no">{t("from_time")}:</h3>
                             <span>{convertTime(orderDetails?.orderShippingDetail?.fromTime)}</span>
                           </div>
                           <div className="sm:flex gap-2">
-                            <h3 className="!font-bold">{t("to_time")}:</h3>
+                            <h3 className="!font-bold" translate="no">{t("to_time")}:</h3>
                             <span>{convertTime(orderDetails?.orderShippingDetail?.toTime)}</span>
                           </div>
                         </div>
@@ -219,6 +220,7 @@ const MyOrderDetailsPage = ({}) => {
                             className="text-red-500"
                             href={orderDetails?.orderShippingDetail?.receipt}
                             target="_blank"
+                            translate="no"
                           >
                             {t("download_receipt")}
                           </Link>
@@ -259,7 +261,7 @@ const MyOrderDetailsPage = ({}) => {
                                     ?.productPrice_product?.productName
                                 }
                               </h3>
-                              <p className="mt-1" dir={langDir}>
+                              <p className="mt-1" dir={langDir} translate="no">
                                 {t("seller")}:{" "}
                                 {
                                   orderDetails?.orderProduct_productPrice
@@ -281,7 +283,7 @@ const MyOrderDetailsPage = ({}) => {
                                     )
                                   : 0}
                               </h4>
-                              <p className="text-gray-500" dir={langDir}>
+                              <p className="text-gray-500" dir={langDir} translate="no">
                                 {t("quantity")} x {orderDetails?.orderQuantity || 0}
                               </p>
                             </figcaption>
@@ -291,7 +293,7 @@ const MyOrderDetailsPage = ({}) => {
                           <div className="order-delivery-progess-s1">
                             <ul>
                               <li className="complted">
-                                <div className="orderStatusText" dir={langDir}>
+                                <div className="orderStatusText" dir={langDir} translate="no">
                                   {t("order_received")}
                                 </div>
                                 <div className="dot">
@@ -318,7 +320,7 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText" dir={langDir}>
+                                <div className="orderStatusText" dir={langDir} translate="no">
                                   {t("order_confirmed")}
                                 </div>
                                 <div className="dot">
@@ -343,7 +345,7 @@ const MyOrderDetailsPage = ({}) => {
                                 )}
                                 dir={langDir}
                               >
-                                <div className="orderStatusText">{t("shipped")}</div>
+                                <div className="orderStatusText" translate="no">{t("shipped")}</div>
                                 <div className="dot">
                                   <small></small>
                                 </div>
@@ -367,7 +369,7 @@ const MyOrderDetailsPage = ({}) => {
                                 )}
                                 dir={langDir}
                               >
-                                <div className="orderStatusText" dir={langDir}>
+                                <div className="orderStatusText" dir={langDir} translate="no">
                                   {t("out_for_delivery")}
                                 </div>
                                 <div className="dot">
@@ -398,6 +400,7 @@ const MyOrderDetailsPage = ({}) => {
                                       ? "orderStatusCancelledText"
                                       : "orderStatusText",
                                   )}
+                                  translate="no"
                                 >
                                   {orderDetails?.orderProductStatus ===
                                   "CANCELLED"
@@ -427,7 +430,7 @@ const MyOrderDetailsPage = ({}) => {
                           </div>
                         </div>
                         <div className="right-info">
-                          <h4 className="mb-2"dir={langDir}>
+                          <h4 className="mb-2"dir={langDir} translate="no">
                             {orderDetails?.orderProductStatus ===
                             "CONFIRMED" ? (
                               <>
@@ -479,7 +482,7 @@ const MyOrderDetailsPage = ({}) => {
                             ) : null}
                           </h4>
 
-                          <a href="#" className="ratingLink"dir={langDir}>
+                          <a href="#" className="ratingLink"dir={langDir} translate="no">
                             <MdHelpCenter />
                             {t("need_help")}
                           </a>
@@ -490,6 +493,7 @@ const MyOrderDetailsPage = ({}) => {
                               className="theme-primary-btn update-status-btn"
                               onClick={handleToggleStatusModal}
                               dir={langDir}
+                              translate="no"
                             >
                               {t("update_status")}
                             </button>
@@ -569,7 +573,7 @@ const MyOrderDetailsPage = ({}) => {
       <Dialog open={isStatusModalOpen} onOpenChange={handleToggleStatusModal}>
         <DialogContent className="customModal-s1">
           <DialogHeader className="modal-header">
-            <DialogTitle className="modal-title">
+            <DialogTitle className="modal-title" translate="no">
               {t("update_delivery_status")}
             </DialogTitle>
           </DialogHeader>
@@ -586,7 +590,7 @@ const MyOrderDetailsPage = ({}) => {
         <Dialog open={isAddReceiptModalOpen} onOpenChange={handleToggleAddReceiptModal}>
           <DialogContent className="customModal-s1">
             <DialogHeader className="modal-header">
-              <DialogTitle className="modal-title">
+              <DialogTitle className="modal-title" translate="no">
                 {t("add_receipt")}
               </DialogTitle>
             </DialogHeader>

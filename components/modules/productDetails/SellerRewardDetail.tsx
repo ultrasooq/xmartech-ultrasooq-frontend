@@ -41,7 +41,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
     return (
         <>
             <div className="modal-header !justify-between">
-                <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+                <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
                     {t("seller_reward")}
                 </DialogTitle>
                 <Button
@@ -52,7 +52,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                 </Button>
             </div>
             <div className="card-item card-payment-form px-5 pb-5">
-                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
                     {t("start_time")}
                 </label>
                 <Input
@@ -60,7 +60,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
                     {t("end_time")}
                 </label>
                 <Input
@@ -68,7 +68,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
                     {t("reward_percentage")}
                 </label>
                 <Input
@@ -76,7 +76,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
                     {t("reward_fix_amount")}
                 </label>
                 <Input
@@ -84,7 +84,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
                     {t("minimum_order")}
                 </label>
                 <Input
@@ -92,7 +92,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     disabled={true}
                 />
 
-                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
                     {t("stock")}
                 </label>
                 <Input
@@ -106,6 +106,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                     onClick={generateShareLink}
                     dir={langDir}
+                    translate="no"
                 >
                     {!createShareLink?.isPending ? t("generate_link") : t("processing")}
                 </Button>

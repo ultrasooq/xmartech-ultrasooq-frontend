@@ -52,8 +52,9 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name
                     "!h-12 rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
                     !field.value && "text-muted-foreground"
                   )}
+                  translate="no"
                 >
-                  {field.value ? field.value : <span>{t("select")} {label || "Time"}</span>}
+                  {field.value ? field.value : <span>{t("select")} {label || t("time")}</span>}
                 </Button>
               </FormControl>
             </PopoverTrigger>
@@ -69,7 +70,7 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name
                 }}
                 dir={langDir}
               >
-                <option value="" disabled>
+                <option value="" translate="no" disabled>
                   {t("select_time")}
                 </option>
                 {timeOptions.map((time) => (

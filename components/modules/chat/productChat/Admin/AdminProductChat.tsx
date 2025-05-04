@@ -510,13 +510,13 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
                 </div>
               </div>
             </div>
-            {showEmoji && (
+            {showEmoji ? (
               <div className="w-full mt-2 border-t border-solid">
                 <EmojiPicker onEmojiClick={onEmojiClick} className="mt-2" />
               </div>
-            )}
+            ) : null}
 
-            {!isAttachmentUploading && attachments.length > 0 && (
+            {!isAttachmentUploading && attachments.length > 0 ? (
               <div className="mt-2 w-full flex flex-wrap gap-2">
                 {attachments.map((file: any, index: any) => (
                   <div key={index} className="flex items-center border border-gray-300 p-2 rounded-md">
@@ -525,7 +525,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
                   </div>
                 ))}
               </div>
-            )}
+            ) : null}
           </div>
         ) : (
           ""

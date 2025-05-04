@@ -53,11 +53,11 @@ const CompleteOrderPage = () => {
   const [emiPeriod, setEmiPeriod] = useState<number>(6);
   const [emiAmount, setEmiAmount] = useState<number>(0);
 
-  useEffect(() => {
-    if (paymentType == "EMI") {
-      setEmiAmount(Number((orderStore.total / emiPeriod).toFixed(2)));
-    }
-  }, [paymentType, emiPeriod]);
+  // useEffect(() => {
+  //   if (paymentType == "EMI") {
+  //     setEmiAmount(Number((orderStore.total / emiPeriod).toFixed(2)));
+  //   }
+  // }, [paymentType, emiPeriod]);
 
   const referenceOrderId = (orderId: number) => {
     const date = new Date();
@@ -125,9 +125,9 @@ const CompleteOrderPage = () => {
           data.advanceAmount = advanceAmount;
           data.dueAmount = orderStore.total - advanceAmount;
         } else if (paymentType == "EMI") {
-          data.emiInstallmentCount = emiPeriod;
-          data.emiInstallmentAmount = emiAmount;
-          data.emiInstallmentAmountCents = emiAmount * 1000;
+          // data.emiInstallmentCount = emiPeriod;
+          // data.emiInstallmentAmount = emiAmount;
+          // data.emiInstallmentAmountCents = emiAmount * 1000;
         }
 
         const response = await createOrder.mutateAsync(orderStore.orders);
@@ -135,7 +135,7 @@ const CompleteOrderPage = () => {
           if (paymentType == "PAYMENTLINK") {
             await handleCreatePaymentLink(response?.data?.id);
           } else if (paymentType == "EMI") {
-            await handleCreateEmiPayment(response?.data?.id);
+            // await handleCreateEmiPayment(response?.data?.id);
           } else {
             await handleCreatePaymentIntent(response?.data?.id);
           }
@@ -259,13 +259,13 @@ const CompleteOrderPage = () => {
       <div className="container m-auto px-3">
         <div className="headerPart" dir={langDir}>
           <div className="lediv">
-            <h3>{t("make_payment")}</h3>
+            <h3 translate="no">{t("make_payment")}</h3>
           </div>
         </div>
         <div className="cart-page-wrapper">
           <div className="cart-page-left">
             <div className="flex items-center justify-start gap-2 sm:grid">
-              <Label>{t("direct_payment")}</Label>
+              <Label translate="no">{t("direct_payment")}</Label>
               <Switch
                 checked={paymentType == "DIRECT"}
                 onCheckedChange={(checked) => {
@@ -278,7 +278,7 @@ const CompleteOrderPage = () => {
               />
             </div>
             <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
-              <Label>{t("advance_payment")}</Label>
+              <Label translate="no">{t("advance_payment")}</Label>
               <Switch
                 checked={paymentType == "ADVANCE"}
                 onCheckedChange={(checked) => {
@@ -287,15 +287,15 @@ const CompleteOrderPage = () => {
                 className="m-0 data-[state=checked]:!bg-dark-orange"
               />
             </div>
-            {paymentType == "ADVANCE" && (
+            {paymentType == "ADVANCE" ? (
               <div className="mt-3 sm:grid sm:grid-cols-3">
                 <Input
                   onChange={(e) => setAdvanceAmount(Number(e.target.value))}
                 />
               </div>
-            )}
+            ) : null}
             <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
-              <Label>{t("pay_it_for_me")}</Label>
+              <Label translate="no">{t("pay_it_for_me")}</Label>
               <Switch
                 checked={paymentType == "PAYMENTLINK"}
                 onCheckedChange={(checked) => {
@@ -309,18 +309,18 @@ const CompleteOrderPage = () => {
               {paymentLink ? (
                 <>
                   <div className="sm:grid sm:grid-cols-3">
-                    <Button type="button" onClick={copyPaymentLink}>
+                    <Button type="button" onClick={copyPaymentLink} translate="no">
                       {t("copy_payment_link")}
                     </Button>
                   </div>
                   <div className="sm:grid sm:grid-cols-1">
-                    <span>{t("copy_payment_link_instruction")}</span>
+                    <span translate="no">{t("copy_payment_link_instruction")}</span>
                   </div>
                 </>
               ) : null}
             </div>
-            <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
-              <Label>{t("installments")}</Label>
+            {/* <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
+              <Label translate="no">{t("installments")}</Label>
               <Switch
                 checked={paymentType == "EMI"}
                 onCheckedChange={(checked) => {
@@ -334,7 +334,7 @@ const CompleteOrderPage = () => {
               {paymentType == "EMI" ? (
                 <>
                   <div className="sm:grid sm:grid-cols-3">
-                    <Label dir={langDir}>{t("emi_period")}{" "}({t("months")})</Label>
+                    <Label dir={langDir} translate="no">{t("emi_period")}{" "}({t("months")})</Label>
                   </div>
                   <div className="sm:grid sm:grid-cols-3">
                     <select
@@ -350,19 +350,19 @@ const CompleteOrderPage = () => {
                   </div>
                 </>
               ) : null}
-            </div>
+            </div> */}
           </div>
           <div className="cart-page-right">
             <div className="card-item priceDetails">
               <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
-                  <h3 dir={langDir}>{t("price_details")}</h3>
+                  <h3 dir={langDir} translate="no">{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
                   <li>
-                    <p dir={langDir}>{t("subtotal")}</p>
+                    <p dir={langDir} translate="no">{t("subtotal")}</p>
                     <h5>
                       {currency.symbol}
                       {orderStore.total || 0}
@@ -371,22 +371,22 @@ const CompleteOrderPage = () => {
                   {advanceAmount > 0 ? (
                     <>
                       <li>
-                        <p dir={langDir}>{t("advance_payment")}</p>
+                        <p dir={langDir} translate="no">{t("advance_payment")}</p>
                         <h5>
                           {currency.symbol}
                           {advanceAmount || 0}
                         </h5>
                       </li>
                       <li>
-                        <p dir={langDir}>{t("shipping")}</p>
-                        <h5 dir={langDir}>{t("free")}</h5>
+                        <p dir={langDir} translate="no">{t("shipping")}</p>
+                        <h5 dir={langDir} translate="no">{t("free")}</h5>
                       </li>
                     </>
                   ) : null}
                 </ul>
               </div>
               <div className="priceDetails-footer">
-                <h4 dir={langDir}>{t("total_amount")}</h4>
+                <h4 dir={langDir} translate="no">{t("total_amount")}</h4>
                 <h4 className="amount-value">
                   {currency.symbol}
                   {advanceAmount > 0
@@ -396,7 +396,7 @@ const CompleteOrderPage = () => {
                 <br />
                 {advanceAmount > 0 ? (
                   <>
-                    <h4>{t("due_balance")}</h4>
+                    <h4 translate="no">{t("due_balance")}</h4>
                     <h4 className="amount-value">
                       {currency.symbol}
                       {(orderStore.total - advanceAmount).toFixed(2)}
@@ -405,7 +405,7 @@ const CompleteOrderPage = () => {
                 ) : null}
                 {paymentType == "EMI" ? (
                   <>
-                    <h4>{t("emi_amount")}</h4>
+                    <h4 translate="no">{t("emi_amount")}</h4>
                     <h4 className="amount-value">
                       {currency.symbol}
                       {emiAmount}
@@ -423,6 +423,7 @@ const CompleteOrderPage = () => {
                   isRedirectingToPaymob
                 }
                 className="theme-primary-btn order-btn"
+                translate="no"
               >
                 {createOrder?.isPending ? (
                   <LoaderWithMessage message={t("placing_order")} />

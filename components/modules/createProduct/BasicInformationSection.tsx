@@ -167,10 +167,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             <div className=" w-full">
               <div className="flex flex-wrap">
                 <div className="form-groups-common-sec-s1">
-                  <h3 dir={langDir}>{t("basic_information")}</h3>
+                  <h3 dir={langDir} translate="no">{t("basic_information")}</h3>
                   <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
                     <div className="flex w-full flex-col justify-between gap-y-2">
-                      <Label dir={langDir}>{t("product_category")}</Label>
+                      <Label dir={langDir} translate="no">{t("product_category")}</Label>
                       <Controller
                         name="categoryId"
                         control={formContext.control}
@@ -198,7 +198,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             value={catList[0]?.id || ""}
                             disabled={true} // This makes the select field disabled
                           >
-                            <option value="" dir={langDir}>{t("select_category")}</option>
+                            <option value="" dir={langDir} translate="no">{t("select_category")}</option>
                             {memoizedCategories.map((item: ISelectOptions) => (
                               <option
                                 value={item.value?.toString()}
@@ -219,14 +219,14 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       </p>
                     </div>
 
-                    {catList.length > 0 &&
-                      catList.map((item, index) => (
+                    {catList.length > 0 ?
+                      catList.filter((item) => item.children?.length).map((item, index) => (
                         <div
                           key={item?.id}
                           className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
                         >
                           <div className="flex w-full flex-col justify-between gap-y-2">
-                            <Label dir={langDir}>{t("sub_category")}</Label>
+                            <Label dir={langDir} translate="no">{t("sub_category")}</Label>
                             <select
                               className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
                               onChange={(e) => {
@@ -254,7 +254,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                 )
                                 ?.id?.toString()}
                             >
-                              <option value="" dir={langDir}>{t("select_sub_category")}</option>
+                              <option value="" dir={langDir} translate="no">{t("select_sub_category")}</option>
                               {item?.children?.map((item: any) => (
                                 <option
                                   value={item.id?.toString()}
@@ -267,7 +267,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             </select>
                           </div>
                         </div>
-                      ))}
+                      )) : null}
                   </div>
 
                   <ControlledTextInput
@@ -275,13 +275,14 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     name="productName"
                     placeholder={t("product_name")}
                     dir={langDir}
+                    translate="no"
                   />
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
                     <BrandSelect />
 
                     <div className="mt-2 flex flex-col gap-y-3">
-                      <Label dir={langDir}>{t("product_condition")}</Label>
+                      <Label dir={langDir} translate="no">{t("product_condition")}</Label>
                       <Controller
                         name="productCondition"
                         control={formContext.control}
@@ -324,7 +325,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                   <div className="relative mb-4 w-full">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+                      <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
                         {t("product_image")}
                       </label>
                       <div className="flex w-full flex-wrap">
@@ -428,7 +429,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                               </div>
 
                                               <div className="absolute h-20 w-full p-5">
-                                                <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir}>
+                                                <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir} translate="no">
                                                   {t("upload_video")}
                                                 </p>
                                               </div>
@@ -480,7 +481,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   width={29}
                                   height={28}
                                 />
-                                <span dir={langDir}>{t("add_more")}</span>
+                                <span dir={langDir} translate="no">{t("add_more")}</span>
                               </div>
                             </div>
 

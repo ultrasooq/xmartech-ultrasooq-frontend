@@ -204,7 +204,7 @@ export default function EditProfilePage() {
             className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" translate="no">
                 {t("profile")}
               </h2>
             </div>
@@ -217,6 +217,7 @@ export default function EditProfilePage() {
                       langDir == "rtl" ? "text-right" : "text-left",
                       "text-lg font-medium capitalize leading-5 text-color-dark"
                     )}
+                    translate="no"
                   >
                     {t("company_information")}
                   </label>
@@ -229,7 +230,7 @@ export default function EditProfilePage() {
                     name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5" dir={langDir}>
-                        <FormLabel>{t("upload_company_logo")}</FormLabel>
+                        <FormLabel translate="no">{t("upload_company_logo")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -260,13 +261,13 @@ export default function EditProfilePage() {
                                       height={30}
                                       alt="camera"
                                     />
-                                    <span>
+                                    <span translate="no">
                                       {t("drop_your_company_logo")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
-                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300" translate="no">
                                       ({t("company_logo_spec")})
                                     </p>
                                   </div>
@@ -309,6 +310,7 @@ export default function EditProfilePage() {
                       name="companyName"
                       placeholder={t("company_name")}
                       dir={langDir}
+                      translate="no"
                     />
 
                     {/* TODO:fix this */}
@@ -328,6 +330,7 @@ export default function EditProfilePage() {
                       type="number"
                       onWheel={(e) => e.currentTarget.blur()}
                       dir={langDir}
+                      translate="no"
                     />
                   </div>
                 </div>
@@ -341,6 +344,7 @@ export default function EditProfilePage() {
                       langDir == "rtl" ? "text-right" : "text-left",
                       "text-base font-medium leading-5 text-color-dark"
                     )}
+                    translate="no"
                   >
                     {t("registration_address")}
                   </label>
@@ -354,6 +358,7 @@ export default function EditProfilePage() {
                       placeholder={t("address")}
                       showLabel={true}
                       dir={langDir}
+                      translate="no"
                     />
                   </div>
 
@@ -363,6 +368,7 @@ export default function EditProfilePage() {
                     placeholder={t("city")}
                     showLabel={true}
                     dir={langDir}
+                    translate="no"
                   />
                 </div>
 
@@ -373,6 +379,7 @@ export default function EditProfilePage() {
                     placeholder={t("province")}
                     showLabel={true}
                     dir={langDir}
+                    translate="no"
                   />
 
                   <ControlledSelectInput label={t("country")} name="country" options={memoizedCountries} />
@@ -394,6 +401,7 @@ export default function EditProfilePage() {
                       langDir == "rtl" ? "text-right" : "text-left",
                       "text-base font-medium leading-5 text-color-dark"
                     )}
+                    translate="no"
                   >
                     {t("more_information")}
                   </label>
@@ -417,7 +425,12 @@ export default function EditProfilePage() {
               </div>
             </div>
 
-            <Button disabled={updateCompanyProfile.isPending || upload.isPending} type="submit" className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90">
+            <Button 
+              disabled={updateCompanyProfile.isPending || upload.isPending} 
+              type="submit" 
+              className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90" 
+              translate="no"
+            >
               {
                 updateCompanyProfile.isPending || upload.isPending ? (
                   <>

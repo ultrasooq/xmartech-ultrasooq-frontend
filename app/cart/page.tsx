@@ -229,7 +229,7 @@ const CartListPage = () => {
       <div className="container m-auto px-3">
         <div className="headerPart" dir={langDir}>
           <div className="lediv">
-            <h3>{t("my_cart")}</h3>
+            <h3 translate="no">{t("my_cart")}</h3>
           </div>
         </div>
         <div className="cart-page-wrapper">
@@ -238,7 +238,7 @@ const CartListPage = () => {
               <div className="card-item cart-items">
                 <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
-                    <h3>{t("cart_items")}</h3>
+                    <h3 translate="no">{t("cart_items")}</h3>
                   </div>
                 </div>
                 <div className="cart-item-lists">
@@ -246,7 +246,7 @@ const CartListPage = () => {
                   !cartListByUser.data?.data?.length &&
                   !cartListByUser.isLoading ? (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center">{t("no_cart_items")}</p>
+                      <p className="my-3 text-center" translate="no">{t("no_cart_items")}</p>
                     </div>
                   ) : null}
 
@@ -254,7 +254,7 @@ const CartListPage = () => {
                   !cartListByDeviceQuery.data?.data?.length &&
                   !cartListByDeviceQuery.isLoading ? (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center">{t("no_cart_items")}</p>
+                      <p className="my-3 text-center" translate="no">{t("no_cart_items")}</p>
                     </div>
                   ) : null}
 
@@ -308,23 +308,23 @@ const CartListPage = () => {
             <div className="card-item priceDetails">
               <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
-                  <h3>{t("price_details")}</h3>
+                  <h3 translate="no">{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
                   <li dir={langDir}>
-                    <p>{t("subtotal")}</p>
+                    <p translate="no">{t("subtotal")}</p>
                     <h5>{currency.symbol}{calculateTotalAmount() || 0}</h5>
                   </li>
                   <li dir={langDir}>
-                    <p>{t("shipping")}</p>
-                    <h5>{t("free")}</h5>
+                    <p translate="no">{t("shipping")}</p>
+                    <h5 translate="no">{t("free")}</h5>
                   </li>
                 </ul>
               </div>
               <div className="priceDetails-footer" dir={langDir}>
-                <h4>{t("total_amount")}</h4>
+                <h4 translate="no">{t("total_amount")}</h4>
                 <h4 className="amount-value">{currency.symbol}{calculateTotalAmount() || 0}</h4>
               </div>
             </div>
@@ -334,6 +334,7 @@ const CartListPage = () => {
                 disabled={!memoizedCartList?.length}
                 className="theme-primary-btn order-btn"
                 dir={langDir}
+                translate="no"
               >
                 {t("place_order")}
               </Button>

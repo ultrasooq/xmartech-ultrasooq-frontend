@@ -75,6 +75,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
               <Link
                 href={`/company-profile/edit-profile?userId=${userDetails?.id}`}
                 className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                translate="no"
               >
                 <Image
                   src={EditIcon}
@@ -91,7 +92,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
         <div className="mt-3 h-auto w-full"></div>
         <div className="text-normal md-2 w-full text-sm font-normal leading-4 text-gray-500 md:mt-4">
           <p dir={langDir}>
-            {t("annual_purchasing_volume")}:{" "}
+            <span translate="no">{t("annual_purchasing_volume")}:{" "}</span>
             <span className="font-bold text-dark-cyan">
               {userDetails?.userProfile?.[0]?.annualPurchasingVolume
                 ? `${currency.symbol}${userDetails.userProfile[0].annualPurchasingVolume}`
@@ -100,7 +101,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
           </p>
         </div>
         <div className="text-normal mt-2 w-full text-sm font-normal leading-4 text-gray-500 md:mt-4">
-          <p dir={langDir}>{t("business_type")}</p>
+          <p dir={langDir} translate="no">{t("business_type")}</p>
           {userDetails?.userProfile?.[0]?.userProfileBusinessType?.map(
             (item: any) => (
               <span
@@ -115,7 +116,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
         <div className="mt-4 flex w-full flex-wrap items-center justify-between">
           <div className="my-2 text-sm font-normal leading-4 text-gray-500">
             <p dir={langDir}>
-              {t("company_id")}:
+              <span translate="no">{t("company_id")}:</span>
               <span className="text-base font-medium leading-4 text-gray-600">
                 {userDetails?.uniqueId
                   ? `${COMPANY_UNIQUE_ID}${userDetails?.uniqueId}`

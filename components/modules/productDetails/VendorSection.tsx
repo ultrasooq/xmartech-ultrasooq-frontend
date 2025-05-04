@@ -91,7 +91,7 @@ const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
             </a>
           </li>
         </ul>
-        <h5 dir={langDir}>{t("business_type")}</h5>
+        <h5 dir={langDir} translate="no">{t("business_type")}</h5>
         <div className="tagLists">
           <div className="tagItem">
             {vendor?.userProfile
@@ -104,7 +104,7 @@ const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
               ))}
           </div>
         </div>
-        <h5 dir={langDir}>
+        <h5 dir={langDir} translate="no">
           {t("company_id")}:{" "}
           <strong>
             {vendor?.uniqueId

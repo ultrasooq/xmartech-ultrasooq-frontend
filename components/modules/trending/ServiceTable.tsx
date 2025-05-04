@@ -45,11 +45,11 @@ const ServiceTable: React.FC<any> = ({ list }) => {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead dir={langDir}>{t("product")}</TableHead>
-                                <TableHead dir={langDir}>{t("category")}</TableHead>
+                                <TableHead dir={langDir} translate="no">{t("product")}</TableHead>
+                                <TableHead dir={langDir} translate="no">{t("category")}</TableHead>
                                 {/* <TableHead>SKU No</TableHead> */}
-                                <TableHead dir={langDir}>{t("brand")}</TableHead>
-                                <TableHead dir={langDir}>{t("price")}</TableHead>
+                                <TableHead dir={langDir} translate="no">{t("brand")}</TableHead>
+                                <TableHead dir={langDir} translate="no">{t("price")}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -84,6 +84,7 @@ const ServiceTable: React.FC<any> = ({ list }) => {
                                                     type="button"
                                                     className="inline-block rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
                                                     dir={langDir}
+                                                    translate="no"
                                                 >
                                                     {t("ask_vendor_for_price")}
                                                 </button>

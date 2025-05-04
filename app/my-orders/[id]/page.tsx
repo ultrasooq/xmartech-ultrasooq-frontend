@@ -97,10 +97,10 @@ const MyOrderDetailsPage = ({}) => {
               <div className="my-order-lists for-delivery-address">
                 <ul className="page-indicator-s1 !mb-0">
                   <li>
-                    <Link href="/home" dir={langDir}>{t("home")}</Link>
+                    <Link href="/home" dir={langDir} translate="no">{t("home")}</Link>
                   </li>
                   <li>
-                    <Link href="/my-orders" dir={langDir}>{t("my_orders")}</Link>
+                    <Link href="/my-orders" dir={langDir} translate="no">{t("my_orders")}</Link>
                   </li>
                   <li>
                     <h5>
@@ -118,7 +118,7 @@ const MyOrderDetailsPage = ({}) => {
                     <div className="my-order-card">
                       <div className="delivery-address">
                         <div className="delivery-address-col deliveryAddress">
-                          <h2 dir={langDir}>{t("delivery_address")}</h2>
+                          <h2 dir={langDir} translate="no">{t("delivery_address")}</h2>
                           <h3 dir={langDir}>
                             {shippingDetails?.firstName}{" "}
                             {shippingDetails?.lastName}
@@ -128,7 +128,7 @@ const MyOrderDetailsPage = ({}) => {
                             {shippingDetails?.postCode}
                           </address>
                           <p dir={langDir}>
-                            {t("phone_number")}{" "}
+                            <span translate="no">{t("phone_number")}{" "}</span>
                             <span className="!text-red-500" dir={langDir}>
                               {shippingDetails?.phone}
                             </span>
@@ -155,7 +155,7 @@ const MyOrderDetailsPage = ({}) => {
                         <h2>Your Rewards</h2>
                       </div> */}
                         <div className="delivery-address-col moreActions">
-                          <h2 dir={langDir}>{t("more_actions")}</h2>
+                          <h2 dir={langDir} translate="no">{t("more_actions")}</h2>
                           <figure className="downloadInvoice">
                             <figcaption>
                               <Button className="downloadInvoice-btn theme-primary-btn">
@@ -174,26 +174,26 @@ const MyOrderDetailsPage = ({}) => {
                     <div className="my-order-card">
                       <div className="sm:grid sm:grid-cols-3 w-full gap-2 mb-2">
                         <div className="sm:flex gap-2">
-                          <h3 className="!font-bold">{t("shipping_mode")}:</h3>
+                          <h3 className="!font-bold" translate="no">{t("shipping_mode")}:</h3>
                           <span>{orderDetails?.orderShippingDetail?.orderShippingType}</span>
                         </div>
                         <div className="sm:flex gap-2">
-                          <h3 className="!font-bold">{t("delivery_charge")}:</h3>
+                          <h3 className="!font-bold" translate="no">{t("delivery_charge")}:</h3>
                           <span>{currency.symbol}{orderDetails?.orderShippingDetail?.shippingCharge}</span>
                         </div>
                       </div>
                       {orderDetails?.orderShippingDetail?.orderShippingType == "PICKUP" ? (
                         <div className="sm:grid sm:grid-cols-3 w-full gap-2">
                           <div className="sm:flex gap-2">
-                            <h3 className="!font-bold">{t("shipping_date")}:</h3>
+                            <h3 className="!font-bold" translate="no">{t("shipping_date")}:</h3>
                             <span>{convertDate(orderDetails?.orderShippingDetail?.shippingDate)}</span>
                           </div>
                           <div className="sm:flex gap-2">
-                            <h3 className="!font-bold">{t("from_time")}:</h3>
+                            <h3 className="!font-bold" translate="no">{t("from_time")}:</h3>
                             <span>{convertTime(orderDetails?.orderShippingDetail?.fromTime)}</span>
                           </div>
                           <div className="sm:flex gap-2">
-                            <h3 className="!font-bold">{t("to_time")}:</h3>
+                            <h3 className="!font-bold" translate="no">{t("to_time")}:</h3>
                             <span>{convertTime(orderDetails?.orderShippingDetail?.toTime)}</span>
                           </div>
                         </div>
@@ -204,6 +204,7 @@ const MyOrderDetailsPage = ({}) => {
                             className="text-red-500"
                             href={orderDetails?.orderShippingDetail?.receipt}
                             target="_blank"
+                            translate="no"
                           >
                             {t("download_receipt")}
                           </Link>
@@ -273,7 +274,7 @@ const MyOrderDetailsPage = ({}) => {
                                     )
                                   : 0}
                               </h4>
-                              <p className="text-gray-500">
+                              <p className="text-gray-500" translate="no">
                                 {t("quantity")} x {orderDetails?.orderQuantity || 0}
                               </p>
                             </figcaption>
@@ -283,7 +284,7 @@ const MyOrderDetailsPage = ({}) => {
                           <div className="order-delivery-progess-s1">
                             <ul>
                               <li className="complted">
-                                <div className="orderStatusText" dir={langDir}>
+                                <div className="orderStatusText" dir={langDir} translate="no">
                                   {t("order_received")}
                                 </div>
                                 <div className="dot">
@@ -310,7 +311,7 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText" dir={langDir}>
+                                <div className="orderStatusText" dir={langDir} translate="no">
                                   {t("order_confirmed")}
                                 </div>
                                 <div className="dot">
@@ -334,7 +335,7 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText" dir={langDir}>{t("shipped")}</div>
+                                <div className="orderStatusText" dir={langDir} translate="no">{t("shipped")}</div>
                                 <div className="dot">
                                   <small></small>
                                 </div>
@@ -357,7 +358,7 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText" dir={langDir}>
+                                <div className="orderStatusText" dir={langDir} translate="no">
                                   {t("out_for_delivery")}
                                 </div>
                                 <div className="dot">
@@ -387,6 +388,7 @@ const MyOrderDetailsPage = ({}) => {
                                       ? "orderStatusCancelledText"
                                       : "orderStatusText",
                                   )}
+                                  translate="no"
                                 >
                                   {orderDetails?.orderProductStatus ===
                                   "CANCELLED"
@@ -416,7 +418,7 @@ const MyOrderDetailsPage = ({}) => {
                           </div>
                         </div>
                         <div className="right-info">
-                          <h4 className="mb-2" dir={langDir}>
+                          <h4 className="mb-2" dir={langDir} translate="no">
                             {orderDetails?.orderProductStatus ===
                             "CONFIRMED" ? (
                               <>
@@ -473,12 +475,13 @@ const MyOrderDetailsPage = ({}) => {
                               href={`/trending/${orderDetails?.productId}?type=reviews`}
                               className="ratingLink"
                               dir={langDir}
+                              translate="no"
                             >
                               <PiStarFill />
                               {t("rate_n_review_product")}
                             </Link>
                           ) : null}
-                          <Button variant="ghost" className="ratingLink mt-0" dir={langDir}>
+                          <Button variant="ghost" className="ratingLink mt-0" dir={langDir} translate="no">
                             <MdHelpCenter />
                             {t("need_help")}
                           </Button>
@@ -497,6 +500,7 @@ const MyOrderDetailsPage = ({}) => {
                               }
                               className="ratingLink"
                               dir={langDir}
+                              translate="no"
                             >
                               <PiStarFill />
                               {t("rate_n_review_seller")}

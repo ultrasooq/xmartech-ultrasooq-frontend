@@ -422,6 +422,7 @@ export default function CompanyProfilePage() {
               <h2
                 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
                 dir={langDir}
+                translate="no"
               >
                 {t("company_profile")}
               </h2>
@@ -432,6 +433,7 @@ export default function CompanyProfilePage() {
                   <label
                     className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("company_information")}
                   </label>
@@ -444,7 +446,7 @@ export default function CompanyProfilePage() {
                     name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5">
-                        <FormLabel dir={langDir}>
+                        <FormLabel dir={langDir} translate="no">
                           {t("upload_company_logo")}
                         </FormLabel>
                         <FormControl>
@@ -472,7 +474,7 @@ export default function CompanyProfilePage() {
                                       height={30}
                                       alt="camera"
                                     />
-                                    <span dir={langDir}>
+                                    <span dir={langDir} translate="no">
                                       {t("drop_your_company_logo")}{" "}
                                     </span>
                                     <span className="text-blue-500">
@@ -481,6 +483,7 @@ export default function CompanyProfilePage() {
                                     <p
                                       className="text-normal mt-3 text-xs leading-4 text-gray-300"
                                       dir={langDir}
+                                      translate="no"
                                     >
                                       ({t("company_logo_spec")})
                                     </p>
@@ -527,6 +530,7 @@ export default function CompanyProfilePage() {
                       name="companyName"
                       placeholder={t("company_name")}
                       dir={langDir}
+                      translate="no"
                     />
 
                     {/* TODO:fix this */}
@@ -546,6 +550,7 @@ export default function CompanyProfilePage() {
                       type="number"
                       onWheel={(e) => e.currentTarget.blur()}
                       dir={langDir}
+                      translate="no"
                     />
                   </div>
                 </div>
@@ -556,6 +561,7 @@ export default function CompanyProfilePage() {
                   <label
                     className="m-0 block text-left text-base font-medium leading-5 text-color-dark"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("registration_address")}
                   </label>
@@ -568,6 +574,7 @@ export default function CompanyProfilePage() {
                         name="address"
                         placeholder={t("address")}
                         dir={langDir}
+                        translate="no"
                       />
 
                       <Image
@@ -584,6 +591,7 @@ export default function CompanyProfilePage() {
                       name="city"
                       placeholder={t("city")}
                       dir={langDir}
+                      translate="no"
                     />
                   </div>
 
@@ -593,6 +601,7 @@ export default function CompanyProfilePage() {
                       name="province"
                       placeholder={t("province")}
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledSelectInput
@@ -609,6 +618,7 @@ export default function CompanyProfilePage() {
                   <label
                     className="m-0 block text-left text-base font-medium leading-5 text-color-dark"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("more_information")}
                   </label>
@@ -644,6 +654,7 @@ export default function CompanyProfilePage() {
                 <label
                   className="m-0 block text-left text-base font-medium leading-5 text-color-dark"
                   dir={langDir}
+                  translate="no"
                 >
                   {t("branch")}
                 </label>
@@ -652,6 +663,7 @@ export default function CompanyProfilePage() {
                   onClick={appendBranchList}
                   className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
                   dir={langDir}
+                  translate="no"
                 >
                   <Image
                     src="/images/add-icon.svg"
@@ -684,7 +696,7 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.branchFrontPicture`}
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full">
-                        <FormLabel dir={langDir}>
+                        <FormLabel dir={langDir} translate="no">
                           {t("upload_branch_front_picture")}
                         </FormLabel>
                         <FormControl>
@@ -716,13 +728,13 @@ export default function CompanyProfilePage() {
                                       height={30}
                                       alt="camera"
                                     />
-                                    <span>
+                                    <span translate="no">
                                       {t("drop_your_branch_front_picture")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
-                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300" translate="no">
                                       ({t("branch_front_picture_spec")})
                                     </p>
                                   </div>
@@ -771,7 +783,7 @@ export default function CompanyProfilePage() {
                     name={`branchList.${index}.proofOfAddress`}
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full">
-                        <FormLabel dir={langDir}>
+                        <FormLabel dir={langDir} translate="no">
                           {t("proof_of_address")}
                         </FormLabel>
                         <FormControl>
@@ -802,11 +814,11 @@ export default function CompanyProfilePage() {
                                       height={30}
                                       alt="camera"
                                     />
-                                    <span>{t("drop_your_address_proof")} </span>
+                                    <span translate="no">{t("drop_your_address_proof")}</span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
-                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300" translate="no">
                                       ({t("address_proof_spec")})
                                     </p>
                                   </div>
@@ -858,6 +870,7 @@ export default function CompanyProfilePage() {
                       <label
                         className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark"
                         dir={langDir}
+                        translate="no"
                       >
                         {t("branch_location")}
                       </label>
@@ -872,6 +885,7 @@ export default function CompanyProfilePage() {
                         placeholder={t("address")}
                         showLabel={true}
                         dir={langDir}
+                        translate="no"
                       />
 
                       <Image
@@ -889,6 +903,7 @@ export default function CompanyProfilePage() {
                       placeholder={t("city")}
                       showLabel={true}
                       dir={langDir}
+                      translate="no"
                     />
                   </div>
 
@@ -899,6 +914,7 @@ export default function CompanyProfilePage() {
                       placeholder={t("province")}
                       showLabel={true}
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledSelectInput
@@ -923,6 +939,7 @@ export default function CompanyProfilePage() {
                       placeholder={t("branch_contact_name")}
                       showLabel={true}
                       dir={langDir}
+                      translate="no"
                     />
                   </div>
                 </div>
@@ -933,6 +950,7 @@ export default function CompanyProfilePage() {
                       <label
                         className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark"
                         dir={langDir}
+                        translate="no"
                       >
                         {t("branch_working_hours")}
                       </label>
@@ -945,6 +963,7 @@ export default function CompanyProfilePage() {
                           htmlFor="startTime"
                           className="text-color-dark"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("start_time")}
                         </Label>
@@ -956,7 +975,7 @@ export default function CompanyProfilePage() {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="" dir={langDir}>
+                              <option value="" dir={langDir} translate="no">
                                 {t("select")}
                               </option>
                               {HOURS_24_FORMAT.map(
@@ -986,6 +1005,7 @@ export default function CompanyProfilePage() {
                           htmlFor="endTime"
                           className="text-color-dark"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("end_time")}
                         </Label>
@@ -997,7 +1017,7 @@ export default function CompanyProfilePage() {
                               {...field}
                               className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                             >
-                              <option value="" dir={langDir}>
+                              <option value="" dir={langDir} translate="no">
                                 {t("select")}
                               </option>
                               {HOURS_24_FORMAT.map(
@@ -1060,7 +1080,7 @@ export default function CompanyProfilePage() {
                     </div>
                     {form.formState.errors.branchList?.[index]?.workingDays
                       ?.message ? (
-                      <p className="text-[13px] text-red-500" dir={langDir}>
+                      <p className="text-[13px] text-red-500" dir={langDir} translate="no">
                         {t("working_day_required")}
                       </p>
                     ) : null}
@@ -1089,7 +1109,7 @@ export default function CompanyProfilePage() {
                       name={`branchList.${index}.mainOffice`}
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
-                          <FormLabel dir={langDir}>
+                          <FormLabel dir={langDir} translate="no">
                             {t("main_office")}:
                           </FormLabel>
                           <FormControl>
@@ -1127,6 +1147,7 @@ export default function CompanyProfilePage() {
               type="submit"
               className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
               dir={langDir}
+              translate="no"
             >
               {createCompanyProfile.isPending || upload.isPending ? (
                 <>

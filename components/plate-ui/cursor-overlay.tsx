@@ -28,7 +28,7 @@ export function Cursor({
 
   return (
     <>
-      {!disableSelection &&
+      {!disableSelection ?
         selectionRects.map((position, i) => (
           <div
             key={i}
@@ -41,8 +41,8 @@ export function Cursor({
               ...position,
             }}
           />
-        ))}
-      {!disableCaret && caretPosition && (
+        )) : null}
+      {!disableCaret && caretPosition ? (
         <div
           className={cn(
             'pointer-events-none absolute z-10 w-0.5',
@@ -50,7 +50,7 @@ export function Cursor({
           )}
           style={{ ...caretPosition, ...style }}
         />
-      )}
+      ) : null}
     </>
   );
 }

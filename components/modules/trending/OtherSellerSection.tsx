@@ -239,7 +239,7 @@ const OtherSellerSection: React.FC<OtherSellerSectionProps> = ({
         </div>
 
         {!otherSellerDetails?.length && !productQueryById.isLoading ? (
-          <p className="py-10 text-center text-sm font-medium" dir={langDir}>
+          <p className="py-10 text-center text-sm font-medium" dir={langDir} translate="no">
             {t("no_sellers_found")}
           </p>
         ) : null}

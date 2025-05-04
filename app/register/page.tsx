@@ -203,7 +203,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <title dir={langDir}>{t("register")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">{t("register")} | Ultrasooq</title>
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
@@ -221,10 +221,11 @@ export default function RegisterPage() {
                 <h2
                   className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
                   dir={langDir}
+                  translate="no"
                 >
                   {t("registration")}
                 </h2>
-                <p dir={langDir}>{t("create_your_account")}</p>
+                <p dir={langDir} translate="no">{t("create_your_account")}</p>
               </div>
               <div className="w-full">
                 <ul className="flex w-full flex-wrap items-center justify-between">
@@ -237,6 +238,7 @@ export default function RegisterPage() {
                         signIn("facebook");
                       }}
                       dir={langDir}
+                      translate="no"
                     >
                       <Image
                         src={FacebookIcon}
@@ -257,6 +259,7 @@ export default function RegisterPage() {
                         signIn("google");
                       }}
                       dir={langDir}
+                      translate="no"
                     >
                       <Image
                         src={GoogleIcon}
@@ -289,6 +292,7 @@ export default function RegisterPage() {
                           <FormLabel
                             className="mb-3 mr-6 capitalize md:mb-0"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("select_trade_role")}:
                           </FormLabel>
@@ -332,6 +336,7 @@ export default function RegisterPage() {
                       name="firstName"
                       placeholder={t("enter_first_name")}
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledTextInput
@@ -339,6 +344,7 @@ export default function RegisterPage() {
                       name="lastName"
                       placeholder={t("enter_last_name")}
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledTextInput
@@ -352,6 +358,7 @@ export default function RegisterPage() {
                           : false
                       }
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledTextInput
@@ -360,6 +367,7 @@ export default function RegisterPage() {
                       placeholder={t("enter_login_password")}
                       type="password"
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledTextInput
@@ -369,6 +377,7 @@ export default function RegisterPage() {
                       type="password"
                       dir={langDir}
                       className="mb-2"
+                      translate="no"
                     />
 
                     <ControlledPhoneInput
@@ -392,12 +401,13 @@ export default function RegisterPage() {
                           </FormControl>
                           <div className="flex flex-col leading-none">
                             <div className="agreeText text-xs text-light-gray md:text-sm">
-                              <span dir={langDir}>{t("i_agree")}</span>
+                              <span dir={langDir} translate="no">{t("i_agree")}</span>
                               <Button
                                 onClick={handleToggleTermsModal}
                                 type="button"
                                 className="ml-1 h-auto bg-transparent p-0 shadow-none hover:bg-transparent"
                                 dir={langDir}
+                                translate="no"
                               >
                                 <span className="text-xs text-light-gray underline md:text-sm">
                                   {t("terms_of_use")}
@@ -411,6 +421,7 @@ export default function RegisterPage() {
                                 type="button"
                                 className="ml-1 h-auto bg-transparent p-0 text-xs shadow-none hover:bg-transparent md:text-sm"
                                 dir={langDir}
+                                translate="no"
                               >
                                 <span className="text-light-gray underline">
                                   {t("privacy_policy")}
@@ -428,6 +439,7 @@ export default function RegisterPage() {
                         disabled={register.isPending}
                         type="submit"
                         className="theme-primary-btn h-12 w-full rounded text-center text-lg font-bold leading-6"
+                        translate="no"
                       >
                         {register.isPending ? (
                           <LoaderWithMessage message="Please wait" />
@@ -442,6 +454,7 @@ export default function RegisterPage() {
                   <span
                     className="text-sm font-medium leading-4 text-light-gray"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("already_have_an_account")}{" "}
                     <Link
@@ -463,6 +476,7 @@ export default function RegisterPage() {
               <DialogTitle
                 className="text-center text-xl font-bold"
                 dir={langDir}
+                translate="no"
               >
                 {t("terms_of_use")}
               </DialogTitle>
@@ -482,6 +496,7 @@ export default function RegisterPage() {
               <DialogTitle
                 className="text-center text-xl font-bold"
                 dir={langDir}
+                translate="no"
               >
                 {t("privacy_policy")}
               </DialogTitle>

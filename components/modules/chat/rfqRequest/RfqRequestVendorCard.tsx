@@ -65,7 +65,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
           </span>
         </div>
 
-        {vendor?.lastUnreadMessage?.createdAt && (
+        {vendor?.lastUnreadMessage?.createdAt ? (
           <div>
             <div className="flex space-x-2 p-2">
               <div className="flex items-center space-x-1">
@@ -79,7 +79,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
                 ): ""}
               </div>
             </div>
-            {vendor?.lastUnreadMessage?.createdAt && (
+            {vendor?.lastUnreadMessage?.createdAt ? (
               <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
                 <span>
                   {moment(vendor?.lastUnreadMessage?.createdAt)
@@ -87,9 +87,9 @@ const VendorCard: React.FC<VendorCardProps> = ({
                     .fromNow()}
                 </span>
               </div>
-            )}
+            ) : null}
           </div>
-        )}
+        ) : null}
 
         {/* <div className="flex w-full">
           <Image src={RatingIcon} alt="rating-icon" />

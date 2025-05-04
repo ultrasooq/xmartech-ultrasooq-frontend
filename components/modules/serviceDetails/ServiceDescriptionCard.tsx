@@ -310,7 +310,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                     {/* <div className="brand_sold_info !items-start">
                         <div className="lediv w-full sm:w-1/2">
                             <h5>
-                                <span className="inline-block w-20 sm:!w-20">
+                                <span className="inline-block w-20 sm:!w-20" translate="no">
                                     {t("brand")}:
                                 </span>{" "}
                                 {brand}
@@ -318,7 +318,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                         </div>
 
                         <div className="rgdiv flex w-full gap-x-2 sm:w-1/2">
-                            <h5 className="w-20 !capitalize !text-dark-orange sm:!w-20">
+                            <h5 className="w-20 !capitalize !text-dark-orange sm:!w-20" translate="no">
                                 {t("sold_by")}:
                             </h5>
                             <Link
@@ -339,7 +339,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                         <span className="mt-1">({productReview?.length} Reviews)</span>
                     </div> */}
                     {/* {askForPrice === "true" ? (
-                        <h3 className="w-fit rounded !bg-dark-orange px-4 py-2 !font-semibold !normal-case !text-white !no-underline shadow-md">
+                        <h3 className="w-fit rounded !bg-dark-orange px-4 py-2 !font-semibold !normal-case !text-white !no-underline shadow-md" translate="no">
                             {t("ask_for_price")}
                         </h3>
                     ) : productType != "R" ? (
@@ -353,7 +353,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                         </h3>
                     ) : null} */}
                     <div className="space-y-4">
-                        <h5 className="text-lg font-semibold">{t("select_services")}</h5>
+                        <h5 className="text-lg font-semibold" translate="no">{t("select_services")}</h5>
                         {
                             allDetailsService?.serviceFeatures?.map((feature: any) => {
                                 const selectedFeature = selectedFeatures.find(
@@ -397,7 +397,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                     {feature.serviceCost}
                                                 </p>
                                             </div>
-                                            {isSelected && (
+                                            {isSelected ? (
                                                 <div className="quantity-container flex items-center gap-2">
                                                     <label className="text-sm text-gray-600">Qty:</label>
                                                     <button
@@ -425,7 +425,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                         +
                                                     </button>
                                                 </div>
-                                            )}
+                                            ) : null}
                                         </div>
                                     </div>
                                 );
@@ -450,7 +450,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                             ))}
                                         </ul>
                                     ) : (
-                                        <p dir={langDir}>{t("no_description")}</p>
+                                        <p dir={langDir} translate="no">{t("no_description")}</p>
                                     )}
                                 </div>
                             </div>
@@ -523,9 +523,9 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                 {productPriceArr?.[0]?.sellType === "BUYGROUP" ? (
                                     <>
                                         <p>
-                                            {timeLeft !== "NotStarted" && timeLeft !== "Expired" && (
+                                            {timeLeft !== "NotStarted" && timeLeft !== "Expired" ? (
                                                 <div className="" dir={langDir}>
-                                                    {t("time_left")}
+                                                    <span translate="no">{t("time_left")}</span>
                                                     <div className="time_wrap">
                                                         <div className="time_field">
                                                             <h3>{timeLeft.split(":")[0]}</h3>
@@ -545,10 +545,10 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                         </div>
                                                     </div>
                                                 </div>
-                                            )}
+                                            ) : null}
                                         </p>
                                         <p>
-                                            <span className="color-text" dir={langDir}>
+                                            <span className="color-text" dir={langDir} translate="no">
                                                 {t("group_buy_deal_ends")} :
                                             </span>{" "}
                                             {formatDateTimeWithTimezone(
@@ -557,7 +557,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                             )}
                                         </p>
                                         <p>
-                                            <span className="color-text" dir={langDir}>
+                                            <span className="color-text" dir={langDir} translate="no">
                                                 {t("timezone")}:
                                             </span>{" "}
                                             {getUTCOffset()} ({userTimezone})
@@ -566,42 +566,35 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                 ) : null}
 
                                 {productPriceArr?.[0]?.minQuantity ? <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("min_quantity")}:
                                     </span>{" "}
                                     <b>{productPriceArr?.[0]?.minQuantity}</b>
                                 </p> : null}
 
                                 {productPriceArr?.[0]?.maxQuantity ? <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("max_quantity")}:
                                     </span>{" "}
                                     <b>{productPriceArr?.[0]?.maxQuantity}</b>
                                 </p> : null}
 
-                                {/* <p>
-                  <span className="color-text" dir={langDir}>
-                    {t("deals_sold")}:
-                  </span>{" "}
-                  {0}
-                </p> */}
-
                                 {productPriceArr?.[0]?.minQuantityPerCustomer ? <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("min_quantity_per_customer")}:
                                     </span>{" "}
                                     <b>{productPriceArr?.[0]?.minQuantityPerCustomer}</b>
                                 </p> : null}
 
                                 {productPriceArr?.[0]?.maxQuantityPerCustomer ? <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("max_quantity_per_customer")}:
                                     </span>{" "}
                                     <b>{productPriceArr?.[0]?.maxQuantityPerCustomer}</b>
                                 </p> : null}
 
                                 {productPriceArr?.[0]?.consumerType ? <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("consumer_type")}:
                                     </span>{" "}
                                     <b>{productPriceArr?.[0]?.consumerType}</b>
@@ -610,7 +603,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                 {(productPriceArr?.[0]?.consumerType == 'EVERYONE' ||
                                     productPriceArr?.[0]?.consumerType == 'CONSUMER') &&
                                     productPriceArr?.[0]?.consumerDiscount ? <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("consumer_discount")}:
                                     </span>{" "}
                                     <b>{productPriceArr?.[0]?.consumerDiscount}&nbsp;({productPriceArr?.[0]?.consumerDiscountType})</b>
@@ -619,7 +612,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                 {(productPriceArr?.[0]?.consumerType == 'EVERYONE' ||
                                     productPriceArr?.[0]?.consumerType == 'VENDORS') &&
                                     productPriceArr?.[0]?.vendorDiscount ? <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("vendor_discount")}:
                                     </span>{" "}
                                     <b>{productPriceArr?.[0]?.vendorDiscount}&nbsp;({productPriceArr?.[0]?.vendorDiscountType})</b>
@@ -642,7 +635,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                         width={28}
                                         height={22}
                                     />
-                                    <span dir={langDir}>{t("secure_payment")}</span>
+                                    <span dir={langDir} translate="no">{t("secure_payment")}</span>
                                 </li>
                                 <li>
                                     <Image
@@ -651,7 +644,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                         width={28}
                                         height={28}
                                     />
-                                    <span dir={langDir}>{t("secure_payment")}</span>
+                                    <span dir={langDir} translate="no">{t("secure_payment")}</span>
                                 </li>
                             </ul>
                         </div>
@@ -666,21 +659,21 @@ const ServiceDescriptionCard: React.FC<any> = ({
                     <div className="row">
                         <div className="col-12 col-md-12">
                             <div className="form-group mb-0">
-                                <label dir={langDir}>{t("report_abuse")}</label>
+                                <label dir={langDir} translate="no">{t("report_abuse")}</label>
                                 <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("sku")}:
                                     </span>{" "}
                                     {skuNo}
                                 </p>
                                 <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("categories")}:
                                     </span>{" "}
                                     {category}
                                 </p>
                                 <p>
-                                    <span className="color-text" dir={langDir}>
+                                    <span className="color-text" dir={langDir} translate="no">
                                         {t("tags")}:
                                     </span>{" "}
                                     {productTags
@@ -697,6 +690,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                             variant="ghost"
                                             className="font-bold text-red-500"
                                             onClick={() => setIsDrawerOpen(true)}
+                                            translate="no"
                                         >
                                             {t("see_other_sellers")}
                                         </Button>
@@ -704,7 +698,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                             <ScrollArea className="h-screen">
                                                 <div className="mx-auto w-full p-2">
                                                     <DrawerHeader>
-                                                        <DrawerTitle dir={langDir}>
+                                                        <DrawerTitle dir={langDir} translate="no">
                                                             {t("all_sellers")}
                                                         </DrawerTitle>
                                                     </DrawerHeader>

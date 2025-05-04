@@ -119,13 +119,13 @@ export const DropdownMenuRadioItem = withRef<
     )}
     {...props}
   >
-    {!hideIcon && (
+    {!hideIcon ? (
       <span className="absolute right-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
           <Icons.check className="size-4" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
-    )}
+    ) : null}
     {children}
   </DropdownMenuPrimitive.RadioItem>
 ));

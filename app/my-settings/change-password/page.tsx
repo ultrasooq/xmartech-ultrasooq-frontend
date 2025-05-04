@@ -135,7 +135,7 @@ export default function ChangePasswordPage() {
               </div>
             ) : (
               <>
-                <h2 className="mb-4 text-[18px] font-semibold md:text-[22px]" dir={langDir}>
+                <h2 className="mb-4 text-[18px] font-semibold md:text-[22px]" dir={langDir} translate="no">
                   {t("change_password")}
                 </h2>
                 <div className="w-full">
@@ -149,7 +149,7 @@ export default function ChangePasswordPage() {
                         name="password"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full" dir={langDir}>
-                            <FormLabel>{t("old_password")}</FormLabel>
+                            <FormLabel translate="no">{t("old_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
@@ -169,7 +169,7 @@ export default function ChangePasswordPage() {
                         name="newPassword"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full" dir={langDir}>
-                            <FormLabel>{t("new_password")}</FormLabel>
+                            <FormLabel translate="no">{t("new_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
@@ -189,7 +189,7 @@ export default function ChangePasswordPage() {
                         name="confirmPassword"
                         render={({ field }) => (
                           <FormItem className="mb-4 w-full" dir={langDir}>
-                            <FormLabel>{t("reenter_new_password")}</FormLabel>
+                            <FormLabel translate="no">{t("reenter_new_password")}</FormLabel>
                             <FormControl>
                               <Input
                                 type="password"
@@ -209,6 +209,7 @@ export default function ChangePasswordPage() {
                           disabled={changePassword.isPending}
                           type="submit"
                           className="h-12 w-full rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:text-lg"
+                          translate="no"
                         >
                           {changePassword.isPending ? (
                             <>

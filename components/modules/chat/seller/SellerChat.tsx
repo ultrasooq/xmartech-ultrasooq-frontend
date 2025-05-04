@@ -662,7 +662,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
       <div className="flex w-full flex-wrap rounded-sm border border-solid border-gray-300">
         <div className="w-full border-r border-solid border-gray-300 md:w-[20%]">
           <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-sm font-normal text-[#333333] md:px-[10px] md:py-[10px] md:text-base" dir={langDir}>
-            <span>{t("request_for_rfq")}</span>
+            <span translate="no">{t("request_for_rfq")}</span>
           </div>
           <div className="max-h-[720px] w-full overflow-y-auto p-2">
             {allRfqQuotesQuery?.isLoading ? (
@@ -675,7 +675,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
             {!allRfqQuotesQuery?.isLoading && !rfqQuotes?.length ? (
               <div className="my-2 space-y-2">
-                <p className="text-center text-sm font-normal text-gray-500" dir={langDir}>
+                <p className="text-center text-sm font-normal text-gray-500" dir={langDir} translate="no">
                   {t("no_data_found")}
                 </p>
               </div>
@@ -718,6 +718,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             <Link
               href="#"
               className="inline-block rounded-sm bg-dark-orange px-3 py-2 text-xs font-bold capitalize text-white"
+              translate="no"
             >
               {t("checkout")}
             </Link>
@@ -726,22 +727,22 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             <div className="mb-5 max-h-[300px] w-full border border-solid border-gray-300">
               <div className="w-full overflow-y-auto rounded-sm">
                 <div className="flex w-full">
-                  <div className="md:w-[25% w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm" dir={langDir}>
+                  <div className="md:w-[25% w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm" dir={langDir} translate="no">
                     {t("product")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[15%] md:text-sm" dir={langDir}>
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[15%] md:text-sm" dir={langDir} translate="no">
                     {t("delivery_date")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir}>
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir} translate="no">
                     {t("brand")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir}>
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir} translate="no">
                     {t("number_of_piece")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir}>
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir} translate="no">
                     {t("price")}
                   </div>
-                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir}>
+                  <div className="w-auto border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir} translate="no">
                     {t("address")}
                   </div>
                 </div>
@@ -755,7 +756,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
                 {!allRfqQuotesQuery?.isLoading && !quoteProducts?.length ? (
                   <div className="my-2 space-y-2 py-10">
-                    <p className="text-center text-sm font-normal text-gray-500" dir={langDir}>
+                    <p className="text-center text-sm font-normal text-gray-500" dir={langDir} translate="no">
                       {t("no_data_found")}
                     </p>
                   </div>
@@ -853,7 +854,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                   </div>
                 </div>
               </div>
-              {showEmoji && (
+              {showEmoji ? (
                 <div className="mt-2 w-full border-t border-solid">
                   <EmojiPicker
                     lazyLoadEmojis={true}
@@ -861,9 +862,9 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     className="mt-2"
                   />
                 </div>
-              )}
+              ) : null}
 
-              {!isAttachmentUploading && attachments.length > 0 && (
+              {!isAttachmentUploading && attachments.length > 0 ? (
                 <div className="mt-2 flex w-full flex-wrap gap-2">
                   {attachments.map((file: any, index: any) => (
                     <div
@@ -880,7 +881,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     </div>
                   ))}
                 </div>
-              )}
+              ) : null}
             </div>
           ) : (
             ""

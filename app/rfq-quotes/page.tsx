@@ -146,18 +146,18 @@ const RfqQuotesPage = () => {
         </div>
         <div className="container m-auto px-3">
           <div className="headerpart">
-            <h2 dir={langDir}>{t("rfq_product")}</h2>
+            <h2 dir={langDir} translate="no">{t("rfq_product")}</h2>
           </div>
           <div className="rfq-product-list-card">
             <div className="table-responsive theme-table-s1 min-h-[400px]">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead dir={langDir}>{t("product")}</TableHead>
-                    <TableHead dir={langDir}>{t("rfq_id")}</TableHead>
-                    <TableHead dir={langDir}>{t("delivery_date")}</TableHead>
-                    <TableHead dir={langDir}>{t("no_of_quote")}</TableHead>
-                    <TableHead className="text-center" dir={langDir}>{t("action")}</TableHead>
+                    <TableHead dir={langDir} translate="no">{t("product")}</TableHead>
+                    <TableHead dir={langDir} translate="no">{t("rfq_id")}</TableHead>
+                    <TableHead dir={langDir} translate="no">{t("delivery_date")}</TableHead>
+                    <TableHead dir={langDir} translate="no">{t("no_of_quote")}</TableHead>
+                    <TableHead className="text-center" dir={langDir} translate="no">{t("action")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -227,6 +227,7 @@ const RfqQuotesPage = () => {
                                   href={`/rfq-request?rfqQuotesId=${item?.id}`}
                                   className="td-dots-dropdown-item flex items-center gap-1"
                                   dir={langDir}
+                                  translate="no"
                                 >
                                   <CgDetailsMore height={24} width={24} />
                                   {t("view")}
@@ -239,6 +240,7 @@ const RfqQuotesPage = () => {
                                   setSelectedProductId(item?.id);
                                 }}
                                 dir={langDir}
+                                translate="no"
                               >
                                 <Image
                                   src={TrashIcon}
@@ -268,7 +270,7 @@ const RfqQuotesPage = () => {
 
               {!memoizedRfqQuotesProducts.length &&
               !rfqQuotesByBuyerIdQuery.isLoading ? (
-                <p className="py-10 text-center text-sm font-medium" dir={langDir}>
+                <p className="py-10 text-center text-sm font-medium" dir={langDir} translate="no">
                   {t("no_product_found")}
                 </p>
               ) : null}

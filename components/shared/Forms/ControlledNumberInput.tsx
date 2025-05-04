@@ -33,7 +33,7 @@ const ControlledNumberInput: React.FC<ControlledNumberInputProps> = ({
                     "mt-2 flex w-full flex-col gap-y-1",
                     props.className || ""
                 )}>
-                    {showLabel && <FormLabel>{label}</FormLabel>}
+                    {showLabel ? <FormLabel>{label}</FormLabel> : null}
                     <FormControl>
                         <Input
                             {...props}

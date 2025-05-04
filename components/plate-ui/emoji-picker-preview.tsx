@@ -67,9 +67,9 @@ export function EmojiPickerPreview({
 
   return (
     <>
-      {showPreview && <EmojiPreview emoji={emoji} {...props} />}
-      {showPickEmoji && <PickAnEmoji i18n={i18n} {...props} />}
-      {showNoEmoji && <NoEmoji i18n={i18n} {...props} />}
+      {showPreview ? <EmojiPreview emoji={emoji} {...props} /> : null}
+      {showPickEmoji ? <PickAnEmoji i18n={i18n} {...props} /> : null}
+      {showNoEmoji ? <NoEmoji i18n={i18n} {...props} /> : null}
     </>
   );
 }

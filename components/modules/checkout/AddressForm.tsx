@@ -254,7 +254,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   return (
     <>
       <div className="modal-header !justify-between" dir={langDir}>
-        <DialogTitle className="text-center text-xl font-bold">
+        <DialogTitle className="text-center text-xl font-bold" translate="no">
           {`${addressId}` ? t("edit_address") : t("add_address")}
         </DialogTitle>
         <Button
@@ -276,6 +276,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
               name="firstName"
               placeholder={t("enter_first_name")}
               dir={langDir}
+              translate="no"
             />
 
             <ControlledTextInput
@@ -283,6 +284,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
               name="lastName"
               placeholder={t("enter_last_name")}
               dir={langDir}
+              translate="no"
             />
           </div>
 
@@ -301,12 +303,13 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
               name="address"
               placeholder={t("address")}
               dir={langDir}
+              translate="no"
             />
           </div>
 
           <div className="mt-3 grid w-full grid-cols-1 gap-1 md:grid-cols-2">
             <div style={{ zIndex: 9999999 }}>
-              <Label>{t("country")}</Label>
+              <Label translate="no">{t("country")}</Label>
               <Controller
                 name="countryId"
                 control={form.control}
@@ -340,7 +343,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             </div>
 
             <div style={{ zIndex: 999999 }}>
-              <Label>{t("state")}</Label>
+              <Label translate="no">{t("state")}</Label>
               <Controller
                 name="stateId"
                 control={form.control}
@@ -376,7 +379,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
 
           <div className="mt-3 grid w-full grid-cols-1 gap-1 md:grid-cols-2">
             <div style={{ zIndex: 99999 }}>
-              <Label>{t("city")}</Label>
+              <Label translate="no">{t("city")}</Label>
               <Controller
                 name="cityId"
                 control={form.control}
@@ -407,7 +410,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             </div>
 
             <div>
-              <Label>{t("town")}</Label>
+              <Label translate="no">{t("town")}</Label>
               <ControlledTextInput
                 className="mt-0"
                 label={t("town")}
@@ -416,13 +419,14 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
                 placeholder={t("town")}
                 onWheel={(e) => e.currentTarget.blur()}
                 dir={langDir}
+                translate="no"
               />
             </div>
           </div>
 
           <div className="mt-3 grid w-full grid-cols-1 gap-1 md:grid-cols-2">
             <div>
-              <Label>{t("postcode")}</Label>
+              <Label translate="no">{t("postcode")}</Label>
               <ControlledTextInput
                 className="mt-0"
                 label={t("postcode")}
@@ -431,6 +435,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
                 placeholder={t("postcode")}
                 onWheel={(e) => e.currentTarget.blur()}
                 dir={langDir}
+                translate="no"
               />
             </div>
           </div>
@@ -440,6 +445,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             type="submit"
             className="theme-primary-btn mt-3 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
             dir={langDir}
+            translate="no"
           >
             {createAddress.isPending || updateAddress.isPending ? (
               <LoaderWithMessage message="Please wait" />

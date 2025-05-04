@@ -126,6 +126,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
               href="/profile"
               className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
               dir={langDir}
+              translate="no"
             >
               <Image
                 src={EditIcon}
@@ -167,7 +168,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
           </ul>
         </div>
         <div className="text-normal mt-5 w-full text-sm font-normal leading-4 text-gray-500">
-          <p dir={langDir}>{t("business_type")}</p>
+          <p dir={langDir} translate="no">{t("business_type")}</p>
           {userDetails?.userBranch?.[0]?.userBranchBusinessType?.map(
             (item: any) => (
               <span
@@ -182,7 +183,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
         </div>
         <div className="mt-5 flex w-full flex-wrap items-center justify-between">
           <div className="my-2 text-sm font-normal leading-4 text-gray-500">
-            <p dir={langDir}>
+            <p dir={langDir} translate="no">
               {t("freelancer_id")}:
               <span className="text-base font-medium leading-4 text-gray-600" dir={langDir}>
                 {userDetails?.uniqueId
@@ -207,7 +208,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
               onChange={handleTimeChange}
               value={userDetails?.onlineOffline || "0"}
             >
-              <option value="" dir={langDir}>{t("select")}</option>
+              <option value="" dir={langDir} translate="no">{t("select")}</option>
               <option value="0" disabled={userDetails?.onlineOffline === "0"} dir={langDir}>
                 Offline
               </option>

@@ -67,21 +67,22 @@ const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
               href="/factories-cart"
               className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
               dir={langDir}
+              translate="no"
             >
               {t("go_to_factories_cart")}
             </Link>
           </div>
         ) : null}
 
-        <h4 className="text-center" dir={langDir}>
+        <h4 className="text-center" dir={langDir} translate="no">
           {t("your_factories_cart")} ({t("n_items", { n: memoizedFactoriseCartList.length })})
         </h4>
 
-        {!memoizedFactoriseCartList.length && (
-          <div className="my-10 text-center">
+        {!memoizedFactoriseCartList.length ? (
+          <div className="my-10 text-center" translate="no">
             <h4 dir={langDir}>{t("no_cart_items")}</h4>
           </div>
-        )}
+        ) : null}
 
         {memoizedFactoriseCartList.map((item: any) => (
           <FactoriesCartMenuCard

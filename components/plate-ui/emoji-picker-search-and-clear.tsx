@@ -23,7 +23,7 @@ export function EmojiPickerSearchAndClear({
       >
         <Icons.search />
       </span>
-      {searchValue && (
+      {searchValue ? (
         <button
           title={i18n.clear}
           aria-label="Clear"
@@ -35,7 +35,7 @@ export function EmojiPickerSearchAndClear({
         >
           <Icons.clear className="size-full" />
         </button>
-      )}
+      ) : null}
     </>
   );
 }

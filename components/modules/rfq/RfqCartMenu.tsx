@@ -51,21 +51,22 @@ const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
               href="/rfq-cart"
               className="flex justify-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
               dir={langDir}
+              translate="no"
             >
               {t("go_to_rfq_cart")}
             </Link>
           </div>
         ) : null}
 
-        <h4 className="text-center" dir={langDir}>
+        <h4 className="text-center" dir={langDir} translate="no">
           {t("your_rfq_cart")} ({t("n_items", { n: cartList.length })})
         </h4>
 
-        {!cartList.length && (
-          <div className="my-10 text-center" dir={langDir}>
+        {!cartList.length ? (
+          <div className="my-10 text-center" dir={langDir} translate="no">
             <h4>{t("no_cart_items")}</h4>
           </div>
-        )}
+        ) : null}
 
         {cartList.map((item: any) => (
           <RfqCartMenuCard

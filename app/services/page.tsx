@@ -343,7 +343,7 @@ const Services = ({ searchParams }: ServicesProps) => {
 
     return (
         <>
-            <title dir={langDir}>{t("store")} | Ultrasooq</title>
+            <title dir={langDir} translate="no">{t("store")} | Ultrasooq</title>
             <div className="body-content-s1">
                 {/* <TrendingCategories /> */}
 
@@ -353,10 +353,10 @@ const Services = ({ searchParams }: ServicesProps) => {
                     <div className="container m-auto px-3">
                         {/* <div className={productFilter ? "left-filter show" : "left-filter"} dir={langDir}>
               <div className="all_select_button">
-                <button type="button" onClick={selectAll}>
+                <button type="button" onClick={selectAll} translate="no">
                   {t("select_all")}
                 </button>
-                <button type="button" onClick={clearFilter}>
+                <button type="button" onClick={clearFilter} translate="no">
                   {t("clean_select")}
                 </button>
               </div>
@@ -366,7 +366,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                 className="filter-col"
               >
                 <AccordionItem value="brand">
-                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir} translate="no">
                     {t("by_brand")}
                   </AccordionTrigger>
                   <AccordionContent>
@@ -377,12 +377,13 @@ const Services = ({ searchParams }: ServicesProps) => {
                         className="custom-form-control-s1 searchInput rounded-none"
                         onChange={handleDebounce}
                         dir={langDir}
+                        translate="no"
                       />
                     </div>
                     <div className="filter-body-part">
                       <div className="filter-checklists">
                         {!memoizedBrands.length ? (
-                          <p className="text-center text-sm font-medium" dir={langDir}>
+                          <p className="text-center text-sm font-medium" dir={langDir} translate="no">
                             {t("no_data_found")}
                           </p>
                         ) : null}
@@ -412,7 +413,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                 </AccordionItem>
 
                 <AccordionItem value="price">
-                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir} translate="no">
                     {t("price")}
                   </AccordionTrigger>
                   <AccordionContent>
@@ -445,6 +446,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                           className="mb-4"
                           onClick={() => setPriceRange([])}
                           dir={langDir}
+                          translate="no"
                         >
                           {t("clear")}
                         </Button>
@@ -493,7 +495,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                       id="all_products"
                       checked={displayMyProducts == "0"}
                     />
-                    <Label htmlFor="all_products" className="text-base" dir={langDir}>
+                    <Label htmlFor="all_products" className="text-base" dir={langDir} translate="no">
                       {t("all_products")}
                     </Label>
                   </div>
@@ -503,7 +505,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                       id="my_products"
                       checked={displayMyProducts == "1"}
                     />
-                    <Label htmlFor="my_products" className="text-base" dir={langDir}>
+                    <Label htmlFor="my_products" className="text-base" dir={langDir} translate="no">
                       {t("my_products")}
                     </Label>
                   </div>
@@ -513,6 +515,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                                 <h2
                                     className="text-2xl font-medium capitalize text-color-dark"
                                     dir={langDir}
+                                    translate="no"
                                 >
                                     {t("services")}
                                 </h2>
@@ -525,6 +528,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                                             onChange={handleSearchService}
                                             // ref={searchInputRef}
                                             dir={langDir}
+                                            translate="no"
                                         />
                                     </li>
                                     <li className="flex">
@@ -532,8 +536,9 @@ const Services = ({ searchParams }: ServicesProps) => {
                                             className="theme-primary-btn add-btn p-2"
                                             onClick={() => router.replace("/cart")}
                                             dir={langDir}
+                                            translate="no"
                                         >
-                                            <span className="d-none-mobile">{t("go_to_cart")}</span>
+                                            <span className="d-none-mobile" translate="no">{t("go_to_cart")}</span>
                                         </button>
                                     </li>
                                 </ul>
@@ -542,7 +547,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                                 <div className="le-info">
                                 </div>
                                 <div className="rg-filter">
-                                    <p dir={langDir}>
+                                    <p dir={langDir} translate="no">
                                         {t("n_services_found", {
                                             n: allServicesQuery.data?.data?.total,
                                         })}
@@ -555,10 +560,10 @@ const Services = ({ searchParams }: ServicesProps) => {
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectGroup>
-                                                        <SelectItem value="desc" dir={langDir}>
+                                                        <SelectItem value="desc" dir={langDir} translate="no">
                                                             {t("sort_by_latest")}
                                                         </SelectItem>
-                                                        <SelectItem value="asc" dir={langDir}>
+                                                        <SelectItem value="asc" dir={langDir} translate="no">
                                                             {t("sort_by_oldest")}
                                                         </SelectItem>
                                                     </SelectGroup>
@@ -606,7 +611,7 @@ const Services = ({ searchParams }: ServicesProps) => {
                             ) : null}
 
                             {!memoizedServicesList.length && !allServicesQuery.isLoading ? (
-                                <p className="text-center text-sm font-medium" dir={langDir}>
+                                <p className="text-center text-sm font-medium" dir={langDir} translate="no">
                                     {t("no_data_found")}
                                 </p>
                             ) : null}

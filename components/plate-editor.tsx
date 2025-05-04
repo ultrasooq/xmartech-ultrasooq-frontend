@@ -58,9 +58,9 @@ export default function PlateEditor({
                 "[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4",
               )}
             >
-              {fixedToolbar && <FixedToolbar>
+              {fixedToolbar ? (<FixedToolbar>
                 <FixedToolbarButtons />
-              </FixedToolbar>}
+              </FixedToolbar>) : null}
               <Editor
                 className="px-[15px] py-[15px] lg:px-[96px] lg:py-16"
                 autoFocus

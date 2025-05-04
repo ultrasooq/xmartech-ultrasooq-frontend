@@ -84,7 +84,7 @@ const BuyerProfileDetailsPage = () => {
         <div className="container relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
-              <h2 className="text-4xl font-semibold leading-10 text-color-dark" dir={langDir}>
+              <h2 className="text-4xl font-semibold leading-10 text-color-dark" dir={langDir} translate="no">
                 {t("my_profile")}
               </h2>
             </div>
@@ -96,6 +96,7 @@ const BuyerProfileDetailsPage = () => {
                 onClick={handleRoleModal}
                 className="theme-primary-btn addbtn"
                 dir={langDir}
+                translate="no"
               >
                 {t("update")}
               </button>
@@ -108,6 +109,7 @@ const BuyerProfileDetailsPage = () => {
                     value="profile-info"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("profile_info")}
                   </TabsTrigger>

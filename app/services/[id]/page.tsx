@@ -579,7 +579,7 @@ const ServiceDetailsPage = () => {
 
     return (
         <>
-            <title dir={langDir}>{t("store")} | Ultrasooq</title>
+            <title dir={langDir} translate="no">{t("store")} | Ultrasooq</title>
             <div className="body-content-s1 relative">
                 <div className="product-view-s1-left-right type2">
                     <div className="container m-auto px-3">
@@ -696,6 +696,7 @@ const ServiceDetailsPage = () => {
                                             value="description"
                                             className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                                             dir={langDir}
+                                            translate="no"
                                         >
                                             {t("description")}
                                         </TabsTrigger>
@@ -703,6 +704,7 @@ const ServiceDetailsPage = () => {
                                             value="specification"
                                             className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                                             dir={langDir}
+                                            translate="no"
                                         >
                                             {t("specification")}
                                         </TabsTrigger> */}
@@ -710,6 +712,7 @@ const ServiceDetailsPage = () => {
                                             value="vendor"
                                             className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                                             dir={langDir}
+                                            translate="no"
                                         >
                                             {t("vendor")}
                                         </TabsTrigger>
@@ -717,6 +720,7 @@ const ServiceDetailsPage = () => {
                                             value="reviews"
                                             className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                                             dir={langDir}
+                                            translate="no"
                                         >
                                             {t("reviews")}
                                         </TabsTrigger>
@@ -724,6 +728,7 @@ const ServiceDetailsPage = () => {
                                             value="qanda"
                                             className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                                             dir={langDir}
+                                            translate="no"
                                         >
                                             {t("questions")}
                                         </TabsTrigger>
@@ -731,6 +736,7 @@ const ServiceDetailsPage = () => {
                                             value="offers"
                                             className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                                             dir={langDir}
+                                            translate="no"
                                         >
                                             {t("more_offers")}
                                         </TabsTrigger>
@@ -756,7 +762,7 @@ const ServiceDetailsPage = () => {
                                             ) : null}
                                             {serviceDetails?.product_productSpecification?.length ? (
                                                 <div className="specification-sec">
-                                                    <h2 dir={langDir}>{t("specification")}</h2>
+                                                    <h2 dir={langDir} translate="no">{t("specification")}</h2>
                                                     <table className="specification-table">
                                                         <tbody>
                                                             <tr className="grid grid-cols-2">
@@ -833,7 +839,7 @@ const ServiceDetailsPage = () => {
                     </div>
                 </div>
 
-                {isVisible && (
+                {isVisible ? (
                     <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 md:w-[300px]">
                         <div className="card-item cart-items">
                             <div className="inline-flex w-full items-center justify-center pt-5 text-center">
@@ -842,6 +848,7 @@ const ServiceDetailsPage = () => {
                                     className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
                                     onClick={handleCartPage}
                                     dir={langDir}
+                                    translate="no"
                                 >
                                     {t("go_to_cart_page")}
                                 </a>
@@ -851,7 +858,7 @@ const ServiceDetailsPage = () => {
                                     !cartListByUser.data?.data?.length &&
                                     !cartListByUser.isLoading ? (
                                     <div className="px-3 py-6">
-                                        <p className="my-3 text-center" dir={langDir}>
+                                        <p className="my-3 text-center" dir={langDir} translate="no">
                                             {t("no_cart_items")}
                                         </p>
                                     </div>
@@ -861,7 +868,7 @@ const ServiceDetailsPage = () => {
                                     !cartListByDeviceQuery.data?.data?.length &&
                                     !cartListByDeviceQuery.isLoading ? (
                                     <div className="px-3 py-6">
-                                        <p className="my-3 text-center" dir={langDir}>
+                                        <p className="my-3 text-center" dir={langDir} translate="no">
                                             {t("no_cart_items")}
                                         </p>
                                     </div>
@@ -910,7 +917,7 @@ const ServiceDetailsPage = () => {
                             </div>
                         </div>
                     </div>
-                )}
+                ) : null}
 
                 {/* <div className="product-view-s1-details-more-suggestion-sliders">
                     <RelatedProductsSection

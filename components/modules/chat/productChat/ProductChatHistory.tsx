@@ -88,7 +88,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                             ))}
                           </div>
                         )}
-                        {chat?.content && (
+                        {chat?.content ? (
                           <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
                             <p
                               dangerouslySetInnerHTML={{
@@ -96,7 +96,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                               }}
                             />
                           </div>
-                        )}
+                        ) : null}
 
                       </div>
 
@@ -122,7 +122,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                       {/* <Image src={UserChatIcon} alt="user-chat-icon" /> */}
                     </div>
                   </div>
-                ) : (chat?.attachments?.length > 0 || chat?.content) && (
+                ) : (chat?.attachments?.length > 0 || chat?.content) ? (
                   <div className="mt-5 flex w-full flex-wrap items-end">
                     <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
                       <span className="flex h-full w-full items-center justify-center">
@@ -132,7 +132,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                     <div className="w-[calc(100%-2rem)] pl-2">
                       <div className="mb-1 inline-block w-auto rounded-xl p-3 text-left text-sm">
 
-                        {chat?.attachments?.length > 0 && (
+                        {chat?.attachments?.length > 0 ? (
                           <div className="mb-2 w-full">
                             {chat?.attachments.map((file: any, index: any) => (
                               <div
@@ -142,9 +142,9 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                                 <div className="flex-1">
                                   {file?.fileType.includes("imag") && file?.presignedUrl ? (
                                     <img src={file?.presignedUrl} className="w-full max-w-sm h-auto" />
-                                  ) : file?.fileType.includes("video") && file?.presignedUrl && (
+                                  ) : file?.fileType.includes("video") && file?.presignedUrl ? (
                                     <video src={file?.presignedUrl} className="w-full max-w-sm h-auto" controls />
-                                  )}
+                                  ) : null}
                                   <p className="mr-2 truncate">{file.fileName}</p>
                                   <p className="mr-2 truncate text-xs italic">
                                     {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
@@ -157,9 +157,9 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                               </div>
                             ))}
                           </div>
-                        )}
+                        ) : null}
 
-                        {chat?.content && (
+                        {chat?.content ? (
                           <div className="inline-block w-auto rounded-xl bg-[#F1F2F6] p-3 text-right text-sm">
                             <p
                               dangerouslySetInnerHTML={{
@@ -167,7 +167,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                               }}
                             />
                           </div>
-                        )}
+                        ) : null}
                       </div>
                       <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
                         <span>
@@ -181,12 +181,12 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                       </div>
                     </div>
                   </div>
-                )}
+                ) : null}
               </div>
             ))}
           </div>
         ) : (
-          <div className="mt-5 flex w-full flex-wrap items-end" dir={langDir}>
+          <div className="mt-5 flex w-full flex-wrap items-end" dir={langDir} translate="no">
             {chatHistoryLoading ? "Loading..." : t("no_chat_history_found")}
           </div>
         )}

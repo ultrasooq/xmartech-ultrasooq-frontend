@@ -21,7 +21,7 @@ export function FloatingToolbarButtons() {
 
   return (
     <>
-      {!readOnly && (
+      {!readOnly ? (
         <>
           <TurnIntoDropdownMenu />
 
@@ -49,7 +49,7 @@ export function FloatingToolbarButtons() {
 
           <LinkToolbarButton />
         </>
-      )}
+      ) : null}
 
       <CommentToolbarButton />
 

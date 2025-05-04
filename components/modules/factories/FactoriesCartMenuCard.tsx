@@ -159,6 +159,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
               onRemove(factoriesCartId);
             }}
             dir={langDir}
+            translate="no"
           >
             {t("remove")}
           </Button>

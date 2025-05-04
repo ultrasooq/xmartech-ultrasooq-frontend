@@ -59,7 +59,7 @@ const WishlistPage = () => {
 
   return (
     <>
-      <title dir={langDir}>{t("wishlist")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">{t("wishlist")} | Ultrasooq</title>
       <section className="w-full py-[50px]">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image src={BannerImage} alt="background-banner" fill />
@@ -74,17 +74,17 @@ const WishlistPage = () => {
               >
                 <MdOutlineChevronLeft size="24" />
               </Button>
-              <h3 className="text-3xl font-semibold" dir={langDir}>{t("my_wishlist")}</h3>
+              <h3 className="text-3xl font-semibold" dir={langDir} translate="no">{t("my_wishlist")}</h3>
             </div>
             <div className="min-h-[400px] rounded-2xl border border-solid border-[#E4E3E3] bg-white p-4 shadow-[0px_4px_23px_0px_#EEF1F5]">
               {wishlistQuery.data?.data?.length ? (
-                <p className="px-5 text-xl font-medium" dir={langDir}>
+                <p className="px-5 text-xl font-medium" dir={langDir} translate="no">
                   {t("my_wishlist")} {wishlistQuery.data?.data?.length} items
                 </p>
               ) : null}
 
               {!wishlistQuery.isLoading && !wishlistQuery.data?.data?.length ? (
-                <p className="mt-10 text-center text-xl font-medium" dir={langDir}>
+                <p className="mt-10 text-center text-xl font-medium" dir={langDir} translate="no">
                   {t("no_wishlist_items")}
                 </p>
               ) : null}

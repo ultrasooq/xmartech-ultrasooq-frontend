@@ -301,7 +301,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           <p>{productName}</p>
         </Link>
       </div>
-      {productPrices?.[0]?.offerPrice && (
+      {productPrices?.[0]?.offerPrice ? (
         <h5 className="py-1 text-[#1D77D1]">
           {currency.symbol}
           {calculateDiscountedPrice()}{" "}
@@ -310,8 +310,8 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
             {productPrices?.[0]?.offerPrice}
           </span>
         </h5>
-      )}
-      {productVariants.length > 0 && <div className="mb-2">
+      ) : null}
+      {productVariants.length > 0 ? (<div className="mb-2">
         <label dir={langDir}>{productVariants[0].type}</label>
         <select
           className="w-full"
@@ -327,9 +327,9 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
             return <option key={index} value={variant.value} dir={langDir}>{variant.value}</option>;
           })}
         </select>
-      </div>}
+      </div>) : null}
       <div className="quantity_wrap mb-2">
-        <label dir={langDir}>{t("quantity")}</label>
+        <label dir={langDir} translate="no">{t("quantity")}</label>
         <div className="qty-up-down-s1-with-rgMenuAction">
           <div className="flex items-center gap-x-3 md:gap-x-3">
             <Button
@@ -388,27 +388,29 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
       </div>
 
       <div className="cart_button">
-        {cartId && (
+        {cartId ? (
           <button
             type="button"
             className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
             dir={langDir}
+            translate="no"
           >
             <FaCircleCheck color="#00C48C" />
             {t("added_to_cart")}
           </button>
-        )}
-        {!cartId && (
+        ) : null}
+        {!cartId ? (
           <button
             type="button"
             className="add_to_cart_button"
             onClick={() => handleAddToCart(quantity, "add")}
             disabled={quantity == 0 || updateCartWithLogin?.isPending}
             dir={langDir}
+            translate="no"
           >
             {t("add_to_cart")}
           </button>
-        )}
+        ) : null}
       </div>
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent

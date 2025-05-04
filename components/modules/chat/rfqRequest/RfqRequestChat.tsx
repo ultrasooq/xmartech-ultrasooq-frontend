@@ -689,7 +689,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
       <div className="flex w-full flex-wrap rounded-sm border border-solid border-gray-300">
         <div className="w-full border-r border-solid border-gray-300 lg:w-[15%]">
           <div className="flex min-h-[55px] w-full items-center border-b border-solid border-gray-300 px-[5px] py-[5px] text-base font-normal text-[#333333] md:px-[10px] md:py-[10px]">
-            <span dir={langDir}>{t("request_for_rfq")}</span>
+            <span dir={langDir} translate="no">{t("request_for_rfq")}</span>
           </div>
           <RequestProductCard
             rfqId={rfqQuoteId}
@@ -700,7 +700,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         </div>
         <div className="w-full border-r border-solid border-gray-300 lg:w-[18%]">
           <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-            <span dir={langDir}>{t("vendor_lists")}</span>
+            <span dir={langDir} translate="no">{t("vendor_lists")}</span>
           </div>
           <div className="h-auto w-full overflow-y-auto p-4 lg:h-[720px]">
             {allRfqQuotesQuery?.isLoading ? (
@@ -713,7 +713,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
 
             {!allRfqQuotesQuery?.isLoading && !vendorList?.length ? (
               <div className="my-2 space-y-2">
-                <p className="text-center text-sm font-normal text-gray-500" dir={langDir}>
+                <p className="text-center text-sm font-normal text-gray-500" dir={langDir} translate="no">
                   {t("no_data_found")}
                 </p>
               </div>
@@ -739,7 +739,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         </div>
         <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
           <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-            <span dir={langDir}>
+            <span dir={langDir} translate="no">
               {t("offering_price")}{" "}
               <b className="text-[#679A03]">
                 {selectedVendor?.offerPrice
@@ -751,6 +751,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
               href="#"
               className="inline-block rounded-sm bg-dark-orange px-3 py-2 text-xs font-bold capitalize text-white"
               dir={langDir}
+              translate="no"
             >
               {t("checkout")}
             </Link>
@@ -759,22 +760,22 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             <div className="mb-5 max-h-[300px] w-full border-solid border-gray-300">
               <div className="w-full overflow-y-auto rounded-sm border">
                 <div className="flex w-full">
-                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[25%] md:text-sm" dir={langDir}>
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[25%] md:text-sm" dir={langDir} translate="no">
                     {t("product")}
                   </div>
-                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[15%] md:text-sm" dir={langDir}>
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[15%] md:text-sm" dir={langDir} translate="no">
                     {t("delivery_date")}
                   </div>
-                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir}>
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir} translate="no">
                     {t("brand")}
                   </div>
-                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir}>
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir} translate="no">
                     {t("number_of_piece")}
                   </div>
-                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir}>
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[10%] md:text-sm" dir={langDir} translate="no">
                     {t("price")}
                   </div>
-                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir}>
+                  <div className="w-auto whitespace-nowrap border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:w-[20%] md:text-sm" dir={langDir} translate="no">
                     {t("address")}
                   </div>
                 </div>
@@ -789,7 +790,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 {!rfqQuotesUsersByBuyerIdQuery?.isLoading &&
                 !selectedVendor?.rfqQuotesProducts?.length ? (
                   <div className="my-2 space-y-2 py-10">
-                    <p className="text-center text-sm font-normal text-gray-500" dir={langDir}>
+                    <p className="text-center text-sm font-normal text-gray-500" dir={langDir} translate="no">
                       {t("no_data_found")}
                     </p>
                   </div>
@@ -885,13 +886,13 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
               </div>
             </div>
 
-            {showEmoji && (
+            {showEmoji ? (
               <div className="mt-2 w-full border-t border-solid">
                 <EmojiPicker onEmojiClick={onEmojiClick} className="mt-2" />
               </div>
-            )}
+            ) : null}
 
-            {!isAttachmentUploading && attachments.length > 0 && (
+            {!isAttachmentUploading && attachments.length > 0 ? (
               <div className="mt-2 flex w-full flex-wrap gap-2">
                 {attachments.map((file: any, index: any) => (
                   <div
@@ -908,7 +909,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                   </div>
                 ))}
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

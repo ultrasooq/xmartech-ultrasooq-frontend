@@ -187,7 +187,7 @@ const OrdersPage = () => {
       <div className="container m-auto px-3">
         <div className="headerPart" dir={langDir}>
           <div className="lediv">
-            <h3>{t("make_payment")}</h3>
+            <h3 translate="no">{t("make_payment")}</h3>
           </div>
         </div>
         <div className="cart-page-wrapper">
@@ -205,30 +205,30 @@ const OrdersPage = () => {
             <div className="card-item priceDetails">
               <div className="card-inner-headerPart" dir={langDir}>
                 <div className="lediv">
-                  <h3 dir={langDir}>{t("price_details")}</h3>
+                  <h3 dir={langDir} translate="no">{t("price_details")}</h3>
                 </div>
               </div>
               <div className="priceDetails-body">
                 <ul>
                   <li>
-                    <p dir={langDir}>{t("subtotal")}</p>
+                    <p dir={langDir} translate="no">{t("subtotal")}</p>
                     <h5>{currency.symbol}{calculateTotalAmount() || 0}</h5>
                   </li>
                   {advanceAmount !== "" ? 
                   <>
                     <li>
-                      <p dir={langDir}>{t("advance_payment")}</p>
+                      <p dir={langDir} translate="no">{t("advance_payment")}</p>
                       <h5>{currency.symbol}{advanceAmount || 0}</h5>
                     </li>
                     <li>
-                        <p dir={langDir}>{t("shipping")}</p>
-                        <h5  dir={langDir}>{t("free")}</h5>
+                        <p dir={langDir} translate="no">{t("shipping")}</p>
+                        <h5  dir={langDir} translate="no">{t("free")}</h5>
                       </li></>
                   : null }
                 </ul>
               </div>
               <div className="priceDetails-footer">
-                <h4 dir={langDir}>{t("total_amount")}</h4>
+                <h4 dir={langDir} translate="no">{t("total_amount")}</h4>
                 <h4 className="amount-value">
                 {advanceAmount !== "" ? (advanceAmount || 0) : (calculateTotalAmount() || 0)}
                   </h4> <br />

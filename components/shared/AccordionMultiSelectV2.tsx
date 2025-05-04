@@ -90,7 +90,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
                 </p>
               ))}
               {!(watcher || [])?.length ? (
-                <p className="capitalize">{t("select")} {placeholder}</p>
+                <p className="capitalize" translate="no">{t("select")} {placeholder}</p>
               ) : null}
             </div>
           </AccordionTrigger>
@@ -106,9 +106,9 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
                 ></Input>
               </FormControl>
             </FormItem>
-            {canCreate && filteredOptions.length == 0 && <div className="mb-4">
+            {canCreate && filteredOptions.length == 0 ? (<div className="mb-4">
               <a href="javascript:void(0)" onClick={e => addNew(search)} style={{ cursor: 'pointer' }}>Add {`"${search}"`}</a>
-            </div>}
+            </div>) : null}
             <div className="flex flex-col" dir={langDir}>
               {filteredOptions.map((item) => (
                 <FormField

@@ -75,7 +75,7 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission
   return (
     <>
       <div className="modal-header !justify-between" dir={langDir}>
-        <DialogTitle className="text-center text-xl font-bold">
+        <DialogTitle className="text-center text-xl font-bold" translate="no">
           {roleDetails ? t('edit_role') : t('add_role') }
         </DialogTitle>
         <Button
@@ -97,11 +97,13 @@ const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission
             name="userRoleName"
             placeholder={t("name_placeholder")}
             dir={langDir}
+            translate="no"
           />
 
           <Button
             type="submit"
             className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+            translate="no"
           >
              {roleDetails ? t('edit_role') : t("add_role") }
           </Button>

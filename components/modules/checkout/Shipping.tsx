@@ -66,7 +66,7 @@ const Shipping: React.FC<ShippingProps> = ({
     return (
         <>
             <div className="modal-header !justify-between" dir={langDir}>
-                <DialogTitle className="text-center text-xl font-bold">
+                <DialogTitle className="text-center text-xl font-bold" translate="no">
                     {t("shipping")}
                 </DialogTitle>
                 <Button
@@ -86,9 +86,9 @@ const Shipping: React.FC<ShippingProps> = ({
                         <table cellPadding={0} cellSpacing={0} border={0}>
                             <thead>
                                 <tr>
-                                    <th dir={langDir}>{t("name")}</th>
-                                    <th dir={langDir}>{t("price")}</th>
-                                    <th dir={langDir}>{t("action")}</th>
+                                    <th dir={langDir} translate="no">{t("name")}</th>
+                                    <th dir={langDir} translate="no">{t("price")}</th>
+                                    <th dir={langDir} translate="no">{t("action")}</th>
                                 </tr>
                             </thead>
 
@@ -105,6 +105,7 @@ const Shipping: React.FC<ShippingProps> = ({
                                                         onSelect(Number(sellerId), item);
                                                         onClose();
                                                     }}
+                                                    translate="no"
                                                 >
                                                     {t("select")}
                                                 </Button>
@@ -118,28 +119,28 @@ const Shipping: React.FC<ShippingProps> = ({
                 ) : null}
 
                 {!servicesBySeller?.isLoading && !servicesByOtherSeller?.isLoading && !services.length ? (
-                    <p className="py-10 text-center text-sm font-medium" dir={langDir}>
+                    <p className="py-10 text-center text-sm font-medium" dir={langDir} translate="no">
                         {t("no_data_found")}
                     </p>
                 ) : null}
 
-                {servicesBySeller.data?.totalCount > limit && (
+                {servicesBySeller.data?.totalCount > limit ? (
                     <Pagination
                         page={page}
                         setPage={setPage}
                         totalCount={servicesBySeller.data?.totalCount}
                         limit={limit}
                     />
-                )}
+                ) : null}
 
-                {servicesByOtherSeller.data?.totalCount > limit && (
+                {servicesByOtherSeller.data?.totalCount > limit ? (
                     <Pagination
                         page={page}
                         setPage={setPage}
                         totalCount={servicesByOtherSeller.data?.totalCount}
                         limit={limit}
                     />
-                )}
+                ) : null}
             </div>
         </>
     );

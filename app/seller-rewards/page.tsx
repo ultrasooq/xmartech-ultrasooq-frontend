@@ -51,9 +51,9 @@ const SellerRewardsPage = () => {
             <div className="container relative z-10 m-auto px-3">
                 <div className="flex w-full flex-wrap">
                     <div className="team_members_heading w-full" dir={langDir}>
-                        <h1>{t("seller_rewards")}</h1>
+                        <h1 translate="no">{t("seller_rewards")}</h1>
                         <div className="flex justify-end gap-3">
-                            <button type="button" onClick={() => setIsSellerRewardFormModalOpen(true)}>
+                            <button type="button" onClick={() => setIsSellerRewardFormModalOpen(true)} translate="no">
                                 {t("create_seller_reward")}
                             </button>
                         </div>
@@ -65,14 +65,14 @@ const SellerRewardsPage = () => {
                                 <table cellPadding={0} cellSpacing={0} border={0}>
                                     <thead>
                                         <tr>
-                                            <th>{t("product")}</th>
-                                            <th>{t("start_time")}</th>
-                                            <th>{t("end_time")}</th>
-                                            <th>{t("reward_amount")}</th>
-                                            <th>{t("reward_percentage")}</th>
-                                            <th>{t("minimum_order")}</th>
-                                            <th>{t("stock")}</th>
-                                            <th>{t("action")}</th>
+                                            <th translate="no">{t("product")}</th>
+                                            <th translate="no">{t("start_time")}</th>
+                                            <th translate="no">{t("end_time")}</th>
+                                            <th translate="no">{t("reward_amount")}</th>
+                                            <th translate="no">{t("reward_percentage")}</th>
+                                            <th translate="no">{t("minimum_order")}</th>
+                                            <th translate="no">{t("stock")}</th>
+                                            <th translate="no">{t("action")}</th>
                                         </tr>
                                     </thead>
 
@@ -109,19 +109,19 @@ const SellerRewardsPage = () => {
                         ) : null}
 
                         {!sellerRewardsQuery?.isLoading && !sellerRewards.length ? (
-                            <p className="py-10 text-center text-sm font-medium" dir={langDir}>
+                            <p className="py-10 text-center text-sm font-medium" dir={langDir} translate="no">
                                 {t("no_data_found")}
                             </p>
                         ) : null}
 
-                        {sellerRewardsQuery.data?.totalCount > limit && (
+                        {sellerRewardsQuery.data?.totalCount > limit ? (
                             <Pagination
                                 page={page}
                                 setPage={setPage}
                                 totalCount={sellerRewardsQuery.data?.totalCount}
                                 limit={limit}
                             />
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </div>

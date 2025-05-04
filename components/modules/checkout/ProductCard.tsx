@@ -85,7 +85,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <figcaption>
             <h4 className="!text-lg !font-bold">{productName}</h4>
             <div className="custom-form-group">
-              <label dir={langDir}>{t("quantity")}</label>
+              <label dir={langDir} translate="no">{t("quantity")}</label>
               <div className="qty-up-down-s1-with-rgMenuAction">
                 <div className="flex items-center gap-x-4">
                   <Button
@@ -123,6 +123,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                       className="px-2 underline"
                       onClick={() => onRemove(cartId)}
                       dir={langDir}
+                      translate="no"
                     >
                       {t("remove")}
                     </Button>
@@ -134,6 +135,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         className="px-2 underline"
                         onClick={() => onWishlist(productId)}
                         dir={langDir}
+                        translate="no"
                       >
                         {t("move_to_wishlist")}
                       </Button>
@@ -145,13 +147,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </figcaption>
         </figure>
         <div className="right-info">
-          <h6 dir={langDir}>{t("price")}</h6>
+          <h6 dir={langDir} translate="no">{t("price")}</h6>
           <h5 dir={langDir}>{currency.symbol}{quantity * calculateDiscountedPrice()}</h5>
         </div>
       </div>
       <div>
-        {invalidProduct && <p className="text-[13px] text-red-500 p-2">{t("you_cant_buy_this_product")}</p>}
-        {cannotBuy && <p className="text-[13px] text-red-500 p-2">{t("product_not_available_for_your_location")}</p>}
+        {invalidProduct ? <p className="text-[13px] text-red-500 p-2" translate="no">
+          {t("you_cant_buy_this_product")}
+        </p> : null}
+        {cannotBuy ? <p className="text-[13px] text-red-500 p-2" translate="no">
+          {t("product_not_available_for_your_location")}
+        </p> : null}
       </div>
     </>
   );

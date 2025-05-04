@@ -72,7 +72,7 @@ const SellerRfqRequestPage = () => {
                     className="brightness-0 invert"
                   />
                 </div>
-                <div className="pl-1 text-sm font-medium" dir={langDir}>{t("rfq")}</div>
+                <div className="pl-1 text-sm font-medium" dir={langDir} translate="no">{t("rfq")}</div>
               </button>
             </li>
             <li
@@ -93,12 +93,12 @@ const SellerRfqRequestPage = () => {
                     className="brightness-0 invert"
                   />
                 </div>
-                <div className="pl-1 text-sm font-medium" dir={langDir}>
+                <div className="pl-1 text-sm font-medium" dir={langDir} translate="no">
                   {t("vendor_operations")}
                 </div>
               </button>
             </li>
-            {productId && (
+            {productId ? (
               <li
                 onClick={() => setCurrentTab("MSG")}
                 className={cn(
@@ -119,7 +119,7 @@ const SellerRfqRequestPage = () => {
                   <div className="pl-1 text-sm font-medium">Messages</div>
                 </button>
               </li>
-            )}
+            ) : null}
           </ul>
         </div>
       </div>
@@ -129,7 +129,7 @@ const SellerRfqRequestPage = () => {
         ) : productId ? (
           <ProductChat productId={productId} />
         ) : null}
-        {currentTab === "Vendor Operations" && <VendorOperations />}
+        {currentTab === "Vendor Operations" ? <VendorOperations /> : null}
       </div>
     </section>
   );

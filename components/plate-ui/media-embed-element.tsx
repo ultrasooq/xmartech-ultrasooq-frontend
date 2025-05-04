@@ -104,7 +104,7 @@ export const MediaEmbedElement = withHOC(
                 )
               ) : null}
 
-              {isTweet && (
+              {isTweet ? (
                 <div
                   className={cn(
                     '[&_.react-tweet-theme]:my-0',
@@ -115,7 +115,7 @@ export const MediaEmbedElement = withHOC(
                 >
                   <Tweet id={embed!.id!} />
                 </div>
-              )}
+              ) : null}
 
               <ResizeHandle
                 options={{ direction: 'right' }}

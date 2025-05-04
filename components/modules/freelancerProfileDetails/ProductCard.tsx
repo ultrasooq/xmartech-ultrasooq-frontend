@@ -375,6 +375,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               type="button"
               className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
               dir={langDir}
+              translate="no"
             >
               {t("ask_vendor_for_price")}
             </button>
@@ -393,7 +394,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
       </div>
 
-      {productVariants.length > 0 && <div className="mb-2">
+      {productVariants.length > 0 ? (<div className="mb-2">
         <label dir={langDir}>{productVariants[0].type}</label>
         <select
           className="w-full"
@@ -409,10 +410,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             return <option key={index} value={variant.value} dir={langDir}>{variant.value}</option>;
           })}
         </select>
-      </div>}
+      </div>) : null}
 
       <div className="quantity_wrap mb-2">
-        <label dir={langDir}>{t("quantity")}</label>
+        <label dir={langDir} translate="no">{t("quantity")}</label>
         <div className="qty-up-down-s1-with-rgMenuAction">
           <div className="flex items-center gap-x-3 md:gap-x-4">
             <Button
@@ -464,18 +465,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       <div className="cart_button">
-        {isAddedToCart && (
+        {isAddedToCart ? (
           <button
             type="button"
             className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
             disabled={false}
             dir={langDir}
+            translate="no"
           >
             <FaCircleCheck color="#00C48C" />
             {t("added_to_cart")}
           </button>
-        )}
-        {!isAddedToCart && (
+        ) : null}
+        {!isAddedToCart ? (
           <button
             type="button"
             className="add_to_cart_button"
@@ -486,10 +488,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
               updateCartWithLogin?.isPending
             }
             dir={langDir}
+            translate="no"
           >
             {t("add_to_cart")}
           </button>
-        )}
+        ) : null}
       </div>
 
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>

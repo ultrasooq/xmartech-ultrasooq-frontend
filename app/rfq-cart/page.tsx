@@ -174,11 +174,11 @@ const RfqCartPage = () => {
               >
                 <MdOutlineChevronLeft />
               </button>
-              <h3 dir={langDir}>{t("rfq_cart_items")}</h3>
+              <h3 dir={langDir} translate="no">{t("rfq_cart_items")}</h3>
             </div>
             <div className="bodyPart">
               <div className="add-delivery-card">
-                <h3 dir={langDir}>{t("add_delivery_address_date")}</h3>
+                <h3 dir={langDir} translate="no">{t("add_delivery_address_date")}</h3>
                 <Form {...form}>
                   <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
                     <ControlledSelectInput
@@ -189,7 +189,7 @@ const RfqCartPage = () => {
                     />
 
                     <div>
-                      <Label dir={langDir}>{t("date")}</Label>
+                      <Label dir={langDir} translate="no">{t("date")}</Label>
                       <ControlledDatePicker name="rfqDate" isFuture placeholder={t("enter_date")} />
                     </div>
                   </form>
@@ -197,7 +197,7 @@ const RfqCartPage = () => {
               </div>
 
               <div className="rfq-cart-item-lists">
-                <h4 dir={langDir}>{t("rfq_cart_items")}</h4>
+                <h4 dir={langDir} translate="no">{t("rfq_cart_items")}</h4>
                 <div className="rfq-cart-item-ul">
                   {memoizedRfqCartList.map((item: any) => (
                     <RfqProductCard
@@ -219,7 +219,7 @@ const RfqCartPage = () => {
 
                   {!memoizedRfqCartList.length ? (
                     <div className="my-10 text-center">
-                      <h4 dir={langDir}>{t("no_cart_items")}</h4>
+                      <h4 dir={langDir} translate="no">{t("no_cart_items")}</h4>
                     </div>
                   ) : null}
                 </div>
@@ -229,6 +229,7 @@ const RfqCartPage = () => {
                   disabled={!memoizedRfqCartList.length || addQuotes.isPending}
                   className="theme-primary-btn submit-btn"
                   onClick={form.handleSubmit(onSubmit)}
+                  translate="no"
                 >
                   {addQuotes.isPending ? (
                     <>

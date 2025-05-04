@@ -56,7 +56,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
 
   return (
     <div className="my-order-card">
-      <h5 className="mb-2" dir={langDir}>
+      <h5 className="mb-2" dir={langDir} translate="no">
         {t("order_id")}: <span className="font-semibold" dir={langDir}>{orderId}</span>
       </h5>
       <div className="my-order-box">
@@ -80,10 +80,10 @@ const OrderCard: React.FC<OrderCardProps> = ({
         </Link>
         <div className="center-price-info">
           <h4>{currency.symbol}{Number(purchasePrice) * (orderQuantity ?? 0)}</h4>
-          <p className="text-gray-500">{t("quantity")} x {orderQuantity || 0}</p>
+          <p className="text-gray-500" translate="no">{t("quantity")} x {orderQuantity || 0}</p>
         </div>
         <div className="right-info" dir={langDir}>
-          <h4>
+          <h4 translate="no">
             {orderStatus === "CONFIRMED" ? (
               <>
                 <BiCircle color="green" />
@@ -123,6 +123,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
               href={`/trending/${productId}?type=reviews`}
               className="ratingLink"
               dir={langDir}
+              translate="no"
             >
               <PiStarFill />
               {t("rate_n_review_product")}

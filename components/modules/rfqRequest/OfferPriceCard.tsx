@@ -88,14 +88,14 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
                 type="number"
               />
               <div className="flex gap-1 mt-1">
-                <button onClick={handleSaveClick} className="text-blue-500">{t("save")}</button>
-                <button onClick={handleCancelClick} className="text-red-500">{t("cancel")}</button>
+                <button onClick={handleSaveClick} className="text-blue-500" translate="no">{t("save")}</button>
+                <button onClick={handleCancelClick} className="text-red-500" translate="no">{t("cancel")}</button>
               </div>
             </div>
           ) : (
             <div>
               {editedOfferPrice ? `${currency.symbol}${editedOfferPrice}` : "-"}
-              <button onClick={handleEditClick} className="ml-2 text-blue-500">{t("edit")}</button>
+              <button onClick={handleEditClick} className="ml-2 text-blue-500" translate="no">{t("edit")}</button>
             </div>
           )}
         </div>
@@ -103,18 +103,24 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
           {address || "-"}
         </div>
       </div>
-      {priceRequest?.status === "PENDING" && (
+      {priceRequest?.status === "PENDING" ? (
         <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4">
           <p className="mb-2 text-sm font-normal text-gray-500">
-            {t("requested_offer_price")}:
-            <span className="mx-7">{t("requested_price")}: {formatPrice(priceRequest?.requestedPrice, currency.symbol)}</span>
-            <span className="mr-7">{t("status")}: {capitalizeWord(priceRequest?.status)}</span>
-            <span>{t("date")}: {moment(priceRequest?.updatedAt).format('YYYY-MM-DD HH:mm A')}</span>
+            <span translate="no">{t("requested_offer_price")}:</span>
+            <span className="mx-7">
+              <span translate="no">{t("requested_price")}:</span>&nbsp; {formatPrice(priceRequest?.requestedPrice, currency.symbol)}
+            </span>
+            <span className="mr-7">
+              <span translate="no">{t("status")}:</span> {capitalizeWord(priceRequest?.status)}
+            </span>
+            <span>
+              <span translate="no">{t("date")}:</span> {moment(priceRequest?.updatedAt).format('YYYY-MM-DD HH:mm A')}
+            </span>
           </p>
         </div>
-      )}
+      ) : null}
       <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4" dir={langDir}>
-        <span className="mb-2 text-sm font-normal text-gray-500">
+        <span className="mb-2 text-sm font-normal text-gray-500" translate="no">
           {t("vendor_note")}:
         </span>
         <p className="text-sm font-normal text-black"> {note || "-"}</p>

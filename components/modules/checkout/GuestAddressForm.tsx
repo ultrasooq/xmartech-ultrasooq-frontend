@@ -203,7 +203,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
   return (
     <>
       <div className="modal-header">
-        <DialogTitle className="text-center text-xl font-bold">
+        <DialogTitle className="text-center text-xl font-bold" translate="no">
           {`${(addressType === "shipping" && guestShippingAddress) || (addressType === "billing" && guestBillingAddress) ? t("edit_address") : t("add_address")}`}
         </DialogTitle>
       </div>
@@ -218,6 +218,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
               name="firstName"
               placeholder={t("enter_first_name")}
               dir={langDir}
+              translate="no"
             />
 
             <ControlledTextInput
@@ -225,6 +226,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
               name="lastName"
               placeholder={t("enter_last_name")}
               dir={langDir}
+              translate="no"
             />
           </div>
 
@@ -243,12 +245,13 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
               name="address"
               placeholder={t("address")}
               dir={langDir}
+              translate="no"
             />
           </div>
 
           <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 mt-3">
             <div style={{ zIndex: 9999999 }}>
-              <Label>{t("country")}</Label>
+              <Label translate="no">{t("country")}</Label>
               <Controller
                 name="countryId"
                 control={form.control}
@@ -275,7 +278,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
             </div>
 
             <div style={{ zIndex: 999999 }}>
-              <Label>{t("state")}</Label>
+              <Label translate="no">{t("state")}</Label>
               <Controller
                 name="stateId"
                 control={form.control}
@@ -306,7 +309,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
 
           <div className="grid w-full grid-cols-1 gap-1 md:grid-cols-2 mt-3">
             <div style={{ zIndex: 99999 }}>
-              <Label>{t("city")}</Label>
+              <Label translate="no">{t("city")}</Label>
               <Controller
                 name="cityId"
                 control={form.control}
@@ -334,7 +337,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
             </div>
 
             <div>
-              <Label>{t("town")}</Label>
+              <Label translate="no">{t("town")}</Label>
               <ControlledTextInput
                 className="mt-0"
                 label={t("town")}
@@ -343,13 +346,14 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
                 placeholder={t("town")}
                 onWheel={(e) => e.currentTarget.blur()}
                 dir={langDir}
+                translate="no"
               />
             </div>
           </div>
 
           <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2 mt-2">
             <div>
-              <Label>{t("postcode")}</Label>
+              <Label translate="no">{t("postcode")}</Label>
               <ControlledTextInput
                 className="mt-0"
                 label={t("postcode")}
@@ -358,6 +362,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
                 placeholder={t("postcode")}
                 onWheel={(e) => e.currentTarget.blur()}
                 dir={langDir}
+                translate="no"
               />
             </div>
           </div>
@@ -366,6 +371,7 @@ const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-3"
             dir={langDir}
+            translate="no"
           >
             {(addressType === "shipping" && guestShippingAddress) ||
               (addressType === "billing" && guestBillingAddress)

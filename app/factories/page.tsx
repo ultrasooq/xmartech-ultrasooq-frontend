@@ -255,8 +255,8 @@ const FactoriesPage = () => {
   }, [accessToken]);
 
   return (
-    <>
-      <title dir={langDir}>{t("rfq")} | Ultrasooq</title>
+    <div>
+      <title dir={langDir} translate="no">{t("rfq")} | Ultrasooq</title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
@@ -266,10 +266,10 @@ const FactoriesPage = () => {
             <div className="rfq_main_box !justify-center">
               <div className="rfq_left" dir={langDir}>
                 <div className="all_select_button">
-                  <button type="button" onClick={selectAll}>
+                  <button type="button" onClick={selectAll} translate="no">
                     {t("select_all")}
                   </button>
-                  <button type="button" onClick={clearFilter}>
+                  <button type="button" onClick={clearFilter} translate="no">
                     {t("clean_select")}
                   </button>
                 </div>
@@ -282,7 +282,7 @@ const FactoriesPage = () => {
                 />
               </div>
               <div className="rfq_middle">
-                {me?.data?.data?.tradeRole != 'BUYER' && <RadioGroup
+                {me?.data?.data?.tradeRole != 'BUYER' ? (<RadioGroup
                   className="mb-3 flex flex-row gap-y-3"
                   value={displayMyProducts}
                   onValueChange={setDisplayMyProducts}
@@ -295,7 +295,7 @@ const FactoriesPage = () => {
                       id="all_products"
                       checked={displayMyProducts == "0"}
                     />
-                    <Label htmlFor="all_products" className="text-base" dir={langDir}>
+                    <Label htmlFor="all_products" className="text-base" dir={langDir} translate="no">
                       {t("all_products")}
                     </Label>
                   </div>
@@ -305,11 +305,11 @@ const FactoriesPage = () => {
                       id="my_products"
                       checked={displayMyProducts == "1"}
                     />
-                    <Label htmlFor="my_products" className="text-base" dir={langDir}>
+                    <Label htmlFor="my_products" className="text-base" dir={langDir} translate="no">
                       {t("my_products")}
                     </Label>
                   </div>
-                </RadioGroup>}
+                </RadioGroup>) : null}
                 <div className="rfq_middle_top">
                   <div className="rfq_search">
                     <input
@@ -319,6 +319,7 @@ const FactoriesPage = () => {
                       onChange={handleRfqDebounce}
                       ref={searchInputRef}
                       dir={langDir}
+                      translate="no"
                     />
                     <button type="button">
                       <Image
@@ -335,7 +336,7 @@ const FactoriesPage = () => {
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
                         <div className="products_sec_top_left">
-                          <h4 dir={langDir}>{t("trending_n_high_rate_product")}</h4>
+                          <h4 dir={langDir} translate="no">{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
                           <div className="trending_filter">
@@ -344,14 +345,14 @@ const FactoriesPage = () => {
                               defaultValue={sortBy}
                             >
                               <SelectTrigger className="custom-form-control-s1 bg-white">
-                                <SelectValue placeholder={t("sort_by")}  dir={langDir} />
+                                <SelectValue placeholder={t("sort_by")} dir={langDir} translate="no" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectItem value="newest" dir={langDir}>
+                                  <SelectItem value="newest" dir={langDir} translate="no">
                                     {t("sort_by_latest")}
                                   </SelectItem>
-                                  <SelectItem value="oldest" dir={langDir}>
+                                  <SelectItem value="oldest" dir={langDir} translate="no">
                                     {t("sort_by_oldest")}
                                   </SelectItem>
                                 </SelectGroup>
@@ -392,7 +393,7 @@ const FactoriesPage = () => {
 
                       {!factoriesProductsQuery?.data?.data?.length &&
                       !factoriesProductsQuery.isLoading ? (
-                        <p className="my-10 text-center text-sm font-medium" dir={langDir}>
+                        <p className="my-10 text-center text-sm font-medium" dir={langDir} translate="no">
                           {t("no_data_found")}
                         </p>
                       ) : null}
@@ -488,7 +489,7 @@ const FactoriesPage = () => {
         </div>
 
         {/* add to factories modal */}
-        {selectedCustomizedProduct?.id && <Dialog open={isAddToFactoryModalOpen} onOpenChange={handleToggleAddModal}>
+        {selectedCustomizedProduct?.id ? (<Dialog open={isAddToFactoryModalOpen} onOpenChange={handleToggleAddModal}>
           <DialogContent
             className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
             ref={wrapperRef}
@@ -505,11 +506,11 @@ const FactoriesPage = () => {
               }}
             />
           </DialogContent>
-        </Dialog>}
+        </Dialog>) : null}
 
       </section>
       <Footer />
-    </>
+    </div>
   );
 };
 

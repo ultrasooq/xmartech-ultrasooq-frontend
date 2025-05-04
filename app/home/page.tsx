@@ -456,13 +456,13 @@ function HomePage() {
         </div>
       </section>
 
-      {memoizedBuyGroupProducts?.length > 0 && (
+      {memoizedBuyGroupProducts?.length > 0 ? (
         <section className="w-full pb-8 pt-0">
           <div className="container m-auto px-3">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
                 <div className="flex flex-wrap items-center justify-start">
-                  <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                  <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
                     {t("deal_of_the_day")}
                   </h4>
                   {/* <span className="rounded bg-dark-orange px-3 py-1.5 text-sm font-medium capitalize text-white md:px-5 md:py-2.5 md:text-lg">
@@ -473,6 +473,7 @@ function HomePage() {
                   <Link
                     href="/buygroup"
                     className="mr-3.5 text-sm font-normal text-black underline sm:mr-0"
+                    translate="no"
                   >
                     {t("view_all")}
                   </Link>
@@ -503,7 +504,7 @@ function HomePage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
 
       {/* <section className="w-full py-8">
         <div className="container m-auto px-3">
@@ -593,13 +594,13 @@ function HomePage() {
         </div>
       </section>
 
-      {memoizedHomeDecorProducts?.length > 0 && (
+      {memoizedHomeDecorProducts?.length > 0 ? (
         <section className="w-full py-8">
           <div className="container m-auto">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                 <div className="flex flex-wrap items-center justify-start">
-                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
                     {t("home_decor")}
                   </h4>
                 </div>
@@ -668,6 +669,7 @@ function HomePage() {
                       router.push("/trending");
                     }}
                     className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                    translate="no"
                   >
                     {t("view_all")}
                   </a>
@@ -697,15 +699,15 @@ function HomePage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
 
-      {memoizedFashionBeautyProducts?.length > 0 && (
+      {memoizedFashionBeautyProducts?.length > 0 ? (
         <section className="w-full py-8">
           <div className="container m-auto">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                 <div className="flex flex-wrap items-center justify-start">
-                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
                     {t("fashion_n_beauty")}
                   </h4>
                 </div>
@@ -768,6 +770,7 @@ function HomePage() {
                       router.push("/trending");
                     }}
                     className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                    translate="no"
                   >
                     {t("view_all")}
                   </a>
@@ -797,15 +800,15 @@ function HomePage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
 
-      {memoizedConsumerElectronicsProducts.length > 0 && (
+      {memoizedConsumerElectronicsProducts.length > 0 ? (
         <section className="w-full py-8">
           <div className="container m-auto">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                 <div className="flex flex-wrap items-center justify-start">
-                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
                     {t("consumer_electronics")}
                   </h4>
                 </div>
@@ -875,6 +878,7 @@ function HomePage() {
                       router.push("/trending");
                     }}
                     className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                    translate="no"
                   >
                     {t("view_all")}
                   </a>
@@ -906,7 +910,7 @@ function HomePage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
 
       <Footer />
     </>

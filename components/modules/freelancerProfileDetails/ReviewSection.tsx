@@ -55,6 +55,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
           <h2
             className="mb-0 mr-7 text-2xl font-semibold leading-7 text-color-dark"
             dir={langDir}
+            translate="no"
           >
             {t("ratings_n_reviews")}
           </h2>
@@ -69,7 +70,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
               className="mt-1.5 w-auto text-sm font-medium leading-5 text-gray-500"
               dir={langDir}
             >
-              <p>
+              <p translate="no">
                 {t("based_on_n_reviews", {
                   n: reviewsQuery.data?.data?.length,
                 })}
@@ -84,6 +85,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
               type="button"
               onClick={handleToggleReviewModal}
               className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
+              translate="no"
             >
               <Image
                 src="/images/pen-icon.svg"
@@ -106,6 +108,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
               onClick={() => setSortType("newest")}
               className="block rounded-full border border-solid border-gray-300 px-2 text-sm font-medium text-gray-500"
               dir={langDir}
+              translate="no"
             >
               {t("newest")}
             </Button>
@@ -116,6 +119,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
               onClick={() => setSortType("highest")}
               className="block rounded-full border border-solid border-gray-300 px-2 text-sm font-medium text-gray-500"
               dir={langDir}
+              translate="no"
             >
               {t("highest")}
             </Button>
@@ -126,6 +130,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
               onClick={() => setSortType("lowest")}
               className="block rounded-full border border-solid border-gray-300 px-2 text-sm font-medium text-gray-500"
               dir={langDir}
+              translate="no"
             >
               {t("lowest")}
             </Button>
@@ -137,6 +142,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ sellerId }) => {
           <div
             className="w-full text-center text-sm font-bold text-dark-orange"
             dir={langDir}
+            translate="no"
           >
             {t("no_reviews_found")}
           </div>

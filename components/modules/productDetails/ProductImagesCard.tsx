@@ -259,6 +259,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 onClick={handleToCustomizeModal}
                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
                 dir={langDir}
+                translate="no"
               >
                 {t("send_to_customize")}
               </Button>
@@ -268,6 +269,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 onClick={onToCart}
                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
                 dir={langDir}
+                translate="no"
               >
                 {t("message_vendor")}
               </Button>
@@ -292,6 +294,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             type="button"
             className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
             dir={langDir}
+            translate="no"
           >
             {t("ask_vendor_for_price")}
           </Button>
@@ -304,6 +307,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             onClick={onAdd}
             className="h-14 max-w-[205px] flex-1 rounded-none bg-color-yellow text-base"
             disabled={isAddedToCart || cartQuantity == 0}
+            translate="no"
           >
             {isAddedToCart ? t("added_to_cart") : t("add_to_cart")}
           </Button>
@@ -312,6 +316,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             onClick={onToCart}
             className="h-14 max-w-[205px] flex-1 rounded-none bg-dark-orange text-base"
             dir={langDir}
+            translate="no"
           >
             {t("buy_now")}
           </Button>
@@ -321,6 +326,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               onClick={() => setIsSellerRewardDetailModalOpen(true)}
               className="h-14 flex-1 rounded-none bg-dark-orange text-base"
               dir={langDir}
+              translate="no"
             >
               {t("generate_share_link")}
             </Button>

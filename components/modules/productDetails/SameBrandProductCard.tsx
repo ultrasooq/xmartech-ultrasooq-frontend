@@ -185,6 +185,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
                 type="button"
                 className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
                 dir={langDir}
+                translate="no"
               >
                 {t("ask_vendor_for_price")}
               </button>

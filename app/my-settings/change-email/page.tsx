@@ -86,7 +86,7 @@ export default function ChangeEmailPage() {
       <div className="container relative z-10 m-auto">
         <div className="flex">
           <div className="w-full rounded-lg border border-solid border-gray-300 bg-white p-4 shadow-sm">
-            <h2 className="mb-4  text-[18px] font-semibold md:text-[22px]" dir={langDir}>
+            <h2 className="mb-4  text-[18px] font-semibold md:text-[22px]" dir={langDir} translate="no">
               {t("change_email")}
             </h2>
             <div className="w-full">
@@ -100,13 +100,14 @@ export default function ChangeEmailPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem className="mb-4 w-full" dir={langDir}>
-                        <FormLabel>{t("new_email")}</FormLabel>
+                        <FormLabel translate="no">{t("new_email")}</FormLabel>
                         <FormControl>
                           <Input
                             placeholder={t("enter_email")}
                             className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
                             {...field}
                             dir={langDir}
+                            translate="no"
                           />
                         </FormControl>
                         <FormMessage />
@@ -118,6 +119,7 @@ export default function ChangeEmailPage() {
                       disabled={changeEmail.isPending}
                       type="submit"
                       className="h-12 w-full rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:text-lg"
+                      translate="no"
                     >
                       {changeEmail.isPending ? (
                         <>

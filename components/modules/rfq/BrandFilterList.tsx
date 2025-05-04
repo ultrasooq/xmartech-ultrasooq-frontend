@@ -96,7 +96,7 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({
             className="filter-col"
           >
             <AccordionItem value="brand">
-              <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+              <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir} translate="no">
                 {t("by_brand")}
               </AccordionTrigger>
               <AccordionContent>
@@ -107,12 +107,13 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({
                     className="custom-form-control-s1 searchInput rounded-none"
                     onChange={handleDebounce}
                     dir={langDir}
+                    translate="no"
                   />
                 </div>
                 <div className="filter-body-part">
                   <div className="filter-checklists">
                     {!memoizedBrands.length ? (
-                      <p className="text-center text-sm font-medium" dir={langDir}>
+                      <p className="text-center text-sm font-medium" dir={langDir} translate="no">
                         {t("no_data_found")}
                       </p>
                     ) : null}

@@ -55,15 +55,15 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             <p className="text-xs font-medium text-gray-500">{answer.userName || ""}</p>
           </React.Fragment>
         )) : null}
-        {!answers?.length && (
+        {!answers?.length ? (
           <>
-            <p dir={langDir}>
+            <p dir={langDir} translate="no">
               <span className="mr-2 font-bold">A:</span>
               {t("no_answer_yet")}
             </p>
             <p className="text-xs font-medium text-gray-500"></p>
           </>
-        )}
+        ) : null}
 
         {/* {hasAccessToken && !answers?.length ? (
           <div className="!my-2 text-center">

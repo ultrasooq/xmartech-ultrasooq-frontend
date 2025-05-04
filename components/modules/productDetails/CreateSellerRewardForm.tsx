@@ -142,7 +142,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
     return (
         <>
             <div className="modal-header !justify-between">
-                <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+                <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
                     {t("create_seller_reward")}
                 </DialogTitle>
                 <Button
@@ -194,7 +194,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         name="rewardPercentage"
                         render={({ field }) => (
                             <FormItem dir={langDir}>
-                                <FormLabel>{t("reward_percentage")}</FormLabel>
+                                <FormLabel translate="no">{t("reward_percentage")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -213,7 +213,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         name="rewardFixAmount"
                         render={({ field }) => (
                             <FormItem dir={langDir}>
-                                <FormLabel>{t("reward_fix_amount")}</FormLabel>
+                                <FormLabel translate="no">{t("reward_fix_amount")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -232,7 +232,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         name="minimumOrder"
                         render={({ field }) => (
                             <FormItem dir={langDir}>
-                                <FormLabel>{t("minimum_order")}</FormLabel>
+                                <FormLabel translate="no">{t("minimum_order")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -251,7 +251,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         name="stock"
                         render={({ field }) => (
                             <FormItem dir={langDir}>
-                                <FormLabel>{t("stock")}</FormLabel>
+                                <FormLabel translate="no">{t("stock")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -269,6 +269,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         type="submit"
                         disabled={addSellerReward?.isPending}
                         className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                        translate="no"
                     >
                         {!addSellerReward?.isPending ? t("create_reward") : t("processing")}
                     </Button>

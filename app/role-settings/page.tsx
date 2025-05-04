@@ -116,20 +116,22 @@ const RoleSettingsPage = () => {
               <Link
                 href={"/team-members"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                translate="no"
               >
                 {t("team_members")}
               </Link>
               <Link
                 href={"/role-settings"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                translate="no"
               >
                 {t("role")}
               </Link>
             </ul>
           </div>
           <div className="team_members_heading w-full" dir={langDir}>
-            <h1 dir={langDir}>{t("role_settings")}</h1>
-            <button type="button" onClick={handleToggleAddModal} dir={langDir}>
+            <h1 dir={langDir} translate="no">{t("role_settings")}</h1>
+            <button type="button" onClick={handleToggleAddModal} dir={langDir} translate="no">
               <IoMdAdd /> {t("add_new_role")}
             </button>
           </div>
@@ -139,9 +141,9 @@ const RoleSettingsPage = () => {
                 <table cellPadding={0} cellSpacing={0} border={0}>
                   <thead>
                     <tr>
-                      <th dir={langDir}>{t("role_name")}</th>
-                      <th dir={langDir}>{t("permission")}</th>
-                      <th dir={langDir}>{t("action")}</th>
+                      <th dir={langDir} translate="no">{t("role_name")}</th>
+                      <th dir={langDir} translate="no">{t("permission")}</th>
+                      <th dir={langDir} translate="no">{t("action")}</th>
                     </tr>
                   </thead>
 
@@ -157,6 +159,7 @@ const RoleSettingsPage = () => {
                               handleOpenPermissionModal(item?.value)
                             }
                             dir={langDir}
+                            translate="no"
                           >
                             {t("setup_permission")}
                           </button>
@@ -191,19 +194,19 @@ const RoleSettingsPage = () => {
             ) : null}
 
             {!userRolesQuery?.isLoading && !memoizedUserRole.length ? (
-              <p className="py-10 text-center text-sm font-medium">
+              <p className="py-10 text-center text-sm font-medium" translate="no">
                 {t("no_roles_found")}
               </p>
             ) : null}
 
-            {userRolesQuery.data?.totalCount > limit && (
+            {userRolesQuery.data?.totalCount > limit ? (
               <Pagination
                 page={page}
                 setPage={setPage}
                 totalCount={userRolesQuery.data?.totalCount}
                 limit={limit}
               />
-            )}
+            ) : null}
           </div>
         </div>
       </div>
