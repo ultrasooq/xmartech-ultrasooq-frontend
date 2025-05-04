@@ -74,7 +74,7 @@ const formSchema = (t: any) => {
       .trim()
       .min(2, { message: t("gender_required") }),
     userName: z
-      .string()
+      .string({ invalid_type_error: t("username_required") })
       .trim()
       .min(5, { message: t("username_required") }),
     email: z

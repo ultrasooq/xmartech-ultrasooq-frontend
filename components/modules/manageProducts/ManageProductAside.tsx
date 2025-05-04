@@ -125,7 +125,6 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   };
 
   useEffect(() => {
-    console.log(prefilledData);
     if (prefilledData) {
       formContext.setValue('productCondition', prefilledData.productCondition);
       formContext.setValue('stock', prefilledData.stock);

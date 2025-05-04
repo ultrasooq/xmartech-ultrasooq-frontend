@@ -7,6 +7,7 @@ import { useCreateShareLink } from "@/apis/queries/seller-reward.queries";
 import { toast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { convertDateTime } from "@/utils/helper";
 
 type SellerRewardDetailProps = {
     reward: { [key: string]: string };
@@ -56,7 +57,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     {t("start_time")}
                 </label>
                 <Input
-                    value={reward.startTime}
+                    value={convertDateTime(reward.startTime)}
                     disabled={true}
                 />
 
@@ -64,7 +65,7 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
                     {t("end_time")}
                 </label>
                 <Input
-                    value={reward.endTime}
+                    value={convertDateTime(reward.endTime)}
                     disabled={true}
                 />
 

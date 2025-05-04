@@ -46,9 +46,9 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
     // Default values based on whether editing or adding a new member
     const addDefaultValues = {
         productId: "",
-        startDate: "", //undefined as unknown as Date,
+        startDate: undefined as unknown as Date,
         startTime: "",
-        endDate: "", //undefined as unknown as Date,
+        endDate: undefined as unknown as Date,
         endTime: "",
         rewardPercentage: 1,
         rewardFixAmount: 1,
@@ -81,19 +81,10 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
     }, [productsQuery?.data?.data]);
 
     const onSubmit = async (values: typeof addDefaultValues) => {
-        let startDateTime = values.startDate + ' ' + values.startTime + ':00';
-        let endDateTime = values.endDate + ' ' + values.endTime + ':00';
+        let startDateTime = values.startDate;
+        let endDateTime = values.endDate;
 
-        if (new Date(startDateTime).getTime() < new Date().getTime()) {
-            toast({
-                title: t("datetime_error"),
-                description: t("start_datetime_cant_be_in_past"),
-                variant: "danger",
-            });
-            return;
-        }
-
-        if (new Date(values.startDate).getTime() > new Date(values.endDate).getTime()) {
+        if (startDateTime.getTime() > endDateTime.getTime()) {
             toast({
                 title: t("datetime_error"),
                 description: t("start_date_cant_be_greater_than_end_date"),
@@ -102,7 +93,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
             return;
         }
 
-        if (values.startDate == values.endDate && new Date(startDateTime).getTime() >= new Date(endDateTime).getTime()) {
+        if (startDateTime.getTime() == endDateTime.getTime() && values.startTime >= values.endTime) {
             toast({
                 title: t("datetime_error"),
                 description: t("start_time_must_be_less_than_end_time"),
@@ -111,10 +102,27 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
             return;
         }
 
+        let startTime = values.startTime.split(':');
+        startDateTime.setHours(Number(startTime[0]));
+        startDateTime.setMinutes(Number(startTime[1]));
+
+        let endTime = values.endTime.split(':');
+        endDateTime.setHours(Number(endTime[0]));
+        endDateTime.setMinutes(Number(endTime[1]));
+
+        if (startDateTime.getTime() < new Date().getTime()) {
+            toast({
+                title: t("datetime_error"),
+                description: t("start_datetime_cant_be_in_past"),
+                variant: "danger",
+            });
+            return;
+        }
+
         const response = await addSellerReward.mutateAsync({
             productId: Number(values.productId),
-            startTime: startDateTime,
-            endTime: endDateTime,
+            startTime: startDateTime.toISOString(),
+            endTime: endDateTime.toISOString(),
             rewardPercentage: values.rewardPercentage,
             rewardFixAmount: values.rewardFixAmount,
             minimumOrder: values.minimumOrder,

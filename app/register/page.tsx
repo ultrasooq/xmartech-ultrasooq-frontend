@@ -87,9 +87,6 @@ const formSchema = z
       .trim()
       .min(1, {
         message: "Confirm Password is required",
-      })
-      .min(8, {
-        message: "Password must be longer than or equal to 8 characters",
       }),
     cc: z.string().trim(),
     phoneNumber: z

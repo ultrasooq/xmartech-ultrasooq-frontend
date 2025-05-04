@@ -414,7 +414,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         ) : null}
         {timeLeft ? (
-          <div className={`time_left ${language === "ar" ? "rtl" : "ltr"}`}>
+          <div className={`time_left ${language === "ar" ? "rtl" : "ltr"}`} translate="no">
             <span dir={language === "ar" ? "rtl" : "ltr"}>{timeLeft}</span>
           </div>
         ) : null}
@@ -651,7 +651,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <span className="w-full text-sm font-normal capitalize text-light-gray">
+                <span className="w-full text-sm font-normal capitalize text-light-gray" translate="no">
                   {t("sold")}: {sold}
                 </span>
               </>
@@ -674,7 +674,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </Button>
           </div>
           <div className="mb-4 mt-4 text-center">
-            <p className="text-dark-orange">
+            <p className="text-dark-orange" translate="no">
               {t("do_you_want_to_remove_this_item_from_cart")}
             </p>
             <div>
@@ -682,6 +682,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 type="button"
                 className="mr-2 bg-white text-red-500"
                 onClick={onCancelRemove}
+                translate="no"
               >
                 {t("cancel")}
               </Button>
@@ -689,6 +690,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 type="button"
                 className="bg-red-500"
                 onClick={onConfirmRemove}
+                translate="no"
               >
                 {t("remove")}
               </Button>
