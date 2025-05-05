@@ -392,9 +392,12 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                 <h5 dir={langDir} className="text-sm text-gray-800">
                                                     {feature.name}
                                                 </h5>
-                                                <p className="text-xs text-gray-500">
-                                                    {feature.serviceCostType.toLowerCase()} — ₹
-                                                    {feature.serviceCost}
+                                                <p className="text-xs text-gray-500" dir={langDir}>
+                                                    {feature.serviceCostType.toLowerCase()} —
+                                                    <span translate="no">
+                                                        {currency.symbol}
+                                                        {feature.serviceCost}
+                                                    </span>
                                                 </p>
                                             </div>
                                             {isSelected ? (

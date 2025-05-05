@@ -46,6 +46,8 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import { useCategoryStore } from "@/lib/categoryStore";
 import { useRouter } from "next/navigation";
 import { useCategory } from "@/apis/queries/category.queries";
+// @ts-ignore
+import { startDebugger } from "remove-child-node-error-debugger";
 // import { Metadata } from "next";
 
 // export const metadata: Metadata = {
@@ -340,6 +342,7 @@ function HomePage() {
     }
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
+  startDebugger();
   return (
     <>
       <section className="w-full py-8">
@@ -390,7 +393,7 @@ function HomePage() {
                       <b>Fluence</b> Minimal Speaker
                     </h3>
                     <p>Just Price</p>
-                    <h5 className="mb-5 text-lg font-semibold text-olive-green">
+                    <h5 className="mb-5 text-lg font-semibold text-olive-green" translate="no">
                       {currency.symbol}159.99
                     </h5>
                   </div>
@@ -415,7 +418,7 @@ function HomePage() {
                       20% OFF
                     </span>
                     <p>Just Price</p>
-                    <h5 className="mb-5 text-lg font-semibold text-olive-green">
+                    <h5 className="mb-5 text-lg font-semibold text-olive-green" translate="no">
                       {currency.symbol}159.99
                     </h5>
                   </div>
@@ -429,7 +432,7 @@ function HomePage() {
       <section className="w-full pb-4 pt-8">
         <div className="container m-auto px-3">
           <div className="flex flex-wrap">
-            <div className="mb-5 w-full">
+            <div className="mb-5 w-full" dir={langDir}>
               <h3 className="text-lg font-normal capitalize text-color-dark md:text-2xl">
                 Search Trending
               </h3>
@@ -565,10 +568,10 @@ function HomePage() {
                 </p>
               </div>
               <div className="w-12/12 flex flex-wrap content-center items-center px-3.5 sm:w-4/12 md:w-3/12" dir={langDir}>
-                <h6 className="mb-1.5 text-base font-medium uppercase text-color-dark line-through">
+                <h6 className="mb-1.5 text-base font-medium uppercase text-color-dark line-through" translate="no">
                   {currency.symbol}332.38
                 </h6>
-                <h4 className="w-full text-3xl font-medium uppercase text-olive-green">
+                <h4 className="w-full text-3xl font-medium uppercase text-olive-green" translate="no">
                   <span className="line-through">{currency.symbol}</span>219.05
                 </h4>
                 <div className="mt-5">
