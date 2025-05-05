@@ -108,8 +108,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [quantity, setQuantity] = useState(0);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
 
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
-  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
+  const handleConfirmDialog = () =>
+    setIsConfirmDialogOpen(!isConfirmDialogOpen);
   const confirmDialogRef = useRef(null);
   const [isClickedOutsideConfirmDialog] = useClickOutside(
     [confirmDialogRef],
@@ -182,7 +184,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
       });
 
       if (response.status) {
-        setQuantity(actionType === "add" && newQuantity === 0 ? 1 : newQuantity);
+        setQuantity(
+          actionType === "add" && newQuantity === 0 ? 1 : newQuantity,
+        );
         toast({
           title:
             actionType == "add"
@@ -215,7 +219,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         productVariant: variant || selectedProductVariant,
       });
       if (response.status) {
-        setQuantity(actionType === "add" && newQuantity === 0 ? 1 : newQuantity);
+        setQuantity(
+          actionType === "add" && newQuantity === 0 ? 1 : newQuantity,
+        );
         toast({
           title:
             actionType == "add"
@@ -375,7 +381,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
 
     const product = item.productPrices[0];
-    const startTimestamp = getLocalTimestamp(product.dateOpen, product.startTime);
+    const startTimestamp = getLocalTimestamp(
+      product.dateOpen,
+      product.startTime,
+    );
     const endTimestamp = getLocalTimestamp(product.dateClose, product.endTime);
 
     const updateCountdown = () => {
@@ -414,13 +423,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         ) : null}
         {timeLeft ? (
-          <div className={`time_left ${language === "ar" ? "rtl" : "ltr"}`} translate="no">
+          <div
+            className={`time_left ${language === "ar" ? "rtl" : "ltr"}`}
+            translate="no"
+          >
             <span dir={language === "ar" ? "rtl" : "ltr"}>{timeLeft}</span>
           </div>
         ) : null}
         <Link href={`/trending/${item.id}`}>
           {item?.askForPrice !== "true" && item.consumerDiscount ? (
-            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
+            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-3 text-white">
               <span>{item.consumerDiscount}%</span>
             </div>
           ) : null}
@@ -475,8 +487,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         ) : null}
 
         <Link href={`/trending/${item.id}`}>
-          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base"  dir={langDir}>
-            <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
+          <div
+            className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base"
+            dir={langDir}
+          >
+            <h4 className="mb-2.5 min-h-[43px] border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark md:min-h-max">
               {item.productName}
             </h4>
             <p title={item.shortDescription} className="truncate">
@@ -530,7 +545,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   {item.productProductPrice}
                 </span>
               </h5> */}
-
             </>
           )}
         </div>
@@ -546,7 +560,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   (variant: any) => variant.value == value,
                 );
                 setSelectedProductVariant(selectedVariant);
-                if (isAddedToCart) handleAddToCart(quantity, "add", selectedVariant);
+                if (isAddedToCart)
+                  handleAddToCart(quantity, "add", selectedVariant);
               }}
               dir={langDir}
             >
@@ -559,7 +574,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         ) : null}
         <div className="quantity_wrap mb-2">
-          <label dir={langDir} translate="no">{t("quantity")}</label>
+          <label dir={langDir} translate="no">
+            {t("quantity")}
+          </label>
           <div className="qty-up-down-s1-with-rgMenuAction">
             <div className="flex items-center gap-x-3 md:gap-x-4">
               <Button
@@ -638,26 +655,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : null}
         </div>
 
-        {sold !== undefined && sold !== null && item.productPrices?.[0]?.stock ? (
-          (() => {
-            const percentage = Number(
-              ((sold / (sold + item.productPrices[0].stock)) * 100).toFixed(),
-            );
-            return (
-              <>
-                <div className="mt-3 h-3 w-full bg-gray-300">
-                  <div
-                    className="h-full bg-color-yellow"
-                    style={{ width: `${percentage}%` }}
-                  />
-                </div>
-                <span className="w-full text-sm font-normal capitalize text-light-gray" translate="no">
-                  {t("sold")}: {sold}
-                </span>
-              </>
-            );
-          })()
-        ) : null}
+        {sold !== undefined && sold !== null && item.productPrices?.[0]?.stock
+          ? (() => {
+              const percentage = Number(
+                ((sold / (sold + item.productPrices[0].stock)) * 100).toFixed(),
+              );
+              return (
+                <>
+                  <div className="mt-3 h-3 w-full bg-gray-300">
+                    <div
+                      className="h-full bg-color-yellow"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <span
+                    className="w-full text-sm font-normal capitalize text-light-gray"
+                    translate="no"
+                  >
+                    {t("sold")}: {sold}
+                  </span>
+                </>
+              );
+            })()
+          : null}
       </div>
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent

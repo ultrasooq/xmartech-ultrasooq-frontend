@@ -63,7 +63,10 @@ const Footer = () => {
       <div className="container m-auto">
         <div className="flex flex-wrap">
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-3/12 lg:w-3/12">
-            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5" translate="no">
+            <h3
+              className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5"
+              translate="no"
+            >
               {t("quick_links")}
             </h3>
             <ul>
@@ -106,7 +109,10 @@ const Footer = () => {
             </ul>
           </div>
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-2/12 lg:w-3/12">
-            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5" translate="no">
+            <h3
+              className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5"
+              translate="no"
+            >
               {t("company")}
             </h3>
             <ul>
@@ -133,7 +139,10 @@ const Footer = () => {
             </ul>
           </div>
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-2/12 lg:w-2/12">
-            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5" translate="no">
+            <h3
+              className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5"
+              translate="no"
+            >
               {t("business")}
             </h3>
             <ul>
@@ -160,7 +169,11 @@ const Footer = () => {
             </ul>
           </div>
           <div className="mb-5 w-full px-3.5 sm:w-6/12 md:w-5/12 lg:w-4/12">
-            <h3 className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5" dir={langDir} translate="no">
+            <h3
+              className="mb-2 text-lg font-semibold capitalize text-color-dark md:mb-3.5"
+              dir={langDir}
+              translate="no"
+            >
               {t("newsletter")}
             </h3>
             <Form {...form}>
@@ -191,10 +204,16 @@ const Footer = () => {
         <div className="flex flex-wrap">
           <div className="flex w-full flex-wrap items-center justify-center border-t border-solid border-gray-200 px-3 py-5 md:px-0 lg:justify-between">
             <div className="mb-3 flex w-auto items-center justify-start text-base font-normal capitalize text-light-gray lg:mb-0">
-              <p dir={langDir} translate="no">©2021 Ultrasooq {t("all_rights_reserved")}</p>
+              <p dir={langDir} translate="no">
+                ©2021 Ultrasooq {t("all_rights_reserved")}
+              </p>
             </div>
             <div className="flex w-auto flex-wrap items-center justify-center text-base font-normal capitalize text-light-gray lg:justify-end">
-              <p className="w-full text-center sm:w-auto" dir={langDir} translate="no">
+              <p
+                className="w-full text-center sm:w-auto"
+                dir={langDir}
+                translate="no"
+              >
                 {t("payment_info")}:
               </p>
               <Image
@@ -212,9 +231,11 @@ const Footer = () => {
       <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
         <DialogContent className="md:!max-w-4xl">
           <DialogHeader className="border-b border-light-gray pb-3">
-            <DialogTitle className="text-center" dir={langDir} translate="no">{t("terms_of_use")}</DialogTitle>
+            <DialogTitle className="text-center" dir={langDir} translate="no">
+              {t("terms_of_use")}
+            </DialogTitle>
           </DialogHeader>
-          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark">
+          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto pr-2 text-sm font-normal leading-7 text-color-dark">
             <TermsContent />
           </DialogDescription>
         </DialogContent>
@@ -223,9 +244,11 @@ const Footer = () => {
       <Dialog open={isPrivacyModalOpen} onOpenChange={handleTogglePrivacyModal}>
         <DialogContent className="md:!max-w-4xl">
           <DialogHeader className="border-b border-light-gray pb-3">
-            <DialogTitle className="text-center" dir={langDir} translate="no">{t("privacy_policy")}</DialogTitle>
+            <DialogTitle className="text-center" dir={langDir} translate="no">
+              {t("privacy_policy")}
+            </DialogTitle>
           </DialogHeader>
-          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto text-sm font-normal leading-7 text-color-dark">
+          <DialogDescription className="max-h-[500px] min-h-[300px] overflow-y-auto pr-2 text-sm font-normal leading-7 text-color-dark">
             <PolicyContent />
           </DialogDescription>
         </DialogContent>

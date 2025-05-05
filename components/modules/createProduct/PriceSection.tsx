@@ -204,29 +204,39 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   useEffect(() => {
     let ipInfo = JSON.parse(window.localStorage.ipInfo ?? "{}");
     if (ipInfo.country_name) {
-      let country = countriesQuery?.data?.data?.find((item: any) => item.countryName.toLowerCase() == ipInfo.country_name.toLowerCase());
-      formContext.setValue('placeOfOriginId', country?.id);
+      let country = countriesQuery?.data?.data?.find(
+        (item: any) =>
+          item.countryName.toLowerCase() == ipInfo.country_name.toLowerCase(),
+      );
+      formContext.setValue("placeOfOriginId", country?.id);
     }
   }, [countriesQuery?.data?.data]);
 
   useEffect(() => {
     let ipInfo = JSON.parse(window.localStorage.ipInfo ?? "{}");
     if (ipInfo.country_name) {
-      let country = countriesNewQuery?.data?.data?.find((item: any) => item.name.toLowerCase() == ipInfo.country_name.toLowerCase());
+      let country = countriesNewQuery?.data?.data?.find(
+        (item: any) =>
+          item.name.toLowerCase() == ipInfo.country_name.toLowerCase(),
+      );
       if (activeProductType != "R") {
-        formContext.setValue('productCountryId', country?.id);
+        formContext.setValue("productCountryId", country?.id);
         setSelectedCountry(country?.id);
       }
-      if(country?.id) {
-        formContext.setValue('sellCountryIds', [{
-          label: country.name,
-          value: country.id
-        }]);
-        setSelectedCountries([{
-          label: country.name,
-          value: country.id
-        }]);
-      };
+      if (country?.id) {
+        formContext.setValue("sellCountryIds", [
+          {
+            label: country.name,
+            value: country.id,
+          },
+        ]);
+        setSelectedCountries([
+          {
+            label: country.name,
+            value: country.id,
+          },
+        ]);
+      }
     }
   }, [countriesNewQuery?.data?.data]);
 
@@ -259,9 +269,14 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         },
         (error) => {
           console.error("Error fetching location:", error);
-          let ipInfo = JSON.parse(window.localStorage.getItem('ipInfo') || '{}');
+          let ipInfo = JSON.parse(
+            window.localStorage.getItem("ipInfo") || "{}",
+          );
           if (ipInfo.latitude && ipInfo.longitude) {
-            setValue("productLatLng",  `${ipInfo.latitude}, ${ipInfo.longitude}`)
+            setValue(
+              "productLatLng",
+              `${ipInfo.latitude}, ${ipInfo.longitude}`,
+            );
           }
         },
       );
@@ -421,23 +436,29 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
     return Object.keys(SELL_TYPE_LIST).map((value: string, index: number) => {
       return {
         label: t(SELL_TYPE_LIST[index].label),
-        value: SELL_TYPE_LIST[index].value
+        value: SELL_TYPE_LIST[index].value,
       };
     });
   };
 
   const consumerTypes = () => {
-    return Object.keys(CONSUMER_TYPE_LIST).map((value: string, index: number) => {
-      return {
-        label: t(CONSUMER_TYPE_LIST[index].label),
-        value: CONSUMER_TYPE_LIST[index].value
-      };
-    });
+    return Object.keys(CONSUMER_TYPE_LIST).map(
+      (value: string, index: number) => {
+        return {
+          label: t(CONSUMER_TYPE_LIST[index].label),
+          value: CONSUMER_TYPE_LIST[index].value,
+        };
+      },
+    );
   };
 
   return (
     <div className="form-groups-common-sec-s1">
-      <h3 className={cn(activeProductType === "R" ? "!mb-0" : "")} dir={langDir} translate="no">
+      <h3
+        className={cn(activeProductType === "R" ? "!mb-0" : "")}
+        dir={langDir}
+        translate="no"
+      >
         {t("price")}
       </h3>
       {activeProductType !== "R" ? (
@@ -456,7 +477,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel dir={langDir} translate="no">{t("set_up_price")}</FormLabel>
+                    <FormLabel dir={langDir} translate="no">
+                      {t("set_up_price")}
+                    </FormLabel>
                   </div>
                 </FormItem>
               )}
@@ -470,7 +493,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           {activeProductType !== "R" ? (
             <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
               <div className="mt-2 flex flex-col gap-y-3">
-                <Label dir={langDir} translate="no">{t("consumer_type")}</Label>
+                <Label dir={langDir} translate="no">
+                  {t("consumer_type")}
+                </Label>
                 <Controller
                   name="productPriceList.[0].consumerType"
                   control={formContext.control}
@@ -498,7 +523,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               </div>
 
               <div className="mt-2 flex flex-col gap-y-3">
-                <Label dir={langDir} translate="no">{t("sell_type")}</Label>
+                <Label dir={langDir} translate="no">
+                  {t("sell_type")}
+                </Label>
                 <Controller
                   name="productPriceList.[0].sellType"
                   control={formContext.control}
@@ -529,7 +556,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           ) : null}
 
           <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
-            <div className="col-span-2 grid w-full grid-cols-2 gap-x-5 gap-y-4">
+            <div className="col-span-1 grid w-full grid-cols-2 gap-x-5 gap-y-4 md:col-span-2">
               {watchConsumerType === "EVERYONE" ||
               watchConsumerType === "CONSUMER" ? (
                 <>
@@ -540,7 +567,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   />
                   {watchConsumerDiscount > 0 ? (
                     <div className="flex w-full flex-col gap-y-2">
-                      <Label dir={langDir} translate="no">{t("discount_type")}</Label>
+                      <Label dir={langDir} translate="no">
+                        {t("discount_type")}
+                      </Label>
                       <Controller
                         name="productPriceList.[0].consumerDiscountType"
                         control={formContext.control}
@@ -587,7 +616,11 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                             <option value="FLAT" dir={langDir} translate="no">
                               {t("flat").toUpperCase()}
                             </option>
-                            <option value="PERCENTAGE" dir={langDir} translate="no">
+                            <option
+                              value="PERCENTAGE"
+                              dir={langDir}
+                              translate="no"
+                            >
                               {t("percentage").toUpperCase()}
                             </option>
                           </select>
@@ -602,7 +635,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             {watchSellType === "BUYGROUP" ? (
               <>
                 <div className="mb-4 w-full">
-                  <label dir={langDir} translate="no">{t("add_time")}</label>
+                  <label dir={langDir} translate="no">
+                    {t("add_time")}
+                  </label>
                   <Input
                     value={localTime} // Show the local time
                     readOnly // Make it read-only
@@ -765,7 +800,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       />
                     )}
                   />
-                  <Label dir={langDir} translate="no">{t("customize_product")}</Label>
+                  <Label dir={langDir} translate="no">
+                    {t("customize_product")}
+                  </Label>
                 </div>
 
                 <div className="flex flex-row items-center gap-x-3">
@@ -780,7 +817,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       />
                     )}
                   />
-                  <Label dir={langDir} translate="no">{t("ask_for_the_price")}</Label>
+                  <Label dir={langDir} translate="no">
+                    {t("ask_for_the_price")}
+                  </Label>
                 </div>
 
                 <div className="flex flex-row items-center gap-x-3">
@@ -795,7 +834,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       />
                     )}
                   />
-                  <Label dir={langDir} translate="no">{t("ask_for_the_stock")}</Label>
+                  <Label dir={langDir} translate="no">
+                    {t("ask_for_the_stock")}
+                  </Label>
                 </div>
               </>
             </div>
@@ -808,7 +849,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 name="productPrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel dir={langDir} translate="no">{t("product_price")}</FormLabel>
+                    <FormLabel dir={langDir} translate="no">
+                      {t("product_price")}
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
@@ -837,7 +880,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 name="offerPrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel dir={langDir} translate="no">{t("offer_price")}</FormLabel>
+                    <FormLabel dir={langDir} translate="no">
+                      {t("offer_price")}
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
@@ -867,7 +912,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                 name="productPriceList.[0].stock"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel dir={langDir} translate="no">{t("stock")}</FormLabel>
+                    <FormLabel dir={langDir} translate="no">
+                      {t("stock")}
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -921,7 +968,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           // </div>
           <>
             <div className="mt-2 flex flex-col gap-y-3">
-              <Label dir={langDir} translate="no">{t("select_country")}</Label>
+              <Label dir={langDir} translate="no">
+                {t("select_country")}
+              </Label>
               <Controller
                 name="productCountryId"
                 control={formContext.control}
@@ -955,7 +1004,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               {/* State Dropdown - Visible only if country is selected */}
               {selectedCountry ? (
                 <>
-                  <Label dir={langDir} translate="no">{t("select_state")}</Label>
+                  <Label dir={langDir} translate="no">
+                    {t("select_state")}
+                  </Label>
                   <Controller
                     name="productStateId"
                     control={formContext.control}
@@ -990,7 +1041,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
             {selectedState ? (
               <>
                 <div className="mt-2 flex flex-col gap-y-3">
-                  <Label dir={langDir} translate="no">{t("select_city")}</Label>
+                  <Label dir={langDir} translate="no">
+                    {t("select_city")}
+                  </Label>
                   <Controller
                     name="productCityId"
                     control={formContext.control}
@@ -1053,13 +1106,19 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         ) : null}
       </div>
       <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-1">
-        <Label className="text-[16px] font-semibold" dir={langDir} translate="no">
+        <Label
+          className="text-[16px] font-semibold"
+          dir={langDir}
+          translate="no"
+        >
           {t("where_to_sell")}
         </Label>
       </div>
       <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
         <div className="mt-2 flex flex-col gap-y-3">
-          <Label dir={langDir} translate="no">{t("select_multiple_country")}</Label>
+          <Label dir={langDir} translate="no">
+            {t("select_multiple_country")}
+          </Label>
           <Controller
             name="sellCountryIds"
             control={formContext.control}
@@ -1106,7 +1165,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         {/* Show States when at least one country is selected */}
         {selectedCountries.length > 0 ? (
           <div className="mt-2 flex flex-col gap-y-3">
-            <Label dir={langDir} translate="no">{t("select_multiple_state")}</Label>
+            <Label dir={langDir} translate="no">
+              {t("select_multiple_state")}
+            </Label>
             <Controller
               name="sellStateIds"
               control={formContext.control}
@@ -1145,7 +1206,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         {/* Show Cities when at least one state is selected */}
         {selectedStates.length > 0 ? (
           <div className="mt-2 flex flex-col gap-y-3">
-            <Label dir={langDir} translate="no">{t("select_multiple_city")}</Label>
+            <Label dir={langDir} translate="no">
+              {t("select_multiple_city")}
+            </Label>
             <Controller
               name="sellCityIds"
               control={formContext.control}
@@ -1170,7 +1233,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         ) : null}
 
         <div className="mt-2 flex flex-col gap-y-3">
-          <Label dir={langDir} translate="no">{t("place_of_origin")}</Label>
+          <Label dir={langDir} translate="no">
+            {t("place_of_origin")}
+          </Label>
           <Controller
             name="placeOfOriginId"
             control={formContext.control}

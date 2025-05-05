@@ -15,7 +15,15 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
-import { ALPHANUMERIC_REGEX, BUYGROUP_MENU_ID, FACTORIES_MENU_ID, RFQ_MENU_ID, STORE_MENU_ID, imageExtensions, videoExtensions } from "@/utils/constants";
+import {
+  ALPHANUMERIC_REGEX,
+  BUYGROUP_MENU_ID,
+  FACTORIES_MENU_ID,
+  RFQ_MENU_ID,
+  STORE_MENU_ID,
+  imageExtensions,
+  videoExtensions,
+} from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
@@ -26,24 +34,24 @@ const baseProductPriceItemSchema = (t: any) => {
   return z.object({
     consumerType: z.string().trim().optional(),
     sellType: z.string().trim().optional(),
-    consumerDiscount: z.coerce.number().optional().or(z.literal('')),
-    vendorDiscount: z.coerce.number().optional().or(z.literal('')),
+    consumerDiscount: z.coerce.number().optional().or(z.literal("")),
+    vendorDiscount: z.coerce.number().optional().or(z.literal("")),
     consumerDiscountType: z.coerce.string().optional(),
     vendorDiscountType: z.coerce.string().optional(),
-    minCustomer: z.coerce.number().optional().or(z.literal('')),
-    maxCustomer: z.coerce.number().optional().or(z.literal('')),
-    minQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
-    maxQuantityPerCustomer: z.coerce.number().optional().or(z.literal('')),
-    minQuantity: z.coerce.number().optional().or(z.literal('')),
-    maxQuantity: z.coerce.number().optional().or(z.literal('')),
+    minCustomer: z.coerce.number().optional().or(z.literal("")),
+    maxCustomer: z.coerce.number().optional().or(z.literal("")),
+    minQuantityPerCustomer: z.coerce.number().optional().or(z.literal("")),
+    maxQuantityPerCustomer: z.coerce.number().optional().or(z.literal("")),
+    minQuantity: z.coerce.number().optional().or(z.literal("")),
+    maxQuantity: z.coerce.number().optional().or(z.literal("")),
     dateOpen: z.coerce.string().optional(),
     dateClose: z.coerce.string().optional(),
     startTime: z.coerce.string().optional(),
-    endTime: z.coerce.string().optional().or(z.literal('')),
-    timeOpen: z.coerce.number().optional().or(z.literal('')),
+    endTime: z.coerce.string().optional().or(z.literal("")),
+    timeOpen: z.coerce.number().optional().or(z.literal("")),
     timeClose: z.coerce.number().optional(),
-    deliveryAfter: z.coerce.number().optional().or(z.literal('')),
-    stock: z.coerce.number().optional().or(z.literal('')),
+    deliveryAfter: z.coerce.number().optional().or(z.literal("")),
+    stock: z.coerce.number().optional().or(z.literal("")),
   });
 };
 
@@ -54,7 +62,10 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
         .string()
         .trim()
         .min(1, { message: t("consumer_type_is_required") }),
-      sellType: z.string().trim().min(1, { message: t("sell_type_is_required") }),
+      sellType: z
+        .string()
+        .trim()
+        .min(1, { message: t("sell_type_is_required") }),
       consumerDiscount: z.coerce
         .number()
         .max(100, { message: t("consumer_discount_must_be_less_than_100") }),
@@ -66,7 +77,8 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
         .min(1, { message: t("delivery_after_is_required") }),
     })
     .refine(
-      ({ minQuantity, maxQuantity, sellType }) => sellType != 'BUYGROUP' ||
+      ({ minQuantity, maxQuantity, sellType }) =>
+        sellType != "BUYGROUP" ||
         (minQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)) ||
         (maxQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)),
       {
@@ -76,10 +88,16 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
     )
     .refine(
       ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
-        (minQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)) ||
-        (maxQuantityPerCustomer && Number(minQuantityPerCustomer || 0) < Number(maxQuantityPerCustomer || 0)),
+        (minQuantityPerCustomer &&
+          Number(minQuantityPerCustomer || 0) <
+            Number(maxQuantityPerCustomer || 0)) ||
+        (maxQuantityPerCustomer &&
+          Number(minQuantityPerCustomer || 0) <
+            Number(maxQuantityPerCustomer || 0)),
       {
-        message: t("min_quantity_per_customer_must_be_less_than_max_quantity_per_customer"),
+        message: t(
+          "min_quantity_per_customer_must_be_less_than_max_quantity_per_customer",
+        ),
         path: ["minQuantityPerCustomer"],
       },
     )
@@ -156,7 +174,11 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
         }
       }
       if (sellType == "BUYGROUP") {
-        if ((minQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0)) || (maxQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0))) {
+        if (
+          (minQuantity &&
+            Number(minQuantity || 0) > Number(maxQuantity || 0)) ||
+          (maxQuantity && Number(minQuantity || 0) > Number(maxQuantity || 0))
+        ) {
           ctx.addIssue({
             code: "custom",
             message: t("min_quantity_must_be_less_than_max_quantity"),
@@ -178,289 +200,312 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
 };
 
 const formSchemaForTypeP = (t: any) => {
-  return z.object({
-    productName: z
-      .string()
-      .trim()
-      .min(2, { message: t("product_name_is_required") })
-      .max(50, { message: t("product_name_must_be_less_than_50_characters") }),
-    categoryId: z.number().optional(),
-    categoryLocation: z.string().trim().optional(),
-    typeOfProduct: z
-      .string({
-        required_error: t("provide_you_product_type"),
-        message: t("provide_you_product_type"),
-      })
-      .trim(),
-    brandId: z.number().min(1, { message: t("brand_is_required") }),
-    // productLocationId: z.number().min(1, { message: t("product_location_is_required") }),
-    productCountryId: z
-      .number()
-      .min(1, { message: t("product_country_is_required") }),
-    productStateId: z.number().min(1, { message: t("product_state_is_required") }),
-    productCityId: z.number().min(1, { message: t("product_city_is_required") }),
-    productTown: z.string().trim().optional(),
-    productLatLng: z.string().trim().optional(),
-    sellCountryIds: z.any().optional(),
-    sellStateIds: z.any().optional(),
-    sellCityIds: z.any().optional(),
-    skuNo: z.string().trim().optional(),
-    productCondition: z
-      .string()
-      .trim()
-      .min(1, { message: t("product_condition_is_required") }),
-    productTagList: z
-      .array(
-        z.object({
-          label: z.string().trim(),
-          value: z.number(),
+  return z
+    .object({
+      productName: z
+        .string()
+        .trim()
+        .min(2, { message: t("product_name_is_required") })
+        .max(50, {
+          message: t("product_name_must_be_less_than_50_characters"),
         }),
-        {
-          invalid_type_error: t("tag_is_required"),
-          required_error: t("tag_is_required")
+      categoryId: z.number().optional(),
+      categoryLocation: z.string().trim().optional(),
+      typeOfProduct: z
+        .string({
+          required_error: t("provide_you_product_type"),
+          message: t("provide_you_product_type"),
+        })
+        .trim(),
+      brandId: z.number().min(1, { message: t("brand_is_required") }),
+      // productLocationId: z.number().min(1, { message: t("product_location_is_required") }),
+      productCountryId: z
+        .number()
+        .min(1, { message: t("product_country_is_required") }),
+      productStateId: z
+        .number()
+        .min(1, { message: t("product_state_is_required") }),
+      productCityId: z
+        .number()
+        .min(1, { message: t("product_city_is_required") }),
+      productTown: z.string().trim().optional(),
+      productLatLng: z.string().trim().optional(),
+      sellCountryIds: z.any().optional(),
+      sellStateIds: z.any().optional(),
+      sellCityIds: z.any().optional(),
+      skuNo: z.string().trim().optional(),
+      productCondition: z
+        .string()
+        .trim()
+        .min(1, { message: t("product_condition_is_required") }),
+      productTagList: z
+        .array(
+          z.object({
+            label: z.string().trim(),
+            value: z.number(),
+          }),
+          {
+            invalid_type_error: t("tag_is_required"),
+            required_error: t("tag_is_required"),
+          },
+        )
+        .min(1, { message: t("tag_is_required") })
+        .transform((value) => value.map((item) => ({ tagId: item.value }))),
+      productImagesList: z.any().optional(),
+      productPrice: z.coerce.number().optional().or(z.literal("")),
+      offerPrice: z.coerce.number().optional().or(z.literal("")),
+      placeOfOriginId: z
+        .number()
+        .min(1, { message: t("place_of_origin_is_required") }),
+      productShortDescriptionList: z.array(
+        z.object({
+          shortDescription: z
+            .string()
+            .trim()
+            .min(2, { message: t("short_description_is_required") })
+            .max(20, {
+              message: t("short_description_must_be_less_than_20_characters"),
+            }),
+        }),
+      ),
+      productSpecificationList: z.array(
+        z.object({
+          label: z
+            .string()
+            .trim()
+            .min(2, { message: t("label_is_required") })
+            .max(20, { message: t("label_must_be_less_than_20_characters") }),
+          specification: z
+            .string()
+            .trim()
+            .min(1, { message: t("specification_is_required") })
+            .max(20, {
+              message: t("specification_must_be_less_than_20_characters"),
+            })
+            .refine((val) => ALPHANUMERIC_REGEX.test(val), {
+              message: t("specification_must_contain_only_letters_or_digits"),
+            }),
+        }),
+      ),
+      description: z.string().trim().optional(),
+      descriptionJson: z.array(z.any()).optional(),
+      productPriceList: z.array(baseProductPriceItemSchema(t)).optional(),
+      setUpPrice: z.boolean(),
+      isStockRequired: z.boolean().optional(),
+      isOfferPriceRequired: z.boolean().optional(),
+      isCustomProduct: z.boolean().optional(),
+      productVariantType: z
+        .string()
+        .trim()
+        .min(3, {
+          message: t("variant_type_must_be_equal_greater_than_2_characters"),
+        })
+        .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
+        .optional()
+        .or(z.literal("")),
+      productVariants: z.array(
+        z.object({
+          value: z
+            .string()
+            .trim()
+            .min(1, { message: t("value_is_required") })
+            .max(20, {
+              message: t("value_must_be_less_than_n_characters", { n: 20 }),
+            })
+            .optional()
+            .or(z.literal("")),
+          image: z.any().optional(),
+        }),
+      ),
+    })
+    .superRefine((data, ctx) => {
+      const variantsCount = data.productVariants.filter((el) =>
+        el.value?.trim(),
+      ).length;
+      if (data.productVariantType?.trim() && variantsCount == 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("value_is_required"),
+          path: ["productVariants.0.value"],
+        });
+      }
+      if (variantsCount > 0 && !data.productVariantType?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("variant_type_is_required"),
+          path: ["productVariantType"],
+        });
+      }
+
+      if (data.setUpPrice) {
+        const result = z
+          .array(productPriceItemSchemaWhenSetUpPriceTrue(t))
+          .safeParse(data.productPriceList);
+
+        if (!result.success) {
+          result.error.issues.forEach((issue) => ctx.addIssue(issue));
         }
-      )
-      .min(1, { message: t("tag_is_required") })
-      .transform((value) => value.map((item) => ({ tagId: item.value }))),
-    productImagesList: z.any().optional(),
-    productPrice: z.coerce.number().optional().or(z.literal('')),
-    offerPrice: z.coerce.number().optional().or(z.literal('')),
-    placeOfOriginId: z
-      .number()
-      .min(1, { message: t("place_of_origin_is_required") }),
-    productShortDescriptionList: z.array(
-      z.object({
-        shortDescription: z
-          .string()
-          .trim()
-          .min(2, { message: t("short_description_is_required") })
-          .max(20, {
-            message: t("short_description_must_be_less_than_20_characters"),
-          }),
-      }),
-    ),
-    productSpecificationList: z.array(
-      z.object({
-        label: z
-          .string()
-          .trim()
-          .min(2, { message: t("label_is_required") })
-          .max(20, { message: t("label_must_be_less_than_20_characters") }),
-        specification: z
-          .string()
-          .trim()
-          .min(1, { message: t("specification_is_required") })
-          .max(20, {
-            message: t("specification_must_be_less_than_20_characters"),
-          })
-          .refine((val) => ALPHANUMERIC_REGEX.test(val), {
-            message: t("specification_must_contain_only_letters_or_digits"),
-          }),
-      }),
-    ),
-    description: z.string().trim().optional(),
-    descriptionJson: z.array(z.any()).optional(),
-    productPriceList: z.array(baseProductPriceItemSchema(t)).optional(),
-    setUpPrice: z.boolean(),
-    isStockRequired: z.boolean().optional(),
-    isOfferPriceRequired: z.boolean().optional(),
-    isCustomProduct: z.boolean().optional(),
-    productVariantType: z.string()
-      .trim()
-      .min(3, { message: t("variant_type_must_be_equal_greater_than_2_characters") })
-      .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
-      .optional()
-      .or(z.literal('')),
-    productVariants: z.array(
-      z.object({
-        value: z
-          .string()
-          .trim()
-          .min(1, { message: t("value_is_required") })
-          .max(20, { message: t("value_must_be_less_than_n_characters", { n: 20 }) })
-          .optional()
-          .or(z.literal('')),
-        image: z.any().optional(),
-      }),
-    ),
-  })
-  .superRefine((data, ctx) => {
-    const variantsCount = data.productVariants.filter(el => el.value?.trim()).length;
-    if (data.productVariantType?.trim() && variantsCount == 0) {
-      ctx.addIssue({
-        code: "custom",
-        message: t("value_is_required"),
-        path: ["productVariants.0.value"],
-      });
-    }
-    if (variantsCount > 0 && !data.productVariantType?.trim()) {
-      ctx.addIssue({
-        code: "custom",
-        message: t("variant_type_is_required"),
-        path: ["productVariantType"],
-      });
-    }
-
-    if (data.setUpPrice) {
-      const result = z
-        .array(productPriceItemSchemaWhenSetUpPriceTrue(t))
-        .safeParse(data.productPriceList);
-
-      if (!result.success) {
-        result.error.issues.forEach((issue) => ctx.addIssue(issue));
+      } else {
+        data.productPrice = 0;
+        data.offerPrice = 0;
+        if (Array.isArray(data.productPriceList)) {
+          data.productPriceList = data.productPriceList.map((item) => ({
+            consumerType: "",
+            sellType: "",
+            consumerDiscount: 0,
+            vendorDiscount: 0,
+            consumerDiscountType: "",
+            vendorDiscountType: "",
+            minCustomer: 0,
+            maxCustomer: 0,
+            minQuantityPerCustomer: 0,
+            maxQuantityPerCustomer: 0,
+            minQuantity: 0,
+            maxQuantity: 0,
+            dateOpen: "",
+            dateClose: "",
+            timeOpen: 0,
+            timeClose: 0,
+            startTime: "",
+            endTime: "",
+            deliveryAfter: 0,
+            stock: 0,
+          }));
+        }
       }
-
-    } else {
-      data.productPrice = 0;
-      data.offerPrice = 0;
-      if (Array.isArray(data.productPriceList)) {
-        data.productPriceList = data.productPriceList.map((item) => ({
-          consumerType: "",
-          sellType: "",
-          consumerDiscount: 0,
-          vendorDiscount: 0,
-          consumerDiscountType: "",
-          vendorDiscountType: "",
-          minCustomer: 0,
-          maxCustomer: 0,
-          minQuantityPerCustomer: 0,
-          maxQuantityPerCustomer: 0,
-          minQuantity: 0,
-          maxQuantity: 0,
-          dateOpen: "",
-          dateClose: "",
-          timeOpen: 0,
-          timeClose: 0,
-          startTime: "",
-          endTime: "",
-          deliveryAfter: 0,
-          stock: 0,
-        }));
-      }
-    }
-  });
+    });
 };
 
 const formSchemaForTypeR = (t: any) => {
-  return z.object({
-    productName: z
-      .string()
-      .trim()
-      .min(2, { message: t("product_name_is_required") })
-      .max(50, { message: t("product_name_must_be_less_than_50_characters") }),
-    categoryId: z.number().optional(),
-    categoryLocation: z.string().trim().optional(),
-    typeOfProduct: z
-      .string({
-        required_error: t("provide_you_product_type"),
-        message: t("provide_you_product_type"),
-      })
-      .trim(),
-    brandId: z.number().min(1, { message: t("brand_is_required") }),
-    productCondition: z
-      .string()
-      .trim()
-      .min(1, { message: t("product_condition_is_required") }),
-    productTagList: z
-      .array(
-        z.object({
-          label: z.string().trim(),
-          value: z.number(),
+  return z
+    .object({
+      productName: z
+        .string()
+        .trim()
+        .min(2, { message: t("product_name_is_required") })
+        .max(50, {
+          message: t("product_name_must_be_less_than_50_characters"),
         }),
-      )
-      .min(1, { message: t("tag_is_required") })
-      .transform((value) => {
-        let temp: any = [];
-        value.forEach((item) => {
-          temp.push({ tagId: item.value });
+      categoryId: z.number().optional(),
+      categoryLocation: z.string().trim().optional(),
+      typeOfProduct: z
+        .string({
+          required_error: t("provide_you_product_type"),
+          message: t("provide_you_product_type"),
+        })
+        .trim(),
+      brandId: z.number().min(1, { message: t("brand_is_required") }),
+      productCondition: z
+        .string()
+        .trim()
+        .min(1, { message: t("product_condition_is_required") }),
+      productTagList: z
+        .array(
+          z.object({
+            label: z.string().trim(),
+            value: z.number(),
+          }),
+        )
+        .min(1, { message: t("tag_is_required") })
+        .transform((value) => {
+          let temp: any = [];
+          value.forEach((item) => {
+            temp.push({ tagId: item.value });
+          });
+          return temp;
+        }),
+      productImagesList: z.any().optional(),
+      productPrice: z.coerce.number().optional(),
+      offerPrice: z.coerce.number().optional(),
+      placeOfOriginId: z
+        .number()
+        .min(1, { message: t("place_of_origin_is_required") }),
+      productShortDescriptionList: z.array(
+        z.object({
+          shortDescription: z
+            .string()
+            .trim()
+            .min(2, { message: t("short_description_is_required") })
+            .max(20, {
+              message: t("short_description_must_be_less_than_20_characters"),
+            }),
+        }),
+      ),
+      productSpecificationList: z.array(
+        z.object({
+          label: z
+            .string()
+            .trim()
+            .min(2, { message: t("label_is_required") })
+            .max(20, { message: t("label_must_be_less_than_20_characters") }),
+          specification: z
+            .string()
+            .trim()
+            .min(2, { message: t("specification_is_required") })
+            .max(20, {
+              message: t("specification_must_be_less_than_20_characters"),
+            }),
+        }),
+      ),
+      description: z.string().trim().optional(),
+      descriptionJson: z.array(z.any()).optional(),
+      setUpPrice: z.boolean(),
+      isStockRequired: z.boolean().optional(),
+      isOfferPriceRequired: z.boolean().optional(),
+      isCustomProduct: z.boolean().optional(),
+      productVariantType: z
+        .string()
+        .trim()
+        .min(3, {
+          message: t("variant_type_must_be_equal_greater_than_2_characters"),
+        })
+        .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
+        .optional()
+        .or(z.literal("")),
+      productVariants: z.array(
+        z.object({
+          value: z
+            .string()
+            .trim()
+            .min(1, { message: t("value_is_required") })
+            .max(20, {
+              message: t("value_must_be_less_than_n_characters", { n: 20 }),
+            })
+            .optional()
+            .or(z.literal("")),
+          image: z.any().optional(),
+        }),
+      ),
+    })
+    .superRefine((data, ctx) => {
+      const variantsCount = data.productVariants.filter((el) =>
+        el.value?.trim(),
+      ).length;
+      if (data.productVariantType?.trim() && variantsCount == 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("value_is_required"),
+          path: ["productVariants.0.value"],
         });
-        return temp;
-      }),
-    productImagesList: z.any().optional(),
-    productPrice: z.coerce.number().optional(),
-    offerPrice: z.coerce.number().optional(),
-    placeOfOriginId: z
-      .number()
-      .min(1, { message: t("place_of_origin_is_required") }),
-    productShortDescriptionList: z.array(
-      z.object({
-        shortDescription: z
-          .string()
-          .trim()
-          .min(2, { message: t("short_description_is_required") })
-          .max(20, {
-            message: t("short_description_must_be_less_than_20_characters"),
-          }),
-      }),
-    ),
-    productSpecificationList: z.array(
-      z.object({
-        label: z
-          .string()
-          .trim()
-          .min(2, { message: t("label_is_required") })
-          .max(20, { message: t("label_must_be_less_than_20_characters") }),
-        specification: z
-          .string()
-          .trim()
-          .min(2, { message: t("specification_is_required") })
-          .max(20, {
-            message: t("specification_must_be_less_than_20_characters"),
-          }),
-      }),
-    ),
-    description: z.string().trim().optional(),
-    descriptionJson: z.array(z.any()).optional(),
-    setUpPrice: z.boolean(),
-    isStockRequired: z.boolean().optional(),
-    isOfferPriceRequired: z.boolean().optional(),
-    isCustomProduct: z.boolean().optional(),
-    productVariantType: z.string()
-      .trim()
-      .min(3, { message: t("variant_type_must_be_equal_greater_than_2_characters") })
-      .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
-      .optional()
-      .or(z.literal('')),
-    productVariants: z.array(
-      z.object({
-        value: z
-          .string()
-          .trim()
-          .min(1, { message: t("value_is_required") })
-          .max(20, { message: t("value_must_be_less_than_n_characters", { n: 20 }) })
-          .optional()
-          .or(z.literal('')),
-        image: z.any().optional(),
-      }),
-    ),
-  })
-  .superRefine((data, ctx) => {
-    const variantsCount = data.productVariants.filter(el => el.value?.trim()).length;
-    if (data.productVariantType?.trim() && variantsCount == 0) {
-      ctx.addIssue({
-        code: "custom",
-        message: t("value_is_required"),
-        path: ["productVariants.0.value"],
-      });
-    }
-    if (variantsCount > 0 && !data.productVariantType?.trim()) {
-      ctx.addIssue({
-        code: "custom",
-        message: t("variant_type_is_required"),
-        path: ["productVariantType"],
-      });
-    }
-    
-    if (data.setUpPrice) {
-      // if (data.offerPrice === 0) {
-      //   ctx.addIssue({
-      //     code: "custom",
-      //     message: t("offer_price_is_required"),
-      //     path: ["offerPrice"],
-      //   });
-      // }
-    }
-  });
+      }
+      if (variantsCount > 0 && !data.productVariantType?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("variant_type_is_required"),
+          path: ["productVariantType"],
+        });
+      }
+
+      if (data.setUpPrice) {
+        // if (data.offerPrice === 0) {
+        //   ctx.addIssue({
+        //     code: "custom",
+        //     message: t("offer_price_is_required"),
+        //     path: ["offerPrice"],
+        //   });
+        // }
+      }
+    });
 };
 
 const defaultValues: { [key: string]: any } = {
@@ -530,9 +575,9 @@ const defaultValues: { [key: string]: any } = {
   productVariants: [
     {
       value: "",
-      image: null
-    }
-  ]
+      image: null,
+    },
+  ],
 };
 
 const CreateProductPage = () => {
@@ -580,8 +625,12 @@ const CreateProductPage = () => {
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
       ...formData,
-      productType: activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
-      status: activeProductType === "R" || activeProductType === "F" ? "ACTIVE" : "INACTIVE",
+      productType:
+        activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
+      status:
+        activeProductType === "R" || activeProductType === "F"
+          ? "ACTIVE"
+          : "INACTIVE",
     };
 
     updatedFormData.productImagesList = [];
@@ -656,7 +705,7 @@ const CreateProductPage = () => {
               ? "ACTIVE"
               : "INACTIVE"
             : updatedFormData.productPrice ||
-              updatedFormData.isOfferPriceRequired
+                updatedFormData.isOfferPriceRequired
               ? "ACTIVE"
               : "INACTIVE",
       },
@@ -681,9 +730,7 @@ const CreateProductPage = () => {
         deliveryAfter: 0,
         stock: 0,
         askForStock: updatedFormData.isStockRequired ? "true" : undefined,
-        askForPrice: updatedFormData.isOfferPriceRequired
-          ? "true"
-          : undefined,
+        askForPrice: updatedFormData.isOfferPriceRequired ? "true" : undefined,
         ...updatedFormData.productPriceList[0],
       };
       delete updatedFormData.productPriceList[0].productCountryId;
@@ -696,10 +743,10 @@ const CreateProductPage = () => {
       delete updatedFormData.productPriceList[0].sellCityIds;
     }
 
-    if (updatedFormData.productPriceList?.[0]?.sellType == 'NORMALSELL') {
+    if (updatedFormData.productPriceList?.[0]?.sellType == "NORMALSELL") {
       updatedFormData.productPriceList[0].menuId = STORE_MENU_ID;
     }
-    if (updatedFormData.productPriceList?.[0]?.sellType == 'BUYGROUP') {
+    if (updatedFormData.productPriceList?.[0]?.sellType == "BUYGROUP") {
       updatedFormData.productPriceList[0].menuId = BUYGROUP_MENU_ID;
     }
     if (updatedFormData.isCustomProduct) {
@@ -745,17 +792,19 @@ const CreateProductPage = () => {
       return;
     }
 
-    updatedFormData.description = updatedFormData?.descriptionJson
+    (updatedFormData.description = updatedFormData?.descriptionJson
       ? JSON.stringify(updatedFormData?.descriptionJson)
-      : "",
-      delete updatedFormData.descriptionJson;console.log(updatedFormData);
+      : ""),
+      delete updatedFormData.descriptionJson;
+    console.log(updatedFormData);
 
-    updatedFormData.productVariant = updatedFormData.productVariants.filter((el: any) => el.value?.trim())
+    updatedFormData.productVariant = updatedFormData.productVariants
+      .filter((el: any) => el.value?.trim())
       .map((el: any) => {
         return {
           type: updatedFormData.productVariantType,
-          value: el.value
-        }
+          value: el.value,
+        };
       });
 
     const productVariantImages = updatedFormData.productVariants
@@ -764,7 +813,8 @@ const CreateProductPage = () => {
         return { path: item.image, id: index.toString() };
       });
     if (productVariantImages.length > 0) {
-      const productVariantImagesArray = await handleUploadedFile(productVariantImages);
+      const productVariantImagesArray =
+        await handleUploadedFile(productVariantImages);
       if (productVariantImagesArray) {
         updatedFormData.productImagesList = [
           ...updatedFormData.productImagesList,
@@ -773,34 +823,34 @@ const CreateProductPage = () => {
             .map((item: any, index: number) => {
               const url = productVariantImagesArray[index];
               const extension = url.split(".").pop()?.toLowerCase();
-  
+
               if (extension) {
                 if (imageExtensions.includes(extension)) {
                   const imageName: string = url.split("/").pop()!;
-                  return { 
-                    image: url, 
-                    imageName, 
+                  return {
+                    image: url,
+                    imageName,
                     variant: {
                       type: updatedFormData.productVariantType,
-                      value: item.value
-                    }
+                      value: item.value,
+                    },
                   };
                 }
               }
-  
-              return { 
-                image: url, 
-                imageName: url, 
+
+              return {
+                image: url,
+                imageName: url,
                 variant: {
                   type: updatedFormData.productVariantType,
-                  value: item.value
-                }
+                  value: item.value,
+                },
               };
-            })
+            }),
         ];
       }
     }
-    
+
     delete updatedFormData.productVariantType;
     delete updatedFormData.productVariants;
 
@@ -898,7 +948,11 @@ const CreateProductPage = () => {
                     <div className="form-groups-common-sec-s1">
                       <DescriptionAndSpecificationSection />
                       <div className="mb-4 mt-4 inline-flex w-full items-center justify-end gap-2">
-                        <button className="rounded-sm bg-transparent px-2 py-2 text-sm font-bold leading-6 text-[#7F818D] md:px-4 md:py-4 md:text-lg" dir={langDir} translate="no">
+                        <button
+                          className="rounded-sm bg-transparent px-2 py-2 text-sm font-bold leading-6 text-[#7F818D] md:px-4 md:py-4 md:text-lg"
+                          dir={langDir}
+                          translate="no"
+                        >
                           {t("save_as_draft")}
                         </button>
 
@@ -912,7 +966,7 @@ const CreateProductPage = () => {
                           translate="no"
                         >
                           {createProduct.isPending ||
-                            uploadMultiple.isPending ? (
+                          uploadMultiple.isPending ? (
                             <LoaderWithMessage message={t("please_wait")} />
                           ) : (
                             t("continue")

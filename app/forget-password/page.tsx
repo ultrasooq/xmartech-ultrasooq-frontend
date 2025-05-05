@@ -82,10 +82,16 @@ export default function ForgetPasswordPage() {
         <div className="flex">
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir} translate="no">
+              <h2
+                className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
+                dir={langDir}
+                translate="no"
+              >
                 {t("forgot_your_password")}
               </h2>
-              <p dir={langDir} translate="no">{t("forgot_password_instruction")}</p>
+              <p dir={langDir} translate="no">
+                {t("forgot_password_instruction")}
+              </p>
             </div>
             <div className="w-full">
               <Form {...form}>
@@ -101,7 +107,7 @@ export default function ForgetPasswordPage() {
                     translate="no"
                   />
 
-                  <div className="mb-4 w-full">
+                  <div className="mb-4 mt-3 w-full">
                     <Button
                       disabled={forgotPassword.isPending}
                       type="submit"
