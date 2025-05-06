@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   deleteCartItem,
+  deleteServiceFromCart,
   fetchCartByDevice,
   fetchCartByUserId,
   fetchCartCountByDeviceId,
@@ -121,6 +122,37 @@ export const useDeleteCartItem = () => {
   >({
     mutationFn: async (payload) => {
       const res = await deleteCartItem(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-user"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-device"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-without-login"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useDeleteServiceFromCart = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { cartId: number, serviceFeatureId: number }
+  >({
+    mutationFn: async (payload) => {
+      const res = await deleteServiceFromCart(payload.cartId, payload.serviceFeatureId);
       return res.data;
     },
     onSuccess: () => {

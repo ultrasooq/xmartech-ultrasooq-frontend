@@ -3,20 +3,13 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
     useProductById,
     useOneWithProductPrice,
-    useProductVariant,
 } from "@/apis/queries/product.queries";
-// import SimilarProductsSection from "@/components/modules/serviceDetails/SimilarProductsSection";
-import RelatedProductsSection from "@/components/modules/productDetails/RelatedProductsSection";
-import SameBrandSection from "@/components/modules/productDetails/SameBrandSection";
-import ProductDescriptionCard from "@/components/modules/productDetails/ProductDescriptionCard";
-import ProductImagesCard from "@/components/modules/productDetails/ProductImagesCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     useCartListByDevice,
     useCartListByUserId,
-    useUpdateCartByDevice,
-    useUpdateCartWithLogin,
     useDeleteCartItem,
+    useDeleteServiceFromCart,
 } from "@/apis/queries/cart.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
@@ -32,12 +25,10 @@ import {
 import { useMe } from "@/apis/queries/user.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import Footer from "@/components/shared/Footer";
-// import Image from "next/image";
-// import EmailIcon from "@/public/images/email.svg";
-// import PhoneCallIcon from "@/public/images/phone-call.svg";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 import ProductCard from "@/components/modules/cartList/ProductCard";
+import ServiceCard from "@/components/modules/cartList/ServiceCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CartItem } from "@/utils/types/cart.types";
 import { useTranslations } from "next-intl";
@@ -64,21 +55,29 @@ const ServiceDetailsPage = () => {
     const [haveAccessToken, setHaveAccessToken] = useState(false);
     const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     const type = searchQuery?.get("type");
-    const otherSellerId = searchQuery?.get("sellerId");
-    const otherProductId = searchQuery?.get("productId");
-    const sharedLinkId = searchQuery?.get("sharedLinkId") || '';
-    const [isShareLinkProcessed, setIsShareLinkProcessed] = useState<boolean>(false);
-    const [productVariantTypes, setProductVariantTypes] = useState<string[]>();
-    const [productVariants, setProductVariants] = useState<any[]>();
-    const [selectedProductVariant, setSelectedProductVariant] = useState<any>(null);
-    const [selectedFeatures, setSelectedFeatures] = useState<
-        { id: number; quantity: number }[]
-    >([]);
+    const [isUpdatingCart, setIsUpdatingCart] = useState<boolean>(false);
+    const [selectedFeatures, setSelectedFeatures] = useState<any[]>([]);
+
     const toggleFeature = (id: number, quantity: number, checked: boolean) => {
+        const existingFeature = selectedFeatures.find((item) => item.id === id);
+
+        if (!checked && existingFeature) {
+            const cartItem = memoizedCartList?.find(
+                (item: any) => item.cartType == 'SERVICE' && item.serviceId == Number(searchParams?.id)
+            )
+                ?.cartServiceFeatures
+                ?.find((feature: any) => feature.serviceFeatureId == id);
+
+            if (cartItem) {
+                handleRemoveServiceFromCart(cartItem.cartId, cartItem.id);
+                setSelectedFeatures((prev: any[]) => prev.filter((item) => item.id !== id));
+                return;
+            }
+        }
+
         setSelectedFeatures((prev) => {
             if (checked) {
                 // Add or update the feature if checked
-                const existingFeature = prev.find((item) => item.id === id);
                 if (existingFeature) {
                     return prev.map((item) =>
                         item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
@@ -90,6 +89,7 @@ const ServiceDetailsPage = () => {
                 return prev.filter((item) => item.id !== id);
             }
         });
+        setIsUpdatingCart(true);
     };
 
     const updateQuantity = (id: number, quantity: number) => {
@@ -98,6 +98,7 @@ const ServiceDetailsPage = () => {
                 item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
             )
         );
+        setIsUpdatingCart(true);
     };
 
     const incrementQuantity = (id: number) => {
@@ -106,17 +107,21 @@ const ServiceDetailsPage = () => {
                 item.id === id ? { ...item, quantity: item.quantity + 1 } : item
             )
         );
+        setIsUpdatingCart(true);
     };
 
     const decrementQuantity = (id: number) => {
-        setSelectedFeatures((prev) =>
-            prev.map((item) =>
-                item.id === id
-                    ? { ...item, quantity: Math.max(1, item.quantity - 1) }
-                    : item
-            )
-        );
+        let quantity = selectedFeatures.find((item: any) => item.id == id)?.quantity || 1;
+        if (quantity - 1 >= 1) {
+            setSelectedFeatures((prev) =>
+                prev.map((item) =>
+                    item.id === id ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item
+                )
+            );
+            setIsUpdatingCart(true);
+        }
     };
+
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
     const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
     const confirmDialogRef = useRef(null);
@@ -126,12 +131,9 @@ const ServiceDetailsPage = () => {
     const serviceQueryById = useServiceById(
         {
             serviceid: searchParams?.id ? (searchParams?.id as string) : "",
-            // userId: me.data?.data?.id,
-            // sharedLinkId: sharedLinkId,
         },
-        !!searchParams?.id && !otherSellerId && !otherProductId,
+        !!searchParams?.id,
     );
-    const getProductVariant = useProductVariant();
 
     const handleProductUpdateSuccess = () => {
         queryClient.invalidateQueries({
@@ -154,43 +156,29 @@ const ServiceDetailsPage = () => {
         },
         haveAccessToken,
     );
-    const updateCartWithLogin = useUpdateCartWithLogin();
-    const updateCartByDevice = useUpdateCartByDevice();
+
     const addToWishlist = useAddToWishList();
     const deleteFromWishlist = useDeleteFromWishList();
-    const productQueryByOtherSeller = useOneWithProductPrice(
-        {
-            productId: otherProductId ? Number(otherProductId) : 0,
-            adminId: otherSellerId ? Number(otherSellerId) : 0,
-        },
-        !!otherProductId && !!otherSellerId,
-    );
     const deleteCartItem = useDeleteCartItem();
+    const deleteServiceFromCart = useDeleteServiceFromCart();
+
     const [isVisible, setIsVisible] = useState(false); // Initially hidden
 
     const hasItemByUser = !!cartListByUser.data?.data?.find(
-        (item: any) => item.productId === Number(searchParams?.id),
+        (item: any) => item.serviceId === Number(searchParams?.id),
     );
 
     const hasItemByDevice = !!cartListByDeviceQuery.data?.data?.find(
-        (item: any) => item.productId === Number(searchParams?.id),
+        (item: any) => item.serviceId === Number(searchParams?.id),
     );
 
     const getProductQuantityByUser = cartListByUser.data?.data?.find(
-        (item: any) => item.productId === Number(searchParams?.id),
+        (item: any) => item.serviceId === Number(searchParams?.id),
     )?.quantity;
 
     const getProductQuantityByDevice = cartListByDeviceQuery.data?.data?.find(
-        (item: any) => item.productId === Number(searchParams?.id),
+        (item: any) => item.serviceId === Number(searchParams?.id),
     )?.quantity;
-
-    const getProductVariantByUser = cartListByUser.data?.data?.find(
-        (item: any) => item.productId === Number(searchParams?.id),
-    )?.object;
-
-    const getProductVariantByDevice = cartListByDeviceQuery.data?.data?.find(
-        (item: any) => item.productId === Number(searchParams?.id),
-    )?.object;
 
     const memoizedCartList = useMemo(() => {
         if (cartListByUser.data?.data) {
@@ -219,126 +207,51 @@ const ServiceDetailsPage = () => {
         }
     };
 
-    const onConfirmRemove = () => {
-        const cartId = cartListByUser.data?.data?.find((item: any) => item.productId == serviceDetails.id)?.id
-            || cartListByDeviceQuery.data?.data?.find((item: any) => item.productId == serviceDetails.id)?.id;
+    const handleRemoveServiceFromCart = async (cartId: number, serviceFeatureId: number) => {
+        const response = await deleteServiceFromCart.mutateAsync({ cartId, serviceFeatureId });
+        if (response.status) {
+            toast({
+                title: t("item_removed_from_cart"),
+                description: t("check_your_cart_for_more_details"),
+                variant: "success",
+            });
+        } else {
+            toast({
+                title: response.message || t("item_not_removed_from_cart"),
+                description: response.message || t("check_your_cart_for_more_details"),
+                variant: "danger",
+            });
+        }
+    };
 
-        if (cartId) handleRemoveItemFromCart(cartId);
+    const onConfirmRemove = () => {
         setIsConfirmDialogOpen(false);
     };
 
     const onCancelRemove = () => {
-        setGlobalQuantity(getProductQuantityByDevice || getProductQuantityByUser);
         setIsConfirmDialogOpen(false);
     };
 
-    const selectProductVariant = (variant: any) => {
-        setSelectedProductVariant(variant);
-        if (getProductQuantityByDevice > 0 || getProductQuantityByUser > 0) {
-            handleAddToCart(globalQuantity, "add", variant);
-        }
-    };
-
-    const addToCartFromSharedLink = async () => {
-        if (isShareLinkProcessed) return;
-
-        if (serviceQueryById?.data?.generatedLinkDetail && !cartListByUser?.isLoading && !cartListByDeviceQuery?.isLoading) {
-            const item = memoizedCartList.find((item: any) => item.productId == Number(searchParams?.id || ''));
-            if (!item || (item && item.sharedLinkId != serviceQueryById.data.generatedLinkDetail.id)) {
-                if (item) {
-                    await handleRemoveItemFromCart(item.id);
-                }
-                const minQuantity = serviceDetails?.product_productPrice?.length
-                    ? serviceDetails.product_productPrice[0]?.minQuantityPerCustomer
-                    : null;
-                let quantity = item?.quantity || minQuantity || 1;
-                handleAddToCart(quantity, "add");
-                setIsShareLinkProcessed(true);
-            }
-        }
-    }
-
-    const serviceDetails = !otherSellerId
-        ? serviceQueryById.data?.data
-        : productQueryByOtherSeller.data?.data;
-    const productInWishlist = !otherSellerId
-        ? serviceQueryById.data?.inWishlist
-        : productQueryByOtherSeller.data?.inWishlist;
-    const otherSellerDetails = !otherSellerId
-        ? serviceQueryById.data?.otherSeller
-        : productQueryByOtherSeller.data?.otherSeller;
-
-    const calculateTagIds = useMemo(
-        () => serviceDetails?.tags?.map((item: any) => item.tagId).join(","),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [serviceDetails?.tags?.length],
-    );
+    const serviceDetails = serviceQueryById.data?.data;
+    const productInWishlist = serviceQueryById.data?.inWishlist
 
     const [globalQuantity, setGlobalQuantity] = useState(0); // Global state
-
-    useEffect(() => {
-        const fetchProductVariant = async () => {
-            const response = await getProductVariant.mutateAsync([serviceDetails?.product_productPrice?.[0]?.id]);
-            const variants = response?.data?.[0]?.object || [];
-            if (variants.length > 0) {
-                const variantTypes = variants.map((item: any) => item.type);
-                setProductVariantTypes(Array.from(new Set(variantTypes)));
-                setProductVariants(variants);
-                setSelectedProductVariant(variants[0]);
-            }
-        };
-
-        if (!serviceQueryById?.isLoading) fetchProductVariant();
-    }, [serviceQueryById?.data?.data])
-
-    useEffect(() => {
-        addToCartFromSharedLink();
-    }, [
-        serviceQueryById?.data?.generatedLinkDetail,
-        memoizedCartList.length,
-        cartListByDeviceQuery?.isLoading,
-        cartListByUser?.isLoading
-    ]);
 
     useEffect(() => {
         setGlobalQuantity(
             getProductQuantityByUser || getProductQuantityByDevice || 0,
         );
+        const serviceId = Number(searchParams?.id || '');
+        const features = (cartListByUser.data?.data || cartListByDeviceQuery.data?.data || [])?.find(
+            (item: any) => item.cartType == 'SERVICE' && item.serviceId == serviceId
+        )?.cartServiceFeatures || [];
+        setSelectedFeatures(
+            features.map((item: any) => ({ id: item.serviceFeatureId, quantity: item.quantity }))
+        );
     }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
-    const handleQuantity = async (quantity: number, action: "add" | "remove") => {
-        setGlobalQuantity(quantity);
-        const isAddedToCart = hasItemByUser || hasItemByDevice;
-        if (isAddedToCart) {
-            handleAddToCart(quantity, action);
-        } else {
-            const minQuantity = serviceDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
-            const maxQuantity = serviceDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
-
-            if (minQuantity && minQuantity > quantity) {
-                toast({
-                    description: t("min_quantity_must_be_n", { n: minQuantity }),
-                    variant: "danger",
-                });
-                return;
-            }
-
-            if (maxQuantity && maxQuantity < quantity) {
-                toast({
-                    description: t("max_quantity_must_be_n", { n: maxQuantity }),
-                    variant: "danger",
-                });
-                return;
-            }
-        }
-    };
-
-    const handleAddToCart = async (
-        quantity: number,
-        actionType: "add" | "remove",
-        productVariant?: any
-    ) => {
-        const payload:any = {
+    const handleAddToCart = async () => {
+        const payload: any = {
             serviceId: Number(searchParams?.id),
             features: selectedFeatures.map((f) => {
                 return {
@@ -348,13 +261,13 @@ const ServiceDetailsPage = () => {
             })
         }
         const response = await addToCartQuery.mutateAsync(payload);
+        setIsUpdatingCart(false);
         if (response.success) {
             toast({
                 title: t("service_added_to_cart"),
                 description: response.message,
                 variant: "success",
             });
-            setSelectedFeatures([]);
         } else {
             toast({
                 title: t("failed_to_add"),
@@ -362,96 +275,6 @@ const ServiceDetailsPage = () => {
                 variant: "danger",
             });
         };
-        console.log(payload);
-        // return;
-        // const minQuantity = serviceDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
-        // if (actionType == "add" && minQuantity && minQuantity > quantity) {
-        //     toast({
-        //         description: t("min_quantity_must_be_n", { n: minQuantity }),
-        //         variant: "danger",
-        //     });
-        //     return;
-        // }
-
-        // if (actionType == "remove" && minQuantity && minQuantity > quantity) {
-        //     toast({
-        //         description: t("min_quantity_must_be_n", { n: minQuantity }),
-        //         variant: "danger",
-        //     });
-        //     setIsConfirmDialogOpen(true);
-        //     return;
-        // }
-
-        // const maxQuantity = serviceDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
-        // if (maxQuantity && maxQuantity < quantity) {
-        //     toast({
-        //         description: t("max_quantity_must_be_n", { n: maxQuantity }),
-        //         variant: "danger",
-        //     });
-        //     return;
-        // }
-
-        // const sharedLinkId = serviceQueryById?.data?.generatedLinkDetail?.id;
-
-        // if (haveAccessToken) {
-        //     if (!serviceDetails?.product_productPrice?.[0]?.id) {
-        //         toast({
-        //             title: t("something_went_wrong"),
-        //             description: t("product_price_id_not_found"),
-        //             variant: "danger",
-        //         });
-        //         return;
-        //     }
-
-        //     if (actionType == "add" && quantity == 0) {
-        //         quantity = minQuantity ?? 1;
-        //     }
-
-        //     const response = await updateCartWithLogin.mutateAsync({
-        //         productPriceId: serviceDetails?.product_productPrice?.[0]?.id,
-        //         quantity,
-        //         sharedLinkId,
-        //         productVariant: productVariant || selectedProductVariant,
-        //     });
-
-        //     if (response.status) {
-        //         setGlobalQuantity(quantity);
-        //         toast({
-        //             title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
-        //             description: t("check_your_cart_for_more_details"),
-        //             variant: "success",
-        //         });
-        //         setIsVisible(true); // Show the div when the button is clicked
-        //         return response.status;
-        //     }
-
-        // } else {
-        //     if (!serviceDetails?.product_productPrice?.[0]?.id) {
-        //         toast({
-        //             title: t("something_went_wrong"),
-        //             description: t("product_price_id_not_found"),
-        //             variant: "danger",
-        //         });
-        //         return;
-        //     }
-        //     const response = await updateCartByDevice.mutateAsync({
-        //         productPriceId: serviceDetails?.product_productPrice?.[0]?.id,
-        //         quantity,
-        //         deviceId,
-        //         sharedLinkId,
-        //         productVariant: productVariant || selectedProductVariant,
-        //     });
-        //     if (response.status) {
-        //         setGlobalQuantity(quantity);
-        //         toast({
-        //             title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
-        //             description: t("check_your_cart_for_more_details"),
-        //             variant: "success",
-        //         });
-        //         setIsVisible(true); // Show the div when the button is clicked
-        //         return response.status;
-        //     }
-        // }
     };
 
     const handleCartPage = async () => {
@@ -470,12 +293,6 @@ const ServiceDetailsPage = () => {
                 : null;
             quantity = minQuantity || 1;
         }
-        // const response = await handleAddToCart(quantity, "add");
-        // if (response) {
-        //     setTimeout(() => {
-        //         router.push("/cart");
-        //     }, 2000);
-        // }
     };
 
     const handleCheckoutPage = async () => {
@@ -494,12 +311,6 @@ const ServiceDetailsPage = () => {
                 : null;
             quantity = minQuantity || 1;
         }
-        // const response = await handleAddToCart(quantity, "add");
-        // if (response) {
-        //     setTimeout(() => {
-        //         router.push("/checkout");
-        //     }, 2000);
-        // }
     };
 
     const handelOpenCartLayout = () => {
@@ -574,8 +385,10 @@ const ServiceDetailsPage = () => {
     }, [accessToken]);
 
     useEffect(() => {
-
-    }, []);
+        if ((hasItemByUser || hasItemByDevice) && isUpdatingCart) {
+            handleAddToCart();
+        }
+    }, [selectedFeatures, isUpdatingCart]);
 
     return (
         <>
@@ -588,17 +401,12 @@ const ServiceDetailsPage = () => {
                             addingToCart={addToCartQuery?.isPending}
                             serviceDetails={serviceDetails}
                             onProductUpdateSuccess={handleProductUpdateSuccess} // Pass to child
-                            onAdd={() => handleAddToCart(globalQuantity, "add")}
-                            onToCart={() => handleAddToCart(globalQuantity, "add")}
+                            onAdd={() => handleAddToCart()}
+                            onToCart={() => handleAddToCart()}
                             onToCheckout={handleCheckoutPage}
                             openCartCard={handelOpenCartLayout}
                             hasItem={hasItemByUser || hasItemByDevice}
-                            isLoading={
-                                !(
-                                    serviceQueryById.isFetched ||
-                                    productQueryByOtherSeller.isFetched
-                                )
-                            }
+                            isLoading={serviceQueryById?.isLoading}
                             onWishlist={handleAddToWishlist}
                             haveAccessToken={haveAccessToken}
                             inWishlist={!!productInWishlist}
@@ -610,7 +418,6 @@ const ServiceDetailsPage = () => {
                         />
                         <ServiceDescriptionCard
                             selectedFeatures={selectedFeatures}
-                            setSelectedFeatures={setSelectedFeatures}
                             toggleFeature={toggleFeature}
                             decrementQuantity={decrementQuantity}
                             incrementQuantity={incrementQuantity}
@@ -618,71 +425,18 @@ const ServiceDetailsPage = () => {
                             allDetailsService={serviceDetails}
                             productId={searchParams?.id ? (searchParams?.id as string) : ""}
                             productName={serviceDetails?.serviceName}
-                            productType={serviceDetails?.productType}
-                            brand={serviceDetails?.brand?.brandName}
                             productPrice={serviceDetails?.productPrice}
                             offerPrice={serviceDetails?.product_productPrice?.[0]?.offerPrice}
                             skuNo={serviceDetails?.skuNo}
                             category={serviceDetails?.category?.name}
                             productTags={serviceDetails?.tags}
-                            productShortDescription={
-                                serviceDetails?.description
-                            }
                             productQuantity={
                                 globalQuantity || getProductQuantityByUser || getProductQuantityByDevice
                             }
-                            onQuantityChange={handleQuantity}
                             productReview={serviceDetails?.productReview}
                             onAdd={handleAddToCart}
-                            isLoading={
-                                !otherSellerId && !otherProductId
-                                    ? !serviceQueryById.isFetched
-                                    : !productQueryByOtherSeller.isFetched
-                            }
-                            soldBy={`${serviceDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
-                ${serviceDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
-                            soldByTradeRole={
-                                serviceDetails?.product_productPrice?.[0]?.adminDetail?.tradeRole
-                            }
+                            isLoading={serviceQueryById?.isLoading}
                             userId={me.data?.data?.id}
-                            sellerId={
-                                serviceDetails?.product_productPrice?.[0]?.adminDetail?.id
-                            }
-                            haveOtherSellers={!!otherSellerDetails?.length}
-                            productProductPrice={
-                                serviceDetails?.product_productPrice?.[0]?.productPrice
-                            }
-                            consumerDiscount={
-                                serviceDetails?.product_productPrice?.[0]?.consumerDiscount
-                            }
-                            consumerDiscountType={
-                                serviceDetails?.product_productPrice?.[0]?.consumerDiscountType
-                            }
-                            vendorDiscount={
-                                serviceDetails?.product_productPrice?.[0]?.vendorDiscount
-                            }
-                            vendorDiscountType={
-                                serviceDetails?.product_productPrice?.[0]?.vendorDiscountType
-                            }
-                            askForPrice={
-                                serviceDetails?.product_productPrice?.[0]?.askForPrice
-                            }
-                            minQuantity={
-                                serviceDetails?.product_productPrice?.[0]
-                                    ?.minQuantityPerCustomer
-                            }
-                            maxQuantity={
-                                serviceDetails?.product_productPrice?.[0]
-                                    ?.maxQuantityPerCustomer
-                            }
-                            otherSellerDetails={otherSellerDetails}
-                            productPriceArr={serviceDetails?.product_productPrice}
-                            productVariantTypes={productVariantTypes}
-                            productVariants={productVariants}
-                            selectedProductVariant={
-                                getProductVariantByDevice || getProductVariantByUser || productVariants?.[0]
-                            }
-                            selectProductVariant={selectProductVariant}
                         />
                     </div>
                 </div>
@@ -700,14 +454,6 @@ const ServiceDetailsPage = () => {
                                         >
                                             {t("description")}
                                         </TabsTrigger>
-                                        {/* <TabsTrigger
-                                            value="specification"
-                                            className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
-                                            dir={langDir}
-                                            translate="no"
-                                        >
-                                            {t("specification")}
-                                        </TabsTrigger> */}
                                         <TabsTrigger
                                             value="vendor"
                                             className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
@@ -822,20 +568,6 @@ const ServiceDetailsPage = () => {
                                 </Tabs>
                             </div>
                         </div>
-                        <div className="product-view-s1-details-right-suggestion">
-                            <div className="suggestion-lists-s1 mt-3">
-                                {/* TODO: hide ad section for now */}
-                                {/* <div className="suggestion-list-s1-col">
-                  <div className="suggestion-banner">
-                    <Image src="/images/suggestion-pic1.png" alt="suggested-preview" />
-                  </div>
-                </div> */}
-                                {/* <SameBrandSection
-                                    serviceDetails={serviceDetails}
-                                    productId={searchParams?.id as string}
-                                /> */}
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -892,28 +624,57 @@ const ServiceDetailsPage = () => {
                                     ) : null}
                                 </div>
 
-                                {memoizedCartList?.map((item: CartItem) => (
-                                    <ProductCard
-                                        key={item.id}
-                                        cartId={item.id}
-                                        productId={item.productId}
-                                        productPriceId={item.productPriceId}
-                                        productName={item.productPriceDetails?.productPrice_product?.productName}
-                                        offerPrice={item.productPriceDetails?.offerPrice}
-                                        productQuantity={item.quantity}
-                                        productVariant={item.object}
-                                        productImages={item.productPriceDetails?.productPrice_product?.productImages}
-                                        consumerDiscount={item.productPriceDetails?.consumerDiscount}
-                                        consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
-                                        vendorDiscount={item.productPriceDetails?.vendorDiscount}
-                                        vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
-                                        onRemove={handleRemoveItemFromCart}
-                                        onWishlist={handleAddToWishlist}
-                                        haveAccessToken={haveAccessToken}
-                                        minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
-                                        maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
-                                    />
-                                ))}
+                                {memoizedCartList?.map((item: CartItem) => {
+                                    if (item.cartType == 'DEFAULT') {
+                                        return (
+                                            <ProductCard
+                                                key={item.id}
+                                                cartId={item.id}
+                                                productId={item.productId}
+                                                productPriceId={item.productPriceId}
+                                                productName={item.productPriceDetails?.productPrice_product?.productName}
+                                                offerPrice={item.productPriceDetails?.offerPrice}
+                                                productQuantity={item.quantity}
+                                                productVariant={item.object || null}
+                                                productImages={item.productPriceDetails?.productPrice_product?.productImages}
+                                                consumerDiscount={item.productPriceDetails?.consumerDiscount}
+                                                consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
+                                                vendorDiscount={item.productPriceDetails?.vendorDiscount}
+                                                vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
+                                                onRemove={handleRemoveItemFromCart}
+                                                onWishlist={handleAddToWishlist}
+                                                haveAccessToken={haveAccessToken}
+                                                minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
+                                                maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                                            />
+                                        )
+                                    }
+
+                                    if (!item.cartServiceFeatures?.length) return null;
+
+                                    const features = item.cartServiceFeatures.map((feature: any) => ({
+                                        id: feature.id,
+                                        serviceFeatureId: feature.serviceFeatureId,
+                                        quantity: feature.quantity
+                                    }));
+
+                                    return item.cartServiceFeatures.map((feature: any) => {
+                                        return (
+                                            <ServiceCard
+                                                cartId={item.id}
+                                                serviceId={item.serviceId}
+                                                serviceFeatureId={feature.serviceFeatureId}
+                                                serviceFeatureName={feature.serviceFeature.name}
+                                                serviceCost={Number(feature.serviceFeature.serviceCost)}
+                                                cartQuantity={feature.quantity}
+                                                serviceFeatures={features}
+                                                onRemove={() => {
+                                                    handleRemoveServiceFromCart(item.id, feature.id);
+                                                }}
+                                            />
+                                        );
+                                    });
+                                })}
                             </div>
                         </div>
                     </div>

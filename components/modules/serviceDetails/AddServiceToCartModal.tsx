@@ -5,21 +5,28 @@ import { useAuth } from "@/context/AuthContext";
 import { useAddServiceToCart, useServiceById } from "@/apis/queries/services.queries";
 import { useToast } from "@/components/ui/use-toast";
 
-const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
+type AddServiceToCartModalProps = {
+    id?: number;
+    open: boolean;
+    features: { id: number; quantity: number }[];
+    handleClose: () => void;
+};
+
+const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({ id, open, features, handleClose }) => {
     const t = useTranslations();
     const { langDir } = useAuth();
     const { toast } = useToast();
-    const [selectedFeatures, setSelectedFeatures] = useState<
-        { id: number; quantity: number }[]
-    >([]);
+    const [selectedFeatures, setSelectedFeatures] = useState<any[]>(features);
 
     const serviceQueryById = useServiceById(
         {
-            serviceid: id ? (id as string) : "",
+            serviceid: id ? String(id) : "",
         },
         !!id
     );
+
     const addToCartQuery = useAddServiceToCart();
+
     const toggleFeature = (id: number, quantity: number, checked: boolean) => {
         setSelectedFeatures((prev) => {
             if (checked) {
@@ -57,9 +64,7 @@ const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
     const decrementQuantity = (id: number) => {
         setSelectedFeatures((prev) =>
             prev.map((item) =>
-                item.id === id
-                    ? { ...item, quantity: Math.max(1, item.quantity - 1) }
-                    : item
+                item.id === id ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item
             )
         );
     };
@@ -70,6 +75,10 @@ const AddServiceToCartModal: React.FC<any> = ({ id, open, handleClose }) => {
         }
         return null;
     }, [serviceQueryById?.data?.data]);
+
+    useEffect(() => {
+        setSelectedFeatures(features);
+    }, [features]);
 
     useEffect(() => {
         if (!open) {

@@ -16,6 +16,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { useEffect, useState } from "react";
 import { getLocale } from "next-intl/server";
 import { getUserLocale } from "@/src/services/locale";
+// @ts-ignore
+import  { startDebugger }  from "remove-child-node-error-debugger";
 
 export const metadata: Metadata = {
   title: {
@@ -88,6 +90,8 @@ export default async function RootLayout({
   const permissions = await getUserPermissions();
 
   const locale = await getLocale();
+
+  startDebugger();
 
   return (
     <SessionWrapper>

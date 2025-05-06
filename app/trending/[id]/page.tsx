@@ -17,6 +17,7 @@ import {
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
   useDeleteCartItem,
+  useDeleteServiceFromCart,
 } from "@/apis/queries/cart.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
@@ -38,6 +39,7 @@ import Footer from "@/components/shared/Footer";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 import ProductCard from "@/components/modules/cartList/ProductCard";
+import ServiceCard from "@/components/modules/cartList/ServiceCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CartItem } from "@/utils/types/cart.types";
 import { useTranslations } from "next-intl";
@@ -117,6 +119,7 @@ const ProductDetailsPage = () => {
     !!otherProductId && !!otherSellerId,
   );
   const deleteCartItem = useDeleteCartItem();
+  const deleteServiceFromCart = useDeleteServiceFromCart();
   const [isVisible, setIsVisible] = useState(false); // Initially hidden
 
   const hasItemByUser = !!cartListByUser.data?.data?.find(
@@ -165,6 +168,23 @@ const ProductDetailsPage = () => {
       toast({
         title: t("item_not_removed_from_cart"),
         description: t("check_your_cart_for_more_details"),
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleRemoveServiceFromCart = async (cartId: number, serviceFeatureId: number) => {
+    const response = await deleteServiceFromCart.mutateAsync({ cartId, serviceFeatureId });
+    if (response.status) {
+      toast({
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: response.message || t("item_not_removed_from_cart"),
+        description: response.message || t("check_your_cart_for_more_details"),
         variant: "danger",
       });
     }
@@ -740,12 +760,6 @@ const ProductDetailsPage = () => {
             </div>
             <div className="product-view-s1-details-right-suggestion">
               <div className="suggestion-lists-s1 mt-3">
-                {/* TODO: hide ad section for now */}
-                {/* <div className="suggestion-list-s1-col">
-                  <div className="suggestion-banner">
-                    <Image src="/images/suggestion-pic1.png" alt="suggested-preview" />
-                  </div>
-                </div> */}
                 <SameBrandSection
                   productDetails={productDetails}
                   productId={searchParams?.id as string}
@@ -808,28 +822,57 @@ const ProductDetailsPage = () => {
                   ) : null}
                 </div>
 
-                {memoizedCartList?.map((item: CartItem) => (
-                  <ProductCard
-                    key={item.id}
-                    cartId={item.id}
-                    productId={item.productId}
-                    productPriceId={item.productPriceId}
-                    productName={item.productPriceDetails?.productPrice_product?.productName}
-                    offerPrice={item.productPriceDetails?.offerPrice}
-                    productQuantity={item.quantity}
-                    productVariant={item.object}
-                    productImages={item.productPriceDetails?.productPrice_product?.productImages}
-                    consumerDiscount={item.productPriceDetails?.consumerDiscount}
-                    consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
-                    vendorDiscount={item.productPriceDetails?.vendorDiscount}
-                    vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
-                    onRemove={handleRemoveItemFromCart}
-                    onWishlist={handleAddToWishlist}
-                    haveAccessToken={haveAccessToken}
-                    minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
-                    maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
-                  />
-                ))}
+                {memoizedCartList?.map((item: CartItem) => {
+                  if (item.cartType == "DEFAULT") {
+                    return (
+                      <ProductCard
+                        key={item.id}
+                        cartId={item.id}
+                        productId={item.productId}
+                        productPriceId={item.productPriceId}
+                        productName={item.productPriceDetails?.productPrice_product?.productName}
+                        offerPrice={item.productPriceDetails?.offerPrice}
+                        productQuantity={item.quantity}
+                        productVariant={item.object}
+                        productImages={item.productPriceDetails?.productPrice_product?.productImages}
+                        consumerDiscount={item.productPriceDetails?.consumerDiscount}
+                        consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
+                        vendorDiscount={item.productPriceDetails?.vendorDiscount}
+                        vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
+                        onRemove={handleRemoveItemFromCart}
+                        onWishlist={handleAddToWishlist}
+                        haveAccessToken={haveAccessToken}
+                        minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
+                        maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                      />
+                    );
+                  }
+
+                  if (!item.cartServiceFeatures?.length) return null;
+
+                  const features = item.cartServiceFeatures.map((feature: any) => ({
+                    id: feature.id,
+                    serviceFeatureId: feature.serviceFeatureId,
+                    quantity: feature.quantity
+                  }));
+
+                  return item.cartServiceFeatures.map((feature: any) => {
+                    return (
+                      <ServiceCard
+                        cartId={item.id}
+                        serviceId={item.serviceId}
+                        serviceFeatureId={feature.serviceFeatureId}
+                        serviceFeatureName={feature.serviceFeature.name}
+                        serviceCost={Number(feature.serviceFeature.serviceCost)}
+                        cartQuantity={feature.quantity}
+                        serviceFeatures={features}
+                        onRemove={() => {
+                          handleRemoveServiceFromCart(item.id, feature.id);
+                        }}
+                      />
+                    );
+                  });
+                })}
               </div>
             </div>
           </div>

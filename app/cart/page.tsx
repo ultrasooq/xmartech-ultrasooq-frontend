@@ -3,11 +3,13 @@ import {
   useCartListByDevice,
   useCartListByUserId,
   useDeleteCartItem,
+  useDeleteServiceFromCart,
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 import ProductCard from "@/components/modules/cartList/ProductCard";
+import ServiceCard from "@/components/modules/cartList/ServiceCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
@@ -29,6 +31,7 @@ const CartListPage = () => {
   const deviceId = getOrCreateDeviceId() || "";
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [loading, setLoading] = useState<boolean>(false);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   const cartListByDeviceQuery = useCartListByDevice(
     {
@@ -48,6 +51,7 @@ const CartListPage = () => {
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
+  const deleteServiceFromCart= useDeleteServiceFromCart();
   const addToWishlist = useAddToWishList();
 
   const memoizedCartList = useMemo(() => {
@@ -78,6 +82,7 @@ const CartListPage = () => {
         (
           acc: number,
           curr: {
+            cartType: "DEFAULT" | "SERVICE",
             productPriceDetails: {
               offerPrice: string;
               consumerDiscount?: number;
@@ -86,22 +91,38 @@ const CartListPage = () => {
               vendorDiscountType?: string;
             };
             quantity: number;
+            cartServiceFeatures: any[];
           },
         ) => {
-          let discount = curr?.productPriceDetails?.consumerDiscount;
-          let discountType = curr?.productPriceDetails?.consumerDiscountType;
-          if (user?.tradeRole && user.tradeRole != 'BUYER') {
-            discount = curr?.productPriceDetails?.vendorDiscount;
-            discountType = curr?.productPriceDetails?.vendorDiscountType;
+          if (curr.cartType == "DEFAULT") {
+            let discount = curr?.productPriceDetails?.consumerDiscount;
+            let discountType = curr?.productPriceDetails?.consumerDiscountType;
+            if (user?.tradeRole && user.tradeRole != 'BUYER') {
+              discount = curr?.productPriceDetails?.vendorDiscount;
+              discountType = curr?.productPriceDetails?.vendorDiscountType;
+            }
+            const calculatedDiscount = calculateDiscountedPrice(
+              curr.productPriceDetails?.offerPrice ?? 0,
+              discount || 0,
+              discountType
+            );
+            return (
+              Number((acc + calculatedDiscount * curr.quantity).toFixed(2))
+            );
           }
-          const calculatedDiscount = calculateDiscountedPrice(
-            curr.productPriceDetails?.offerPrice ?? 0,
-            discount || 0,
-            discountType
-          );
-          return (
-            Number((acc + calculatedDiscount * curr.quantity).toFixed(2))
-          );
+
+          if (!curr.cartServiceFeatures?.length) return acc;
+
+          let amount = 0;
+          for (let feature of curr.cartServiceFeatures) {
+            if (feature.serviceFeature?.serviceCostType == "FLAT") {
+              amount += Number(feature.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
+            } else {
+              amount += Number(feature?.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
+            }
+          }
+
+          return Number((acc + amount).toFixed(2))
         },
         0,
       );
@@ -110,78 +131,41 @@ const CartListPage = () => {
         (
           acc: number,
           curr: {
+            cartType: "DEFAULT" | "SERVICE";
             productPriceDetails: {
               offerPrice: string;
             };
             quantity: number;
+            cartServiceFeatures: any[];
           },
         ) => {
-          return (
-            Number((acc + Number(curr.productPriceDetails?.offerPrice || 0) * curr.quantity).toFixed(2))
-          );
+          if (curr.cartType == "DEFAULT") {
+            return (
+              Number((acc + Number(curr.productPriceDetails?.offerPrice || 0) * curr.quantity).toFixed(2))
+            );
+          }
+
+          if (!curr.cartServiceFeatures?.length) return acc;
+
+          let amount = 0;
+          for (let feature of curr.cartServiceFeatures) {
+            if (feature.serviceFeature?.serviceCostType == "FLAT") {
+              amount += Number(feature.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
+            } else {
+              amount += Number(feature?.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
+            }
+          }
+
+          return Number((acc + amount).toFixed(2))
         },
         0,
       );
-    }
-  };
-
-  const handleAddToCart = async (
-    quantity: number,
-    actionType: "add" | "remove",
-    productPriceId: number,
-  ) => {
-    const minQuantity = memoizedCartList.find((item: any) => item.productPriceId == productPriceId)?.productPriceDetails?.minQuantityPerCustomer;
-    if (actionType == "add" && minQuantity && minQuantity > quantity) {
-      toast({
-        description: t("min_quantity_must_be_n", { n: minQuantity }),
-        variant: "danger",
-      })
-      return;
-    }
-
-    const maxQuantity = memoizedCartList.find((item: any) => item.productPriceId == productPriceId)?.productPriceDetails?.minQuantityPerCustomer;
-    if (maxQuantity && maxQuantity < quantity) {
-      toast({
-        description: t("max_quantity_must_be_n", { n: maxQuantity }),
-        variant: "danger",
-      })
-      return;
-    }
-
-    if (actionType == "remove" && minQuantity && minQuantity > quantity) {
-      quantity = 0;
-    }
-
-    if (haveAccessToken) {
-      const response = await updateCartWithLogin.mutateAsync({
-        productPriceId,
-        quantity,
-      });
-
-      if (response.status) {
-        toast({
-          title: actionType === "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
-          description: t("check_your_cart_for_more_details"),
-          variant: "success",
-        });
-      }
     } else {
-      const response = await updateCartByDevice.mutateAsync({
-        productPriceId,
-        quantity,
-        deviceId,
-      });
-      if (response.status) {
-        toast({
-          title: actionType === "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
-          description: t("check_your_cart_for_more_details"),
-          variant: "success",
-        });
-      }
+      return 0;
     }
   };
 
-  const handleRemoveItemFromCart = async (cartId: number) => {
+  const handleRemoveProductFromCart = async (cartId: number) => {
     const response = await deleteCartItem.mutateAsync({ cartId });
     if (response.status) {
       setLoading(true);
@@ -194,6 +178,24 @@ const CartListPage = () => {
       toast({
         title: t("item_not_removed_from_cart"),
         description: t("check_your_cart_for_more_details"),
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleRemoveServiceFromCart = async (cartId: number, serviceFeatureId: number) => {
+    const response = await deleteServiceFromCart.mutateAsync({ cartId, serviceFeatureId });
+    if (response.status) {
+      setLoading(true);
+      toast({
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: response.message || t("item_not_removed_from_cart"),
+        description: response.message || t("check_your_cart_for_more_details"),
         variant: "danger",
       });
     }
@@ -223,6 +225,10 @@ const CartListPage = () => {
       setHaveAccessToken(false);
     }
   }, [accessToken]);
+
+  useEffect(() => {
+    setTotalAmount(calculateTotalAmount());
+  }, [memoizedCartList]);
 
   return (
     <div className="cart-page">
@@ -277,28 +283,58 @@ const CartListPage = () => {
                   </div>
 
                   {!loading ? (
-                    memoizedCartList?.map((item: CartItem) => (
-                      <ProductCard
-                        key={item.id}
-                        cartId={item.id}
-                        productId={item.productId}
-                        productPriceId={item.productPriceId}
-                        productName={item.productPriceDetails?.productPrice_product?.productName}
-                        offerPrice={item.productPriceDetails?.offerPrice}
-                        productQuantity={item.quantity}
-                        productVariant={item.object}
-                        productImages={item.productPriceDetails?.productPrice_product?.productImages}
-                        consumerDiscount={item.productPriceDetails?.consumerDiscount || 0}
-                        consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
-                        vendorDiscount={item.productPriceDetails?.vendorDiscount || 0}
-                        vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
-                        onRemove={handleRemoveItemFromCart}
-                        onWishlist={handleAddToWishlist}
-                        haveAccessToken={haveAccessToken}
-                        minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
-                        maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
-                      />
-                    ))
+                    memoizedCartList?.map((item: CartItem) => {
+                      if (item.cartType == "DEFAULT") {
+                        return (
+                          <ProductCard
+                            key={item.id}
+                            cartId={item.id}
+                            productId={item.productId}
+                            productPriceId={item.productPriceId}
+                            productName={item.productPriceDetails?.productPrice_product?.productName}
+                            offerPrice={item.productPriceDetails?.offerPrice}
+                            productQuantity={item.quantity}
+                            productVariant={item.object}
+                            productImages={item.productPriceDetails?.productPrice_product?.productImages}
+                            consumerDiscount={item.productPriceDetails?.consumerDiscount || 0}
+                            consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
+                            vendorDiscount={item.productPriceDetails?.vendorDiscount || 0}
+                            vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
+                            onRemove={handleRemoveProductFromCart}
+                            onWishlist={handleAddToWishlist}
+                            haveAccessToken={haveAccessToken}
+                            minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
+                            maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                          />
+                        )
+                      }
+
+                      if (!item.cartServiceFeatures?.length) return null;
+
+                      const features = item.cartServiceFeatures.map((feature: any) => ({
+                        id: feature.id,
+                        serviceFeatureId: feature.serviceFeatureId,
+                        quantity: feature.quantity
+                      }));
+
+                      return item.cartServiceFeatures.map((feature: any) => {
+                        return (
+                          <ServiceCard 
+                            key={feature.id}
+                            cartId={item.id}
+                            serviceId={item.serviceId}
+                            serviceFeatureId={feature.serviceFeatureId}
+                            serviceFeatureName={feature.serviceFeature.name}
+                            serviceCost={Number(feature.serviceFeature.serviceCost)}
+                            cartQuantity={feature.quantity}
+                            serviceFeatures={features}
+                            onRemove={() => {
+                              handleRemoveServiceFromCart(item.id, feature.id);
+                            }}
+                          />
+                        );
+                      });
+                    })
                   ) : null}
                 </div>
               </div>
@@ -315,7 +351,7 @@ const CartListPage = () => {
                 <ul>
                   <li dir={langDir}>
                     <p translate="no">{t("subtotal")}</p>
-                    <h5>{currency.symbol}{calculateTotalAmount() || 0}</h5>
+                    <h5>{currency.symbol}{totalAmount}</h5>
                   </li>
                   <li dir={langDir}>
                     <p translate="no">{t("shipping")}</p>
@@ -325,7 +361,7 @@ const CartListPage = () => {
               </div>
               <div className="priceDetails-footer" dir={langDir}>
                 <h4 translate="no">{t("total_amount")}</h4>
-                <h4 className="amount-value">{currency.symbol}{calculateTotalAmount() || 0}</h4>
+                <h4 className="amount-value">{currency.symbol}{totalAmount}</h4>
               </div>
             </div>
             <div className="order-action-btn">
