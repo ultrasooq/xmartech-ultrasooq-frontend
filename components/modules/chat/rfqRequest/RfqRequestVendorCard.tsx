@@ -15,14 +15,14 @@ type VendorCardProps = {
     firstName: string;
     lastName: string;
     profilePicture: string;
-  },
+  };
   vendor: {
     lastUnreadMessage: {
       content: string;
-      createdAt: string
-    },
-    unreadMsgCount: number
-  }
+      createdAt: string;
+    };
+    unreadMsgCount: number;
+  };
 };
 
 const VendorCard: React.FC<VendorCardProps> = ({
@@ -31,7 +31,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
   profilePicture,
   onClick,
   isSelected,
-  vendor
+  vendor,
 }) => {
   const { currency } = useAuth();
 
@@ -52,7 +52,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
           className="rounded-full"
         />
       </div>
-      <div className="flex w-[calc(100%-2.5rem)] flex-wrap items-center justify-start gap-y-1 pl-3">
+      <div className="flex w-[calc(100%-2.5rem)] flex-wrap items-center justify-start gap-y-1 whitespace-pre-wrap break-all pl-3">
         <div className="flex w-full">
           <h4 className="text-color-[#333333] text-left text-[15px] font-normal uppercase">
             {name ? name : "-"}
@@ -73,10 +73,12 @@ const VendorCard: React.FC<VendorCardProps> = ({
                   {vendor?.lastUnreadMessage.content}
                 </div>
                 {vendor?.unreadMsgCount ? (
-                  <div className="flex items-center justify-center h-5 w-5 text-xs font-semibold text-white bg-blue-500 rounded-full">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-semibold text-white">
                     {vendor?.unreadMsgCount}
                   </div>
-                ): ""}
+                ) : (
+                  ""
+                )}
               </div>
             </div>
             {vendor?.lastUnreadMessage?.createdAt ? (

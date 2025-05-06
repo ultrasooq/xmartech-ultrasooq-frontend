@@ -5294,6 +5294,45 @@ input::-ms-clear {
     @apply min-h-[38px];
   }
 
+  .my-order-lists .delivery-address {
+    @apply flex flex-wrap m-0;
+  }
+
+  .my-order-lists .delivery-address-col.moreActions {
+    @apply max-w-full p-0;
+  }
+
+  .order-delivery-progess-s1 ul {
+    @apply flex-col flex-wrap m-0;
+  }
+
+  .order-delivery-progess-s1 ul li {
+    @apply text-left pl-6 relative;
+  }
+
+  .order-delivery-progess-s1 ul li::before {
+    @apply w-0.5 h-full left-[7px] bottom-0 content-[""] absolute bg-[#888];
+  }
+
+  .order-delivery-progess-s1 ul li:first-child:before {
+    @apply bottom-[-30%];
+  }
+
+  .order-delivery-progess-s1 ul li:last-child:before {
+    @apply bottom-auto top-0 h-[40%];
+  }
+
+  .order-delivery-progess-s1 ul li .dot {
+    @apply w-2 h-2 rounded-[50%] bg-[#888] absolute top-[4px] left-1;
+  }
+
+  .order-delivery-progess-s1 ul li .dot::before,
+  .order-delivery-progess-s1 ul li .dot::after,
+  .order-delivery-progess-s1 ul li .dot small {
+    @apply hidden !important;
+  }
+
+
 }
 
 
