@@ -516,36 +516,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </button>
             </Link>
           ) : (
-            <>
-              <h5 className="py-0.5 text-[#1D77D1]" dir={langDir}>
-                {langDir === "rtl" ? (
-                  <>
-                    <span className="text-gray-500 !line-through">
-                      {item.productProductPrice} {currency.symbol}
-                    </span>{" "}
-                    {calculateDiscountedPrice()} {currency.symbol}
-                  </>
-                ) : (
-                  <>
-                    {currency.symbol}
-                    {calculateDiscountedPrice()}{" "}
-                    <span className="text-gray-500 !line-through">
-                      {currency.symbol}
-                      {item.productProductPrice}
-                    </span>
-                  </>
-                )}
-              </h5>
-
-              {/* <h5 className="py-0.5 text-[#1D77D1]">
+            <div suppressHydrationWarning>
+              <h5
+                className="py-0.5 text-[#1D77D1]"
+                dir={langDir}
+                translate="no"
+              >
                 {currency.symbol}
                 {calculateDiscountedPrice()}{" "}
                 <span className="text-gray-500 !line-through">
                   {currency.symbol}
                   {item.productProductPrice}
                 </span>
-              </h5> */}
-            </>
+              </h5>
+            </div>
           )}
         </div>
         {productVariants.length > 0 ? (

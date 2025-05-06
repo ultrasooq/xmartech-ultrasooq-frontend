@@ -205,7 +205,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             width={108}
           />
         </div>
-        <figcaption>
+        <figcaption dir={langDir}>
           <h4 className="!text-lg !font-bold">{productName}</h4>
           <div className="custom-form-group">
             <label dir={langDir} translate="no">{t("quantity")}</label>

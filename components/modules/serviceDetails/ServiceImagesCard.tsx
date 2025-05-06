@@ -23,8 +23,6 @@ import ProductEditForm from "../factories/ProductEditForm";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useMe } from "@/apis/queries/user.queries";
 import AddToCustomizeForm from "../factories/AddToCustomizeForm";
-import { useSellerRewards } from "@/apis/queries/seller-reward.queries";
-// import SellerRewardDetail from "./SellerRewardDetail";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -116,32 +114,7 @@ const ServiceImagesCard: React.FC<any> = ({
 
     const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
 
-    const handleToCustomizeModal = () =>
-        setIsCustomizeModalOpen(!isCustomizeModalOpen);
-
-    const [reward, setReward] = useState<{ [key: string]: string }>();
-
-    const [isSellerRewardDetailModalOpen, setIsSellerRewardDetailModalOpen] =
-        useState<boolean>(false);
-
-    const handleSellerRewardDetailModal = () =>
-        setIsSellerRewardDetailModalOpen(!isSellerRewardDetailModalOpen);
-
-    const sellerRewardsQuery = useSellerRewards(
-        {
-            page: 1,
-            limit: 1,
-            productId: serviceDetails?.id,
-            sortType: "desc",
-        },
-        !!serviceDetails?.id,
-    );
-
-    useEffect(() => {
-        const reward = sellerRewardsQuery?.data?.data?.[0];
-        if (reward && new Date(reward.endTime).getTime() > new Date().getTime())
-            setReward(reward);
-    }, [sellerRewardsQuery?.data?.data, serviceDetails]);
+    const handleToCustomizeModal = () => setIsCustomizeModalOpen(!isCustomizeModalOpen);
 
     return (
         <div className="product-view-s1-left">
@@ -219,31 +192,6 @@ const ServiceImagesCard: React.FC<any> = ({
                             <Skeleton className="h-28 w-28" key={index} />
                         ))
                         : null}
-
-                    {/* {serviceDetails?.images?.map((item: any, index: number) => (
-                        <Button
-                            variant="ghost"
-                            className={cn(
-                                previewImages[currentImageIndex] === item?.url
-                                    ? "border-2 border-red-500"
-                                    : "",
-                                "relative h-28 w-28 rounded-none bg-gray-100",
-                            )}
-                            key={item?.id}
-                            onClick={() => api?.scrollTo(index)}
-                        >
-                            <Image
-                                src={
-                                    item?.url && validator.isURL(item.url)
-                                        ? item.url
-                                        : PlaceholderImage
-                                }
-                                alt="primary-image"
-                                fill
-                                className="rounded-none object-contain"
-                            />
-                        </Button>
-                    ))} */}
                     {serviceDetails?.images?.map((item: any, index: number) => {
                         return (
                             <Button
@@ -313,7 +261,6 @@ const ServiceImagesCard: React.FC<any> = ({
                             </Button>
                             <Button
                                 type="button"
-                                // onClick={onToCheckout}
                                 onClick={onToCart}
                                 className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
                                 dir={langDir}
@@ -323,16 +270,6 @@ const ServiceImagesCard: React.FC<any> = ({
                             </Button>
                         </>
                     ) : null}
-                    {/* {serviceDetails?.adminId == loginUserId ? (
-                <Button
-                  type="button"
-                  // onClick={onToCheckout}
-                  onClick={handleToggleEditModal}
-                  className="h-14 flex-1 rounded-none bg-color-yellow text-base"
-                >
-                  Edit Product
-                </Button>
-              ) : null} */}
                 </div>
             ) : null}
 
@@ -368,17 +305,6 @@ const ServiceImagesCard: React.FC<any> = ({
                     >
                         {t("buy_now")}
                     </Button>
-                    {reward ? (
-                        <Button
-                            type="button"
-                            onClick={() => setIsSellerRewardDetailModalOpen(true)}
-                            className="h-14 flex-1 rounded-none bg-dark-orange text-base"
-                            dir={langDir}
-                            translate="no"
-                        >
-                            {t("generate_share_link")}
-                        </Button>
-                    ) : null}
                 </div>
             ) : null}
 
@@ -414,23 +340,6 @@ const ServiceImagesCard: React.FC<any> = ({
                     />
                 </DialogContent>
             </Dialog>
-
-            {/* {reward && (
-        <Dialog
-          open={isSellerRewardDetailModalOpen}
-          onOpenChange={handleSellerRewardDetailModal}
-        >
-          <DialogContent
-            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
-            ref={wrapperRef}
-          >
-            <SellerRewardDetail
-              reward={reward}
-              onClose={() => setIsSellerRewardDetailModalOpen(false)}
-            />
-          </DialogContent>
-        </Dialog>
-      )} */}
         </div>
     );
 };

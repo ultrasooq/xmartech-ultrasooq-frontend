@@ -38,9 +38,7 @@ export default function PlateEditor({
 }: PlateEditorProps) {
   const containerRef = useRef(null);
   if (typeof window !== "undefined") {
-    {
-      /* @ts-ignore */
-    }
+    // @ts-ignore
     window.__isReactDndBackendSetUp = false;
   }
   return (

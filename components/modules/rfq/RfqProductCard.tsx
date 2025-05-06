@@ -117,7 +117,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         </Button>
       </div>
       {/* </Link> */}
-      <div className="product_list_content">
+      <div className="product_list_content" dir={langDir}>
         <p>{productName}</p>
         {/* price For P type product */}
         {/* {productType === "P" ? (
