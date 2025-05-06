@@ -1,5 +1,6 @@
 export interface CartItem {
   id: number;
+  cartType: "DEFAULT" | "SERVICE"
   productId: number;
   productPriceId: number;
   productPriceDetails: {
@@ -17,6 +18,8 @@ export interface CartItem {
     minQuantityPerCustomer?: number;
     maxQuantityPerCustomer?: number;
   };
+  serviceId: number;
+  cartServiceFeatures: any[];
   quantity: number;
   object: any;
 }

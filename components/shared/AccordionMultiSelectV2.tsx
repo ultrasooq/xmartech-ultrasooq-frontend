@@ -25,7 +25,7 @@ type AccordionMultiSelectV2Props = {
   options?: OptionProps[];
   placeholder?: string;
   canCreate?: boolean;
-  createOption?: (option: string) => void,
+  createOption?: (option: string) => void;
   error?: string;
 };
 
@@ -40,34 +40,37 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
-  
+
   const formContext = useFormContext();
 
   const watcher = formContext.watch(name);
 
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   let filteredOptions: OptionProps[] = [...options];
   if (search) {
-    filteredOptions = filteredOptions.filter(
-      item => item.label.toString().toLowerCase().includes(search.toString().toLocaleLowerCase())
+    filteredOptions = filteredOptions.filter((item) =>
+      item.label
+        .toString()
+        .toLowerCase()
+        .includes(search.toString().toLocaleLowerCase()),
     );
   }
 
   const addNew = (option: string) => {
     if (createOption) {
       createOption(option);
-      setSearch('');
+      setSearch("");
     }
   };
 
   return (
     <>
-      <label 
+      <label
         className={cn(
-          'mb-3 block',
-          langDir == 'rtl' ? 'text-right' : 'text-left',
-          'text-sm font-medium leading-5 text-color-dark'
+          "mb-3 block",
+          langDir == "rtl" ? "text-right" : "text-left",
+          "text-sm font-medium leading-5 text-color-dark",
         )}
       >
         {label}
@@ -78,19 +81,24 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
         collapsible
         className="mb-4 w-full rounded border border-solid border-gray-300 bg-white"
       >
-        <AccordionItem value="item-1" className="border-b-0 px-3">
-          <AccordionTrigger className="flex h-auto min-h-[48px] justify-between py-0 hover:!no-underline" dir={langDir}>
+        <AccordionItem value="item-1" className="border-b-0 px-2 md:px-3">
+          <AccordionTrigger
+            className="flex h-auto min-h-[48px] justify-between py-0 hover:!no-underline"
+            dir={langDir}
+          >
             <div className="my-2 flex flex-wrap">
               {(watcher || [])?.map((item: OptionProps) => (
                 <p
                   key={item.value}
-                  className="my-1 mr-2 inline-flex items-center justify-between rounded bg-zinc-100 px-3.5 py-3 text-sm font-normal capitalize leading-4 text-dark-cyan"
+                  className="my-1 mr-1 inline-flex items-center justify-between rounded bg-zinc-100 px-2 py-2 text-sm font-normal capitalize leading-4 text-dark-cyan"
                 >
                   {item.label}
                 </p>
               ))}
               {!(watcher || [])?.length ? (
-                <p className="capitalize" translate="no">{t("select")} {placeholder}</p>
+                <p className="capitalize" translate="no">
+                  {t("select")} {placeholder}
+                </p>
               ) : null}
             </div>
           </AccordionTrigger>
@@ -102,13 +110,21 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
               <FormControl>
                 <Input
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 ></Input>
               </FormControl>
             </FormItem>
-            {canCreate && filteredOptions.length == 0 ? (<div className="mb-4">
-              <a href="javascript:void(0)" onClick={e => addNew(search)} style={{ cursor: 'pointer' }}>Add {`"${search}"`}</a>
-            </div>) : null}
+            {canCreate && filteredOptions.length == 0 ? (
+              <div className="mb-4">
+                <a
+                  href="javascript:void(0)"
+                  onClick={(e) => addNew(search)}
+                  style={{ cursor: "pointer" }}
+                >
+                  Add {`"${search}"`}
+                </a>
+              </div>
+            ) : null}
             <div className="flex flex-col" dir={langDir}>
               {filteredOptions.map((item) => (
                 <FormField
@@ -170,7 +186,9 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <p className="mb-3 text-sm text-red-500" dir={langDir}>{error}</p>
+      <p className="mb-3 text-sm text-red-500" dir={langDir}>
+        {error}
+      </p>
     </>
   );
 };

@@ -62,11 +62,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const price = productProductPrice ? Number(productProductPrice) : 0;
     let discount = consumerDiscount || 0;
     let discountType = consumerDiscountType;
-    if (user?.tradeRole && user.tradeRole != 'BUYER') {
+    if (user?.tradeRole && user.tradeRole != "BUYER") {
       discount = vendorDiscount || 0;
       discountType = vendorDiscountType;
     }
-    if (discountType == 'PERCENTAGE') {
+    if (discountType == "PERCENTAGE") {
       return Number((price - (price * discount) / 100).toFixed(2));
     }
     return Number((price - discount).toFixed(2));
@@ -120,7 +120,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 : PlaceholderImage
             }
             alt="preview"
-            className="object-contain"
+            className="object-cover"
             fill
           />
         </div>

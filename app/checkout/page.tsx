@@ -54,44 +54,47 @@ const CheckoutPage = () => {
   const { toast } = useToast();
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | undefined>();
+  const [selectedAddressId, setSelectedAddressId] = useState<
+    number | undefined
+  >();
   const [sameAsShipping, setSameAsShipping] = useState(false);
-  const [selectedOrderDetails, setSelectedOrderDetails] = useState<OrderDetails>();
+  const [selectedOrderDetails, setSelectedOrderDetails] =
+    useState<OrderDetails>();
   const [addressType, setAddressType] = useState<"shipping" | "billing">();
   const [guestShippingAddress, setGuestShippingAddress] = useState<
     | {
-      firstName: string;
-      lastName: string;
-      cc: string;
-      phoneNumber: string;
-      address: string;
-      town: string;
-      city: string;
-      cityId: string;
-      state: string;
-      stateId: string;
-      country: string;
-      countryId: string;
-      postCode: string;
-    }
+        firstName: string;
+        lastName: string;
+        cc: string;
+        phoneNumber: string;
+        address: string;
+        town: string;
+        city: string;
+        cityId: string;
+        state: string;
+        stateId: string;
+        country: string;
+        countryId: string;
+        postCode: string;
+      }
     | undefined
   >();
   const [guestBillingAddress, setGuestBillingAddress] = useState<
     | {
-      firstName: string;
-      lastName: string;
-      cc: string;
-      phoneNumber: string;
-      address: string;
-      town: string;
-      city: string;
-      cityId: string;
-      state: string;
-      stateId: string;
-      country: string;
-      countryId: string;
-      postCode: string;
-    }
+        firstName: string;
+        lastName: string;
+        cc: string;
+        phoneNumber: string;
+        address: string;
+        town: string;
+        city: string;
+        cityId: string;
+        state: string;
+        stateId: string;
+        country: string;
+        countryId: string;
+        postCode: string;
+      }
     | undefined
   >();
   const [guestEmail, setGuestEmail] = useState("");
@@ -104,17 +107,26 @@ const CheckoutPage = () => {
   const [shippingCharge, setShippingCharge] = useState<number>(0);
 
   const [selectedCartId, setSelectedCartId] = useState<number>();
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
-  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
+  const handleConfirmDialog = () =>
+    setIsConfirmDialogOpen(!isConfirmDialogOpen);
   const confirmDialogRef = useRef(null);
-  const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
+  const [isClickedOutsideConfirmDialog] = useClickOutside(
+    [confirmDialogRef],
+    (event) => {
+      onCancelRemove();
+    },
+  );
 
   const [selectedSellerId, setSelectedSellerId] = useState<number>();
   const [selectedShippingType, setSelectedShippingType] = useState<string>();
   const [fromCityId, setFromCityId] = useState<number>();
   const [toCityId, setToCityId] = useState<number>();
-  const [isShippingModalOpen, setIsShippingModalOpen] = useState<boolean>(false);
-  const handleShippingModal = () => setIsShippingModalOpen(!isShippingModalOpen);
+  const [isShippingModalOpen, setIsShippingModalOpen] =
+    useState<boolean>(false);
+  const handleShippingModal = () =>
+    setIsShippingModalOpen(!isShippingModalOpen);
   const shippingModalRef = useRef(null);
 
   const deviceId = getOrCreateDeviceId() || "";
@@ -123,7 +135,7 @@ const CheckoutPage = () => {
   const orderStore = useOrderStore();
   const preOrderCalculation = usePreOrderCalculation();
 
-  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => { });
+  const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
   const me = useMe(haveAccessToken);
   const cartListByDeviceQuery = useCartListByDevice(
@@ -168,10 +180,10 @@ const CheckoutPage = () => {
   const calculateDiscountedPrice = (
     offerPrice: string | number,
     discount: number,
-    discountType?: string
+    discountType?: string,
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
-    if (discountType == 'PERCENTAGE') {
+    if (discountType == "PERCENTAGE") {
       return Number((price - (price * discount) / 100).toFixed(2));
     }
     return Number((price - discount).toFixed(2));
@@ -196,24 +208,23 @@ const CheckoutPage = () => {
           ) => {
             let discount = curr?.productPriceDetails?.consumerDiscount;
             let discountType = curr?.productPriceDetails?.consumerDiscountType;
-            if (user?.tradeRole && user.tradeRole != 'BUYER') {
+            if (user?.tradeRole && user.tradeRole != "BUYER") {
               discount = curr?.productPriceDetails?.vendorDiscount;
               discountType = curr?.productPriceDetails?.vendorDiscountType;
             }
             let calculatedDiscount = calculateDiscountedPrice(
               curr.productPriceDetails?.offerPrice ?? 0,
               discount || 0,
-              discountType
+              discountType,
             );
 
-            return (
-              Number((acc + calculatedDiscount * curr.quantity).toFixed(2))
+            return Number(
+              (acc + calculatedDiscount * curr.quantity).toFixed(2),
             );
           },
           0,
-        )
+        ),
       );
-
     } else if (cartListByDeviceQuery.data?.data?.length) {
       setItemsTotal(
         cartListByDeviceQuery.data?.data?.reduce(
@@ -226,12 +237,15 @@ const CheckoutPage = () => {
               quantity: number;
             },
           ) => {
-            return (
-              Number((acc + +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity).toFixed(2))
+            return Number(
+              (
+                acc +
+                +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
+              ).toFixed(2),
             );
           },
           0,
-        )
+        ),
       );
     }
   };
@@ -245,7 +259,7 @@ const CheckoutPage = () => {
       { value: "PICKUP", label: "Consumer Pickup" },
       { value: "SELLERDROP", label: "Delivery By Seller" },
       { value: "THIRDPARTY", label: "Third Party" },
-      { value: "PLATFORM", label: "Third Party (Within Platform)" }
+      { value: "PLATFORM", label: "Third Party (Within Platform)" },
     ];
   };
 
@@ -253,18 +267,21 @@ const CheckoutPage = () => {
     quantity: number,
     actionType: "add" | "remove",
     productPriceId: number,
-    productVariant?: any
+    productVariant?: any,
   ) => {
     if (haveAccessToken) {
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId,
         quantity,
-        productVariant
+        productVariant,
       });
 
       if (response.status) {
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -277,7 +294,10 @@ const CheckoutPage = () => {
       });
       if (response.status) {
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -359,7 +379,6 @@ const CheckoutPage = () => {
         shippingProvince: item.stateDetail?.name,
         shippingCountry: item.countryDetail?.name,
         shippingPostCode: item.postCode,
-
       }));
     } else if (addresszType === "billing") {
       setSelectedOrderDetails((prevState) => ({
@@ -380,8 +399,12 @@ const CheckoutPage = () => {
   };
 
   // State for selected addresses
-  const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(null);
-  const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(null);
+  const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<
+    string | null
+  >(null);
+  const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<
+    string | null
+  >(null);
 
   //  Set default selected address when addresses are loaded
   useEffect(() => {
@@ -396,25 +419,31 @@ const CheckoutPage = () => {
   }, [memoziedAddressList]);
 
   const [invalidProducts, setInvalidProducts] = useState<number[]>([]);
-  const [notAvailableProducts, setNotAvailableProducts] = useState<number[]>([]);
+  const [notAvailableProducts, setNotAvailableProducts] = useState<number[]>(
+    [],
+  );
 
   const calculateFees = async () => {
     const response = await preOrderCalculation.mutateAsync({
       cartIds: memoizedCartList.map((item: any) => item.id),
-      userAddressId: Number(selectedShippingAddressId)
+      userAddressId: Number(selectedShippingAddressId),
     });
 
-    setInvalidProducts(response?.invalidProducts?.map((productId: number) => productId) || []);
-    setNotAvailableProducts(response?.productCannotBuy?.map((item: any) => item.productId) || []);
+    setInvalidProducts(
+      response?.invalidProducts?.map((productId: number) => productId) || [],
+    );
+    setNotAvailableProducts(
+      response?.productCannotBuy?.map((item: any) => item.productId) || [],
+    );
 
     let chargedFee = 0;
     if (response?.data?.length) {
       response.data.forEach((item: any) => {
         chargedFee += Number(item?.breakdown?.customer?.chargedFee);
-      })
+      });
     }
     setFee(chargedFee);
-  }
+  };
 
   useEffect(() => {
     if (memoizedCartList.length) {
@@ -428,7 +457,9 @@ const CheckoutPage = () => {
 
       setShippingInfo(
         userIds.map((userId: number) => {
-          const info = shippingInfo.find((item: any) => item.sellerId == userId);
+          const info = shippingInfo.find(
+            (item: any) => item.sellerId == userId,
+          );
 
           if (info) return info;
 
@@ -440,23 +471,25 @@ const CheckoutPage = () => {
               fromTime: null,
               toTime: null,
               shippingCharge: 0,
-              serviceId: null
-            }
+              serviceId: null,
+            },
           };
-        })
+        }),
       );
 
       setShippingErrors(
         userIds.map((userId: number) => {
-          const data = shippingErrors.find((item: any) => item.sellerId == userId);
+          const data = shippingErrors.find(
+            (item: any) => item.sellerId == userId,
+          );
 
           if (data) return data;
 
           return {
             sellerId: userId,
-            errors: {}
+            errors: {},
           };
-        })
+        }),
       );
 
       calculateFees();
@@ -465,15 +498,12 @@ const CheckoutPage = () => {
     cartListByUser.data?.data,
     cartListByDeviceQuery?.data?.data,
     allUserAddressQuery?.data?.data,
-    selectedBillingAddressId
+    selectedBillingAddressId,
   ]);
 
   useEffect(() => {
     calculateTotalAmount();
-  }, [
-    cartListByUser.data?.data,
-    cartListByDeviceQuery?.data?.data
-  ]);
+  }, [cartListByUser.data?.data, cartListByDeviceQuery?.data?.data]);
 
   useEffect(() => {
     setTotalAmount(itemsTotal + shippingCharge + fee);
@@ -496,36 +526,48 @@ const CheckoutPage = () => {
 
       if (info.shippingType == "PICKUP") {
         if (!info?.info?.shippingDate) {
-          errors[i]['errors']['shippingDate'] = 'Shipping date is required';
+          errors[i]["errors"]["shippingDate"] = "Shipping date is required";
         } else {
-          let date = new Date;
+          let date = new Date();
           date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-          if ((new Date(info?.info?.shippingDate + ' 00:00:00')).getTime() <= date.getTime()) {
-            errors[i]['errors']['shippingDate'] = 'Shipping date must be greater than current date';
+          if (
+            new Date(info?.info?.shippingDate + " 00:00:00").getTime() <=
+            date.getTime()
+          ) {
+            errors[i]["errors"]["shippingDate"] =
+              "Shipping date must be greater than current date";
           }
         }
 
         if (!info?.info?.fromTime) {
-          errors[i]['errors']['fromTime'] = 'From time is required';
+          errors[i]["errors"]["fromTime"] = "From time is required";
         }
 
         if (!info?.info?.toTime) {
-          errors[i]['errors']['toTime'] = 'To time is required';
+          errors[i]["errors"]["toTime"] = "To time is required";
         }
 
-        if (info?.info?.fromTime && info?.info?.toTime && info?.info?.fromTime >= info?.info?.toTime) {
-          errors[i]['errors']['fromTime'] = 'From time must be less than to time';
+        if (
+          info?.info?.fromTime &&
+          info?.info?.toTime &&
+          info?.info?.fromTime >= info?.info?.toTime
+        ) {
+          errors[i]["errors"]["fromTime"] =
+            "From time must be less than to time";
         }
 
-        count += Object.keys(errors[i]['errors']).length > 0 ? 1 : 0;
+        count += Object.keys(errors[i]["errors"]).length > 0 ? 1 : 0;
       }
 
-      if (info.shippingType == 'SELLERDROP' || info.shippingType == 'PLATFORM') {
+      if (
+        info.shippingType == "SELLERDROP" ||
+        info.shippingType == "PLATFORM"
+      ) {
         if (!info?.info?.serviceId) {
-          errors[i]['errors']['serviceId'] = 'Shipping service is required';
+          errors[i]["errors"]["serviceId"] = "Shipping service is required";
         }
 
-        count += Object.keys(errors[i]['errors']).length > 0 ? 1 : 0;
+        count += Object.keys(errors[i]["errors"]).length > 0 ? 1 : 0;
       }
 
       i++;
@@ -547,18 +589,25 @@ const CheckoutPage = () => {
         fromTime: null,
         toTime: null,
         shippingCharge: 0,
-        serviceId: null
+        serviceId: null,
       };
-      
-      if (info.shippingType == 'PICKUP') {
-        data[i].shippingDate = convertDateTimeToUTC(`${info.info.shippingDate} ${info.info.fromTime}:00`);
-        data[i].fromTime = convertDateTimeToUTC(`${info.info.shippingDate} ${info.info.fromTime}:00`);
-        data[i].toTime = convertDateTimeToUTC(`${info.info.shippingDate} ${info.info.toTime}:00`);
 
-      } else if (info.shippingType == 'SELLERDROP' || info.shippingType == 'PLATFORM') {
+      if (info.shippingType == "PICKUP") {
+        data[i].shippingDate = convertDateTimeToUTC(
+          `${info.info.shippingDate} ${info.info.fromTime}:00`,
+        );
+        data[i].fromTime = convertDateTimeToUTC(
+          `${info.info.shippingDate} ${info.info.fromTime}:00`,
+        );
+        data[i].toTime = convertDateTimeToUTC(
+          `${info.info.shippingDate} ${info.info.toTime}:00`,
+        );
+      } else if (
+        info.shippingType == "SELLERDROP" ||
+        info.shippingType == "PLATFORM"
+      ) {
         data[i].shippingCharge = info.info.shippingCharge;
         data[i].serviceId = info.info.serviceId;
-
       }
 
       i++;
@@ -570,8 +619,10 @@ const CheckoutPage = () => {
   const onSaveOrder = () => {
     if (invalidProducts.length > 0 || notAvailableProducts.length > 0) {
       toast({
-        description: t("remove_n_items_from_cart", { n: invalidProducts.length + notAvailableProducts.length }),
-        variant: "danger"
+        description: t("remove_n_items_from_cart", {
+          n: invalidProducts.length + notAvailableProducts.length,
+        }),
+        variant: "danger",
       });
       return;
     }
@@ -580,7 +631,7 @@ const CheckoutPage = () => {
       toast({
         title: "Shipping error",
         description: "Shipping data has errors, please check",
-        variant: "danger"
+        variant: "danger",
       });
       return;
     }
@@ -617,7 +668,9 @@ const CheckoutPage = () => {
         return;
       }
 
-      const address = memoziedAddressList.find((item: any) => item.id == selectedShippingAddressId);
+      const address = memoziedAddressList.find(
+        (item: any) => item.id == selectedShippingAddressId,
+      );
 
       orderStore.setOrders({
         ...data,
@@ -626,12 +679,11 @@ const CheckoutPage = () => {
           stateId: address?.stateId,
           cityId: address?.cityId,
           town: address?.town,
-          userAddressId: Number(selectedShippingAddressId)
-        }
+          userAddressId: Number(selectedShippingAddressId),
+        },
       });
       orderStore.setTotal(totalAmount);
       router.push("/complete-order");
-
     } else {
       // if (!guestEmail) {
       //   toast({
@@ -640,7 +692,6 @@ const CheckoutPage = () => {
       //   });
       //   return;
       // }
-
       // if (!validator.isEmail(guestEmail)) {
       //   toast({
       //     title: t("please_enter_valid_email_address"),
@@ -648,7 +699,6 @@ const CheckoutPage = () => {
       //   });
       //   return;
       // }
-
       // let guestOrderDetails: any = {
       //   guestUser: {
       //     firstName: "",
@@ -658,7 +708,6 @@ const CheckoutPage = () => {
       //     phoneNumber: "",
       //   },
       // };
-
       // if (!guestShippingAddress) {
       //   toast({
       //     title: t("please_add_a_shipping_address"),
@@ -666,7 +715,6 @@ const CheckoutPage = () => {
       //   });
       //   return;
       // }
-
       // if (guestShippingAddress) {
       //   guestOrderDetails = {
       //     ...guestOrderDetails,
@@ -683,7 +731,6 @@ const CheckoutPage = () => {
       //     shippingPostCode: guestShippingAddress.postCode,
       //   };
       // }
-
       // if (!guestBillingAddress) {
       //   toast({
       //     title: t("please_add_a_billing_address"),
@@ -691,7 +738,6 @@ const CheckoutPage = () => {
       //   });
       //   return;
       // }
-
       // if (guestBillingAddress) {
       //   guestOrderDetails = {
       //     ...guestOrderDetails,
@@ -703,14 +749,12 @@ const CheckoutPage = () => {
       //     billingPostCode: guestBillingAddress.postCode,
       //   };
       // }
-
       // const data = {
       //   ...guestOrderDetails,
       //   email: guestEmail,
       //   paymentMethod: "cash",
       //   cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
       // };
-
       // if (
       //   data.firstName !== "" &&
       //   data.lastName !== "" &&
@@ -725,7 +769,6 @@ const CheckoutPage = () => {
       //     phoneNumber: data.phone,
       //   };
       // }
-
       // orderStore.setOrders(data);
       // orderStore.setTotal(totalAmount);
       // router.push("/complete-order");
@@ -762,22 +805,40 @@ const CheckoutPage = () => {
                 {sellerIds.map((sellerId: number, index: number) => {
                   return (
                     <div className="cart-item-lists" key={sellerId}>
-                      {memoizedCartList?.filter((item: CartItem) => item.productPriceDetails.adminId == sellerId)
+                      {memoizedCartList
+                        ?.filter(
+                          (item: CartItem) =>
+                            item.productPriceDetails.adminId == sellerId,
+                        )
                         ?.map((item: CartItem) => (
                           <ProductCard
                             key={item.id}
                             cartId={item.id}
                             productId={item.productId}
                             productPriceId={item.productPriceId}
-                            productName={item.productPriceDetails?.productPrice_product?.productName}
+                            productName={
+                              item.productPriceDetails?.productPrice_product
+                                ?.productName
+                            }
                             offerPrice={item.productPriceDetails?.offerPrice}
                             productQuantity={item.quantity}
                             productVariant={item.object}
-                            productImages={item.productPriceDetails?.productPrice_product?.productImages}
-                            consumerDiscount={item.productPriceDetails?.consumerDiscount || 0}
-                            consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
-                            vendorDiscount={item.productPriceDetails?.vendorDiscount || 0}
-                            vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
+                            productImages={
+                              item.productPriceDetails?.productPrice_product
+                                ?.productImages
+                            }
+                            consumerDiscount={
+                              item.productPriceDetails?.consumerDiscount || 0
+                            }
+                            consumerDiscountType={
+                              item.productPriceDetails?.consumerDiscountType
+                            }
+                            vendorDiscount={
+                              item.productPriceDetails?.vendorDiscount || 0
+                            }
+                            vendorDiscountType={
+                              item.productPriceDetails?.vendorDiscountType
+                            }
                             onAdd={handleAddToCart}
                             onRemove={(cartId: number) => {
                               setIsConfirmDialogOpen(true);
@@ -785,18 +846,24 @@ const CheckoutPage = () => {
                             }}
                             onWishlist={handleAddToWishlist}
                             haveAccessToken={haveAccessToken}
-                            invalidProduct={invalidProducts.includes(item.productId)}
-                            cannotBuy={notAvailableProducts.includes(item.productId)}
+                            invalidProduct={invalidProducts.includes(
+                              item.productId,
+                            )}
+                            cannotBuy={notAvailableProducts.includes(
+                              item.productId,
+                            )}
                           />
                         )) || []}
                       <div className="cart-item-list-col" dir={langDir}>
-                        <div className="sm:grid sm:grid-cols-3 w-full gap-2">
+                        <div className="w-full gap-2 sm:grid sm:grid-cols-3">
                           <Select
                             // @ts-ignore
                             options={shippingOptions()}
-                            value={
-                              shippingOptions().find(option => shippingInfo[index].shippingType == option.value)
-                            }
+                            value={shippingOptions().find(
+                              (option) =>
+                                shippingInfo[index].shippingType ==
+                                option.value,
+                            )}
                             onChange={(newValue: any) => {
                               let data = shippingInfo;
                               data[index].shippingType = newValue?.value;
@@ -807,16 +874,29 @@ const CheckoutPage = () => {
                             }}
                           />
 
-                          {["SELLERDROP", "PLATFORM"].includes(shippingInfo[index].shippingType) ? (
+                          {["SELLERDROP", "PLATFORM"].includes(
+                            shippingInfo[index].shippingType,
+                          ) ? (
                             <Button
                               onClick={() => {
                                 setSelectedSellerId(sellerId);
-                                setSelectedShippingType(shippingInfo[index].shippingType);
-                                const item = memoizedCartList?.find((item: CartItem) => item.productPriceDetails.adminId == sellerId);
+                                setSelectedShippingType(
+                                  shippingInfo[index].shippingType,
+                                );
+                                const item = memoizedCartList?.find(
+                                  (item: CartItem) =>
+                                    item.productPriceDetails.adminId ==
+                                    sellerId,
+                                );
                                 if (item) {
-                                  setFromCityId(item.productPriceDetails?.productCityId);
+                                  setFromCityId(
+                                    item.productPriceDetails?.productCityId,
+                                  );
                                 }
-                                const address = memoziedAddressList.find((item: any) => item.id == selectedShippingAddressId);
+                                const address = memoziedAddressList.find(
+                                  (item: any) =>
+                                    item.id == selectedShippingAddressId,
+                                );
                                 if (address) {
                                   setToCityId(address.cityId);
                                 }
@@ -829,13 +909,18 @@ const CheckoutPage = () => {
                             </Button>
                           ) : null}
 
-                          {["SELLERDROP", "PLATFORM"].includes(shippingInfo[index].shippingType) ? (
+                          {["SELLERDROP", "PLATFORM"].includes(
+                            shippingInfo[index].shippingType,
+                          ) ? (
                             <>
                               {shippingInfo[index]?.info?.serviceId ? (
-                                <div className="mt-2">{shippingInfo[index].info.serviceName}</div>
+                                <div className="mt-2">
+                                  {shippingInfo[index].info.serviceName}
+                                </div>
                               ) : (
                                 <span className="text-red-500">
-                                  {shippingErrors?.[index]?.errors?.serviceId || ''}
+                                  {shippingErrors?.[index]?.errors?.serviceId ||
+                                    ""}
                                 </span>
                               )}
                             </>
@@ -846,50 +931,58 @@ const CheckoutPage = () => {
                       {shippingInfo[index].shippingType == "PICKUP" ? (
                         <>
                           <div className="cart-item-list-col" dir={langDir}>
-                            <div className="sm:grid sm:grid-cols-3 w-full gap-2">
+                            <div className="w-full gap-2 sm:grid sm:grid-cols-3">
                               <div>
                                 <Label>Shipping Date</Label>
                                 <Input
                                   type="date"
-                                  value={shippingInfo[index].info?.shippingDate || ''}
+                                  value={
+                                    shippingInfo[index].info?.shippingDate || ""
+                                  }
                                   onChange={(e) => {
                                     let data = shippingInfo;
-                                    data[index].info.shippingDate = e.target.value;
+                                    data[index].info.shippingDate =
+                                      e.target.value;
                                     setShippingInfo([...data]);
                                   }}
                                 />
-                                <span className="text-red-500">
-                                  {shippingErrors?.[index]?.errors?.shippingDate || ''}
+                                <span className="text-xs text-red-500">
+                                  {shippingErrors?.[index]?.errors
+                                    ?.shippingDate || ""}
                                 </span>
                               </div>
                               <div>
                                 <Label>From Time</Label>
                                 <Input
                                   type="time"
-                                  value={shippingInfo[index].info?.fromTime || ''}
+                                  value={
+                                    shippingInfo[index].info?.fromTime || ""
+                                  }
                                   onChange={(e) => {
                                     let data = shippingInfo;
                                     data[index].info.fromTime = e.target.value;
                                     setShippingInfo([...data]);
                                   }}
                                 />
-                                <span className="text-red-500">
-                                  {shippingErrors?.[index]?.errors?.fromTime || ''}
+                                <span className="text-xs text-red-500">
+                                  {shippingErrors?.[index]?.errors?.fromTime ||
+                                    ""}
                                 </span>
                               </div>
                               <div>
                                 <Label>To Time</Label>
                                 <Input
                                   type="time"
-                                  value={shippingInfo[index].info?.toTime || ''}
+                                  value={shippingInfo[index].info?.toTime || ""}
                                   onChange={(e) => {
                                     let data = shippingInfo;
                                     data[index].info.toTime = e.target.value;
                                     setShippingInfo([...data]);
                                   }}
                                 />
-                                <span className="text-red-500">
-                                  {shippingErrors?.[index]?.errors?.toTime || ''}
+                                <span className="text-xs text-red-500">
+                                  {shippingErrors?.[index]?.errors?.toTime ||
+                                    ""}
                                 </span>
                               </div>
                             </div>
@@ -912,7 +1005,9 @@ const CheckoutPage = () => {
 
                   <div className="selected-address-lists">
                     <div className="space-y-2 p-3">
-                      <Label dir={langDir} translate="no">{t("email")}</Label>
+                      <Label dir={langDir} translate="no">
+                        {t("email")}
+                      </Label>
                       <Input
                         className="theme-form-control-s1"
                         placeholder={t("enter_email")}
@@ -958,7 +1053,9 @@ const CheckoutPage = () => {
                   <RadioGroup
                     // defaultValue={selectedAddressId?.toString()}
                     value={selectedShippingAddressId?.toString()}
-                    onValueChange={(value) => setSelectedShippingAddressId(value)}
+                    onValueChange={(value) =>
+                      setSelectedShippingAddressId(value)
+                    }
                     className=""
                   >
                     {memoziedAddressList?.map((item: AddressItem) => (
@@ -1037,7 +1134,9 @@ const CheckoutPage = () => {
                 <div className="card-inner-headerPart" dir={langDir}>
                   <div className="lediv">
                     <h3 translate="no">
-                      {me?.data ? t("select_billing_address") : t("billing_address")}
+                      {me?.data
+                        ? t("select_billing_address")
+                        : t("billing_address")}
                     </h3>
                   </div>
 
@@ -1064,7 +1163,11 @@ const CheckoutPage = () => {
                           }}
                           checked={sameAsShipping}
                         />
-                        <Label htmlFor="same_as_shipping" dir={langDir} translate="no">
+                        <Label
+                          htmlFor="same_as_shipping"
+                          dir={langDir}
+                          translate="no"
+                        >
                           {t("same_as_shipping_address")}
                         </Label>
                       </div>
@@ -1093,9 +1196,12 @@ const CheckoutPage = () => {
                   {!sameAsShipping ? (
                     <RadioGroup
                       value={selectedBillingAddressId?.toString()}
-                      onValueChange={(value) => setSelectedBillingAddressId(value)}
-                      // defaultValue="comfortable" 
-                      className="">
+                      onValueChange={(value) =>
+                        setSelectedBillingAddressId(value)
+                      }
+                      // defaultValue="comfortable"
+                      className=""
+                    >
                       {memoziedAddressList?.map((item: AddressItem) => (
                         <AddressCard
                           key={item.id}
@@ -1123,7 +1229,11 @@ const CheckoutPage = () => {
                     </RadioGroup>
                   ) : (
                     <div className="px-3 py-6">
-                      <p className="my-3 text-center" dir={langDir} translate="no">
+                      <p
+                        className="my-3 text-center"
+                        dir={langDir}
+                        translate="no"
+                      >
                         {t("same_as_shipping_address")}
                       </p>
                     </div>
@@ -1210,43 +1320,59 @@ const CheckoutPage = () => {
                 <ul>
                   <li dir={langDir}>
                     <p translate="no">{t("subtotal")}</p>
-                    <h5>{currency.symbol}{itemsTotal}</h5>
+                    <h5>
+                      {currency.symbol}
+                      {itemsTotal}
+                    </h5>
                   </li>
                   <li dir={langDir}>
                     <p translate="no">{t("shipping")}</p>
                     {shippingCharge > 0 ? (
-                      <h5>{currency.symbol}{shippingCharge}</h5>
+                      <h5>
+                        {currency.symbol}
+                        {shippingCharge}
+                      </h5>
                     ) : (
                       <h5 translate="no">{t("free")}</h5>
                     )}
                   </li>
                   <li dir={langDir}>
                     <p translate="no">{t("fee")}</p>
-                    <h5>{currency.symbol}{fee}</h5>
+                    <h5>
+                      {currency.symbol}
+                      {fee}
+                    </h5>
                   </li>
                 </ul>
               </div>
               <div className="priceDetails-footer" dir={langDir}>
                 <h4 translate="no">{t("total_amount")}</h4>
-                <h4 className="amount-value">{currency.symbol}{totalAmount}</h4>
+                <h4 className="amount-value">
+                  {currency.symbol}
+                  {totalAmount}
+                </h4>
               </div>
             </div>
             <div className="order-action-btn">
               <Button
                 onClick={onSaveOrder}
-                disabled={!memoizedCartList?.length
-                  || updateCartByDevice?.isPending
-                  || updateCartWithLogin?.isPending
-                  || cartListByDeviceQuery?.isFetching
-                  || cartListByUser?.isFetching
-                  || allUserAddressQuery?.isLoading
-                  || preOrderCalculation?.isPending}
+                disabled={
+                  !memoizedCartList?.length ||
+                  updateCartByDevice?.isPending ||
+                  updateCartWithLogin?.isPending ||
+                  cartListByDeviceQuery?.isFetching ||
+                  cartListByUser?.isFetching ||
+                  allUserAddressQuery?.isLoading ||
+                  preOrderCalculation?.isPending
+                }
                 className="theme-primary-btn order-btn"
                 translate="no"
               >
                 {preOrderCalculation?.isPending ? (
                   <LoaderWithMessage message={t("please_wait")} />
-                ) : t("continue")}
+                ) : (
+                  t("continue")
+                )}
               </Button>
             </div>
           </div>
@@ -1288,21 +1414,23 @@ const CheckoutPage = () => {
           ref={confirmDialogRef}
         >
           <div className="modal-header !justify-between" dir={langDir}>
-            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
             >
               <IoCloseSharp size={20} />
             </Button>
           </div>
 
-          <div className="text-center mt-4 mb-4">
-            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
+          <div className="mb-4 mt-4 text-center">
+            <p className="text-dark-orange">
+              Do you want to remove this item from cart?
+            </p>
             <div>
               <Button
                 type="button"
-                className="bg-white text-red-500 mr-2"
+                className="mr-2 bg-white text-red-500"
                 onClick={onCancelRemove}
                 translate="no"
               >
@@ -1339,13 +1467,19 @@ const CheckoutPage = () => {
               setIsShippingModalOpen(false);
             }}
             onSelect={(sellerId: number, item: any) => {
-              const index = shippingInfo.findIndex((item: any) => item.sellerId == sellerId);
-              const shipping = shippingInfo.find((item: any) => item.sellerId == sellerId);
+              const index = shippingInfo.findIndex(
+                (item: any) => item.sellerId == sellerId,
+              );
+              const shipping = shippingInfo.find(
+                (item: any) => item.sellerId == sellerId,
+              );
               if (shipping) {
                 const info = shippingInfo;
                 info[index].info.serviceId = item.id;
                 info[index].info.serviceName = item.serviceName;
-                info[index].info.shippingCharge = Number(item.serviceFeatures?.[0]?.serviceCost);
+                info[index].info.shippingCharge = Number(
+                  item.serviceFeatures?.[0]?.serviceCost,
+                );
                 setShippingInfo([...info]);
               }
             }}

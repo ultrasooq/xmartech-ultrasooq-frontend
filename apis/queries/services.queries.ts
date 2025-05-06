@@ -111,8 +111,18 @@ export const useAddServiceToCart = () => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart-by-device"] });
-      queryClient.invalidateQueries({ queryKey: ["cart-by-user"] });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-user"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-device"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-without-login"],
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);

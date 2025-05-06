@@ -65,6 +65,20 @@ export const deleteCartItem = (payload: { cartId: number }) => {
   });
 };
 
+export const deleteServiceFromCart = (cartId: number, serviceFeatureId: number) => {
+  return axios({
+    method: "DELETE",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/deleteService/${cartId}`, { 
+      servicefeatureids: serviceFeatureId.toString() 
+    }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const updateUserCartByDeviceId = (payload: { deviceId: string }) => {
   return axios({
     method: "PATCH",
