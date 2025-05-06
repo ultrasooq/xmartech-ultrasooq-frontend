@@ -49,7 +49,9 @@ const formSchema = (t: any) =>
       .trim()
       .min(1, { message: t("service_name_is_required") }),
 
-    description: z.array(z.any()).optional(),
+    description: z
+      .array(z.any(), { required_error: "Description is required" })
+      .min(1, { message: "Description cannot be empty" }),
 
     categoryId: z
       .number({ required_error: t("category_is_required") })
@@ -79,9 +81,8 @@ const formSchema = (t: any) =>
     fromCityId: z.number().positive().nullable().optional(),
     toCityId: z.number().positive().nullable().optional(),
     rangeCityId: z.number().positive().nullable().optional(),
-
-    eachCustomerTime: z.string().trim().optional(),
-    customerPerPeiod: z.string().trim().optional(),
+    eachCustomerTime: z.string().trim().min(1, { message: "Each customer time is required" }),
+    customerPerPeiod: z.string().trim().min(1, { message: "Customer per period is required" }),
 
     serviceType: z.enum(["BOOKING", "MOVING"], {
       required_error: t("service_type_is_required"),
@@ -167,7 +168,12 @@ const formSchema = (t: any) =>
   });
 const defaultServiceValues = {
   serviceName: "",
-  description: "",
+  description: [
+    {
+      type: 'p',
+      children: [{ text: '' }],
+    },
+  ],
   categoryId: 0,
   categoryLocation: "",
   workingDays: "",
@@ -194,7 +200,7 @@ const defaultServiceValues = {
     {
       name: "",
       serviceCostType: "FLAT",
-      serviceCost: "0",
+      serviceCost: "",
     }
   ],
   images: [],
@@ -244,7 +250,7 @@ const CreateServicePage = () => {
     },
     !!editId
   );
-  
+
   const memoizedTags = useMemo(() => {
     return (
       tagsQuery?.data?.data.map((item: { id: string; tagName: string }) => {
@@ -365,7 +371,7 @@ const CreateServicePage = () => {
         }
         if (oldFiles.length > 0) {
           updatedFormData.images = [...oldFiles, ...newFiles];
-        }else{
+        } else {
           updatedFormData.images = newFiles;
         }
       }
@@ -866,6 +872,9 @@ const CreateServicePage = () => {
                                   onChange={(e) => {
                                     const cleaned = e.target.value.replace(/[^\d]/g, "");
                                     form.setValue("eachCustomerTime", cleaned ? parseInt(cleaned, 10) : undefined as any);
+                                    if (cleaned) {
+                                      form.clearErrors("eachCustomerTime");
+                                    }
                                   }}
                                   value={form.watch("eachCustomerTime") || ""}
                                   translate="no"
@@ -881,7 +890,7 @@ const CreateServicePage = () => {
                               <div>
                                 <Label dir={langDir} translate="no">{t("customer_per_period")}</Label>
                                 <input
-                                  type="number"
+                                  type="text"
                                   min={0}
                                   className="w-full rounded border border-gray-300 p-2"
                                   placeholder={t("enter_number")}
@@ -889,6 +898,9 @@ const CreateServicePage = () => {
                                   onChange={(e) => {
                                     const cleaned = e.target.value.replace(/[^\d]/g, "");
                                     form.setValue("customerPerPeiod", cleaned ? parseInt(cleaned, 10) : undefined as any);
+                                    if (cleaned) {
+                                      form.clearErrors("customerPerPeiod");
+                                    }
                                   }}
                                   value={form.watch("customerPerPeiod") || ""}
                                   translate="no"

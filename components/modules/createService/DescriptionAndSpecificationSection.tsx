@@ -42,6 +42,7 @@ const DescriptionAndSpecificationSection = () => {
     });
 
   const removeVariant = (index: number) => fieldArrayForVariants.remove(index);
+  const descriptionError = formContext.formState.errors.description;
   return (
     <div className="flex w-full flex-wrap">
       <h3 dir={langDir} translate="no">{t("description_n_specification")}</h3>
@@ -51,6 +52,9 @@ const DescriptionAndSpecificationSection = () => {
             label={t("description")}
             name="description"
           />
+          <p className="text-red-500 text-sm mt-1">
+            {typeof descriptionError?.message === "string" ? descriptionError.message : null}
+          </p>
         </div>
         <div className="relative mb-4 w-full">
           <div className="grid w-full grid-cols-1">
@@ -66,7 +70,7 @@ const DescriptionAndSpecificationSection = () => {
                     fieldArrayForFeatures.append({
                       name: "",
                       serviceCostType: "FLAT",
-                      serviceCost: 0,
+                      serviceCost: "",
                     })
                   }
                   className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
