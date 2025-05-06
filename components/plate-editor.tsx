@@ -58,11 +58,13 @@ export default function PlateEditor({
                 "[&_.slate-start-area-left]:!w-[64px] [&_.slate-start-area-right]:!w-[64px] [&_.slate-start-area-top]:!h-4",
               )}
             >
-              {fixedToolbar ? (<FixedToolbar>
-                <FixedToolbarButtons />
-              </FixedToolbar>) : null}
+              {fixedToolbar ? (
+                <FixedToolbar>
+                  <FixedToolbarButtons />
+                </FixedToolbar>
+              ) : null}
               <Editor
-                className="px-[15px] py-[15px] lg:px-[96px] lg:py-16"
+                className="border border-solid border-gray-300 px-[15px] py-[15px] lg:px-[96px] lg:py-16"
                 autoFocus
                 focusRing={false}
                 variant="ghost"

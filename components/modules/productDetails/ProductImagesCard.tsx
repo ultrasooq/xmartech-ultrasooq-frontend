@@ -213,7 +213,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {isLoading ? <Skeleton className="min-h-[250px] w-full" /> : null}
         </div>
 
-        <div className="col-span-1 m-auto flex !h-full flex-col gap-4 self-start">
+        <div className="col-span-1 m-auto flex !h-full w-full flex-wrap gap-4 self-start sm:w-auto sm:flex-col">
           {isLoading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton className="h-28 w-28" key={index} />
@@ -241,7 +241,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 }
                 alt="primary-image"
                 fill
-                className="rounded-none object-contain"
+                className="rounded-none object-cover"
               />
             </Button>
           ))}
