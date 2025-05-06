@@ -48,6 +48,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useClickOutside } from "use-events";
 import { Button } from "@/components/ui/button";
 import { IoCloseSharp } from "react-icons/io5";
+import RelatedServices from "@/components/modules/trending/RelatedServices";
 
 const ProductDetailsPage = () => {
   const t = useTranslations();
@@ -676,6 +677,14 @@ const ProductDetailsPage = () => {
                     >
                       {t("more_offers")}
                     </TabsTrigger>
+                    <TabsTrigger
+                      value="services"
+                      className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
+                      translate="no"
+                    >
+                      {t("services")}
+                    </TabsTrigger>
                   </TabsList>
                   <TabsContent value="description" className="mt-0">
                     <div className="w-full bg-white">
@@ -753,6 +762,17 @@ const ProductDetailsPage = () => {
                   <TabsContent value="offers" className="mt-0">
                     <div className="w-full bg-white">
                       <p>More Offers</p>
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="services" className="mt-0">
+                    <div className="w-full bg-white">
+                      <RelatedServices 
+                        productId={Number(searchParams?.id) || 0}
+                        productPriceId={productDetails?.product_productPrice?.[0]?.id}
+                        productCategoryId={String(productDetails?.categoryId || '')}
+                        cartList={memoizedCartList}
+                        productCartId={memoizedCartList.find((item: any) => item.productId == Number(searchParams?.id))?.id}
+                      />
                     </div>
                   </TabsContent>
                 </Tabs>

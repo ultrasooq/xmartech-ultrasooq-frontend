@@ -9,10 +9,21 @@ type AddServiceToCartModalProps = {
     id?: number;
     open: boolean;
     features: { id: number; quantity: number }[];
+    relatedProductId?: number;
+    relatedProductPriceId?: number;
+    relatedCartId?: number;
     handleClose: () => void;
 };
 
-const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({ id, open, features, handleClose }) => {
+const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({ 
+    id, 
+    open, 
+    features, 
+    handleClose, 
+    relatedProductId, 
+    relatedProductPriceId, 
+    relatedCartId
+}) => {
     const t = useTranslations();
     const { langDir } = useAuth();
     const { toast } = useToast();

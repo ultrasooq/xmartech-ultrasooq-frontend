@@ -1,0 +1,93 @@
+import React, { useMemo, useState } from "react";
+import { useGetServicesByProductCategory } from "@/apis/queries/services.queries";
+import ServiceCard from "./ServiceCard";
+import { Dialog } from "@/components/ui/dialog";
+import AddServiceToCartModal from "../serviceDetails/AddServiceToCartModal";
+import Pagination from "@/components/shared/Pagination";
+
+type RelatedServicesProps = {
+    productId: number;
+    productPriceId?: number;
+    productCategoryId: string;
+    cartList: any[];
+    productCartId?: number; 
+};
+
+const RelatedServices: React.FC<RelatedServicesProps> = ({
+    productId,
+    productPriceId,
+    productCategoryId,
+    cartList,
+    productCartId
+}) => {
+    const [page, setPage] = useState<number>(1);
+    const [limit, setLimit] = useState<number>(8);
+    const [isServiceAddToCartModalOpen, setIsServiceAddToCartModalOpen] = useState(false);
+    const [selectedServiceId, setSelectedServiceId] = useState<any>(null);
+
+    const handleServiceToCartModal = () => {
+        setIsServiceAddToCartModalOpen((prev) => !prev)
+    }
+
+    const servicesByProductCategory = useGetServicesByProductCategory({
+        categoryId: productCategoryId,
+        page,
+        limit
+    }, !!productCategoryId)
+
+    const memoizedServices = useMemo(() => {
+        return servicesByProductCategory?.data?.data || [];
+    }, [
+        servicesByProductCategory?.data?.data,
+        productCategoryId,
+        page,
+        limit
+    ]);
+
+    return (
+        <>
+            <div className="product-list-s1">
+                {memoizedServices.map((item: any) => {
+                    return (
+                        <ServiceCard
+                            key={item.id}
+                            item={item}
+                            handleServiceToCartModal={() => {
+                                setSelectedServiceId(item.id.toString());
+                                handleServiceToCartModal();
+                            }}
+                        />
+                    );
+                })}
+            </div>
+
+            {servicesByProductCategory.data?.totalCount > limit ? (<Pagination
+                page={page}
+                setPage={setPage}
+                totalCount={servicesByProductCategory.data?.totalCount}
+                limit={limit}
+            />) : null}
+            
+            {selectedServiceId ? (<Dialog open={isServiceAddToCartModalOpen} onOpenChange={handleServiceToCartModal}>
+                <AddServiceToCartModal
+                    id={selectedServiceId}
+                    open={isServiceAddToCartModalOpen}
+                    features={
+                        cartList.find((item: any) => item.serviceId == selectedServiceId)
+                            ?.cartServiceFeatures
+                            ?.map((feature: any) => ({
+                                id: feature.serviceFeatureId,
+                                quantity: feature.quantity
+                            })) || []
+                    }
+                    handleClose={() => {
+                        setSelectedServiceId(undefined);
+                        setIsServiceAddToCartModalOpen(false)
+                    }}
+                />
+            </Dialog>) : null}
+        </>
+    );
+};
+
+export default RelatedServices;

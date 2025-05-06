@@ -1,6 +1,6 @@
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addServiceToCart, createService, fetchAllServices, fetchServiceById, fetchServicesByOtherSeller, fetchServicesBySeller, updateService } from "../requests/services.requests";
+import { addServiceToCart, createService, fetchAllServices, fetchServiceById, fetchServicesByOtherSeller, fetchServicesByProductCategory, fetchServicesBySeller, updateService } from "../requests/services.requests";
 
 export const useCreateService = () => {
   const queryClient = useQueryClient();
@@ -103,6 +103,7 @@ export const useGetServicesByOtherSeller = (payload: { page: number; limit: numb
   // },
   enabled,
 });
+
 export const useAddServiceToCart = () => {
   const queryClient = useQueryClient();
   return useMutation<any, APIResponseError, number[]>({
@@ -129,3 +130,15 @@ export const useAddServiceToCart = () => {
     },
   });
 };
+
+export const useGetServicesByProductCategory = (payload: { categoryId: string; page: number; limit: number; }, enabled = true,) => useQuery({
+  queryKey: ["services-by-other-seller", payload],
+  queryFn: async () => {
+    const res = await fetchServicesByProductCategory(payload);
+    return res.data;
+  },
+  // onError: (err: APIResponseError) => {
+  //   console.log(err);
+  // },
+  enabled,
+});

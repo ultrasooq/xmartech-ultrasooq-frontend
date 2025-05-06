@@ -107,3 +107,19 @@ export const fetchServicesByOtherSeller = (payload: {
     },
   });
 };
+
+export const fetchServicesByProductCategory = (payload: {
+  categoryId: string;
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/getAllServiceRelatedProductCategoryId`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+}
