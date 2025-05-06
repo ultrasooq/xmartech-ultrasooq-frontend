@@ -475,7 +475,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         ) : null}
 
         <Link href={`/trending/${item.id}`}>
-          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base"  dir={langDir}>
+          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base" dir={langDir}>
             <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
               {item.productName}
             </h4>
@@ -501,9 +501,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </button>
             </Link>
           ) : (
-            <>
-              <h5 className="py-0.5 text-[#1D77D1]" dir={langDir}>
-                {langDir === "rtl" ? (
+            <div suppressHydrationWarning>
+              <h5
+                className="py-0.5 text-[#1D77D1]"
+                dir={langDir}
+                translate="no"
+              >
+                {/* {langDir === "rtl" ? (
                   <>
                     <span className="text-gray-500 !line-through">
                       {item.productProductPrice} {currency.symbol}
@@ -511,15 +515,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     {calculateDiscountedPrice()} {currency.symbol}
                   </>
                 ) : (
-                  <>
-                    {currency.symbol}
-                    {calculateDiscountedPrice()}{" "}
-                    <span className="text-gray-500 !line-through">
-                      {currency.symbol}
-                      {item.productProductPrice}
-                    </span>
-                  </>
-                )}
+                  <> */}
+                {currency.symbol}
+                {calculateDiscountedPrice()}{" "}
+                <span className="text-gray-500 !line-through">
+                  {currency.symbol}
+                  {item.productProductPrice}
+                </span>
+                {/* </>
+                )} */}
               </h5>
 
               {/* <h5 className="py-0.5 text-[#1D77D1]">
@@ -531,7 +535,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 </span>
               </h5> */}
 
-            </>
+            </div>
           )}
         </div>
         {productVariants.length > 0 ? (

@@ -296,13 +296,13 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           )}
         </Button>
       </div>
-      <div className="product_list_content">
+      <div className="product_list_content" dir={langDir}>
         <Link href={`/trending/${id}`}>
           <p>{productName}</p>
         </Link>
       </div>
       {productPrices?.[0]?.offerPrice ? (
-        <h5 className="py-1 text-[#1D77D1]">
+        <h5 className="py-1 text-[#1D77D1]" dir={langDir}>
           {currency.symbol}
           {calculateDiscountedPrice()}{" "}
           <span className="text-gray-500 !line-through">
@@ -311,25 +311,26 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           </span>
         </h5>
       ) : null}
-      {productVariants.length > 0 ? (<div className="mb-2">
-        <label dir={langDir}>{productVariants[0].type}</label>
-        <select
-          className="w-full"
-          value={selectedProductVariant?.value}
-          onChange={(e) => {
-            let value = e.target.value;
-            const selectedVariant = productVariants.find((variant: any) => variant.value == value);
-            setSelectedProductVariant(selectedVariant);
-            if (cartId) handleAddToCart(quantity, "add", selectedVariant)
-          }}
-        >
-          {productVariants.map((variant: any, index: number) => {
-            return <option key={index} value={variant.value} dir={langDir}>{variant.value}</option>;
-          })}
-        </select>
-      </div>) : null}
-      <div className="quantity_wrap mb-2">
-        <label dir={langDir} translate="no">{t("quantity")}</label>
+      {productVariants.length > 0 ? (
+        <div className="mb-2" dir={langDir}>
+          <label htmlFor="">{productVariants[0].type}</label>
+          <select
+            className="w-full"
+            value={selectedProductVariant?.value}
+            onChange={(e) => {
+              let value = e.target.value;
+              const selectedVariant = productVariants.find((variant: any) => variant.value == value);
+              setSelectedProductVariant(selectedVariant);
+              if (cartId) handleAddToCart(quantity, "add", selectedVariant)
+            }}
+          >
+            {productVariants.map((variant: any, index: number) => {
+              return <option key={index} value={variant.value} dir={langDir}>{variant.value}</option>;
+            })}
+          </select>
+        </div>) : null}
+      <div className="quantity_wrap mb-2" dir={langDir}>
+        <label translate="no">{t("quantity")}</label>
         <div className="qty-up-down-s1-with-rgMenuAction">
           <div className="flex items-center gap-x-3 md:gap-x-3">
             <Button
