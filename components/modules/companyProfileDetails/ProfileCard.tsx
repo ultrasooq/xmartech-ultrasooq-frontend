@@ -73,7 +73,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
           {userDetails?.userBranch?.length ? (
             <div className="w-auto">
               <Link
-                href={`/company-profile/edit-profile?userId=${userDetails?.id}`}
+                // href={`/company-profile/edit-profile?userId=${userDetails?.id}`}
+                href="/profile"
                 className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
                 translate="no"
               >

@@ -47,7 +47,8 @@ const InformationSection: React.FC<InformationSectionProps> = ({
         </h2>
         <div className="w-auto">
           <Link
-            href="/profile"
+            // href="/profile"
+            href={`/company-profile/edit-profile?userId=${userDetails?.id}`}
             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
             dir={langDir}
             translate="no"

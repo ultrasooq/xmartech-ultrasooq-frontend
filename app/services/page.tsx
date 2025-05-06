@@ -141,13 +141,13 @@ const Services = ({ searchParams }: ServicesProps) => {
                     <div className="container m-auto px-3">
                         <div className="right-products">
                             <div className="existing-product-add-headerPart">
-                                <h2
+                                {/* <h2
                                     className="text-2xl font-medium capitalize text-color-dark"
                                     dir={langDir}
                                     translate="no"
                                 >
                                     {t("services")}
-                                </h2>
+                                </h2> */}
                                 <ul className="right-filter-lists flex flex-row flex-wrap gap-2 md:flex-nowrap">
                                     <li className="w-full sm:w-auto">
                                         <Input

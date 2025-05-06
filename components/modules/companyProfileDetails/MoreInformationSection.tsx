@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
-
+import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Form } from "@/components/ui/form";
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 type MoreInformationSectionProps = {
@@ -17,6 +21,24 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
+  const formSchema = (t: any) => z.object({
+    aboutUs: z.array(z.any()).optional(),
+  })
+  const form = useForm({
+    resolver: zodResolver(formSchema(t)),
+    defaultValues: {
+      aboutUs: []
+    },
+  });
+  useEffect(() => {
+    const raw = userDetails?.userProfile?.[0]?.aboutUs;
+    const parsed = raw ? JSON.parse(raw) : [];
+    if (parsed) {
+      form.reset({
+        aboutUs: parsed
+      });
+    }
+  }, [userDetails?.userProfile]);
 
   return (
     <div className="w-full py-4">
@@ -84,13 +106,20 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
               </div>
             </div>
 
-            <ReactQuill
+            {/* <ReactQuill
               defaultValue={userDetails?.userProfile?.[0]?.aboutUs || ''}
               readOnly={true}
               modules={{
                 toolbar: null
               }}
-            />
+            /> */}
+            <Form {...form}>
+              <ControlledRichTextEditor
+                name="aboutUs"
+                label=""
+                readOnly={true}
+              />
+            </Form>
           </div>
         </div>
       </div>

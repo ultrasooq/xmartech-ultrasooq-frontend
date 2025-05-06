@@ -1,6 +1,4 @@
 import React from "react";
-// import Tiptap from "../Rte/Tiptap";
-// import QuillEditor from "../Quill/QuillEditor";
 import { Controller, useFormContext } from "react-hook-form";
 import PlateEditor from "../Plate/PlateEditor";
 import { useAuth } from "@/context/AuthContext";
@@ -8,11 +6,18 @@ import { useAuth } from "@/context/AuthContext";
 interface ControlledRichTextEditorProps {
   label: string;
   name: string;
-  value?: any[],
+  value?: any[];
   onChange?: (e: any) => void;
+  readOnly?: boolean; // Add readOnly prop
 }
 
-const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({ label, name, value, onChange, }) => {
+const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({
+  label,
+  name,
+  value,
+  onChange,
+  readOnly = false, // Default to false
+}) => {
   const formContext = useFormContext();
   const { langDir } = useAuth();
 
@@ -26,17 +31,18 @@ const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({ lab
         name={name}
         defaultValue=""
         render={({ field }) => (
-          // <Tiptap onChange={field.onChange} description={field.value} />
-          // <QuillEditor onChange={field.onChange} description={field.value} />
-          <PlateEditor 
+          <PlateEditor
             onChange={(e) => {
               if (onChange) {
                 onChange(e);
               } else {
                 field.onChange(e);
               }
-            }} 
-            description={value || field.value} />
+            }}
+            description={value || field.value}
+            readOnly={readOnly} // Pass readOnly prop to PlateEditor
+            fixedToolbar={readOnly ? false : true}
+          />
         )}
       />
     </div>

@@ -176,7 +176,7 @@ export default function EditProfilePage() {
         totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
         annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
         aboutUs: userProfile?.aboutUs || "",
-        aboutUsJson: userProfile?.aboutUs,
+        aboutUsJson: userProfile?.aboutUs ? JSON.parse(userProfile?.aboutUs) : "",
         companyName: userProfile?.companyName || "",
         businessTypeList: userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() || undefined,
         cc: userProfile?.cc,
@@ -185,7 +185,6 @@ export default function EditProfilePage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uniqueUser.data?.data?.userProfile?.length, memoizedTags?.length, memoizedCountries?.length, memoizedLastTwoHundredYears?.length]);
-
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -211,7 +210,7 @@ export default function EditProfilePage() {
             <div className="flex w-full flex-wrap">
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                  <label 
+                  <label
                     className={cn(
                       "mb-3.5 block",
                       langDir == "rtl" ? "text-right" : "text-left",
@@ -338,7 +337,7 @@ export default function EditProfilePage() {
 
               <div className="mb-3.5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
-                  <label 
+                  <label
                     className={cn(
                       "mb-0 block",
                       langDir == "rtl" ? "text-right" : "text-left",
@@ -385,7 +384,7 @@ export default function EditProfilePage() {
                   <ControlledSelectInput label={t("country")} name="country" options={memoizedCountries} />
                 </div>
 
-                <ControlledPhoneInput 
+                <ControlledPhoneInput
                   name={"phoneNumber"}
                   countryName={"cc"}
                   placeholder={t("enter_phone_number")}
@@ -395,7 +394,7 @@ export default function EditProfilePage() {
 
               <div className="mb-5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
-                  <label 
+                  <label
                     className={cn(
                       "mb-0 block",
                       langDir == "rtl" ? "text-right" : "text-left",
@@ -408,27 +407,31 @@ export default function EditProfilePage() {
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                  <ControlledSelectInput 
+                  <ControlledSelectInput
                     label={t("year_of_establishment")}
                     name="yearOfEstablishment"
-                    options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))} 
+                    options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))}
                   />
-                  
-                  <ControlledSelectInput 
+
+                  <ControlledSelectInput
                     label={t("total_no_of_employees")}
                     name="totalNoOfEmployee"
                     options={NO_OF_EMPLOYEES_LIST}
                   />
                 </div>
 
-                <QuillEditor label={t("about_us")} name="aboutUsJson" />
+                {/* <QuillEditor label={t("about_us")} name="aboutUsJson" /> */}
+                <ControlledRichTextEditor
+                  label={t("about_us")}
+                  name="aboutUsJson"
+                />
               </div>
             </div>
 
-            <Button 
-              disabled={updateCompanyProfile.isPending || upload.isPending} 
-              type="submit" 
-              className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90" 
+            <Button
+              disabled={updateCompanyProfile.isPending || upload.isPending}
+              type="submit"
+              className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
               translate="no"
             >
               {
