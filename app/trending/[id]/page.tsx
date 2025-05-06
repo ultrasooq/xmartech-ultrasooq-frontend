@@ -859,6 +859,7 @@ const ProductDetailsPage = () => {
                   return item.cartServiceFeatures.map((feature: any) => {
                     return (
                       <ServiceCard
+                        key={feature.id}
                         cartId={item.id}
                         serviceId={item.serviceId}
                         serviceFeatureId={feature.serviceFeatureId}
