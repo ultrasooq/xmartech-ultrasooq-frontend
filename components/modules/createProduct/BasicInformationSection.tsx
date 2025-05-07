@@ -48,11 +48,13 @@ type ProductImageProps = {
 type BasicInformationProps = {
   tagsList: any;
   activeProductType?: string;
+  selectedCategoryIds?: string[];
 };
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
   activeProductType,
+  selectedCategoryIds,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -137,6 +139,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     if (subCategoryById.data?.data?.children) {
       setCatList([...catList, subCategoryById.data?.data]);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentId, subCategoryById.data?.data?.children, currentIndex]);
 
@@ -145,6 +148,16 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentId],
   );
+
+  useEffect(() => {
+    if (selectedCategoryIds?.length && catList?.length && !listIds.length) {
+      setCurrentId(selectedCategoryIds[currentIndex]);
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+      if (selectedCategoryIds.length == currentIndex + 1) {
+        setListIds(selectedCategoryIds);
+      }
+    }
+  }, [selectedCategoryIds, catList?.length]);
 
   useEffect(
     () => formContext.setValue("categoryLocation", listIds.join(",")),
@@ -299,7 +312,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   />
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                    <BrandSelect />
+                    <BrandSelect selectedProductType={formContext.getValues("typeOfProduct")} />
 
                     <div className="mt-2 flex flex-col gap-y-3">
                       <Label dir={langDir} translate="no">

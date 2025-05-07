@@ -1161,7 +1161,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
       </div>
 
       <Dialog open={isAddProductModalOpen} onOpenChange={handleAddProductModal}>
-        <AddProductContent />
+        <AddProductContent productId={productId} />
       </Dialog>
     </>
   );

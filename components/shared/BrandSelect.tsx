@@ -21,15 +21,19 @@ const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
 };
 
-const ReactSelectInput = () => {
+const ReactSelectInput: React.FC<{
+  selectedProductType?: string
+}> = ({
+  // Set default product type as "OWNBRAND"
+  selectedProductType = "OWNBRAND"
+}) => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const formContext = useFormContext();
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
 
-  // Set default product type as "OWNBRAND"
-  const [productType, setProductType] = useState<string>("OWNBRAND");
+  const [productType, setProductType] = useState<string>(selectedProductType);
 
   const { user } = useAuth();
 
@@ -47,8 +51,11 @@ const ReactSelectInput = () => {
 
   // Set default product type in the form
   useEffect(() => {
-    formContext.setValue("typeOfProduct", "OWNBRAND");
-  }, []);
+    if (selectedProductType) {
+      formContext.setValue("typeOfProduct", selectedProductType);
+      setProductType(selectedProductType);
+    }
+  }, [selectedProductType]);
 
   const handleCreate = async (inputValue: string) => {
     const response = await createBrand.mutateAsync({ brandName: inputValue });

@@ -10,10 +10,10 @@ import BasicInformationSection from "@/components/modules/createProduct/BasicInf
 import ProductDetailsSection from "@/components/modules/createProduct/ProductDetailsSection";
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
-import { useCreateProduct } from "@/apis/queries/product.queries";
+import { useCreateProduct, useProductById, useProductVariant } from "@/apis/queries/product.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import {
   ALPHANUMERIC_REGEX,
@@ -25,7 +25,7 @@ import {
   videoExtensions,
 } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
-import { generateRandomSkuNoWithTimeStamp } from "@/utils/helper";
+import { convertDate, convertTime, generateRandomSkuNoWithTimeStamp, handleDescriptionParse } from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
@@ -90,10 +90,10 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
       ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
         (minQuantityPerCustomer &&
           Number(minQuantityPerCustomer || 0) <
-            Number(maxQuantityPerCustomer || 0)) ||
+          Number(maxQuantityPerCustomer || 0)) ||
         (maxQuantityPerCustomer &&
           Number(minQuantityPerCustomer || 0) <
-            Number(maxQuantityPerCustomer || 0)),
+          Number(maxQuantityPerCustomer || 0)),
       {
         message: t(
           "min_quantity_per_customer_must_be_less_than_max_quantity_per_customer",
@@ -584,6 +584,8 @@ const CreateProductPage = () => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const productId = searchParams?.get('copy');
   const { toast } = useToast();
   const [activeProductType, setActiveProductType] = useState<string>();
   const form = useForm({
@@ -592,12 +594,21 @@ const CreateProductPage = () => {
     ),
     defaultValues,
   });
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
 
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
   const createProduct = useCreateProduct();
   const watchProductImages = form.watch("productImages");
   const watchSetUpPrice = form.watch("setUpPrice");
+
+  const productQueryById = useProductById(
+    {
+      productId: productId || ''
+    },
+    !!productId,
+  );
+  const getProductVariant = useProductVariant();
 
   const memoizedTags = useMemo(() => {
     return (
@@ -621,6 +632,135 @@ const CreateProductPage = () => {
       }
     }
   };
+
+  const fetchProductVariant = async (productPriceId: number) => {
+    const response = await getProductVariant.mutateAsync([productPriceId]);
+    const variants = response?.data?.[0]?.object || [];
+    if (variants.length > 0) {
+      form.setValue("productVariantType", variants[0].type);
+      form.setValue("productVariants", variants.map((variant: any) => {
+        return {
+          value: variant.value,
+          image: null
+        };
+      }));
+    }
+  }
+
+  useEffect(() => {
+    if (productQueryById?.data?.data) {
+      const product = productQueryById?.data?.data;
+      
+      form.setValue("categoryId", product.categoryId);
+      form.setValue("categoryLocation", product.categoryLocation);
+      setSelectedCategoryIds(
+        product.categoryLocation.split(',').filter((item: string) => item)
+      );
+
+      form.setValue("productName", product.productName);
+      form.setValue("typeOfProduct", product.typeOfProduct);
+      form.setValue("brandId", product.brandId);
+      form.setValue("productCondition", product.product_productPrice?.[0]?.productCondition);
+      form.setValue(
+        "productTagList",
+        product.productTags?.filter((item: any) => item.productTagsTag)?.map((item: any) => {
+          return {
+            label: item.productTagsTag.tagName,
+            value: item.productTagsTag.id
+          }
+        }) || []
+      );
+
+      if (product.product_productPrice?.length) {
+        form.setValue("productPriceList.[0].consumerType", product.product_productPrice[0]?.consumerType);
+        form.setValue("productPriceList.[0].consumerDiscount", product.product_productPrice[0]?.consumerDiscount);
+        form.setValue("productPriceList.[0].consumerDiscountType", product.product_productPrice[0]?.consumerDiscountType);
+        form.setValue("productPriceList.[0].vendorDiscount", product.product_productPrice[0]?.consumerDiscount);
+        form.setValue("productPriceList.[0].vendorDiscountType", product.product_productPrice[0]?.vendorDiscountType);
+        form.setValue("productPriceList.[0].sellType", product.product_productPrice[0]?.sellType);
+        form.setValue("productPriceList.[0].minCustomer", product.product_productPrice[0]?.minCustomer);
+        form.setValue("productPriceList.[0].maxCustomer", product.product_productPrice[0]?.maxCustomer);
+        form.setValue("productPriceList.[0].minQuantityPerCustomer", product.product_productPrice[0]?.minQuantityPerCustomer);
+        form.setValue("productPriceList.[0].maxQuantityPerCustomer", product.product_productPrice[0]?.maxQuantityPerCustomer);
+        form.setValue("productPriceList.[0].minQuantity", product.product_productPrice[0]?.minQuantity);
+        form.setValue("productPriceList.[0].maxQuantity", product.product_productPrice[0]?.maxQuantity);
+        if (product.product_productPrice[0]?.dateOpen) {
+          form.setValue("productPriceList.[0].dateOpen", product.product_productPrice[0]?.dateOpen);
+        }
+        form.setValue("productPriceList.[0].startTime", product.product_productPrice[0]?.timeOpen);
+        if (product.product_productPrice[0]?.dateClose) {
+          form.setValue("productPriceList.[0].dateClose", product.product_productPrice[0]?.dateClose);
+        }
+        form.setValue("productPriceList.[0].endTime", product.product_productPrice[0]?.timeClose);
+        form.setValue("productPriceList.[0].deliveryAfter", product.product_productPrice[0]?.deliveryAfter);
+        form.setValue("productPrice", product.product_productPrice[0]?.productPrice);
+        form.setValue("offerPrice", product.product_productPrice[0]?.offerPrice);
+        form.setValue("productPriceList.[0].stock", product.product_productPrice[0]?.stock);
+      }
+
+      form.setValue("productCountryId", product.product_productPrice[0]?.productCountryId);
+      form.setValue("productStateId", product.product_productPrice[0]?.productStateId);
+      form.setValue("productCityId", product.product_productPrice[0]?.productCityId);
+      form.setValue("productTown", product?.product_productPrice[0]?.productTown);
+      form.setValue("productLatLng", product?.product_productPrice[0]?.productLatLng);
+
+      form.setValue("sellCountryIds", product?.product_sellCountry?.map((item: any) => {
+        return {
+          label: item.countryName,
+          value: item.countryId
+        };
+      }) || []);
+      form.setValue("sellStateIds", product?.product_sellState?.map((item: any) => {
+        return {
+          label: item.stateName,
+          value: item.stateId
+        };
+      }) || []);
+      form.setValue("sellCityIds", product?.product_sellCity?.map((item: any) => {
+        return {
+          label: item.cityName,
+          value: item.cityId
+        };
+      }) || []);
+      form.setValue("placeOfOriginId", product?.placeOfOriginId);
+
+      const productShortDescriptionList = product
+        ?.product_productShortDescription?.length
+        ? product?.product_productShortDescription.map((item: any) => ({
+          shortDescription: item?.shortDescription,
+          shortDescriptionJson: [
+            {
+              children: [
+                {
+                  text: item?.shortDescription
+                }
+              ],
+              type: 'p'
+            }
+          ]
+        }))
+        : [
+          {
+            shortDescription: "",
+          },
+        ];
+
+      form.setValue("productShortDescriptionList", productShortDescriptionList)
+      form.setValue("description", product?.description || "");
+      form.setValue("descriptionJson", product?.description ? handleDescriptionParse(product?.description) : undefined);
+
+      form.setValue("productSpecificationList", product.product_productSpecification?.map((item: any) => {
+        return {
+          label: item.label,
+          specification: item.specification
+        }
+      }) || []);
+
+      if (product.product_productPrice?.length) {
+        fetchProductVariant(product.product_productPrice?.[0]?.id);
+      }
+    }
+  }, [productQueryById?.data?.data]);
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
@@ -705,7 +845,7 @@ const CreateProductPage = () => {
               ? "ACTIVE"
               : "INACTIVE"
             : updatedFormData.productPrice ||
-                updatedFormData.isOfferPriceRequired
+              updatedFormData.isOfferPriceRequired
               ? "ACTIVE"
               : "INACTIVE",
       },
@@ -939,6 +1079,7 @@ const CreateProductPage = () => {
                 <BasicInformationSection
                   tagsList={memoizedTags}
                   activeProductType={activeProductType}
+                  selectedCategoryIds={selectedCategoryIds}
                 />
 
                 {/* <ProductDetailsSection /> */}
@@ -966,7 +1107,7 @@ const CreateProductPage = () => {
                           translate="no"
                         >
                           {createProduct.isPending ||
-                          uploadMultiple.isPending ? (
+                            uploadMultiple.isPending ? (
                             <LoaderWithMessage message={t("please_wait")} />
                           ) : (
                             t("continue")

@@ -36,6 +36,7 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useSearchParams } from "next/navigation";
 
 interface Option {
   readonly label: string;
@@ -67,6 +68,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const formContext = useFormContext();
+  const searchParams = useSearchParams();
 
   const countriesQuery = useCountries();
   const locationsQuery = useLocation();
@@ -95,30 +97,13 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   const watchVendorDiscount = formContext.watch(
     "productPriceList.[0].vendorDiscount",
   );
-  // TODO: validation remove when user types
-  // const watchMinCustomer = formContext.watch(
-  //   "productPriceList.[0].minCustomer",
-  // );
-  // const watchMaxCustomer = formContext.watch(
-  //   "productPriceList.[0].maxCustomer",
-  // );
-  // const watchMinQuantityPerCustomer = formContext.watch(
-  //   "productPriceList.[0].minQuantityPerCustomer",
-  // );
-  // const watchMaxQuantityPerCustomer = formContext.watch(
-  //   "productPriceList.[0].maxQuantityPerCustomer",
-  // );
-  // const watchMinQuantity = formContext.watch(
-  //   "productPriceList.[0].minQuantity",
-  // );
-  // const watchMaxQuantity = formContext.watch(
-  //   "productPriceList.[0].maxQuantity",
-  // );
-  // const watchTimeOpen = formContext.watch("productPriceList.[0].timeOpen");
-  // const watchTimeClose = formContext.watch("productPriceList.[0].timeClose");
-  // const watchDeliveryAfter = formContext.watch(
-  //   "productPriceList.[0].deliveryAfter",
-  // );
+
+  const watchProductCountryId = formContext.watch("productCountryId");
+  const watchProductStateId = formContext.watch("productStateId");
+
+  const watchSellCountryIds = formContext.watch("sellCountryIds");
+  const watchSellStateIds = formContext.watch("sellStateIds");
+  const watchSellCityIds = formContext.watch("sellCityIds");
 
   const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
   const [selectedState, setSelectedState] = useState<any | null>(null);
@@ -239,6 +224,26 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
       }
     }
   }, [countriesNewQuery?.data?.data]);
+
+  useEffect(() => {
+    setSelectedCountry(watchProductCountryId);
+  }, [watchProductCountryId]);
+
+  useEffect(() => {
+    setSelectedState(watchProductStateId);
+  }, [watchProductStateId]);
+
+  useEffect(() => {
+    setSelectedCountries([...watchSellCountryIds]);
+  }, [watchSellCountryIds]);
+
+  useEffect(() => {
+    setSelectedStates([...watchSellStateIds]);
+  }, [watchSellStateIds]);
+
+  useEffect(() => {
+    setSelectedCities([...watchSellCityIds])
+  }, [watchSellCityIds]);
 
   const fetchCities = async (stateId: number) => {
     try {
@@ -978,7 +983,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   <ReactSelect
                     {...field}
                     onChange={(newValue) => {
-                      setSelectedCountry(newValue?.value || null);
                       setSelectedState(null); // Reset state when country changes
                       setCities([]); // Clear cities when country changes
                       field.onChange(newValue?.value);
@@ -1014,7 +1018,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       <ReactSelect
                         {...field}
                         onChange={(newValue) => {
-                          setSelectedState(newValue?.value || null);
                           setCities([]); // Clear cities when state changes
                           field.onChange(newValue?.value);
                         }}

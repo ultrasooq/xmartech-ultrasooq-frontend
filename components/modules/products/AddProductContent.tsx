@@ -7,9 +7,11 @@ import ExistingProductIcon from "@/public/images/existing-product.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
-type AddProductContentProps = {};
+type AddProductContentProps = {
+  productId?: number
+};
 
-const AddProductContent: React.FC<AddProductContentProps> = () => {
+const AddProductContent: React.FC<AddProductContentProps> = ({ productId }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
 
@@ -22,7 +24,7 @@ const AddProductContent: React.FC<AddProductContentProps> = () => {
         <div className="import-pickup-type-selector-lists" dir={langDir}>
           <div className="import-pickup-type-selector-item">
             <Link
-              href="/product"
+              href={productId ? `/product?copy=${productId}` : '/product'}
               className="import-pickup-type-selector-box hover:!bg-gray-100"
             >
               <div className="icon-container">
