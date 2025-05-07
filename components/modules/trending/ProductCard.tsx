@@ -432,7 +432,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         ) : null}
         <Link href={`/trending/${item.id}`}>
           {item?.askForPrice !== "true" && item.consumerDiscount ? (
-            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-3 text-white">
+            <div className="absolute right-2.5 top-14 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-3 text-white">
               <span>{item.consumerDiscount}%</span>
             </div>
           ) : null}
@@ -446,7 +446,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               alt="product-image"
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-contain"
+              className="object-cover"
               blurDataURL="/images/product-placeholder.png"
               placeholder="blur"
             />

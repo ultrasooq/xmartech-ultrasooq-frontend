@@ -858,6 +858,7 @@ const CheckoutPage = () => {
                         <div className="w-full gap-2 sm:grid sm:grid-cols-3">
                           <Select
                             // @ts-ignore
+                            className="mb-2"
                             options={shippingOptions()}
                             value={shippingOptions().find(
                               (option) =>
@@ -918,7 +919,7 @@ const CheckoutPage = () => {
                                   {shippingInfo[index].info.serviceName}
                                 </div>
                               ) : (
-                                <span className="text-red-500">
+                                <span className="block w-full text-red-500">
                                   {shippingErrors?.[index]?.errors?.serviceId ||
                                     ""}
                                 </span>
