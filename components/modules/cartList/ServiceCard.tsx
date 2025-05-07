@@ -7,6 +7,7 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/ui/use-toast";
 import {
+    useAddServiceToCartWithProduct,
     useDeleteCartItem,
     useUpdateCartByDevice,
     useUpdateCartWithLogin,
@@ -26,6 +27,7 @@ type ServiceCardProps = {
     serviceCost: number;
     cartQuantity: number;
     serviceFeatures: { id: number; serviceFeatureId: number; quantity: number; }[]
+    relatedCart?: any;
     onRemove: () => void;
 };
 
@@ -37,6 +39,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     serviceCost,
     cartQuantity,
     serviceFeatures,
+    relatedCart,
     onRemove
 }) => {
     const t = useTranslations();
@@ -49,7 +52,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     const confirmDialogRef = useRef(null);
     const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
 
-    const addToCartQuery = useAddServiceToCart();
+    const addServiceToCart = useAddServiceToCart();
+    const addServiceToCartWithProduct = useAddServiceToCartWithProduct();
 
     const onConfirmRemove = () => {
         if (cartId) onRemove();
@@ -62,31 +66,60 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     };
 
     const handleAddToCart = async (newQuantity: number) => {
-        const payload: any = {
-            serviceId: serviceId,
-            features: serviceFeatures.map((f) => {
-                return {
-                    serviceFeatureId: f.serviceFeatureId,
-                    quantity: f.serviceFeatureId == serviceFeatureId ? newQuantity : f.quantity
-                }
-            })
-        }
-
-        const response = await addToCartQuery.mutateAsync(payload);
-
-        if (response.success) {
-            toast({
-                title: t("service_added_to_cart"),
-                description: response.message,
-                variant: "success",
-            });
+        if (relatedCart) {
+            const payload: any = {
+                serviceId: serviceId,
+                features: serviceFeatures.map((f) => {
+                    return {
+                        serviceFeatureId: f.serviceFeatureId,
+                        quantity: f.serviceFeatureId == serviceFeatureId ? newQuantity : f.quantity
+                    }
+                }),
+                productId: relatedCart?.productId,
+                productPriceId: relatedCart?.productPriceId,
+                cartId: relatedCart?.id,
+                cartType: "PRODUCT",
+                relatedCartType: "SERVICE"
+            }
+            const response = await addServiceToCartWithProduct.mutateAsync(payload);
+            if (response.success) {
+                toast({
+                    title: t("service_added_to_cart"),
+                    description: response.message,
+                    variant: "success",
+                });
+            } else {
+                toast({
+                    title: t("failed_to_add"),
+                    description: response.message,
+                    variant: "danger",
+                });
+            };
         } else {
-            toast({
-                title: t("failed_to_add"),
-                description: response.message,
-                variant: "danger",
-            });
-        };
+            const payload: any = {
+                serviceId: serviceId,
+                features: serviceFeatures.map((f) => {
+                    return {
+                        serviceFeatureId: f.serviceFeatureId,
+                        quantity: f.serviceFeatureId == serviceFeatureId ? newQuantity : f.quantity
+                    }
+                })
+            }
+            const response = await addServiceToCart.mutateAsync(payload);
+            if (response.success) {
+                toast({
+                    title: t("service_added_to_cart"),
+                    description: response.message,
+                    variant: "success",
+                });
+            } else {
+                toast({
+                    title: t("failed_to_add"),
+                    description: response.message,
+                    variant: "danger",
+                });
+            };
+        }
     };
 
     useEffect(() => {
@@ -119,7 +152,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                                             handleAddToCart(quantity - 1);
                                         }
                                     }}
-                                    disabled={quantity == 0 || addToCartQuery?.isPending}
+                                    disabled={quantity == 0 || 
+                                        addServiceToCart?.isPending || 
+                                        addServiceToCartWithProduct?.isPending
+                                    }
                                 >
                                     <Image
                                         src={MinusIcon}
@@ -148,7 +184,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                                         setQuantity(quantity + 1);
                                         handleAddToCart(quantity + 1);
                                     }}
-                                    disabled={addToCartQuery?.isPending}
+                                    disabled={addServiceToCart?.isPending || addServiceToCartWithProduct?.isPending}
                                 >
                                     <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
                                 </Button>

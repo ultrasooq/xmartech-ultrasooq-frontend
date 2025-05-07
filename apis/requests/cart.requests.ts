@@ -111,3 +111,16 @@ export const fetchCartCountByDeviceId = (payload: { deviceId: string }) => {
     data: payload,
   });
 };
+
+export const addServiceToCartWithProduct = (payload: {[key: string]: any}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateCartServiceWithProduct`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

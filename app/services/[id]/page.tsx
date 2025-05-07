@@ -658,6 +658,13 @@ const ServiceDetailsPage = () => {
                                         quantity: feature.quantity
                                     }));
 
+                                    let relatedCart: any = memoizedCartList
+                                        ?.filter((c: any) => c.productId && c.cartProductServices?.length)
+                                        .find((c: any) => {
+                                            return !!c.cartProductServices
+                                                .find((r: any) => r.relatedCartType == 'SERVICE' && r.serviceId == item.serviceId);
+                                        });
+
                                     return item.cartServiceFeatures.map((feature: any) => {
                                         return (
                                             <ServiceCard
@@ -669,6 +676,7 @@ const ServiceDetailsPage = () => {
                                                 serviceCost={Number(feature.serviceFeature.serviceCost)}
                                                 cartQuantity={feature.quantity}
                                                 serviceFeatures={features}
+                                                relatedCart={relatedCart}
                                                 onRemove={() => {
                                                     handleRemoveServiceFromCart(item.id, feature.id);
                                                 }}

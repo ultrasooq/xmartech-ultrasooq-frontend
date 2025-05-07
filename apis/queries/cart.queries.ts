@@ -2,6 +2,7 @@ import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  addServiceToCartWithProduct,
   deleteCartItem,
   deleteServiceFromCart,
   fetchCartByDevice,
@@ -222,5 +223,36 @@ export const useCartCountWithoutLogin = (
       return res.data;
     },
     enabled,
+  });
+};
+
+export const useAddServiceToCartWithProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; success: boolean },
+    APIResponseError,
+    {[key: string]: any}
+  >({
+    mutationFn: async (payload) => {
+      const res = await addServiceToCartWithProduct(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-user"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-device"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-without-login"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
   });
 };

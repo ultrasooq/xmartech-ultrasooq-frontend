@@ -4,14 +4,17 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useAddServiceToCart, useServiceById } from "@/apis/queries/services.queries";
 import { useToast } from "@/components/ui/use-toast";
+import { useAddServiceToCartWithProduct } from "@/apis/queries/cart.queries";
 
 type AddServiceToCartModalProps = {
     id?: number;
     open: boolean;
     features: { id: number; quantity: number }[];
-    relatedProductId?: number;
-    relatedProductPriceId?: number;
-    relatedCartId?: number;
+    cartId?: number;
+    productId?: number;
+    productPriceId?: number;
+    productCartId?: number;
+    relatedCart?: any;
     handleClose: () => void;
 };
 
@@ -19,10 +22,12 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
     id, 
     open, 
     features, 
+    cartId, 
     handleClose, 
-    relatedProductId, 
-    relatedProductPriceId, 
-    relatedCartId
+    productId,
+    productPriceId,
+    productCartId,
+    relatedCart
 }) => {
     const t = useTranslations();
     const { langDir } = useAuth();
@@ -36,7 +41,8 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
         !!id
     );
 
-    const addToCartQuery = useAddServiceToCart();
+    const addServiceToCart = useAddServiceToCart();
+    const addServiceToCartWithProduct = useAddServiceToCartWithProduct();
 
     const toggleFeature = (id: number, quantity: number, checked: boolean) => {
         setSelectedFeatures((prev) => {
@@ -98,31 +104,70 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
     }, [open]);
 
     const handleAddToCart = async () => {
+        let linkProduct = false;
+        if (cartId && relatedCart) {
+            linkProduct = true;
+        } else if (!cartId) {
+            linkProduct = true;
+        }
         try {
-            const payload: any = {
-                serviceId: Number(id),
-                features: selectedFeatures.map((f) => {
-                    return {
-                        serviceFeatureId: f.id,
-                        quantity: f.quantity
-                    }
-                })
-            }
-            const response = await addToCartQuery.mutateAsync(payload);
-            if (response.success) {
-                toast({
-                    title: t("service_added_to_cart"),
-                    description: response.message,
-                    variant: "success",
-                });
-                handleClose();
+            if (linkProduct) {
+                const payload: any = {
+                    serviceId: Number(id),
+                    features: selectedFeatures.map((f) => {
+                        return {
+                            serviceFeatureId: f.id,
+                            quantity: f.quantity
+                        }
+                    }),
+                    productId: relatedCart?.productId || productId,
+                    productPriceId: relatedCart?.productPriceId || productPriceId,
+                    cartId: relatedCart?.id || productCartId,
+                    cartType: "PRODUCT",
+                    relatedCartType: "SERVICE"
+                };
+                const response = await addServiceToCartWithProduct.mutateAsync(payload);
+                if (response.success) {
+                    toast({
+                        title: t("service_added_to_cart"),
+                        description: response.message,
+                        variant: "success",
+                    });
+                    handleClose();
+                } else {
+                    toast({
+                        title: t("failed_to_add"),
+                        description: response.message,
+                        variant: "danger",
+                    });
+                };
+
             } else {
-                toast({
-                    title: t("failed_to_add"),
-                    description: response.message,
-                    variant: "danger",
-                });
-            };
+                const payload: any = {
+                    serviceId: Number(id),
+                    features: selectedFeatures.map((f) => {
+                        return {
+                            serviceFeatureId: f.id,
+                            quantity: f.quantity
+                        }
+                    })
+                };
+                const response = await addServiceToCart.mutateAsync(payload);
+                if (response.success) {
+                    toast({
+                        title: t("service_added_to_cart"),
+                        description: response.message,
+                        variant: "success",
+                    });
+                    handleClose();
+                } else {
+                    toast({
+                        title: t("failed_to_add"),
+                        description: response.message,
+                        variant: "danger",
+                    });
+                };
+            }
         } catch (error: any) {
             console.log(error);
             toast({
@@ -239,12 +284,15 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
                         <button
                             onClick={handleAddToCart}
                             className="add_to_cart_button"
-                            disabled={selectedFeatures.length === 0 || addToCartQuery.isPending}
+                            disabled={selectedFeatures.length === 0 || 
+                                addServiceToCart.isPending || 
+                                addServiceToCartWithProduct?.isPending
+                            }
                             dir={langDir}
                             translate="no"
                         >
                             {
-                                addToCartQuery.isPending ?
+                                addServiceToCart.isPending || addServiceToCartWithProduct?.isPending ?
                                     t("please_wait")+"..."
                                     :
                                     t("add_to_cart")

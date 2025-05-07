@@ -130,7 +130,7 @@ const Services = ({ searchParams }: ServicesProps) => {
     }, [accessToken]);
 
     useEffect(() => {
-        
+
     }, []);
 
     return (
@@ -271,24 +271,47 @@ const Services = ({ searchParams }: ServicesProps) => {
                     </div>
                 </div>
             </div>
-            {selectedServiceId ? (<Dialog open={isServiceAddToCartModalOpen} onOpenChange={handleServiceToCartModal}>
-                <AddServiceToCartModal
-                    id={selectedServiceId}
-                    open={isServiceAddToCartModalOpen}
-                    features={
-                        cartList.find((item: any) => item.serviceId == selectedServiceId)
-                        ?.cartServiceFeatures
-                        ?.map((feature: any) => ({
-                            id: feature.serviceFeatureId,
-                            quantity: feature.quantity
-                        })) || []
-                    }
-                    handleClose={() => {
-                        setSelectedServiceId(undefined);
-                        setIsServiceAddToCartModalOpen(false)
-                    }}
-                />
-            </Dialog>) : null}
+            {(() => {
+                if (!selectedServiceId) return null;
+
+                return (
+                    <Dialog open={isServiceAddToCartModalOpen} onOpenChange={handleServiceToCartModal}>
+                        {(() => {
+                            let relatedCart: any = null;
+                            const cartItem = cartList.find((item: any) => item.serviceId == selectedServiceId);
+                            if (cartItem) {
+                                relatedCart = cartList
+                                    ?.filter((item: any) => item.productId && item.cartProductServices?.length)
+                                    .find((item: any) => {
+                                        return !!item.cartProductServices
+                                            .find((c: any) => c.relatedCartType == 'SERVICE' && c.serviceId == selectedServiceId);
+                                    });
+                            }
+
+                            return (
+                                <AddServiceToCartModal
+                                    id={selectedServiceId}
+                                    open={isServiceAddToCartModalOpen}
+                                    features={
+                                        cartList.find((item: any) => item.serviceId == selectedServiceId)
+                                            ?.cartServiceFeatures
+                                            ?.map((feature: any) => ({
+                                                id: feature.serviceFeatureId,
+                                                quantity: feature.quantity
+                                            })) || []
+                                    }
+                                    cartId={cartList.find((item: any) => item.serviceId == selectedServiceId)?.id}
+                                    relatedCart={relatedCart}
+                                    handleClose={() => {
+                                        setSelectedServiceId(undefined);
+                                        setIsServiceAddToCartModalOpen(false)
+                                    }}
+                                />
+                            );
+                        })()}
+                    </Dialog>
+                )
+            })()}
             <Footer />
         </>
     );
