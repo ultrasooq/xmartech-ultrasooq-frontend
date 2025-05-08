@@ -51,7 +51,7 @@ const CartListPage = () => {
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
-  const deleteServiceFromCart= useDeleteServiceFromCart();
+  const deleteServiceFromCart = useDeleteServiceFromCart();
   const addToWishlist = useAddToWishList();
 
   const memoizedCartList = useMemo(() => {
@@ -184,7 +184,12 @@ const CartListPage = () => {
   };
 
   const handleRemoveServiceFromCart = async (cartId: number, serviceFeatureId: number) => {
-    const response = await deleteServiceFromCart.mutateAsync({ cartId, serviceFeatureId });
+    const cartItem = memoizedCartList.find((item: any) => item.id == cartId);
+    let payload: any = { cartId };
+    if (cartItem?.cartServiceFeatures?.length > 1) {
+      payload.serviceFeatureId = serviceFeatureId;
+    }
+    const response = await deleteServiceFromCart.mutateAsync(payload);
     if (response.status) {
       setLoading(true);
       toast({
@@ -285,6 +290,12 @@ const CartListPage = () => {
                   {!loading ? (
                     memoizedCartList?.map((item: CartItem) => {
                       if (item.cartType == "DEFAULT") {
+                        let relatedCart = memoizedCartList
+                          ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                          .find((c: any) => {
+                              return !!c.cartProductServices
+                                  .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.productId);
+                          });
                         return (
                           <ProductCard
                             key={item.id}
@@ -305,6 +316,7 @@ const CartListPage = () => {
                             haveAccessToken={haveAccessToken}
                             minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
                             maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                            relatedCart={relatedCart}
                           />
                         )
                       }

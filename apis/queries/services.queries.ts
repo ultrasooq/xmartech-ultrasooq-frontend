@@ -132,7 +132,7 @@ export const useAddServiceToCart = () => {
 };
 
 export const useGetServicesByProductCategory = (payload: { categoryId: string; page: number; limit: number; }, enabled = true,) => useQuery({
-  queryKey: ["services-by-other-seller", payload],
+  queryKey: ["services-by-product-category", payload],
   queryFn: async () => {
     const res = await fetchServicesByProductCategory(payload);
     return res.data;

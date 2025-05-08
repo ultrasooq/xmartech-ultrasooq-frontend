@@ -603,6 +603,15 @@ const TrendingPage = () => {
                 <div className="product-list-s1">
                   {memoizedProductList.map((item: TrendingProduct) => {
                     const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                    let relatedCart: any = null;
+                    if (cartItem) {
+                      relatedCart = cartList
+                        ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                        .find((c: any) => {
+                            return !!c.cartProductServices
+                                .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                        });
+                    }
                     return (
                       <ProductCard
                         key={item.id}
@@ -620,6 +629,7 @@ const TrendingPage = () => {
                         productVariant={cartItem?.object}
                         cartId={cartItem?.id}
                         isAddedToCart={cartItem ? true : false}
+                        relatedCart={relatedCart}
                         sold={item.sold}
                       />
                     );

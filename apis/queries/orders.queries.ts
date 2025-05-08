@@ -314,7 +314,7 @@ export const usePreOrderCalculation = () => {
   return useMutation<
     { [key: string]: any },
     APIResponseError,
-    { cartIds: number[]; userAddressId: number }
+    { cartIds: number[]; serviceCartIds: number[], userAddressId: number }
   >({
     mutationFn: async (payload) => {
       const res = await preOrderCalculation(payload);

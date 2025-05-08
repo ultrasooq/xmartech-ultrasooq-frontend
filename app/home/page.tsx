@@ -484,9 +484,16 @@ function HomePage() {
               </div>
               <div className="product-list-s1 w-full">
                 {memoizedBuyGroupProducts.map((item: TrendingProduct) => {
-                  const cartQuantity =
-                    cartList?.find((el: any) => el.productId == item.id)
-                      ?.quantity || 0;
+                  const cartItem =  cartList?.find((el: any) => el.productId == item.id);
+                  let relatedCart: any = null;
+                  if (cartItem) {
+                    relatedCart = cartList
+                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                      .find((c: any) => {
+                          return !!c.cartProductServices
+                              .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      });
+                  }
                   return (
                     <ProductCard
                       key={item.id}
@@ -497,8 +504,11 @@ function HomePage() {
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
                       isInteractive
-                      productQuantity={cartQuantity}
-                      isAddedToCart={cartQuantity > 0}
+                      cartId={cartItem?.id}
+                      productQuantity={cartItem?.quantity}
+                      productVariant={cartItem?.object}
+                      isAddedToCart={cartItem ? true : false}
+                      relatedCart={relatedCart}
                       sold={item.sold}
                     />
                   );
@@ -680,9 +690,16 @@ function HomePage() {
               </div>
               <div className="product-list-s1 w-full">
                 {memoizedHomeDecorProducts.map((item: TrendingProduct) => {
-                  const cartQuantity =
-                    cartList?.find((el: any) => el.productId == item.id)
-                      ?.quantity || 0;
+                  const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                  let relatedCart: any = null;
+                  if (cartItem) {
+                    relatedCart = cartList
+                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                      .find((c: any) => {
+                        return !!c.cartProductServices
+                          .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      });
+                  }
                   return (
                     <ProductCard
                       key={item.id}
@@ -693,8 +710,11 @@ function HomePage() {
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
                       isInteractive
-                      productQuantity={cartQuantity}
-                      isAddedToCart={cartQuantity > 0}
+                      cartId={cartItem?.id}
+                      productQuantity={cartItem?.quantity}
+                      productVariant={cartItem?.object}
+                      isAddedToCart={cartItem ? true : false}
+                      relatedCart={relatedCart}
                     />
                   );
                 })}
@@ -781,9 +801,16 @@ function HomePage() {
               </div>
               <div className="product-list-s1 w-full">
                 {memoizedFashionBeautyProducts.map((item: TrendingProduct) => {
-                  const cartQuantity =
-                    cartList?.find((el: any) => el.productId == item.id)
-                      ?.quantity || 0;
+                  const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                  let relatedCart: any = null;
+                  if (cartItem) {
+                    relatedCart = cartList
+                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                      .find((c: any) => {
+                        return !!c.cartProductServices
+                          .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      });
+                  }
                   return (
                     <ProductCard
                       key={item.id}
@@ -794,8 +821,11 @@ function HomePage() {
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
                       isInteractive
-                      productQuantity={cartQuantity}
-                      isAddedToCart={cartQuantity > 0}
+                      cartId={cartItem?.id}
+                      productQuantity={cartItem?.quantity}
+                      productVariant={cartItem?.object}
+                      isAddedToCart={cartItem ? true : false}
+                      relatedCart={relatedCart}
                     />
                   );
                 })}
@@ -890,9 +920,16 @@ function HomePage() {
               <div className="product-list-s1 w-full">
                 {memoizedConsumerElectronicsProducts.map(
                   (item: TrendingProduct) => {
-                    const cartQuantity =
-                      cartList?.find((el: any) => el.productId == item.id)
-                        ?.quantity || 0;
+                    const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                    let relatedCart: any = null;
+                    if (cartItem) {
+                      relatedCart = cartList
+                        ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                        .find((c: any) => {
+                          return !!c.cartProductServices
+                            .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                        });
+                    }
                     return (
                       <ProductCard
                         key={item.id}
@@ -903,8 +940,11 @@ function HomePage() {
                         inWishlist={item?.inWishlist}
                         haveAccessToken={haveAccessToken}
                         isInteractive
-                        productQuantity={cartQuantity}
-                        isAddedToCart={cartQuantity > 0}
+                        cartId={cartItem?.id}
+                        productQuantity={cartItem?.quantity}
+                        productVariant={cartItem?.object}
+                        isAddedToCart={cartItem ? true : false}
+                        relatedCart={relatedCart}
                       />
                     );
                   },

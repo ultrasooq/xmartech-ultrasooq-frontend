@@ -33,25 +33,12 @@ import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLo
 import FactoriesProductCard from "@/components/modules/factories/FactoriesProductCard";
 import { useQueryClient } from "@tanstack/react-query";
 import FactoryCartMenu from "@/components/modules/factories/FactoriesCartMenu";
-import { DialogTitle } from "@radix-ui/react-dialog";
-import { Button } from "@/components/ui/button";
-import { IoCloseSharp } from "react-icons/io5";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
-import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
-import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import {
   useAddToWishList,
   useDeleteFromWishList,
 } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
-import {
-  useCartListByUserId,
-  useUpdateCartWithLogin,
-} from "@/apis/queries/cart.queries";
+import { useCartListByUserId } from "@/apis/queries/cart.queries";
 import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";

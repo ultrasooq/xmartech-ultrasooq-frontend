@@ -425,7 +425,8 @@ const CheckoutPage = () => {
 
   const calculateFees = async () => {
     const response = await preOrderCalculation.mutateAsync({
-      cartIds: memoizedCartList.map((item: any) => item.id),
+      cartIds: memoizedCartList.filter((item: any) => item.productId)?.map((item: any) => item.id),
+      serviceCartIds: memoizedCartList.filter((item: any) => item.serviceId)?.map((item: any) => item.id),
       userAddressId: Number(selectedShippingAddressId),
     });
 
@@ -439,7 +440,9 @@ const CheckoutPage = () => {
     let chargedFee = 0;
     if (response?.data?.length) {
       response.data.forEach((item: any) => {
-        chargedFee += Number(item?.breakdown?.customer?.chargedFee);
+        if (item.orderProductType == 'PRODUCT') {
+          chargedFee += Number(item?.breakdown?.customer?.chargedFee);
+        }
       });
     }
     setFee(chargedFee);
@@ -447,9 +450,9 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     if (memoizedCartList.length) {
-      let userIds = memoizedCartList.map((item: any) => {
+      let userIds = memoizedCartList.filter((item: any) => item.productPriceDetails)?.map((item: any) => {
         return item.productPriceDetails.adminId;
-      });
+      }) || [];
       // @ts-ignore
       userIds = [...new Set(userIds)];
 
@@ -808,7 +811,7 @@ const CheckoutPage = () => {
                       {memoizedCartList
                         ?.filter(
                           (item: CartItem) =>
-                            item.productPriceDetails.adminId == sellerId,
+                            item.productPriceDetails && item.productPriceDetails.adminId == sellerId,
                         )
                         ?.map((item: CartItem) => (
                           <ProductCard

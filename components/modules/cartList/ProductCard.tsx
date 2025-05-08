@@ -10,6 +10,7 @@ import {
   useDeleteCartItem,
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
+  useUpdateCartWithService,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { useAuth } from "@/context/AuthContext";
@@ -35,6 +36,7 @@ type ProductCardProps = {
   vendorDiscountType?: string;
   minQuantity?: number;
   maxQuantity?: number;
+  relatedCart?: any;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -55,6 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   vendorDiscountType,
   minQuantity,
   maxQuantity,
+  relatedCart
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
@@ -62,6 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
   const deviceId = getOrCreateDeviceId() || "";
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartWithService = useUpdateCartWithService();
   const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
 

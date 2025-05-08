@@ -16,6 +16,7 @@ import {
   getAllManagedProducts,
   getOneProductByProductCondition,
   getOneWithProductPrice,
+  getProductsByService,
   getVendorDetails,
   getVendorProducts,
   removeProduct,
@@ -584,3 +585,23 @@ export const useProductVariant = () => {
     },
   });
 };
+
+export const useProductsByService = (
+  serviceId: number,
+  payload: {
+    page: number;
+    limit: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["products-by-service", serviceId, payload],
+    queryFn: async () => {
+      const res = await getProductsByService(serviceId, payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });

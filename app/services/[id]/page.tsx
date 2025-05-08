@@ -40,6 +40,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useAddServiceToCart, useServiceById } from "@/apis/queries/services.queries";
 import ServiceImagesCard from "@/components/modules/serviceDetails/ServiceImagesCard";
 import ServiceDescriptionCard from "@/components/modules/serviceDetails/ServiceDescriptionCard";
+import RelatedProducts from "@/components/modules/serviceDetails/RelatedProducts";
 
 const ServiceDetailsPage = () => {
     const t = useTranslations();
@@ -208,7 +209,12 @@ const ServiceDetailsPage = () => {
     };
 
     const handleRemoveServiceFromCart = async (cartId: number, serviceFeatureId: number) => {
-        const response = await deleteServiceFromCart.mutateAsync({ cartId, serviceFeatureId });
+        const cartItem = memoizedCartList.find((item: any) => item.id == cartId);
+        let payload: any = { cartId };
+        if (cartItem?.cartServiceFeatures?.length > 1) {
+          payload.serviceFeatureId = serviceFeatureId;
+        }
+        const response = await deleteServiceFromCart.mutateAsync(payload);
         if (response.status) {
             toast({
                 title: t("item_removed_from_cart"),
@@ -486,6 +492,14 @@ const ServiceDetailsPage = () => {
                                         >
                                             {t("more_offers")}
                                         </TabsTrigger>
+                                        <TabsTrigger
+                                            value="products"
+                                            className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                                            dir={langDir}
+                                            translate="no"
+                                        >
+                                            {t("products")}
+                                        </TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="description" className="mt-0">
                                         <div className="w-full bg-white">
@@ -565,6 +579,25 @@ const ServiceDetailsPage = () => {
                                             <p>More Offers</p>
                                         </div>
                                     </TabsContent>
+                                    <TabsContent value="products" className="mt-0">
+                                        {serviceDetails?.id ? (<div className="w-full bg-white">
+                                            <RelatedProducts
+                                                serviceId={serviceDetails?.id}
+                                                serviceCategoryId={serviceDetails?.categoryId}
+                                                cartList={memoizedCartList}
+                                                serviceCartId={
+                                                    memoizedCartList.find((item: any) => item.serviceId == serviceDetails?.id)?.id
+                                                }
+                                                isChildCart={
+                                                    !!memoizedCartList?.filter((c: any) => c.productId && c.cartProductServices?.length > 0)
+                                                        ?.find((c: any) => {
+                                                            return !!c.cartProductServices
+                                                                .find((r: any) => r.relatedCartType == 'SERVICE' && r.serviceId == serviceDetails.id);
+                                                        })
+                                                }
+                                            />
+                                        </div>) : null}
+                                    </TabsContent>
                                 </Tabs>
                             </div>
                         </div>
@@ -626,6 +659,13 @@ const ServiceDetailsPage = () => {
 
                                 {memoizedCartList?.map((item: CartItem) => {
                                     if (item.cartType == 'DEFAULT') {
+                                        let relatedCart = memoizedCartList
+                                            ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                                            .find((c: any) => {
+                                                return !!c.cartProductServices
+                                                    .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.productId);
+                                            });
+
                                         return (
                                             <ProductCard
                                                 key={item.id}
@@ -646,6 +686,7 @@ const ServiceDetailsPage = () => {
                                                 haveAccessToken={haveAccessToken}
                                                 minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
                                                 maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                                                relatedCart={relatedCart}
                                             />
                                         )
                                     }

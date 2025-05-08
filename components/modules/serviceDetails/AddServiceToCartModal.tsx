@@ -107,7 +107,7 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
         let linkProduct = false;
         if (cartId && relatedCart) {
             linkProduct = true;
-        } else if (!cartId) {
+        } else if (!cartId && productId && productPriceId && productCartId) {
             linkProduct = true;
         }
         try {

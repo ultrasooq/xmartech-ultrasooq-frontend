@@ -10,6 +10,7 @@ type RelatedServicesProps = {
     productPriceId?: number;
     productCategoryId: string;
     cartList: any[];
+    isChildCart: boolean;
     productCartId?: number; 
 };
 
@@ -18,6 +19,7 @@ const RelatedServices: React.FC<RelatedServicesProps> = ({
     productPriceId,
     productCategoryId,
     cartList,
+    isChildCart,
     productCartId
 }) => {
     const [page, setPage] = useState<number>(1);
@@ -93,9 +95,9 @@ const RelatedServices: React.FC<RelatedServicesProps> = ({
                                     })) || []
                             }
                             cartId={cartList.find((item: any) => item.serviceId == selectedServiceId)?.id}
-                            productId={productId}
-                            productPriceId={productPriceId}
-                            productCartId={productCartId}
+                            productId={!isChildCart ? productId : undefined}
+                            productPriceId={!isChildCart ? productPriceId : undefined}
+                            productCartId={!isChildCart ? productCartId : undefined}
                             relatedCart={relatedCart}
                             handleClose={() => {
                                 setSelectedServiceId(undefined);

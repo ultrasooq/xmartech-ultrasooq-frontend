@@ -187,10 +187,12 @@ const ProductDetailsPage = () => {
     cartId: number,
     serviceFeatureId: number,
   ) => {
-    const response = await deleteServiceFromCart.mutateAsync({
-      cartId,
-      serviceFeatureId,
-    });
+    const cartItem = memoizedCartList.find((item: any) => item.id == cartId);
+    let payload: any = { cartId };
+    if (cartItem?.cartServiceFeatures?.length > 1) {
+      payload.serviceFeatureId = serviceFeatureId;
+    }
+    const response = await deleteServiceFromCart.mutateAsync(payload);
     if (response.status) {
       toast({
         title: t("item_removed_from_cart"),
@@ -829,6 +831,13 @@ const ProductDetailsPage = () => {
                               item.productId == Number(searchParams?.id),
                           )?.id
                         }
+                        isChildCart={
+                          !!memoizedCartList?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                            ?.find((c: any) => {
+                                return !!c.cartProductServices
+                                    .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == searchParams?.id);
+                            })
+                        }
                       />
                     </div>
                   </TabsContent>
@@ -909,6 +918,12 @@ const ProductDetailsPage = () => {
 
                 {memoizedCartList?.map((item: CartItem) => {
                   if (item.cartType == "DEFAULT") {
+                    let relatedCart = memoizedCartList
+                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                      .find((c: any) => {
+                          return !!c.cartProductServices
+                              .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.productId);
+                      });
                     return (
                       <ProductCard
                         key={item.id}
@@ -947,6 +962,7 @@ const ProductDetailsPage = () => {
                         maxQuantity={
                           item?.productPriceDetails?.maxQuantityPerCustomer
                         }
+                        relatedCart={relatedCart}
                       />
                     );
                   }

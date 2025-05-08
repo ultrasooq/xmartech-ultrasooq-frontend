@@ -22,6 +22,7 @@ import { toast } from "@/components/ui/use-toast";
 import {
   useDeleteCartItem,
   useUpdateCartWithLogin,
+  useUpdateCartWithService,
 } from "@/apis/queries/cart.queries";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
@@ -38,6 +39,7 @@ type ProductCardProps = {
   cartQuantity?: number;
   productVariant: any;
   cartId?: number;
+  relatedCart?: any
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -51,6 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   cartQuantity = 0,
   productVariant,
   cartId,
+  relatedCart
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
@@ -71,6 +74,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   );
 
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartWithService = useUpdateCartWithService();
   const deleteCartItem = useDeleteCartItem();
 
   useEffect(() => {
@@ -172,6 +176,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       });
       return;
     }
+
     const response = await updateCartWithLogin.mutateAsync({
       productPriceId: item?.productProductPriceId,
       quantity: newQuantity,

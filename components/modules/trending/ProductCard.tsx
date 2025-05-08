@@ -16,6 +16,7 @@ import {
   useDeleteCartItem,
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
+  useUpdateCartWithService,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { useTranslations, useLocale } from "next-intl"; // Import useLocale
@@ -38,6 +39,9 @@ type ProductCardProps = {
   productVariant?: any;
   cartId?: number;
   isAddedToCart?: boolean;
+  serviceId?: number;
+  serviceCartId?: number;
+  relatedCart?: any;
   sold?: number;
 };
 
@@ -54,6 +58,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   productQuantity = 0,
   productVariant,
   cartId,
+  serviceId,
+  serviceCartId,
+  relatedCart,
   isAddedToCart,
   sold,
 }) => {
@@ -128,6 +135,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
+  const updateCartWithService = useUpdateCartWithService();
   const deleteCartItem = useDeleteCartItem();
 
   const handleAddToCart = async (
@@ -177,6 +185,44 @@ const ProductCard: React.FC<ProductCardProps> = ({
         });
         return;
       }
+
+      let linkService = !!(!cartId && serviceId && serviceCartId);
+      console.log(linkService, cartId, serviceId, relatedCart);
+
+      if (linkService) {
+        const response = await updateCartWithService.mutateAsync({
+          productId: item?.id,
+          productPriceId: item?.productProductPriceId,
+          quantity: newQuantity,
+          productVariant: variant || selectedProductVariant,
+          serviceId: relatedCart?.serviceId || serviceId,
+          cartId: relatedCart?.id || serviceCartId
+        });
+  
+        if (response.success) {
+          setQuantity(
+            actionType === "add" && newQuantity === 0 ? 1 : newQuantity,
+          );
+          toast({
+            title:
+              actionType == "add"
+                ? t("item_added_to_cart")
+                : t("item_removed_from_cart"),
+            description: t("check_your_cart_for_more_details"),
+            variant: "success",
+          });
+          return response.success;
+        } else {
+          toast({
+            title: t("something_went_wrong"),
+            description: response.message,
+            variant: "danger",
+          });
+        }
+
+        return;
+      }
+
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: item?.productProductPriceId,
         quantity: newQuantity,
@@ -203,6 +249,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           variant: "danger",
         });
       }
+
     } else {
       if (!item?.productProductPriceId) {
         toast({
