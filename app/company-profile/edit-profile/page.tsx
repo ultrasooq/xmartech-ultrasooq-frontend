@@ -49,7 +49,7 @@ const formSchema = (t: any) => {
       .transform((value) => Number(value)),
     totalNoOfEmployee: z.string().trim().min(2, { message: t("total_no_of_employees_required") }),
     aboutUs: z.string().trim().optional(),
-    aboutUsJson: z.string().optional(),
+    aboutUsJson: z.any().optional(),
     cc: z.string().trim(),
     phoneNumber: z.string().trim()
       .min(2, { message: t("phone_number_required"), })
@@ -134,7 +134,7 @@ export default function EditProfilePage() {
   };
 
   const onSubmit = async (formData: any) => {
-    let data = { ...formData, aboutUs: formData.aboutUsJson, profileType: "COMPANY", userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number, };
+    let data = { ...formData, aboutUs: JSON.stringify(formData.aboutUsJson || ''), profileType: "COMPANY", userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number, };
 
     formData.uploadImage = imageFile;
     let getImageUrl;
@@ -166,6 +166,14 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (uniqueUser.data?.data) {
       const userProfile = uniqueUser.data?.data?.userProfile?.[0];
+      let abountUsJson = "";
+      if (userProfile?.aboutUs) {
+        try {
+          abountUsJson = JSON.parse(userProfile?.aboutUs);
+        } catch (error) {
+
+        }
+      }
       form.reset({
         logo: userProfile?.logo || "",
         address: userProfile?.address || "",
@@ -176,7 +184,7 @@ export default function EditProfilePage() {
         totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
         annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
         aboutUs: userProfile?.aboutUs || "",
-        aboutUsJson: userProfile?.aboutUs ? JSON.parse(userProfile?.aboutUs) : "",
+        aboutUsJson: abountUsJson,
         companyName: userProfile?.companyName || "",
         businessTypeList: userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() || undefined,
         cc: userProfile?.cc,
