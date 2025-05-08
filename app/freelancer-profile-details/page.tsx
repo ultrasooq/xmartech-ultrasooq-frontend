@@ -80,7 +80,7 @@ export default function FreelancerProfileDetailsPage() {
 
             <div className="mt-12 w-full">
               <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
-                <TabsList className="flex h-auto min-h-[80px] w-full grid-cols-3 gap-3 rounded-none bg-transparent px-0 pt-7 md:mb-1 md:grid md:w-[560px] md:gap-6">
+                <TabsList className="flex h-auto min-h-[80px] w-full grid-cols-3 flex-wrap gap-3 rounded-none bg-transparent px-0 pt-7 md:mb-1 md:grid md:w-[560px] md:gap-6">
                   <TabsTrigger
                     value="profile-info"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
