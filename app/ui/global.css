@@ -5300,7 +5300,7 @@ input::-ms-clear {
   }
 
   .rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .product_sec_list .product_list_part .product_list_content p {
-    @apply min-h-[38px];
+    @apply min-h-[38px] flex;
   }
 
   .my-order-lists .delivery-address {

@@ -128,7 +128,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         ) : null} */}
         {haveAccessToken ? (
           <div className="quantity_wrap mb-2">
-            <label dir={langDir} translate="no">{t("quantity")}</label>
+            <label dir={langDir} translate="no">
+              {t("quantity")}
+            </label>
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-3 md:gap-x-3">
                 <Button
@@ -155,7 +157,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-                <p className="!mb-0 !text-black">{quantity}</p>
+                <p className="!mb-0 flex items-center !text-black">
+                  {quantity}
+                </p>
                 <Button
                   type="button"
                   variant="outline"

@@ -72,16 +72,16 @@ const TermsContent = () => {
       <p className="mb-4">You must not:</p>
 
       <ul className="mb-4 pl-5">
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           Republish material from www.puremoon.com
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           Sell, rent or sub-license material from www.puremoon.com
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           Reproduce, duplicate or copy material from www.puremoon.com
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           Redistribute content from www.puremoon.com
         </li>
       </ul>
@@ -98,21 +98,21 @@ const TermsContent = () => {
       </p>
 
       <ul className="mb-4 pl-5">
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           Government agencies;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           Search engines;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           News organizations;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           Online directory distributors may link to our Website in the same
           manner as they hyperlink to the Websites of other listed businesses;
           and
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           System wide Accredited Businesses except soliciting non-profit
           organizations, charity shopping malls, and charity fundraising groups
           which may not hyperlink to our Web site.
@@ -133,25 +133,25 @@ const TermsContent = () => {
       </p>
 
       <ul className="mb-4 pl-5">
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           commonly-known consumer and/or business information sources;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           dot.com community sites;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           associations or other groups representing charities;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           online directory distributors;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           internet portals;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           accounting, law and consulting firms; and
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           educational institutions and trade associations.
         </li>
       </ul>
@@ -188,13 +188,13 @@ const TermsContent = () => {
       </p>
 
       <ul className="mb-4 pl-5">
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           By use of our corporate name; or
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           By use of the uniform resource locator being linked to; or
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           By use of any other description of our Website being linked to that
           makes sense within the context and format of content on the linking
           party&apos;s site.
@@ -271,18 +271,18 @@ const TermsContent = () => {
       </p>
 
       <ul className="mb-4 pl-5">
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           limit or exclude our or your liability for death or personal injury;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           limit or exclude our or your liability for fraud or fraudulent
           misrepresentation;
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           limit any of our or your liabilities in any way that is not permitted
           under applicable law; or
         </li>
-        <li className="relative pl-5 before:absolute before:left-0 before:top-[8px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
+        <li className="relative pl-5 before:absolute before:left-0 before:top-[11px] before:h-[6px] before:w-[6px] before:rounded-full before:bg-color-dark before:content-['']">
           exclude any of our or your liabilities that may not be excluded under
           applicable law.
         </li>
