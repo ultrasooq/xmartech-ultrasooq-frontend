@@ -90,7 +90,7 @@ const CompleteOrderPage = () => {
   const handleCreateOrder = async () => {
     if (hasAccessToken) {
       if (orderStore.orders) {
-        if (!orderStore.orders.cartIds?.length) {
+        if (!orderStore.orders.cartIds?.length && !orderStore.orders.serviceCartIds?.length) {
           toast({
             title: t("order_cant_be_placed"),
             description: t("order_placed_retry_info"),

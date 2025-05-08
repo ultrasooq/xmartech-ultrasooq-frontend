@@ -148,7 +148,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </figure>
         <div className="right-info">
           <h6 dir={langDir} translate="no">{t("price")}</h6>
-          <h5 dir={langDir}>{currency.symbol}{quantity * calculateDiscountedPrice()}</h5>
+          {invalidProduct || cannotBuy ? (
+            <s>
+              <h5 dir={langDir}>{currency.symbol}{quantity * calculateDiscountedPrice()}</h5>
+            </s>
+          ) : (
+            <h5 dir={langDir}>{currency.symbol}{quantity * calculateDiscountedPrice()}</h5>
+          )}
         </div>
       </div>
       <div>

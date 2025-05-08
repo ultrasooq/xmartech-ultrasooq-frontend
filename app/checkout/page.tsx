@@ -7,6 +7,7 @@ import {
   useCartListByDevice,
   useCartListByUserId,
   useDeleteCartItem,
+  useDeleteServiceFromCart,
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
@@ -45,6 +46,7 @@ import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { IoCloseSharp } from "react-icons/io5";
 import Select from "react-select";
 import Shipping from "@/components/modules/checkout/Shipping";
+import ServiceCard from "@/components/modules/checkout/ServiceCard";
 
 const CheckoutPage = () => {
   const t = useTranslations();
@@ -141,7 +143,7 @@ const CheckoutPage = () => {
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
-      limit: 10,
+      limit: 100,
       deviceId,
     },
     !haveAccessToken,
@@ -149,13 +151,14 @@ const CheckoutPage = () => {
   const cartListByUser = useCartListByUserId(
     {
       page: 1,
-      limit: 10,
+      limit: 100,
     },
     haveAccessToken,
   );
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
+  const deleteServiceFromCart = useDeleteServiceFromCart();
   const addToWishlist = useAddToWishList();
   const allUserAddressQuery = useAllUserAddress(
     {
@@ -196,6 +199,7 @@ const CheckoutPage = () => {
           (
             acc: number,
             curr: {
+              cartType: "DEFAULT" | "SERVICE";
               productPriceDetails: {
                 offerPrice: string;
                 consumerDiscount?: number;
@@ -204,23 +208,45 @@ const CheckoutPage = () => {
                 vendorDiscountType?: string;
               };
               quantity: number;
+              productId?: number;
+              serviceId?: number;
+              cartServiceFeatures: any[];
+              service: {
+                eachCustomerTime: number;
+              }
             },
           ) => {
-            let discount = curr?.productPriceDetails?.consumerDiscount;
-            let discountType = curr?.productPriceDetails?.consumerDiscountType;
-            if (user?.tradeRole && user.tradeRole != "BUYER") {
-              discount = curr?.productPriceDetails?.vendorDiscount;
-              discountType = curr?.productPriceDetails?.vendorDiscountType;
+            // @ts-ignore
+            if (curr.cartType == "DEFAULT" && !invalidProducts.includes(curr.productId) && !notAvailableProducts.includes(curr.productId)) {
+              let discount = curr?.productPriceDetails?.consumerDiscount;
+              let discountType = curr?.productPriceDetails?.consumerDiscountType;
+              if (user?.tradeRole && user.tradeRole != "BUYER") {
+                discount = curr?.productPriceDetails?.vendorDiscount;
+                discountType = curr?.productPriceDetails?.vendorDiscountType;
+              }
+              let calculatedDiscount = calculateDiscountedPrice(
+                curr.productPriceDetails?.offerPrice ?? 0,
+                discount || 0,
+                discountType,
+              );
+  
+              return Number(
+                (acc + calculatedDiscount * curr.quantity).toFixed(2),
+              );
             }
-            let calculatedDiscount = calculateDiscountedPrice(
-              curr.productPriceDetails?.offerPrice ?? 0,
-              discount || 0,
-              discountType,
-            );
 
-            return Number(
-              (acc + calculatedDiscount * curr.quantity).toFixed(2),
-            );
+            if (!curr.cartServiceFeatures?.length) return acc;
+
+            let amount = 0;
+            for (let feature of curr.cartServiceFeatures) {
+              if (feature.serviceFeature?.serviceCostType == "FLAT") {
+                amount += Number(feature.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
+              } else {
+                amount += Number(feature?.serviceFeature?.serviceCost || '') * (feature.quantity || 1) * curr.service.eachCustomerTime;
+              }
+            }
+
+            return Number((acc + amount).toFixed(2));
           },
           0,
         ),
@@ -231,18 +257,41 @@ const CheckoutPage = () => {
           (
             acc: number,
             curr: {
+              cartType: "DEFAULT" | "SERVICE";
               productPriceDetails: {
                 offerPrice: string;
               };
               quantity: number;
+              productId?: number;
+              serviceId?: number;
+              cartServiceFeatures: any[];
+              service: {
+                eachCustomerTime: number
+              }
             },
           ) => {
-            return Number(
-              (
-                acc +
-                +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
-              ).toFixed(2),
-            );
+            // @ts-ignore
+            if (curr.cartType == "DEFAULT"  && !invalidProducts.includes(curr.productId) && !notAvailableProducts.includes(curr.productId)) {
+              return Number(
+                (
+                  acc +
+                  +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
+                ).toFixed(2),
+              );
+            }
+
+            if (!curr.cartServiceFeatures?.length) return acc;
+
+            let amount = 0;
+            for (let feature of curr.cartServiceFeatures) {
+              if (feature.serviceFeature?.serviceCostType == "FLAT") {
+                amount += Number(feature.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
+              } else {
+                amount += Number(feature?.serviceFeature?.serviceCost || '') * (feature.quantity || 1) * curr.service.eachCustomerTime;
+              }
+            }
+  
+            return Number((acc + amount).toFixed(2));
           },
           0,
         ),
@@ -325,6 +374,28 @@ const CheckoutPage = () => {
   const onCancelRemove = () => {
     setIsConfirmDialogOpen(false);
     setSelectedCartId(undefined);
+  };
+
+  const handleRemoveServiceFromCart = async (cartId: number, serviceFeatureId: number) => {
+    const cartItem = memoizedCartList.find((item: any) => item.id == cartId);
+    let payload: any = { cartId };
+    if (cartItem?.cartServiceFeatures?.length > 1) {
+      payload.serviceFeatureId = serviceFeatureId;
+    }
+    const response = await deleteServiceFromCart.mutateAsync(payload);
+    if (response.status) {
+      toast({
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: response.message || t("item_not_removed_from_cart"),
+        description: response.message || t("check_your_cart_for_more_details"),
+        variant: "danger",
+      });
+    }
   };
 
   const handleDeleteAddress = async (userAddressId: number) => {
@@ -440,12 +511,16 @@ const CheckoutPage = () => {
     let chargedFee = 0;
     if (response?.data?.length) {
       response.data.forEach((item: any) => {
-        if (item.orderProductType == 'PRODUCT') {
+        if (item.orderProductType != 'SERVICE') {
           chargedFee += Number(item?.breakdown?.customer?.chargedFee);
         }
       });
     }
     setFee(chargedFee);
+
+    calculateTotalAmount();
+
+    setTotalAmount(response?.totalCustomerPay || 0)
   };
 
   useEffect(() => {
@@ -495,22 +570,23 @@ const CheckoutPage = () => {
         }),
       );
 
-      calculateFees();
+      if (selectedShippingAddressId) calculateFees();
     }
   }, [
     cartListByUser.data?.data,
     cartListByDeviceQuery?.data?.data,
     allUserAddressQuery?.data?.data,
     selectedBillingAddressId,
+    selectedShippingAddressId,
   ]);
 
   useEffect(() => {
     calculateTotalAmount();
-  }, [cartListByUser.data?.data, cartListByDeviceQuery?.data?.data]);
+  }, [cartListByUser.data?.data, cartListByDeviceQuery?.data?.data, invalidProducts, notAvailableProducts]);
 
   useEffect(() => {
-    setTotalAmount(itemsTotal + shippingCharge + fee);
-  }, [itemsTotal, shippingCharge, fee]);
+    setTotalAmount(prevAmount => (prevAmount || itemsTotal) + shippingCharge);
+  }, [itemsTotal, shippingCharge]);
 
   useEffect(() => {
     let charge = 0;
@@ -650,7 +726,8 @@ const CheckoutPage = () => {
 
       const data = {
         ...selectedOrderDetails,
-        cartIds: memoizedCartList?.map((item: CartItem) => item.id) || [],
+        cartIds: memoizedCartList?.filter((item: any) => item.productId)?.map((item: CartItem) => item.id) || [],
+        serviceCartIds: memoizedCartList?.filter((item: any) => item.serviceId)?.map((item: CartItem) => item.id) || [],
         deliveryCharge: shippingCharge,
         shipping: prepareShippingInfo(),
       };
@@ -804,6 +881,14 @@ const CheckoutPage = () => {
                     <h3 translate="no">{t("cart_items")}</h3>
                   </div>
                 </div>
+
+                {memoizedCartList.filter((item: any) => item.productId).length > 0 ? (
+                  <div className="card-inner-headerPart mt-5" dir={langDir}>
+                    <div className="lediv">
+                      <h3 translate="no">{t("products")}</h3>
+                    </div>
+                  </div>
+                ) : null}
 
                 {sellerIds.map((sellerId: number, index: number) => {
                   return (
@@ -997,6 +1082,52 @@ const CheckoutPage = () => {
                     </div>
                   );
                 })}
+
+                {memoizedCartList.filter((item: any) => item.serviceId).length > 0 ? (
+                  <div className="card-inner-headerPart mt-5" dir={langDir}>
+                    <div className="lediv">
+                      <h3 translate="no">{t("services")}</h3>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="cart-item-lists">
+                  {memoizedCartList.filter((item: any) => item.serviceId).map((item: any) => {
+                    if (!item.cartServiceFeatures?.length) return null;
+
+                    const features = item.cartServiceFeatures.map((feature: any) => ({
+                      id: feature.id,
+                      serviceFeatureId: feature.serviceFeatureId,
+                      quantity: feature.quantity
+                    }));
+
+                    let relatedCart: any = memoizedCartList
+                      ?.filter((c: any) => c.productId && c.cartProductServices?.length)
+                      .find((c: any) => {
+                          return !!c.cartProductServices
+                              .find((r: any) => r.relatedCartType == 'SERVICE' && r.serviceId == item.serviceId);
+                      });
+
+                    return item.cartServiceFeatures.map((feature: any) => {
+                      return (
+                        <ServiceCard 
+                          key={feature.id}
+                          cartId={item.id}
+                          serviceId={item.serviceId}
+                          serviceFeatureId={feature.serviceFeatureId}
+                          serviceFeatureName={feature.serviceFeature.name}
+                          serviceCost={Number(feature.serviceFeature.serviceCost)}
+                          cartQuantity={feature.quantity}
+                          serviceFeatures={features}
+                          relatedCart={relatedCart}
+                          onRemove={() => {
+                            handleRemoveServiceFromCart(item.id, feature.id);
+                          }}
+                        />
+                      );
+                    });
+                  })}
+                </div>
               </div>
 
               {!me.data ? (

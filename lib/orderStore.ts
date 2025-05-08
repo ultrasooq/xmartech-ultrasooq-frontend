@@ -11,6 +11,7 @@ export type State = {
       phoneNumber: string;
     };
     cartIds: number[];
+    serviceCartIds: number[];
     firstName: string;
     lastName: string;
     email: string;
@@ -50,6 +51,7 @@ export const initialOrderState: State = {
   orders: {
     guestUser: undefined,
     cartIds: [],
+    serviceCartIds: [],
     firstName: "",
     lastName: "",
     email: "",

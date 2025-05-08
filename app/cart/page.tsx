@@ -82,7 +82,7 @@ const CartListPage = () => {
         (
           acc: number,
           curr: {
-            cartType: "DEFAULT" | "SERVICE",
+            cartType: "DEFAULT" | "SERVICE";
             productPriceDetails: {
               offerPrice: string;
               consumerDiscount?: number;
@@ -92,6 +92,9 @@ const CartListPage = () => {
             };
             quantity: number;
             cartServiceFeatures: any[];
+            service: {
+              eachCustomerTime: number;
+            }
           },
         ) => {
           if (curr.cartType == "DEFAULT") {
@@ -118,11 +121,11 @@ const CartListPage = () => {
             if (feature.serviceFeature?.serviceCostType == "FLAT") {
               amount += Number(feature.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
             } else {
-              amount += Number(feature?.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
+              amount += Number(feature?.serviceFeature?.serviceCost || '') * (feature.quantity || 1) * curr.service.eachCustomerTime;
             }
           }
 
-          return Number((acc + amount).toFixed(2))
+          return Number((acc + amount).toFixed(2));
         },
         0,
       );
@@ -137,6 +140,9 @@ const CartListPage = () => {
             };
             quantity: number;
             cartServiceFeatures: any[];
+            service: {
+              eachCustomerTime: number;
+            }
           },
         ) => {
           if (curr.cartType == "DEFAULT") {
@@ -152,11 +158,11 @@ const CartListPage = () => {
             if (feature.serviceFeature?.serviceCostType == "FLAT") {
               amount += Number(feature.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
             } else {
-              amount += Number(feature?.serviceFeature?.serviceCost || '') * (feature.quantity || 1);
+              amount += Number(feature?.serviceFeature?.serviceCost || '') * (feature.quantity || 1) * curr.service.eachCustomerTime;
             }
           }
 
-          return Number((acc + amount).toFixed(2))
+          return Number((acc + amount).toFixed(2));
         },
         0,
       );
