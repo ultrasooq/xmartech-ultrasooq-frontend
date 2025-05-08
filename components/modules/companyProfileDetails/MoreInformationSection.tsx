@@ -32,7 +32,12 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
   });
   useEffect(() => {
     const raw = userDetails?.userProfile?.[0]?.aboutUs;
-    const parsed = raw ? JSON.parse(raw) : [];
+    let parsed: any[] = [];
+    try {
+      parsed = raw ? JSON.parse(raw) : [];
+    } catch (error) {
+      parsed = [];
+    }
     if (parsed) {
       form.reset({
         aboutUs: parsed
