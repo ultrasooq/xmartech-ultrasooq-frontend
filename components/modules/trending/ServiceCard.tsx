@@ -20,9 +20,9 @@ import { useCartStore } from "@/lib/rfqStore";
 import { toast } from "@/components/ui/use-toast";
 import EditIcon from "@/public/images/edit-icon.svg";
 import {
-    useDeleteCartItem,
-    useUpdateCartByDevice,
-    useUpdateCartWithLogin,
+  useDeleteCartItem,
+  useUpdateCartByDevice,
+  useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { useTranslations } from "next-intl";
@@ -50,471 +50,497 @@ import { useRouter } from "next/navigation";
 // };
 
 const ServiceCard: React.FC<any> = ({
-    item,
-    manageService,
-    handleServiceToCartModal,
-    productVariants = [],
-    onWishlist,
-    inWishlist,
-    haveAccessToken,
-    isInteractive,
-    isSelectable,
-    selectedIds,
-    onSelectedId,
-    productQuantity = 0,
-    productVariant,
-    cartId,
-    isAddedToCart,
-    sold,
+  item,
+  manageService,
+  handleServiceToCartModal,
+  productVariants = [],
+  onWishlist,
+  inWishlist,
+  haveAccessToken,
+  isInteractive,
+  isSelectable,
+  selectedIds,
+  onSelectedId,
+  productQuantity = 0,
+  productVariant,
+  cartId,
+  isAddedToCart,
+  sold,
 }) => {
-    const router = useRouter();
-    const t = useTranslations();
-    const { user, langDir, currency } = useAuth();
+  const router = useRouter();
+  const t = useTranslations();
+  const { user, langDir, currency } = useAuth();
 
-    const [timeLeft, setTimeLeft] = useState("");
+  const [timeLeft, setTimeLeft] = useState("");
 
-    const deviceId = getOrCreateDeviceId() || "";
+  const deviceId = getOrCreateDeviceId() || "";
 
-    const calculateDiscountedPrice = () => {
-        const price = item.productProductPrice ? Number(item.productProductPrice) : 0;
-        let discount = item.consumerDiscount || 0;
-        let discountType = item.consumerDiscountType;
-        if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-            discount = item.vendorDiscount || 0;
-            discountType = item.vendorDiscountType;
-        }
-        if (discountType == 'PERCENTAGE') {
-            return Number((price - (price * discount) / 100).toFixed(2));
-        }
-        return Number((price - discount).toFixed(2));
-    };
+  const calculateDiscountedPrice = () => {
+    const price = item.productProductPrice
+      ? Number(item.productProductPrice)
+      : 0;
+    let discount = item.consumerDiscount || 0;
+    let discountType = item.consumerDiscountType;
+    if (user?.tradeRole && user?.tradeRole != "BUYER") {
+      discount = item.vendorDiscount || 0;
+      discountType = item.vendorDiscountType;
+    }
+    if (discountType == "PERCENTAGE") {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
+  };
 
-    const calculateAvgRating = useMemo(() => {
-        const totalRating = item.productReview?.reduce(
-            (acc: number, item: { rating: number }) => {
-                return acc + item.rating;
-            },
-            0,
-        );
-
-        const result = totalRating / item.productReview?.length;
-        return !isNaN(result) ? Math.floor(result) : 0;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [item.productReview?.length]);
-
-    const calculateRatings = useMemo(
-        () => (rating: number) => {
-            const stars: Array<React.ReactNode> = [];
-            for (let i = 1; i <= 5; i++) {
-                if (i <= rating) {
-                    stars.push(<FaStar key={i} color="#FFC107" size={20} />);
-                } else {
-                    stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
-                }
-            }
-            return stars;
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [item.productReview?.length],
+  const calculateAvgRating = useMemo(() => {
+    const totalRating = item.productReview?.reduce(
+      (acc: number, item: { rating: number }) => {
+        return acc + item.rating;
+      },
+      0,
     );
 
-    const [quantity, setQuantity] = useState(0);
-    const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
+    const result = totalRating / item.productReview?.length;
+    return !isNaN(result) ? Math.floor(result) : 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item.productReview?.length]);
 
-    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
-    const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
-    const confirmDialogRef = useRef(null);
-    const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
-
-    useEffect(() => {
-        setQuantity(productQuantity || 0);
-    }, [productQuantity]);
-
-    useEffect(() => {
-        setSelectedProductVariant(productVariant || productVariants?.[0]);
-    }, [productVariants, productVariant]);
-
-    const updateCartWithLogin = useUpdateCartWithLogin();
-    const updateCartByDevice = useUpdateCartByDevice();
-    const deleteCartItem = useDeleteCartItem();
-
-    const handleAddToCart = async (
-        newQuantity: number,
-        actionType: "add" | "remove",
-        variant?: any
-    ) => {
-        const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
-        const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
-
-        if (actionType == "add" && newQuantity == -1) {
-            newQuantity = minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
-        }
-
-        if (actionType == "add" && minQuantity && minQuantity > newQuantity) {
-            toast({
-                description: t("min_quantity_must_be_n", { n: minQuantity }),
-                variant: "danger",
-            });
-            return;
-        }
-
-        if (maxQuantity && maxQuantity < newQuantity) {
-            toast({
-                description: t("max_quantity_must_be_n", { n: maxQuantity }),
-                variant: "danger",
-            });
-            return;
-        }
-
-        if (actionType == "remove" && minQuantity && minQuantity > newQuantity) {
-            setIsConfirmDialogOpen(true);
-            return;
-        }
-
-        if (haveAccessToken) {
-            if (!item?.productProductPriceId) {
-                toast({
-                    title: t("something_went_wrong"),
-                    description: t("product_price_id_not_found"),
-                    variant: "danger",
-                });
-                return;
-            }
-            const response = await updateCartWithLogin.mutateAsync({
-                productPriceId: item?.productProductPriceId,
-                quantity: newQuantity,
-                productVariant: variant || selectedProductVariant
-            });
-
-            if (response.status) {
-                if (actionType === "add" && newQuantity === 0) {
-                    setQuantity(1);
-                } else {
-                    setQuantity(newQuantity);
-                }
-                toast({
-                    title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
-                    description: t("check_your_cart_for_more_details"),
-                    variant: "success",
-                });
-                return response.status;
-            } else {
-                toast({
-                    title: t("something_went_wrong"),
-                    description: response.message,
-                    variant: "danger",
-                });
-            }
+  const calculateRatings = useMemo(
+    () => (rating: number) => {
+      const stars: Array<React.ReactNode> = [];
+      for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+          stars.push(<FaStar key={i} color="#FFC107" size={20} />);
         } else {
-            if (!item?.productProductPriceId) {
-                toast({
-                    title: t("something_went_wrong"),
-                    description: t("product_price_id_not_found"),
-                    variant: "danger",
-                });
-                return;
-            }
-            const response = await updateCartByDevice.mutateAsync({
-                productPriceId: item?.productProductPriceId,
-                quantity: newQuantity,
-                deviceId,
-                productVariant: variant || selectedProductVariant
-            });
-            if (response.status) {
-                if (actionType === "add" && newQuantity === 0) {
-                    setQuantity(1);
-                } else {
-                    setQuantity(newQuantity);
-                }
-                toast({
-                    title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
-                    description: t("check_your_cart_for_more_details"),
-                    variant: "success",
-                });
-                return response.status;
-            } else {
-                toast({
-                    title: t("something_went_wrong"),
-                    description: response.message,
-                    variant: "danger",
-                });
-            }
+          stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
         }
-    };
+      }
+      return stars;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [item.productReview?.length],
+  );
 
-    const handleQuantity = (quantity: number, action: "add" | "remove") => {
-        const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
-        const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
+  const [quantity, setQuantity] = useState(0);
+  const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
 
-        if (maxQuantity && maxQuantity < quantity) {
-            toast({
-                description: t("max_quantity_must_be_n", { n: maxQuantity }),
-                variant: "danger",
-            });
-            setQuantity(productQuantity || maxQuantity);
-            return;
-        }
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
+  const handleConfirmDialog = () =>
+    setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const confirmDialogRef = useRef(null);
+  const [isClickedOutsideConfirmDialog] = useClickOutside(
+    [confirmDialogRef],
+    (event) => {
+      onCancelRemove();
+    },
+  );
 
-        setQuantity(quantity);
-        if (cartId) {
-            handleAddToCart(quantity, action);
+  useEffect(() => {
+    setQuantity(productQuantity || 0);
+  }, [productQuantity]);
+
+  useEffect(() => {
+    setSelectedProductVariant(productVariant || productVariants?.[0]);
+  }, [productVariants, productVariant]);
+
+  const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartByDevice = useUpdateCartByDevice();
+  const deleteCartItem = useDeleteCartItem();
+
+  const handleAddToCart = async (
+    newQuantity: number,
+    actionType: "add" | "remove",
+    variant?: any,
+  ) => {
+    const minQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.minQuantityPerCustomer
+      : null;
+    const maxQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.maxQuantityPerCustomer
+      : null;
+
+    if (actionType == "add" && newQuantity == -1) {
+      newQuantity =
+        minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
+    }
+
+    if (actionType == "add" && minQuantity && minQuantity > newQuantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      });
+      return;
+    }
+
+    if (maxQuantity && maxQuantity < newQuantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      });
+      return;
+    }
+
+    if (actionType == "remove" && minQuantity && minQuantity > newQuantity) {
+      setIsConfirmDialogOpen(true);
+      return;
+    }
+
+    if (haveAccessToken) {
+      if (!item?.productProductPriceId) {
+        toast({
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
+          variant: "danger",
+        });
+        return;
+      }
+      const response = await updateCartWithLogin.mutateAsync({
+        productPriceId: item?.productProductPriceId,
+        quantity: newQuantity,
+        productVariant: variant || selectedProductVariant,
+      });
+
+      if (response.status) {
+        if (actionType === "add" && newQuantity === 0) {
+          setQuantity(1);
         } else {
-            if (minQuantity && minQuantity > quantity) {
-                toast({
-                    description: t("min_quantity_must_be_n", { n: minQuantity }),
-                    variant: "danger",
-                });
-                return;
-            }
+          setQuantity(newQuantity);
         }
-    };
-
-    const handleQuantityChange = () => {
-        if (quantity == 0 && productQuantity != 0) {
-            toast({
-                description: t("quantity_can_not_be_0"),
-                variant: "danger",
-            });
-            handleQuantity(quantity, "remove");
-            return;
-        }
-
-        const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
-        if (minQuantity && minQuantity > quantity) {
-            toast({
-                description: t("min_quantity_must_be_n", { n: minQuantity }),
-                variant: "danger",
-            });
-            handleQuantity(quantity, quantity > productQuantity ? "add" : "remove");
-            return;
-        }
-
-        const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
-        if (maxQuantity && maxQuantity < quantity) {
-            toast({
-                description: t("max_quantity_must_be_n", { n: maxQuantity }),
-                variant: "danger",
-            });
-            setQuantity(productQuantity || maxQuantity);
-            return;
-        }
-
-        const action = quantity > productQuantity ? "add" : "remove";
-        if (quantity != productQuantity) handleQuantity(quantity, action);
-    };
-
-    const handleRemoveItemFromCart = async (cartId: number) => {
-        const response = await deleteCartItem.mutateAsync({ cartId });
-        if (response.status) {
-            toast({
-                title: t("item_removed_from_cart"),
-                description: t("check_your_cart_for_more_details"),
-                variant: "success",
-            });
+        toast({
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
+          variant: "success",
+        });
+        return response.status;
+      } else {
+        toast({
+          title: t("something_went_wrong"),
+          description: response.message,
+          variant: "danger",
+        });
+      }
+    } else {
+      if (!item?.productProductPriceId) {
+        toast({
+          title: t("something_went_wrong"),
+          description: t("product_price_id_not_found"),
+          variant: "danger",
+        });
+        return;
+      }
+      const response = await updateCartByDevice.mutateAsync({
+        productPriceId: item?.productProductPriceId,
+        quantity: newQuantity,
+        deviceId,
+        productVariant: variant || selectedProductVariant,
+      });
+      if (response.status) {
+        if (actionType === "add" && newQuantity === 0) {
+          setQuantity(1);
         } else {
-            toast({
-                title: t("item_not_removed_from_cart"),
-                description: t("check_your_cart_for_more_details"),
-                variant: "danger",
-            });
+          setQuantity(newQuantity);
         }
+        toast({
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
+          variant: "success",
+        });
+        return response.status;
+      } else {
+        toast({
+          title: t("something_went_wrong"),
+          description: response.message,
+          variant: "danger",
+        });
+      }
+    }
+  };
+
+  const handleQuantity = (quantity: number, action: "add" | "remove") => {
+    const minQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.minQuantityPerCustomer
+      : null;
+    const maxQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.maxQuantityPerCustomer
+      : null;
+
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      });
+      setQuantity(productQuantity || maxQuantity);
+      return;
+    }
+
+    setQuantity(quantity);
+    if (cartId) {
+      handleAddToCart(quantity, action);
+    } else {
+      if (minQuantity && minQuantity > quantity) {
+        toast({
+          description: t("min_quantity_must_be_n", { n: minQuantity }),
+          variant: "danger",
+        });
+        return;
+      }
+    }
+  };
+
+  const handleQuantityChange = () => {
+    if (quantity == 0 && productQuantity != 0) {
+      toast({
+        description: t("quantity_can_not_be_0"),
+        variant: "danger",
+      });
+      handleQuantity(quantity, "remove");
+      return;
+    }
+
+    const minQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.minQuantityPerCustomer
+      : null;
+    if (minQuantity && minQuantity > quantity) {
+      toast({
+        description: t("min_quantity_must_be_n", { n: minQuantity }),
+        variant: "danger",
+      });
+      handleQuantity(quantity, quantity > productQuantity ? "add" : "remove");
+      return;
+    }
+
+    const maxQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.maxQuantityPerCustomer
+      : null;
+    if (maxQuantity && maxQuantity < quantity) {
+      toast({
+        description: t("max_quantity_must_be_n", { n: maxQuantity }),
+        variant: "danger",
+      });
+      setQuantity(productQuantity || maxQuantity);
+      return;
+    }
+
+    const action = quantity > productQuantity ? "add" : "remove";
+    if (quantity != productQuantity) handleQuantity(quantity, action);
+  };
+
+  const handleRemoveItemFromCart = async (cartId: number) => {
+    const response = await deleteCartItem.mutateAsync({ cartId });
+    if (response.status) {
+      toast({
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: t("item_not_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "danger",
+      });
+    }
+  };
+
+  const onConfirmRemove = () => {
+    if (cartId) handleRemoveItemFromCart(cartId);
+    setIsConfirmDialogOpen(false);
+  };
+
+  const onCancelRemove = () => {
+    setQuantity(productQuantity);
+    setIsConfirmDialogOpen(false);
+  };
+
+  const getLocalTimestamp = (dateStr: any, timeStr: any) => {
+    const date = new Date(dateStr); // Parse date part only
+    const [hours, minutes] = (timeStr || "").split(":").map(Number); // Extract hours/minutes
+
+    date.setHours(hours, minutes || 0, 0, 0); // Set correct time in local timezone
+
+    return date.getTime(); // Return timestamp in milliseconds
+  };
+
+  // ✅ Corrected formatTime function to display (Days, Hours, Minutes, Seconds)
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(
+      2,
+      "0",
+    );
+    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
+      2,
+      "0",
+    );
+    const seconds = String(totalSeconds % 60).padStart(2, "0");
+    // console.log(days, hours, minutes, seconds)
+    return `${days} Days; ${hours}:${minutes}:${seconds}`;
+  };
+
+  useEffect(() => {
+    if (
+      !item?.productPrices?.length ||
+      item?.productPrices?.[0]?.sellType !== "BUYGROUP"
+    )
+      return;
+
+    const product = item.productPrices[0];
+
+    const startTimestamp = getLocalTimestamp(
+      product.dateOpen,
+      product.startTime,
+    );
+    const endTimestamp = getLocalTimestamp(product.dateClose, product.endTime);
+
+    const updateCountdown = () => {
+      const now = Date.now();
+
+      if (now < startTimestamp) {
+        setTimeLeft(t("not_started"));
+        return;
+      }
+
+      let ms = endTimestamp - now;
+      if (ms <= 0) {
+        setTimeLeft(t("expired"));
+        return;
+      }
+
+      setTimeLeft(formatTime(ms));
     };
 
-    const onConfirmRemove = () => {
-        if (cartId) handleRemoveItemFromCart(cartId);
-        setIsConfirmDialogOpen(false);
-    };
+    updateCountdown(); // Initial call
+    const interval = setInterval(updateCountdown, 1000);
 
-    const onCancelRemove = () => {
-        setQuantity(productQuantity);
-        setIsConfirmDialogOpen(false);
-    };
+    return () => clearInterval(interval);
+  }, [item?.productPrices?.length]);
+  type Node = {
+    type: string;
+    children?: { text: string }[];
+  };
 
-    const getLocalTimestamp = (dateStr: any, timeStr: any) => {
-        const date = new Date(dateStr); // Parse date part only
-        const [hours, minutes] = (timeStr || "").split(":").map(Number); // Extract hours/minutes
+  const getPlainText = (nodes: string | Node[]): string => {
+    let parsedNodes: Node[];
 
-        date.setHours(hours, minutes || 0, 0, 0); // Set correct time in local timezone
+    if (typeof nodes === "string") {
+      parsedNodes = JSON.parse(nodes);
+    } else {
+      parsedNodes = nodes;
+    }
 
-        return date.getTime(); // Return timestamp in milliseconds
-    };
+    return parsedNodes
+      .map((node) => node.children?.map((child) => child.text).join("") || "")
+      .join("\n");
+  };
 
-    // ✅ Corrected formatTime function to display (Days, Hours, Minutes, Seconds)
-    const formatTime = (ms: number) => {
-        const totalSeconds = Math.floor(ms / 1000);
-        const days = Math.floor(totalSeconds / 86400);
-        const hours = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(
-            2,
-            "0",
-        );
-        const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
-            2,
-            "0",
-        );
-        const seconds = String(totalSeconds % 60).padStart(2, "0");
-        // console.log(days, hours, minutes, seconds)
-        return `${days} Days; ${hours}:${minutes}:${seconds}`;
-    };
-
-    useEffect(() => {
-        if (
-            !item?.productPrices?.length ||
-            item?.productPrices?.[0]?.sellType !== "BUYGROUP"
-        )
-            return;
-
-        const product = item.productPrices[0];
-
-        const startTimestamp = getLocalTimestamp(
-            product.dateOpen,
-            product.startTime,
-        );
-        const endTimestamp = getLocalTimestamp(product.dateClose, product.endTime);
-
-        const updateCountdown = () => {
-            const now = Date.now();
-
-            if (now < startTimestamp) {
-                setTimeLeft(t("not_started"));
-                return;
-            }
-
-            let ms = endTimestamp - now;
-            if (ms <= 0) {
-                setTimeLeft(t("expired"));
-                return;
-            }
-
-            setTimeLeft(formatTime(ms));
-        };
-
-        updateCountdown(); // Initial call
-        const interval = setInterval(updateCountdown, 1000);
-
-        return () => clearInterval(interval);
-    }, [item?.productPrices?.length]);
-    type Node = {
-        type: string;
-        children?: { text: string }[];
-    };
-
-    const getPlainText = (nodes: string | Node[]): string => {
-        let parsedNodes: Node[];
-
-        if (typeof nodes === 'string') {
-            parsedNodes = JSON.parse(nodes);
-        } else {
-            parsedNodes = nodes;
-        }
-
-        return parsedNodes
-            .map(node =>
-                node.children?.map(child => child.text).join('') || ''
-            )
-            .join('\n');
-    };
-
-    return (
-        <div className="product-list-s1-col">
-            <div className="product-list-s1-box relative hover:bg-slate-100">
-                {isSelectable ? (
-                    <div className="absolute left-[10px] top-[20px]">
-                        <Checkbox
-                            className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                            checked={selectedIds?.includes(item.id)}
-                            onCheckedChange={(checked) => onSelectedId?.(checked, item.id)}
-                        />
-                    </div>
-                ) : null}
-                {timeLeft ? (
-                    <div className="time_left">
-                        <span>{timeLeft}</span>
-                    </div>
-                ) : null}
-                <Link href={manageService ? "#" : `/services/${item.id}`}>
-                    {item?.askForPrice !== "true" ? (
-                        item.consumerDiscount ? (
-                            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
-                                <span>{item.consumerDiscount}%</span>
-                            </div>
-                        ) : null
-                    ) : null}
-                    <div className="relative mx-auto mb-4 h-36 w-36">
-                        <Image
-                            src={
-                                item?.images?.[0]?.url && validator.isURL(item.images[0].url)
-                                    ? item.images[0].url
-                                    : PlaceholderImage
-                            }
-                            alt="product-image"
-                            fill
-                            sizes="(max-width: 768px) 100vw,
+  return (
+    <div className="product-list-s1-col">
+      <div className="product-list-s1-box relative hover:bg-slate-100">
+        {isSelectable ? (
+          <div className="absolute left-[10px] top-[20px]">
+            <Checkbox
+              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+              checked={selectedIds?.includes(item.id)}
+              onCheckedChange={(checked) => onSelectedId?.(checked, item.id)}
+            />
+          </div>
+        ) : null}
+        {timeLeft ? (
+          <div className="time_left">
+            <span>{timeLeft}</span>
+          </div>
+        ) : null}
+        <Link href={manageService ? "#" : `/services/${item.id}`}>
+          {item?.askForPrice !== "true" ? (
+            item.consumerDiscount ? (
+              <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
+                <span>{item.consumerDiscount}%</span>
+              </div>
+            ) : null
+          ) : null}
+          <div className="relative mx-auto mb-4 h-36 w-36">
+            <Image
+              src={
+                item?.images?.[0]?.url && validator.isURL(item.images[0].url)
+                  ? item.images[0].url
+                  : PlaceholderImage
+              }
+              alt="product-image"
+              fill
+              sizes="(max-width: 768px) 100vw,
                                     (max-width: 1200px) 50vw,
                                     33vw
                                 "
-                            className="object-contain"
-                            blurDataURL="/images/product-placeholder.png"
-                            placeholder="blur"
-                        />
-                    </div>
-                </Link>
+              className="object-cover"
+              blurDataURL="/images/product-placeholder.png"
+              placeholder="blur"
+            />
+          </div>
+        </Link>
 
-                {isInteractive ? (
-                    <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-                        {item?.askForPrice !== "true" ? (
-                            <Button
-                                variant="ghost"
-                                className="relative h-8 w-8 rounded-full p-0 shadow-md"
-                                onClick={() => handleAddToCart(-1, "add")}
-                            >
-                                <ShoppingIcon />
-                            </Button>
-                        ) : null}
+        {isInteractive ? (
+          <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
+            {item?.askForPrice !== "true" ? (
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full p-0 shadow-md"
+                onClick={() => handleAddToCart(-1, "add")}
+              >
+                <ShoppingIcon />
+              </Button>
+            ) : null}
 
-                        <Link
-                            href={manageService ? "#" : `/services/${item.id}`}
-                            className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
-                        >
-                            <FiEye size={18} />
-                        </Link>
-                        {haveAccessToken ? (
-                            <Button
-                                variant="ghost"
-                                className="relative h-8 w-8 rounded-full p-0 shadow-md"
-                                onClick={onWishlist}
-                            >
-                                {inWishlist ? (
-                                    <FaHeart color="red" size={16} />
-                                ) : (
-                                    <FaRegHeart size={16} />
-                                )}
-                            </Button>
-                        ) : null}
-                        {/* <Button
+            <Link
+              href={manageService ? "#" : `/services/${item.id}`}
+              className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+            >
+              <FiEye size={18} />
+            </Link>
+            {haveAccessToken ? (
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full p-0 shadow-md"
+                onClick={onWishlist}
+              >
+                {inWishlist ? (
+                  <FaHeart color="red" size={16} />
+                ) : (
+                  <FaRegHeart size={16} />
+                )}
+              </Button>
+            ) : null}
+            {/* <Button
               variant="ghost"
               className="relative h-8 w-8 rounded-full p-0 shadow-md"
               onClick={copyToClipboard}
             >
               <ShareIcon />
             </Button> */}
-                    </div>
-                ) : null}
+          </div>
+        ) : null}
 
-                <Link href={manageService ? "#" : `/services/${item.id}`}>
-                    <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-                        <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-                            {item.serviceName}
-                        </h4>
-                        <p title={getPlainText(item.description)} className="truncate">
-                            {getPlainText(item.description)}
-                        </p>
-                        {/* <div className="my-1 flex">
+        <Link href={manageService ? "#" : `/services/${item.id}`}>
+          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
+            <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
+              {item.serviceName}
+            </h4>
+            <p title={getPlainText(item.description)} className="truncate">
+              {getPlainText(item.description)}
+            </p>
+            {/* <div className="my-1 flex">
                             {calculateRatings(calculateAvgRating)}
                             <span className="ml-2">{item.productReview?.length}</span>
                         </div> */}
-                    </div>
-                </Link>
-                {/* <div>
+          </div>
+        </Link>
+        {/* <div>
                     {item?.askForPrice === "true" ? (
                         <Link href={`/seller-rfq-request?product_id=${item?.id}`}>
                             <button
@@ -607,96 +633,102 @@ const ServiceCard: React.FC<any> = ({
                     </div>
                 </div> */}
 
-                <div className="cart_button">
-                    {
-                        manageService ?
-                            <button
-                                className="w-full flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D] theme-primary-btn"
-                                onClick={() => router.push(`/manage-services/create-service?editId=${item.id}`)}
-                                dir={langDir}
-                                translate="no"
-                            >
-                                <span className="d-none-mobile">{t("edit")}</span>
-                            </button>
-                            :
-                            <>
-                                {isAddedToCart ? (
-                                    <button
-                                        type="button"
-                                        className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
-                                        disabled={false}
-                                        dir={langDir}
-                                        translate="no"
-                                    >
-                                        <FaCircleCheck color="#00C48C" />
-                                        {t("added_to_cart")}
-                                    </button>
-                                ) : null}
-                                {!isAddedToCart ? (
-                                    <button
-                                        type="button"
-                                        className="add_to_cart_button"
-                                        onClick={handleServiceToCartModal}
-                                        // disabled={quantity == 0}
-                                        dir={langDir}
-                                        translate="no"
-                                    >
-                                        {t("add_to_cart")}
-                                    </button>
-                                ) : null}
-                            </>
-                    }
-                </div>
-
-                {sold !== undefined ? (
-                    <>
-                        <div className="mt-3 h-3 w-full bg-gray-300">
-                            <div className="h-full w-4/5 bg-color-yellow"></div>
-                        </div>
-                        <span className="w-full text-sm font-normal capitalize text-light-gray" translate="no">
-                            {t("sold")}: {sold}
-                        </span>
-                    </>
-                ) : null}
-            </div>
-            <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
-                <DialogContent
-                    className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
-                    ref={confirmDialogRef}
+        <div className="cart_button">
+          {manageService ? (
+            <button
+              className="theme-primary-btn flex w-full items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
+              onClick={() =>
+                router.push(`/manage-services/create-service?editId=${item.id}`)
+              }
+              dir={langDir}
+              translate="no"
+            >
+              <span className="d-none-mobile">{t("edit")}</span>
+            </button>
+          ) : (
+            <>
+              {isAddedToCart ? (
+                <button
+                  type="button"
+                  className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
+                  disabled={false}
+                  dir={langDir}
+                  translate="no"
                 >
-                    <div className="modal-header !justify-between" dir={langDir}>
-                        <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
-                        <Button
-                            onClick={onCancelRemove}
-                            className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
-                        >
-                            <IoCloseSharp size={20} />
-                        </Button>
-                    </div>
-
-                    <div className="text-center mt-4 mb-4">
-                        <p className="text-dark-orange">Do you want to remove this item from cart?</p>
-                        <div>
-                            <Button
-                                type="button"
-                                className="bg-white text-red-500 mr-2"
-                                onClick={onCancelRemove}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                type="button"
-                                className="bg-red-500"
-                                onClick={onConfirmRemove}
-                            >
-                                Remove
-                            </Button>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                  <FaCircleCheck color="#00C48C" />
+                  {t("added_to_cart")}
+                </button>
+              ) : null}
+              {!isAddedToCart ? (
+                <button
+                  type="button"
+                  className="add_to_cart_button"
+                  onClick={handleServiceToCartModal}
+                  // disabled={quantity == 0}
+                  dir={langDir}
+                  translate="no"
+                >
+                  {t("add_to_cart")}
+                </button>
+              ) : null}
+            </>
+          )}
         </div>
-    );
+
+        {sold !== undefined ? (
+          <>
+            <div className="mt-3 h-3 w-full bg-gray-300">
+              <div className="h-full w-4/5 bg-color-yellow"></div>
+            </div>
+            <span
+              className="w-full text-sm font-normal capitalize text-light-gray"
+              translate="no"
+            >
+              {t("sold")}: {sold}
+            </span>
+          </>
+        ) : null}
+      </div>
+      <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
+        <DialogContent
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          ref={confirmDialogRef}
+        >
+          <div className="modal-header !justify-between" dir={langDir}>
+            <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
+            <Button
+              onClick={onCancelRemove}
+              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+            >
+              <IoCloseSharp size={20} />
+            </Button>
+          </div>
+
+          <div className="mb-4 mt-4 text-center">
+            <p className="text-dark-orange">
+              Do you want to remove this item from cart?
+            </p>
+            <div>
+              <Button
+                type="button"
+                className="mr-2 bg-white text-red-500"
+                onClick={onCancelRemove}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="bg-red-500"
+                onClick={onConfirmRemove}
+              >
+                Remove
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 };
 
 export default ServiceCard;

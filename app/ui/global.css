@@ -4997,7 +4997,6 @@ input::-ms-clear {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
 }
@@ -5340,6 +5339,10 @@ input::-ms-clear {
   .order-delivery-progess-s1 ul li .dot::after,
   .order-delivery-progess-s1 ul li .dot small {
     @apply hidden !important;
+  }
+
+  .truncate {
+    @apply max-w-[300px];
   }
 
 
