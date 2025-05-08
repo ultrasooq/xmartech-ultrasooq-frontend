@@ -188,7 +188,7 @@ const MyOrderDetailsPage = ({}) => {
                   </div>
                 )}
 
-                {orderDetails?.orderShippingDetail ? (
+                {orderDetails?.orderShippingDetail && orderDetails?.orderProductType != 'SERVICE' ? (
                   <div className="my-order-item">
                     <div className="my-order-card">
                       <div className="mb-2 w-full gap-2 sm:grid sm:grid-cols-3">
@@ -613,11 +613,12 @@ const MyOrderDetailsPage = ({}) => {
                   <OtherItemCard
                     key={item?.id}
                     id={item?.id}
+                    orderProductType={item?.orderProductType}
                     productName={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productName
                     }
-                    offerPrice={item.orderProduct_productPrice?.offerPrice}
+                    offerPrice={item?.purchasePrice}
                     orderQuantity={
                       item?.orderProduct_productPrice?.orderQuantity
                     }
@@ -625,9 +626,6 @@ const MyOrderDetailsPage = ({}) => {
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
                     }
-                    // productName={item?.orderProduct_product?.productName}
-                    // offerPrice={item?.orderProduct_product?.offerPrice}
-                    // productImages={item?.orderProduct_product?.productImages}
                     sellerName={`${item?.orderProduct_productPrice?.adminDetail?.firstName} ${item?.orderProduct_productPrice?.adminDetail?.lastName}`}
                     orderNo={orderDetails?.orderProduct_order?.orderNo}
                     orderProductDate={item?.orderProductDate}
@@ -679,21 +677,6 @@ const MyOrderDetailsPage = ({}) => {
           </DialogContent>
         </Dialog>
       ) : null}
-
-      {/* <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
-        <DialogContent>
-          <SellerReviewForm
-            onClose={() => {
-              setReviewId(undefined);
-              handleToggleReviewModal();
-            }}
-            reviewId={reviewId}
-            productPriceId={orderDetails?.orderProduct_productPrice?.id}
-            adminId={orderDetails?.orderProduct_productPrice?.adminDetail?.id}
-            productId={orderDetails?.orderProduct_productPrice?.productId}
-          />
-        </DialogContent>
-      </Dialog> */}
     </>
   );
 };

@@ -692,6 +692,23 @@ const CheckoutPage = () => {
       i++;
     }
 
+    const sellerIds = memoizedCartList.filter((item: any) => item.serviceId)
+      ?.map((item: any) => item.service.sellerId) || [];
+
+    for (let sellerId of sellerIds) {
+      if (!data.find((item: any) => item.sellerId == sellerId)) {
+        data[i] = {
+          sellerId: sellerId,
+          orderShippingType: "PICKUP",
+          shippingDate: convertDateTimeToUTC(new Date().toLocaleString()),
+          fromTime: convertDateTimeToUTC(new Date().toLocaleString()),
+          toTime: convertDateTimeToUTC(new Date().toLocaleString()),
+          shippingCharge: 0,
+          serviceId: null,
+        };
+      }
+    }
+
     return data;
   };
 

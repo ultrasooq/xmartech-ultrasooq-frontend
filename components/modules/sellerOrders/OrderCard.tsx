@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 
 type OrderCardProps = {
   id: number;
+  orderProductType?: string;
   purchasePrice: string;
   productName: string;
   produtctImage?: { id: number; image: string }[];
@@ -26,6 +27,7 @@ type OrderCardProps = {
 
 const OrderCard: React.FC<OrderCardProps> = ({
   id,
+  orderProductType,
   purchasePrice,
   productName,
   produtctImage,
@@ -50,22 +52,40 @@ const OrderCard: React.FC<OrderCardProps> = ({
       </h5>
       <div className="my-order-box">
         <Link href={`/seller-orders/${id}`}>
-          <figure>
-            <div className="image-container rounded border border-gray-300">
-              <Image
-                src={produtctImage?.[0]?.image || PlaceholderImage}
-                alt="preview-product"
-                width={120}
-                height={120}
-              />
-            </div>
-            <figcaption>
-              <h3>
-                {productName} {productColor ? productColor : ""}
-              </h3>
-              <p>{productColor ? `Color: ${productColor}` : ""}</p>
-            </figcaption>
-          </figure>
+          {orderProductType == 'SERVICE' ? (
+            <figure>
+              <div className="image-container rounded border border-gray-300">
+                <Image
+                  src={PlaceholderImage}
+                  alt="preview-product"
+                  width={120}
+                  height={120}
+                />
+              </div>
+              <figcaption>
+                <h3>
+                  {t("service")}
+                </h3>
+              </figcaption>
+            </figure>
+          ) : (
+            <figure>
+              <div className="image-container rounded border border-gray-300">
+                <Image
+                  src={produtctImage?.[0]?.image || PlaceholderImage}
+                  alt="preview-product"
+                  width={120}
+                  height={120}
+                />
+              </div>
+              <figcaption>
+                <h3>
+                  {productName} {productColor ? productColor : ""}
+                </h3>
+                <p>{productColor ? `Color: ${productColor}` : ""}</p>
+              </figcaption>
+            </figure>
+          )}
         </Link>
         <div className="center-price-info">
           <h4>{currency.symbol}{Number(purchasePrice) * (orderQuantity ?? 0)}</h4>

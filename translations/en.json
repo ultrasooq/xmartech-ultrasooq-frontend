@@ -909,6 +909,7 @@
     "service_create_successful": "Service Create Successful",
     "service_create_failed": "Service Create Failed",
     "services": "Services",
+    "service": "Service",
     "all_services": "All Services",
     "my_services": "My Services",
     "n_services_found": "{n} Services Found",

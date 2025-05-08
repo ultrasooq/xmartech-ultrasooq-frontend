@@ -274,6 +274,7 @@ const SellerOrdersPage = () => {
               {ordersBySellerIdQuery?.data?.data?.map(
                 (item: {
                   id: number;
+                  orderProductType?: string;
                   purchasePrice: string;
                   orderProduct_productPrice: {
                     id: number;
@@ -297,7 +298,7 @@ const SellerOrdersPage = () => {
                   <OrderCard
                     key={item.id}
                     id={item.id}
-                    purchasePrice={item.orderProduct_productPrice?.offerPrice}
+                    purchasePrice={item.purchasePrice}
                     productName={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productName

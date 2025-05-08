@@ -909,6 +909,7 @@
     "service_create_successful": "تم إنشاء الخدمة بنجاح",
     "service_create_failed": "فشل إنشاء الخدمة",
     "services": "الخدمات",
+    "service": "خدمة",
     "all_services": "جميع الخدمات",
     "my_services": "خدماتي",
     "n_services_found": "تم العثور على {n} خدمة",

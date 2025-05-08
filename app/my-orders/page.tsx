@@ -267,6 +267,7 @@ const MyOrdersPage = () => {
               {ordersQuery?.data?.data?.map(
                 (item: {
                   id: number;
+                  orderProductType?: string;
                   productId: number;
                   purchasePrice: string;
                   orderProduct_productPrice: {
@@ -288,10 +289,7 @@ const MyOrdersPage = () => {
                     key={item.id}
                     id={item.id}
                     productId={item.productId}
-                    // purchasePrice={item.purchasePrice}
-                    // productName={item.orderProduct_product?.productName}
-                    // produtctImage={item.orderProduct_product?.productImages}
-                    purchasePrice={item.orderProduct_productPrice?.offerPrice}
+                    purchasePrice={item.purchasePrice}
                     productName={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productName
