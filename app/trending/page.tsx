@@ -63,6 +63,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 // @ts-ignore
 import  { startDebugger }  from "remove-child-node-error-debugger";
+import Cart from "@/components/modules/cartList/Cart";
 
 interface TrendingPageProps {
   searchParams?: { term?: string };
@@ -656,6 +657,13 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                 />
               ) : null}
             </div>
+            {/* <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 md:w-[300px]">
+              <Cart 
+                haveAccessToken={haveAccessToken}
+                isLoadingCart={cartListByDeviceQuery?.isLoading || cartListByUser?.isLoading}
+                cartItems={cartList}
+              />
+            </div> */}
           </div>
         </div>
       </div>

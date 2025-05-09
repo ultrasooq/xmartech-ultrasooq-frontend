@@ -45,6 +45,7 @@ import { Label } from "@/components/ui/label";
 import AddToCustomizeForm from "@/components/modules/factories/AddToCustomizeForm";
 import { useAuth } from "@/context/AuthContext";
 import { useProductVariant } from "@/apis/queries/product.queries";
+import Cart from "@/components/modules/cartList/Cart";
 
 const FactoriesPage = () => {
   const t = useTranslations();
@@ -471,6 +472,13 @@ const FactoriesPage = () => {
                 onInitCart={setFactoriesCartList}
                 haveAccessToken={haveAccessToken}
               />
+              {/* <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 md:w-[300px]">
+                <Cart 
+                  haveAccessToken={haveAccessToken}
+                  isLoadingCart={cartListByUser?.isLoading}
+                  cartItems={cartList}
+                />
+              </div> */}
             </div>
           </div>
         </div>
