@@ -689,7 +689,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {sold !== undefined && sold !== null && item.productPrices?.[0]?.stock
           ? (() => {
               const percentage = Number(
-                ((sold / (sold + item.productPrices[0].stock)) * 100).toFixed(),
+                (100 - (sold / (sold + item.productPrices[0].stock)) * 100).toFixed(),
               );
               return (
                 <>
