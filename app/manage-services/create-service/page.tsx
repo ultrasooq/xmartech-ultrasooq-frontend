@@ -57,9 +57,9 @@ const formSchema = (t: any) =>
         .trim()
         .min(1, { message: t("service_name_is_required") }),
 
-    description: z
-      .array(z.any(), { required_error: "Description is required" })
-      .min(1, { message: "Description cannot be empty" }),
+      description: z
+        .array(z.any(), { required_error: "Description is required" })
+        .min(1, { message: "Description cannot be empty" }),
 
       categoryId: z
         .number({ required_error: t("category_is_required") })
@@ -83,14 +83,20 @@ const formSchema = (t: any) =>
       breakTimeFrom: z.string().trim().optional(),
       breakTimeTo: z.string().trim().optional(),
 
-    shippingType: z.enum(["DIRECTION", "RANG"]).optional(),
-    countryId: z.number().positive().nullable().optional(),
-    stateId: z.number().positive().nullable().optional(),
-    fromCityId: z.number().positive().nullable().optional(),
-    toCityId: z.number().positive().nullable().optional(),
-    rangeCityId: z.number().positive().nullable().optional(),
-    eachCustomerTime: z.string().trim().min(1, { message: "Each customer time is required" }),
-    customerPerPeiod: z.string().trim().min(1, { message: "Customer per period is required" }),
+      shippingType: z.enum(["DIRECTION", "RANG"]).optional(),
+      countryId: z.number().positive().nullable().optional(),
+      stateId: z.number().positive().nullable().optional(),
+      fromCityId: z.number().positive().nullable().optional(),
+      toCityId: z.number().positive().nullable().optional(),
+      rangeCityId: z.number().positive().nullable().optional(),
+      eachCustomerTime: z
+        .string()
+        .trim()
+        .min(1, { message: "Each customer time is required" }),
+      customerPerPeiod: z
+        .string()
+        .trim()
+        .min(1, { message: "Customer per period is required" }),
 
       serviceType: z.enum(["BOOKING", "MOVING"], {
         required_error: t("service_type_is_required"),
@@ -179,8 +185,8 @@ const defaultServiceValues = {
   serviceName: "",
   description: [
     {
-      type: 'p',
-      children: [{ text: '' }],
+      type: "p",
+      children: [{ text: "" }],
     },
   ],
   categoryId: 0,
@@ -210,7 +216,7 @@ const defaultServiceValues = {
       name: "",
       serviceCostType: "FLAT",
       serviceCost: "",
-    }
+    },
   ],
   images: [],
 };
@@ -1078,8 +1084,16 @@ const CreateServicePage = () => {
                                   placeholder={t("enter_minutes")}
                                   {...form.register("eachCustomerTime")}
                                   onChange={(e) => {
-                                    const cleaned = e.target.value.replace(/[^\d]/g, "");
-                                    form.setValue("eachCustomerTime", cleaned ? parseInt(cleaned, 10) : undefined as any);
+                                    const cleaned = e.target.value.replace(
+                                      /[^\d]/g,
+                                      "",
+                                    );
+                                    form.setValue(
+                                      "eachCustomerTime",
+                                      cleaned
+                                        ? parseInt(cleaned, 10)
+                                        : (undefined as any),
+                                    );
                                     if (cleaned) {
                                       form.clearErrors("eachCustomerTime");
                                     }
@@ -1109,8 +1123,16 @@ const CreateServicePage = () => {
                                   placeholder={t("enter_number")}
                                   {...form.register("customerPerPeiod")}
                                   onChange={(e) => {
-                                    const cleaned = e.target.value.replace(/[^\d]/g, "");
-                                    form.setValue("customerPerPeiod", cleaned ? parseInt(cleaned, 10) : undefined as any);
+                                    const cleaned = e.target.value.replace(
+                                      /[^\d]/g,
+                                      "",
+                                    );
+                                    form.setValue(
+                                      "customerPerPeiod",
+                                      cleaned
+                                        ? parseInt(cleaned, 10)
+                                        : (undefined as any),
+                                    );
                                     if (cleaned) {
                                       form.clearErrors("customerPerPeiod");
                                     }
